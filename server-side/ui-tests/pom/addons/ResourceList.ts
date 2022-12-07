@@ -3,8 +3,9 @@ import { By } from 'selenium-webdriver';
 import { AddonPage } from './base/AddonPage';
 
 export class ResourceList extends AddonPage {
+    public resourceName = 'resources';
+    
     // *general selectors for Resource Views*
-
     public PepTopArea_title: By = By.xpath('//div[contains(@class, "pep-top-area")]/h2');
     public TabsContainer: By = By.xpath('//div[contains(@class, "mat-tab-labels")]');
     // Tabs
@@ -12,7 +13,6 @@ export class ResourceList extends AddonPage {
     public Editors_Tab: By = this.getSelectorOfResourceListSettingsTab('Editors'); //By.xpath('//div[text()="Editors"]/parent::div[@role="tab"]');
     // List
     public GenericList_Content: By = By.xpath('//pep-generic-list/pep-page-layout/div[@class="pep-page-main-layout"]');
-    public AddonSettingsContent_ListTitle: By = By.xpath('//pep-top-bar //span[@title="Views"]');
     public Add_Button: By = By.xpath('//span[@title="Add"]/ancestor::button');
     public List_NoDataFound: By = By.xpath('//pep-list/div/p[contains(@class, "no-data")]');
     public Label_Name: By = this.getSelectorOfLabelUnderTableHeader('Name'); //By.xpath('//label[@id="Name"]');
@@ -23,29 +23,38 @@ export class ResourceList extends AddonPage {
     public SelectedRadioButton: By = By.xpath(
         '//mat-radio-button[contains(@class, "checked")]/label/span/input[@type="radio"]',
     );
-    public EditorsTabBody: By = By.id('mat-tab-content-0-1');
-    public EditorsTab_Content: By = By.xpath('//*[@id="mat-tab-content-0-1"]/div/app-table');
     public ResultsDiv: By = By.xpath(
         '//*[contains(@id,"mat-tab-content")]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div',
     );
     public NumberOfItemsInList: By = By.xpath(
         '//div[contains(text(), "result")]/span[contains(@class, "bold number")]',
     );
-    public EmptyEditorsList: By = By.id('mat-tab-content-0-0');
-    public ContentEditorsList: By = By.id('mat-tab-content-1-0');
-    public NoResultsFoundDiv: By = By.xpath(
-        '//*[@id="mat-tab-content-0-0"]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[2]/div/div/pep-list/div[1]/p',
-    );
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu/div/button');
     public Pencil_Edit: By = this.getSelectorOfButtonUnderPencilMenu('Edit');
     public Pencil_Delete: By = this.getSelectorOfButtonUnderPencilMenu('Delete');
-    public EditorInList: By = By.xpath(
-        '//pep-list/virtual-scroller/div[@class="scrollable-content"]/div/fieldset/mat-radio-button/label/span/input',
-    );
     // Delete Pop-up
     public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
     public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
     public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
+    // Add Pop-up
+    public AddPopup_Title: By = By.xpath('//span[contains(@class,"dialog-title")]');
+    public AddPopup_Name: By = By.xpath('//input[@id="Name"]');
+    public AddPopup_Description: By = By.xpath('//input[@id="Description"]');
+    public AddPopup_Cancel: By = By.xpath('//pep-button/button[@data-qa="Cancel"]');
+    public AddPopup_Save: By = By.xpath('//pep-button/button[@data-qa="Save"]');
+    public AddPopup_Resource: By = By.xpath('//*[contains(@id,"mat-select-value")]/span/span');
+    public AddPopupResourceDropdown: By = By.id('Resource-panel');
+    public AddPopupResourceDropdownSingleOption: By = By.xpath(
+        '//*[contains(@id,"mat-dialog")]/app-add-form/pep-dialog/div[2]/pep-generic-form/pep-page-layout/div[4]/div[2]/div/div/pep-form/fieldset/mat-grid-list/div/mat-grid-tile[3]/div/pep-field-generator/pep-select/mat-form-field/div/div[1]',
+    );
+    // Edit page
+    public EditPage_Title: By = By.xpath('//span[contains(text(), "Edit - ")]');
+    public EditPage_BackToList_Button: By = By.xpath('//span[@title="Back to list"]/ancestor::button');
+    public EditPage_Update_Button: By = By.xpath('//button[@data-qa="Update"]');
+    // Update Popup
+    public Update_Popup_PepDialog: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog');
+    public Update_Popup_MessageDiv: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog/div[2]/div');
+    public Update_Popup_Close_Button: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog //span[text()=" Close "]/parent::button');
 
     private getSelectorOfResourceListSettingsTab(title: string) {
         return By.xpath(`//div[text()="${title}"]/parent::div[@role="tab"]`);
@@ -67,11 +76,24 @@ export class ResourceList extends AddonPage {
         return By.xpath(`//span[@title="${name}"]/ancestor::pep-textbox`);
     }
 
+    private getSelectorOfEditPgaeTitleWithName(name: string) {
+        return By.xpath(`//span[@title="Edit - ${name}"]`);
+    }
+
+    public setResourceName(resName: string): any {
+        this.resourceName = resName;
+    }
+
+    public async selectResource(resName: string, dropdownElement: By) {
+        await this.selectDropBoxByString(dropdownElement, resName);
+    }
+
     public async clickTab(tabName: string): Promise<void> {
         if (this[tabName]) {
             try {
                 await this.browser.click(this[tabName]);
-                await expect(this.untilIsVisible(this[tabName], 90000)).eventually.to.be.true;
+                const tabSelected = await (await this.browser.findElement(this[tabName])).getAttribute('aria-selected');
+                expect(Boolean(tabSelected)).to.be.true;
             } catch (error) {
                 console.info(`UNABLE TO SELECT: ${tabName}`);
                 console.error(error);
@@ -112,12 +134,9 @@ export class ResourceList extends AddonPage {
 
     public async confirmDeleteClickRedButton() {
         try {
-            //await this.browser.untilIsVisible(this.DeletePopup_Delete_Button, 500);
             this.pause(500);
             const redDeleteButton = await this.browser.findElement(this.DeletePopup_Delete_Button);
             redDeleteButton.click();
-            // await this.browser.click(this.DeletePopup_Delete_Button);
-            // await this.clickElement('DeletePopup_Delete_Button');
             this.pause(5000);
             await this.checkThatElementIsNotFound('DeletePopup_Delete_Button');
         } catch (error) {
@@ -127,60 +146,81 @@ export class ResourceList extends AddonPage {
         }
     }
 
-    public async deleteAllItems() {
-        await this.browser.untilIsVisible(By.xpath('//pep-list'), 3000);
-        try {
-            this.iterateOverList('openPencilChooseDelete');
-        } catch (error) {
-            console.error(error);
-            expect(error).to.be.null;
-        }
+    public async deleteAll() {
+        let numOfEditors: string;
+        do {
+            numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
+            try {
+                this.browser.sleep(500);
+                await this.browser.click(this.FirstRadioButtonInList);
+                this.browser.sleep(500);
+                await this.openPencilChooseDelete();
+                this.browser.sleep(500);
+                await this.confirmDeleteClickRedButton();
+                this.browser.sleep(500);
+            } catch (error) {
+                const errorMessage: string = (error as any).message;
+                console.info(`MESSAGE thrown in deleteAllEditors: ${errorMessage}`);
+            }
+        } while (Number(numOfEditors) > 0);
+        numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
+        const arr = new Array(Number(numOfEditors)).fill(0);
+        console.info(`at deleteAllEditors, ${numOfEditors}, arr: ${arr}`);
+        expect(Number(numOfEditors)).to.equal(0);
     }
 
-    public async iterateOverList(methodName: string) {
-        let findElementError = '';
-        do {
-            try {
-                debugger;
-                if (this[methodName]) {
-                    await this.browser.click(this.FirstRadioButtonInList);
-                    await this[methodName].apply();
-                }
-            } catch (error) {
-                const m = (error as any).message;
-                console.info(`MESSAGE thrown in iterateOverList: ${m}`);
-                findElementError = m.includes('not found') ? m : 'other error occured';
-            }
-        } while (!findElementError);
+    public async validateListPageIsLoaded() {
+        await expect(this.untilIsVisible(this.GenericList_Content, 90000)).eventually.to.be.true;
+        expect(await (await this.browser.findElement(this.ResultsDiv)).getText()).to.contain('result');
+    }
+
+    public async verifyResourceSelected() {
+        this.browser.sleep(2000);
+        const inputContent = await (await this.browser.findElement(this.AddPopup_Resource)).getText();
+        return expect(inputContent).to.equal(this.resourceName);
+    }
+
+    public async verifyEditPageOpen(testName: string) {
+        const selector: By = this.getSelectorOfEditPgaeTitleWithName(testName);
+        await expect(this.untilIsVisible(selector, 15000)).eventually.to.be.true;
+        expect(await (await this.browser.findElement(this.EditPage_Title)).getText()).to.contain(testName);
     }
 }
 
 export class ResourceViews extends ResourceList {
-    // *specific selectors for Views TAB under Resource Views*
+    public viewName = '';
+    /* specific selectors for Views TAB under Resource Views */
+    public Views_List_Title: By = By.xpath('//span[@title="Views"]');
+    public View_Edit_Title: By = By.xpath('//div[contains(@class,"pep-top-area")]/div[contains(@class,"header")]/h4');
+    // Edit Page
+    public SelectEditor_DropDown: By = By.xpath('//mat-select[@id="Editor"]/parent::div/parent::div');
 
-    public ViewsTabBody: By = By.id('mat-tab-content-0-0');
-    public ViewsTabContent: By = By.xpath('//*[@id="mat-tab-content-0-0"]/div/app-table');
+    public setViewName(name: string) {
+        this.viewName = name;
+    }
+
+    public async validateViewsListPageIsLoaded() {
+        await this.validateListPageIsLoaded();
+        await expect(this.untilIsVisible(this.Views_List_Title, 90000)).eventually.to.be.true;
+    }
+    
+    public async verifyViewEditPageOpen(viewName: string) {
+        await expect(this.untilIsVisible(this.EditPage_BackToList_Button, 90000)).eventually.to.be.true;
+        const viewEditTitle = await (await this.browser.findElement(this.View_Edit_Title)).getText();
+        expect(viewEditTitle).to.contain(this.viewName);
+    }
+
+    public async selectEditor(dropdownElement: By, editorName: string) {
+        await this.selectDropBoxByString(dropdownElement, editorName);
+    }
 }
 
 export class ResourceEditors extends ResourceList {
-    public resourceName = 'resources';
+    public editorName = '';
 
     // *specific selectors for Editors TAB under Resource Views*
-    public AddEditor_Button: By = By.xpath('//span[@title="Add"]/ancestor::button');
-    // Add Pop-up
-    public AddEditorPopup_Title: By = By.xpath('//*[@id="mat-dialog-title-0"]/span');
-    public AddEditorPopup_Name: By = By.xpath('//input[@id="Name"]');
-    public AddEditorPopup_Description: By = By.xpath('//input[@id="Description"]');
-    public AddEditorPopup_Cancel: By = By.xpath('//button[@data-qa="Cancel"]');
-    public AddEditorPopup_Save: By = By.xpath('//button[@data-qa="Save"]');
-    public AddEditorPopup_Resource: By = By.xpath('//*[@id="mat-select-value-1"]/span/span');
-    public AddEditorPopupResourceDropdown: By = By.id('Resource-panel');
-    public AddEditorPopupResourceDropdownSingleOption: By = By.xpath(
-        '//*[@id="mat-dialog-0"]/app-add-form/pep-dialog/div[2]/pep-generic-form/pep-page-layout/div[4]/div[2]/div/div/pep-form/fieldset/mat-grid-list/div/mat-grid-tile[3]/div/pep-field-generator/pep-select/mat-form-field/div/div[1]',
-    );
+    public Editors_List_Title: By = By.xpath('//span[@title="Editors"]');
     // Edit Page
-    public EditPageEditors_Title: By = By.xpath('//span[contains(text(), "Edit - ")]');
-    public EditPageEditors_BackToList_Button: By = By.xpath('//span[@title="Back to list"]/ancestor::button');
     public EditPageEditors_Update_Button: By = By.linkText(' Update ');
     public EditPageEditors_General_Tab: By = By.linkText('General');
     public EditPageEditors_Form_Tab: By = By.linkText('Form');
@@ -210,34 +250,13 @@ export class ResourceEditors extends ResourceList {
         '//*[@id="mat-tab-content-0-0"]/div/div[3]/block-reference-fields-table/pep-generic-list/pep-page-layout/div[4]/div[2]/div/div/pep-list/div[1]',
     );
 
-    private getSelectorOfEditPgaeTitleWithName(name: string) {
-        return By.xpath(`//span[@title="Edit - ${name}"]`);
+    public setEditorName(name: string) {
+        this.editorName = name;
     }
-
+    
     public async validateEditorsListPageIsLoaded() {
-        await expect(this.untilIsVisible(this.EditorsTab_Content, 90000)).eventually.to.be.true;
-        expect(await (await this.browser.findElement(this.ResultsDiv)).getText()).to.contain('result');
-    }
-
-    public setResourceName(resName: string): any {
-        this.resourceName = resName;
-    }
-
-    public async selectResource(resName: string, dropdownElement: By) {
-        await this.selectDropBoxByString(dropdownElement, resName);
-    }
-
-    public async verifyResourceSelected() {
-        this.browser.sleep(2000);
-        const inputContent = await (await this.browser.findElement(this.AddEditorPopup_Resource)).getText();
-        return expect(inputContent).to.equal(this.resourceName);
-    }
-
-    public async verifyEditPageOpen(testName: string) {
-        const selector: By = this.getSelectorOfEditPgaeTitleWithName(testName);
-        // this.browser.sleep(8000);
-        await expect(this.untilIsVisible(selector, 15000)).eventually.to.be.true;
-        expect(await (await this.browser.findElement(this.EditPageEditors_Title)).getText()).to.contain(testName);
+        await this.validateListPageIsLoaded();
+        await expect(this.untilIsVisible(this.Editors_List_Title, 90000)).eventually.to.be.true;
     }
 
     public async selectFromListByName(name: string) {
@@ -259,48 +278,7 @@ export class ResourceEditors extends ResourceList {
         await this.confirmDeleteClickRedButton();
     }
 
-    public async deleteAllEditors() {
-        let numOfEditors: string;
-        do {
-            numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
-            try {
-                this.browser.sleep(500);
-                await this.browser.click(this.FirstRadioButtonInList);
-                this.browser.sleep(500);
-                await this.openPencilChooseDelete();
-                this.browser.sleep(500);
-                await this.confirmDeleteClickRedButton();
-                this.browser.sleep(500);
-            } catch (error) {
-                const errorMessage: string = (error as any).message;
-                console.info(`MESSAGE thrown in deleteAllEditors: ${errorMessage}`);
-            }
-        } while (Number(numOfEditors) > 0);
-        numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
-        const arr = new Array(Number(numOfEditors)).fill(0);
-        console.info(`at deleteAllEditors, ${numOfEditors}, arr: ${arr}`);
-        expect(Number(numOfEditors)).to.equal(0);
+    public async verifyEditorEditPageOpen(editorName: string) {
+        this.verifyEditPageOpen(editorName);
     }
-
-    // public async deleteAllEditors() {
-    //     let numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
-    //     let numberOfEditors = new Array(Number(numOfEditors)).fill(0);
-    //     numberOfEditors.forEach(async (element) => {
-    //         try {
-    //             this.browser.sleep(500);
-    //             await this.browser.click(this.FirstRadioButtonInList);
-    //             this.browser.sleep(500);
-    //             await this.openPencilChooseDelete();
-    //             this.browser.sleep(500);
-    //             await this.confirmDeleteClickRedButton();
-    //             this.browser.sleep(500);
-    //         } catch (error) {
-    //             const m: string = (error as any).message;
-    //             console.info(`MESSAGE thrown in deleteAllEditors: ${m}`);
-    //         }
-    //     });
-    //     numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
-    //     console.info(`at deleteAllEditors, ${numOfEditors}`);
-    //     // expect(Number(numOfEditors)).to.equal(0);
-    // }
 }

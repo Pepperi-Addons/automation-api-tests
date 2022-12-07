@@ -12,7 +12,7 @@ import {
     WebAppList,
     WebAppDialog,
 } from '../pom';
-import { ResourceList, ResourceEditors } from '../pom/addons/ResourceList';
+import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 
 chai.use(promised);
 
@@ -27,10 +27,12 @@ export async function ResourceListTests(email: string, password: string, varPass
     let webAppDialog: WebAppDialog;
     let resourceList: ResourceList;
     let resourceEditors: ResourceEditors;
+    let resourceViews: ResourceViews;
     const random_name: string = generalService.generateRandomString(5);
     const test_generic_decsription = 'for RL automated testing';
     let test_name: string;
     let test_decsription: string;
+    let resource: string;
     let numOfElementsBeforeAdding: number;
     let numOfElementsBeforeDeleting: number;
 
@@ -38,51 +40,51 @@ export async function ResourceListTests(email: string, password: string, varPass
     const ResourceViews_path = 'settings/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/views_and_editors'; //id
 
     /* Addons Installation */
-    await generalService.baseAddonVersionsInstallation(varPass);
-    //#region Upgrade script dependencies
-    const testData = {
-        'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
-        'Generic Resources': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
-        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
-        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-    };
+    // await generalService.baseAddonVersionsInstallation(varPass);
+    // //#region Upgrade script dependencies
+    // const testData = {
+    //     'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
+    //     'Generic Resources': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+    //     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+    //     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+    // };
 
-    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
-    describe('Prerequisites Addons for Scripts Tests', () => {
-        //Resource List - making sure 'Resource List' and 'Generic Resources' are installed, and 'Core Resources' and 'User Defined Collections' are not.
-        const addonsList = Object.keys(testData);
+    // describe('Prerequisites Addons for Scripts Tests', () => {
+    //     //Resource List - making sure 'Resource List' and 'Generic Resources' are installed, and 'Core Resources' and 'User Defined Collections' are not.
+    //     const addonsList = Object.keys(testData);
 
-        isInstalledArr.forEach((isInstalled, index) => {
-            it(`Validate That Needed Addon Is Installed: ${addonsList[index]}`, () => {
-                expect(isInstalled).to.be.true;
-            });
-        });
-        for (const addonName in testData) {
-            const addonUUID = testData[addonName][0];
-            const version = testData[addonName][1];
-            const varLatestVersion = chnageVersionResponseArr[addonName][2];
-            const changeType = chnageVersionResponseArr[addonName][3];
-            describe(`Test Data: ${addonName}`, () => {
-                it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-                    if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-                        expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-                    } else {
-                        expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-                    }
-                });
-                it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                    await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                        .eventually.to.have.property('Version')
-                        .a('string')
-                        .that.is.equal(varLatestVersion);
-                });
-            });
-        }
-    });
+    //     isInstalledArr.forEach((isInstalled, index) => {
+    //         it(`Validate That Needed Addon Is Installed: ${addonsList[index]}`, () => {
+    //             expect(isInstalled).to.be.true;
+    //         });
+    //     });
+    //     for (const addonName in testData) {
+    //         const addonUUID = testData[addonName][0];
+    //         const version = testData[addonName][1];
+    //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
+    //         const changeType = chnageVersionResponseArr[addonName][3];
+    //         describe(`Test Data: ${addonName}`, () => {
+    //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+    //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+    //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+    //                 } else {
+    //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+    //                 }
+    //             });
+    //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+    //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+    //                     .eventually.to.have.property('Version')
+    //                     .a('string')
+    //                     .that.is.equal(varLatestVersion);
+    //             });
+    //         });
+    //     }
+    // });
 
-    describe('UI test - Editors tab', async () => {
+    describe('UI tests', async () => {
         //this.retries(1);
 
         before(async function () {
@@ -95,64 +97,72 @@ export async function ResourceListTests(email: string, password: string, varPass
             webAppDialog = new WebAppDialog(driver);
             resourceList = new ResourceList(driver);
             resourceEditors = new ResourceEditors(driver);
+            resourceViews = new ResourceViews(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('Editors Full Functionality test', async () => {
-            afterEach(async function () {
-                driver.sleep(500);
-                await webAppHomePage.collectEndTestData(this);
-            });
-
-            it('Resource Views settings is loaded and Elements exist', async () => {
-                // navigation
-                await webAppLoginPage.login(email, password);
-                await webAppHeader.openSettings();
-                await webAppSettingsSidePanel.selectSettingsByID('Pages');
-                await webAppSettingsSidePanel.clickSettingsSubCategory(ResourceViews_path, 'Pages');
-                driver.sleep(500);
-                driver.untilIsVisible(resourceList.PepTopArea_title);
-
-                /* test logics */
-                // title is currect
-                const addonSettingsTitle = await (await driver.findElement(resourceList.PepTopArea_title)).getText();
-                expect(addonSettingsTitle).to.contain('Views & Editors');
-
-                // tabs are the right amount, the currect text and the right one (Views) is selected while the other isn't
-                await driver.untilIsVisible(resourceList.GenericList_Content);
-                await driver.untilIsVisible(resourceList.TabsContainer);
-                const tabs = await driver.findElements(resourceList.AddonContainerTabs);
-                expect(tabs.length).to.equal(2);
-                const viewsTab_isSelected = await (
-                    await driver.findElement(resourceList.Views_Tab)
-                ).getAttribute('aria-selected');
-                expect(viewsTab_isSelected).to.equal('true');
-                const editorsTab_isSelected = await (
-                    await driver.findElement(resourceList.Editors_Tab)
-                ).getAttribute('aria-selected');
-                expect(editorsTab_isSelected).to.equal('false');
-
-                // list title is "Views" - contains number and "results"/"result", number of results is 0 and the text "No Data Found" appears
-                const listTitle = await (
-                    await driver.findElement(resourceList.AddonSettingsContent_ListTitle)
-                ).getText();
-                expect(listTitle).to.equal('Views');
-                const resultsDivText = await (await driver.findElement(resourceList.ResultsDiv)).getText();
-                expect(resultsDivText).to.contain('result');
-                const numberOfResults = await (await driver.findElement(resourceList.NumberOfItemsInList)).getText();
-                expect(Number(numberOfResults)).to.equal(0);
-                const noData = await (await driver.findElement(resourceList.List_NoDataFound)).getText();
-                expect(noData).to.contain('No Data Found');
-            });
-
-            it('Editors Tab', async () => {
-                await resourceList.clickTab('Editors_Tab');
-                //TODO
-            });
+        it('Login', async () => {
+            await webAppLoginPage.login(email, password);
         });
+
+        // describe('Editors Full Functionality test', async () => {
+        //     afterEach(async function () {
+        //         driver.sleep(500);
+        //         await webAppHomePage.collectEndTestData(this);
+        //     });
+
+        //     it('Resource Views settings is loaded and Elements exist', async () => {
+        //         // navigation
+        //         //await webAppLoginPage.login(email, password);
+        //         await webAppHeader.openSettings();
+        //         await webAppSettingsSidePanel.selectSettingsByID('Pages');
+        //         await webAppSettingsSidePanel.clickSettingsSubCategory('views_and_editors', 'Pages');
+        //         driver.sleep(500);
+        //         driver.untilIsVisible(resourceList.PepTopArea_title);
+
+        //         // await webAppHeader.openSettings();
+        //         // nevigateToResourceListSettingsBlock(driver, webAppHeader, webAppSettingsSidePanel, webAppList, resourceList);
+
+        //         /* test logics */
+        //         // title is currect
+        //         const addonSettingsTitle = await (await driver.findElement(resourceList.PepTopArea_title)).getText();
+        //         expect(addonSettingsTitle).to.contain('Views & Editors');
+
+        //         // tabs are the right amount, the currect text and the right one (Views) is selected while the other isn't
+        //         await driver.untilIsVisible(resourceList.GenericList_Content);
+        //         await driver.untilIsVisible(resourceList.TabsContainer);
+        //         const tabs = await driver.findElements(resourceList.AddonContainerTabs);
+        //         expect(tabs.length).to.equal(2);
+        //         const viewsTab_isSelected = await (
+        //             await driver.findElement(resourceList.Views_Tab)
+        //         ).getAttribute('aria-selected');
+        //         expect(viewsTab_isSelected).to.equal('true');
+        //         const editorsTab_isSelected = await (
+        //             await driver.findElement(resourceList.Editors_Tab)
+        //         ).getAttribute('aria-selected');
+        //         expect(editorsTab_isSelected).to.equal('false');
+
+        //         // list title is "Views" - contains number and "results"/"result", number of results is 0 and the text "No Data Found" appears
+        //         const listTitle = await (
+        //             await driver.findElement(resourceList.AddonSettingsContent_ListTitle)
+        //         ).getText();
+        //         expect(listTitle).to.equal('Views');
+        //         const resultsDivText = await (await driver.findElement(resourceList.ResultsDiv)).getText();
+        //         expect(resultsDivText).to.contain('result');
+        //         const numberOfResults = await (await driver.findElement(resourceList.NumberOfItemsInList)).getText();
+        //         expect(Number(numberOfResults)).to.equal(0);
+        //         const noData = await (await driver.findElement(resourceList.List_NoDataFound)).getText();
+        //         expect(noData).to.contain('No Data Found');
+        //     });
+
+        //     it('Editors Tab', async () => {
+        //         await resourceList.clickTab('Editors_Tab');
+        //         //TODO
+        //     });
+        // });
 
         describe('Operations (e.g Addition, Deletion)', async () => {
             // describe('Login and Open Settings', async () => {
@@ -208,199 +218,157 @@ export async function ResourceListTests(email: string, password: string, varPass
             // });
 
             /* JUST FOR THE PURPOSE OF EXPLORING THE AVAILABLE TESTING COMPONENTS */
-            describe('Count Items in List', async () => {
-                afterEach(async function () {
-                    driver.sleep(500);
-                    await webAppHomePage.collectEndTestData(this);
-                });
+            // describe('Count Items in List', async () => {
+            //     afterEach(async function () {
+            //         driver.sleep(500);
+            //         await webAppHomePage.collectEndTestData(this);
+            //     });
 
-                it('Exploring WebAppList', async () => {
-                    const elementAsArray = await webAppList.getAddonListAsTable();
-                    console.info(`webAppList.getListElementsAsArray: `);
-                    console.table(elementAsArray);
-                });
+            //     it('Exploring WebAppList', async () => {
+            //         const elementAsArray = await webAppList.getAddonListAsTable();
+            //         console.info(`webAppList.getListElementsAsArray: `);
+            //         console.table(elementAsArray);
+            //     });
 
-                it('Display Num of Elements in List from Title', async () => {
-                    const numOfElements = await webAppList.getNumOfElementsTitle();
-                    console.info(`webAppList.getNumOfElementsTitle: ${numOfElements}`);
-                });
+            //     it('Display Num of Elements in List from Title', async () => {
+            //         const numOfElements = await webAppList.getNumOfElementsTitle();
+            //         console.info(`webAppList.getNumOfElementsTitle: ${numOfElements}`);
+            //     });
 
-                it('Exploring WebAppDialog', async () => {
-                    await driver.click(resourceList.Add_Button);
-                    const dialogTitle = await driver.findElement(webAppDialog.Title);
-                    console.info(`webAppDialog.Title: ${dialogTitle}`);
-                    await driver.click(webAppDialog.cancelBtn);
-                });
+            //     it('Exploring WebAppDialog', async () => {
+            //         await driver.click(resourceList.Add_Button);
+            //         const dialogTitle = await driver.findElement(webAppDialog.Title);
+            //         console.info(`webAppDialog.Title: ${dialogTitle}`);
+            //         await driver.click(webAppDialog.cancelBtn);
+            //     });
 
-                it('Close Open Dialog', async () => {
-                    await driver.click(resourceEditors.AddEditorPopup_Cancel);
-                });
-            });
+            //     it('Close Open Dialog', async () => {
+            //         await driver.click(resourceEditors.AddEditorPopup_Cancel);
+            //     });
+            // });
 
-            describe('Add Editor for accounts', async () => {
-                afterEach(async function () {
-                    driver.sleep(500);
-                    await webAppHomePage.collectEndTestData(this);
-                });
+            // describe('Add Editor for accounts', async () => {
+            //     afterEach(async function () {
+            //         driver.sleep(500);
+            //         await webAppHomePage.collectEndTestData(this);
+            //     });
 
-                it('Set Resource Name to "accounts"', async () => {
-                    resourceEditors.setResourceName('accounts');
-                });
-                it('Set Test Name', async () => {
-                    test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
-                });
-                it('Set Test Description', async () => {
-                    test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
-                });
-                it('Wait untill Add Button on Editors page is visible', async () => {
-                    await resourceEditors.waitTillVisible(resourceEditors.AddEditor_Button, 5000);
-                });
-                it('Get Number of Elements in List', async () => {
-                    numOfElementsBeforeAdding = Number(await webAppList.getNumOfElementsTitle());
-                    console.info(`type of numOfElementsBeforeAdding: ${typeof numOfElementsBeforeAdding}`);
-                });
-                it('Click on Add Editor Button', async () => {
-                    await resourceEditors.clickElement('AddEditor_Button');
-                });
-                it('Wait for the title "Add" to be displayed', async () => {
-                    await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Title, 15000);
-                });
-                it('Wait for the input "Name" to be displayed', async () => {
-                    await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Name, 5000);
-                });
-                it('Writing into the input "Name"', async () => {
-                    await resourceEditors.insertTextToInputElement(test_name, resourceEditors.AddEditorPopup_Name);
-                });
-                it('Writing into the input "Description"', async () => {
-                    await resourceEditors.insertTextToInputElement(
-                        test_decsription,
-                        resourceEditors.AddEditorPopup_Description,
-                    );
-                });
-                it('Select Resource', async () => {
-                    await resourceEditors.selectResource(
-                        resourceEditors.resourceName,
-                        resourceEditors.AddEditorPopupResourceDropdownSingleOption,
-                    );
-                });
-                it('Verify Resource has been selected', async () => {
-                    await resourceEditors.verifyResourceSelected();
-                });
-                it('Click Save', async () => {
-                    await resourceEditors.clickElement('AddEditorPopup_Save');
-                });
-                it('Edit Page opened', async () => {
-                    await resourceEditors.verifyEditPageOpen(test_name);
-                });
-            });
+            //     it('Set Resource Name to "accounts"', async () => {
+            //         resourceEditors.setResourceName('accounts');
+            //     });
+            //     it('Set Test Name', async () => {
+            //         test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
+            //     });
+            //     it('Set Test Description', async () => {
+            //         test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
+            //     });
+            //     it('Wait untill Add Button on Editors page is visible', async () => {
+            //         await resourceEditors.waitTillVisible(resourceEditors.AddEditor_Button, 5000);
+            //     });
+            //     it('Get Number of Elements in List', async () => {
+            //         numOfElementsBeforeAdding = Number(await webAppList.getNumOfElementsTitle());
+            //         console.info(`type of numOfElementsBeforeAdding: ${typeof numOfElementsBeforeAdding}`);
+            //     });
+            //     it('Click on Add Editor Button', async () => {
+            //         await resourceEditors.clickElement('AddEditor_Button');
+            //     });
+            //     it('Wait for the title "Add" to be displayed', async () => {
+            //         await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Title, 15000);
+            //     });
+            //     it('Wait for the input "Name" to be displayed', async () => {
+            //         await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Name, 5000);
+            //     });
+            //     it('Writing into the input "Name"', async () => {
+            //         await resourceEditors.insertTextToInputElement(test_name, resourceEditors.AddEditorPopup_Name);
+            //     });
+            //     it('Writing into the input "Description"', async () => {
+            //         await resourceEditors.insertTextToInputElement(
+            //             test_decsription,
+            //             resourceEditors.AddEditorPopup_Description,
+            //         );
+            //     });
+            //     it('Select Resource', async () => {
+            //         await resourceEditors.selectResource(
+            //             resourceEditors.resourceName,
+            //             resourceEditors.AddEditorPopupResourceDropdownSingleOption,
+            //         );
+            //     });
+            //     it('Verify Resource has been selected', async () => {
+            //         await resourceEditors.verifyResourceSelected();
+            //     });
+            //     it('Click Save', async () => {
+            //         await resourceEditors.clickElement('AddEditorPopup_Save');
+            //     });
+            //     it('Edit Page opened', async () => {
+            //         await resourceEditors.verifyEditPageOpen(test_name);
+            //     });
+            // });
 
-            describe('Go back to List, then Editors tab', async () => {
-                afterEach(async function () {
-                    driver.sleep(500);
-                    await webAppHomePage.collectEndTestData(this);
-                });
+            // describe('Go back to List, then Editors tab', async () => {
+            //     afterEach(async function () {
+            //         driver.sleep(500);
+            //         await webAppHomePage.collectEndTestData(this);
+            //     });
 
-                it('Go back to List', async () => {
-                    await resourceEditors.clickElement('EditPageEditors_BackToList_Button');
-                });
-                it('Click Editors Tab (under Resource Views)', async () => {
-                    await resourceList.clickTab('Editors_Tab');
-                });
-                it('Verify Editor Added', async () => {
-                    const numOfElementsAfterAdding = Number(await webAppList.getNumOfElementsTitle());
-                    expect(numOfElementsAfterAdding).to.equal(numOfElementsBeforeAdding + 1);
-                });
-                // it('Verify that Editors List Content is loaded', async () => {
-                //     await resourceEditors.validateEditorsListPageIsLoaded();
-                // });
-            });
+            //     it('Go back to List', async () => {
+            //         await resourceEditors.clickElement('EditPageEditors_BackToList_Button');
+            //     });
+            //     it('Click Editors Tab (under Resource Views)', async () => {
+            //         await resourceList.clickTab('Editors_Tab');
+            //     });
+            //     it('Verify Editor Added', async () => {
+            //         const numOfElementsAfterAdding = Number(await webAppList.getNumOfElementsTitle());
+            //         expect(numOfElementsAfterAdding).to.equal(numOfElementsBeforeAdding + 1);
+            //     });
+            //     // it('Verify that Editors List Content is loaded', async () => {
+            //     //     await resourceEditors.validateEditorsListPageIsLoaded();
+            //     // });
+            // });
 
-            describe('Delete the Editor Created by the test', async () => {
-                // let editorName = test_name;
+            // describe('Delete the Editor Created by the test', async () => {
+            //     // let editorName = test_name;
 
-                afterEach(async function () {
-                    driver.sleep(500);
-                    await webAppHomePage.collectEndTestData(this);
-                });
+            //     afterEach(async function () {
+            //         driver.sleep(500);
+            //         await webAppHomePage.collectEndTestData(this);
+            //     });
 
-                it('Get Number of Elements in List', async () => {
-                    numOfElementsBeforeDeleting = Number(await webAppList.getNumOfElementsTitle());
-                    console.info(`type of numOfElementsBeforeAdding: ${typeof numOfElementsBeforeDeleting}`);
-                });
-                it('Select by name', async () => {
-                    await resourceEditors.pause(3000);
-                    await driver.untilIsVisible(resourceEditors.Label_Name);
-                    await webAppList.searchInAddonList(test_name);
-                    await resourceEditors.selectFromListByName(test_name);
-                    // debugger
-                });
-                it('Click Pencil Button', async () => {
-                    await resourceEditors.openPencilMenu();
-                    // await driver.untilIsVisible(resourceEditors.Pencil_Button);
-                    // await driver.click(resourceEditors.Pencil_Button);
-                });
-                it('Get to Delete Popup', async () => {
-                    await resourceEditors.selectUnderPencil('Delete');
-                    // await resourceEditors.deleteEditor();
-                });
-                it('Click RED Delete button', async () => {
-                    await resourceEditors.confirmDeleteClickRedButton();
-                    // await driver.click(resourceEditors.DeletePopup_Delete_Button);
-                });
-                it('Verify that Deleted', async () => {
-                    await resourceList.clickTab('EditorsTab');
-                    const numOfElementsAfterDeleting = Number(await webAppList.getNumOfElementsTitle());
-                    expect(numOfElementsAfterDeleting).to.equal(numOfElementsBeforeDeleting - 1);
-                    try {
-                        await resourceEditors.selectFromListByName(test_name);
-                    } catch (error) {
-                        expect(error).to.not.be.undefined;
-                    }
-                });
-            });
+            //     it('Get Number of Elements in List', async () => {
+            //         numOfElementsBeforeDeleting = Number(await webAppList.getNumOfElementsTitle());
+            //         console.info(`type of numOfElementsBeforeAdding: ${typeof numOfElementsBeforeDeleting}`);
+            //     });
+            //     it('Select by name', async () => {
+            //         await resourceEditors.pause(3000);
+            //         await driver.untilIsVisible(resourceEditors.Label_Name);
+            //         await webAppList.searchInAddonList(test_name);
+            //         await resourceEditors.selectFromListByName(test_name);
+            //         // debugger
+            //     });
+            //     it('Click Pencil Button', async () => {
+            //         await resourceEditors.openPencilMenu();
+            //         // await driver.untilIsVisible(resourceEditors.Pencil_Button);
+            //         // await driver.click(resourceEditors.Pencil_Button);
+            //     });
+            //     it('Get to Delete Popup', async () => {
+            //         await resourceEditors.selectUnderPencil('Delete');
+            //         // await resourceEditors.deleteEditor();
+            //     });
+            //     it('Click RED Delete button', async () => {
+            //         await resourceEditors.confirmDeleteClickRedButton();
+            //         // await driver.click(resourceEditors.DeletePopup_Delete_Button);
+            //     });
+            //     it('Verify that Deleted', async () => {
+            //         await resourceList.clickTab('EditorsTab');
+            //         const numOfElementsAfterDeleting = Number(await webAppList.getNumOfElementsTitle());
+            //         expect(numOfElementsAfterDeleting).to.equal(numOfElementsBeforeDeleting - 1);
+            //         try {
+            //             await resourceEditors.selectFromListByName(test_name);
+            //         } catch (error) {
+            //             expect(error).to.not.be.undefined;
+            //         }
+            //     });
+            // });
 
-            describe('Add Editor for items', async () => {
-                afterEach(async function () {
-                    driver.sleep(500);
-                    await webAppHomePage.collectEndTestData(this);
-                });
-
-                it("Test's settings", async () => {
-                    resourceEditors.setResourceName('items');
-                    test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
-                    test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
-                });
-                it('Go to Resource Views Editors tab', async () => {
-                    await webAppSettingsSidePanel.selectSettingsByID('Pages');
-                    await webAppSettingsSidePanel.clickSettingsSubCategory(ResourceViews_path, 'Pages');
-                    await resourceList.waitTillVisible(resourceList.PepTopArea_title, 15000);
-                    await resourceList.clickTab('Editors_Tab');
-                    await resourceEditors.validateEditorsListPageIsLoaded();
-                });
-                it('Opening Add Form', async () => {
-                    await resourceEditors.waitTillVisible(resourceEditors.AddEditor_Button, 5000);
-                    await resourceEditors.clickElement('AddEditor_Button');
-                    await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Title, 15000);
-                    await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Name, 5000);
-                });
-                it('Filling and Submitting Form', async () => {
-                    await resourceEditors.insertTextToInputElement(test_name, resourceEditors.AddEditorPopup_Name);
-                    await resourceEditors.insertTextToInputElement(
-                        test_decsription,
-                        resourceEditors.AddEditorPopup_Description,
-                    );
-                    await resourceEditors.selectResource(
-                        resourceEditors.resourceName,
-                        resourceEditors.AddEditorPopupResourceDropdownSingleOption,
-                    );
-                    await resourceEditors.verifyResourceSelected();
-                    await resourceEditors.clickElement('AddEditorPopup_Save');
-                    resourceEditors.pause(5000);
-                });
-                it('Edit Page loaded', async () => {
-                    await resourceEditors.verifyEditPageOpen(test_name);
-                });
-            });
 
             // describe('Go back to List then Editors tab', async () => {
             //     afterEach(async function () {
@@ -432,28 +400,151 @@ export async function ResourceListTests(email: string, password: string, varPass
 
             // });
 
-            describe('Delete All Editors', async () => {
-                // this.retries(5);
+            // describe('Delete All Editors', async () => {
+            //     afterEach(async function () {
+            //         driver.sleep(500);
+            //         await webAppHomePage.collectEndTestData(this);
+            //     });
 
+            //     it('Delete All', async () => {
+            //         // get to Editors tab
+            //         await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
+            //         await resourceList.clickTab('Editors_Tab');
+
+            //         // actual deletion
+            //         await resourceEditors.deleteAll();
+            //         driver.sleep(15000);
+            //     });
+            // });
+        });
+
+        describe('Flow', async () => {
+            it("Set Resource to 'items'", async () => {
+                resource = 'items';
+            });
+
+            describe(`Add Editor for Resource: ${resource}`, async () => {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
                 });
 
-                it('Delete All', async () => {
-                    // get to Editors tab
-                    await webAppSettingsSidePanel.clickSettingsSubCategory(ResourceViews_path, 'Pages');
-                    await resourceList.waitTillVisible(resourceList.PepTopArea_title, 15000);
+                it("Test's settings", async () => {
+                    resourceEditors.setResourceName(resource);
+                    test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
+                    test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
+                });
+                it('Go to Resource Views [Editors]', async () => {
+                    await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
                     await resourceList.clickTab('Editors_Tab');
+                    await resourceEditors.validateEditorsListPageIsLoaded();
+                });
+                it('Clear Editors List', async () => {
+                    await resourceEditors.deleteAll();
+                });
+                it('Open Add Form', async () => {
+                    await resourceEditors.waitTillVisible(resourceEditors.Add_Button, 5000);
+                    await resourceEditors.clickElement('Add_Button');
+                    await resourceEditors.waitTillVisible(resourceEditors.AddPopup_Title, 15000);
+                    await resourceEditors.waitTillVisible(resourceEditors.AddPopup_Name, 5000);
+                });
+                it('Filling and Submitting Form', async () => {
+                    await resourceEditors.insertTextToInputElement(test_name, resourceEditors.AddPopup_Name);
+                    await resourceEditors.insertTextToInputElement(
+                        test_decsription,
+                        resourceEditors.AddPopup_Description,
+                    );
+                    await resourceEditors.selectResource(
+                        resourceEditors.resourceName,
+                        resourceEditors.AddPopupResourceDropdownSingleOption,
+                    );
+                    await resourceEditors.verifyResourceSelected();
+                    await resourceEditors.clickElement('AddPopup_Save');
+                    resourceEditors.pause(5000);
+                });
+                it('Edit Page loaded', async () => {
+                    await resourceEditors.verifyEditorEditPageOpen(test_name);
+                    resourceEditors.setEditorName(test_name);
+                    await resourceEditors.clickElement('EditPage_BackToList_Button');
+                });
+            });
 
-                    // actual deletion
-                    await resourceEditors.deleteAllEditors();
-                    driver.sleep(15000);
+            describe('Configure Editor', async () => {
+                it("Edit - customize Editor", async () => {
+
+                });
+            });
+
+            describe(`Add View for Resource: ${resource}`, async () => {
+                afterEach(async function () {
+                    driver.sleep(500);
+                    await webAppHomePage.collectEndTestData(this);
                 });
 
-                // it('Wait', async () => {
-                // });
+                it("Test's settings", async () => {
+                    resourceViews.setResourceName(resource);
+                    test_name = `RL_Views_${resourceViews.resourceName}_Test_${random_name}`;
+                    test_decsription = `View ${resourceViews.resourceName} ${test_generic_decsription}`;
+                });
+                it('Go to Resource Views [Views]', async () => {
+                    await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
+                    await resourceViews.validateViewsListPageIsLoaded();
+                });
+                it('Clear Views List', async () => {
+                    await resourceViews.deleteAll();
+                });
+                it('Open Add Form', async () => {
+                    await resourceViews.waitTillVisible(resourceViews.Add_Button, 5000);
+                    await resourceViews.clickElement('Add_Button');
+                    await resourceViews.waitTillVisible(resourceViews.AddPopup_Title, 15000);
+                    await resourceViews.waitTillVisible(resourceViews.AddPopup_Name, 5000);
+                });
+                it('Filling and Submitting Form', async () => {
+                    await resourceViews.insertTextToInputElement(test_name, resourceViews.AddPopup_Name);
+                    await resourceViews.insertTextToInputElement(
+                        test_decsription,
+                        resourceViews.AddPopup_Description,
+                    );
+                    await resourceViews.selectResource(
+                        resourceViews.resourceName,
+                        resourceViews.AddPopupResourceDropdownSingleOption,
+                    );
+                    await resourceViews.verifyResourceSelected();
+                    await resourceViews.clickElement('AddPopup_Save');
+                    resourceViews.pause(5000);
+                });
+                it('Edit Page loaded', async () => {
+                    await resourceViews.verifyViewEditPageOpen(test_name);
+                    resourceViews.setViewName(test_name);
+                });
+            });
+
+            describe('Connect Editor to View', async () => {
+                it("Edit - choose Editor", async () => {
+                    await resourceViews.selectEditor(resourceViews.SelectEditor_DropDown, resourceEditors.editorName);
+                    await resourceEditors.clickElement('EditPage_Update_Button');
+                    await resourceEditors.waitTillVisible(resourceEditors.Update_Popup_PepDialog, 5000);
+                    expect(await (await driver.findElement(resourceEditors.Update_Popup_MessageDiv)).getText()).to.contain('Successfully updated');
+                    await resourceEditors.clickElement('Update_Popup_Close_Button');
+                    resourceEditors.pause(5000);
+                });
             });
         });
     });
+}
+
+async function nevigateToResourceListSettings(browser: Browser, header: WebAppHeader, settingsSidePanel: WebAppSettingsSidePanel, resourceList: ResourceList) {
+    console.info('Inside nevigateToResourceListSettingsBlock function');
+    try {
+        if (!(await browser.getCurrentUrl()).includes('HomePage')) {
+            await header.goHome();
+        }
+        await header.openSettings();
+        await settingsSidePanel.selectSettingsByID('Pages');
+        await settingsSidePanel.clickSettingsSubCategory('views_and_editors', 'Pages');
+        await resourceList.waitTillVisible(resourceList.PepTopArea_title, 15000);
+    } catch (error) {
+        console.error(error);
+    }
+    return
 }
