@@ -31,7 +31,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
     //#endregion
     //#region Upgrade ADAL
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.3.44'], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
         // 'Generic Resource':['df90dba6-e7cc-477b-95cf-2c70114e44e0',''],
         // 'User Defined Collections' :['122c0e9d-c240-4865-b446-f37ece866c22', '0.6.126'],
