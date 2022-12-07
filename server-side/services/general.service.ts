@@ -340,14 +340,24 @@ export default class GeneralService {
         }
     }
 
-    async getSecretfromKMS(key: string) {
-        const kmsData = (await this.papiClient.get(`/kms/parameters/${key}`)).Value;
-        return kmsData;
+    async getSecretfromKMS(email, pass, key: string) {
+        const token = (await this.getToken(email, pass)).access_token;
+        const sk = this.getSecret();
+        const uuid = testData['API Testing Framework'][0];
+        const kmsData = await this.fetchStatus(`https://papi.pepperi.com/V1.0/kms/parameters/${key}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'X-Pepperi-SecretKey': sk[1],
+                'x-pepperi-ownerid': uuid,
+            },
+        });
+        // const kmsData = (await this.papiClient.get(`/kms/parameters/${key}`)).Value;
+        return kmsData.Body.Value;
     }
 
-    async runJenkinsJobRemotely(kmsKeyToFetch: string, jobPath: string, jobName: string): Promise<string[]> {
-        const kmsSecret = await this.getSecretfromKMS(kmsKeyToFetch);
-        const base64Credentials = Buffer.from(kmsSecret).toString('base64');
+    async runJenkinsJobRemotely(buildUserCredentials: string, jobPath: string, jobName: string): Promise<string[]> {
+        const base64Credentials = Buffer.from(buildUserCredentials).toString('base64');
         const jobQueueId = await this.startJenkinsJobRemotely(base64Credentials, jobPath);
         console.log(`started ${jobName} Jenkins job with queue id: ${jobQueueId}`);
         // const jobNameAsUrlSafe = encodeURI(jobName);
@@ -468,9 +478,8 @@ export default class GeneralService {
         return jenkinsJobResult;
     }
 
-    async getLatestJenkinsJobExecutionId(jobPath: string, kmsKeyToFetch: string) {
-        const kmsSecret = await this.getSecretfromKMS(kmsKeyToFetch);
-        const base64Credentials = Buffer.from(kmsSecret).toString('base64');
+    async getLatestJenkinsJobExecutionId(buildUserCredentials, jobPath: string) {
+        const base64Credentials = Buffer.from(buildUserCredentials).toString('base64');
         const jenkinsJobResponsePolling = await this.fetchStatus(
             `https://admin-box.pepperi.com/job/${jobPath}/lastBuild/api/json`,
             {
@@ -778,6 +787,7 @@ export default class GeneralService {
                 addonName == 'system_health' || //evgeny
                 addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
                 addonName == 'Relations Framework' || // evgeny 4/12: done to be able to test latest relation fw version
+                addonName == 'Pepperitest (Jenkins Special Addon) - Code Jobs' || // evgeny 6/12: trying to fix wiered jenkins issue
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
