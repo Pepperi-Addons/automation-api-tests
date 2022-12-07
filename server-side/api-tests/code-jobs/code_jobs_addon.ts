@@ -84,8 +84,8 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
             // "CronExpression": "0 9 16 12 *",
             // "NextRunTime": null,
             IsScheduled: false,
-            FailureAlertEmailTo: ['oleg.y@pepperi.com'],
-            FailureAlertEmailSubject: 'test creation',
+            // FailureAlertEmailTo: ['oleg.y@pepperi.com'],
+            // FailureAlertEmailSubject: 'test creation',
             // "ExecutedCode": "",
             // "DraftCode": "exports.main=async(Client)=>{\r\nvar response;\r\nClient.addLogEntry(\"Info\", \"multiplyResult\");\r\nresponse={success:\"true\",errorMessage:\"\",resultObject:{}};\r\nfunction multiply(a=2,b=3){\r\nvar res = {'multiplyResult':a*b};\r\nClient.addLogEntry(\"Info\",\"Start Funcion multiply =\" + res);\r\nresponse.resultObject=res;\r\nresponse.errorMessage=\"test msg\";\r\nresponse.success=true;\r\nreturn(response);\r\n}\r\nreturn multiply(2,3);\r\n};",
             CodeJobIsHidden: false,
@@ -132,7 +132,7 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
     }
     //get resultObject from AuditLog
     async function getAuditLogAddonJobExecution() {
-        generalService.sleep(20000);
+        generalService.sleep(30000);
         CallbackCash.getAuditLogAddonJobExecution = await generalService.fetchStatus(
             '/audit_logs/' + CallbackCash.executeAddonJob.Body.ExecutionUUID,
             { method: 'GET' },

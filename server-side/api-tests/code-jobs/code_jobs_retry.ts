@@ -74,9 +74,9 @@ export async function CodeJobsRetryTests(generalService: GeneralService, tester:
             NextRunTime: null,
             IsScheduled: false,
             Type: 'AddonJob',
-            FailureAlertEmailTo: ['oleg.y@pepperi.com'],
-            FailureAlertEmailSubject: 'test creation',
-            ExecutedCode: '',
+            // FailureAlertEmailTo: ['oleg.y@pepperi.com'],
+            // FailureAlertEmailSubject: 'test creation',
+            // ExecutedCode: '',
             // DraftCode:
             //     'exports.main = async (Client) => {\r\nvar response = {};\r\nClient.addLogEntry("Info","Start throw new error");\r\nthrow new Error(\'nofartest\');\r\nreturn (response);\r\n};',
             CodeJobIsHidden: false,
