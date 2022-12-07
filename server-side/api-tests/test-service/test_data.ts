@@ -70,6 +70,10 @@ export async function TestDataTests(
                 installedAddons['Order Trade Promotions'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Package Trade Promotions')
                 installedAddons['Package Trade Promotions'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Data Index Framework')
+                installedAddons['Data Index Framework'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Activity Data Index')
+                installedAddons['Activity Data Index'] = installedAddonsArr[index].Version;
         }
     }
 
@@ -135,6 +139,14 @@ export async function TestDataTests(
             });
             it(`ADAL | Version: ${installedAddons['ADAL']}`, () => {
                 const regexMatched = installedAddons['ADAL'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Data Index Framework | Version: ${installedAddons['Data Index Framework']}`, () => {
+                const regexMatched = installedAddons['Data Index Framework'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Activity Data Index (Papi Index) | Version: ${installedAddons['Activity Data Index']}`, () => {
+                const regexMatched = installedAddons['Activity Data Index'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
             if (options.IsAllAddons) {
