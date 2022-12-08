@@ -85,8 +85,6 @@ export async function ResourceListTests(email: string, password: string, varPass
     // });
 
     describe('UI tests', async () => {
-        //this.retries(1);
-
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
@@ -108,114 +106,57 @@ export async function ResourceListTests(email: string, password: string, varPass
             await webAppLoginPage.login(email, password);
         });
 
-        // describe('Editors Full Functionality test', async () => {
-        //     afterEach(async function () {
-        //         driver.sleep(500);
-        //         await webAppHomePage.collectEndTestData(this);
-        //     });
+        describe('Editors Full Functionality test', async () => {
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
 
-        //     it('Resource Views settings is loaded and Elements exist', async () => {
-        //         // navigation
-        //         //await webAppLoginPage.login(email, password);
-        //         await webAppHeader.openSettings();
-        //         await webAppSettingsSidePanel.selectSettingsByID('Pages');
-        //         await webAppSettingsSidePanel.clickSettingsSubCategory('views_and_editors', 'Pages');
-        //         driver.sleep(500);
-        //         driver.untilIsVisible(resourceList.PepTopArea_title);
+            it('Resource Views settings is loaded and Elements exist', async () => {
+                // navigation
+                await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
 
-        //         // await webAppHeader.openSettings();
-        //         // nevigateToResourceListSettingsBlock(driver, webAppHeader, webAppSettingsSidePanel, webAppList, resourceList);
+                /* test logics */
+                // title is currect
+                const addonSettingsTitle = await (await driver.findElement(resourceList.PepTopArea_title)).getText();
+                expect(addonSettingsTitle).to.contain('Views & Editors');
 
-        //         /* test logics */
-        //         // title is currect
-        //         const addonSettingsTitle = await (await driver.findElement(resourceList.PepTopArea_title)).getText();
-        //         expect(addonSettingsTitle).to.contain('Views & Editors');
+                // tabs are the right amount, the currect text and the right one (Views) is selected while the other isn't
+                await driver.untilIsVisible(resourceList.GenericList_Content);
+                await driver.untilIsVisible(resourceList.TabsContainer);
+                const tabs = await driver.findElements(resourceList.AddonContainerTabs);
+                expect(tabs.length).to.equal(2);
+                const viewsTab_isSelected = await (
+                    await driver.findElement(resourceList.Views_Tab)
+                ).getAttribute('aria-selected');
+                expect(viewsTab_isSelected).to.equal('true');
+                const editorsTab_isSelected = await (
+                    await driver.findElement(resourceList.Editors_Tab)
+                ).getAttribute('aria-selected');
+                expect(editorsTab_isSelected).to.equal('false');
 
-        //         // tabs are the right amount, the currect text and the right one (Views) is selected while the other isn't
-        //         await driver.untilIsVisible(resourceList.GenericList_Content);
-        //         await driver.untilIsVisible(resourceList.TabsContainer);
-        //         const tabs = await driver.findElements(resourceList.AddonContainerTabs);
-        //         expect(tabs.length).to.equal(2);
-        //         const viewsTab_isSelected = await (
-        //             await driver.findElement(resourceList.Views_Tab)
-        //         ).getAttribute('aria-selected');
-        //         expect(viewsTab_isSelected).to.equal('true');
-        //         const editorsTab_isSelected = await (
-        //             await driver.findElement(resourceList.Editors_Tab)
-        //         ).getAttribute('aria-selected');
-        //         expect(editorsTab_isSelected).to.equal('false');
+                // list title is "Views" - contains number and "results"/"result", number of results is 0 and the text "No Data Found" appears
+                const listTitle = await (
+                    await driver.findElement(resourceList.AddonSettingsContent_ListTitle)
+                ).getText();
+                expect(listTitle).to.equal('Views');
+                const resultsDivText = await (await driver.findElement(resourceList.ResultsDiv)).getText();
+                expect(resultsDivText).to.contain('result');
+                const numberOfResults = await (await driver.findElement(resourceList.NumberOfItemsInList)).getText();
+                expect(Number(numberOfResults)).to.be.greaterThanOrEqual(0);
+                if (Number(numberOfResults) === 0) {
+                    const noData = await (await driver.findElement(resourceList.List_NoDataFound)).getText();
+                    expect(noData).to.contain('No Data Found');
+                }
+            });
 
-        //         // list title is "Views" - contains number and "results"/"result", number of results is 0 and the text "No Data Found" appears
-        //         const listTitle = await (
-        //             await driver.findElement(resourceList.AddonSettingsContent_ListTitle)
-        //         ).getText();
-        //         expect(listTitle).to.equal('Views');
-        //         const resultsDivText = await (await driver.findElement(resourceList.ResultsDiv)).getText();
-        //         expect(resultsDivText).to.contain('result');
-        //         const numberOfResults = await (await driver.findElement(resourceList.NumberOfItemsInList)).getText();
-        //         expect(Number(numberOfResults)).to.equal(0);
-        //         const noData = await (await driver.findElement(resourceList.List_NoDataFound)).getText();
-        //         expect(noData).to.contain('No Data Found');
-        //     });
-
-        //     it('Editors Tab', async () => {
-        //         await resourceList.clickTab('Editors_Tab');
-        //         //TODO
-        //     });
-        // });
+            it('Editors Tab', async () => {
+                await resourceList.clickTab('Editors_Tab');
+                //TODO
+            });
+        });
 
         describe('Operations (e.g Addition, Deletion)', async () => {
-            // describe('Login and Open Settings', async () => {
-            //     // this.retries(2);
-
-            //     afterEach(async function () {
-            //         driver.sleep(500);
-            //         await webAppHomePage.collectEndTestData(this);
-            //     });
-
-            //     it('Pepperi Login', async () => {
-            //         await webAppLoginPage.login(email, password);
-            //     });
-            //     it('Open Settings', async () => {
-            //         await webAppHeader.openSettings();
-            //     });
-            // });
-
-            // describe('Open Resource Views', async () => {
-            //     // this.retries(2);
-
-            //     afterEach(async function () {
-            //         driver.sleep(500);
-            //         await webAppHomePage.collectEndTestData(this);
-            //     });
-
-            //     it('Click on Pages (under Settings)', async () => {
-            //         await webAppSettingsSidePanel.selectSettingsByID('Pages');
-            //     });
-            //     it('Click on Resource Views (under Pages)', async () => {
-            //         await webAppSettingsSidePanel.clickSettingsSubCategory(ResourceViews_path, 'Pages');
-            //         // await this.browser.click(webAppSettingsSidePanel.ResourceViews);
-            //     });
-            //     it('Verify that Resource Views Page is loaded', async () => {
-            //         await resourceList.waitTillVisible(resourceList.PepTopArea, 15000);
-            //     });
-            // });
-
-            // describe('Go to Editors tab', async () => {
-            //     // this.retries(1);
-
-            //     afterEach(async function () {
-            //         driver.sleep(500);
-            //         await webAppHomePage.collectEndTestData(this);
-            //     });
-
-            //     it('Click Editors Tab (under Resource Views)', async () => {
-            //         await resourceList.clickTab('Editors_Tab');
-            //     });
-            //     // it('Verify that Editors List Content is loaded', async () => {
-            //     //     await resourceEditors.validateEditorsListPageIsLoaded();
-            //     // });
-            // });
 
             /* JUST FOR THE PURPOSE OF EXPLORING THE AVAILABLE TESTING COMPONENTS */
             // describe('Count Items in List', async () => {
@@ -247,146 +188,6 @@ export async function ResourceListTests(email: string, password: string, varPass
             //     });
             // });
 
-            // describe('Add Editor for accounts', async () => {
-            //     afterEach(async function () {
-            //         driver.sleep(500);
-            //         await webAppHomePage.collectEndTestData(this);
-            //     });
-
-            //     it('Set Resource Name to "accounts"', async () => {
-            //         resourceEditors.setResourceName('accounts');
-            //     });
-            //     it('Set Test Name', async () => {
-            //         test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
-            //     });
-            //     it('Set Test Description', async () => {
-            //         test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
-            //     });
-            //     it('Wait untill Add Button on Editors page is visible', async () => {
-            //         await resourceEditors.waitTillVisible(resourceEditors.AddEditor_Button, 5000);
-            //     });
-            //     it('Get Number of Elements in List', async () => {
-            //         numOfElementsBeforeAdding = Number(await webAppList.getNumOfElementsTitle());
-            //         console.info(`type of numOfElementsBeforeAdding: ${typeof numOfElementsBeforeAdding}`);
-            //     });
-            //     it('Click on Add Editor Button', async () => {
-            //         await resourceEditors.clickElement('AddEditor_Button');
-            //     });
-            //     it('Wait for the title "Add" to be displayed', async () => {
-            //         await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Title, 15000);
-            //     });
-            //     it('Wait for the input "Name" to be displayed', async () => {
-            //         await resourceEditors.waitTillVisible(resourceEditors.AddEditorPopup_Name, 5000);
-            //     });
-            //     it('Writing into the input "Name"', async () => {
-            //         await resourceEditors.insertTextToInputElement(test_name, resourceEditors.AddEditorPopup_Name);
-            //     });
-            //     it('Writing into the input "Description"', async () => {
-            //         await resourceEditors.insertTextToInputElement(
-            //             test_decsription,
-            //             resourceEditors.AddEditorPopup_Description,
-            //         );
-            //     });
-            //     it('Select Resource', async () => {
-            //         await resourceEditors.selectResource(
-            //             resourceEditors.resourceName,
-            //             resourceEditors.AddEditorPopupResourceDropdownSingleOption,
-            //         );
-            //     });
-            //     it('Verify Resource has been selected', async () => {
-            //         await resourceEditors.verifyResourceSelected();
-            //     });
-            //     it('Click Save', async () => {
-            //         await resourceEditors.clickElement('AddEditorPopup_Save');
-            //     });
-            //     it('Edit Page opened', async () => {
-            //         await resourceEditors.verifyEditPageOpen(test_name);
-            //     });
-            // });
-
-            // describe('Go back to List, then Editors tab', async () => {
-            //     afterEach(async function () {
-            //         driver.sleep(500);
-            //         await webAppHomePage.collectEndTestData(this);
-            //     });
-
-            //     it('Go back to List', async () => {
-            //         await resourceEditors.clickElement('EditPageEditors_BackToList_Button');
-            //     });
-            //     it('Click Editors Tab (under Resource Views)', async () => {
-            //         await resourceList.clickTab('Editors_Tab');
-            //     });
-            //     it('Verify Editor Added', async () => {
-            //         const numOfElementsAfterAdding = Number(await webAppList.getNumOfElementsTitle());
-            //         expect(numOfElementsAfterAdding).to.equal(numOfElementsBeforeAdding + 1);
-            //     });
-            //     // it('Verify that Editors List Content is loaded', async () => {
-            //     //     await resourceEditors.validateEditorsListPageIsLoaded();
-            //     // });
-            // });
-
-            // describe('Delete the Editor Created by the test', async () => {
-            //     // let editorName = test_name;
-
-            //     afterEach(async function () {
-            //         driver.sleep(500);
-            //         await webAppHomePage.collectEndTestData(this);
-            //     });
-
-            //     it('Get Number of Elements in List', async () => {
-            //         numOfElementsBeforeDeleting = Number(await webAppList.getNumOfElementsTitle());
-            //         console.info(`type of numOfElementsBeforeAdding: ${typeof numOfElementsBeforeDeleting}`);
-            //     });
-            //     it('Select by name', async () => {
-            //         await resourceEditors.pause(3000);
-            //         await driver.untilIsVisible(resourceEditors.Label_Name);
-            //         await webAppList.searchInAddonList(test_name);
-            //         await resourceEditors.selectFromListByName(test_name);
-            //         // debugger
-            //     });
-            //     it('Click Pencil Button', async () => {
-            //         await resourceEditors.openPencilMenu();
-            //         // await driver.untilIsVisible(resourceEditors.Pencil_Button);
-            //         // await driver.click(resourceEditors.Pencil_Button);
-            //     });
-            //     it('Get to Delete Popup', async () => {
-            //         await resourceEditors.selectUnderPencil('Delete');
-            //         // await resourceEditors.deleteEditor();
-            //     });
-            //     it('Click RED Delete button', async () => {
-            //         await resourceEditors.confirmDeleteClickRedButton();
-            //         // await driver.click(resourceEditors.DeletePopup_Delete_Button);
-            //     });
-            //     it('Verify that Deleted', async () => {
-            //         await resourceList.clickTab('EditorsTab');
-            //         const numOfElementsAfterDeleting = Number(await webAppList.getNumOfElementsTitle());
-            //         expect(numOfElementsAfterDeleting).to.equal(numOfElementsBeforeDeleting - 1);
-            //         try {
-            //             await resourceEditors.selectFromListByName(test_name);
-            //         } catch (error) {
-            //             expect(error).to.not.be.undefined;
-            //         }
-            //     });
-            // });
-
-
-            // describe('Go back to List then Editors tab', async () => {
-            //     afterEach(async function () {
-            //         driver.sleep(500);
-            //         await webAppHomePage.collectEndTestData(this);
-            //     });
-
-            //     it('Go back to List', async () => {
-            //         await resourceEditors.clickElement('EditPageEditors_BackToList_Button');
-            //     });
-            //     it('Click Editors Tab (under Resource Views)', async () => {
-            //         await resourceList.clickTab('EditorsTab');
-            //     });
-            //     // it('Verify that Editors List Content is loaded', async () => {
-            //     //     await resourceEditors.validateEditorsListPageIsLoaded();
-            //     // });
-            // });
-
             // describe('Delete Editor', async () => {
 
             //     afterEach(async function () {
@@ -400,136 +201,67 @@ export async function ResourceListTests(email: string, password: string, varPass
 
             // });
 
-            // describe('Delete All Editors', async () => {
-            //     afterEach(async function () {
-            //         driver.sleep(500);
-            //         await webAppHomePage.collectEndTestData(this);
-            //     });
-
-            //     it('Delete All', async () => {
-            //         // get to Editors tab
-            //         await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
-            //         await resourceList.clickTab('Editors_Tab');
-
-            //         // actual deletion
-            //         await resourceEditors.deleteAll();
-            //         driver.sleep(15000);
-            //     });
-            // });
         });
 
         describe('Flow', async () => {
-            it("Set Resource to 'accounts'", async () => {
+            before(function () {
                 resource_name = 'accounts';
+                resourceEditors.setResourceName(resource_name);
+                resourceViews.setResourceName(resource_name);
+            });
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
             });
 
-            describe(`Add Editor`, async () => {
-                afterEach(async function () {
-                    driver.sleep(500);
-                    await webAppHomePage.collectEndTestData(this);
-                });
-
-                it("Test's settings", async () => {
-                    resourceEditors.setResourceName(resource_name);
-                    test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
-                    test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
-                });
-                it('Go to Resource Views [Editors]', async () => {
-                    await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
-                    await resourceList.clickTab('Editors_Tab');
-                    await resourceEditors.validateEditorsListPageIsLoaded();
-                });
-                it('Clear Editors List', async () => {
-                    await resourceEditors.deleteAll();
-                });
-                it('Open, Fill and Submmit Add Form', async () => {
-                    // Open Add Form
-                    await resourceEditors.waitTillVisible(resourceEditors.Add_Button, 5000);
-                    await resourceEditors.clickElement('Add_Button');
-                    await resourceEditors.waitTillVisible(resourceEditors.AddPopup_Title, 15000);
-                    await resourceEditors.waitTillVisible(resourceEditors.AddPopup_Name, 5000);
-                    // Filling and Submitting Form
-                    await resourceEditors.insertTextToInputElement(test_name, resourceEditors.AddPopup_Name);
-                    await resourceEditors.insertTextToInputElement(
-                        test_decsription,
-                        resourceEditors.AddPopup_Description,
-                    );
-                    await resourceEditors.selectResource(
-                        resourceEditors.resourceName,
-                        resourceEditors.AddPopupResourceDropdownSingleOption,
-                    );
-                    await resourceEditors.verifyResourceSelected();
-                    await resourceEditors.clickElement('AddPopup_Save');
-                });
-                it('Edit Page loaded', async () => {
-                    await resourceEditors.verifyEditorEditPageOpen(test_name);
-                    resourceEditors.setEditorName(test_name);
-                });
+            it("Add Editor", async () => {
+                // Test's settings
+                test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
+                test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
+                // Go to Resource Views [Editors]
+                await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
+                await resourceEditors.clickTab('Editors_Tab');
+                await resourceEditors.validateEditorsListPageIsLoaded();
+                // Clear Editors List
+                await resourceEditors.deleteAll();
+                // Add Editor
+                await addToResourceList(resourceViews, test_name, test_decsription);
+                // Verify that Edit Page has loaded
+                await resourceEditors.verifyEditorEditPageOpen(test_name);
+                resourceEditors.setEditorName(test_name);
             });
-            
-            describe('Configure Editor', async () => {
-                it("Edit - customize Editor", async () => {
-                    await resourceEditors.clickElement('Form_Tab');
-                    await resourceEditors.waitTillVisible(resourceEditors.EditPage_ConfigProfileCard_Rep, 15000);
-                    await resourceEditors.clickElement('EditPage_ConfigProfileCard_EditButton_Rep');
-                    resourceEditors.pause(7000);
-                    await resourceEditors.clickElement('EditPage_ProfileEdit_BackButton');
-                    await resourceEditors.clickElement('EditPage_BackToList_Button');
-                });
+            it("Configure Editor", async () => {
+                // Edit - customize Editor
+                await resourceEditors.clickElement('Form_Tab');
+                await resourceEditors.waitTillVisible(resourceEditors.EditPage_ConfigProfileCard_Rep, 15000);
+                await resourceEditors.clickElement('EditPage_ConfigProfileCard_EditButton_Rep');
+                resourceEditors.pause(7000);
+                await resourceEditors.clickElement('EditPage_ProfileEdit_BackButton');
+                await resourceEditors.clickElement('EditPage_BackToList_Button');
             });
-
-            describe(`Add View`, async () => {
-                afterEach(async function () {
-                    driver.sleep(500);
-                    await webAppHomePage.collectEndTestData(this);
-                });
-
-                it("Test's settings", async () => {
-                    resourceViews.setResourceName(resource_name);
-                    test_name = `RL_Views_${resourceViews.resourceName}_Test_${random_name}`;
-                    test_decsription = `View ${resourceViews.resourceName} ${test_generic_decsription}`;
-                });
-                it('Go to Resource Views [Views]', async () => {
-                    await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
-                    await resourceViews.validateViewsListPageIsLoaded();
-                });
-                it('Clear Views List', async () => {
-                    await resourceViews.deleteAll();
-                });
-                it('Open, Fill and Submmit Add Form', async () => {
-                    // Open Add Form
-                    await resourceViews.waitTillVisible(resourceViews.Add_Button, 5000);
-                    await resourceViews.clickElement('Add_Button');
-                    await resourceViews.waitTillVisible(resourceViews.AddPopup_Title, 15000);
-                    await resourceViews.waitTillVisible(resourceViews.AddPopup_Name, 5000);
-                    // Filling and Submitting Form
-                    await resourceViews.insertTextToInputElement(test_name, resourceViews.AddPopup_Name);
-                    await resourceViews.insertTextToInputElement(
-                        test_decsription,
-                        resourceViews.AddPopup_Description,
-                    );
-                    await resourceViews.selectResource(
-                        resourceViews.resourceName,
-                        resourceViews.AddPopupResourceDropdownSingleOption,
-                    );
-                    await resourceViews.verifyResourceSelected();
-                    await resourceViews.clickElement('AddPopup_Save');
-                });
-                it('Verify that Edit Page has loaded', async () => {
-                    await resourceViews.verifyViewEditPageOpen(test_name);
-                    resourceViews.setViewName(test_name);
-                });
+            it("Add View", async () => {
+                // Test's settings
+                test_name = `RL_Views_${resourceViews.resourceName}_Test_${random_name}`;
+                test_decsription = `View ${resourceViews.resourceName} ${test_generic_decsription}`;
+                // Go to Resource Views [Views]
+                await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
+                await resourceViews.validateViewsListPageIsLoaded();
+                // Clear Views List
+                await resourceViews.deleteAll();
+                // Add View
+                await addToResourceList(resourceViews, test_name, test_decsription);
+                // Verify that Edit Page has loaded
+                await resourceViews.verifyViewEditPageOpen(test_name);
+                resourceViews.setViewName(test_name);
             });
-
-            describe('Connect Editor to View', async () => {
-                it("Edit - choose Editor", async () => {
-                    await resourceViews.selectEditor(resourceViews.SelectEditor_DropDown, resourceEditors.editorName);
-                    await resourceEditors.clickElement('EditPage_Update_Button');
-                    await resourceEditors.waitTillVisible(resourceEditors.Update_Popup_PepDialog, 5000);
-                    expect(await (await driver.findElement(resourceEditors.Update_Popup_MessageDiv)).getText()).to.contain('Successfully updated');
-                    await resourceEditors.clickElement('Update_Popup_Close_Button');
-                    resourceEditors.pause(5000);
-                });
+            it("Configure View", async () => {
+                // Connect Editor to View
+                await resourceViews.selectEditor(resourceViews.SelectEditor_DropDown, resourceEditors.editorName);
+                await resourceViews.clickElement('EditPage_Update_Button');
+                await resourceViews.waitTillVisible(resourceViews.Update_Popup_PepDialog, 5000);
+                expect(await (await driver.findElement(resourceViews.Update_Popup_MessageDiv)).getText()).to.contain('Successfully updated');
+                await resourceViews.clickElement('Update_Popup_Close_Button');
+                resourceViews.pause(5000);
             });
         });
     });
@@ -549,4 +281,23 @@ async function nevigateToResourceListSettings(browser: Browser, header: WebAppHe
         console.error(error);
     }
     return
+}
+
+async function addToResourceList(rlComponent: ResourceEditors | ResourceViews, testName: string, testDescription: string) {
+    await rlComponent.waitTillVisible(rlComponent.Add_Button, 5000);
+    await rlComponent.clickElement('Add_Button');
+    await rlComponent.waitTillVisible(rlComponent.AddPopup_Title, 15000);
+    await rlComponent.waitTillVisible(rlComponent.AddPopup_Name, 5000);
+    await rlComponent.insertTextToInputElement(testName, rlComponent.AddPopup_Name);
+    await rlComponent.insertTextToInputElement(
+        testDescription,
+        rlComponent.AddPopup_Description,
+    );
+    await rlComponent.selectResource(
+        rlComponent.resourceName,
+        rlComponent.AddPopupResourceDropdownSingleOption,
+    );
+    await rlComponent.verifyResourceSelected();
+    await rlComponent.clickElement('AddPopup_Save');
+    rlComponent.pause(500);
 }

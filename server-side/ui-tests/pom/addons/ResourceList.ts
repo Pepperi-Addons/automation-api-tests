@@ -16,6 +16,7 @@ export class ResourceList extends AddonPage {
     // List
     public GenericList_Content: By = By.xpath('//pep-generic-list/pep-page-layout/div[@class="pep-page-main-layout"]');
     public Add_Button: By = By.xpath('//span[@title="Add"]/ancestor::button');
+    public AddonSettingsContent_ListTitle: By = By.xpath('//pep-top-bar //div[contains(@class,"title")]');
     public List_NoDataFound: By = By.xpath('//pep-list/div/p[contains(@class, "no-data")]');
     public Label_Name: By = this.getSelectorOfLabelUnderTableHeader('Name'); //By.xpath('//label[@id="Name"]');
     public Label_Description: By = this.getSelectorOfLabelUnderTableHeader('Description'); //By.xpath('//label[@id="Description"]');
