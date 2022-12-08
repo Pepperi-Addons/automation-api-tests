@@ -21,7 +21,7 @@ import tester from '../tester';
 
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
-    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on TLS 2 version
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.20'], //PAPI locked on TLS 2 version
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.%'], //cpapi locked on TLS 2 version
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.0.%'], //cpi-node (Cross Platform Engine)
@@ -29,8 +29,8 @@ export const testData = {
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
-    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
-    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.41'],
+    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.0.13'],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', '1.0.2'],
