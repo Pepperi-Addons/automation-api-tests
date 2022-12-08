@@ -343,8 +343,8 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
-        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.41'],
+        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.0.13'],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
