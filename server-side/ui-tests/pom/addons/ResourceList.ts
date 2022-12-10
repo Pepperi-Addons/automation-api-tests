@@ -3,28 +3,28 @@ import { By } from 'selenium-webdriver';
 import { AddonPage } from './base/AddonPage';
 
 export class ResourceList extends AddonPage {
-    public resourceName = 'resources';
-    
+    public resourceName = '';
+
     // *general selectors for Resource Views*
     public PepTopArea_title: By = By.xpath('//div[contains(@class, "pep-top-area")]/h2');
     public TabsContainer: By = By.xpath('//div[contains(@class, "mat-tab-labels")]');
     // Tabs
-    public Views_Tab: By = this.getSelectorOfResourceListSettingsTab('Views'); //By.xpath('//div[text()="Views"]/parent::div[@role="tab"]');
-    public Editors_Tab: By = this.getSelectorOfResourceListSettingsTab('Editors'); //By.xpath('//div[text()="Editors"]/parent::div[@role="tab"]');
-    public General_Tab: By = this.getSelectorOfResourceListSettingsTab('General'); //By.xpath('//div[text()="General"]/parent::div[@role="tab"]');
-    public Form_Tab: By = this.getSelectorOfResourceListSettingsTab('Form'); //By.xpath('//div[contains(@class,"mat-tab-labels")] //div[text()="Form"]/parent::div[@role="tab"]');
+    public Views_Tab: By = this.getSelectorOfResourceListSettingsTab('Views');
+    public Editors_Tab: By = this.getSelectorOfResourceListSettingsTab('Editors');
+    public General_Tab: By = this.getSelectorOfResourceListSettingsTab('General');
+    public Form_Tab: By = this.getSelectorOfResourceListSettingsTab('Form');
     // List
     public GenericList_Content: By = By.xpath('//pep-generic-list/pep-page-layout/div[@class="pep-page-main-layout"]');
     public Add_Button: By = By.xpath('//span[@title="Add"]/ancestor::button');
     public AddonSettingsContent_ListTitle: By = By.xpath('//pep-top-bar //div[contains(@class,"title")]');
     public List_NoDataFound: By = By.xpath('//pep-list/div/p[contains(@class, "no-data")]');
-    public Label_Name: By = this.getSelectorOfLabelUnderTableHeader('Name'); //By.xpath('//label[@id="Name"]');
-    public Label_Description: By = this.getSelectorOfLabelUnderTableHeader('Description'); //By.xpath('//label[@id="Description"]');
-    public Label_Resource: By = this.getSelectorOfLabelUnderTableHeader('Resource'); //By.xpath('//label[@id="Resource"]');
+    public Label_Name: By = this.getSelectorOfLabelUnderTableHeader('Name');
+    public Label_Description: By = this.getSelectorOfLabelUnderTableHeader('Description');
+    public Label_Resource: By = this.getSelectorOfLabelUnderTableHeader('Resource');
     public RadioButtons: By = By.xpath('//input[@type="radio"]');
     public FirstRadioButtonInList: By = By.xpath('//virtual-scroller/div[2]/div/fieldset/mat-radio-button');
     public SelectedRadioButton: By = By.xpath(
-        '//mat-radio-button[contains(@class, "checked")]/label/span/input[@type="radio"]',
+        '//mat-radio-button[contains(@class, "checked")]',
     );
     public ResultsDiv: By = By.xpath(
         '//*[contains(@id,"mat-tab-content")]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div',
@@ -59,13 +59,20 @@ export class ResourceList extends AddonPage {
     public Update_Popup_MessageDiv: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog/div[2]/div');
     public Update_Popup_Close_Button: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog //span[text()=" Close "]/parent::button');
     // Edit Tabs Configuration
-    public EditPage_ConfigProfileCard_Rep: By = this.getSelectorOfConfigProfileCardByName('Rep'); //By.xpath('//span[contains(text(),"Rep")]/ancestor::pep-profile-data-views-card');
+    public EditPage_ConfigProfileCard_Rep: By = this.getSelectorOfConfigProfileCardByName('Rep');
     public EditPage_AddProfile_Button: By = By.xpath('//button[@data-qa="Add profile"]');
     public EditPage_ProfileCard_Menu: By = By.xpath('//button[@data-qa="Add profile"]');
     public EditPage_ConfigProfileCard_EditButton_Rep: By = this.getSelectorOfProfileCardEditButtonByName('Rep');
     // Edit Page Profile Edit
-    public EditPage_ProfileEdit_BackButton: By = By.xpath('//button[@data-qa="Back"]');
-    public EditPage_ProfileEdit_SaveButton: By = By.xpath('//button[@data-qa="Save"]');
+    public EditPage_ProfileEditButton_Back: By = this.getSelectorOfEditPageProfileEditButton('Back'); //By.xpath('//button[@data-qa="Back"]');
+    public EditPage_ProfileEditButton_Save: By = this.getSelectorOfEditPageProfileEditButton('Save'); //By.xpath('//button[@data-qa="Save"]');
+    public EditPage_MappedFields_DeleteButton_ByText_CreationDateTime: By = this.getSelectorOfEditPageMappedFieldsByTextDeleteButton('Creation Date Time');
+    public EditPage_MappedFields_DeleteButton_ByText_ModificationDateTime: By = this.getSelectorOfEditPageMappedFieldsByTextDeleteButton('Modification Date Time');
+    public EditPage_MappedFields_ReadOnly_CheckBox_ByText_Key: By = this.getSelectorOfEditPageMappedFieldsByTextReadOnlyCheckBox('Key');
+    // Save Popup
+    public Save_Popup_PepDialog: By = By.xpath('//span[text()=" Save "]/ancestor::pep-dialog');
+    public Save_Popup_MessageDiv: By = By.xpath('//span[text()=" Save "]/ancestor::pep-dialog/div[2]/div');
+    public Save_Popup_Close_Button: By = By.xpath('//span[text()=" Save "]/ancestor::pep-dialog //span[text()=" Close "]/parent::button');
 
     public getSelectorOfResourceListSettingsTab(title: string) {
         return By.xpath(`//div[contains(@class,"mat-tab-labels")] //div[text()="${title}"]/parent::div[@role="tab"]`);
@@ -84,7 +91,7 @@ export class ResourceList extends AddonPage {
     }
 
     public getSelectorOfRowInListByName(name: string) {
-        return By.xpath(`//span[@title="${name}"]/ancestor::pep-textbox`);
+        return By.xpath(`//span[@id="Name"][contains(text(),"${name}")]/ancestor::pep-form`);
     }
 
     private getSelectorOfEditPgaeTitleWithName(name: string) {
@@ -97,6 +104,18 @@ export class ResourceList extends AddonPage {
 
     private getSelectorOfProfileCardEditButtonByName(name: string) {
         return By.xpath(`//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card //pep-button[@iconname="system_edit"]/button`);
+    }
+
+    private getSelectorOfEditPageProfileEditButton(title: string) {
+        return By.xpath(`//button[@data-qa="${title}"]`);
+    }
+
+    private getSelectorOfEditPageMappedFieldsByTextDeleteButton(title: string) {
+        return By.xpath(`//div[@id="mappedFields"] //pep-textbox[@type="text"] //input[@title="${title}"]/ancestor::app-editor-mapped-field //pep-button[contains(@class,"del-button")]/button`);
+    }
+
+    private getSelectorOfEditPageMappedFieldsByTextReadOnlyCheckBox(title: string) {
+        return By.xpath(`//div[@id="mappedFields"] //pep-textbox[@type="text"] //input[@title="${title}"]/ancestor::app-editor-mapped-field //pep-checkbox //mat-checkbox/label/span[contains(@class,"mat-checkbox-inner-container")]`);
     }
 
     public setResourceName(resName: string): any {
@@ -116,7 +135,7 @@ export class ResourceList extends AddonPage {
             } catch (error) {
                 console.info(`UNABLE TO SELECT: ${tabName}`);
                 console.error(error);
-                expect(error).to.be.null;
+                expect(`ERROR -> UNABLE TO SELECT: ${tabName}`).to.be.undefined;
             }
         } else {
             expect(`${tabName} is NOT defined in the ResourceList.ts selectors' list`).to.be.null;
@@ -130,7 +149,7 @@ export class ResourceList extends AddonPage {
         } catch (error) {
             console.info('Unable to Click Pencil_Button!!!');
             console.error(error);
-            expect(error).to.be.null;
+            expect('Unable to Click Pencil_Button!!!').to.be.undefined;
         }
     }
 
@@ -142,7 +161,7 @@ export class ResourceList extends AddonPage {
         } catch (error) {
             console.info(`UNABLE TO SELECT: ${buttonTitle}`);
             console.error(error);
-            expect(error).to.be.null;
+            expect(`ERROR -> UNABLE TO SELECT: ${buttonTitle}`).to.be.undefined;
         }
     }
 
@@ -161,7 +180,7 @@ export class ResourceList extends AddonPage {
         } catch (error) {
             console.info('RED DELETE Button NOT CLICKED!');
             console.error(error);
-            expect(error).to.be.null;
+            expect('RED DELETE Button NOT CLICKED!').to.be.null;
         }
     }
 
@@ -183,9 +202,27 @@ export class ResourceList extends AddonPage {
             }
         } while (Number(numOfEditors) > 0);
         numOfEditors = await (await this.browser.findElement(this.NumberOfItemsInList)).getText();
-        const arr = new Array(Number(numOfEditors)).fill(0);
-        console.info(`at deleteAllEditors, ${numOfEditors}, arr: ${arr}`);
         expect(Number(numOfEditors)).to.equal(0);
+    }
+
+    public async selectFromListByName(name: string) {
+        try {
+            const selector: By = this.getSelectorOfRowInListByName(name); //By.xpath(`//span[@title="${name}"]/ancestor::pep-textbox`);
+            await this.browser.click(selector);
+            await this.browser.untilIsVisible(this.SelectedRadioButton);
+            await expect(this.untilIsVisible(this.Pencil_Button, 90000)).eventually.to.be.true;
+        } catch (error) {
+            console.info(`UNABLE TO SELECT: ${name}`);
+            console.error(error);
+            expect(`ERROR -> UNABLE TO SELECT: ${name}`).to.be.undefined;
+        }
+    }
+
+    public async deleteFromListByName(name: string) {
+        await this.selectFromListByName(name);
+        await this.openPencilMenu();
+        await this.selectUnderPencil('Delete');
+        await this.confirmDeleteClickRedButton();
     }
 
     public async validateListPageIsLoaded() {
@@ -199,10 +236,11 @@ export class ResourceList extends AddonPage {
         return expect(inputContent).to.equal(this.resourceName);
     }
 
-    public async verifyEditPageOpen(testName: string) {
+    public async verifyEditPageOpen(testName: string) { // This method is NOT Generic for both Editor and View (they have different HTML structure) - it works only for Editors (Hagit, Dec2022)
         const selector: By = this.getSelectorOfEditPgaeTitleWithName(testName);
         await expect(this.untilIsVisible(selector, 15000)).eventually.to.be.true;
-        expect(await (await this.browser.findElement(this.EditPage_Title)).getText()).to.contain(testName);
+        const editPageTitle = await (await this.browser.findElement(this.EditPage_Title)).getText();
+        expect(editPageTitle).to.contain(testName);
     }
 }
 
@@ -225,11 +263,12 @@ export class ResourceViews extends ResourceList {
         await this.validateListPageIsLoaded();
         await expect(this.untilIsVisible(this.Views_List_Title, 90000)).eventually.to.be.true;
     }
-    
+
     public async verifyViewEditPageOpen(viewName: string) {
         await expect(this.untilIsVisible(this.EditPage_BackToList_Button, 90000)).eventually.to.be.true;
+        this.browser.sleep(1500);
         const viewEditTitle = await (await this.browser.findElement(this.View_Edit_Title)).getText();
-        expect(viewEditTitle).to.contain(this.viewName);
+        expect(viewEditTitle).to.contain(viewName);
     }
 
     public async selectEditor(dropdownElement: By, editorName: string) {
@@ -275,29 +314,10 @@ export class ResourceEditors extends ResourceList {
     public setEditorName(name: string) {
         this.editorName = name;
     }
-    
+
     public async validateEditorsListPageIsLoaded() {
         await this.validateListPageIsLoaded();
         await expect(this.untilIsVisible(this.Editors_List_Title, 90000)).eventually.to.be.true;
-    }
-
-    public async selectFromListByName(name: string) {
-        try {
-            const selector: By = this.getSelectorOfRowInListByName(name); //By.xpath(`//span[@title="${name}"]/ancestor::pep-textbox`);
-            await this.browser.click(selector);
-            await this.browser.untilIsVisible(this.SelectedRadioButton);
-        } catch (error) {
-            console.info(`UNABLE TO SELECT: ${name}`);
-            console.error(error);
-            expect(`UNABLE TO SELECT: ${name}`).to.be.undefined;
-        }
-    }
-
-    public async deleteEditorByName(name: string) {
-        await this.selectFromListByName(name);
-        await this.openPencilMenu();
-        await this.selectUnderPencil('Delete');
-        await this.confirmDeleteClickRedButton();
     }
 
     public async verifyEditorEditPageOpen(editorName: string) {

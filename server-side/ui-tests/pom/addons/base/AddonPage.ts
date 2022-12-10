@@ -271,7 +271,7 @@ export class AddonPage extends Page {
         } catch (error) {
             console.info(`Element: ${element} - IS NOT LOCATED!!!`);
             console.error(error);
-            // expect(error).to.be.null;
+            expect(`Element: ${element} - IS NOT LOCATED!!!`).to.be.null;
         }
     }
 
@@ -285,22 +285,20 @@ export class AddonPage extends Page {
         } catch (error) {
             console.info(`Element: ${elem} - is not clicked - make sure you've provided a string and not By`);
             console.error(error);
-            expect(elem).to.contain('The Element Can NOT Be Found!');
+            expect(`The Element: ${elem} -> to be Found, but it's NOT!`).to.be.undefined;
         }
     }
 
     public async checkThatElementIsNotFound(elem: string): Promise<void> {
         if (this[elem]) {
-            console.info(`We are in method checkThatElementIsNotFound looking for: ${this[elem]}`);
             try {
-                const isElementFound = await this.browser.findElement(this[elem]);
-                console.info(`isElementFound: ${isElementFound}`);
+                await this.browser.findElement(this[elem]);
             } catch (error) {
-                expect(elem).contains('The element is not visible');
+                expect(`ERROR -> The element: ${elem} is not visible`).to.be.undefined;
             }
         } else {
             console.info(`Element: ${elem} - is NOT declared in the Addon file`);
-            expect(`${this[elem]} to be `).to.contain('in the Addon file, but is NOT');
+            expect(`${this[elem]} to be in the Addon file, but is NOT`).to.be.undefined;
         }
     }
 
@@ -309,7 +307,7 @@ export class AddonPage extends Page {
             expect(await (await this.browser.findElement(this[elem])).isSelected()).to.be.true;
         } else {
             console.info(`Element: ${elem} - is NOT declared in the Addon file`);
-            expect(`${this[elem]} to be `).to.contain('in the Addon file, but is NOT');
+            expect(`${this[elem]} to be in the Addon file, but is NOT`).to.be.undefined;
         }
     }
 
