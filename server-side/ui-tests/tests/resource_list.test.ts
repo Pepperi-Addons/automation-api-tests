@@ -111,7 +111,7 @@ export async function ResourceListTests(email: string, password: string, varPass
 
             it('Resource Views settings is loaded and Elements exist', async () => {
                 // navigation
-                await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
+                await nevigateTo('Resource Views', driver);
 
                 /* test logics */
 
@@ -143,8 +143,8 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await resourceViews.deleteAll();
                 const numberOfResults = await (await driver.findElement(resourceList.NumberOfItemsInList)).getText();
                 expect(Number(numberOfResults)).to.be.equal(0);
-                const noData = await (await driver.findElement(resourceList.List_NoDataFound)).getText();
-                expect(noData).to.contain('No Data Found');
+                const noData = (await (await driver.findElement(resourceList.List_NoDataFound)).getText()).trim();
+                expect(noData).to.be.oneOf(['No Data Found','No results were found.']);
             });
 
             it('Editors Tab', async () => {
@@ -188,7 +188,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 resourceEditors.setResourceName(resource_name);
                 test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
                 test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
-                await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
+                await nevigateTo('Resource Views', driver);
                 await resourceEditors.clickTab('Editors_Tab');
                 await resourceEditors.validateEditorsListPageIsLoaded();
                 await addToResourceList(resourceEditors, test_name, test_decsription);
@@ -215,7 +215,7 @@ export async function ResourceListTests(email: string, password: string, varPass
             it("Add Editor", async () => {
                 test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
                 test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
-                await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
+                await nevigateTo('Resource Views', driver);
                 await resourceEditors.clickTab('Editors_Tab');
                 await resourceEditors.validateEditorsListPageIsLoaded();
                 await resourceEditors.deleteAll();
@@ -244,7 +244,7 @@ export async function ResourceListTests(email: string, password: string, varPass
             it("Add View", async () => {
                 test_name = `RL_Views_${resourceViews.resourceName}_Test_${random_name}`;
                 test_decsription = `View ${resourceViews.resourceName} ${test_generic_decsription}`;
-                await nevigateToResourceListSettings(driver, webAppHeader, webAppSettingsSidePanel, resourceList);
+                await nevigateTo('Resource Views', driver);
                 await resourceViews.validateViewsListPageIsLoaded();
                 await resourceViews.deleteAll();
                 await addToResourceList(resourceViews, test_name, test_decsription);
@@ -259,23 +259,46 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await resourceViews.clickElement('Update_Popup_Close_Button');
                 resourceViews.pause(5000);
             });
+            it('Nevigate to Page Builder', async () => {
+                await nevigateTo('Page Builder', driver);
+                driver.sleep(7000);
+            });
+            it('Nevigate to Slugs', async () => {
+                await nevigateTo('Slugs', driver);
+                driver.sleep(7000);
+            });
         });
     });
 }
 
 // Utils
-async function nevigateToResourceListSettings(browser: Browser, header: WebAppHeader, settingsSidePanel: WebAppSettingsSidePanel, resourceList: ResourceList) {
+async function nevigateTo(destiny: string, browser: Browser) {
+    const header: WebAppHeader = new WebAppHeader(browser);
+    const settingsSidePanel: WebAppSettingsSidePanel = new WebAppSettingsSidePanel(browser);
     try {
         if (!(await browser.getCurrentUrl()).includes('HomePage')) {
             await header.goHome();
         }
         await header.openSettings();
         await settingsSidePanel.selectSettingsByID('Pages');
-        await settingsSidePanel.clickSettingsSubCategory('views_and_editors', 'Pages');
-        if (await browser.isElementVisible(resourceList.EditPage_BackToList_Button)) {
-            await resourceList.clickElement('EditPage_BackToList_Button');
+        switch (destiny) {
+            case 'Resource Views':
+                const resourceList: ResourceList = new ResourceList(browser);
+                await settingsSidePanel.clickSettingsSubCategory('views_and_editors', 'Pages');
+                if (await browser.isElementVisible(resourceList.EditPage_BackToList_Button)) {
+                    await resourceList.clickElement('EditPage_BackToList_Button');
+                }
+                await resourceList.waitTillVisible(resourceList.PepTopArea_title, 30000);
+                break;
+            case 'Slugs':
+                await settingsSidePanel.clickSettingsSubCategory('slugs', 'Pages');
+                break;
+            case 'Page Builder':
+                await settingsSidePanel.clickSettingsSubCategory('pages', 'Pages');
+                break;
+            default:
+                throw new Error('Incorrect Path Chosen!');
         }
-        await resourceList.waitTillVisible(resourceList.PepTopArea_title, 30000);
     } catch (error) {
         console.error(error);
     }

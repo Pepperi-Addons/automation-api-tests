@@ -118,7 +118,7 @@ export class WebAppSettingsSidePanel extends Component {
         } catch (error) {
             console.error(error);
             console.info('Settings Sub Category is NOT OPEN');
-            // expect(error).to.be.null;
+            expect('Settings Sub Category is NOT OPEN').to.be.null;
         }
     }
 
