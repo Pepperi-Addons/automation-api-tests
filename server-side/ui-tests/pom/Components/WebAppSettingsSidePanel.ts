@@ -14,8 +14,10 @@ export class WebAppSettingsSidePanel extends Component {
     //WebApp Platform | Version: 16.65.30/16.65.34 = pep-side-bar-container
     //public SettingsBarContainer: By = By.xpath('.//*[@class="settings-bar-container"]//*[@role="button"]');
     public SettingsBarContainer: By = By.xpath('//*[@class="pep-side-bar-container"]//*[@role="button"]');
-    
-    public SettingsBarContainer_isOpen: By = By.xpath('//div[@class="toggle-side-bar-container ng-star-inserted is-open-state"]');
+
+    public SettingsBarContainer_isOpen: By = By.xpath(
+        '//div[@class="toggle-side-bar-container ng-star-inserted is-open-state"]',
+    );
 
     public async isSettingsOpen() {
         try {
@@ -80,7 +82,7 @@ export class WebAppSettingsSidePanel extends Component {
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
         try {
             const expanded = this.isCategoryExpanded(settingsButtonID);
-            console.info(`this.isCategoryExpanded(settingsButtonID) : ${expanded}`)
+            console.info(`this.isCategoryExpanded(settingsButtonID) : ${expanded}`);
             const mat_expansion_panel_header_selector = `//*[@id="${settingsButtonID}"]/ancestor::mat-expansion-panel-header[@aria-expanded="false"]`;
             const isNotExpanded = await this.browser.isElementVisible(By.xpath(mat_expansion_panel_header_selector));
             if (isNotExpanded) {

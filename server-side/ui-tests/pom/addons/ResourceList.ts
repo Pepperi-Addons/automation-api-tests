@@ -23,9 +23,7 @@ export class ResourceList extends AddonPage {
     public Label_Resource: By = this.getSelectorOfLabelUnderTableHeader('Resource');
     public RadioButtons: By = By.xpath('//input[@type="radio"]');
     public FirstRadioButtonInList: By = By.xpath('//virtual-scroller/div[2]/div/fieldset/mat-radio-button');
-    public SelectedRadioButton: By = By.xpath(
-        '//mat-radio-button[contains(@class, "checked")]',
-    );
+    public SelectedRadioButton: By = By.xpath('//mat-radio-button[contains(@class, "checked")]');
     public ResultsDiv: By = By.xpath(
         '//*[contains(@id,"mat-tab-content")]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div',
     );
@@ -57,7 +55,9 @@ export class ResourceList extends AddonPage {
     // Update Popup
     public Update_Popup_PepDialog: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog');
     public Update_Popup_MessageDiv: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog/div[2]/div');
-    public Update_Popup_Close_Button: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog //span[text()=" Close "]/parent::button');
+    public Update_Popup_Close_Button: By = By.xpath(
+        '//span[text()=" Update "]/ancestor::pep-dialog //span[text()=" Close "]/parent::button',
+    );
     // Edit Tabs Configuration
     public EditPage_ConfigProfileCard_Rep: By = this.getSelectorOfConfigProfileCardByName('Rep');
     public EditPage_AddProfile_Button: By = By.xpath('//button[@data-qa="Add profile"]');
@@ -66,13 +66,18 @@ export class ResourceList extends AddonPage {
     // Edit Page Profile Edit
     public EditPage_ProfileEditButton_Back: By = this.getSelectorOfEditPageProfileEditButton('Back'); //By.xpath('//button[@data-qa="Back"]');
     public EditPage_ProfileEditButton_Save: By = this.getSelectorOfEditPageProfileEditButton('Save'); //By.xpath('//button[@data-qa="Save"]');
-    public EditPage_MappedFields_DeleteButton_ByText_CreationDateTime: By = this.getSelectorOfEditPageMappedFieldsByTextDeleteButton('Creation Date Time');
-    public EditPage_MappedFields_DeleteButton_ByText_ModificationDateTime: By = this.getSelectorOfEditPageMappedFieldsByTextDeleteButton('Modification Date Time');
-    public EditPage_MappedFields_ReadOnly_CheckBox_ByText_Key: By = this.getSelectorOfEditPageMappedFieldsByTextReadOnlyCheckBox('Key');
+    public EditPage_MappedFields_DeleteButton_ByText_CreationDateTime: By =
+        this.getSelectorOfEditPageMappedFieldsByTextDeleteButton('Creation Date Time');
+    public EditPage_MappedFields_DeleteButton_ByText_ModificationDateTime: By =
+        this.getSelectorOfEditPageMappedFieldsByTextDeleteButton('Modification Date Time');
+    public EditPage_MappedFields_ReadOnly_CheckBox_ByText_Key: By =
+        this.getSelectorOfEditPageMappedFieldsByTextReadOnlyCheckBox('Key');
     // Save Popup
     public Save_Popup_PepDialog: By = By.xpath('//span[text()=" Save "]/ancestor::pep-dialog');
     public Save_Popup_MessageDiv: By = By.xpath('//span[text()=" Save "]/ancestor::pep-dialog/div[2]/div');
-    public Save_Popup_Close_Button: By = By.xpath('//span[text()=" Save "]/ancestor::pep-dialog //span[text()=" Close "]/parent::button');
+    public Save_Popup_Close_Button: By = By.xpath(
+        '//span[text()=" Save "]/ancestor::pep-dialog //span[text()=" Close "]/parent::button',
+    );
 
     public getSelectorOfResourceListSettingsTab(title: string) {
         return By.xpath(`//div[contains(@class,"mat-tab-labels")] //div[text()="${title}"]/parent::div[@role="tab"]`);
@@ -103,7 +108,9 @@ export class ResourceList extends AddonPage {
     }
 
     private getSelectorOfProfileCardEditButtonByName(name: string) {
-        return By.xpath(`//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card //pep-button[@iconname="system_edit"]/button`);
+        return By.xpath(
+            `//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card //pep-button[@iconname="system_edit"]/button`,
+        );
     }
 
     private getSelectorOfEditPageProfileEditButton(title: string) {
@@ -111,11 +118,15 @@ export class ResourceList extends AddonPage {
     }
 
     private getSelectorOfEditPageMappedFieldsByTextDeleteButton(title: string) {
-        return By.xpath(`//div[@id="mappedFields"] //pep-textbox[@type="text"] //input[@title="${title}"]/ancestor::app-editor-mapped-field //pep-button[contains(@class,"del-button")]/button`);
+        return By.xpath(
+            `//div[@id="mappedFields"] //pep-textbox[@type="text"] //input[@title="${title}"]/ancestor::app-editor-mapped-field //pep-button[contains(@class,"del-button")]/button`,
+        );
     }
 
     private getSelectorOfEditPageMappedFieldsByTextReadOnlyCheckBox(title: string) {
-        return By.xpath(`//div[@id="mappedFields"] //pep-textbox[@type="text"] //input[@title="${title}"]/ancestor::app-editor-mapped-field //pep-checkbox //mat-checkbox/label/span[contains(@class,"mat-checkbox-inner-container")]`);
+        return By.xpath(
+            `//div[@id="mappedFields"] //pep-textbox[@type="text"] //input[@title="${title}"]/ancestor::app-editor-mapped-field //pep-checkbox //mat-checkbox/label/span[contains(@class,"mat-checkbox-inner-container")]`,
+        );
     }
 
     public setResourceName(resName: string): any {
@@ -236,7 +247,8 @@ export class ResourceList extends AddonPage {
         return expect(inputContent).to.equal(this.resourceName);
     }
 
-    public async verifyEditPageOpen(testName: string) { // This method is NOT Generic for both Editor and View (they have different HTML structure) - it works only for Editors (Hagit, Dec2022)
+    public async verifyEditPageOpen(testName: string) {
+        // This method is NOT Generic for both Editor and View (they have different HTML structure) - it works only for Editors (Hagit, Dec2022)
         const selector: By = this.getSelectorOfEditPgaeTitleWithName(testName);
         await expect(this.untilIsVisible(selector, 15000)).eventually.to.be.true;
         const editPageTitle = await (await this.browser.findElement(this.EditPage_Title)).getText();

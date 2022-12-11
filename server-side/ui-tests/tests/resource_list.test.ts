@@ -21,8 +21,6 @@ export async function ResourceListTests(email: string, password: string, varPass
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
-    let webAppSettingsSidePanel: WebAppSettingsSidePanel;
-    let webAppHeader: WebAppHeader;
     let webAppList: WebAppList;
     let webAppDialog: WebAppDialog;
     let resourceList: ResourceList;
@@ -33,8 +31,6 @@ export async function ResourceListTests(email: string, password: string, varPass
     let test_name: string;
     let test_decsription: string;
     let resource_name: string;
-    let numOfElementsBeforeAdding: number;
-    let numOfElementsBeforeDeleting: number;
 
     /* Addons Installation */
     await generalService.baseAddonVersionsInstallation(varPass);
@@ -86,8 +82,6 @@ export async function ResourceListTests(email: string, password: string, varPass
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
             webAppHomePage = new WebAppHomePage(driver);
-            webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
-            webAppHeader = new WebAppHeader(driver);
             webAppList = new WebAppList(driver);
             webAppDialog = new WebAppDialog(driver);
             resourceList = new ResourceList(driver);
@@ -111,7 +105,7 @@ export async function ResourceListTests(email: string, password: string, varPass
 
             it('Resource Views settings is loaded and Elements exist', async () => {
                 // navigation
-                await nevigateTo('Resource Views', driver);
+                await navigateTo('Resource Views', driver);
 
                 /* test logics */
 
@@ -144,7 +138,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 const numberOfResults = await (await driver.findElement(resourceList.NumberOfItemsInList)).getText();
                 expect(Number(numberOfResults)).to.be.equal(0);
                 const noData = (await (await driver.findElement(resourceList.List_NoDataFound)).getText()).trim();
-                expect(noData).to.be.oneOf(['No Data Found','No results were found.']);
+                expect(noData).to.be.oneOf(['No Data Found', 'No results were found.']);
             });
 
             it('Editors Tab', async () => {
@@ -188,7 +182,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 resourceEditors.setResourceName(resource_name);
                 test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
                 test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
-                await nevigateTo('Resource Views', driver);
+                await navigateTo('Resource Views', driver);
                 await resourceEditors.clickTab('Editors_Tab');
                 await resourceEditors.validateEditorsListPageIsLoaded();
                 await addToResourceList(resourceEditors, test_name, test_decsription);
@@ -198,7 +192,6 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await resourceEditors.clickTab('Editors_Tab');
                 await resourceEditors.deleteFromListByName(test_name);
             });
-
         });
 
         describe('Flow', async () => {
@@ -212,10 +205,10 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await webAppHomePage.collectEndTestData(this);
             });
 
-            it("Add Editor", async () => {
+            it('Add Editor', async () => {
                 test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
                 test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
-                await nevigateTo('Resource Views', driver);
+                await navigateTo('Resource Views', driver);
                 await resourceEditors.clickTab('Editors_Tab');
                 await resourceEditors.validateEditorsListPageIsLoaded();
                 await resourceEditors.deleteAll();
@@ -223,7 +216,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await resourceEditors.verifyEditorEditPageOpen(test_name);
                 resourceEditors.setEditorName(test_name);
             });
-            it("Configure Editor", async () => {
+            it('Configure Editor', async () => {
                 await resourceEditors.clickElement('Form_Tab');
                 await resourceEditors.waitTillVisible(resourceEditors.EditPage_ConfigProfileCard_Rep, 15000);
                 await resourceEditors.clickElement('EditPage_ConfigProfileCard_EditButton_Rep');
@@ -236,35 +229,39 @@ export async function ResourceListTests(email: string, password: string, varPass
                 resourceEditors.pause(500);
                 await resourceEditors.clickElement('EditPage_ProfileEditButton_Save');
                 await resourceEditors.waitTillVisible(resourceEditors.Save_Popup_PepDialog, 5000);
-                expect(await (await driver.findElement(resourceEditors.Save_Popup_MessageDiv)).getText()).to.contain('Saved successfully');
+                expect(await (await driver.findElement(resourceEditors.Save_Popup_MessageDiv)).getText()).to.contain(
+                    'Saved successfully',
+                );
                 await resourceEditors.clickElement('Save_Popup_Close_Button');
                 await resourceEditors.clickElement('EditPage_ProfileEditButton_Back');
                 await resourceEditors.clickElement('EditPage_BackToList_Button');
             });
-            it("Add View", async () => {
+            it('Add View', async () => {
                 test_name = `RL_Views_${resourceViews.resourceName}_Test_${random_name}`;
                 test_decsription = `View ${resourceViews.resourceName} ${test_generic_decsription}`;
-                await nevigateTo('Resource Views', driver);
+                await navigateTo('Resource Views', driver);
                 await resourceViews.validateViewsListPageIsLoaded();
                 await resourceViews.deleteAll();
                 await addToResourceList(resourceViews, test_name, test_decsription);
                 await resourceViews.verifyViewEditPageOpen(test_name); // IS DIFFERENT than: Editor Edit Page !  DO NOT CHANGE (Hagit, Dec2022)
                 resourceViews.setViewName(test_name);
             });
-            it("Configure View", async () => {
+            it('Configure View', async () => {
                 await resourceViews.selectEditor(resourceViews.SelectEditor_DropDown, resourceEditors.editorName);
                 await resourceViews.clickElement('EditPage_Update_Button');
                 await resourceViews.waitTillVisible(resourceViews.Update_Popup_PepDialog, 5000);
-                expect(await (await driver.findElement(resourceViews.Update_Popup_MessageDiv)).getText()).to.contain('Successfully updated');
+                expect(await (await driver.findElement(resourceViews.Update_Popup_MessageDiv)).getText()).to.contain(
+                    'Successfully updated',
+                );
                 await resourceViews.clickElement('Update_Popup_Close_Button');
                 resourceViews.pause(5000);
             });
             it('Nevigate to Page Builder', async () => {
-                await nevigateTo('Page Builder', driver);
+                await navigateTo('Page Builder', driver);
                 driver.sleep(7000);
             });
             it('Nevigate to Slugs', async () => {
-                await nevigateTo('Slugs', driver);
+                await navigateTo('Slugs', driver);
                 driver.sleep(7000);
             });
         });
@@ -272,7 +269,7 @@ export async function ResourceListTests(email: string, password: string, varPass
 }
 
 // Utils
-async function nevigateTo(destiny: string, browser: Browser) {
+async function navigateTo(destiny: string, browser: Browser) {
     const header: WebAppHeader = new WebAppHeader(browser);
     const settingsSidePanel: WebAppSettingsSidePanel = new WebAppSettingsSidePanel(browser);
     try {
@@ -302,23 +299,21 @@ async function nevigateTo(destiny: string, browser: Browser) {
     } catch (error) {
         console.error(error);
     }
-    return
+    return;
 }
 
-async function addToResourceList(rlComponent: ResourceEditors | ResourceViews, testName: string, testDescription: string) {
+async function addToResourceList(
+    rlComponent: ResourceEditors | ResourceViews,
+    testName: string,
+    testDescription: string,
+) {
     await rlComponent.waitTillVisible(rlComponent.Add_Button, 5000);
     await rlComponent.clickElement('Add_Button');
     await rlComponent.waitTillVisible(rlComponent.AddPopup_Title, 15000);
     await rlComponent.waitTillVisible(rlComponent.AddPopup_Name, 5000);
     await rlComponent.insertTextToInputElement(testName, rlComponent.AddPopup_Name);
-    await rlComponent.insertTextToInputElement(
-        testDescription,
-        rlComponent.AddPopup_Description,
-    );
-    await rlComponent.selectResource(
-        rlComponent.resourceName,
-        rlComponent.AddPopupResourceDropdownSingleOption,
-    );
+    await rlComponent.insertTextToInputElement(testDescription, rlComponent.AddPopup_Description);
+    await rlComponent.selectResource(rlComponent.resourceName, rlComponent.AddPopupResourceDropdownSingleOption);
     await rlComponent.verifyResourceSelected();
     await rlComponent.clickElement('AddPopup_Save');
     rlComponent.pause(1000);
