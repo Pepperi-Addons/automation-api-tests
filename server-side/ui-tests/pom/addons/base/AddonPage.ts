@@ -315,4 +315,13 @@ export class AddonPage extends Page {
         const elem = await this.browser.findElement(inputElement, 2000, true);
         await elem.sendKeys(text);
     }
+
+    // public async hoverOver(elem: string) {
+    //     if (this[elem]) {
+    //         // const actions = new Actions(this.browser)
+    //     } else {
+    //         console.info(`Element: ${elem} - is NOT declared in the Addon file`);
+    //         expect(`${this[elem]} to be in the Addon file, but is NOT`).to.be.undefined;
+    //     }
+    // }
 }

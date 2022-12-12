@@ -269,6 +269,7 @@ export class ResourceViews extends ResourceList {
 
     public setViewName(name: string) {
         this.viewName = name;
+        this.resourceName = this.viewName;
     }
 
     public async validateViewsListPageIsLoaded() {
@@ -278,7 +279,7 @@ export class ResourceViews extends ResourceList {
 
     public async verifyViewEditPageOpen(viewName: string) {
         await expect(this.untilIsVisible(this.EditPage_BackToList_Button, 90000)).eventually.to.be.true;
-        this.browser.sleep(1500);
+        this.browser.sleep(2000);
         const viewEditTitle = await (await this.browser.findElement(this.View_Edit_Title)).getText();
         expect(viewEditTitle).to.contain(viewName);
     }
@@ -325,6 +326,7 @@ export class ResourceEditors extends ResourceList {
 
     public setEditorName(name: string) {
         this.editorName = name;
+        this.resourceName = this.editorName;
     }
 
     public async validateEditorsListPageIsLoaded() {
