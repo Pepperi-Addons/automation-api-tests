@@ -8,7 +8,9 @@ export interface UdcField {
     Type: 'String' | 'Bool' | 'Integer' | 'Double' | 'DateTime' | 'Resource' | 'ContainedResource';
     OptionalValues?: string[];
     Indexed?: boolean;
-    Value: string | boolean | number | Date | unknown;
+    Value?: string | boolean | number | Date | unknown;
+    Resource?: string;
+    AdddonUID?: string;
 }
 
 const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
@@ -71,6 +73,58 @@ export class UDCService {
             .then((res) => res.Body);
     }
 
+    async sendDataToField(collectionName, field) {
+        const response = await this.generalService.fetchStatus(`/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName}`, {
+            method: "POST",
+            body: JSON.stringify(field)
+        });
+        // debugger;
+        return response;
+    }
+
+    async getAllObjectFromCollection(collectionName) {
+        const body = { "Page": 1, "MaxPageSize": 100, "IncludeCount": true };
+        const response = await this.generalService.fetchStatus(`/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/search?resource_name=${collectionName}`, {
+            method: "POST",
+            body: JSON.stringify(body)
+        });
+        return response.Body.Objects;
+    }
+
+    async hideObjectInACollection(collectionName, key) {
+        const body = { Key: key, Hidden: true };
+        const response = await this.generalService.fetchStatus(`/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=${collectionName}`, {
+            method: "POST",
+            body: JSON.stringify(body)
+        });
+        return response;
+    }
+
+    async hideCollection(collectionName) {
+        const body = { Name: collectionName, "Hidden": true };
+        const response = await this.generalService.fetchStatus(`/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/schemes`, {
+            method: "POST",
+            body: JSON.stringify(body)
+        });
+        return response;
+    }
+
+    resolveUIType(fieldType) {
+        switch (fieldType) {
+            case 'String':
+            case 'ContainedResource':
+                return 'TextBox';
+            case 'Bool':
+                return 'Boolean';
+            case 'Integer':
+                return 'NumberInteger';
+            case 'Double':
+                return 'NumberReal';
+            case 'DateTime':
+                return 'DateAndTime';
+        }
+    }
+
     async createUDCWithFields(collecitonName: string, udcFields: UdcField[], desc?: string) {
         const Fields = {};
         for (let index = 0; index < udcFields.length; index++) {
@@ -92,10 +146,11 @@ export class UDCService {
                     Mandatory: false,
                     Description: '',
                 },
-                Resource: '', //currently not supported
-                AddonUUID: '',
-                Indexed: false, //currently not supported
+                Resource: field.Resource ? field.Resource : '',
+                AddonUUID: field.AdddonUID ? field.AdddonUID : '',
+                Indexed: field.Indexed ? field.Indexed : false,
             };
+            // debugger;
         }
         const arrayOfViews: any[] = [];
         const arrayOfColumns: any[] = [];
@@ -107,7 +162,7 @@ export class UDCService {
                 Mandatory: field.Mandatory,
                 ReadOnly: true,
                 Title: field.Name,
-                Type: field.Type === 'String' && field.OptionalValues ? 'ComboBox' : 'TextBox',
+                Type: this.resolveUIType(field.Type)
             };
             arrayOfViews.push(uiControlUDCFields);
             arrayOfColumns.push({
@@ -170,40 +225,41 @@ export class UDCService {
         //3. upsert all items
         for (let index = 0; index < udcFields.length; index++) {
             const field: UdcField = udcFields[index];
-            const bodyToSendField = {};
-            bodyToSendField[field.Name] = field.Value;
-            udcUpsertItemResponse.push(
-                await this.generalService.fetchStatus(
-                    `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collecitonName}`,
-                    {
-                        method: 'POST',
-                        body: JSON.stringify(bodyToSendField),
-                    },
-                ),
-            );
-            if (udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Ok !== true) {
-                console.log(`UDC Returned Error OK: ${udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Ok}`);
-                udcUpsertItemResponse[udcUpsertItemResponse.length - 1]['Fail'] =
-                    udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body.fault.faultstring;
-                return udcUpsertItemResponse[udcUpsertItemResponse.length - 1];
-            }
-            if (udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Status !== 200) {
-                console.log(
-                    `UDC Returned Error Status: ${udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Status}`,
+            if (field.Value) {
+                const bodyToSendField = {};
+                bodyToSendField[field.Name] = field.Value;
+                udcUpsertItemResponse.push(
+                    await this.generalService.fetchStatus(
+                        `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collecitonName}`,
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(bodyToSendField),
+                        },
+                    ),
                 );
-                udcUpsertItemResponse[udcUpsertItemResponse.length - 1]['Fail'] =
-                    udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body.fault.faultstring;
-                return udcUpsertItemResponse[udcUpsertItemResponse.length - 1];
-            }
-            if (udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name] !== field.Value) {
-                console.log(
-                    `UDC Returned Wrong Value: ${
-                        udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
-                    } instaed of: ${field.Value}`,
-                );
-                udcUpsertItemResponse[udcUpsertItemResponse.length - 1]['Fail'] =
-                    udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body.fault.faultstring;
-                return udcUpsertItemResponse[udcUpsertItemResponse.length - 1];
+                if (udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Ok !== true) {
+                    console.log(`UDC Returned Error OK: ${udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Ok}`);
+                    udcUpsertItemResponse[udcUpsertItemResponse.length - 1]['Fail'] =
+                        udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body.fault.faultstring;
+                    return udcUpsertItemResponse[udcUpsertItemResponse.length - 1];
+                }
+                if (udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Status !== 200) {
+                    console.log(
+                        `UDC Returned Error Status: ${udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Status}`,
+                    );
+                    udcUpsertItemResponse[udcUpsertItemResponse.length - 1]['Fail'] =
+                        udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body.fault.faultstring;
+                    return udcUpsertItemResponse[udcUpsertItemResponse.length - 1];
+                }
+                if (udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name] !== field.Value) {
+                    console.log(
+                        `UDC Returned Wrong Value: ${udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
+                        } instaed of: ${field.Value}`,
+                    );
+                    udcUpsertItemResponse[udcUpsertItemResponse.length - 1]['Fail'] =
+                        udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body.fault.faultstring;
+                    return udcUpsertItemResponse[udcUpsertItemResponse.length - 1];
+                }
             }
         }
         //4. test all items are upserted
@@ -227,11 +283,6 @@ export class UDCService {
                 udcWithFieldGetResponse['Fail'] = udcWithFieldGetResponse.Body.fault.faultstring;
                 return udcWithFieldGetResponse;
             }
-        }
-        for (let index = 0; index < udcFields.length; index++) {
-            const field: UdcField = udcFields[index];
-            const valueFromServer = udcUpsertItemResponse.find((_field) => _field.Body[field.Name] !== undefined);
-            udcWithFieldGetResponse.Body.Fields[field.Name].Value = valueFromServer.Body[field.Name];
         }
         return udcWithFieldGetResponse.Body.Fields;
     }
