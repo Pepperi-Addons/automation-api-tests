@@ -74,38 +74,50 @@ export class UDCService {
     }
 
     async sendDataToField(collectionName, field) {
-        const response = await this.generalService.fetchStatus(`/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName}`, {
-            method: "POST",
-            body: JSON.stringify(field)
-        });
+        const response = await this.generalService.fetchStatus(
+            `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName}`,
+            {
+                method: 'POST',
+                body: JSON.stringify(field),
+            },
+        );
         // debugger;
         return response;
     }
 
     async getAllObjectFromCollection(collectionName) {
-        const body = { "Page": 1, "MaxPageSize": 100, "IncludeCount": true };
-        const response = await this.generalService.fetchStatus(`/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/search?resource_name=${collectionName}`, {
-            method: "POST",
-            body: JSON.stringify(body)
-        });
+        const body = { Page: 1, MaxPageSize: 100, IncludeCount: true };
+        const response = await this.generalService.fetchStatus(
+            `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/search?resource_name=${collectionName}`,
+            {
+                method: 'POST',
+                body: JSON.stringify(body),
+            },
+        );
         return response.Body.Objects;
     }
 
     async hideObjectInACollection(collectionName, key) {
         const body = { Key: key, Hidden: true };
-        const response = await this.generalService.fetchStatus(`/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=${collectionName}`, {
-            method: "POST",
-            body: JSON.stringify(body)
-        });
+        const response = await this.generalService.fetchStatus(
+            `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=${collectionName}`,
+            {
+                method: 'POST',
+                body: JSON.stringify(body),
+            },
+        );
         return response;
     }
 
     async hideCollection(collectionName) {
-        const body = { Name: collectionName, "Hidden": true };
-        const response = await this.generalService.fetchStatus(`/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/schemes`, {
-            method: "POST",
-            body: JSON.stringify(body)
-        });
+        const body = { Name: collectionName, Hidden: true };
+        const response = await this.generalService.fetchStatus(
+            `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/schemes`,
+            {
+                method: 'POST',
+                body: JSON.stringify(body),
+            },
+        );
         return response;
     }
 
@@ -162,7 +174,7 @@ export class UDCService {
                 Mandatory: field.Mandatory,
                 ReadOnly: true,
                 Title: field.Name,
-                Type: this.resolveUIType(field.Type)
+                Type: this.resolveUIType(field.Type),
             };
             arrayOfViews.push(uiControlUDCFields);
             arrayOfColumns.push({
@@ -253,7 +265,8 @@ export class UDCService {
                 }
                 if (udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name] !== field.Value) {
                     console.log(
-                        `UDC Returned Wrong Value: ${udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
+                        `UDC Returned Wrong Value: ${
+                            udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
                         } instaed of: ${field.Value}`,
                     );
                     udcUpsertItemResponse[udcUpsertItemResponse.length - 1]['Fail'] =
