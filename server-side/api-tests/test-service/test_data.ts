@@ -74,6 +74,8 @@ export async function TestDataTests(
                 installedAddons['Data Index Framework'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Activity Data Index')
                 installedAddons['Activity Data Index'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Audit Log')
+                installedAddons['Audit Log'] = installedAddonsArr[index].Version;
         }
     }
 
@@ -147,6 +149,10 @@ export async function TestDataTests(
             });
             it(`Activity Data Index (Papi Index) | Version: ${installedAddons['Activity Data Index']}`, () => {
                 const regexMatched = installedAddons['Activity Data Index'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Audit Log | Version: ${installedAddons['Audit Log']}`, () => {
+                const regexMatched = installedAddons['Audit Log'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
             if (options.IsAllAddons) {
