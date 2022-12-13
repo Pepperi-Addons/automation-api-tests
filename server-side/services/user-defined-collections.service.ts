@@ -85,8 +85,8 @@ export class UDCService {
         return response;
     }
 
-    async getAllObjectFromCollection(collectionName) {
-        const body = { Page: 1, MaxPageSize: 100, IncludeCount: true };
+    async getAllObjectFromCollection(collectionName, page?, maxPageSize?) {
+        const body = { Page: page ? page : 1, MaxPageSize: maxPageSize ? maxPageSize : 100, IncludeCount: true };
         const response = await this.generalService.fetchStatus(
             `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/search?resource_name=${collectionName}`,
             {
@@ -94,7 +94,7 @@ export class UDCService {
                 body: JSON.stringify(body),
             },
         );
-        return response.Body.Objects;
+        return { objects: response.Body.Objects, count: response.Body.Count };
     }
 
     async hideObjectInACollection(collectionName, key) {
@@ -137,7 +137,7 @@ export class UDCService {
         }
     }
 
-    async createUDCWithFields(collecitonName: string, udcFields: UdcField[], desc?: string) {
+    async createUDCWithFields(collecitonName: string, udcFields: UdcField[], desc?: string, collectionType?) {
         const Fields = {};
         for (let index = 0; index < udcFields.length; index++) {
             const field = udcFields[index];
@@ -201,6 +201,9 @@ export class UDCService {
             GenericResource: true,
             Description: desc ? desc : '', //not mandatory
         };
+        if (collectionType) {
+            bodyToSendCollection['Type'] = collectionType;
+        }
         //1. create scheme with all required data
         const udcCreateResponse = await this.generalService.fetchStatus(
             '/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create',
