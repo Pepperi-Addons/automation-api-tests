@@ -29,7 +29,8 @@ export const testData = {
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
-    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.41'],
+    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.0.13'],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', '1.0.2'],
@@ -38,6 +39,7 @@ export const testData = {
     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
+    'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
     // system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '0.0.77'], //needed to be able to report tests results -- notice were locked on a certin version
 };
 
@@ -52,6 +54,7 @@ export const testDataForInitUser = {
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
@@ -788,6 +791,7 @@ export default class GeneralService {
                 addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
                 addonName == 'Relations Framework' || // evgeny 4/12: done to be able to test latest relation fw version
                 addonName == 'Pepperitest (Jenkins Special Addon) - Code Jobs' || // evgeny 6/12: trying to fix wiered jenkins issue
+                addonName == 'Audit Log' || // evgeny 13/12: newest audit to fix SB
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
