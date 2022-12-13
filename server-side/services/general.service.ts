@@ -21,7 +21,7 @@ import tester from '../tester';
 
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
-    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.20'], //PAPI locked on TLS 2 version
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on TLS 2 version
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.%'], //cpapi locked on TLS 2 version
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.0.%'], //cpi-node (Cross Platform Engine)
@@ -39,6 +39,7 @@ export const testData = {
     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
+    'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
     // system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '0.0.77'], //needed to be able to report tests results -- notice were locked on a certin version
 };
 
@@ -790,6 +791,7 @@ export default class GeneralService {
                 addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
                 addonName == 'Relations Framework' || // evgeny 4/12: done to be able to test latest relation fw version
                 addonName == 'Pepperitest (Jenkins Special Addon) - Code Jobs' || // evgeny 6/12: trying to fix wiered jenkins issue
+                addonName == 'Audit Log' || // evgeny 13/12: newest audit to fix SB
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
