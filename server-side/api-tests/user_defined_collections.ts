@@ -24,48 +24,48 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
     };
     testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
 
-    // let varKey;
-    // if (generalService.papiClient['options'].baseURL.includes('staging')) {
-    //     varKey = request.body.varKeyStage;
-    // } else {
-    //     varKey = request.body.varKeyPro;
-    // }
-    // const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
-    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //#endregion Upgrade UDC
 
     describe('UDC Tests Suites', () => {
-        // describe('Prerequisites Addon for UDC Tests', () => {
-        //     //Test Data
-        //     //UDC
-        //     isInstalledArr.forEach((isInstalled, index) => {
-        //         it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-        //             expect(isInstalled).to.be.true;
-        //         });
-        //     });
-        //     for (const addonName in testData) {
-        //         const addonUUID = testData[addonName][0];
-        //         const version = testData[addonName][1];
-        //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
-        //         const changeType = chnageVersionResponseArr[addonName][3];
-        //         describe(`Test Data: ${addonName}`, () => {
-        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-        //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-        //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-        //                 } else {
-        //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-        //                 }
-        //             });
+        describe('Prerequisites Addon for UDC Tests', () => {
+            //Test Data
+            //UDC
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
 
-        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-        //                     .eventually.to.have.property('Version')
-        //                     .a('string')
-        //                     .that.is.equal(varLatestVersion);
-        //             });
-        //         });
-        //     }
-        // });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
+        });
 
         describe('Base Collection Testing', () => {
             let basicCollectionName = '';
@@ -367,73 +367,79 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(newCollection.Hidden).to.equal(false);
                 expect(newCollection.GenericResource).to.equal(true);
             });
-            // it('Positive Test: upserting data to indexed UDC', async () => {
-            //     let field = {};
-            //     const arrayOfValues: any[] = [];
-            //     for (let index = 0; index < 130; index++) {
-            //         field = {
-            //             int: Math.floor(Math.random() * 5),
-            //             dou: Math.random(),
-            //             str: generalService.generateRandomString(5),
-            //             bool: Math.random() < 0.5,
-            //         }
-            //         arrayOfValues.push(field);
-            //     }
-            //     for (let index = 0; index < arrayOfValues.length; index++) {
-            //         const field = arrayOfValues[index];
-            //         const response = await udcService.sendDataToField(indexedCollectionName, field);
-            //         expect(response.Ok).to.equal(true);
-            //         expect(response.Status).to.equal(200);
-            //         expect(response.Body.bool).to.equal(field.bool);
-            //         expect(response.Body.dou).to.equal(field.dou);
-            //         expect(response.Body.int).to.equal(field.int);
-            //         expect(response.Body.str).to.equal(field.str);
-            //         expect(response.Body.Hidden).to.equal(false);
-            //         expect(response.Body).to.haveOwnProperty('Key');
-            //         expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
-            //         expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
-            //     }
-            //     generalService.sleep(3000);
-            //     const allObjects = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 130);
-            //     expect(allObjects.objects.length).to.equal(arrayOfValues.length);
-            //     expect(allObjects.count).to.equal(arrayOfValues.length);
-            //     for (let index = 0; index < allObjects.objects.length; index++) {
-            //         const returnedObj = allObjects.objects[index];
-            //         const match = arrayOfValues.filter(field => field.bool === returnedObj.bool && field.int === returnedObj.int && field.str === returnedObj.str && field.dou === returnedObj.dou);
-            //         expect(match.length).to.equal(1);
-            //     }
-            // });
-            // it('Positive Test: getting indexed data from UDC - using paganation + count field', async () => {
-            //     const allObjects50page1 = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 50);
-            //     expect(allObjects50page1.objects.length).to.equal(50);
-            //     expect(allObjects50page1.count).to.equal(130);
-            //     const allObjects50page2 = await udcService.getAllObjectFromCollection(indexedCollectionName, 2, 50);
-            //     expect(allObjects50page2.objects.length).to.equal(50);
-            //     expect(allObjects50page2.count).to.equal(130);
-            //     const allObjects50page3 = await udcService.getAllObjectFromCollection(indexedCollectionName, 3, 50);
-            //     expect(allObjects50page3.objects.length).to.equal(30);
-            //     expect(allObjects50page3.count).to.equal(130);
-            //     const allObjects50page4 = await udcService.getAllObjectFromCollection(indexedCollectionName, 4, 50);
-            //     expect(allObjects50page4.objects.length).to.equal(0);
-            //     expect(allObjects50page4.count).to.equal(130);
-            //     const allObjects100page1 = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 100);
-            //     expect(allObjects100page1.objects.length).to.equal(100);
-            //     expect(allObjects100page1.count).to.equal(130);
-            //     const allObjects100page2 = await udcService.getAllObjectFromCollection(indexedCollectionName, 2, 100);
-            //     expect(allObjects100page2.objects.length).to.equal(30);
-            //     expect(allObjects100page2.count).to.equal(130);
-            //     //hide an object and see the count changing
-            //     const hideResponse = await udcService.hideObjectInACollection(
-            //         indexedCollectionName,
-            //         allObjects50page1.objects[0].Key,
-            //     );
-            //     expect(hideResponse.Body.Key).to.equal(allObjects50page1.objects[0].Key);
-            //     expect(hideResponse.Body.ModificationDateTime).to.include(parsedTodayDate);
-            //     expect(hideResponse.Body.Hidden).to.equal(true);
-            //     generalService.sleep(3000);
-            //     const allObjects = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 130);
-            //     expect(allObjects.count).to.equal(129);
-            // });
+            it('Positive Test: upserting data to indexed UDC', async () => {
+                let field = {};
+                const arrayOfValues: any[] = [];
+                for (let index = 0; index < 130; index++) {
+                    field = {
+                        int: Math.floor(Math.random() * 5),
+                        dou: Math.random(),
+                        str: generalService.generateRandomString(5),
+                        bool: Math.random() < 0.5,
+                    };
+                    arrayOfValues.push(field);
+                }
+                for (let index = 0; index < arrayOfValues.length; index++) {
+                    const field = arrayOfValues[index];
+                    const response = await udcService.sendDataToField(indexedCollectionName, field);
+                    expect(response.Ok).to.equal(true);
+                    expect(response.Status).to.equal(200);
+                    expect(response.Body.bool).to.equal(field.bool);
+                    expect(response.Body.dou).to.equal(field.dou);
+                    expect(response.Body.int).to.equal(field.int);
+                    expect(response.Body.str).to.equal(field.str);
+                    expect(response.Body.Hidden).to.equal(false);
+                    expect(response.Body).to.haveOwnProperty('Key');
+                    expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
+                    expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
+                }
+                generalService.sleep(3000);
+                const allObjects = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 130);
+                expect(allObjects.objects.length).to.equal(arrayOfValues.length);
+                expect(allObjects.count).to.equal(arrayOfValues.length);
+                for (let index = 0; index < allObjects.objects.length; index++) {
+                    const returnedObj = allObjects.objects[index];
+                    const match = arrayOfValues.filter(
+                        (field) =>
+                            field.bool === returnedObj.bool &&
+                            field.int === returnedObj.int &&
+                            field.str === returnedObj.str &&
+                            field.dou === returnedObj.dou,
+                    );
+                    expect(match.length).to.equal(1);
+                }
+            });
+            it('Positive Test: getting indexed data from UDC - using paganation + count field', async () => {
+                const allObjects50page1 = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 50);
+                expect(allObjects50page1.objects.length).to.equal(50);
+                expect(allObjects50page1.count).to.equal(130);
+                const allObjects50page2 = await udcService.getAllObjectFromCollection(indexedCollectionName, 2, 50);
+                expect(allObjects50page2.objects.length).to.equal(50);
+                expect(allObjects50page2.count).to.equal(130);
+                const allObjects50page3 = await udcService.getAllObjectFromCollection(indexedCollectionName, 3, 50);
+                expect(allObjects50page3.objects.length).to.equal(30);
+                expect(allObjects50page3.count).to.equal(130);
+                const allObjects50page4 = await udcService.getAllObjectFromCollection(indexedCollectionName, 4, 50);
+                expect(allObjects50page4.objects.length).to.equal(0);
+                expect(allObjects50page4.count).to.equal(130);
+                const allObjects100page1 = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 100);
+                expect(allObjects100page1.objects.length).to.equal(100);
+                expect(allObjects100page1.count).to.equal(130);
+                const allObjects100page2 = await udcService.getAllObjectFromCollection(indexedCollectionName, 2, 100);
+                expect(allObjects100page2.objects.length).to.equal(30);
+                expect(allObjects100page2.count).to.equal(130);
+                //hide an object and see the count changing
+                const hideResponse = await udcService.hideObjectInACollection(
+                    indexedCollectionName,
+                    allObjects50page1.objects[0].Key,
+                );
+                expect(hideResponse.Body.Key).to.equal(allObjects50page1.objects[0].Key);
+                expect(hideResponse.Body.ModificationDateTime).to.include(parsedTodayDate);
+                expect(hideResponse.Body.Hidden).to.equal(true);
+                generalService.sleep(3000);
+                const allObjects = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 130);
+                expect(allObjects.count).to.equal(129);
+            });
             //TODO: positive -> using it as a resource in another UDC
             it('Positive Test: creating a Scheme - Only UDC', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes()).length;
