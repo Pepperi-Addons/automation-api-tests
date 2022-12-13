@@ -202,7 +202,7 @@ export class UDCService {
             Description: desc ? desc : '', //not mandatory
         };
         if (collectionType) {
-            bodyToSendCollection["Type"] = collectionType;
+            bodyToSendCollection['Type'] = collectionType;
         }
         //1. create scheme with all required data
         const udcCreateResponse = await this.generalService.fetchStatus(
@@ -268,7 +268,8 @@ export class UDCService {
                 }
                 if (udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name] !== field.Value) {
                     console.log(
-                        `UDC Returned Wrong Value: ${udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
+                        `UDC Returned Wrong Value: ${
+                            udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
                         } instaed of: ${field.Value}`,
                     );
                     udcUpsertItemResponse[udcUpsertItemResponse.length - 1]['Fail'] =

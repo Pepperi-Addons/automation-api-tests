@@ -130,7 +130,11 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             it('Positive Test: creating an empty UDC with no fields', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes()).length;
                 basicCollectionName = 'BasicTestingEmpty' + generalService.generateRandomString(7);
-                const response = await udcService.createUDCWithFields(basicCollectionName, [], 'automation testing UDC');
+                const response = await udcService.createUDCWithFields(
+                    basicCollectionName,
+                    [],
+                    'automation testing UDC',
+                );
                 expect(response).to.deep.equal({});
                 const documents = await udcService.getSchemes();
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
@@ -256,12 +260,12 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             });
             it('Positive Test: upserting data by basic UDC format which is the field of new UDC', async () => {
                 const field = {};
-                field["containedRes"] = {
+                field['containedRes'] = {
                     int: intVal,
                     dou: douVal,
                     str: strVal,
                     bool: boolVal,
-                }
+                };
                 const response = await udcService.sendDataToField(containedCollectionName, field);
                 expect(response.Ok).to.equal(true);
                 expect(response.Status).to.equal(200);
@@ -459,7 +463,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     schemeOnlyCollectionName,
                     fieldsArray,
                     'automation testing UDC',
-                    'contained'
+                    'contained',
                 );
                 expect(response.bool.Type).to.equal('Bool');
                 expect(response.dou.Type).to.equal('Double');
@@ -481,7 +485,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(documentKey['Type']).to.equal('AutoGenerate');
                 expect(newCollection.Hidden).to.equal(false);
                 expect(newCollection.GenericResource).to.equal(true);
-                expect(newCollection.Type).to.equal("contained");
+                expect(newCollection.Type).to.equal('contained');
             });
             it('Negative Test: trying to push data to scheme only UDC', async () => {
                 const fieldValues = {
@@ -510,7 +514,10 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             it("Tear Down: cleaning all upserted UDC's", async () => {
                 const documents = await udcService.getSchemes();
                 const toHideCollections = documents.filter(
-                    (doc) => doc.Name.includes('BasicTesting') || doc.Name.includes('ContainedTesting') || doc.Name.includes('IndexedTesting'),
+                    (doc) =>
+                        doc.Name.includes('BasicTesting') ||
+                        doc.Name.includes('ContainedTesting') ||
+                        doc.Name.includes('IndexedTesting'),
                 );
                 for (let index = 0; index < toHideCollections.length; index++) {
                     const collectionToHide = toHideCollections[index];
