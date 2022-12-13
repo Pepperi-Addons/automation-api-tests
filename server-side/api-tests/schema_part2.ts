@@ -617,7 +617,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             logcash.updateExtendedSchemaStatus = false;
             logcash.updateExtendedSchemaErrorMessage = 'Schema will be updated successfully, but actually failed';
         }
-        generalService.sleep(15000);
+        generalService.sleep(20000);
         await getDataADAL2();
     }
     async function getDataADAL2() {

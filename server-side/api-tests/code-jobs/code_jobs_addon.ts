@@ -242,6 +242,9 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
             CodeJobName: 'Code Job without type - negative test',
             IsScheduled: false,
             // "ExecutedCode": "",
+            AddonPath: jsFileName, // Only for AddonJob
+            AddonUUID: addonUUID, // Only for AddonJob
+            FunctionName: functionNameWithBody,
         };
         CallbackCash.insertNewCJWithoutType = await generalService.fetchStatus('/code_jobs', {
             method: 'POST',
