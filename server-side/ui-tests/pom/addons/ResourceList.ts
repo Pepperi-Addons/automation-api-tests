@@ -3,8 +3,6 @@ import { By } from 'selenium-webdriver';
 import { AddonPage } from './base/AddonPage';
 
 export class ResourceList extends AddonPage {
-    public resourceName = '';
-
     // *general selectors for Resource Views*
     public PepTopArea_title: By = By.xpath('//div[contains(@class, "pep-top-area")]/h2');
     public TabsContainer: By = By.xpath('//div[contains(@class, "mat-tab-labels")]');
@@ -96,6 +94,10 @@ export class ResourceList extends AddonPage {
     }
 
     public getSelectorOfRowInListByName(name: string) {
+        return By.xpath(`//span[@id="Name"][@text()="${name}"]/ancestor::pep-form`);
+    }
+
+    public getSelectorOfRowInListByPartialName(name: string) {
         return By.xpath(`//span[@id="Name"][contains(text(),"${name}")]/ancestor::pep-form`);
     }
 
@@ -127,10 +129,6 @@ export class ResourceList extends AddonPage {
         return By.xpath(
             `//div[@id="mappedFields"] //pep-textbox[@type="text"] //input[@title="${title}"]/ancestor::app-editor-mapped-field //pep-checkbox //mat-checkbox/label/span[contains(@class,"mat-checkbox-inner-container")]`,
         );
-    }
-
-    public setResourceName(resName: string): any {
-        this.resourceName = resName;
     }
 
     public async selectResource(resName: string, dropdownElement: By) {
@@ -186,7 +184,7 @@ export class ResourceList extends AddonPage {
             this.pause(500);
             const redDeleteButton = await this.browser.findElement(this.DeletePopup_Delete_Button);
             redDeleteButton.click();
-            this.pause(5000);
+            this.pause(1000);
             await this.checkThatElementIsNotFound('DeletePopup_Delete_Button');
         } catch (error) {
             console.info('RED DELETE Button NOT CLICKED!');
@@ -216,9 +214,8 @@ export class ResourceList extends AddonPage {
         expect(Number(numOfEditors)).to.equal(0);
     }
 
-    public async selectFromListByName(name: string) {
+    public async selectFromList(selector: By, name?: string) {
         try {
-            const selector: By = this.getSelectorOfRowInListByName(name); //By.xpath(`//span[@title="${name}"]/ancestor::pep-textbox`);
             await this.browser.click(selector);
             await this.browser.untilIsVisible(this.SelectedRadioButton);
             await expect(this.untilIsVisible(this.Pencil_Button, 90000)).eventually.to.be.true;
@@ -227,6 +224,16 @@ export class ResourceList extends AddonPage {
             console.error(error);
             expect(`ERROR -> UNABLE TO SELECT: ${name}`).to.be.undefined;
         }
+    }
+
+    public async selectFromListByName(name: string) {
+        const selector: By = this.getSelectorOfRowInListByName(name); //By.xpath(`//span[@title="${name}"]/ancestor::pep-textbox`);
+        await this.selectFromList(selector, name);
+    }
+
+    public async selectFromListByPartialName(name: string) {
+        const selector: By = this.getSelectorOfRowInListByName(name); //By.xpath(`//span[@title="${name}"]/ancestor::pep-textbox`);
+        await this.selectFromList(selector, name);
     }
 
     public async deleteFromListByName(name: string) {
@@ -241,10 +248,10 @@ export class ResourceList extends AddonPage {
         expect(await (await this.browser.findElement(this.ResultsDiv)).getText()).to.contain('result');
     }
 
-    public async verifyResourceSelected() {
+    public async verifyResourceSelected(resourceName: string) {
         this.browser.sleep(2000);
         const inputContent = await (await this.browser.findElement(this.AddPopup_Resource)).getText();
-        return expect(inputContent).to.equal(this.resourceName);
+        return expect(inputContent).to.equal(resourceName);
     }
 
     public async verifyEditPageOpen(testName: string) {
@@ -254,10 +261,22 @@ export class ResourceList extends AddonPage {
         const editPageTitle = await (await this.browser.findElement(this.EditPage_Title)).getText();
         expect(editPageTitle).to.contain(testName);
     }
+
+    public async addToResourceList(testName: string, testDescription: string, nameOfResource: string) {
+        await this.waitTillVisible(this.Add_Button, 5000);
+        await this.clickElement('Add_Button');
+        await this.waitTillVisible(this.AddPopup_Title, 15000);
+        await this.waitTillVisible(this.AddPopup_Name, 5000);
+        await this.insertTextToInputElement(testName, this.AddPopup_Name);
+        await this.insertTextToInputElement(testDescription, this.AddPopup_Description);
+        await this.selectResource(nameOfResource, this.AddPopupResourceDropdownSingleOption);
+        await this.verifyResourceSelected(nameOfResource);
+        await this.clickElement('AddPopup_Save');
+        this.pause(1000);
+    }
 }
 
 export class ResourceViews extends ResourceList {
-    public viewName = '';
     /* specific selectors for Views TAB under Resource Views */
     public Views_List_Title: By = By.xpath('//span[@title="Views"]');
     public View_Edit_Title: By = By.xpath('//div[contains(@class,"pep-top-area")]/div[contains(@class,"header")]/h4');
@@ -266,11 +285,6 @@ export class ResourceViews extends ResourceList {
     public LineMenu_Tab: By = this.getSelectorOfResourceListSettingsTab('Line Menu');
     // Edit Page
     public SelectEditor_DropDown: By = By.xpath('//mat-select[@id="Editor"]/parent::div/parent::div');
-
-    public setViewName(name: string) {
-        this.viewName = name;
-        this.resourceName = this.viewName;
-    }
 
     public async validateViewsListPageIsLoaded() {
         await this.validateListPageIsLoaded();
@@ -290,8 +304,6 @@ export class ResourceViews extends ResourceList {
 }
 
 export class ResourceEditors extends ResourceList {
-    public editorName = '';
-
     // *specific selectors for Editors TAB under Resource Views*
     public Editors_List_Title: By = By.xpath('//span[@title="Editors"]');
     // Edit Page
@@ -323,11 +335,6 @@ export class ResourceEditors extends ResourceList {
     public EditPageEditors_GeneralTab_ResourceFields_Content: By = By.xpath(
         '//*[@id="mat-tab-content-0-0"]/div/div[3]/block-reference-fields-table/pep-generic-list/pep-page-layout/div[4]/div[2]/div/div/pep-list/div[1]',
     );
-
-    public setEditorName(name: string) {
-        this.editorName = name;
-        this.resourceName = this.editorName;
-    }
 
     public async validateEditorsListPageIsLoaded() {
         await this.validateListPageIsLoaded();
