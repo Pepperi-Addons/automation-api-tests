@@ -21,6 +21,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.5.1'],
         'User Defined Collections': [UserDefinedCollectionsUUID, ''],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     };
     testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
 
