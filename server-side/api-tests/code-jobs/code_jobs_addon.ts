@@ -242,6 +242,9 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
             CodeJobName: 'Code Job without type - negative test',
             IsScheduled: false,
             // "ExecutedCode": "",
+            // AddonPath: jsFileName, // Only for AddonJob
+            // AddonUUID: addonUUID, // Only for AddonJob
+            // FunctionName: functionNameWithBody,
         };
         CallbackCash.insertNewCJWithoutType = await generalService.fetchStatus('/code_jobs', {
             method: 'POST',
@@ -250,7 +253,9 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
         //debugger;
         if (
             CallbackCash.insertNewCJWithoutType.Status == 400 &&
-            CallbackCash.insertNewCJWithoutType.Body.fault.faultstring == 'Requested job type is not valid'
+            CallbackCash.insertNewCJWithoutType.Body.fault.faultstring.includes(
+                'Invalid field value. Field: AddonPath: Value cannot be null or empty.',
+            )
         ) {
             logcash.insertNewCJWithoutType = true;
         } else {
