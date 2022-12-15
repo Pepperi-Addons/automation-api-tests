@@ -579,7 +579,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
         //debugger;
         if (
             logcash.createSchemaAbstractNegativeCamel.fault.faultstring.includes(
-                'did not match the pattern ^[a-z][a-zA-Z_0-9]',
+                'did not match the pattern ^[a-z][a-z_0-9]', //
             )
         ) {
             logcash.createSchemaAbstractNegativeCamelStatus = true;
@@ -940,7 +940,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'camelCase', //+ newUuid(),
+                    Name: 'snake_case', //+ newUuid(),
                     Type: 'data',
                     GenericResource: true,
                     UserDefined: false,
@@ -953,7 +953,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.createGenericResourceSchemaPositive.Name == 'camelCase' &&
+            logcash.createGenericResourceSchemaPositive.Name == 'snake_case' &&
             logcash.createGenericResourceSchemaPositive.Fields.TestString.Type == 'String' &&
             logcash.createGenericResourceSchemaPositive.Fields.TestInt.Type == 'Integer'
         ) {

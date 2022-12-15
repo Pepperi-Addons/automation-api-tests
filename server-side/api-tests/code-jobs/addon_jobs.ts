@@ -1288,7 +1288,7 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
         if (
             parsedData.Status == 400 &&
             CallbackCash.parsedMsg.fault.faultstring.includes(
-                'Invalid field value. Field:CodeJobName: Value cannot be null or empty.',
+                'Invalid field value. Field: CodeJobName: Value cannot be null or empty',
             )
         ) {
             logcash.MandatoryCheck = true;

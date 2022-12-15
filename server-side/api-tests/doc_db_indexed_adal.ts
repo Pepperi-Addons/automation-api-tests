@@ -1,5 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-import { v4 as newUuid } from 'uuid';
+//import { v4 as newUuid } from 'uuid';
 
 export async function DocDBIndexedAdal(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
@@ -90,16 +90,52 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             });
             it('Create Schema (name accounts) with owner not from white list and without indexed fields', async () => {
                 assert(logcash.createMainSchemaStatus, logcash.createMainSchemaErrorMessage);
-            });
+            }); //
             it('Insert data to created account schema', () => {
                 assert(logcash.insertDataToAccountsTableStatus, logcash.insertDataToAccountsTableError);
-            });
+            }); //
             it('Create Schema (name survey) with white liste owner and indexeded fields with resource fields from accounts schema', () => {
                 assert(logcash.createSecondSchemaStatus, logcash.createSecondSchemaErrorMessage);
-            });
+            }); //
             it('Insert data to created survey schema ', () => {
                 assert(logcash.insertDataToSurveyTableStatus, logcash.insertDataToSurveyTableError);
-            });
+            }); //
+            it('GET survey (second) schema with referance to account schema from ADAL', () => {
+                assert(logcash.getSurveySchemeStatus, logcash.getSurveySchemeErrorMessage);
+            }); //
+            it('GET survey (second) schema with referance to account schema from Elastic', () => {
+                assert(logcash.getFromElasticStatus, logcash.getFromElasticMessage);
+            }); //
+            it('Update Account(main) schema Name field value(referanced field)', () => {
+                assert(logcash.updateSurveyTableStatus, logcash.updateSurveyTableError);
+            }); //
+            it('GET survey (second) schema with referance to account schema after update from ADAL', () => {
+                assert(logcash.getFromAdal2Status, logcash.getFromAdal2Error);
+            }); //
+            it('GET survey (second) schema with referance to account schema from Elastic', () => {
+                assert(logcash.getFromElastic2Status, logcash.getFromElastic2Error);
+            }); //
+            it('Insert new key + field value to Accounts(main) taible', () => {
+                assert(logcash.insertNewKeyToAccountsTableStatus, logcash.insertNewKeyToAccountsTableError);
+            }); //
+            it('Update survey table - change key value from account table (the value will be changed to new inserted value)', () => {
+                assert(logcash.updateSurveyAccountStatus, logcash.updateSurveyAccountError);
+            }); //
+            it('GET survey (second) schema with referance to account schema after update from ADAL', () => {
+                assert(logcash.getFromAdal3Status, logcash.getFromElastic3Error);
+            }); //
+            it('GET survey (second) schema with referance to account schema from Elastic', () => {
+                assert(logcash.getFromElastic3Status, logcash.getFromElastic3Error);
+            }); //
+            it('Update survey table - change test field value(not referenced from account))', () => {
+                assert(logcash.updateSurveyTestFieldStatus, logcash.updateSurveyTestFieldError);
+            }); //
+            it('GET survey (second) schema with referance to account schema after update from ADAL', () => {
+                assert(logcash.getFromAdal4Status, logcash.getFromAdal4Error);
+            }); //
+            it('GET survey (second) schema with referance to account schema from Elastic', () => {
+                assert(logcash.getFromElastic4Status, logcash.getFromElastic4Error);
+            }); //
         });
         describe('Drop created schemas of the end of test', () => {
             it('Drop account schema', () => {
@@ -139,7 +175,8 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     'X-Pepperi-SecretKey': logcash.secretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'account_test' + newUuid(),
+                    // Name: 'account_test' + newUuid(),
+                    Name: 'account_test' + generalService.generateRandomString(16),
                     Type: 'data',
                     DataSourceData: {
                         IndexName: 'my_index',
@@ -203,7 +240,8 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     'X-Pepperi-SecretKey': whaitSecretKey,
                 },
                 body: JSON.stringify({
-                    Name: 'survey_test' + newUuid(),
+                    //Name: 'survey_test' + newUuid(),
+                    Name: 'survey_test' + generalService.generateRandomString(16),
                     Type: 'data',
                     DataSourceData: {
                         IndexName: 'my_index',
@@ -212,27 +250,29 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     StringIndexName: 'my_index',
                     Fields: {
                         test: { Type: 'Integer', Indexed: true },
-                    },
-                    Account: {
-                        Type: 'Resource',
-                        AddonUUID: addonUUID,
-                        Indexed: true,
-                        IndexedFields: {
-                            Name: { Type: 'String', Indexed: true },
+                        // },
+                        Account: {
+                            Type: 'Resource',
+                            Resource: logcash.createMainSchema.Name,
+                            AddonUUID: addonUUID,
+                            Indexed: true,
+                            IndexedFields: {
+                                Name: { Type: 'String', Indexed: true },
+                            },
                         },
                     },
                 }),
             })
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         if (
             logcash.createSecondSchema.Name.includes('survey_test') &&
             logcash.createSecondSchema.Hidden == false &&
             logcash.createSecondSchema.Type == 'data' &&
             logcash.createSecondSchema.Fields.test.Type == 'Integer' &&
-            logcash.createSecondSchema.Account.AddonUUID == addonUUID &&
-            logcash.createSecondSchema.Account.Type == 'Resource' &&
-            logcash.createSecondSchema.Account.IndexedFields.Name.Indexed == true
+            logcash.createSecondSchema.Fields.Account.AddonUUID == addonUUID &&
+            logcash.createSecondSchema.Fields.Account.Type == 'Resource' &&
+            logcash.createSecondSchema.Fields.Account.IndexedFields.Name.Indexed == true
         ) {
             logcash.createSecondSchemaStatus = true;
         } else {
@@ -289,27 +329,199 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 },
             )
             .then((res) => res.Body);
-        debugger;
-        if (
-            logcash.getSurveyScheme.AddonUUID == whaitOwnerUUID //&&
-            // logcash.getSurveyScheme.Fields.CreationDateTime.Indexed == true &&
-            // logcash.getSurveyScheme.Fields.CreationDateTime.Type == 'DateTime' &&
-            // logcash.getSurveyScheme.Fields.Hidden.Indexed == true &&
-            // logcash.getSurveyScheme.Fields.Hidden.Type == 'Bool' &&
-            // logcash.getSurveyScheme.Fields.Key.Keyword == true &&
-            // logcash.getSurveyScheme.Fields.Key.Indexed == true &&
-            // logcash.getSurveyScheme.Fields.Key.Type == 'String' &&
-            // logcash.getSurveyScheme.Fields.ModificationDateTime.Indexed == true &&
-            // logcash.getSurveyScheme.Fields.ModificationDateTime.Type == 'DateTime' &&
-            // logcash.getSurveyScheme.Fields.TestDateTime.Indexed == true &&
-            // logcash.getSurveyScheme.Fields.TestDateTime.Type == 'DateTime' &&
-            // logcash.getSurveyScheme.Fields.testString.Indexed == true &&
-            // logcash.getSurveyScheme.Fields.testString.Type == 'String'
-        ) {
+        //debugger;
+        if (logcash.getSurveyScheme[0].test == '123' && logcash.getSurveyScheme[0]['Account.Name'] == 'First Table') {
             logcash.getSurveySchemeStatus = true;
         } else {
             logcash.getSurveySchemeStatus = false;
             logcash.getSurveySchemeErrorMessage = 'The survey scheme will be created, but actuall get empty ';
+        }
+        generalService.sleep(2000);
+        await getFromElastic();
+    }
+
+    async function getFromElastic() {
+        logcash.getFromElastic = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    whaitOwnerUUID +
+                    '/' +
+                    logcash.createSecondSchema.Name +
+                    '?where=Key="1"&fields=test,Account.Name',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': whaitOwnerUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getFromElastic[0].test == '123' && logcash.getFromElastic[0]['Account.Name'] == 'First Table') {
+            logcash.getFromElasticStatus = true;
+        } else {
+            logcash.getFromElasticStatus = false;
+            logcash.getFromElasticMessage = 'The survey scheme will be created, but actuall get empty ';
+        }
+        await updateSurveyTable();
+    }
+
+    async function updateSurveyTable() {
+        logcash.updateSurveyTable = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createMainSchema.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: '5',
+                    Name: 'Updated first table',
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.updateSurveyTable[0] == 200) {
+            logcash.updateSurveyTableStatus = true;
+        } else {
+            logcash.updateSurveyTableStatus = false;
+            logcash.updateSurveyTableError = 'Insert data to Accounts table failed';
+        }
+        //debugger;
+        const res = await getSurveyScheme1();
+        //debugger;
+        if (res.test == '123' && res['Account.Name'] == 'Updated first table') {
+            logcash.getFromAdal2Status = true;
+        } else {
+            logcash.getFromAdal2Status = false;
+            logcash.getFromAdal2Error = 'Accounts table document with key 5 not updated on ADAL table';
+        }
+        generalService.sleep(20000);
+        const res2 = await getFromElastic1();
+        //debugger;
+        if (res2.test == '123' && res2['Account.Name'] == 'Updated first table') {
+            logcash.getFromElastic2Status = true;
+        } else {
+            logcash.getFromElastic2Status = false;
+            logcash.getFromElastic2Error = 'Accounts table document with key 5 not updated on elastic table';
+        }
+        await insertNewKeyToAccountsTable();
+    }
+
+    async function insertNewKeyToAccountsTable() {
+        logcash.insertNewKeyToAccountsTable = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createMainSchema.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: '6',
+                    Name: 'Second table',
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.insertNewKeyToAccountsTable[0] == 200) {
+            logcash.insertNewKeyToAccountsTableStatus = true;
+        } else {
+            logcash.insertNewKeyToAccountsTableStatus = false;
+            logcash.insertNewKeyToAccountsTableError = 'Insert data to Accounts table failed';
+        }
+        //debugger;
+        await updateSurveyAccount();
+    }
+
+    async function updateSurveyAccount() {
+        logcash.updateSurveyAccount = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSecondSchema.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    Key: '1',
+                    test: '123',
+                    Account: '6',
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.updateSurveyAccount[0] == 200) {
+            logcash.updateSurveyAccountStatus = true;
+        } else {
+            logcash.updateSurveyAccountStatus = false;
+            logcash.updateSurveyAccountError = 'Update data on Survey table failed';
+        }
+        //debugger;
+        const res = await getSurveyScheme1();
+        //debugger;
+        if (res.test == '123' && res['Account.Name'] == 'Second table') {
+            logcash.getFromAdal3Status = true;
+        } else {
+            logcash.getFromAdal3Status = false;
+            logcash.getFromAdal3Error = 'Survey table document not updated to key 6 on adal table';
+        }
+        generalService.sleep(15000);
+        const res2 = await getFromElastic1();
+        //debugger;
+        if (res2.test == '123' && res2['Account.Name'] == 'Second table') {
+            logcash.getFromElastic3Status = true;
+        } else {
+            logcash.getFromElastic3Status = false;
+            logcash.getFromElastic3Error = 'Survey table document not updated to key 6 on elastic table';
+        }
+        await updateSurveyTestField();
+    }
+
+    async function updateSurveyTestField() {
+        logcash.updateSurveyTestField = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSecondSchema.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    Key: '1',
+                    test: '456',
+                    Account: '6',
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.updateSurveyTestField[0] == 200) {
+            logcash.updateSurveyTestFieldStatus = true;
+        } else {
+            logcash.updateSurveyTestFieldStatus = false;
+            logcash.updateSurveyTestFieldError = 'Update data on Survey table (test field) failed';
+        }
+        //debugger;
+        const res = await getSurveyScheme1();
+        //debugger;
+        if (res.test == '456' && res['Account.Name'] == 'Second table') {
+            logcash.getFromAdal4Status = true;
+        } else {
+            logcash.getFromAdal4Status = false;
+            logcash.getFromAdal4Error = 'Survey table test field value not updated on ADAL table';
+        }
+        generalService.sleep(15000);
+        const res2 = await getFromElastic1();
+        //debugger;
+        if (res2.test == '456' && res2['Account.Name'] == 'Second table') {
+            logcash.getFromElastic4Status = true;
+        } else {
+            logcash.getFromElastic4Status = false;
+            logcash.getFromElastic4Error = 'Survey table test field value not updated on elastic table';
         }
         await dropAccountsTable();
     }
@@ -361,5 +573,54 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.dropSurveyTableError = 'Drop survry schema failed. Error message';
         }
         //await createSchemaTypeDataIndex();
+    }
+
+    /////////////////////////////////Get from ADAL and from Elastic
+    async function getSurveyScheme1() {
+        logcash.getSurveyScheme1 = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    whaitOwnerUUID +
+                    '/' +
+                    logcash.createSecondSchema.Name +
+                    '?fields=test,Account.Name',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': whaitOwnerUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+
+        return logcash.getSurveyScheme1[0];
+    }
+
+    async function getFromElastic1() {
+        logcash.getFromElastic1 = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    whaitOwnerUUID +
+                    '/' +
+                    logcash.createSecondSchema.Name +
+                    '?where=Key="1"&fields=test,Account.Name',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': whaitOwnerUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+
+        return logcash.getFromElastic1[0];
     }
 }
