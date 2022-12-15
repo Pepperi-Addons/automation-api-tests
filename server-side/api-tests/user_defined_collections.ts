@@ -16,7 +16,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.3.49'],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
