@@ -74,6 +74,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             let containedCollectionName = '';
             let indexedCollectionName = '';
             let schemeOnlyCollectionName = '';
+            let basicArrayCollectionName = '';
+            let basicOnlineCollectionName = '';
             const intVal = 15;
             const douVal = 0.129;
             const strVal = 'Test String UDC Feild';
@@ -508,24 +510,283 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body).to.haveOwnProperty('fault');
                 expect(response.Body.fault.faultstring).to.include("Unsupported schema type 'contained'");
             });
-            //TODO: import export: basic and with dot notation on accounts
-            it("Negative Test: trying to delete 'scheme only' UDC's", async () => {
+            it('Positive Test: creating an basic UDC with all array data for all fields: no field values', async () => {
+                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                basicArrayCollectionName = 'BasicArrayTesting' + generalService.generateRandomString(7);
+                const arrayFieldInt: UdcField = {
+                    Name: 'int2',
+                    Mandatory: true,
+                    Type: 'Integer',
+                    isArray: true,
+                };
+                const arrayFieldStr: UdcField = {
+                    Name: 'str2',
+                    Mandatory: true,
+                    Type: 'String',
+                    isArray: true,
+                };
+                // const arrayFieldBool: UdcField = {
+                //     Name: 'bool',
+                //     Mandatory: false,
+                //     Type: 'Bool',
+                //     isArray: true
+                // };
+                const arrayFieldDou: UdcField = {
+                    Name: 'dou2',
+                    Mandatory: false,
+                    Type: 'Double',
+                    isArray: true,
+                };
+                const allFieldsToCreate = [arrayFieldInt, arrayFieldStr, arrayFieldDou];
+                const response = await udcService.createUDCWithFields(
+                    basicArrayCollectionName,
+                    allFieldsToCreate,
+                    'automation testing UDC',
+                );
+                expect(response.int2.Type).to.equal('Array');
+                expect(response.str2.Type).to.equal('Array');
+                expect(response.dou2.Type).to.equal('Array');
                 const documents = await udcService.getSchemes();
-                const schemeOnlyCollections = documents.filter((doc) => doc.Type === 'contained');
-                for (let index = 0; index < schemeOnlyCollections.length; index++) {
-                    const collectionToHide = schemeOnlyCollections[index];
-                    const hideResponse = await udcService.hideCollection(collectionToHide.Name);
-                    expect(hideResponse.Body).to.haveOwnProperty('fault');
-                    expect(hideResponse.Body.fault.faultstring).to.include("Unsupported schema type 'contained'");
+                expect(documents.length).to.equal(numOfInitialCollections + 1);
+                expect(response.int2.Items.Type).to.equal('Integer');
+                expect(response.str2.Items.Type).to.equal('String');
+                expect(response.dou2.Items.Type).to.equal('Double');
+                expect(response.int2.Items.Mandatory).to.equal(false);
+                expect(response.str2.Items.Mandatory).to.equal(false);
+                expect(response.dou2.Items.Mandatory).to.equal(false);
+                const newCollection = documents.filter((doc) => doc.Name === basicArrayCollectionName)[0];
+                expect(newCollection).to.not.equal(undefined);
+                expect(newCollection.AddonUUID).to.equal(UserDefinedCollectionsUUID);
+                expect(newCollection.Description).to.equal('automation testing UDC');
+                expect(newCollection).to.haveOwnProperty('DocumentKey');
+                let documentKey = {};
+                if (newCollection.DocumentKey) {
+                    documentKey = newCollection.DocumentKey;
+                }
+                expect(documentKey['Delimiter']).to.equal('@');
+                expect(documentKey['Fields']).to.deep.equal([]);
+                expect(documentKey['Type']).to.equal('AutoGenerate');
+                expect(newCollection.Type).to.equal('data');
+                expect(newCollection.Hidden).to.equal(false);
+                expect(newCollection.GenericResource).to.equal(true);
+            });
+            it('Positive Test: adding array data to just created array UDC', async () => {
+                const fieldValues = {
+                    int: [1, 2, 3],
+                    dou: [1.1, 1.2, 1.3],
+                    str: ['a', 'b', 'c'],
+                };
+                const response = await udcService.sendDataToField(basicArrayCollectionName, fieldValues);
+                expect(response.Ok).to.equal(true);
+                expect(response.Status).to.equal(200);
+                expect(response.Body.dou).to.deep.equal([1.1, 1.2, 1.3]);
+                expect(response.Body.int).to.deep.equal([1, 2, 3]);
+                expect(response.Body.str).to.deep.equal(['a', 'b', 'c']);
+                expect(response.Body.Hidden).to.equal(false);
+                expect(response.Body).to.haveOwnProperty('Key');
+                expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
+                expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
+            });
+            it('Positive Test: creating an ONLINE ONLY basic UDC: no field values', async () => {
+                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                basicOnlineCollectionName = 'BasicOnlineTesting' + generalService.generateRandomString(7);
+                const fieldInt: UdcField = {
+                    Name: 'int1',
+                    Mandatory: true,
+                    Type: 'Integer',
+                };
+                const fieldStr: UdcField = {
+                    Name: 'str1',
+                    Mandatory: true,
+                    Type: 'String',
+                };
+                const fieldBool: UdcField = {
+                    Name: 'bool1',
+                    Mandatory: false,
+                    Type: 'Bool',
+                };
+                const fieldDou: UdcField = {
+                    Name: 'dou1',
+                    Mandatory: false,
+                    Type: 'Double',
+                };
+                const allFieldsToCreate = [fieldInt, fieldStr, fieldBool, fieldDou];
+                const response = await udcService.createUDCWithFields(
+                    basicOnlineCollectionName,
+                    allFieldsToCreate,
+                    'automation testing UDC',
+                    undefined,
+                    true,
+                );
+                expect(response.bool1.Type).to.equal('Bool');
+                expect(response.dou1.Type).to.equal('Double');
+                expect(response.int1.Type).to.equal('Integer');
+                expect(response.str1.Type).to.equal('String');
+                const documents = await udcService.getSchemes();
+                expect(documents.length).to.equal(numOfInitialCollections + 1);
+                const newCollection = documents.filter((doc) => doc.Name === basicOnlineCollectionName)[0];
+                expect(newCollection).to.not.equal(undefined);
+                expect(newCollection.AddonUUID).to.equal(UserDefinedCollectionsUUID);
+                expect(newCollection.Description).to.equal('automation testing UDC');
+                expect(newCollection).to.haveOwnProperty('DocumentKey');
+                if (newCollection.SyncData) {
+                    expect(newCollection.SyncData.Sync).to.equal(false);
+                    expect(newCollection.SyncData.SyncFieldLevel).to.equal(false);
+                } else {
+                    expect(newCollection).to.haveOwnProperty('SyncData');
+                }
+                let documentKey = {};
+                if (newCollection.DocumentKey) {
+                    documentKey = newCollection.DocumentKey;
+                }
+                expect(documentKey['Delimiter']).to.equal('@');
+                expect(documentKey['Fields']).to.deep.equal([]);
+                expect(documentKey['Type']).to.equal('AutoGenerate');
+                expect(newCollection.Type).to.equal('data');
+                expect(newCollection.Hidden).to.equal(false);
+                expect(newCollection.GenericResource).to.equal(true);
+            });
+            it('Positive Test: adding basic data to just created ONLINE ONLY UDC', async () => {
+                const fieldValues = {
+                    int1: intVal,
+                    dou1: douVal,
+                    str1: strVal,
+                    bool1: boolVal,
+                };
+                const response = await udcService.sendDataToField(basicOnlineCollectionName, fieldValues);
+                expect(response.Ok).to.equal(true);
+                expect(response.Status).to.equal(200);
+                expect(response.Body.bool1).to.equal(boolVal);
+                expect(response.Body.dou1).to.equal(douVal);
+                expect(response.Body.int1).to.equal(intVal);
+                expect(response.Body.str1).to.equal(strVal);
+                expect(response.Body.Hidden).to.equal(false);
+                expect(response.Body).to.haveOwnProperty('Key');
+                expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
+                expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
+            });
+            it("Positive Test: exporting all created UDC's", async () => {
+                const allCollectionNames = [
+                    basicCollectionName,
+                    containedCollectionName,
+                    indexedCollectionName,
+                    schemeOnlyCollectionName,
+                    basicArrayCollectionName,
+                    basicOnlineCollectionName,
+                ];
+                for (let index = 0; index < allCollectionNames.length; index++) {
+                    const collectionName = allCollectionNames[index];
+                    const bodyToSend = {
+                        Format: 'csv',
+                        IncludeDeleted: false,
+                        Fields:
+                            collectionName === basicOnlineCollectionName
+                                ? 'str1,int1,dou1,Key'
+                                : 'str,bool,int,dou,Key',
+                        Delimiter: ',',
+                    };
+                    const a = await generalService.fetchStatus(
+                        `/addons/data/export/file/122c0e9d-c240-4865-b446-f37ece866c22/${collectionName}`,
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(bodyToSend),
+                        },
+                    );
+                    expect(a.Ok).to.equal(true);
+                    expect(a.Status).to.equal(200);
+                    const b = await generalService.getAuditLogResultObjectIfValid(a.Body.URI, 90);
+                    if (collectionName.includes('SchemeOnlyTesting')) {
+                        expect(b.AuditInfo.ErrorMessage).to.include("Unsupported schema type 'contained'");
+                    } else {
+                        if (b.Status) {
+                            expect(b.Status.ID).to.equal(1);
+                            expect(b.Status.Name).to.equal('Success');
+                        } else {
+                            expect(b).to.haveOwnProperty('Status');
+                        }
+                        expect(b.AuditInfo.ResultObject).to.contain(`"URI":"https://pfs.pepperi.com/`);
+                        expect(b.AuditInfo.ResultObject).to.contain(
+                            `"DistributorUUID":"c87efcca-7170-4e46-8d58-04d2f6817b71"`,
+                        );
+                        const resultURL = b.AuditInfo.ResultObject.split(`,"V`)[0].split(`:"`)[1].replace('"', '');
+                        const c = await generalService.fetchStatus(`${resultURL}`, {
+                            method: 'GET',
+                        });
+                        const numOfVals = c.Body.Text.split('\n')[1].split(',').length;
+                        expect(c.Ok).to.equal(true);
+                        expect(c.Status).to.equal(200);
+                        if (collectionName.includes('ContainedTesting')) {
+                            expect(c.Body.Text).to.include('Key');
+                            expect(numOfVals).to.equal(1);
+                        } else {
+                            if (collectionName.includes('BasicArrayTesting')) {
+                                expect(c.Body.Text).to.include('Key');
+                                expect(c.Body.Text).to.include('dou');
+                                expect(c.Body.Text).to.include('str');
+                                expect(c.Body.Text).to.include('int');
+                                expect(numOfVals).to.equal(10);
+                            } else {
+                                if (collectionName.includes('BasicOnlineTesting')) {
+                                    expect(c.Body.Text).to.include('Key');
+                                    expect(c.Body.Text).to.include('dou1');
+                                    expect(c.Body.Text).to.include('str1');
+                                    expect(c.Body.Text).to.include('int1');
+                                    expect(numOfVals).to.equal(4);
+                                } else {
+                                    expect(c.Body.Text).to.include('Key');
+                                    expect(c.Body.Text).to.include('dou');
+                                    expect(c.Body.Text).to.include('str');
+                                    expect(c.Body.Text).to.include('int');
+                                    expect(c.Body.Text).to.include('bool');
+                                    expect(numOfVals).to.equal(5);
+                                }
+                            }
+                        }
+                    }
                 }
             });
+            // it("Positive Test: importing data to basic UDC", async () => {//TODO
+            //     //-> how does this works?
+            //     //body - >
+            //     //AddonUUID: "122c0e9d-c240-4865-b446-f37ece866c22"
+            //     //Delimiter: ","
+            //     //Key: "/e14ee6bc-6fcb-2030-df78-31c7c6c9d7a7.csv"
+            //     //MIME: "text/csv"
+            //     //OverwriteObject: false
+            //     //OwnerID: "122c0e9d-c240-4865-b446-f37ece866c22"
+            //     //Resource: "Import"
+            //     //URI:
+            //     const collectionName = basicCollectionName;
+            //     const document = (await udcService.getDocuments(collectionName))[0];
+            //     debugger;
+            //     const dataToImport = `a,Key
+            //     evgeny,654ce333-573e-4d23-a012-171492f1664a`;
+            //     const bodyToSend = {
+            //         "AddonUUID": "122c0e9d-c240-4865-b446-f37ece866c22", "Delimiter": ",",
+            //         "MIME": "text/csv", "OverwriteObject": false, "OwnerID": "122c0e9d-c240-4865-b446-f37ece866c22", "Resource": "Import",
+            //         "Key": ``
+            //     };
+            //     bodyToSend["URI"] = `data:text/csv;base64,${Buffer.from(dataToImport).toString('base64')}`;
+            //     const a = await generalService.fetchStatus(`/addons/api/44c97115-6d14-4626-91dc-83f176e9a0fc/api/file_import_upload`, {
+            //         method: "POST",
+            //         body: JSON.stringify(bodyToSend),
+            //     });
+            //     expect(a.Ok).to.equal(true);
+            //     expect(a.Status).to.equal(200);
+            //     const b = await generalService.getAuditLogResultObjectIfValid(
+            //         a.Body.URI,
+            //         90,
+            //     );
+            // });
             it("Tear Down: cleaning all upserted UDC's", async () => {
                 const documents = await udcService.getSchemes();
                 const toHideCollections = documents.filter(
                     (doc) =>
                         doc.Name.includes('BasicTesting') ||
                         doc.Name.includes('ContainedTesting') ||
-                        doc.Name.includes('IndexedTesting'),
+                        doc.Name.includes('IndexedTesting') ||
+                        doc.Name.includes('BasicArrayTesting') ||
+                        doc.Name.includes('BasicOnlineTesting'),
                 );
                 for (let index = 0; index < toHideCollections.length; index++) {
                     const collectionToHide = toHideCollections[index];

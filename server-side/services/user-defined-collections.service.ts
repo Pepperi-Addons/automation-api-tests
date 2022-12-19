@@ -11,6 +11,7 @@ export interface UdcField {
     Value?: string | boolean | number | Date | unknown;
     Resource?: string;
     AdddonUID?: string;
+    isArray?: boolean;
 }
 
 const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
@@ -137,7 +138,13 @@ export class UDCService {
         }
     }
 
-    async createUDCWithFields(collecitonName: string, udcFields: UdcField[], desc?: string, collectionType?) {
+    async createUDCWithFields(
+        collecitonName: string,
+        udcFields: UdcField[],
+        desc?: string,
+        collectionType?,
+        isOnlineOnly?: boolean,
+    ) {
         const Fields = {};
         for (let index = 0; index < udcFields.length; index++) {
             const field = udcFields[index];
@@ -150,11 +157,10 @@ export class UDCService {
             Fields[field.Name] = {
                 Description: field.Description ? field.Description : '',
                 Mandatory: field.Mandatory,
-                Type: field.Type,
+                Type: field.isArray === true ? 'Array' : field.Type,
                 OptionalValues: optionalValues.length > 0 ? optionalValues : [],
                 Items: {
-                    //always the same
-                    Type: 'String',
+                    Type: field.isArray ? field.Type : 'String',
                     Mandatory: false,
                     Description: '',
                 },
@@ -174,7 +180,7 @@ export class UDCService {
                 Mandatory: field.Mandatory,
                 ReadOnly: true,
                 Title: field.Name,
-                Type: this.resolveUIType(field.Type),
+                Type: field.isArray ? 'TextBox' : this.resolveUIType(field.Type),
             };
             arrayOfViews.push(uiControlUDCFields);
             arrayOfColumns.push({
@@ -195,7 +201,7 @@ export class UDCService {
                 Columns: arrayOfColumns,
             },
             SyncData: {
-                Sync: true,
+                Sync: isOnlineOnly === true ? false : true,
                 SyncFieldLevel: false,
             },
             GenericResource: true,
