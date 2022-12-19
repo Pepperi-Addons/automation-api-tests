@@ -767,10 +767,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                             uriToLookFor = `"URI":"https://pfs.pepperi.com`;
                             distUUIDToLookFor = 'c87efcca-7170-4e46-8d58-04d2f6817b71';
                         } else {
-                            uriToLookFor = `"URI":""https://eupfs.pepperi.com`;
+                            uriToLookFor = `"URI":"https://eupfs.pepperi.com`;
                             distUUIDToLookFor = 'd35b5b12-47ec-4076-9d59-1450f15e0fdf';
                         }
-                        debugger;
                         expect(b.AuditInfo.ResultObject).to.contain(uriToLookFor);
                         expect(b.AuditInfo.ResultObject).to.contain(`"DistributorUUID":"${distUUIDToLookFor}"`);
                         const resultURL = b.AuditInfo.ResultObject.split(`,"V`)[0].split(`:"`)[1].replace('"', '');
