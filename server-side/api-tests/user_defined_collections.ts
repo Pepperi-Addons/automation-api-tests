@@ -730,7 +730,6 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 ];
                 for (let index = 0; index < allCollectionNames.length; index++) {
                     const collectionName = allCollectionNames[index];
-                    debugger;
                     const bodyToSend = {
                         Format: 'csv',
                         IncludeDeleted: false,
@@ -759,9 +758,23 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         } else {
                             expect(b).to.haveOwnProperty('Status');
                         }
-                        expect(b.AuditInfo.ResultObject).to.contain(`"URI":"https://pfs.pepperi.com/`);
+                        let uriToLookFor = ``;
+                        let distUUIDToLookFor = ``;
+                        if (generalService.papiClient['options'].baseURL.includes('staging')) {
+                            uriToLookFor = `"URI":"https://pfs.staging.pepperi.com`;
+                            distUUIDToLookFor = "9154dfe9-a1eb-466e-bf79-bc4fc53051c0";
+                            
+                        } else if(generalService.papiClient['options'].baseURL.includes('prod')){
+                            uriToLookFor = `"URI":"https://pfs.pepperi.com`;
+                            distUUIDToLookFor = "c87efcca-7170-4e46-8d58-04d2f6817b71";
+                        }else{
+                            uriToLookFor = `"URI":""https://eupfs.pepperi.com`;
+                            distUUIDToLookFor = "d35b5b12-47ec-4076-9d59-1450f15e0fdf";
+                        }
+                        debugger;
+                        expect(b.AuditInfo.ResultObject).to.contain(uriToLookFor);
                         expect(b.AuditInfo.ResultObject).to.contain(
-                            `"DistributorUUID":"c87efcca-7170-4e46-8d58-04d2f6817b71"`,
+                            `"DistributorUUID":"${distUUIDToLookFor}"`,
                         );
                         const resultURL = b.AuditInfo.ResultObject.split(`,"V`)[0].split(`:"`)[1].replace('"', '');
                         const c = await generalService.fetchStatus(`${resultURL}`, {
