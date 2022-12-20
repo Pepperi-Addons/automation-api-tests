@@ -56,11 +56,8 @@ export class ResourceList extends AddonPage {
     public Update_Popup_Close_Button: By = By.xpath(
         '//span[text()=" Update "]/ancestor::pep-dialog //span[text()=" Close "]/parent::button',
     );
-    // Edit Tabs Configuration
-    public EditPage_ConfigProfileCard_Rep: By = this.getSelectorOfConfigProfileCardByName('Rep');
-    public EditPage_AddProfile_Button: By = By.xpath('//button[@data-qa="Add profile"]');
-    public EditPage_ProfileCard_Menu: By = By.xpath('//button[@data-qa="Add profile"]');
-    public EditPage_ConfigProfileCard_EditButton_Rep: By = this.getSelectorOfProfileCardEditButtonByName('Rep');
+    // Edit Tabs Configuration - moved to AddonPage.ts (Dec2022 Hagit)
+
     // Edit Page Profile Edit
     public EditPage_ProfileEditButton_Back: By = this.getSelectorOfEditPageProfileEditButton('Back'); //By.xpath('//button[@data-qa="Back"]');
     public EditPage_ProfileEditButton_Save: By = this.getSelectorOfEditPageProfileEditButton('Save'); //By.xpath('//button[@data-qa="Save"]');
@@ -71,8 +68,8 @@ export class ResourceList extends AddonPage {
     public EditPage_MappedFields_ReadOnly_CheckBox_ByText_Key: By =
         this.getSelectorOfEditPageMappedFieldsByTextReadOnlyCheckBox('Key');
     // Save Popup
-    public Save_Popup_PepDialog: By = By.xpath('//span[text()=" Save "]/ancestor::pep-dialog');
-    public Save_Popup_MessageDiv: By = By.xpath('//span[text()=" Save "]/ancestor::pep-dialog/div[2]/div');
+    public Save_Popup_PepDialog: By = By.xpath('//span[contains(text(),"Save")]/ancestor::pep-dialog');
+    public Save_Popup_MessageDiv: By = By.xpath('//span[contains(text(),"Save")]/ancestor::pep-dialog/div[2]/div');
     public Save_Popup_Close_Button: By = By.xpath(
         '//span[text()=" Save "]/ancestor::pep-dialog //span[text()=" Close "]/parent::button',
     );
@@ -103,16 +100,6 @@ export class ResourceList extends AddonPage {
 
     private getSelectorOfEditPgaeTitleWithName(name: string) {
         return By.xpath(`//span[@title="Edit - ${name}"]`);
-    }
-
-    private getSelectorOfConfigProfileCardByName(name: string) {
-        return By.xpath(`//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card`);
-    }
-
-    private getSelectorOfProfileCardEditButtonByName(name: string) {
-        return By.xpath(
-            `//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card //pep-button[@iconname="system_edit"]/button`,
-        );
     }
 
     private getSelectorOfEditPageProfileEditButton(title: string) {

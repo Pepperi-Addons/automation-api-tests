@@ -100,6 +100,22 @@ export class AddonPage extends Page {
     //TODO:activitys page --> has to be moved
     public OrderIdTextElement: By = By.xpath(`//span[@id='Type' and text()='|textToFill|']/../../div//a//span`);
 
+    // Edit Tabs Configuration
+    public EditPage_ConfigProfileCard_Rep: By = this.getSelectorOfConfigProfileCardByName('Rep');
+    public EditPage_AddProfile_Button: By = By.xpath('//button[@data-qa="Add profile"]');
+    public EditPage_ProfileCard_Menu: By = By.xpath('//button[@data-qa="Add profile"]');
+    public EditPage_ConfigProfileCard_EditButton_Rep: By = this.getSelectorOfProfileCardEditButtonByName('Rep');
+
+    private getSelectorOfConfigProfileCardByName(name: string) {
+        return By.xpath(`//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card`);
+    }
+
+    private getSelectorOfProfileCardEditButtonByName(name: string) {
+        return By.xpath(
+            `//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card //pep-button[@iconname="system_edit"]/button`,
+        );
+    }
+
     public async selectTabByText(tabText: string): Promise<void> {
         const selectedTab = Object.assign({}, this.AddonContainerTablistXpath);
         selectedTab['value'] += ` [contains(., '${tabText}')]`;
@@ -316,12 +332,4 @@ export class AddonPage extends Page {
         await elem.sendKeys(text);
     }
 
-    // public async hoverOver(elem: string) {
-    //     if (this[elem]) {
-    //         // const actions = new Actions(this.browser)
-    //     } else {
-    //         console.info(`Element: ${elem} - is NOT declared in the Addon file`);
-    //         expect(`${this[elem]} to be in the Addon file, but is NOT`).to.be.undefined;
-    //     }
-    // }
 }

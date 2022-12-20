@@ -5,6 +5,8 @@ import { WebAppSettingsSidePanel } from '../pom';
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
+import { FormDataFieldForEditorView } from '../blueprints/DataViewBlueprints';
+import { BaseFormDataViewField, DataViewFieldType, GridDataViewField } from '@pepperi-addons/papi-sdk';
 
 export default class ResourceListUtils {
     public constructor(protected browser: Browser) { }
@@ -127,5 +129,23 @@ export default class ResourceListUtils {
         await this.navigateTo('Slugs');
         await slugs.clickTab('Mapping_Tab');
         this.browser.sleep(7000);
+    }
+
+    public prepareDataForDragAndDropAtEditorAndView(arrayOfFields: [string, DataViewFieldType, boolean, boolean][]) { 
+        let fields: BaseFormDataViewField[] | GridDataViewField[]= [];
+        let index = 0;
+        let field: BaseFormDataViewField | GridDataViewField;
+        arrayOfFields.forEach((fieldDefinitionArray: [string, DataViewFieldType, boolean, boolean]) => {
+            field = new FormDataFieldForEditorView(
+                fieldDefinitionArray[0],
+                fieldDefinitionArray[1],
+                fieldDefinitionArray[2],
+                fieldDefinitionArray[3],
+                index
+            );
+            fields.push(field);
+            index++;
+        })
+        return fields;
     }
 }

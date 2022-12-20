@@ -1,7 +1,8 @@
 import { Browser } from '../utilities/browser';
-import { describe, it, afterEach, beforeEach ,before, after } from 'mocha';
+import { describe, it, afterEach, beforeEach, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
+import { DataViewsService } from '../../services/data-views.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import {
@@ -16,11 +17,14 @@ import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/Reso
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
 import ResourceListUtils from '../utilities/resource_list';
+import { BaseFormDataViewField, DataViewField, FormDataView, GridDataViewField } from '@pepperi-addons/papi-sdk';
+import { UpsertResourceFieldsToEditor, FormDataFieldForEditorView, UpsertResourceFieldsToView } from '../blueprints/DataViewBlueprints';
 
 chai.use(promised);
 
 export async function ResourceListTests(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
+    const dataViewsService = new DataViewsService(generalService.papiClient);
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
@@ -42,6 +46,7 @@ export async function ResourceListTests(email: string, password: string, varPass
     let view_name: string;
     let view_decsription: string;
 
+
     /* Addons Installation */
     // await generalService.baseAddonVersionsInstallation(varPass);
     // //#region Upgrade script dependencies
@@ -50,12 +55,12 @@ export async function ResourceListTests(email: string, password: string, varPass
     //     'Generic Resources': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '0.5.6'],
     //     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.5.1'],
     //     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', '0.7.24'],
-    //     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.94'],
+    //     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.101'],
     //     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.10'],
     //     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.31'],
     //     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.5.5'],
     //     'sync': ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.2.36'],
-    //     'Pages': ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.9.11'],
+    //     'Pages': ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.9.18'],
     // };
 
     // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
@@ -116,76 +121,76 @@ export async function ResourceListTests(email: string, password: string, varPass
             await webAppLoginPage.login(email, password);
         });
 
-        // describe('Editors Full Functionality test', async () => {
-        //     afterEach(async function () {
-        //         driver.sleep(500);
-        //         await webAppHomePage.collectEndTestData(this);
-        //     });
+        describe('Editors Full Functionality test', async () => {
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
 
-        //     it('Resource Views settings is loaded and Elements exist', async () => {
-        //         // navigation
-        //         await resourceListUtils.navigateTo('Resource Views');
+            it('Resource Views settings is loaded and Elements exist', async () => {
+                // navigation
+                await resourceListUtils.navigateTo('Resource Views');
 
-        //         /* test logics */
-        //         // title is currect
-        //         const addonSettingsTitle = await (await driver.findElement(resourceList.PepTopArea_title)).getText();
-        //         expect(addonSettingsTitle).to.contain('Views & Editors');
+                /* test logics */
+                // title is currect
+                const addonSettingsTitle = await (await driver.findElement(resourceList.PepTopArea_title)).getText();
+                expect(addonSettingsTitle).to.contain('Views & Editors');
 
-        //         // tabs are the right amount, the currect text and the right one (Views) is selected while the other isn't
-        //         await driver.untilIsVisible(resourceList.GenericList_Content);
-        //         await driver.untilIsVisible(resourceList.TabsContainer);
-        //         const tabs = await driver.findElements(resourceList.AddonContainerTabs);
-        //         expect(tabs.length).to.equal(2);
-        //         const viewsTab_isSelected = await (
-        //             await driver.findElement(resourceList.Views_Tab)
-        //         ).getAttribute('aria-selected');
-        //         expect(viewsTab_isSelected).to.equal('true');
-        //         const editorsTab_isSelected = await (
-        //             await driver.findElement(resourceList.Editors_Tab)
-        //         ).getAttribute('aria-selected');
-        //         expect(editorsTab_isSelected).to.equal('false');
+                // tabs are the right amount, the currect text and the right one (Views) is selected while the other isn't
+                await driver.untilIsVisible(resourceList.GenericList_Content);
+                await driver.untilIsVisible(resourceList.TabsContainer);
+                const tabs = await driver.findElements(resourceList.AddonContainerTabs);
+                expect(tabs.length).to.equal(2);
+                const viewsTab_isSelected = await (
+                    await driver.findElement(resourceList.Views_Tab)
+                ).getAttribute('aria-selected');
+                expect(viewsTab_isSelected).to.equal('true');
+                const editorsTab_isSelected = await (
+                    await driver.findElement(resourceList.Editors_Tab)
+                ).getAttribute('aria-selected');
+                expect(editorsTab_isSelected).to.equal('false');
 
-        //         // list title is "Views" - contains number and "results"/"result", number of results is 0 and the text "No Data Found" appears
-        //         const listTitle = await (
-        //             await driver.findElement(resourceList.AddonSettingsContent_ListTitle)
-        //         ).getText();
-        //         expect(listTitle).to.equal('Views');
-        //         const resultsDivText = await (await driver.findElement(resourceList.ResultsDiv)).getText();
-        //         expect(resultsDivText).to.contain('result');
-        //         await resourceViews.deleteAll();
-        //         const numberOfResults = await (await driver.findElement(resourceList.NumberOfItemsInList)).getText();
-        //         expect(Number(numberOfResults)).to.be.equal(0);
-        //         const noData = (await (await driver.findElement(resourceList.List_NoDataFound)).getText()).trim();
-        //         expect(noData).to.be.oneOf(['No Data Found', 'No results were found.']);
-        //     });
+                // list title is "Views" - contains number and "results"/"result", number of results is 0 and the text "No Data Found" appears
+                const listTitle = await (
+                    await driver.findElement(resourceList.AddonSettingsContent_ListTitle)
+                ).getText();
+                expect(listTitle).to.equal('Views');
+                const resultsDivText = await (await driver.findElement(resourceList.ResultsDiv)).getText();
+                expect(resultsDivText).to.contain('result');
+                // await resourceViews.deleteAll();
+                // const numberOfResults = await (await driver.findElement(resourceList.NumberOfItemsInList)).getText();
+                // expect(Number(numberOfResults)).to.be.equal(0);
+                // const noData = (await (await driver.findElement(resourceList.List_NoDataFound)).getText()).trim();
+                // expect(noData).to.be.oneOf(['No Data Found', 'No results were found.']);
+            });
 
-        //     // it('Editors Tab', async () => {
-        //     //     await resourceList.clickTab('Editors_Tab');
-        //     //     //TODO
-        //     // });
-        // });
+            // it('Editors Tab', async () => {
+            //     await resourceList.clickTab('Editors_Tab');
+            //     //TODO
+            // });
+        });
 
-        // describe('Operations (e.g Addition, Deletion)', async () => {
-        //     it('Delete Editor by Name: Neviagte to Editors, Add Editor and Delete it', async () => {
-        //         resource_name = 'items';
-        //         resourceEditors.setResourceName(resource_name);
-        //         test_name = `RL_Editors_${resourceEditors.resourceName}_Test_${random_name}`;
-        //         test_decsription = `Editor ${resourceEditors.resourceName} ${test_generic_decsription}`;
-        //         await resourceListUtils.navigateTo('Resource Views');
-        //         await resourceEditors.clickTab('Editors_Tab');
-        //         await resourceEditors.validateEditorsListPageIsLoaded();
-        //         await resourceListUtils.addToResourceList(resourceEditors, test_name, test_decsription);
-        //         await resourceEditors.verifyEditPageOpen(test_name);
-        //         resourceEditors.setEditorName(test_name);
-        //         await resourceEditors.clickElement('EditPage_BackToList_Button');
-        //         await resourceEditors.clickTab('Editors_Tab');
-        //         await resourceEditors.deleteFromListByName(test_name);
-        //     });
-        // });
+        describe('Operations (e.g Addition, Deletion)', async () => {
+            it('Delete Editor by Name: Neviagte to Editors, Add Editor and Delete it', async () => {
+                resource_name = 'NoData';
+                // resourceEditors.setResourceName(resource_name);
+                test_name = `RL_Editors_${resource_name}_Test_${random_name}`;
+                test_decsription = `Editor ${resource_name} ${test_generic_decsription}`;
+                await resourceListUtils.navigateTo('Resource Views');
+                await resourceEditors.clickTab('Editors_Tab');
+                await resourceEditors.validateEditorsListPageIsLoaded();
+                await resourceEditors.addToResourceList(test_name, test_decsription, resource_name);
+                await resourceEditors.verifyEditPageOpen(test_name);
+                // resourceEditors.setEditorName(test_name);
+                await resourceEditors.clickElement('EditPage_BackToList_Button');
+                await resourceEditors.clickTab('Editors_Tab');
+                await resourceEditors.deleteFromListByName(test_name);
+            });
+        });
 
         describe('Flow', async () => {
             before(function () {
-                resource_name = 'users';
+                resource_name = 'ContainedArrayNoScheme';
                 random_name = generalService.generateRandomString(5);
                 // resourceEditors.setResourceName(resource_name);
                 // resourceViews.setResourceName(resource_name);
@@ -201,12 +206,17 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await resourceListUtils.navigateTo('Resource Views');
                 await resourceEditors.clickTab('Editors_Tab');
                 await resourceEditors.validateEditorsListPageIsLoaded();
-                await resourceEditors.deleteAll();
+                // await resourceEditors.deleteAll();
                 await resourceEditors.addToResourceList(editor_name, editor_decsription, resource_name);
                 await resourceEditors.verifyEditorEditPageOpen(editor_name);
                 // resourceEditors.setEditorName(editor_name);
             });
             it('Configure Editor', async () => {
+                let fieldsToEditor: BaseFormDataViewField[] = [];
+                let editorFields;
+                const currentUrl = (await driver.getCurrentUrl()).split("/");
+                const editorUuid = currentUrl[currentUrl.length - 1];
+                console.info(`EDITOR UUID: ${editorUuid}`);
                 await resourceEditors.clickElement('Form_Tab');
                 await resourceEditors.waitTillVisible(resourceEditors.EditPage_ConfigProfileCard_Rep, 15000);
                 await resourceEditors.clickElement('EditPage_ConfigProfileCard_EditButton_Rep');
@@ -218,25 +228,45 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await resourceEditors.clickElement('EditPage_MappedFields_ReadOnly_CheckBox_ByText_Key');
                 resourceEditors.pause(500);
                 await resourceEditors.clickElement('EditPage_ProfileEditButton_Save');
+                resourceEditors.pause(500);
                 await resourceEditors.waitTillVisible(resourceEditors.Save_Popup_PepDialog, 5000);
                 expect(await (await driver.findElement(resourceEditors.Save_Popup_MessageDiv)).getText()).to.contain(
                     'Saved successfully',
                 );
                 await resourceEditors.clickElement('Save_Popup_Close_Button');
                 await resourceEditors.clickElement('EditPage_ProfileEditButton_Back');
+                editorFields = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
+                    ["name_age_no_data_obj", "TextBox", true, false]
+                ]);
+                console.info(`editorFields: ${JSON.stringify(editorFields, null, 2)}`)
+                // fieldsToEditor.push(new FormDataFieldForEditorView("numbers", "TextBox", true, false, 0));
+                // fieldsToEditor.push(new FormDataFieldForEditorView("names", "TextBox", true, false, 1));
+                // fieldsToEditor.push(new FormDataFieldForEditorView("reals", "TextBox", true, false, 2));
+                // const resourceFieldsToAddToEditorObj = new UpsertResourceFieldsToEditor(editorUuid, fieldsToEditor);
+                const resourceFieldsToAddToEditorObj = new UpsertResourceFieldsToEditor(editorUuid, editorFields);
+                const upsertFieldsToEditor = await dataViewsService.postDataView(resourceFieldsToAddToEditorObj);
+                console.info(`RESPONSE of API: ${JSON.stringify(upsertFieldsToEditor, null, 2)}`);
+                await resourceEditors.clickElement('EditPage_ConfigProfileCard_EditButton_Rep');
+                resourceEditors.pause(5000);
+                await resourceEditors.clickElement('EditPage_ProfileEditButton_Back');
+                resourceEditors.pause(5000);
                 await resourceEditors.clickElement('EditPage_BackToList_Button');
             });
             it('Add View', async () => {
-                view_name = `RL_Views_${resource_name}_Test_${random_name}`;
+                view_name = `${resource_name}_RL_Views_Test_${random_name}`;
                 view_decsription = `View ${resource_name} ${test_generic_decsription}`;
                 await resourceListUtils.navigateTo('Resource Views');
                 await resourceViews.validateViewsListPageIsLoaded();
-                await resourceViews.deleteAll();
+                // await resourceViews.deleteAll();
                 await resourceViews.addToResourceList(view_name, view_decsription, resource_name);
                 await resourceViews.verifyViewEditPageOpen(view_name); // IS DIFFERENT than: Editor Edit Page !  DO NOT CHANGE (Hagit, Dec2022)
                 // resourceViews.setViewName(view_name);
             });
             it('Configure View', async () => {
+                let fieldsToView: GridDataViewField[] = [];
+                let viewFields;
+                const currentUrl = (await driver.getCurrentUrl()).split("/");
+                const viewUuid = currentUrl[currentUrl.length - 1];
                 await resourceViews.selectEditor(resourceViews.SelectEditor_DropDown, editor_name);
                 await resourceViews.clickElement('EditPage_Update_Button');
                 await resourceViews.waitTillVisible(resourceViews.Update_Popup_PepDialog, 5000);
@@ -244,14 +274,43 @@ export async function ResourceListTests(email: string, password: string, varPass
                     'Successfully updated',
                 );
                 await resourceViews.clickElement('Update_Popup_Close_Button');
+                resourceViews.pause(500);
+                await resourceViews.clickElement('Form_Tab');
+                await resourceViews.waitTillVisible(resourceViews.EditPage_ConfigProfileCard_Rep, 15000);
+                await resourceViews.clickElement('EditPage_ConfigProfileCard_EditButton_Rep');
+                resourceViews.pause(500);
+                await resourceViews.clickElement('EditPage_ProfileEditButton_Save');
+                resourceViews.pause(500);
+                await resourceViews.waitTillVisible(resourceViews.Save_Popup_PepDialog, 5000);
+                expect(await (await driver.findElement(resourceViews.Save_Popup_MessageDiv)).getText()).to.contain(
+                    'Saved successfully',
+                );
+                await resourceViews.clickElement('Save_Popup_Close_Button');
+                await resourceViews.clickElement('EditPage_ProfileEditButton_Back');
+                // fieldsToView = resourceListUtils.prepareDataForDragAndDropAtEditorView([
+                //     ["numbers", "TextBox", true, false],
+                //     ["names", "TextBox", true, false],
+                //     ["reals", "TextBox", true, false]
+                // ]);
+                // fieldsToView.push(new FormDataFieldForEditorView("numbers", "TextBox", true, false, 0));
+                // fieldsToView.push(new FormDataFieldForEditorView("names", "TextBox", true, false, 1));
+                // fieldsToView.push(new FormDataFieldForEditorView("reals", "TextBox", true, false, 2));
+                viewFields = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
+                    ["name_age_no_data_obj", "TextBox", true, false]
+                ]);
+                // const resourceFieldsToAddToViewObj = new UpsertResourceFieldsToView(viewUuid, fieldsToView);
+                const resourceFieldsToAddToViewObj = new UpsertResourceFieldsToView(viewUuid, viewFields);
+                // console.info(`resourceFieldsToAddToViewObj: ${JSON.stringify(resourceFieldsToAddToViewObj, null, 2)}`);
+                const upsertFieldsToView = await dataViewsService.postDataView(resourceFieldsToAddToViewObj);
+                console.info(`RESPONSE of API: ${JSON.stringify(upsertFieldsToView, null, 2)}`);
                 resourceViews.pause(5000);
             });
             it('Create Page', async () => {
                 await resourceListUtils.navigateTo('Page Builder');
                 // debugger
                 await pageBuilder.validatePageBuilderIsLoaded();
-                await pageBuilder.deleteAll();
-                await pageBuilder.addBlankPage(`${random_name}_Test Page ${resource_name}`, `Automation Testing Page for resource ${resource_name}`);
+                // await pageBuilder.deleteAll();
+                await pageBuilder.addBlankPage(`${resource_name} ${random_name}`, `Automation Testing Page for resource ${resource_name}`);
                 pageBuilder.pause(6000);
             });
             it('Nevigate to Slugs', async () => {
@@ -279,20 +338,56 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await resourceListUtils.createBlockFullFlowE2E('items', random_name);
             });
 
-            // it('Full Flow for resource: users', async () => {
-            //     await resourceListUtils.createBlockFullFlowE2E('users', random_name);
-            // });
+        it('Full Flow for resource: users', async () => {
+            await resourceListUtils.createBlockFullFlowE2E('users', random_name);
+        });
 
-            it('Full Flow for resource: NameAge', async () => {
-                await resourceListUtils.createBlockFullFlowE2E('NameAge', random_name);
+        it('Full Flow for resource: NameAge', async () => {
+            await resourceListUtils.createBlockFullFlowE2E('NameAge', random_name);
+        });
+
+        it('Full Flow for resource: IntegerArray', async () => {
+            await resourceListUtils.createBlockFullFlowE2E('IntegerArray', random_name);
+        });
+
+        it('Full Flow for resource: ContainedArrayNoScheme', async () => {
+            await resourceListUtils.createBlockFullFlowE2E('ContainedArrayNoScheme', random_name);
+        });
+        });
+
+        describe('Resource List 0.7', async () => {
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
             });
 
-            it('Full Flow for resource: IntegerArray', async () => {
-                await resourceListUtils.createBlockFullFlowE2E('IntegerArray', random_name);
-            });
+            it('DI-19954 Resource List - Data Viewer - Offline - Data', async () => {
 
-            it('Full Flow for resource: ContainedArrayNoScheme', async () => {
-                await resourceListUtils.createBlockFullFlowE2E('ContainedArrayNoScheme', random_name);
+            });
+            it('DI-20285 Support Views Filter', async () => {
+
+            });
+            it('DI-21009 Data Viewer Block - Array fields', async () => {
+                /* Fields that are an array should be shown in the list as following: 1.All types: show as string concatenated by ','  2.Array of contained?? */
+                // Data is presented
+                // Can Delete Data
+                // Can Add new Data
+                // Can Edit Data
+            });
+            it('DI-21010 Data Editor - support basic array fields', async () => {
+
+            });
+            it('DI-21550 Data Editor - support contained array fields', async () => {
+
+            });
+            it('DI-21778 Resource List - Data Viewer - Offline support - Meta Data', async () => {
+
+            });
+            it('DI-21859 Available fields - support fields from references', async () => {
+
+            });
+            it('DI-21780 Refactor Resource List component to make it work for contained resources', async () => {
+
             });
         });
     });
