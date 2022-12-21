@@ -20,7 +20,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.5.1'],
-        'User Defined Collections': [UserDefinedCollectionsUUID, ''],
+        'User Defined Collections': [UserDefinedCollectionsUUID, '0.7.31'], //currently un-phased versions of this addon cannot be installed
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
         'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     };
@@ -77,6 +77,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             let basicArrayCollectionName = '';
             let basicOnlineCollectionName = '';
             let baseedOnSchemeOnlyCollectionName = '';
+            let accResourceCollectionName = '';
             const intVal = 15;
             const douVal = 0.129;
             const strVal = 'Test String UDC Feild';
@@ -211,7 +212,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             // const response = await udcService.postDocument("APITest", { strValue });
             //     debugger;
             // });
-            it('Positive Test: adding basic data to just created UDC', async () => {
+            it('Positive Test: adding basic data to just created UDC - all basic types', async () => {
                 const fieldValues = {
                     int: intVal,
                     dou: douVal,
@@ -240,6 +241,19 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(document.str).to.equal(strVal);
                 expect(document.Hidden).to.equal(false);
                 expect(document).to.haveOwnProperty('Key');
+            });
+            it('Negative Test: trying to create a collection with exsisting name', async () => {
+                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                const response = await udcService.createUDCWithFields(
+                    basicCollectionName,
+                    [],
+                    'automation testing UDC',
+                );
+                expect(response.Ok).to.equal(false);
+                expect(response.Status).to.equal(400);
+                expect(response.Body.fault.faultstring).to.include('Object already Exist');
+                const documents = await udcService.getSchemes();
+                expect(documents.length).to.equal(numOfInitialCollections);
             });
             it('Positive Test: creating a UDC which field is the basic UDC as containd resource', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes()).length;
@@ -445,7 +459,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const allObjects = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 130);
                 expect(allObjects.count).to.equal(129);
             });
-            it('Positive Test: creating a Scheme - Only UDC', async () => {
+            it('Positive Test: creating a "Scheme - Only" UDC', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes()).length;
                 schemeOnlyCollectionName = 'SchemeOnlyTesting' + generalService.generateRandomString(7);
                 const fieldStr: UdcField = {
@@ -497,7 +511,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(newCollection.GenericResource).to.equal(true);
                 expect(newCollection.Type).to.equal('contained');
             });
-            it('Negative Test: trying to push data to scheme only UDC', async () => {
+            it('Negative Test: trying to push data to "scheme only" UDC', async () => {
                 const fieldValues = {
                     int: intVal,
                     dou: douVal,
@@ -510,7 +524,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body).to.haveOwnProperty('fault');
                 expect(response.Body.fault.faultstring).to.include("Unsupported schema type 'contained'");
             });
-            it('Positive Test: create a UDC based on scheme only UDC', async () => {
+            it('Positive Test: create a UDC based on "scheme only" UDC', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes()).length;
                 baseedOnSchemeOnlyCollectionName =
                     'SchemeBasedOnOnlySchemeTesting' + generalService.generateRandomString(7);
@@ -544,7 +558,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(newCollection.GenericResource).to.equal(true);
                 expect(newCollection.Type).to.equal('data');
             });
-            it('Positive Test: pushing data to UDC based on scheme only', async () => {
+            it('Positive Test: pushing data to UDC which is based on "scheme only"', async () => {
                 const fieldValues = {
                     int: intVal,
                     dou: douVal,
@@ -563,7 +577,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
                 expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
             });
-            it('Positive Test: creating an basic UDC with all array data for all fields', async () => {
+            it('Positive Test: creating a basic UDC with all array data for all fields', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes()).length;
                 basicArrayCollectionName = 'BasicArrayTesting' + generalService.generateRandomString(7);
                 const arrayFieldInt: UdcField = {
@@ -640,7 +654,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
                 expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
             });
-            it('Positive Test: creating a ONLINE ONLY basic UDC: no field values', async () => {
+            it('Positive Test: creating an ONLINE ONLY basic UDC', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes()).length;
                 basicOnlineCollectionName = 'BasicOnlineTesting' + generalService.generateRandomString(7);
                 const fieldInt: UdcField = {
@@ -718,6 +732,68 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
                 expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
             });
+            it('Positive Test: creating a UDC with account resource', async () => {
+                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                accResourceCollectionName = 'AccResource' + generalService.generateRandomString(7);
+                const accField: UdcField = {
+                    Name: 'myAcc',
+                    Mandatory: true,
+                    Type: 'Resource',
+                    Resource: 'accounts',
+                };
+                const response = await udcService.createUDCWithFields(
+                    accResourceCollectionName,
+                    [accField],
+                    'automation testing UDC',
+                );
+                expect(response.myAcc.Type).to.equal('Resource');
+                expect(response.myAcc.Resource).to.equal('accounts');
+                const documents = await udcService.getSchemes();
+                expect(documents.length).to.equal(numOfInitialCollections + 1);
+                const newCollection = documents.filter((doc) => doc.Name === accResourceCollectionName)[0];
+                expect(newCollection).to.not.equal(undefined);
+                expect(newCollection.AddonUUID).to.equal(UserDefinedCollectionsUUID);
+                expect(newCollection.Description).to.equal('automation testing UDC');
+                expect(newCollection).to.haveOwnProperty('DocumentKey');
+                if (newCollection.SyncData) {
+                    expect(newCollection.SyncData.Sync).to.equal(true);
+                    expect(newCollection.SyncData.SyncFieldLevel).to.equal(false);
+                } else {
+                    expect(newCollection).to.haveOwnProperty('SyncData');
+                }
+                let documentKey = {};
+                if (newCollection.DocumentKey) {
+                    documentKey = newCollection.DocumentKey;
+                }
+                expect(documentKey['Delimiter']).to.equal('@');
+                expect(documentKey['Fields']).to.deep.equal([]);
+                expect(documentKey['Type']).to.equal('AutoGenerate');
+                expect(newCollection.Type).to.equal('data');
+                expect(newCollection.Hidden).to.equal(false);
+                expect(newCollection.GenericResource).to.equal(true);
+            });
+            it('Positive Test: pushing accounts data to acc resource UDC', async () => {
+                const fieldValues = {
+                    //{"myAcc.ExternalID":"be14-96da166b"}
+                    'myAcc.ExternalID': 'Account for order scenarios',
+                };
+                let accUUID = '';
+                if (generalService.papiClient['options'].baseURL.includes('staging')) {
+                    accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
+                } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
+                    accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
+                } else {
+                    accUUID = 'ffd14354-aa2c-4767-8b3a-89b88451207e';
+                }
+                const response = await udcService.sendDataToField(accResourceCollectionName, fieldValues);
+                expect(response.Ok).to.equal(true);
+                expect(response.Status).to.equal(200);
+                expect(response.Body.myAcc).to.equal(accUUID);
+                expect(response.Body.Hidden).to.equal(false);
+                expect(response.Body).to.haveOwnProperty('Key');
+                expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
+                expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
+            });
             it("Positive Test: exporting all created UDC's", async () => {
                 const allCollectionNames = [
                     basicCollectionName,
@@ -727,6 +803,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     basicArrayCollectionName,
                     basicOnlineCollectionName,
                     baseedOnSchemeOnlyCollectionName,
+                    accResourceCollectionName,
                 ];
                 for (let index = 0; index < allCollectionNames.length; index++) {
                     const collectionName = allCollectionNames[index];
@@ -736,6 +813,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         Fields:
                             collectionName === basicOnlineCollectionName
                                 ? 'str1,int1,dou1,Key'
+                                : collectionName === accResourceCollectionName
+                                ? 'myAcc,Key'
                                 : 'str,bool,int,dou,Key',
                         Delimiter: ',',
                     };
@@ -763,7 +842,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         if (generalService.papiClient['options'].baseURL.includes('staging')) {
                             uriToLookFor = `"URI":"https://pfs.staging.pepperi.com`;
                             distUUIDToLookFor = '9154dfe9-a1eb-466e-bf79-bc4fc53051c0';
-                        } else if (generalService.papiClient['options'].baseURL.includes('prod')) {
+                        } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
                             uriToLookFor = `"URI":"https://pfs.pepperi.com`;
                             distUUIDToLookFor = 'c87efcca-7170-4e46-8d58-04d2f6817b71';
                         } else {
@@ -796,6 +875,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                                     expect(c.Body.Text).to.include('str1');
                                     expect(c.Body.Text).to.include('int1');
                                     expect(numOfVals).to.equal(4);
+                                } else if (collectionName.includes('AccResource')) {
+                                    expect(c.Body.Text).to.include('Key');
+                                    expect(numOfVals).to.equal(2);
                                 } else {
                                     expect(c.Body.Text).to.include('Key');
                                     expect(c.Body.Text).to.include('dou');
@@ -851,7 +933,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         doc.Name.includes('IndexedTesting') ||
                         doc.Name.includes('BasicArrayTesting') ||
                         doc.Name.includes('BasicOnlineTesting') ||
-                        doc.Name.includes('SchemeBasedOnOnlySchemeTesting'),
+                        doc.Name.includes('SchemeBasedOnOnlySchemeTesting') ||
+                        doc.Name.includes('AccResource'),
                 );
                 for (let index = 0; index < toHideCollections.length; index++) {
                     const collectionToHide = toHideCollections[index];

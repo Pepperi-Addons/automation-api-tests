@@ -126,6 +126,7 @@ export class UDCService {
         switch (fieldType) {
             case 'String':
             case 'ContainedResource':
+            case 'Resource':
                 return 'TextBox';
             case 'Bool':
                 return 'Boolean';
