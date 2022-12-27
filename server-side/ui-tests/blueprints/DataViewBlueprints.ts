@@ -1,4 +1,18 @@
-import { BaseFormDataViewField, DataViewColumn, DataViewContext, DataViewFieldLayout, DataViewFieldStyle, DataViewFieldType, DataViewRow, DataViewType, GridDataViewColumn, GridDataViewField } from '@pepperi-addons/papi-sdk';
+import {
+    BaseFormDataViewField,
+    DataViewColumn,
+    DataViewContext,
+    DataViewFieldLayout,
+    DataViewFieldStyle,
+    DataViewFieldType,
+    DataViewRow,
+    FormDataView,
+    GridDataView,
+    GridDataViewColumn,
+    GridDataViewField,
+    MenuDataView,
+    MenuDataViewField
+} from '@pepperi-addons/papi-sdk';
 
 export class UpsertResourceFields {
     constructor(uuID: string) {
@@ -20,40 +34,42 @@ export class UpsertResourceFields {
     protected EditorViewUUID: string;
 }
 
-export class UpsertResourceFieldsToEditor extends UpsertResourceFields {
+export class UpsertResourceFieldsToEditor extends UpsertResourceFields implements FormDataView {
     constructor(editorUUID: string, fields?: BaseFormDataViewField[]) {
         super(editorUUID);
-        this.Context.Name = `GV_${this.EditorViewUUID}_Editor`
+        this.Context.Name = `GV_${this.EditorViewUUID}_Editor`;
+        this.Type = 'Form';
         if (fields) {
             this.Fields = fields;
         }
     }
-    public Type: DataViewType = 'Form';
+    public Type: "Form";
     public Fields?: BaseFormDataViewField[];
     public Rows?: DataViewRow[];
     public Columns?: DataViewColumn[];
 }
 
-export class UpsertResourceFieldsToView extends UpsertResourceFields {
+export class UpsertResourceFieldsToView extends UpsertResourceFields implements GridDataView {
     constructor(viewUUID: string, fields?: GridDataViewField[]) {
         super(viewUUID);
-        this.Context.Name = `GV_${this.EditorViewUUID}_View`
+        this.Context.Name = `GV_${this.EditorViewUUID}_View`;
+        this.Type = 'Grid';
         if (fields) {
             this.Fields = fields;
             this.Columns = [];
             for (let field of fields) {
-                this.Columns.push({Width: 10});
+                this.Columns.push({ Width: 10 });
             }
         }
     }
-    public Type: DataViewType = 'Grid';
+    public Type: "Grid";
     public Fields?: GridDataViewField[];
     public FrozenColumnsCount?: number;
     public MinimumColumnWidth?: number;
     public Columns?: GridDataViewColumn[];
 }
 
-export class FormDataFieldForEditorView {
+export class DataFieldForEditorView implements BaseFormDataViewField {
     constructor(
         fieldID: string,
         type: DataViewFieldType = "TextBox",
@@ -96,4 +112,39 @@ export class FormDataFieldForEditorView {
             Horizontal: "Stretch"
         }
     };
+}
+
+export class UpsertFieldsToMenuDataView implements MenuDataView {
+    constructor(fields?: MenuDataViewField[]) {
+        this.Type = "Menu";
+        if (fields) {
+            this.Fields = fields;
+        }
+    }
+
+    public Type: "Menu";
+    public Fields?: MenuDataViewField[];
+    public Context: DataViewContext = {
+        Name: "",
+        ScreenSize: "Tablet",
+        Profile: {
+            Name: "Rep"
+        }
+    };
+}
+
+export class UpsertFieldsToMappedSlugs extends UpsertFieldsToMenuDataView {
+    constructor(fields: MenuDataViewField[]) {
+        super(fields);
+        this.Context.Name = "Slugs";
+    }
+}
+
+export class SlugField implements MenuDataViewField {
+    constructor(slugName: string, slugUUID: string) {
+        this.FieldID = slugName;
+        this.Title = slugUUID;
+    }
+    public FieldID: string;
+    public Title: string;
 }

@@ -15,6 +15,10 @@ export class WebAppHeader extends Page {
     public UserBtn: By = By.css('[data-qa="systemAvatar"]');
     public Home: By = By.css('[data-qa="systemHome"]');
 
+    // User Details Popup
+    public UserDetails_PopupList: By = By.xpath('//ul[@id="userMenu"]');
+    public SignOutBtn: By = By.xpath('//li[@id="btnSignOut"]');
+
     public async openSettings() {
         await this.browser.click(this.Settings);
         this.browser.sleep(1800);
@@ -22,8 +26,10 @@ export class WebAppHeader extends Page {
     }
 
     public async goHome() {
-        await this.browser.click(this.Home);
-        this.browser.sleep(1000);
+        if (!(await this.browser.getCurrentUrl()).includes('HomePage')) {
+            await this.browser.click(this.Home);
+            this.browser.sleep(1000);
+        }
         return;
     }
 
@@ -45,5 +51,12 @@ export class WebAppHeader extends Page {
         await this.browser.click(this.Settings);
         await this.browser.waitForLoading(loadingLocator, timeOut, timeOutToDisplay, errorOnNoLoad);
         return new WebAppSettingsSidePanel(this.browser);
+    }
+
+    public async signOut() {
+        await this.browser.click(this.UserBtn);
+        await this.browser.untilIsVisible(this.UserDetails_PopupList);
+        await this.browser.untilIsVisible(this.SignOutBtn);
+        await this.browser.click(this.SignOutBtn);
     }
 }

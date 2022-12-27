@@ -1,23 +1,25 @@
 import { expect } from 'chai';
 import { Browser } from './browser';
 import { WebAppHeader } from '../pom/WebAppHeader';
-import { WebAppSettingsSidePanel } from '../pom';
+import { WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
-import { FormDataFieldForEditorView } from '../blueprints/DataViewBlueprints';
-import { BaseFormDataViewField, DataViewFieldType, GridDataViewField } from '@pepperi-addons/papi-sdk';
+import { DataFieldForEditorView, SlugField } from '../blueprints/DataViewBlueprints';
+import { BaseFormDataViewField, DataViewFieldType, GridDataViewField, MenuDataViewField } from '@pepperi-addons/papi-sdk';
 
 export default class ResourceListUtils {
     public constructor(protected browser: Browser) { }
 
     public async navigateTo(destiny: string) {
+        // posible destinies: 'Resource Views' | 'Slugs' | 'Page Builder' (At Settings Side-Bar)
         const header: WebAppHeader = new WebAppHeader(this.browser);
         const settingsSidePanel: WebAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         try {
-            if (!(await this.browser.getCurrentUrl()).includes('HomePage')) {
-                await header.goHome();
-            }
+            // if (!(await this.browser.getCurrentUrl()).includes('HomePage')) {
+            //     await header.goHome();
+            // }
+            await header.goHome();
             await header.openSettings();
             await settingsSidePanel.selectSettingsByID('Pages');
             switch (destiny) {
@@ -131,12 +133,18 @@ export default class ResourceListUtils {
         this.browser.sleep(7000);
     }
 
-    public prepareDataForDragAndDropAtEditorAndView(arrayOfFields: [string, DataViewFieldType, boolean, boolean][]) { 
-        let fields: BaseFormDataViewField[] | GridDataViewField[]= [];
+    public async mappingSlugWithPage(slugName: string, pageName: string) {
+        const slugs: Slugs = new Slugs(this.browser);
+        await this.navigateTo('Slugs');
+        await slugs.mapPageToSlug(slugName, pageName);
+    }
+
+    public prepareDataForDragAndDropAtEditorAndView(arrayOfFields: [string, DataViewFieldType, boolean, boolean][]) {
+        let fields: BaseFormDataViewField[] | GridDataViewField[] = [];
         let index = 0;
         let field: BaseFormDataViewField | GridDataViewField;
         arrayOfFields.forEach((fieldDefinitionArray: [string, DataViewFieldType, boolean, boolean]) => {
-            field = new FormDataFieldForEditorView(
+            field = new DataFieldForEditorView(
                 fieldDefinitionArray[0],
                 fieldDefinitionArray[1],
                 fieldDefinitionArray[2],
@@ -147,5 +155,59 @@ export default class ResourceListUtils {
             index++;
         })
         return fields;
+    }
+
+    public prepareDataForDragAndDropAtSlugs(arrayOfSlugPathSlugUUID: [string, string][]) {
+        let fields: MenuDataViewField[] = [];
+        let field: MenuDataViewField;
+        arrayOfSlugPathSlugUUID.forEach((slugPathSlugUUID: [string, string]) => {
+            field = new SlugField(slugPathSlugUUID[0], slugPathSlugUUID[1]);
+            fields.push(field);
+        });
+        return fields;
+    }
+
+    public async performManualSync() {
+        const webAppHeader: WebAppHeader = new WebAppHeader(this.browser);
+        const webAppHomePage: WebAppHomePage = new WebAppHomePage(this.browser);
+        const webAppList: WebAppList = new WebAppList(this.browser);
+        for (let index = 0; index < 4; index++) {
+            await webAppHeader.goHome();
+            await webAppHomePage.isSpinnerDone();
+            await webAppHomePage.clickOnBtn('Accounts');
+            await webAppList.isSpinnerDone();
+            await webAppList.validateListRowElements();
+        }
+        await webAppHeader.goHome();
+        await webAppHomePage.isSpinnerDone();
+    }
+
+    public async performManualResync() {
+        const webAppHeader: WebAppHeader = new WebAppHeader(this.browser);
+        const webAppHomePage: WebAppHomePage = new WebAppHomePage(this.browser);
+        await webAppHeader.goHome();
+        await webAppHomePage.isSpinnerDone();
+        await this.browser.navigate(`${await this.browser.getCurrentUrl()}/supportmenu`);
+        await this.browser.untilIsVisible(webAppHomePage.SupportMenuPopup_Container);
+        await this.browser.click(webAppHomePage.SupportMenuPopup_Refresh);
+        await this.browser.untilIsVisible(webAppHomePage.SupportMenuPopup_RefreshData);
+        await this.browser.click(webAppHomePage.SupportMenuPopup_RefreshData);
+        this.browser.sleep(5 * 60 * 1000);
+        let spinnerDone = await webAppHomePage.isSpinnerDone();
+        do {
+            await webAppHomePage.isDialogOnHomePAge('Error');
+            spinnerDone = await webAppHomePage.isSpinnerDone();
+        } while (!spinnerDone);
+        await webAppHeader.goHome();
+    }
+
+    public async logOutLogIn(email: string, password: string) {
+        const webAppHeader: WebAppHeader = new WebAppHeader(this.browser);
+        const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(this.browser);
+        this.browser.sleep(1000);
+        await webAppHeader.signOut();
+        this.browser.sleep(2000);
+        await webAppLoginPage.login(email, password);
+        this.browser.sleep(1000);
     }
 }

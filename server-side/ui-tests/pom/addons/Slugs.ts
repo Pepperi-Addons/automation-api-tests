@@ -18,6 +18,17 @@ export class Slugs extends AddonPage {
     public SelectedCheckbox: By = By.xpath('//mat-checkbox[contains(@class,"checked")] //span[contains(@class,"mat-checkbox-inner-container")]');
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu //button');
     public Uncheck_Checkbox: By = By.xpath('//mat-checkbox //input[@aria-checked="mixed"]');
+    // Mapped Slugs
+    public MappedSlugs: By = By.id('mappedSlugs');
+    // Page Mapping Profile Edit Button
+    public PageMapping_ProfileEditButton_Save: By = this.getSelectorOfPageMappingProfileEditButton('Save');
+    public PageMapping_ProfileEditButton_Cancel: By = this.getSelectorOfPageMappingProfileEditButton('Cancel');
+    // Info Popup
+    public Info_Popup_PepDialog: By = By.xpath('//span[contains(text(),"Info")]/ancestor::pep-dialog');
+    public Info_Popup_MessageDiv: By = By.xpath('//span[contains(text(),"Info")]/ancestor::pep-dialog/div[2]/div');
+    public Info_Popup_Close_Button: By = By.xpath(
+        '//span[contains(text(),"Info")]/ancestor::pep-dialog //span[contains(text(),"Close")]/parent::button',
+    );
 
     private getSelectorOfTabByText(title: string) {
         return By.xpath(`//div[text()="${title}"]/parent::div[@role="tab"][contains(@id,"mat-tab-label-")]`);
@@ -32,7 +43,15 @@ export class Slugs extends AddonPage {
     }
 
     private getSelectorOfRowInListByName(name: string) {
-        return By.xpath('');
+        return By.xpath(``);
+    }
+
+    private getSelectorOfSelectPageDropdownBySlugName(name: string) {
+        return By.xpath(`//input[@title="${name}"]/ancestor::pep-textbox/parent::div/pep-select/mat-form-field //mat-select/parent::div/parent::div`);
+    }
+
+    private getSelectorOfPageMappingProfileEditButton(title: string) {
+        return By.xpath(`//span[@title="${title}"]/ancestor::pep-button`);
     }
 
     public async selectFromList(selector: By, name?: string) {
@@ -48,7 +67,7 @@ export class Slugs extends AddonPage {
     }
 
     public async selectFromListByName(name: string) {
-        const selector: By = this.getSelectorOfRowInListByName(name);
+        const selector: By = this.getSelectorOfRowInListByName(name); // selector is missing
         await this.selectFromList(selector, name);
     }
 
@@ -68,6 +87,10 @@ export class Slugs extends AddonPage {
         }
     }
 
+    public async forSlugByNameSelectPageByName(nameOfSlug: string, nameOfPage: string) {
+        await this.selectDropBoxByString(this.getSelectorOfSelectPageDropdownBySlugName(nameOfSlug), nameOfPage);
+    }
+
     public async createSlug(displayNameOfSlug: string, slugPath: string, descriptionOfSlug: string) {
         this.pause(500);
         await this.clickElement('CreateSlug_Button');
@@ -78,5 +101,23 @@ export class Slugs extends AddonPage {
         this.pause(500);
         await this.clickElement('CreateSlugPopup_CreateSlug_Button');
         this.pause(5000);
+    }
+
+    public async mapPageToSlug(nameOfSlug: string, nameOfPage: string) {
+        await this.clickTab('Mapping_Tab');
+        await this.isSpinnerDone();
+        //click Rep Pencil button
+        await this.waitTillVisible(this.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
+        await this.clickElement('EditPage_ConfigProfileCard_EditButton_Rep');
+        await this.waitTillVisible(this.MappedSlugs, 5000);
+        // TODO: method of drag & drop
+        await this.forSlugByNameSelectPageByName(nameOfSlug, nameOfPage);
+        this.pause(500);
+        await this.clickElement('PageMapping_ProfileEditButton_Save');
+        await this.waitTillVisible(this.Info_Popup_PepDialog, 5000);
+        expect(await (await this.browser.findElement(this.Info_Popup_MessageDiv)).getText()).to.contain(
+            'The mapped slugs are saved.',
+        );
+        await this.clickElement('Info_Popup_Close_Button');
     }
 }
