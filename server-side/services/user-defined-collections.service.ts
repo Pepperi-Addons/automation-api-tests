@@ -92,7 +92,8 @@ export class UDCService {
         desc?: string,
         collectionType?,
         isOnlineOnly?: boolean,
-        documentKeys?: UdcField[]) {
+        documentKeys?: UdcField[],
+    ) {
         const Fields = {};
         for (let index = 0; index < udcFields.length; index++) {
             const field = udcFields[index];
@@ -135,19 +136,19 @@ export class UDCService {
                 Width: 10,
             });
         }
-        let DocumentKey = {};
+        const DocumentKey = {};
         if (documentKeys) {
-            DocumentKey["Fields"] = [];
+            DocumentKey['Fields'] = [];
             for (let index = 0; index < documentKeys.length; index++) {
                 const keyField = documentKeys[index];
-                DocumentKey["Fields"].push(keyField.Name);
+                DocumentKey['Fields'].push(keyField.Name);
             }
-            DocumentKey["Delimiter"] = "@";
-            DocumentKey["Type"] = "Composite";
-        }else{
-            DocumentKey["Fields"] = [];
-            DocumentKey["Delimiter"] = "@";
-            DocumentKey["Type"] = "AutoGenerate";
+            DocumentKey['Delimiter'] = '@';
+            DocumentKey['Type'] = 'Composite';
+        } else {
+            DocumentKey['Fields'] = [];
+            DocumentKey['Delimiter'] = '@';
+            DocumentKey['Type'] = 'AutoGenerate';
         }
         const bodyToSendCollection = {
             Name: collecitonName,
@@ -176,7 +177,7 @@ export class UDCService {
                 body: JSON.stringify(bodyToSendCollection),
             },
         );
-       return udcCreateResponse;
+        return udcCreateResponse;
     }
 
     async getAllObjectFromCollection(collectionName, page?, maxPageSize?) {
@@ -238,7 +239,7 @@ export class UDCService {
         desc?: string,
         collectionType?,
         isOnlineOnly?: boolean,
-        documentKeys?: UdcField[]
+        documentKeys?: UdcField[],
     ) {
         const Fields = {};
         for (let index = 0; index < udcFields.length; index++) {
@@ -282,19 +283,19 @@ export class UDCService {
                 Width: 10,
             });
         }
-        let DocumentKey = {};
+        const DocumentKey = {};
         if (documentKeys) {
-            DocumentKey["Fields"] = [];
+            DocumentKey['Fields'] = [];
             for (let index = 0; index < documentKeys.length; index++) {
                 const keyField = documentKeys[index];
-                DocumentKey["Fields"].push(keyField.Name);
+                DocumentKey['Fields'].push(keyField.Name);
             }
-            DocumentKey["Delimiter"] = "@";
-            DocumentKey["Type"] = "Composite";
-        }else{
-            DocumentKey["Fields"] = [];
-            DocumentKey["Delimiter"] = "@";
-            DocumentKey["Type"] = "AutoGenerate";
+            DocumentKey['Delimiter'] = '@';
+            DocumentKey['Type'] = 'Composite';
+        } else {
+            DocumentKey['Fields'] = [];
+            DocumentKey['Delimiter'] = '@';
+            DocumentKey['Type'] = 'AutoGenerate';
         }
         const bodyToSendCollection = {
             Name: collecitonName,
@@ -379,7 +380,8 @@ export class UDCService {
                 }
                 if (udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name] !== field.Value) {
                     console.log(
-                        `UDC Returned Wrong Value: ${udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
+                        `UDC Returned Wrong Value: ${
+                            udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
                         } instaed of: ${field.Value}`,
                     );
                     udcUpsertItemResponse[udcUpsertItemResponse.length - 1]['Fail'] =
