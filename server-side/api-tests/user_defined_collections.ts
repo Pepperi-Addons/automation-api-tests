@@ -16,7 +16,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.3.49'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.3.54'],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.5.1'],
@@ -71,6 +71,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
 
         describe('Base Collection Testing', () => {
             let basicCollectionName = '';
+            let keyCollectionName = '';
             let containedCollectionName = '';
             let indexedCollectionName = '';
             let schemeOnlyCollectionName = '';
@@ -134,7 +135,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(documents.length).to.equal(numOfInitialCollections);
             });
             it('Positive Test: creating an empty UDC with no fields configured', async () => {
-                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 basicCollectionName = 'BasicTestingEmpty' + generalService.generateRandomString(7);
                 const response = await udcService.createUDCWithFields(
                     basicCollectionName,
@@ -142,11 +143,11 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     'automation testing UDC',
                 );
                 expect(response).to.deep.equal({});
-                const documents = await udcService.getSchemes();
+                const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
             });
             it('Positive Test: creating a UDC with all types of basic fields', async () => {
-                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 basicCollectionName = 'BasicTesting' + generalService.generateRandomString(7);
                 const fieldStr: UdcField = {
                     Name: 'str',
@@ -178,13 +179,25 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.dou.Type).to.equal('Double');
                 expect(response.int.Type).to.equal('Integer');
                 expect(response.str.Type).to.equal('String');
-                const documents = await udcService.getSchemes();
+                const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
                 const newCollection = documents.filter((doc) => doc.Name === basicCollectionName)[0];
                 expect(newCollection).to.not.equal(undefined);
                 expect(newCollection.AddonUUID).to.equal(UserDefinedCollectionsUUID);
                 expect(newCollection.Description).to.equal('automation testing UDC');
                 expect(newCollection).to.haveOwnProperty('DocumentKey');
+                const fields: any[] = [];
+                for (const i in newCollection.Fields) {
+                    fields.push({ Name: i, Field: newCollection.Fields[i] });
+                }
+                for (let index = 0; index < fields.length; index++) {
+                    const field = fields[index];
+                    if (field.Name === 'str') {
+                        expect(field.Field.Mandatory).to.equal(true);
+                    } else {
+                        expect(field.Field.Mandatory).to.equal(false);
+                    }
+                }
                 let documentKey = {};
                 if (newCollection.DocumentKey) {
                     documentKey = newCollection.DocumentKey;
@@ -195,6 +208,22 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(newCollection.Type).to.equal('data');
                 expect(newCollection.Hidden).to.equal(false);
                 expect(newCollection.GenericResource).to.equal(true);
+            });
+            it('Positive Test: change fields mandatory value BEFORE data is added', async () => {
+                const fieldStr: UdcField = {
+                    Name: 'str',
+                    Mandatory: false,
+                    Type: 'String',
+                };
+                const response = await udcService.EditCollection(basicCollectionName, [fieldStr]);
+                expect(response.Ok).to.equal(true);
+                expect(response.Status).to.equal(200);
+                expect(response.Body.Name).to.equal(basicCollectionName);
+                expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
+                expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
+                expect(response.Body.Fields).to.haveOwnProperty('str');
+                expect(response.Body.Fields.str.Type).to.equal('String');
+                expect(response.Body.Fields.str.Mandatory).to.equal(fieldStr.Mandatory);
             });
             //TODO:trying to upsert NOT matching values to types in udc just was created
             // it('Negative Test: trying to upsert NOT matching values to types in udc just was created', async () => {
@@ -242,8 +271,70 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(document.Hidden).to.equal(false);
                 expect(document).to.haveOwnProperty('Key');
             });
+            it('Positive Test: creating a UDC with all types of basic fields AND a Key Based On Fields', async () => {
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
+                keyCollectionName = 'KeyBasicTesting' + generalService.generateRandomString(7);
+                const fieldStr: UdcField = {
+                    Name: 'str',
+                    Mandatory: true,
+                    Type: 'String',
+                };
+                const fieldInt: UdcField = {
+                    Name: 'int',
+                    Mandatory: true,
+                    Type: 'Integer',
+                };
+                const fieldsArray = [fieldStr, fieldInt];
+                const response = await udcService.createUDCWithFields(
+                    keyCollectionName,
+                    fieldsArray,
+                    'automation testing UDC',
+                    undefined,
+                    undefined,
+                    fieldsArray,
+                );
+                expect(response.str.Type).to.equal('String');
+                expect(response.str.Mandatory).to.equal(true);
+                expect(response.int.Type).to.equal('Integer');
+                expect(response.int.Mandatory).to.equal(true);
+                const documents = await udcService.getSchemes({ page_size: -1 });
+                expect(documents.length).to.equal(numOfInitialCollections + 1);
+                const newCollection = documents.filter((doc) => doc.Name === keyCollectionName)[0];
+                expect(newCollection).to.not.equal(undefined);
+                expect(newCollection.AddonUUID).to.equal(UserDefinedCollectionsUUID);
+                expect(newCollection.Description).to.equal('automation testing UDC');
+                expect(newCollection).to.haveOwnProperty('DocumentKey');
+                let documentKey = {};
+                if (newCollection.DocumentKey) {
+                    documentKey = newCollection.DocumentKey;
+                }
+                expect(documentKey['Delimiter']).to.equal('@');
+                expect(documentKey['Fields']).to.deep.equal(['str', 'int']);
+                expect(documentKey['Type']).to.equal('Composite');
+                expect(newCollection.Type).to.equal('data');
+                expect(newCollection.Hidden).to.equal(false);
+                expect(newCollection.GenericResource).to.equal(true);
+            });
+            it('Positive Test: adding data to just created User Defined Key Collection - testing the ket is indeed composed of included values', async () => {
+                const intVal = 14;
+                const strVal = 'testing';
+                const fieldValues = {
+                    int: intVal,
+                    str: strVal,
+                };
+                const response = await udcService.sendDataToField(keyCollectionName, fieldValues);
+                expect(response.Ok).to.equal(true);
+                expect(response.Status).to.equal(200);
+                expect(response.Body.int).to.equal(intVal);
+                expect(response.Body.str).to.equal(strVal);
+                expect(response.Body.Hidden).to.equal(false);
+                expect(response.Body).to.haveOwnProperty('Key');
+                expect(response.Body.Key).to.equal(`${strVal}@${intVal}`);
+                expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
+                expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
+            });
             it('Negative Test: trying to create a collection with exsisting name', async () => {
-                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 const response = await udcService.createUDCWithFields(
                     basicCollectionName,
                     [],
@@ -252,11 +343,11 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Ok).to.equal(false);
                 expect(response.Status).to.equal(400);
                 expect(response.Body.fault.faultstring).to.include('Object already Exist');
-                const documents = await udcService.getSchemes();
+                const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections);
             });
             it('Positive Test: creating a UDC which field is the basic UDC as containd resource', async () => {
-                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 containedCollectionName = 'ContainedTesting' + generalService.generateRandomString(7);
                 const fieldContained: UdcField = {
                     Name: 'containedRes',
@@ -274,7 +365,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response).to.haveOwnProperty(fieldContained.Name);
                 expect(response.containedRes.Resource).to.equal(fieldContained.Resource);
                 expect(response.containedRes.Type).to.equal(fieldContained.Type);
-                const numOfCollections = (await udcService.getSchemes()).length;
+                const numOfCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 expect(numOfCollections).to.equal(numOfInitialCollections + 1);
             });
             it('Positive Test: upserting data by basic UDC format which is the field of new UDC', async () => {
@@ -308,27 +399,27 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(document.Hidden).to.equal(false);
                 expect(document).to.haveOwnProperty('Key');
             });
-            //TODO:trying to upsert unmatching data to UDC which field is a containd resource of basic field
-            // it('Negative Test: trying to upsert unmatching data to UDC which field is a containd resource of basic field', async () => {
-            //     const field = {};
-            //     field["containedRes"] = {
-            //         "abc": 200,
-            //     }
-            //     const response = await udcService.sendDataToField(containedCollectionName, field);
-            //     debugger;
-            //     expect(response.Ok).to.equal(true);
-            //     expect(response.Status).to.equal(200);
-            //     expect(response.Body.bool).to.equal(boolVal);
-            //     expect(response.Body.dou).to.equal(douVal);
-            //     expect(response.Body.int).to.equal(intVal);
-            //     expect(response.Body.str).to.equal(strVal);
-            //     expect(response.Body.Hidden).to.equal(false);
-            //     expect(response.Body).to.haveOwnProperty("Key");
-            //     expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
-            //     expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
-            // });
+            // //TODO:trying to upsert unmatching data to UDC which field is a containd resource of basic field
+            // // it('Negative Test: trying to upsert unmatching data to UDC which field is a containd resource of basic field', async () => {
+            // //     const field = {};
+            // //     field["containedRes"] = {
+            // //         "abc": 200,
+            // //     }
+            // //     const response = await udcService.sendDataToField(containedCollectionName, field);
+            // //     debugger;
+            // //     expect(response.Ok).to.equal(true);
+            // //     expect(response.Status).to.equal(200);
+            // //     expect(response.Body.bool).to.equal(boolVal);
+            // //     expect(response.Body.dou).to.equal(douVal);
+            // //     expect(response.Body.int).to.equal(intVal);
+            // //     expect(response.Body.str).to.equal(strVal);
+            // //     expect(response.Body.Hidden).to.equal(false);
+            // //     expect(response.Body).to.haveOwnProperty("Key");
+            // //     expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
+            // //     expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
+            // // });
             it('Positive Test: creating a UDC with indexed fields', async () => {
-                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 indexedCollectionName = 'IndexedTesting' + generalService.generateRandomString(7);
                 const fieldStr: UdcField = {
                     Name: 'str',
@@ -368,7 +459,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.int.Indexed).to.equal(true);
                 expect(response.str.Type).to.equal('String');
                 expect(response.str.Indexed).to.equal(true);
-                const documents = await udcService.getSchemes();
+                const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
                 const newCollection = documents.filter((doc) => doc.Name === indexedCollectionName)[0];
                 expect(newCollection).to.not.equal(undefined);
@@ -460,7 +551,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(allObjects.count).to.equal(129);
             });
             it('Positive Test: creating a "Scheme - Only" UDC', async () => {
-                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 schemeOnlyCollectionName = 'SchemeOnlyTesting' + generalService.generateRandomString(7);
                 const fieldStr: UdcField = {
                     Name: 'str',
@@ -493,7 +584,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.dou.Type).to.equal('Double');
                 expect(response.int.Type).to.equal('Integer');
                 expect(response.str.Type).to.equal('String');
-                const documents = await udcService.getSchemes();
+                const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
                 const newCollection = documents.filter((doc) => doc.Name === schemeOnlyCollectionName)[0];
                 expect(newCollection).to.not.equal(undefined);
@@ -525,7 +616,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body.fault.faultstring).to.include("Unsupported schema type 'contained'");
             });
             it('Positive Test: create a UDC based on "scheme only" UDC', async () => {
-                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 baseedOnSchemeOnlyCollectionName =
                     'SchemeBasedOnOnlySchemeTesting' + generalService.generateRandomString(7);
                 const fieldBasedOnSchemeOnly: UdcField = {
@@ -540,7 +631,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     'automation testing UDC',
                 );
                 expect(response.basedOn.Type).to.equal('ContainedResource');
-                const documents = await udcService.getSchemes();
+                const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
                 const newCollection = documents.filter((doc) => doc.Name === baseedOnSchemeOnlyCollectionName)[0];
                 expect(newCollection).to.not.equal(undefined);
@@ -578,7 +669,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
             });
             it('Positive Test: creating a basic UDC with all array data for all fields', async () => {
-                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 basicArrayCollectionName = 'BasicArrayTesting' + generalService.generateRandomString(7);
                 const arrayFieldInt: UdcField = {
                     Name: 'int2',
@@ -613,7 +704,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.int2.Type).to.equal('Array');
                 expect(response.str2.Type).to.equal('Array');
                 expect(response.dou2.Type).to.equal('Array');
-                const documents = await udcService.getSchemes();
+                const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
                 expect(response.int2.Items.Type).to.equal('Integer');
                 expect(response.str2.Items.Type).to.equal('String');
@@ -655,7 +746,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
             });
             it('Positive Test: creating an ONLINE ONLY basic UDC', async () => {
-                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 basicOnlineCollectionName = 'BasicOnlineTesting' + generalService.generateRandomString(7);
                 const fieldInt: UdcField = {
                     Name: 'int1',
@@ -689,7 +780,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.dou1.Type).to.equal('Double');
                 expect(response.int1.Type).to.equal('Integer');
                 expect(response.str1.Type).to.equal('String');
-                const documents = await udcService.getSchemes();
+                const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
                 const newCollection = documents.filter((doc) => doc.Name === basicOnlineCollectionName)[0];
                 expect(newCollection).to.not.equal(undefined);
@@ -733,7 +824,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
             });
             it('Positive Test: creating a UDC with account resource', async () => {
-                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 accResourceCollectionName = 'AccResource' + generalService.generateRandomString(7);
                 const accField: UdcField = {
                     Name: 'myAcc',
@@ -748,7 +839,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 );
                 expect(response.myAcc.Type).to.equal('Resource');
                 expect(response.myAcc.Resource).to.equal('accounts');
-                const documents = await udcService.getSchemes();
+                const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
                 const newCollection = documents.filter((doc) => doc.Name === accResourceCollectionName)[0];
                 expect(newCollection).to.not.equal(undefined);
@@ -804,6 +895,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     basicOnlineCollectionName,
                     baseedOnSchemeOnlyCollectionName,
                     accResourceCollectionName,
+                    keyCollectionName,
                 ];
                 for (let index = 0; index < allCollectionNames.length; index++) {
                     const collectionName = allCollectionNames[index];
@@ -862,7 +954,12 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                             expect(c.Body.Text).to.include('Key');
                             expect(numOfVals).to.equal(1);
                         } else {
-                            if (collectionName.includes('BasicArrayTesting')) {
+                            if (collectionName.includes('KeyBasicTesting')) {
+                                expect(c.Body.Text).to.include('Key');
+                                expect(c.Body.Text).to.include('str');
+                                expect(c.Body.Text).to.include('int');
+                                expect(numOfVals).to.equal(3);
+                            } else if (collectionName.includes('BasicArrayTesting')) {
                                 expect(c.Body.Text).to.include('Key');
                                 expect(c.Body.Text).to.include('dou');
                                 expect(c.Body.Text).to.include('str');
@@ -891,39 +988,39 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     }
                 }
             });
-            // it("Positive Test: importing data to basic UDC", async () => {//TODO
-            //     //-> how does this works?
-            //     //body - >
-            //     //AddonUUID: "122c0e9d-c240-4865-b446-f37ece866c22"
-            //     //Delimiter: ","
-            //     //Key: "/e14ee6bc-6fcb-2030-df78-31c7c6c9d7a7.csv"
-            //     //MIME: "text/csv"
-            //     //OverwriteObject: false
-            //     //OwnerID: "122c0e9d-c240-4865-b446-f37ece866c22"
-            //     //Resource: "Import"
-            //     //URI:
-            //     const collectionName = basicCollectionName;
-            //     const document = (await udcService.getDocuments(collectionName))[0];
-            //     debugger;
-            //     const dataToImport = `a,Key
-            //     evgeny,654ce333-573e-4d23-a012-171492f1664a`;
-            //     const bodyToSend = {
-            //         "AddonUUID": "122c0e9d-c240-4865-b446-f37ece866c22", "Delimiter": ",",
-            //         "MIME": "text/csv", "OverwriteObject": false, "OwnerID": "122c0e9d-c240-4865-b446-f37ece866c22", "Resource": "Import",
-            //         "Key": ``
-            //     };
-            //     bodyToSend["URI"] = `data:text/csv;base64,${Buffer.from(dataToImport).toString('base64')}`;
-            //     const a = await generalService.fetchStatus(`/addons/api/44c97115-6d14-4626-91dc-83f176e9a0fc/api/file_import_upload`, {
-            //         method: "POST",
-            //         body: JSON.stringify(bodyToSend),
-            //     });
-            //     expect(a.Ok).to.equal(true);
-            //     expect(a.Status).to.equal(200);
-            //     const b = await generalService.getAuditLogResultObjectIfValid(
-            //         a.Body.URI,
-            //         90,
-            //     );
-            // });
+            // // it("Positive Test: importing data to basic UDC", async () => {//TODO
+            // // //     //-> how does this works?
+            // // //     //body - >
+            // // //     //AddonUUID: "122c0e9d-c240-4865-b446-f37ece866c22"
+            // // //     //Delimiter: ","
+            // // //     //Key: "/e14ee6bc-6fcb-2030-df78-31c7c6c9d7a7.csv"
+            // // //     //MIME: "text/csv"
+            // // //     //OverwriteObject: false
+            // // //     //OwnerID: "122c0e9d-c240-4865-b446-f37ece866c22"
+            // // //     //Resource: "Import"
+            // // //     //URI:
+            // // //     const collectionName = basicCollectionName;
+            // // //     const document = (await udcService.getDocuments(collectionName))[0];
+            // // //     debugger;
+            // // //     const dataToImport = `a,Key
+            // // //     evgeny,654ce333-573e-4d23-a012-171492f1664a`;
+            // // //     const bodyToSend = {
+            // // //         "AddonUUID": "122c0e9d-c240-4865-b446-f37ece866c22", "Delimiter": ",",
+            // // //         "MIME": "text/csv", "OverwriteObject": false, "OwnerID": "122c0e9d-c240-4865-b446-f37ece866c22", "Resource": "Import",
+            // // //         "Key": ``
+            // // //     };
+            // // //     bodyToSend["URI"] = `data:text/csv;base64,${Buffer.from(dataToImport).toString('base64')}`;
+            // // //     const a = await generalService.fetchStatus(`/addons/api/44c97115-6d14-4626-91dc-83f176e9a0fc/api/file_import_upload`, {
+            // // //         method: "POST",
+            // // //         body: JSON.stringify(bodyToSend),
+            // // //     });
+            // // //     expect(a.Ok).to.equal(true);
+            // // //     expect(a.Status).to.equal(200);
+            // // //     const b = await generalService.getAuditLogResultObjectIfValid(
+            // // //         a.Body.URI,
+            // // //         90,
+            // // //     );
+            // // // });
             it("Tear Down: cleaning all upserted UDC's", async () => {
                 const documents = await udcService.getSchemes();
                 const toHideCollections = documents.filter(
@@ -934,7 +1031,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         doc.Name.includes('BasicArrayTesting') ||
                         doc.Name.includes('BasicOnlineTesting') ||
                         doc.Name.includes('SchemeBasedOnOnlySchemeTesting') ||
-                        doc.Name.includes('AccResource'),
+                        doc.Name.includes('AccResource') ||
+                        doc.Name.includes('KeyBasicTesting'),
                 );
                 for (let index = 0; index < toHideCollections.length; index++) {
                     const collectionToHide = toHideCollections[index];
