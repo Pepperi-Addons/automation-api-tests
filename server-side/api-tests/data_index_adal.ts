@@ -16,8 +16,8 @@ export async function DataIndexADALTests(generalService: GeneralService, request
     //#region Upgrade Data Index ADAL Pepperitest (Jenkins Special Addon)
     const testData = {
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.41'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.3.54'],
     };
 
     let varKey;
@@ -553,7 +553,6 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             });
 
             it('Read All Documents', async () => {
-                debugger;
                 const readDocumentResponse = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
                     typedIndexSchema,
                     'shared_index',

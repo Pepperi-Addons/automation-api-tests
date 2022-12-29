@@ -35,6 +35,24 @@ export class LegacyResourcesService {
         return this.papiClient.get(`/resources/${resource}`);
     }
 
+    dimxExport(resource) {
+        return this.papiClient.get(`/addons/data/export/file/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/${resource}`);
+    }
+
+    dimxImport(resource) {
+        return this.papiClient.get(`/addons/data/import/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/${resource}`);
+    }
+
+    async getDimxResult(uri) {
+        const auditResult = await this.generalService.getAuditLogResultObjectIfValid(uri);
+        const resultURL = auditResult.AuditInfo.ResultObject.split(`,"V`)[0].split(`:"`)[1].replace('"', '');
+        return await this.generalService
+            .fetchStatus(resultURL, {
+                method: 'GET',
+            })
+            .then((res) => res.Body);
+    }
+
     search(resource, body) {
         return this.papiClient.post(`/resources/${resource}/search`, body);
     }
