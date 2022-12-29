@@ -58,6 +58,10 @@ export class WebAppList extends Page {
     public SmartSearchSelect: By = By.css('.advance-search-menu .smBody select');
     public SmartSearchNumberInputArr: By = By.css(`.advance-search-menu .smBody input[type='number']`);
 
+    //Addon List Search
+    public AddonList_SearchInput: By = By.xpath('//input[@id="mat-input-1"]');
+    public AddonList_SearchIconWrappingDiv: By = By.xpath('//input[@id="mat-input-1"]/parent::div/following::div');
+
     public async validateListRowElements(ms?: number): Promise<void> {
         await this.isSpinnerDone();
         return await this.validateElements(this.ListRowElements, ms);
@@ -291,5 +295,12 @@ export class WebAppList extends Page {
         const allElems = await this.getListElementsAsArray();
         const text = await Promise.all(allElems.map(async (elem) => await elem.getText()));
         return text[index];
+    }
+
+    public async searchInAddonList(textToSearch: string) {
+        const search_input = await this.browser.findElement(this.AddonList_SearchInput);
+        if (search_input) {
+            await search_input.sendKeys(`${textToSearch}\n`);
+        }
     }
 }

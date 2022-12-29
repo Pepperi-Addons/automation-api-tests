@@ -132,7 +132,7 @@ export async function ElasticSearchTests(generalService: GeneralService, request
 
     //#region Upgrade Pepperi Elastic Search
     const testData = {
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.41'],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {

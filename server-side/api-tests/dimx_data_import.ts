@@ -44,29 +44,27 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         //AddonRelativeURL: '/api/test1', // mandatory on create
     };
 
-    //#region Upgrade ADAL
-    const dimxName = generalService.papiClient['options'].baseURL.includes('staging')
-        ? 'Export and Import Framework'
-        : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
-    const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
-        'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
-    };
-    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
-
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
     } else {
         varKey = request.body.varKeyPro;
     }
-
     //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
     if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
         const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, varKey);
         generalService['client'].AddonSecretKey = addonSecretKey;
         generalService.papiClient['options'].addonSecretKey = addonSecretKey;
     }
+    //#region Upgrade ADAL
+    const dimxName = generalService.papiClient['options'].baseURL.includes('staging')
+        ? 'Export and Import Framework'
+        : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
+    const testData = {
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
+    };
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
 
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
