@@ -906,8 +906,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                             collectionName === basicOnlineCollectionName
                                 ? 'str1,int1,dou1,Key'
                                 : collectionName === accResourceCollectionName
-                                    ? 'myAcc,Key'
-                                    : 'str,bool,int,dou,Key',
+                                ? 'myAcc,Key'
+                                : 'str,bool,int,dou,Key',
                         Delimiter: ',',
                     };
                     const a = await generalService.fetchStatus(
@@ -1011,7 +1011,11 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const currentMinute = now.getMinutes();
                 const document = (await udcService.getDocuments(accResourceCollectionName))[0];
                 expect(document.myAcc).to.equal(accUUID);
-                expect(document.ModificationDateTime).to.include.oneOf([currentMinute - 2 < 0 ? 60 + (currentMinute - 2) : currentMinute - 2, currentMinute - 1 < 0 ? 60 + (currentMinute - 1) : currentMinute - 1, currentMinute]);
+                expect(document.ModificationDateTime).to.include.oneOf([
+                    currentMinute - 2 < 0 ? 60 + (currentMinute - 2) : currentMinute - 2,
+                    currentMinute - 1 < 0 ? 60 + (currentMinute - 1) : currentMinute - 1,
+                    currentMinute,
+                ]);
             });
             it("Tear Down: cleaning all upserted UDC's", async () => {
                 const documents = await udcService.getSchemes();
