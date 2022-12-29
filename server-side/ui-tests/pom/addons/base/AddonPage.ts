@@ -331,5 +331,4 @@ export class AddonPage extends Page {
         const elem = await this.browser.findElement(inputElement, 2000, true);
         await elem.sendKeys(text);
     }
-
 }

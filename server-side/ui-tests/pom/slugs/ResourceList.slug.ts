@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
 
 export class ResourceListSlugs {

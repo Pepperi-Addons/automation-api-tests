@@ -8,9 +8,11 @@ export class PageBuilder extends AddonPage {
     // Add a new Page
     public SelectPage_Title: By = By.xpath('//span[@title="Select a Page"]');
     public BlankTemplatePage: By = By.xpath('//*[text()="Blank"]/parent::div[contains(@class,"page-cube-inner")]');
-    // List 
+    // List
     public PagesList_Title: By = By.xpath('');
-    public PagesList_NumberOfItemsInList: By = By.xpath('//div[contains(text(), "result")]/span[contains(@class, "bold number")]');
+    public PagesList_NumberOfItemsInList: By = By.xpath(
+        '//div[contains(text(), "result")]/span[contains(@class, "bold number")]',
+    );
     public PagesList_FirstCheckboxInList: By = By.xpath('//virtual-scroller/div[2]/div/fieldset/mat-checkbox');
     // Single Selection
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu/div/button');
@@ -33,8 +35,12 @@ export class PageBuilder extends AddonPage {
     public Section_Frame: By = By.xpath('//div[contains(@id,"_column_")]');
     // Notice Popup
     public NoticePopup_Title: By = By.xpath('//span[contains(@class,"dialog-title")][contains(text(), "Notice")]');
-    public NoticePopup_LeavePage_Button: By = By.xpath('//span[contains(@class,"mat-button-wrapper")][contains(text(), "Leave Page")]/parent::button');
-    public NoticePopup_Cancel_Button: By = By.xpath('//span[contains(@class,"mat-button-wrapper")][contains(text(), "Cancel")]/parent::button');
+    public NoticePopup_LeavePage_Button: By = By.xpath(
+        '//span[contains(@class,"mat-button-wrapper")][contains(text(), "Leave Page")]/parent::button',
+    );
+    public NoticePopup_Cancel_Button: By = By.xpath(
+        '//span[contains(@class,"mat-button-wrapper")][contains(text(), "Cancel")]/parent::button',
+    );
 
     private getSelectorOfButtonUnderPencilMenu(title: string) {
         return By.xpath(`//span[@title="${title}"]/parent::button`);
@@ -81,7 +87,6 @@ export class PageBuilder extends AddonPage {
         this.pause(1500);
     }
 
-    
     public async openPencilMenu() {
         try {
             await this.browser.untilIsVisible(this.Pencil_Button, 500);
@@ -145,4 +150,5 @@ export class PageBuilder extends AddonPage {
         expect(Number(numOfEditors)).to.equal(0);
     }
 
+    // public async prepareDataForPublishPageRequest() {}
 }

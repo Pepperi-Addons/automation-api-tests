@@ -11,11 +11,15 @@ export class Slugs extends AddonPage {
     public CreateSlugPopup_Title: By = By.xpath('//span[contains(@class,"dialog-title")]');
     public CreateSlugPopup_DisplayName_Input: By = this.getSelectorOfCreateSlugPopupInputByTitle('Display Name'); //By.xpath('//mat-label[@title="Display Name"]/ancestor::pep-field-title/parent::pep-textbox/mat-form-field //input');
     public CreateSlugPopup_Slug_Input: By = this.getSelectorOfCreateSlugPopupInputByTitle('Slug');
-    public CreateSlugPopup_Description_Input: By = By.xpath('//mat-label[contains(@title,"Description")]/ancestor::pep-field-title/parent::div/mat-form-field //textarea');
+    public CreateSlugPopup_Description_Input: By = By.xpath(
+        '//mat-label[contains(@title,"Description")]/ancestor::pep-field-title/parent::div/mat-form-field //textarea',
+    );
     public CreateSlugPopup_CreateSlug_Button: By = this.getSelectorOfCreateSlugPopupButtonByTitle('Create Slug'); //By.xpath('//span[@title="Create Slug"]/ancestor::button[@data-qa="Create Slug"]');
     public CreateSlugPopup_Cancel_Button: By = this.getSelectorOfCreateSlugPopupButtonByTitle('Cancel');
     // Slugs List
-    public SelectedCheckbox: By = By.xpath('//mat-checkbox[contains(@class,"checked")] //span[contains(@class,"mat-checkbox-inner-container")]');
+    public SelectedCheckbox: By = By.xpath(
+        '//mat-checkbox[contains(@class,"checked")] //span[contains(@class,"mat-checkbox-inner-container")]',
+    );
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu //button');
     public Uncheck_Checkbox: By = By.xpath('//mat-checkbox //input[@aria-checked="mixed"]');
     // Mapped Slugs
@@ -35,19 +39,23 @@ export class Slugs extends AddonPage {
     }
 
     private getSelectorOfCreateSlugPopupInputByTitle(title: string) {
-        return By.xpath(`//mat-label[@title="${title}"]/ancestor::pep-field-title/parent::pep-textbox/mat-form-field //input`);
+        return By.xpath(
+            `//mat-label[@title="${title}"]/ancestor::pep-field-title/parent::pep-textbox/mat-form-field //input`,
+        );
     }
 
     private getSelectorOfCreateSlugPopupButtonByTitle(title: string) {
         return By.xpath(`//span[@title="${title}"]/ancestor::button[@data-qa="${title}"]`);
     }
 
-    private getSelectorOfRowInListByName(name: string) {
-        return By.xpath(``);
-    }
+    // private getSelectorOfRowInListByName(name: string) {
+    //     return By.xpath(``);
+    // }
 
     private getSelectorOfSelectPageDropdownBySlugName(name: string) {
-        return By.xpath(`//input[@title="${name}"]/ancestor::pep-textbox/parent::div/pep-select/mat-form-field //mat-select/parent::div/parent::div`);
+        return By.xpath(
+            `//input[@title="${name}"]/ancestor::pep-textbox/parent::div/pep-select/mat-form-field //mat-select/parent::div/parent::div`,
+        );
     }
 
     private getSelectorOfPageMappingProfileEditButton(title: string) {
@@ -66,10 +74,10 @@ export class Slugs extends AddonPage {
         }
     }
 
-    public async selectFromListByName(name: string) {
-        const selector: By = this.getSelectorOfRowInListByName(name); // selector is missing
-        await this.selectFromList(selector, name);
-    }
+    // public async selectFromListByName(name: string) {
+    //     //     const selector: By = this.getSelectorOfRowInListByName(name); // selector is missing
+    //     //     await this.selectFromList(selector, name);
+    // }
 
     public async clickTab(tabName: string): Promise<void> {
         if (this[tabName]) {

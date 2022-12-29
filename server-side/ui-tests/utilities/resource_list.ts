@@ -6,10 +6,15 @@ import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/Reso
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
 import { DataFieldForEditorView, SlugField } from '../blueprints/DataViewBlueprints';
-import { BaseFormDataViewField, DataViewFieldType, GridDataViewField, MenuDataViewField } from '@pepperi-addons/papi-sdk';
+import {
+    BaseFormDataViewField,
+    DataViewFieldType,
+    GridDataViewField,
+    MenuDataViewField,
+} from '@pepperi-addons/papi-sdk';
 
 export default class ResourceListUtils {
-    public constructor(protected browser: Browser) { }
+    public constructor(protected browser: Browser) {}
 
     public async navigateTo(destiny: string) {
         // posible destinies: 'Resource Views' | 'Slugs' | 'Page Builder' (At Settings Side-Bar)
@@ -140,7 +145,7 @@ export default class ResourceListUtils {
     }
 
     public prepareDataForDragAndDropAtEditorAndView(arrayOfFields: [string, DataViewFieldType, boolean, boolean][]) {
-        let fields: BaseFormDataViewField[] | GridDataViewField[] = [];
+        const fields: BaseFormDataViewField[] | GridDataViewField[] = [];
         let index = 0;
         let field: BaseFormDataViewField | GridDataViewField;
         arrayOfFields.forEach((fieldDefinitionArray: [string, DataViewFieldType, boolean, boolean]) => {
@@ -149,16 +154,16 @@ export default class ResourceListUtils {
                 fieldDefinitionArray[1],
                 fieldDefinitionArray[2],
                 fieldDefinitionArray[3],
-                index
+                index,
             );
             fields.push(field);
             index++;
-        })
+        });
         return fields;
     }
 
     public prepareDataForDragAndDropAtSlugs(arrayOfSlugPathSlugUUID: [string, string][]) {
-        let fields: MenuDataViewField[] = [];
+        const fields: MenuDataViewField[] = [];
         let field: MenuDataViewField;
         arrayOfSlugPathSlugUUID.forEach((slugPathSlugUUID: [string, string]) => {
             field = new SlugField(slugPathSlugUUID[0], slugPathSlugUUID[1]);

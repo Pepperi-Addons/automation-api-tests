@@ -11,7 +11,7 @@ import {
     GridDataViewColumn,
     GridDataViewField,
     MenuDataView,
-    MenuDataViewField
+    MenuDataViewField,
 } from '@pepperi-addons/papi-sdk';
 
 export class UpsertResourceFields {
@@ -19,17 +19,17 @@ export class UpsertResourceFields {
         let uUid = uuID;
         if (uUid.length) {
             do {
-                uUid = uUid.replace("-", "");
-            } while (uUid.indexOf("-") !== -1);
+                uUid = uUid.replace('-', '');
+            } while (uUid.indexOf('-') !== -1);
         }
-        this.EditorViewUUID = uUid
+        this.EditorViewUUID = uUid;
     }
     public Context: DataViewContext = {
-        Name: "",
-        ScreenSize: "Tablet",
+        Name: '',
+        ScreenSize: 'Tablet',
         Profile: {
-            Name: "Rep"
-        }
+            Name: 'Rep',
+        },
     };
     protected EditorViewUUID: string;
 }
@@ -43,7 +43,7 @@ export class UpsertResourceFieldsToEditor extends UpsertResourceFields implement
             this.Fields = fields;
         }
     }
-    public Type: "Form";
+    public Type: 'Form';
     public Fields?: BaseFormDataViewField[];
     public Rows?: DataViewRow[];
     public Columns?: DataViewColumn[];
@@ -57,12 +57,13 @@ export class UpsertResourceFieldsToView extends UpsertResourceFields implements 
         if (fields) {
             this.Fields = fields;
             this.Columns = [];
-            for (let field of fields) {
+            for (const field of fields) {
                 this.Columns.push({ Width: 10 });
+                console.info(`field: ${field}`);
             }
         }
     }
-    public Type: "Grid";
+    public Type: 'Grid';
     public Fields?: GridDataViewField[];
     public FrozenColumnsCount?: number;
     public MinimumColumnWidth?: number;
@@ -72,21 +73,21 @@ export class UpsertResourceFieldsToView extends UpsertResourceFields implements 
 export class DataFieldForEditorView implements BaseFormDataViewField {
     constructor(
         fieldID: string,
-        type: DataViewFieldType = "TextBox",
+        type: DataViewFieldType = 'TextBox',
         mandatory: boolean,
         readonly: boolean,
         index: number,
         layout: DataViewFieldLayout = {
             Origin: {
                 X: 0,
-                Y: index
+                Y: index,
             },
             Size: {
                 Width: 1,
-                Height: 1
-            }
+                Height: 1,
+            },
         },
-        style?: DataViewFieldStyle
+        style?: DataViewFieldStyle,
     ) {
         this.FieldID = fieldID;
         this.Type = type;
@@ -108,35 +109,35 @@ export class DataFieldForEditorView implements BaseFormDataViewField {
     public Layout?: DataViewFieldLayout;
     public Style?: DataViewFieldStyle = {
         Alignment: {
-            Vertical: "Center",
-            Horizontal: "Stretch"
-        }
+            Vertical: 'Center',
+            Horizontal: 'Stretch',
+        },
     };
 }
 
 export class UpsertFieldsToMenuDataView implements MenuDataView {
     constructor(fields?: MenuDataViewField[]) {
-        this.Type = "Menu";
+        this.Type = 'Menu';
         if (fields) {
             this.Fields = fields;
         }
     }
 
-    public Type: "Menu";
+    public Type: 'Menu';
     public Fields?: MenuDataViewField[];
     public Context: DataViewContext = {
-        Name: "",
-        ScreenSize: "Tablet",
+        Name: '',
+        ScreenSize: 'Tablet',
         Profile: {
-            Name: "Rep"
-        }
+            Name: 'Rep',
+        },
     };
 }
 
 export class UpsertFieldsToMappedSlugs extends UpsertFieldsToMenuDataView {
     constructor(fields: MenuDataViewField[]) {
         super(fields);
-        this.Context.Name = "Slugs";
+        this.Context.Name = 'Slugs';
     }
 }
 
