@@ -988,39 +988,35 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     }
                 }
             });
-            // // it("Positive Test: importing data to basic UDC", async () => {//TODO
-            // // //     //-> how does this works?
-            // // //     //body - >
-            // // //     //AddonUUID: "122c0e9d-c240-4865-b446-f37ece866c22"
-            // // //     //Delimiter: ","
-            // // //     //Key: "/e14ee6bc-6fcb-2030-df78-31c7c6c9d7a7.csv"
-            // // //     //MIME: "text/csv"
-            // // //     //OverwriteObject: false
-            // // //     //OwnerID: "122c0e9d-c240-4865-b446-f37ece866c22"
-            // // //     //Resource: "Import"
-            // // //     //URI:
-            // // //     const collectionName = basicCollectionName;
-            // // //     const document = (await udcService.getDocuments(collectionName))[0];
-            // // //     debugger;
-            // // //     const dataToImport = `a,Key
-            // // //     evgeny,654ce333-573e-4d23-a012-171492f1664a`;
-            // // //     const bodyToSend = {
-            // // //         "AddonUUID": "122c0e9d-c240-4865-b446-f37ece866c22", "Delimiter": ",",
-            // // //         "MIME": "text/csv", "OverwriteObject": false, "OwnerID": "122c0e9d-c240-4865-b446-f37ece866c22", "Resource": "Import",
-            // // //         "Key": ``
-            // // //     };
-            // // //     bodyToSend["URI"] = `data:text/csv;base64,${Buffer.from(dataToImport).toString('base64')}`;
-            // // //     const a = await generalService.fetchStatus(`/addons/api/44c97115-6d14-4626-91dc-83f176e9a0fc/api/file_import_upload`, {
-            // // //         method: "POST",
-            // // //         body: JSON.stringify(bodyToSend),
-            // // //     });
-            // // //     expect(a.Ok).to.equal(true);
-            // // //     expect(a.Status).to.equal(200);
-            // // //     const b = await generalService.getAuditLogResultObjectIfValid(
-            // // //         a.Body.URI,
-            // // //         90,
-            // // //     );
-            // // // });
+            it('Positive Test: importing data to account resource UDC', async () => {
+                let accUUID = '';
+                if (generalService.papiClient['options'].baseURL.includes('staging')) {
+                    accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
+                } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
+                    accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
+                } else {
+                    accUUID = 'ffd14354-aa2c-4767-8b3a-89b88451207e';
+                }
+                const bodyToImport = {};
+                bodyToImport['Objects'] = [{ 'myAcc.ExternalID': 'Account for order scenarios' }];
+                const response = await generalService.fetchStatus(
+                    `/addons/data/import/122c0e9d-c240-4865-b446-f37ece866c22/${accResourceCollectionName}`,
+                    { method: 'POST', body: JSON.stringify(bodyToImport) },
+                );
+                expect(response.Ok).to.equal(true);
+                expect(response.Status).to.equal(200);
+                expect(response.Body[0].Status).to.equal('Insert');
+                expect(response.Body[0]).to.haveOwnProperty('Key');
+                const now = new Date();
+                const currentMinute = now.getMinutes();
+                const document = (await udcService.getDocuments(accResourceCollectionName))[0];
+                expect(document.myAcc).to.equal(accUUID);
+                expect(document.ModificationDateTime).to.include.oneOf([
+                    currentMinute - 2 < 0 ? 60 + (currentMinute - 2) : currentMinute - 2,
+                    currentMinute - 1 < 0 ? 60 + (currentMinute - 1) : currentMinute - 1,
+                    currentMinute,
+                ]);
+            });
             it("Tear Down: cleaning all upserted UDC's", async () => {
                 const documents = await udcService.getSchemes();
                 const toHideCollections = documents.filter(
