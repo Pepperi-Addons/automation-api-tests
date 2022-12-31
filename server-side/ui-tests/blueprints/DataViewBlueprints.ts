@@ -70,7 +70,51 @@ export class UpsertResourceFieldsToView extends UpsertResourceFields implements 
     public Columns?: GridDataViewColumn[];
 }
 
-export class DataFieldForEditorView implements BaseFormDataViewField {
+export class UpsertUdcGridDataView implements GridDataView {
+    constructor(listOfFields: GridDataViewField[]) {
+        this.Type = "Grid";
+        this.Context = {
+            ScreenSize: "Tablet",
+            Profile: {},
+            Name: ""
+        };
+        this.Fields = [];
+        this.Columns = [];
+        if (listOfFields.length) {
+            this.Fields = listOfFields;
+            for (const field of listOfFields) {
+                this.Columns.push({ Width: 10 });
+                console.info(`field: ${field}`);
+            }
+        }
+    }
+    public Context?: DataViewContext;
+    public Type: 'Grid';
+    public Fields?: GridDataViewField[];
+    public Columns?: GridDataViewColumn[];
+}
+
+export class BaseField implements GridDataViewField {
+    constructor(
+        fieldName: string,
+        type: DataViewFieldType = 'TextBox',
+        mandatory: boolean,
+        readonly: boolean,
+    ) {
+        this.FieldID = fieldName;
+        this.Type = type;
+        this.Title = fieldName;
+        this.Mandatory = mandatory;
+        this.ReadOnly = readonly;
+    }
+    public FieldID: string;
+    public Type: DataViewFieldType;
+    public Title: string;
+    public Mandatory: boolean;
+    public ReadOnly: boolean;
+}
+
+export class DataFieldForEditorView extends BaseField implements BaseFormDataViewField {
     constructor(
         fieldID: string,
         type: DataViewFieldType = 'TextBox',
@@ -89,11 +133,8 @@ export class DataFieldForEditorView implements BaseFormDataViewField {
         },
         style?: DataViewFieldStyle,
     ) {
-        this.FieldID = fieldID;
-        this.Type = type;
-        this.Title = fieldID;
-        this.Mandatory = mandatory;
-        this.ReadOnly = readonly;
+        super(fieldID, type, mandatory, readonly)
+
         if (layout) {
             this.Layout = layout;
         }
@@ -101,11 +142,7 @@ export class DataFieldForEditorView implements BaseFormDataViewField {
             this.Style = style;
         }
     }
-    public FieldID: string;
-    public Type: DataViewFieldType;
-    public Title: string;
-    public Mandatory: boolean;
-    public ReadOnly: boolean;
+
     public Layout?: DataViewFieldLayout;
     public Style?: DataViewFieldStyle = {
         Alignment: {
@@ -149,3 +186,4 @@ export class SlugField implements MenuDataViewField {
     public FieldID: string;
     public Title: string;
 }
+

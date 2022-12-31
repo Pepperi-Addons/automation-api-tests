@@ -235,4 +235,22 @@ export class UDCService {
         }
         return udcWithFieldGetResponse.Body.Fields;
     }
+
+    async upsertUDC(bodyObj, path: string) {
+        return await this.generalService.fetchStatus(
+            `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/${path}`,
+            {
+                method: 'POST',
+                body: JSON.stringify(bodyObj),
+            },
+        );
+    }
+
+    async createUDC(bodyObj) {
+        return await this.upsertUDC(bodyObj, 'create');
+    }
+
+    async schemesUDC(bodyObj) {
+        return await this.upsertUDC(bodyObj, 'schemes');
+    }
 }

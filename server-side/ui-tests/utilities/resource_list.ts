@@ -5,7 +5,7 @@ import { WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } 
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
-import { DataFieldForEditorView, SlugField } from '../blueprints/DataViewBlueprints';
+import { BaseField, DataFieldForEditorView, SlugField, UpsertUdcGridDataView } from '../blueprints/DataViewBlueprints';
 import {
     BaseFormDataViewField,
     DataViewFieldType,
@@ -144,16 +144,36 @@ export default class ResourceListUtils {
         await slugs.mapPageToSlug(slugName, pageName);
     }
 
-    public prepareDataForDragAndDropAtEditorAndView(arrayOfFields: [string, DataViewFieldType, boolean, boolean][]) {
+    public prepareDataForCreationOfUDC(arrayOfFields: {fieldName: string, type: DataViewFieldType, mandatory: boolean, readonly: boolean}[]) {
+        const udcListViewFields = this.prepareListOfBaseFields(arrayOfFields);
+        const udcListView = new UpsertUdcGridDataView(udcListViewFields);
+    }
+
+    public prepareListOfBaseFields(arrayOfFields: {fieldName: string, type: DataViewFieldType, mandatory: boolean, readonly: boolean}[]) {
+        const fields: GridDataViewField[] = [];
+        let field: GridDataViewField;
+        arrayOfFields.forEach((fieldFromArray: {fieldName: string, type: DataViewFieldType, mandatory: boolean, readonly: boolean}) => {
+            field = new BaseField(
+                fieldFromArray.fieldName,
+                fieldFromArray.type,
+                fieldFromArray.mandatory,
+                fieldFromArray.readonly,
+            );
+            fields.push(field);
+        });
+        return fields;
+    }
+
+    public prepareDataForDragAndDropAtEditorAndView(arrayOfFields: {fieldName: string, type: DataViewFieldType, mandatory: boolean, readonly: boolean}[]) {
         const fields: BaseFormDataViewField[] | GridDataViewField[] = [];
         let index = 0;
         let field: BaseFormDataViewField | GridDataViewField;
-        arrayOfFields.forEach((fieldDefinitionArray: [string, DataViewFieldType, boolean, boolean]) => {
+        arrayOfFields.forEach((fieldDefinitionArray: {fieldName: string, type: DataViewFieldType, mandatory: boolean, readonly: boolean}) => {
             field = new DataFieldForEditorView(
-                fieldDefinitionArray[0],
-                fieldDefinitionArray[1],
-                fieldDefinitionArray[2],
-                fieldDefinitionArray[3],
+                fieldDefinitionArray.fieldName,
+                fieldDefinitionArray.type,
+                fieldDefinitionArray.mandatory,
+                fieldDefinitionArray.readonly,
                 index,
             );
             fields.push(field);

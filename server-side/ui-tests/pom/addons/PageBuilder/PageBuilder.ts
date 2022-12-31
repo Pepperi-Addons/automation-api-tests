@@ -1,5 +1,7 @@
+import { Client } from '@pepperi-addons/debug-server/dist';
 import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
+import GeneralService from '../../../../services/general.service';
 import { AddonPage } from '../base/AddonPage';
 
 export class PageBuilder extends AddonPage {
@@ -23,13 +25,14 @@ export class PageBuilder extends AddonPage {
     public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
     public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
     // Edit a Page
-    public EditMenu_Button_Publish: By = this.getSelectorOfButtonAtEditPageByDataQa('Publish'); //By.xpath('//button[@data-qa="Publish"]');
-    public EditMenu_Button_Save: By = this.getSelectorOfButtonAtEditPageByDataQa('Save'); //By.xpath('//button[@data-qa="Save"]');
-    public EditMenu_Button_Preview: By = this.getSelectorOfButtonAtEditPageByDataQa('Preview'); //By.xpath('//button[@data-qa="Preview"]');
-    public EditMenu_Button_Hamburger: By = By.xpath('//pep-menu //button[@mat-button]');
-    public SideBar_ArrowBack_Button: By = By.xpath('//pep-button[contains(@class,"back-button")]');
-    public SideBar_PageName_TextInput: By = By.xpath('//input[@type="text"][contains(@id,"mat-input-")]');
-    public SideBar_PageDescription_Textarea: By = By.xpath('//textarea[contains(@id,"mat-input-")]');
+    public EditPage_SideBar_PageTitle: By = By.xpath('//pep-side-bar/div/div/div[1]/div[1]/div/div/div/span');
+    public EditPage_EditMenu_Button_Publish: By = this.getSelectorOfButtonAtEditPageByDataQa('Publish'); //By.xpath('//button[@data-qa="Publish"]');
+    public EditPage_EditMenu_Button_Save: By = this.getSelectorOfButtonAtEditPageByDataQa('Save'); //By.xpath('//button[@data-qa="Save"]');
+    public EditPage_EditMenu_Button_Preview: By = this.getSelectorOfButtonAtEditPageByDataQa('Preview'); //By.xpath('//button[@data-qa="Preview"]');
+    public EditPage_EditMenu_Button_Hamburger: By = By.xpath('//pep-menu //button[@mat-button]');
+    public EditPage_SideBar_ArrowBack_Button: By = By.xpath('//pep-button[contains(@class,"back-button")]');
+    public EditPage_SideBar_PageName_TextInput: By = By.xpath('//input[@type="text"][contains(@id,"mat-input-")]');
+    public EditPage_SideBar_PageDescription_Textarea: By = By.xpath('//textarea[contains(@id,"mat-input-")]');
     // Add Section
     public EditSideBar_AddSection_Button: By = this.getSelectorOfButtonAtEditPageByDataQa('Add Section'); //By.xpath('//button[@data-qa="Add Section"]');
     public Section_Frame: By = By.xpath('//div[contains(@id,"_column_")]');
@@ -66,21 +69,21 @@ export class PageBuilder extends AddonPage {
         await this.waitTillVisible(this.BlankTemplatePage, 5000);
         this.pause(500);
         await this.clickElement('BlankTemplatePage');
-        await this.waitTillVisible(this.EditMenu_Button_Publish, 5000);
+        await this.waitTillVisible(this.EditPage_EditMenu_Button_Publish, 5000);
         this.pause(500);
         await this.waitTillVisible(this.EditSideBar_AddSection_Button, 5000);
-        const pageNameElement = await this.browser.findElement(this.SideBar_PageName_TextInput);
+        const pageNameElement = await this.browser.findElement(this.EditPage_SideBar_PageName_TextInput);
         pageNameElement.clear();
         pageNameElement.sendKeys(pageName);
-        const pageDescriptionElement = await this.browser.findElement(this.SideBar_PageDescription_Textarea);
+        const pageDescriptionElement = await this.browser.findElement(this.EditPage_SideBar_PageDescription_Textarea);
         pageDescriptionElement.clear();
         pageDescriptionElement.sendKeys(pageDescription);
         this.pause(1500);
         await this.clickElement('EditSideBar_AddSection_Button');
         await this.waitTillVisible(this.Section_Frame, 5000);
-        await this.clickElement('EditMenu_Button_Save');
+        await this.clickElement('EditPage_EditMenu_Button_Save');
         this.pause(1500);
-        await this.clickElement('SideBar_ArrowBack_Button');
+        await this.clickElement('EditPage_SideBar_ArrowBack_Button');
         if (await this.browser.isElementVisible(this.NoticePopup_Title)) {
             await this.clickElement('NoticePopup_LeavePage_Button');
         }
@@ -150,5 +153,22 @@ export class PageBuilder extends AddonPage {
         expect(Number(numOfEditors)).to.equal(0);
     }
 
-    // public async prepareDataForPublishPageRequest() {}
+    public async publishPage(pageObj, client: Client) {
+        return await this.upsertPage('publish_page', pageObj, client);
+    }
+
+    public async saveDraftPage(pageObj, client: Client) {
+        return await this.upsertPage('save_draft_page', pageObj, client);
+    }
+
+    public async upsertPage(path: string, pageObj, client: Client) {
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus(
+            `https://papi.pepperi.com/V1.0/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/${path}`,
+            {
+                method: 'POST',
+                body: JSON.stringify(pageObj),
+            },
+        );
+    }
 }
