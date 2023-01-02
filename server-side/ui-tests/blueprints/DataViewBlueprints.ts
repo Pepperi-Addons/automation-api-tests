@@ -72,11 +72,11 @@ export class UpsertResourceFieldsToView extends UpsertResourceFields implements 
 
 export class UpsertUdcGridDataView implements GridDataView {
     constructor(listOfFields: GridDataViewField[]) {
-        this.Type = "Grid";
+        this.Type = 'Grid';
         this.Context = {
-            ScreenSize: "Tablet",
+            ScreenSize: 'Tablet',
             Profile: {},
-            Name: ""
+            Name: '',
         };
         this.Fields = [];
         this.Columns = [];
@@ -94,13 +94,8 @@ export class UpsertUdcGridDataView implements GridDataView {
     public Columns?: GridDataViewColumn[];
 }
 
-export class BaseField implements GridDataViewField {
-    constructor(
-        fieldName: string,
-        type: DataViewFieldType = 'TextBox',
-        mandatory: boolean,
-        readonly: boolean,
-    ) {
+export class DataViewBaseField implements GridDataViewField {
+    constructor(fieldName: string, type: DataViewFieldType = 'TextBox', mandatory = false, readonly = true) {
         this.FieldID = fieldName;
         this.Type = type;
         this.Title = fieldName;
@@ -114,7 +109,7 @@ export class BaseField implements GridDataViewField {
     public ReadOnly: boolean;
 }
 
-export class DataFieldForEditorView extends BaseField implements BaseFormDataViewField {
+export class DataFieldForEditorView extends DataViewBaseField implements BaseFormDataViewField {
     constructor(
         fieldID: string,
         type: DataViewFieldType = 'TextBox',
@@ -133,7 +128,7 @@ export class DataFieldForEditorView extends BaseField implements BaseFormDataVie
         },
         style?: DataViewFieldStyle,
     ) {
-        super(fieldID, type, mandatory, readonly)
+        super(fieldID, type, mandatory, readonly);
 
         if (layout) {
             this.Layout = layout;
@@ -186,4 +181,3 @@ export class SlugField implements MenuDataViewField {
     public FieldID: string;
     public Title: string;
 }
-

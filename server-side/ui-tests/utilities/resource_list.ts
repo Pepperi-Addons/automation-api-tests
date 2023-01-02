@@ -5,7 +5,7 @@ import { WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } 
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
-import { BaseField, DataFieldForEditorView, SlugField, UpsertUdcGridDataView } from '../blueprints/DataViewBlueprints';
+import { DataViewBaseField, DataFieldForEditorView, SlugField } from '../blueprints/DataViewBlueprints';
 import {
     BaseFormDataViewField,
     DataViewFieldType,
@@ -144,41 +144,107 @@ export default class ResourceListUtils {
         await slugs.mapPageToSlug(slugName, pageName);
     }
 
-    public prepareDataForCreationOfUDC(arrayOfFields: {fieldName: string, type: DataViewFieldType, mandatory: boolean, readonly: boolean}[]) {
-        const udcListViewFields = this.prepareListOfBaseFields(arrayOfFields);
-        const udcListView = new UpsertUdcGridDataView(udcListViewFields);
-    }
+    // public prepareDataForUdcCreation(collectionData: {
+    //     nameOfCollection: string,
+    //     fieldsOfCollection: {
+    //         classType: "Primitive" | "Array" | "Contained" | "Resource",
+    //         fieldName: string,
+    //         fieldType?: SchemeFieldType,
+    //         indexed?: boolean,
+    //         mandatory?: boolean,
+    //         fieldDescription?: string,
+    //         dataViewType?: DataViewFieldType,
+    //         readonly?: boolean
+    //     }[],
+    //     descriptionOfCollection?: string
+    // }
+    // ) {
+    //     const collectionFields = {};
+    //     const udcListViewFields = collectionData.fieldsOfCollection.map((schemeField) => {
+    //         switch (schemeField.classType) {
+    //             case "Primitive":
+    //                 collectionFields[schemeField.fieldName] = new PrimitiveTypeUdcField(
+    //                     schemeField.fieldDescription ? schemeField.fieldDescription : "",
+    //                     schemeField.hasOwnProperty('mandatory') ? schemeField.mandatory : false,
+    //                     schemeField.fieldType ? schemeField.fieldType : "String",
+    //                     schemeField.hasOwnProperty('indexed') ? schemeField.indexed : false,
+    //                 );
+    //                 break;
 
-    public prepareListOfBaseFields(arrayOfFields: {fieldName: string, type: DataViewFieldType, mandatory: boolean, readonly: boolean}[]) {
+    //             default:
+    //                 break;
+    //         }
+    //         return new DataViewBaseField(
+    //             schemeField.fieldName,
+    //             schemeField.dataViewType ? schemeField.dataViewType : "TextBox",
+    //             schemeField.hasOwnProperty('mandatory') ? schemeField.mandatory : false,
+    //             schemeField.hasOwnProperty('readonly') ? schemeField.readonly : true
+    //         )
+    //     })
+    //     const udcListView = new UpsertUdcGridDataView(udcListViewFields);
+    //     const bodyOfCollectionWithFields = new BodyToUpsertUdcWithFields(
+    //         collectionData.nameOfCollection,
+    //         collectionFields,
+    //         udcListView,
+    //         collectionData.descriptionOfCollection ? collectionData.descriptionOfCollection : ""
+    //     );
+
+    //     return bodyOfCollectionWithFields;
+    // }
+
+    public prepareListOfBaseFields(
+        arrayOfFields: {
+            fieldName: string;
+            mandatory?: boolean;
+            dataViewType?: DataViewFieldType;
+            readonly?: boolean;
+        }[],
+    ) {
         const fields: GridDataViewField[] = [];
         let field: GridDataViewField;
-        arrayOfFields.forEach((fieldFromArray: {fieldName: string, type: DataViewFieldType, mandatory: boolean, readonly: boolean}) => {
-            field = new BaseField(
-                fieldFromArray.fieldName,
-                fieldFromArray.type,
-                fieldFromArray.mandatory,
-                fieldFromArray.readonly,
-            );
-            fields.push(field);
-        });
+        arrayOfFields.forEach(
+            (fieldFromArray: {
+                fieldName: string;
+                mandatory?: boolean;
+                dataViewType?: DataViewFieldType;
+                readonly?: boolean;
+            }) => {
+                field = new DataViewBaseField(
+                    fieldFromArray.fieldName,
+                    fieldFromArray.dataViewType ? fieldFromArray.dataViewType : 'TextBox',
+                    fieldFromArray.hasOwnProperty('mandatory') ? fieldFromArray.mandatory : false,
+                    fieldFromArray.hasOwnProperty('readonly') ? fieldFromArray.readonly : true,
+                );
+                fields.push(field);
+            },
+        );
         return fields;
     }
 
-    public prepareDataForDragAndDropAtEditorAndView(arrayOfFields: {fieldName: string, type: DataViewFieldType, mandatory: boolean, readonly: boolean}[]) {
+    public prepareDataForDragAndDropAtEditorAndView(
+        arrayOfFields: { fieldName: string; dataViewType: DataViewFieldType; mandatory: boolean; readonly: boolean }[],
+    ) {
         const fields: BaseFormDataViewField[] | GridDataViewField[] = [];
         let index = 0;
         let field: BaseFormDataViewField | GridDataViewField;
-        arrayOfFields.forEach((fieldDefinitionArray: {fieldName: string, type: DataViewFieldType, mandatory: boolean, readonly: boolean}) => {
-            field = new DataFieldForEditorView(
-                fieldDefinitionArray.fieldName,
-                fieldDefinitionArray.type,
-                fieldDefinitionArray.mandatory,
-                fieldDefinitionArray.readonly,
-                index,
-            );
-            fields.push(field);
-            index++;
-        });
+        arrayOfFields.forEach(
+            (fieldDefinitionArray: {
+                fieldName: string;
+                dataViewType: DataViewFieldType;
+                mandatory: boolean;
+                readonly: boolean;
+            }) => {
+                field = new DataFieldForEditorView(
+                    fieldDefinitionArray.fieldName,
+                    fieldDefinitionArray.dataViewType,
+                    fieldDefinitionArray.mandatory,
+                    fieldDefinitionArray.readonly,
+                    index,
+                );
+                fields.push(field);
+                index++;
+            },
+        );
         return fields;
     }
 

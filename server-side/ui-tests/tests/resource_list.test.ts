@@ -10,21 +10,21 @@ import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/Reso
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import ResourceListUtils from '../utilities/resource_list';
 import { BaseFormDataViewField, GridDataViewField, MenuDataViewField } from '@pepperi-addons/papi-sdk';
-import { CollectionField, CollectionMain } from '../pom/addons/Udc';
+
 import {
     UpsertResourceFieldsToEditor,
     UpsertResourceFieldsToView,
     UpsertFieldsToMappedSlugs,
 } from '../blueprints/DataViewBlueprints';
-import { ResourceListSlugs } from '../pom/slugs/ResourceList.slug';
+
 import { ResourceListBasicViewerEditorBlocksStructurePage } from '../blueprints/PageBlocksBlueprints';
-import { UdcField, UDCService } from '../../services/user-defined-collections.service';
 
 chai.use(promised);
 
 export async function ResourceListTests(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
     const dataViewsService = new DataViewsService(generalService.papiClient);
+
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
@@ -37,7 +37,7 @@ export async function ResourceListTests(email: string, password: string, varPass
     let pageBuilder: PageBuilder;
     // let slugs: Slugs;
     let resourceListUtils: ResourceListUtils;
-    let resourceListSlugs: ResourceListSlugs;
+
     let random_name: string;
     const test_generic_decsription = 'for RL automated testing';
     let test_name: string;
@@ -49,59 +49,6 @@ export async function ResourceListTests(email: string, password: string, varPass
     let editorKey: string;
     let viewKey: string;
     let viewName: string;
-    let pageKey: string;
-
-    /* Addons Installation */
-    // await generalService.baseAddonVersionsInstallation(varPass);
-    // //#region Upgrade script dependencies
-    // const testData = {
-    //     'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', '0.7.69'],
-    //     'Generic Resources': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '0.5.6'],
-    //     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.5.1'],
-    //     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', '0.7.24'],
-    //     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.105'],
-    //     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.10'],
-    //     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.31'],
-    //     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.5.5'],
-    //     sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.2.36'],
-    //     Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.9.18'],
-    //     'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', '0.5.3'],
-    // };
-
-    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
-
-    // describe('Prerequisites Addons for Resource List Tests', () => {
-    //     //Resource List - for the 1st step: making sure 'Resource List' and 'Generic Resources' are installed, and 'Core Resources' and 'User Defined Collections' are not.
-    //     const addonsList = Object.keys(testData);
-
-    //     isInstalledArr.forEach((isInstalled, index) => {
-    //         it(`Validate That Needed Addon Is Installed: ${addonsList[index]}`, () => {
-    //             expect(isInstalled).to.be.true;
-    //         });
-    //     });
-    //     for (const addonName in testData) {
-    //         const addonUUID = testData[addonName][0];
-    //         const version = testData[addonName][1];
-    //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
-    //         const changeType = chnageVersionResponseArr[addonName][3];
-    //         describe(`Test Data: ${addonName}`, () => {
-    //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-    //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-    //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-    //                 } else {
-    //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-    //                 }
-    //             });
-    //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-    //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-    //                     .eventually.to.have.property('Version')
-    //                     .a('string')
-    //                     .that.is.equal(varLatestVersion);
-    //             });
-    //         });
-    //     }
-    // });
 
     describe('UI tests', async () => {
         before(async function () {
@@ -117,7 +64,6 @@ export async function ResourceListTests(email: string, password: string, varPass
             pageBuilder = new PageBuilder(driver);
             // slugs = new Slugs(driver);
             resourceListUtils = new ResourceListUtils(driver);
-            resourceListSlugs = new ResourceListSlugs();
         });
 
         after(async function () {
@@ -128,150 +74,76 @@ export async function ResourceListTests(email: string, password: string, varPass
             await webAppLoginPage.login(email, password);
         });
 
-        // describe('Views & Editors Full Functionality test', async () => {
-        //     afterEach(async function () {
-        //         driver.sleep(500);
-        //         await webAppHomePage.collectEndTestData(this);
-        //     });
+        describe('Views & Editors Full Functionality test', async () => {
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
 
-        //     it('Resource Views settings is loaded and Elements exist', async () => {
-        //         // navigation
-        //         await resourceListUtils.navigateTo('Resource Views');
+            it('Resource Views settings is loaded and Elements exist', async () => {
+                // navigation
+                await resourceListUtils.navigateTo('Resource Views');
 
-        //         /* test logics */
-        //         // title is currect
-        //         const addonSettingsTitle = await (await driver.findElement(resourceList.PepTopArea_title)).getText();
-        //         expect(addonSettingsTitle).to.contain('Views & Editors');
+                /* test logics */
+                // title is currect
+                const addonSettingsTitle = await (await driver.findElement(resourceList.PepTopArea_title)).getText();
+                expect(addonSettingsTitle).to.contain('Views & Editors');
 
-        //         // tabs are the right amount, the currect text and the right one (Views) is selected while the other isn't
-        //         await driver.untilIsVisible(resourceList.GenericList_Content);
-        //         await driver.untilIsVisible(resourceList.TabsContainer);
-        //         const tabs = await driver.findElements(resourceList.AddonContainerTabs);
-        //         expect(tabs.length).to.equal(2);
-        //         const viewsTab_isSelected = await (
-        //             await driver.findElement(resourceList.Views_Tab)
-        //         ).getAttribute('aria-selected');
-        //         expect(viewsTab_isSelected).to.equal('true');
-        //         const editorsTab_isSelected = await (
-        //             await driver.findElement(resourceList.Editors_Tab)
-        //         ).getAttribute('aria-selected');
-        //         expect(editorsTab_isSelected).to.equal('false');
+                // tabs are the right amount, the currect text and the right one (Views) is selected while the other isn't
+                await driver.untilIsVisible(resourceList.GenericList_Content);
+                await driver.untilIsVisible(resourceList.TabsContainer);
+                const tabs = await driver.findElements(resourceList.AddonContainerTabs);
+                expect(tabs.length).to.equal(2);
+                const viewsTab_isSelected = await (
+                    await driver.findElement(resourceList.Views_Tab)
+                ).getAttribute('aria-selected');
+                expect(viewsTab_isSelected).to.equal('true');
+                const editorsTab_isSelected = await (
+                    await driver.findElement(resourceList.Editors_Tab)
+                ).getAttribute('aria-selected');
+                expect(editorsTab_isSelected).to.equal('false');
 
-        //         // list title is "Views" - contains number and "results"/"result", number of results is 0 and the text "No Data Found" appears
-        //         const listTitle = await (
-        //             await driver.findElement(resourceList.AddonSettingsContent_ListTitle)
-        //         ).getText();
-        //         expect(listTitle).to.equal('Views');
-        //         const resultsDivText = await (await driver.findElement(resourceList.ResultsDiv)).getText();
-        //         expect(resultsDivText).to.contain('result');
-        //         await resourceViews.deleteAll();
-        //         const numberOfResults = await (await driver.findElement(resourceList.NumberOfItemsInList)).getText();
-        //         expect(Number(numberOfResults)).to.be.equal(0);
-        //         const noData = (await (await driver.findElement(resourceList.List_NoDataFound)).getText()).trim();
-        //         expect(noData).to.be.oneOf(['No Data Found', 'No results were found.']);
-        //     });
+                // list title is "Views" - contains number and "results"/"result", number of results is 0 and the text "No Data Found" appears
+                const listTitle = await (
+                    await driver.findElement(resourceList.AddonSettingsContent_ListTitle)
+                ).getText();
+                expect(listTitle).to.equal('Views');
+                const resultsDivText = await (await driver.findElement(resourceList.ResultsDiv)).getText();
+                expect(resultsDivText).to.contain('result');
+                await resourceViews.deleteAll();
+                const numberOfResults = await (await driver.findElement(resourceList.NumberOfItemsInList)).getText();
+                expect(Number(numberOfResults)).to.be.equal(0);
+                const noData = (await (await driver.findElement(resourceList.List_NoDataFound)).getText()).trim();
+                expect(noData).to.be.oneOf(['No Data Found', 'No results were found.']);
+            });
 
-        //     it('Editors Tab', async () => {
-        //         await resourceList.clickTab('Editors_Tab');
-        //         //TODO
-        //     });
-        // });
+            it('Editors Tab', async () => {
+                await resourceList.clickTab('Editors_Tab');
+                //TODO
+            });
+        });
 
         describe('Operations (e.g Addition, Deletion)', async () => {
-            // it('Delete Editor by Name: Neviagte to Editors, Add Editor and Delete it', async () => {
-            //     resource_name = 'NoData';
-            //     // resourceEditors.setResourceName(resource_name);
-            //     test_name = `RL_Editors_${resource_name}_Test_${random_name}`;
-            //     test_decsription = `Editor ${resource_name} ${test_generic_decsription}`;
-            //     await resourceListUtils.navigateTo('Resource Views');
-            //     await resourceEditors.clickTab('Editors_Tab');
-            //     await resourceEditors.validateEditorsListPageIsLoaded();
-            //     await resourceEditors.addToResourceList(test_name, test_decsription, resource_name);
-            //     await resourceEditors.verifyEditPageOpen(test_name);
-            //     // resourceEditors.setEditorName(test_name);
-            //     await resourceEditors.clickElement('EditPage_BackToList_Button');
-            //     await resourceEditors.clickTab('Editors_Tab');
-            //     await resourceEditors.deleteFromListByName(test_name);
-            // });
-            it('Creating UDC with API', async () => {
-                //1. service init
-                const udcService = new UDCService(generalService);
-                //2. data to upsert
-                const udcName = 'UdcTestInfraFunc';
-                const fieldTestString: UdcField = {
-                    Name: 'testFieldString',
-                    Mandatory: false,
-                    Type: 'String',
-                    Value: 'abc123',
-                };
-                const fieldTestNumber: UdcField = {
-                    Name: 'testFieldNumber',
-                    Mandatory: false,
-                    Type: 'Integer',
-                    Value: 123,
-                };
-                const fieldsToSend = [fieldTestString, fieldTestNumber];
-                //3. infra function to use
-                const udcResponse = await udcService.createUDCWithFields(udcName, fieldsToSend);
-                //4. testing all went well
-                expect(udcResponse.Fail).to.be.undefined; //flag i created to test if whole flow was successful
-                for (let index = 0; index < fieldsToSend.length; index++) {
-                    //iterate throuth all fields and test each is found + with correct value
-                    const field = fieldsToSend[index];
-                    expect(udcResponse[field.Name]).to.not.be.undefined;
-                    expect(udcResponse[field.Name].Value).to.equal(field.Value);
-                }
-
-                // const collectionFieldsArr: CollectionField[] = [
-                //     {
-                //         Key: 'arrOfString',
-                //         Description: 'Array of string',
-                //         Type: 'Array',
-                //         ArrayInnerType: 'String',
-                //         Mandatory: false
-                //     },
-                //     {
-                //         Key: 'arrOfBool',
-                //         Description: 'Array of boolean',
-                //         Type: 'Array',
-                //         ArrayInnerType: 'Bool',
-                //         Mandatory: false
-                //     },
-                //     {
-                //         Key: 'arrOfInteger',
-                //         Description: 'Array of integer',
-                //         Type: 'Array',
-                //         ArrayInnerType: 'Integer',
-                //         Mandatory: false
-                //     },
-                //     {
-                //         Key: 'arrOfDouble',
-                //         Description: 'Array of double',
-                //         Type: 'Array',
-                //         ArrayInnerType: 'Double',
-                //         Mandatory: false
-                //     },
-                //     {
-                //         Key: 'arrOfObject',
-                //         Description: 'Array of object',
-                //         Type: 'Array',
-                //         ArrayInnerType: 'Object',
-                //         Mandatory: false
-                //     },
-                //     {
-                //         Key: 'arrOfDateTime',
-                //         Description: 'Array of DateTime',
-                //         Type: 'Array',
-                //         ArrayInnerType: 'DateTime',
-                //         Mandatory: false
-                //     }
-                // ];
+            it('Delete Editor by Name: Neviagte to Editors, Add Editor and Delete it', async () => {
+                resource_name = 'NoData';
+                // resourceEditors.setResourceName(resource_name);
+                test_name = `RL_Editors_${resource_name}_Test_${random_name}`;
+                test_decsription = `Editor ${resource_name} ${test_generic_decsription}`;
+                await resourceListUtils.navigateTo('Resource Views');
+                await resourceEditors.clickTab('Editors_Tab');
+                await resourceEditors.validateEditorsListPageIsLoaded();
+                await resourceEditors.addToResourceList(test_name, test_decsription, resource_name);
+                await resourceEditors.verifyEditPageOpen(test_name);
+                // resourceEditors.setEditorName(test_name);
+                await resourceEditors.clickElement('EditPage_BackToList_Button');
+                await resourceEditors.clickTab('Editors_Tab');
+                await resourceEditors.deleteFromListByName(test_name);
             });
         });
 
         describe('Flow', async () => {
             before(function () {
-                resource_name = 'ArraysNumbersNamesReals';
+                resource_name = 'ArraysOfPrimitivesAuto';
                 random_name = generalService.generateRandomString(5);
             });
             afterEach(async function () {
@@ -280,7 +152,7 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
 
             it('Add Editor', async () => {
-                editor_name = `${resource_name} Editor ${random_name}`;
+                editor_name = `${resource_name} Editor (${random_name})`;
                 editor_decsription = `Editor of resource: ${resource_name} - ${test_generic_decsription}`;
                 await resourceListUtils.navigateTo('Resource Views');
                 await resourceEditors.clickTab('Editors_Tab');
@@ -315,7 +187,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await resourceEditors.clickElement('EditPage_ProfileEditButton_Back');
                 const editorFields: BaseFormDataViewField[] =
                     resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-                        {fieldName: 'reals', type: 'TextBox', mandatory: true, readonly: false}
+                        { fieldName: 'reals', dataViewType: 'TextBox', mandatory: true, readonly: false },
                     ]);
                 // console.info(`editorFields: ${JSON.stringify(editorFields, null, 2)}`)
                 const resourceFieldsToAddToEditorObj = new UpsertResourceFieldsToEditor(editorKey, editorFields);
@@ -363,14 +235,14 @@ export async function ResourceListTests(email: string, password: string, varPass
                 //     ['reals', 'TextBox', true, false],
                 // ]);
                 const viewFields: GridDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-                    {fieldName: 'item', type: 'TextBox', mandatory: true, readonly: false},
-                    {fieldName: 'quantity', type: 'TextBox', mandatory: true, readonly: false},
-                    {fieldName: 'price', type: 'TextBox', mandatory: true, readonly: false},
-                    {fieldName: 'instock', type: 'TextBox', mandatory: true, readonly: true},
-                    {fieldName: 'description', type: 'TextBox', mandatory: false, readonly: false},
-                    {fieldName: 'sold', type: 'TextBox', mandatory: false, readonly: true},
-                    {fieldName: 'discount', type: 'TextBox', mandatory: false, readonly: false},
-                    {fieldName: 'replacement_available', type: 'TextBox', mandatory: false, readonly: false},
+                    { fieldName: 'item', dataViewType: 'TextBox', mandatory: true, readonly: false },
+                    { fieldName: 'quantity', dataViewType: 'TextBox', mandatory: true, readonly: false },
+                    { fieldName: 'price', dataViewType: 'TextBox', mandatory: true, readonly: false },
+                    { fieldName: 'instock', dataViewType: 'TextBox', mandatory: true, readonly: true },
+                    { fieldName: 'description', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'sold', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                    { fieldName: 'discount', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'replacement_available', dataViewType: 'TextBox', mandatory: false, readonly: false },
                 ]);
                 const resourceFieldsToAddToViewObj = new UpsertResourceFieldsToView(viewKey, viewFields);
                 // console.info(`resourceFieldsToAddToViewObj: ${JSON.stringify(resourceFieldsToAddToViewObj, null, 2)}`);
@@ -425,65 +297,65 @@ export async function ResourceListTests(email: string, password: string, varPass
                 console.info(`responseOfPublishPage: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
                 pageBuilder.pause(6000);
             });
-            // it('Map Page to Slugs', async () => {
-            //     // let slugsFields: MenuDataViewField[];
-            //     await resourceListUtils.navigateTo('Slugs');
-            //     // await slugs.createSlug('RL0.6', 'resource-list-0-6', 'Used for previous implementation testing');
-            //     const slugsFields: MenuDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtSlugs([
-            //         ['arrays', 'cad05942-35d9-4828-b092-e3b54b7fa4c8'],
-            //         ['resource-list-0-7', 'dc4035b8-6251-4aaf-a7f3-61367369f368'],
-            //     ]);
-            //     // console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`)
-            //     const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
-            //     // console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`)
-            //     const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
-            //     console.info(`RESPONSE of API: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
-            //     driver.sleep(7000);
-            // });
+            it('Map Page to Slugs', async () => {
+                // let slugsFields: MenuDataViewField[];
+                await resourceListUtils.navigateTo('Slugs');
+                // await slugs.createSlug('RL0.6', 'resource-list-0-6', 'Used for previous implementation testing');
+                const slugsFields: MenuDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtSlugs([
+                    ['arrays', 'cad05942-35d9-4828-b092-e3b54b7fa4c8'],
+                    ['resource-list-0-7', 'dc4035b8-6251-4aaf-a7f3-61367369f368'],
+                ]);
+                // console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`)
+                const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
+                // console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`)
+                const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
+                console.info(`RESPONSE of API: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
+                driver.sleep(7000);
+            });
             // it('Add Slug to Home Screen', async () => {});
         });
 
-        // describe('E2E Method', async () => {
-        //     beforeEach(async function () {
-        //         random_name = generalService.generateRandomString(5);
-        //     });
-        //     afterEach(async function () {
-        //         driver.sleep(500);
-        //         await webAppHomePage.collectEndTestData(this);
-        //     });
+        describe('E2E Method', async () => {
+            beforeEach(async function () {
+                random_name = generalService.generateRandomString(5);
+            });
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
 
-        //     it('Full Flow for resource: accounts', async () => {
-        //         await resourceListUtils.createBlockFullFlowE2E('accounts', random_name);
-        //     });
+            it('Full Flow for resource: accounts', async () => {
+                await resourceListUtils.createBlockFullFlowE2E('accounts', random_name);
+            });
 
-        //     it('Full Flow for resource: items', async () => {
-        //         await resourceListUtils.createBlockFullFlowE2E('items', random_name);
-        //     });
+            // it('Full Flow for resource: items', async () => {
+            //     await resourceListUtils.createBlockFullFlowE2E('items', random_name);
+            // });
 
-        //     it('Full Flow for resource: users', async () => {
-        //         await resourceListUtils.createBlockFullFlowE2E('users', random_name);
-        //     });
+            // it('Full Flow for resource: users', async () => {
+            //     await resourceListUtils.createBlockFullFlowE2E('users', random_name);
+            // });
 
-        //     it('Full Flow for resource: NameAge', async () => {
-        //         await resourceListUtils.createBlockFullFlowE2E('NameAge', random_name);
-        //     });
+            // it('Full Flow for resource: NameAge', async () => {
+            //     await resourceListUtils.createBlockFullFlowE2E('NameAge', random_name);
+            // });
 
-        //     it('Full Flow for resource: IntegerArray', async () => {
-        //         await resourceListUtils.createBlockFullFlowE2E('IntegerArray', random_name);
-        //     });
+            // it('Full Flow for resource: IntegerArray', async () => {
+            //     await resourceListUtils.createBlockFullFlowE2E('IntegerArray', random_name);
+            // });
 
-        //     it('Full Flow for resource: IntegerArray', async () => {
-        //         await resourceListUtils.createBlockFullFlowE2E('DoubleArray', random_name);
-        //     });
+            // it('Full Flow for resource: IntegerArray', async () => {
+            //     await resourceListUtils.createBlockFullFlowE2E('DoubleArray', random_name);
+            // });
 
-        //     it('Full Flow for resource: IntegerArray', async () => {
-        //         await resourceListUtils.createBlockFullFlowE2E('StringArray', random_name);
-        //     });
+            // it('Full Flow for resource: IntegerArray', async () => {
+            //     await resourceListUtils.createBlockFullFlowE2E('StringArray', random_name);
+            // });
 
-        //     it('Full Flow for resource: ContainedArrayNoScheme', async () => {
-        //         await resourceListUtils.createBlockFullFlowE2E('ContainedArrayNoScheme', random_name);
-        //     });
-        // });
+            // it('Full Flow for resource: ContainedArrayNoScheme', async () => {
+            //     await resourceListUtils.createBlockFullFlowE2E('ContainedArrayNoScheme', random_name);
+            // });
+        });
 
         // describe('Resource List 0.7', async () => {
         //     describe('DI-19954 Resource List - Data Viewer - Offline - Data', async () => {
@@ -538,8 +410,8 @@ export async function ResourceListTests(email: string, password: string, varPass
         //         // });
         //     });
         //     describe('DI-21010 Data Editor - support basic array fields', async () => {
-        //         /*** | Should be at the bottom of the form | 
-        //             1. remove from DV, and add all arrays of resources at the bottom by order that they are in the DV 
+        //         /*** | Should be at the bottom of the form |
+        //             1. remove from DV, and add all arrays of resources at the bottom by order that they are in the DV
         //          | Basic fields - Use generic list with one column |
         //             The list will include:
         //             1. Add - opens dialog to enter value
