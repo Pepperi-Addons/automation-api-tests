@@ -35,7 +35,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
         training: ['2c199913-dba2-4533-ad78-747b6553acf8', '0.0.12'],
         Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.41'],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -150,8 +150,8 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             });
         });
     });
-    logcash.getDataADALbyName2Status = false;
-    logcash.getDataADALbyName2Error;
+    // logcash.getDataADALbyName2Status = false;
+    // logcash.getDataADALbyName2Error;
     //#endregion Mocha
 
     //get secret key

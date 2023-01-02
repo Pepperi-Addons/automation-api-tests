@@ -28,6 +28,7 @@ import {
     DBSchemaTests,
     DBSchemaTestsPart2,
     SchemaTypeDataIndexedTests,
+    DocDBIndexedAdal,
     BatchUpsertTests,
     DimxDataImportTests,
     SchedulerTests,
@@ -445,12 +446,19 @@ export async function schema_type_data_index(client: Client, request: Request, t
     testName = 'Schema_Type_Data_Indexed';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    const testResult = await Promise.all([
-        await test_data(client, testerFunctions),
-        SchemaTypeDataIndexedTests(service, request, testerFunctions),
-    ]).then(() => testerFunctions.run());
+    await SchemaTypeDataIndexedTests(service, request, testerFunctions), await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
-    return testResult;
+    return await testerFunctions.run();
+}
+
+export async function doc_db_indexed_adal(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Doc_DB_Indexed_ADAL';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await DocDBIndexedAdal(service, request, testerFunctions), await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
 }
 
 export async function batch_upsert(client: Client, request: Request, testerFunctions: TesterFunctions) {

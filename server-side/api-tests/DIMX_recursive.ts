@@ -29,13 +29,13 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
         ? 'Export and Import Framework'
         : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.2.20'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.41'],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'], //hardcoded because 1.0.x (while x>2) is failing currently 31/10/22 (evgeny)
     };
-    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.7.%'];
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
 

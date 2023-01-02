@@ -26,7 +26,7 @@ export async function PepperiNotificationServiceTests(
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.2.20'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
     let varKey;

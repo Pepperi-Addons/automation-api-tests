@@ -40,6 +40,21 @@ export class ObjectsService {
         return this.papiClient.users.find(options);
     }
 
+    getAccountUsers(internalID?) {
+        if (internalID) {
+            return this.papiClient.get(`/account_users?where=AccountInternalID=${internalID}`);
+        }
+        return this.papiClient.get('/account_users');
+    }
+
+    getAccountUsersClause(clause) {
+        return this.papiClient.get(`/account_users?${clause}`);
+    }
+
+    postAccountUsers(body) {
+        return this.papiClient.post('/account_users', body);
+    }
+
     createUser(body: User): Promise<User> {
         return this.papiClient.post('/CreateUser', body);
     }
@@ -84,6 +99,10 @@ export class ObjectsService {
         return this.papiClient.catalogs.find(options);
     }
 
+    postCatalog(body) {
+        return this.papiClient.post('/catalogs', body);
+    }
+
     deleteUser(type, ID) {
         switch (type) {
             case 'UUID':
@@ -104,8 +123,11 @@ export class ObjectsService {
         }
     }
 
-    getContacts(InternalID) {
-        return this.papiClient.get('/contacts?where=InternalID=' + InternalID);
+    getContacts(InternalID?) {
+        if (InternalID) {
+            return this.papiClient.get('/contacts?where=InternalID=' + InternalID);
+        }
+        return this.papiClient.get('/contacts');
     }
 
     getContactsSDK(options?: FindOptions) {

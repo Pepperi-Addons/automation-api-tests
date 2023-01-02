@@ -80,9 +80,9 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
             CronExpression: '*/2 * * * *',
             NextRunTime: null,
             IsScheduled: true,
-            FailureAlertEmailTo: ['qa@pepperi.com'],
-            FailureAlertEmailSubject: 'Execution section',
-            ExecutedCode: '',
+            // FailureAlertEmailTo: ['qa@pepperi.com'],
+            // FailureAlertEmailSubject: 'Execution section',
+            // ExecutedCode: '',
             Type: 'AddonJob',
             // DraftCode:
             //     'exports.main=async(Client)=>{\r\nvar response;\r\nClient.addLogEntry("Info", "multiplyResult");\r\nresponse={success:"true",errorMessage:"",resultObject:{}};\r\nfunction multiply(a=2,b=3){\r\nvar res = {\'multiplyResult\':a*b};\r\nClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\nresponse.resultObject=res;\r\nresponse.errorMessage="test msg";\r\nresponse.success=true;\r\nreturn(response);\r\n}\r\nreturn multiply(2,3);\r\n};',

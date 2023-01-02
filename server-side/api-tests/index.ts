@@ -33,6 +33,7 @@ import { AddonAsyncExecutionTests } from './addon_async_execution';
 import { DBSchemaTests } from './schema';
 import { DBSchemaTestsPart2 } from './schema_part2';
 import { SchemaTypeDataIndexedTests } from './schema_type_data_index';
+import { DocDBIndexedAdal } from './doc_db_indexed_adal';
 import { BatchUpsertTests } from './batch_upsert';
 import { DimxDataImportTests } from './dimx_data_import';
 import { SchedulerTests } from './code-jobs/scheduler';
@@ -132,6 +133,7 @@ export {
     DBSchemaTests,
     DBSchemaTestsPart2,
     SchemaTypeDataIndexedTests,
+    DocDBIndexedAdal,
     BatchUpsertTests,
     DimxDataImportTests,
     SchedulerTests,

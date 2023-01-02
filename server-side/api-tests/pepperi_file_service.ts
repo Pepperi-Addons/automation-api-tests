@@ -14,8 +14,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
     //#region Upgrade PFS
     const testData = {
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.21'],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.1.8'],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.45'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.3.49'],
     };
 
     let varKey;
