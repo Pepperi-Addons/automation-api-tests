@@ -259,6 +259,57 @@ export async function sync_clean(client: Client, testerFunctions: TesterFunction
     testName = '';
     return await testerFunctions.run();
 }
+
+export async function user_events() {
+    return {
+        Events: [
+            {
+                Title: 'loading survey object',
+                EventKey: 'SurveyLoad',
+                EventFilter: {
+                    HasQuestions: false,
+                },
+                EventData: {
+                    SurveyName: {
+                        Type: 'String',
+                    },
+                    HasQuestions: {
+                        Type: 'Boolean',
+                    },
+                    Survey: {
+                        Type: 'Object',
+                    },
+                    SurveyID: {
+                        Type: 'Integer',
+                    },
+                    Factor: {
+                        Type: 'Double',
+                    },
+                },
+            },
+            {
+                Title: 'loading transaction scope',
+                EventKey: 'TransactionScopeLoaded',
+                EventFilter: {
+                    DataObject: {
+                        TypeDefinition: {
+                            InternalID: 255154,
+                        },
+                    },
+                },
+                EventData: {
+                    DataObject: {
+                        Type: 'Object',
+                    },
+                    HasQuestions: {
+                        Type: 'Boolean',
+                    },
+                },
+            },
+        ],
+    };
+}
+
 //#endregion All Tests
 export async function pages_api(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
