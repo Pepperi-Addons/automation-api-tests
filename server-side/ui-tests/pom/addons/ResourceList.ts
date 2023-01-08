@@ -1,5 +1,7 @@
+import { BaseFormDataViewField, GridDataViewField } from '@pepperi-addons/papi-sdk';
 import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
+import { UpsertResourceFieldsToEditor, UpsertResourceFieldsToView } from '../../blueprints/DataViewBlueprints';
 import { AddonPage } from './base/AddonPage';
 
 export class ResourceList extends AddonPage {
@@ -7,6 +9,7 @@ export class ResourceList extends AddonPage {
     public PepTopArea_title: By = By.xpath('//div[contains(@class, "pep-top-area")]/h2');
     public TabsContainer: By = By.xpath('//div[contains(@class, "mat-tab-labels")]');
     // Tabs
+    public Highlighted_Tab: By = By.xpath('//div[contains(@class,"mat-tab-labels")]/div[@role="tab"][@aria-selected="true"]/div');
     public Views_Tab: By = this.getSelectorOfResourceListSettingsTab('Views');
     public Editors_Tab: By = this.getSelectorOfResourceListSettingsTab('Editors');
     public General_Tab: By = this.getSelectorOfResourceListSettingsTab('General');
@@ -91,14 +94,14 @@ export class ResourceList extends AddonPage {
     }
 
     public getSelectorOfRowInListByName(name: string) {
-        return By.xpath(`//span[@id="Name"][@text()="${name}"]/ancestor::pep-form`);
+        return By.xpath(`//span[@id="Name"][text()="${name}"]/ancestor::pep-form`);
     }
 
     public getSelectorOfRowInListByPartialName(name: string) {
         return By.xpath(`//span[@id="Name"][contains(text(),"${name}")]/ancestor::pep-form`);
     }
 
-    private getSelectorOfEditPgaeTitleWithName(name: string) {
+    public getSelectorOfEditPgaeTitleWithName(name: string) {
         return By.xpath(`//span[@title="Edit - ${name}"]`);
     }
 
@@ -122,7 +125,7 @@ export class ResourceList extends AddonPage {
         await this.selectDropBoxByString(dropdownElement, resName);
     }
 
-    public async clickTab(tabName: string): Promise<void> {
+    public async clickTab(tabName: 'Views_Tab' | 'Editors_Tab' | 'General_Tab' | 'Form_Tab') {
         if (this[tabName]) {
             try {
                 await this.browser.click(this[tabName]);
@@ -141,7 +144,7 @@ export class ResourceList extends AddonPage {
     public async openPencilMenu() {
         try {
             await this.browser.untilIsVisible(this.Pencil_Button, 500);
-            await this.clickElement('Pencil_Button');
+            await this.click(this.Pencil_Button);
         } catch (error) {
             console.info('Unable to Click Pencil_Button!!!');
             console.error(error);
@@ -149,21 +152,33 @@ export class ResourceList extends AddonPage {
         }
     }
 
-    public async selectUnderPencil(buttonTitle: string) {
+    public async selectUnderPencil(buttonTitle: 'Edit' | 'Delete') {
         try {
-            await this.browser.untilIsVisible(this[`Pencil_${buttonTitle}`], 500);
-            await this.clickElement(`Pencil_${buttonTitle}`);
-            await this.browser.untilIsVisible(this.DeletePopup_Dialog, 500);
+            const selector = this.getSelectorOfButtonUnderPencilMenu(buttonTitle);
+            await this.browser.untilIsVisible(selector, 500);
+            await this.click(selector);
+            switch (buttonTitle) {
+                case 'Delete':
+                    await this.browser.untilIsVisible(this.DeletePopup_Dialog, 500);
+                    break;
+                case 'Edit':
+                    const tabText = await (await this.browser.findElement(this.Highlighted_Tab)).getText();
+                    if (tabText === 'Views') {
+                        await this.browser.untilIsVisible(this.EditPage_BackToList_Button, 1000);
+                    }
+                    if (tabText === 'Editors') {
+                        await this.browser.untilIsVisible(this.EditPage_Title, 1000);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
         } catch (error) {
             console.info(`UNABLE TO SELECT: ${buttonTitle}`);
             console.error(error);
             expect(`ERROR -> UNABLE TO SELECT: ${buttonTitle}`).to.be.undefined;
         }
-    }
-
-    public async openPencilChooseDelete() {
-        await this.openPencilMenu();
-        await this.selectUnderPencil('Delete');
     }
 
     public async confirmDeleteClickRedButton() {
@@ -188,7 +203,8 @@ export class ResourceList extends AddonPage {
                 this.browser.sleep(500);
                 await this.browser.click(this.FirstRadioButtonInList);
                 this.browser.sleep(500);
-                await this.openPencilChooseDelete();
+                await this.openPencilMenu();
+                await this.selectUnderPencil('Delete');
                 this.browser.sleep(500);
                 await this.confirmDeleteClickRedButton();
                 this.browser.sleep(500);
@@ -214,12 +230,12 @@ export class ResourceList extends AddonPage {
     }
 
     public async selectFromListByName(name: string) {
-        const selector: By = this.getSelectorOfRowInListByName(name); //By.xpath(`//span[@title="${name}"]/ancestor::pep-textbox`);
+        const selector: By = this.getSelectorOfRowInListByName(name);
         await this.selectFromList(selector, name);
     }
 
     public async selectFromListByPartialName(name: string) {
-        const selector: By = this.getSelectorOfRowInListByName(name); //By.xpath(`//span[@title="${name}"]/ancestor::pep-textbox`);
+        const selector: By = this.getSelectorOfRowInListByName(name);
         await this.selectFromList(selector, name);
     }
 
@@ -241,25 +257,26 @@ export class ResourceList extends AddonPage {
         return expect(inputContent).to.equal(resourceName);
     }
 
-    public async verifyEditPageOpen(testName: string) {
-        // This method is NOT Generic for both Editor and View (they have different HTML structure) - it works only for Editors (Hagit, Dec2022)
-        const selector: By = this.getSelectorOfEditPgaeTitleWithName(testName);
-        await expect(this.untilIsVisible(selector, 15000)).eventually.to.be.true;
-        const editPageTitle = await (await this.browser.findElement(this.EditPage_Title)).getText();
-        expect(editPageTitle).to.contain(testName);
-    }
-
     public async addToResourceList(testName: string, testDescription: string, nameOfResource: string) {
         await this.waitTillVisible(this.Add_Button, 5000);
-        await this.clickElement('Add_Button');
+        await this.click(this.Add_Button);
         await this.waitTillVisible(this.AddPopup_Title, 15000);
         await this.waitTillVisible(this.AddPopup_Name, 5000);
         await this.insertTextToInputElement(testName, this.AddPopup_Name);
         await this.insertTextToInputElement(testDescription, this.AddPopup_Description);
         await this.selectResource(nameOfResource, this.AddPopupResourceDropdownSingleOption);
         await this.verifyResourceSelected(nameOfResource);
-        await this.clickElement('AddPopup_Save');
+        await this.click(this.AddPopup_Save);
         this.pause(1000);
+    }
+
+    public async gotoEditPage(name: string) {
+        await this.selectFromListByName(name);
+        this.pause(0.5 * 1000);
+        await this.openPencilMenu();
+        this.pause(0.5 * 1000);
+        await this.selectUnderPencil('Edit');
+        this.pause(0.5 * 1000);
     }
 }
 
@@ -287,6 +304,58 @@ export class ResourceViews extends ResourceList {
 
     public async selectEditor(dropdownElement: By, editorName: string) {
         await this.selectDropBoxByString(dropdownElement, editorName);
+    }
+
+    public async gotoEditPageOfView(viewName: string) {
+        await this.gotoEditPage(viewName);
+        await this.verifyViewEditPageOpen(viewName);
+        this.pause(2 * 1000);
+    }
+
+    public async basicViewConfig(matchingEditorName: string) {
+        await this.selectEditor(this.SelectEditor_DropDown, matchingEditorName);
+        await this.click(this.EditPage_Update_Button);
+        await this.waitTillVisible(this.Update_Popup_PepDialog, 5000);
+        expect(await (await this.browser.findElement(this.Update_Popup_MessageDiv)).getText()).to.contain(
+            'Successfully updated',
+        );
+        await this.click(this.Update_Popup_Close_Button);
+        this.pause(0.5 * 1000);
+        await this.click(this.Form_Tab);
+        await this.waitTillVisible(this.EditPage_ConfigProfileCard_Rep, 15000);
+        await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
+        this.pause(0.5 * 1000);
+        await this.click(this.EditPage_ProfileEditButton_Save);
+        this.pause(0.5 * 1000);
+        await this.waitTillVisible(this.Save_Popup_PepDialog, 5000);
+        expect(await (await this.browser.findElement(this.Save_Popup_MessageDiv)).getText()).to.contain(
+            'Saved successfully',
+        );
+        await this.click(this.Save_Popup_Close_Button);
+        await this.click(this.EditPage_ProfileEditButton_Back);
+        this.pause(5 * 1000);
+    }
+
+    public async customViewConfig(dataViewsService, viewData: { matchingEditorName: string, viewKey: string, fieldsToConfigureInView: GridDataViewField[] }) {
+        const resourceFieldsToAddToViewObj = new UpsertResourceFieldsToView(viewData.viewKey, viewData.fieldsToConfigureInView);
+        // POST https://papi.pepperi.com/V1.0/meta_data/data_views
+        const upsertFieldsToView = await dataViewsService.postDataView(resourceFieldsToAddToViewObj);
+        console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToView, null, 2)}`);
+        this.pause(0.5 * 1000);
+        await this.selectEditor(this.SelectEditor_DropDown, viewData.matchingEditorName);
+        await this.click(this.EditPage_Update_Button);
+        await this.waitTillVisible(this.Update_Popup_PepDialog, 5000);
+        expect(await (await this.browser.findElement(this.Update_Popup_MessageDiv)).getText()).to.contain(
+            'Successfully updated',
+        );
+        await this.click(this.Update_Popup_Close_Button);
+        this.pause(5 * 1000);
+        await this.click(this.Form_Tab);
+        await this.waitTillVisible(this.EditPage_ConfigProfileCard_Rep, 15000);
+        await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
+        this.pause(0.5 * 1000);
+        await this.click(this.EditPage_ProfileEditButton_Back);
+        this.pause(5 * 1000);
     }
 }
 
@@ -329,6 +398,51 @@ export class ResourceEditors extends ResourceList {
     }
 
     public async verifyEditorEditPageOpen(editorName: string) {
-        this.verifyEditPageOpen(editorName);
+        const selector: By = this.getSelectorOfEditPgaeTitleWithName(editorName);
+        await expect(this.untilIsVisible(selector, 15000)).eventually.to.be.true;
+        const editPageTitle = await (await this.browser.findElement(this.EditPage_Title)).getText();
+        expect(editPageTitle).to.contain(editorName);
+    }
+
+    public async gotoEditPageOfEditor(editorName: string) {
+        await this.gotoEditPage(editorName);
+        await this.verifyEditorEditPageOpen(editorName);
+        this.pause(2 * 1000);
+    }
+
+    public async basicEditorConfig() {
+        await this.click(this.Form_Tab);
+        await this.waitTillVisible(this.EditPage_ConfigProfileCard_Rep, 15000);
+        await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
+        this.pause(500);
+        await this.click(this.EditPage_MappedFields_DeleteButton_ByText_CreationDateTime);
+        this.pause(500);
+        await this.click(this.EditPage_MappedFields_DeleteButton_ByText_ModificationDateTime);
+        this.pause(500);
+        await this.click(this.EditPage_MappedFields_ReadOnly_CheckBox_ByText_Key);
+        this.pause(500);
+        await this.click(this.EditPage_ProfileEditButton_Save);
+        await this.waitTillVisible(this.Save_Popup_PepDialog, 5000);
+        expect(await (await this.browser.findElement(this.Save_Popup_MessageDiv)).getText()).to.contain(
+            'Saved successfully',
+        );
+        await this.click(this.Save_Popup_Close_Button);
+        await this.click(this.EditPage_ProfileEditButton_Back);
+        await this.click(this.EditPage_BackToList_Button);
+    }
+
+    public async customEditorConfig(dataViewsService, editorData: { editorKey: string, fieldsToConfigureInView: BaseFormDataViewField[] }) {
+        const resourceFieldsToAddToEditorObj = new UpsertResourceFieldsToEditor(editorData.editorKey, editorData.fieldsToConfigureInView);
+        // POST https://papi.pepperi.com/V1.0/meta_data/data_views
+        const upsertFieldsToEditor = await dataViewsService.postDataView(resourceFieldsToAddToEditorObj);
+        console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToEditor, null, 2)}`);
+        this.pause(5 * 1000);
+        await this.click(this.Form_Tab);
+        await this.waitTillVisible(this.EditPage_ConfigProfileCard_Rep, 15000);
+        await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
+        this.pause(5 * 1000);
+        await this.click(this.EditPage_ProfileEditButton_Back);
+        this.pause(5 * 1000);
+        await this.click(this.EditPage_BackToList_Button);
     }
 }

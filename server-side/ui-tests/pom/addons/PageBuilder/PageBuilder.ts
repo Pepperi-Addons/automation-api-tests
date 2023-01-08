@@ -171,4 +171,9 @@ export class PageBuilder extends AddonPage {
             },
         );
     }
+
+    public async getPages(client: Client) {
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus('/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/api/pages');
+    }
 }

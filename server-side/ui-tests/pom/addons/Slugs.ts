@@ -1,5 +1,7 @@
+import { Client } from '@pepperi-addons/debug-server/dist';
 import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
+import GeneralService from '../../../services/general.service';
 import { AddonPage } from './base/AddonPage';
 
 export class Slugs extends AddonPage {
@@ -101,31 +103,42 @@ export class Slugs extends AddonPage {
 
     public async createSlug(displayNameOfSlug: string, slugPath: string, descriptionOfSlug: string) {
         this.pause(500);
-        await this.clickElement('CreateSlug_Button');
+        await this.click(this.CreateSlug_Button);
         await this.waitTillVisible(this.CreateSlugPopup_Title, 10000);
         await this.insertTextToInputElement(displayNameOfSlug, this.CreateSlugPopup_DisplayName_Input);
         await this.insertTextToInputElement(slugPath, this.CreateSlugPopup_Slug_Input);
         await this.insertTextToInputElement(descriptionOfSlug, this.CreateSlugPopup_Description_Input);
         this.pause(500);
-        await this.clickElement('CreateSlugPopup_CreateSlug_Button');
+        await this.click(this.CreateSlugPopup_CreateSlug_Button);
         this.pause(5000);
     }
 
-    public async mapPageToSlug(nameOfSlug: string, nameOfPage: string) {
+    public async mapPageToSlug(pathOfSlug: string, nameOfPage: string) {
         await this.clickTab('Mapping_Tab');
         await this.isSpinnerDone();
         //click Rep Pencil button
         await this.waitTillVisible(this.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
-        await this.clickElement('EditPage_ConfigProfileCard_EditButton_Rep');
+        await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
         await this.waitTillVisible(this.MappedSlugs, 5000);
         // TODO: method of drag & drop
-        await this.forSlugByNameSelectPageByName(nameOfSlug, nameOfPage);
+        await this.forSlugByNameSelectPageByName(pathOfSlug, nameOfPage);
         this.pause(500);
-        await this.clickElement('PageMapping_ProfileEditButton_Save');
+        await this.click(this.PageMapping_ProfileEditButton_Save);
         await this.waitTillVisible(this.Info_Popup_PepDialog, 5000);
         expect(await (await this.browser.findElement(this.Info_Popup_MessageDiv)).getText()).to.contain(
             'The mapped slugs are saved.',
         );
-        await this.clickElement('Info_Popup_Close_Button');
+        await this.click(this.Info_Popup_Close_Button);
+    }
+
+    public async getSlugs(client: Client) {
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus('/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs');
+    }
+
+    public async getSlugUUIDbySlugName(slugName: string, client: Client) {
+        const allSlugs = await this.getSlugs(client);
+        const findSlugBySlugName = allSlugs.Body.find(slugObj => { if (slugObj.Slug === slugName) { return slugObj.Key } });
+        return findSlugBySlugName.Key;
     }
 }

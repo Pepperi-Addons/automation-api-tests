@@ -266,7 +266,6 @@ const addon = process.env.npm_config_addon as string;
 
     if (tests.includes('DataPrepRL')) {
         await RLdataPrep(varPass, client);
-        // await ResourceListTests(email, pass, varPass, client);
     }
 
     if (tests.includes('ResourceList')) {
