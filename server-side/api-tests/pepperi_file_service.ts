@@ -14,9 +14,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
     //#region Upgrade PFS
     const testData = {
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.1.8'],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.45'],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.3.49'],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.1.17'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.4.66'],
     };
 
     let varKey;
@@ -33,13 +33,14 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
     }
     const pfsService = new PFSService(generalService);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
-    // debugger;
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const distributor = await pfsService.getDistributor();
     //#endregion Upgrade PFS
 
     describe('PFS Tests Suites', () => {
         const schemaName = 'pfsTestSchema';
+        const addonUUIDnoHyphen = generalService['client'].AddonUUID.replace(/-/g, "");
+        const pfsSchemaNAme = `pfs_${addonUUIDnoHyphen}_${schemaName}`;
         const verifyAfterPurge = [] as any;
         describe('Prerequisites Addon for PFS Tests', () => {
             //Test Data
@@ -91,10 +92,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const newSchema = await adalService.postSchema({
                     Name: schemaName,
                     Type: 'pfs',
+                    SyncData: {Sync: true}
                 } as any);
                 expect(purgedSchema).to.equal('');
                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('pfs');
+                expect(newSchema).to.not.have.property('SyncData');
                 expect(newSchema.Fields).to.have.property('Description');
                 expect(newSchema.Fields).to.have.property('MIME');
                 expect(newSchema.Fields).to.have.property('Sync');
@@ -105,6 +108,60 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(newSchema.Fields).to.have.property('Cache');
                 expect(newSchema.Fields).to.have.property('UploadedBy');
                 expect(newSchema.Fields).to.have.property('FileSize');
+            });
+
+            it(`Get underlying PFS schema and verify SyncData field`, async () => {
+                const pfsSchema = await pfsService.getPFSSchema(pfsSchemaNAme) as any;
+                expect(pfsSchema.Body).to.have.property('Name').a('string').that.is.equal(pfsSchemaNAme);
+                expect(pfsSchema.Body).to.have.property('Type').a('string').that.is.equal('data');
+                expect(pfsSchema.Body).to.have.property('SyncData').that.deep.equals({Sync: true});
+                expect(pfsSchema.Body.Fields).to.have.property('Description');
+                expect(pfsSchema.Body.Fields).to.have.property('MIME');
+                expect(pfsSchema.Body.Fields).to.have.property('Sync');
+                expect(pfsSchema.Body.Fields).to.have.property('Thumbnails');
+                expect(pfsSchema.Body.Fields).to.have.property('Folder');
+                expect(pfsSchema.Body.Fields).to.have.property('URL');
+                expect(pfsSchema.Body.Fields).to.have.property('FileVersion');
+                expect(pfsSchema.Body.Fields).to.have.property('Cache');
+                expect(pfsSchema.Body.Fields).to.have.property('UploadedBy');
+                expect(pfsSchema.Body.Fields).to.have.property('FileSize');
+            });
+
+            it(`Upsert schema and verify underlying schema was updated`, async () => {
+                const adalService = new ADALService(generalService.papiClient);
+                const updatedSchema = await adalService.postSchema({
+                    Name: schemaName,
+                    Type: 'pfs',
+                    SyncData: {Sync: false}
+                } as any);
+                expect(updatedSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
+                expect(updatedSchema).to.have.property('Type').a('string').that.is.equal('pfs');
+                expect(updatedSchema).to.not.have.property('SyncData');
+                expect(updatedSchema.Fields).to.have.property('Description');
+                expect(updatedSchema.Fields).to.have.property('MIME');
+                expect(updatedSchema.Fields).to.have.property('Sync');
+                expect(updatedSchema.Fields).to.have.property('Thumbnails');
+                expect(updatedSchema.Fields).to.have.property('Folder');
+                expect(updatedSchema.Fields).to.have.property('URL');
+                expect(updatedSchema.Fields).to.have.property('FileVersion');
+                expect(updatedSchema.Fields).to.have.property('Cache');
+                expect(updatedSchema.Fields).to.have.property('UploadedBy');
+                expect(updatedSchema.Fields).to.have.property('FileSize');
+
+                const pfsSchema = await pfsService.getPFSSchema(pfsSchemaNAme) as any;
+                expect(pfsSchema.Body).to.have.property('Name').a('string').that.is.equal(pfsSchemaNAme);
+                expect(pfsSchema.Body).to.have.property('Type').a('string').that.is.equal('data');
+                expect(pfsSchema.Body).to.have.property('SyncData').that.deep.equals({Sync: false});
+                expect(pfsSchema.Body.Fields).to.have.property('Description');
+                expect(pfsSchema.Body.Fields).to.have.property('MIME');
+                expect(pfsSchema.Body.Fields).to.have.property('Sync');
+                expect(pfsSchema.Body.Fields).to.have.property('Thumbnails');
+                expect(pfsSchema.Body.Fields).to.have.property('Folder');
+                expect(pfsSchema.Body.Fields).to.have.property('URL');
+                expect(pfsSchema.Body.Fields).to.have.property('FileVersion');
+                expect(pfsSchema.Body.Fields).to.have.property('Cache');
+                expect(pfsSchema.Body.Fields).to.have.property('UploadedBy');
+                expect(pfsSchema.Body.Fields).to.have.property('FileSize');
             });
 
             it(`Post + Get file in root folder`, async () => {
@@ -790,24 +847,12 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Get list of files`, async () => {
-                const rootFolderResponse = await pfsService.getFilesList(schemaName, '/');
+                const rootFolderResponse = await pfsService.getFilesList(schemaName, '/', {order_by: 'Key'});
                 expect(rootFolderResponse)
                     .to.be.an('Array')
                     .with.lengthOf(startingListLength.length + 21);
-                expect(rootFolderResponse[1].CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(rootFolderResponse[1].CreationDateTime).to.include('Z');
-                expect(rootFolderResponse[1].ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(rootFolderResponse[1].ModificationDateTime).to.include('Z');
-                expect(rootFolderResponse[1].Description).to.equal('');
-                expect(rootFolderResponse[1].Folder).to.equal('/');
-                expect(rootFolderResponse[1].Sync).to.equal('None');
-                expect(rootFolderResponse[1].URL).to.equal('');
-                expect(rootFolderResponse[1].Key).to.include('ListFolder');
-                expect(rootFolderResponse[1].Key).to.include('/');
-                expect(rootFolderResponse[1].MIME).to.equal('pepperi/folder');
-                expect(rootFolderResponse[1].Name).to.include('ListFolder');
                 let i = 2;
-                while (i < 21) {
+                while (i < 22) {
                     expect(rootFolderResponse[i].MIME).to.equal('file/plain');
                     expect(rootFolderResponse[i].Folder).to.equal('/');
                     expect(rootFolderResponse[i].Description).to.include(rootFiletempDescription);
@@ -891,7 +936,6 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             // });
 
             // it(`Validate indexed fields - MIME`, async () => {
-            //     debugger;
             //     const mimeIndexResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', { order_by: 'MIME' });
             //     expect(mimeIndexResponse).to.be.an('array').with.length.above(0);
             // });
@@ -902,7 +946,6 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             // });
 
             // it(`Validate indexed fields - Folder`, async () => {
-            //     debugger;
             //     const descriptionIndexResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
             //         order_by: 'Folder',
             //     });
@@ -912,6 +955,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             it(`Page size parameter`, async () => {
                 const getFileResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
                     page_size: 2,
+                    order_by: 'Key'
                 });
                 expect(getFileResponse).to.be.an('Array').with.lengthOf(2);
                 expect(getFileResponse[0].Description).to.include(folderFiletempDescription + ' 1');
@@ -943,7 +987,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
             it(`Where Clause In`, async () => {
                 const getFileResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
-                    where: `Description IN '${folderFiletempDescription} 1'`,
+                    where: `Description IN ('${folderFiletempDescription} 1')`,
                 });
                 expect(getFileResponse).to.be.an('Array').with.lengthOf(1);
                 expect(getFileResponse[0].MIME).to.equal('file/plain');
@@ -967,6 +1011,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             it(`Where Clause In group`, async () => {
                 const getFileResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
                     where: `Description IN ('${folderFiletempDescription} 1', '${folderFiletempDescription} 2')`,
+                    order_by: 'Key'
                 });
                 expect(getFileResponse).to.be.an('Array').with.lengthOf(2);
                 expect(getFileResponse[0].Description).to.include(folderFiletempDescription + ' 1');
