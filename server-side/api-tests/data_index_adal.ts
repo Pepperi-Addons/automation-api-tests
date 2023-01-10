@@ -16,7 +16,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
     //#region Upgrade Data Index ADAL Pepperitest (Jenkins Special Addon)
     const testData = {
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.41'],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
 
@@ -931,6 +931,20 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             });
 
             it('Read After Delete Shared Index Document', async () => {
+                // let a;
+                // try{
+                // a = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
+                //     typedIndexSchema,
+                //     'shared_index',
+                //     generalService.papiClient['options'].addonUUID,
+                //     typedSchemeName,
+                // );
+                // debugger;
+                // }catch(e){
+                //     const b = e;
+                //     debugger;
+                // }
+                // debugger;
                 await expect(
                     dataIndexAdalService.getDocumentByNameAndOptionalKey(
                         typedIndexSchema,
