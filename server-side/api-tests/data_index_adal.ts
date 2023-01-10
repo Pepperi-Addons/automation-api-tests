@@ -953,7 +953,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         typedSchemeName,
                     ),
                 ).eventually.to.be.rejectedWith(
-                    `${generalService.papiClient['options'].baseURL}/addons/shared_index/index/tester/${addonUUID}/test_shared_index failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: ${generalService.papiClient['options'].baseURL}/addons/data/schemes/test_shared_index failed with status: 400 - Bad Request error: {\\\"fault\\\":{\\\"faultstring\\\":\\\"Failed due to exception: Object ID does not exist.\\\",\\\"detail\\\":{\\\"errorcode\\\":\\\"BadRequest\\\"}}}","detail":{"errorcode":"BadRequest"}}}`,
+                    `${generalService.papiClient['options'].baseURL}/addons/shared_index/index/tester/${addonUUID}/test_shared_index failed with status: 404 - Not Found error: {"fault":{"faultstring":"Failed due to exception: Index not found","detail":{"errorcode":"NotFound"}}}`,
                 );
             });
 
@@ -966,7 +966,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         indexSchemeName,
                     ),
                 ).eventually.to.be.rejectedWith(
-                    `${generalService.papiClient['options'].baseURL}/addons/index/${addonUUID}/test_index failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: ${generalService.papiClient['options'].baseURL}/addons/data/schemes/test_index failed with status: 400 - Bad Request error: {\\\"fault\\\":{\\\"faultstring\\\":\\\"Failed due to exception: Object ID does not exist.\\\",\\\"detail\\\":{\\\"errorcode\\\":\\\"BadRequest\\\"}}}","detail":{"errorcode":"BadRequest"}}}`,
+                    `${generalService.papiClient['options'].baseURL}/addons/index/${addonUUID}/test_index failed with status: 404 - Not Found error: {"fault":{"faultstring":"Failed due to exception: Index not found","detail":{"errorcode":"NotFound"}}}`,
                 );
             });
 

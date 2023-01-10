@@ -44,6 +44,7 @@ export class PFSService {
     }
 
     deleteFile(schemaName, key: any) {
+        this.generalService.sleep(5000);
         return this.papiClient.post('/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName, {
             Key: key,
             Hidden: 'true',
@@ -51,10 +52,12 @@ export class PFSService {
     }
 
     getFile(schemaName, path: string) {
+        this.generalService.sleep(5000);
         return this.papiClient.get(`/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${schemaName}/${path}`);
     }
 
     getFileSDK(schemaName, path: string) {
+        this.generalService.sleep(5000);
         return this.papiClient.addons.pfs
             .uuid('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe')
             .schema(schemaName)
@@ -63,6 +66,7 @@ export class PFSService {
     }
 
     getFilesList(schemaName, path: string, options?: QueryOptions) {
+        this.generalService.sleep(5000);
         let url = `/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${schemaName}?folder=${path}`;
         if (options) {
             url = this.addQueryAndOptions(url, options);
@@ -84,6 +88,7 @@ export class PFSService {
     }
 
     async getFileFromURL(url) {
+        this.generalService.sleep(5000);
         const response = await fetch(url, { method: `GET` });
         const arrayData = await response.arrayBuffer();
         const buf = Buffer.from(arrayData);
@@ -91,6 +96,7 @@ export class PFSService {
     }
 
     async getFileFromURLNoBuffer(url) {
+        this.generalService.sleep(5000);
         const response = await this.generalService.fetchStatus(url, { method: `GET` });
         return response;
     }
@@ -106,11 +112,21 @@ export class PFSService {
     }
 
     async getFileAfterDelete(url) {
+        this.generalService.sleep(5000);
         return await this.generalService
             .fetchStatus(url, {
                 method: 'GET',
             })
             .then((res) => res.Body);
+    }
+
+    async getPFSSchema(pfsSchemaName) {
+        return await this.generalService.fetchStatus('/addons/data/schemes/' + pfsSchemaName, {
+            method: 'GET',
+            headers: {
+                'X-Pepperi-OwnerID': '00000000-0000-0000-0000-0000000f11e5',
+            },
+        });
     }
 
     async hardDelete(distUUID, addonUUID, addonSecretKey, fileKey) {

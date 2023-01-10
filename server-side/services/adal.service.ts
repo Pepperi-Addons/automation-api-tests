@@ -9,6 +9,10 @@ export class ADALService {
         return this.papiClient.addons.data.schemes.post(addonDataScheme);
     }
 
+    getSchema(schemeName: string) {
+        return this.papiClient.addons.data.schemes.name(schemeName).get();
+    }
+
     getDataFromSchema(addonUUID: string, tableName: string, options?: FindOptions) {
         return this.papiClient.addons.data.uuid(addonUUID).table(tableName).find(options);
     }

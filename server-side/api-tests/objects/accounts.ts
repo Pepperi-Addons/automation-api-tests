@@ -335,6 +335,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
         const schemaName = 'PNS Objects Test';
 
         it('Create TSAs for account CRUD', async () => {
+            debugger;
             createdTSAs = await service.createBulkTSA('accounts', TSAarr);
             console.log('The following fields created:\n' + createdTSAs);
         });

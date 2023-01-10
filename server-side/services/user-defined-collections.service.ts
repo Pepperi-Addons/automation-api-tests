@@ -11,6 +11,7 @@ export interface UdcField {
     Value?: string | boolean | number | Date | unknown;
     Resource?: string;
     AdddonUID?: string;
+    isArray?: boolean;
 }
 
 const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
@@ -85,6 +86,100 @@ export class UDCService {
         return response;
     }
 
+    async EditCollection(
+        collecitonName: string,
+        udcFields: UdcField[],
+        desc?: string,
+        collectionType?,
+        isOnlineOnly?: boolean,
+        documentKeys?: UdcField[],
+    ) {
+        const Fields = {};
+        for (let index = 0; index < udcFields.length; index++) {
+            const field = udcFields[index];
+            const optionalValues: string[] = [];
+            if (field.Type === 'String' && field.OptionalValues) {
+                for (let index = 0; index < field.OptionalValues.length; index++) {
+                    optionalValues.push(field.OptionalValues[index]);
+                }
+            }
+            Fields[field.Name] = {
+                Description: field.Description ? field.Description : '',
+                Mandatory: field.Mandatory,
+                Type: field.isArray === true ? 'Array' : field.Type,
+                OptionalValues: optionalValues.length > 0 ? optionalValues : [],
+                Items: {
+                    Type: field.isArray ? field.Type : 'String',
+                    Mandatory: false,
+                    Description: '',
+                },
+                Resource: field.Resource ? field.Resource : '',
+                AddonUUID: field.AdddonUID ? field.AdddonUID : '',
+                Indexed: field.Indexed ? field.Indexed : false,
+            };
+            // debugger;
+        }
+        const arrayOfViews: any[] = [];
+        const arrayOfColumns: any[] = [];
+        for (let index = 0; index < udcFields.length; index++) {
+            let uiControlUDCFields = {};
+            const field = udcFields[index];
+            uiControlUDCFields = {
+                FieldID: field.Name,
+                Mandatory: field.Mandatory,
+                ReadOnly: true,
+                Title: field.Name,
+                Type: field.isArray ? 'TextBox' : this.resolveUIType(field.Type),
+            };
+            arrayOfViews.push(uiControlUDCFields);
+            arrayOfColumns.push({
+                Width: 10,
+            });
+        }
+        const DocumentKey = {};
+        if (documentKeys) {
+            DocumentKey['Fields'] = [];
+            for (let index = 0; index < documentKeys.length; index++) {
+                const keyField = documentKeys[index];
+                DocumentKey['Fields'].push(keyField.Name);
+            }
+            DocumentKey['Delimiter'] = '@';
+            DocumentKey['Type'] = 'Composite';
+        } else {
+            DocumentKey['Fields'] = [];
+            DocumentKey['Delimiter'] = '@';
+            DocumentKey['Type'] = 'AutoGenerate';
+        }
+        const bodyToSendCollection = {
+            Name: collecitonName,
+            DocumentKey,
+            Fields,
+            ListView: {
+                Type: 'Grid',
+                Fields: arrayOfViews,
+                Columns: arrayOfColumns,
+            },
+            SyncData: {
+                Sync: isOnlineOnly === true ? false : true,
+                SyncFieldLevel: false,
+            },
+            GenericResource: true,
+            Description: desc ? desc : '', //not mandatory
+        };
+        if (collectionType) {
+            bodyToSendCollection['Type'] = collectionType;
+        }
+        //1. create scheme with all required data
+        const udcCreateResponse = await this.generalService.fetchStatus(
+            '/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/schemes',
+            {
+                method: 'POST',
+                body: JSON.stringify(bodyToSendCollection),
+            },
+        );
+        return udcCreateResponse;
+    }
+
     async getAllObjectFromCollection(collectionName, page?, maxPageSize?) {
         const body = { Page: page ? page : 1, MaxPageSize: maxPageSize ? maxPageSize : 100, IncludeCount: true };
         const response = await this.generalService.fetchStatus(
@@ -125,6 +220,7 @@ export class UDCService {
         switch (fieldType) {
             case 'String':
             case 'ContainedResource':
+            case 'Resource':
                 return 'TextBox';
             case 'Bool':
                 return 'Boolean';
@@ -137,7 +233,14 @@ export class UDCService {
         }
     }
 
-    async createUDCWithFields(collecitonName: string, udcFields: UdcField[], desc?: string, collectionType?) {
+    async createUDCWithFields(
+        collecitonName: string,
+        udcFields: UdcField[],
+        desc?: string,
+        collectionType?,
+        isOnlineOnly?: boolean,
+        documentKeys?: UdcField[],
+    ) {
         const Fields = {};
         for (let index = 0; index < udcFields.length; index++) {
             const field = udcFields[index];
@@ -150,11 +253,10 @@ export class UDCService {
             Fields[field.Name] = {
                 Description: field.Description ? field.Description : '',
                 Mandatory: field.Mandatory,
-                Type: field.Type,
+                Type: field.isArray === true ? 'Array' : field.Type,
                 OptionalValues: optionalValues.length > 0 ? optionalValues : [],
                 Items: {
-                    //always the same
-                    Type: 'String',
+                    Type: field.isArray ? field.Type : 'String',
                     Mandatory: false,
                     Description: '',
                 },
@@ -174,20 +276,30 @@ export class UDCService {
                 Mandatory: field.Mandatory,
                 ReadOnly: true,
                 Title: field.Name,
-                Type: this.resolveUIType(field.Type),
+                Type: field.isArray ? 'TextBox' : this.resolveUIType(field.Type),
             };
             arrayOfViews.push(uiControlUDCFields);
             arrayOfColumns.push({
                 Width: 10,
             });
         }
+        const DocumentKey = {};
+        if (documentKeys) {
+            DocumentKey['Fields'] = [];
+            for (let index = 0; index < documentKeys.length; index++) {
+                const keyField = documentKeys[index];
+                DocumentKey['Fields'].push(keyField.Name);
+            }
+            DocumentKey['Delimiter'] = '@';
+            DocumentKey['Type'] = 'Composite';
+        } else {
+            DocumentKey['Fields'] = [];
+            DocumentKey['Delimiter'] = '@';
+            DocumentKey['Type'] = 'AutoGenerate';
+        }
         const bodyToSendCollection = {
             Name: collecitonName,
-            DocumentKey: {
-                Delimiter: '@',
-                Type: 'AutoGenerate',
-                Fields: [],
-            },
+            DocumentKey,
             Fields,
             ListView: {
                 Type: 'Grid',
@@ -195,7 +307,7 @@ export class UDCService {
                 Columns: arrayOfColumns,
             },
             SyncData: {
-                Sync: true,
+                Sync: isOnlineOnly === true ? false : true,
                 SyncFieldLevel: false,
             },
             GenericResource: true,
