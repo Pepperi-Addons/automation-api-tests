@@ -121,15 +121,12 @@ export class PFSService {
     }
 
     async getPFSSchema(pfsSchemaName) {
-        return await this.generalService.fetchStatus(
-            '/addons/data/schemes/' + pfsSchemaName,
-            {
-                method: 'GET',
-                headers: {
-                    'X-Pepperi-OwnerID': '00000000-0000-0000-0000-0000000f11e5'
-                },
+        return await this.generalService.fetchStatus('/addons/data/schemes/' + pfsSchemaName, {
+            method: 'GET',
+            headers: {
+                'X-Pepperi-OwnerID': '00000000-0000-0000-0000-0000000f11e5',
             },
-        );
+        });
     }
 
     async hardDelete(distUUID, addonUUID, addonSecretKey, fileKey) {

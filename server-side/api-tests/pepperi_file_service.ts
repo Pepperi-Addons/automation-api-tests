@@ -39,7 +39,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
     describe('PFS Tests Suites', () => {
         const schemaName = 'pfsTestSchema';
-        const addonUUIDnoHyphen = generalService['client'].AddonUUID.replace(/-/g, "");
+        const addonUUIDnoHyphen = generalService['client'].AddonUUID.replace(/-/g, '');
         const pfsSchemaNAme = `pfs_${addonUUIDnoHyphen}_${schemaName}`;
         const verifyAfterPurge = [] as any;
         describe('Prerequisites Addon for PFS Tests', () => {
@@ -92,7 +92,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const newSchema = await adalService.postSchema({
                     Name: schemaName,
                     Type: 'pfs',
-                    SyncData: {Sync: true}
+                    SyncData: { Sync: true },
                 } as any);
                 expect(purgedSchema).to.equal('');
                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
@@ -111,10 +111,10 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Get underlying PFS schema and verify SyncData field`, async () => {
-                const pfsSchema = await pfsService.getPFSSchema(pfsSchemaNAme) as any;
+                const pfsSchema = (await pfsService.getPFSSchema(pfsSchemaNAme)) as any;
                 expect(pfsSchema.Body).to.have.property('Name').a('string').that.is.equal(pfsSchemaNAme);
                 expect(pfsSchema.Body).to.have.property('Type').a('string').that.is.equal('data');
-                expect(pfsSchema.Body).to.have.property('SyncData').that.deep.equals({Sync: true});
+                expect(pfsSchema.Body).to.have.property('SyncData').that.deep.equals({ Sync: true });
                 expect(pfsSchema.Body.Fields).to.have.property('Description');
                 expect(pfsSchema.Body.Fields).to.have.property('MIME');
                 expect(pfsSchema.Body.Fields).to.have.property('Sync');
@@ -132,7 +132,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const updatedSchema = await adalService.postSchema({
                     Name: schemaName,
                     Type: 'pfs',
-                    SyncData: {Sync: false}
+                    SyncData: { Sync: false },
                 } as any);
                 expect(updatedSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                 expect(updatedSchema).to.have.property('Type').a('string').that.is.equal('pfs');
@@ -148,10 +148,10 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(updatedSchema.Fields).to.have.property('UploadedBy');
                 expect(updatedSchema.Fields).to.have.property('FileSize');
 
-                const pfsSchema = await pfsService.getPFSSchema(pfsSchemaNAme) as any;
+                const pfsSchema = (await pfsService.getPFSSchema(pfsSchemaNAme)) as any;
                 expect(pfsSchema.Body).to.have.property('Name').a('string').that.is.equal(pfsSchemaNAme);
                 expect(pfsSchema.Body).to.have.property('Type').a('string').that.is.equal('data');
-                expect(pfsSchema.Body).to.have.property('SyncData').that.deep.equals({Sync: false});
+                expect(pfsSchema.Body).to.have.property('SyncData').that.deep.equals({ Sync: false });
                 expect(pfsSchema.Body.Fields).to.have.property('Description');
                 expect(pfsSchema.Body.Fields).to.have.property('MIME');
                 expect(pfsSchema.Body.Fields).to.have.property('Sync');
@@ -847,7 +847,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Get list of files`, async () => {
-                const rootFolderResponse = await pfsService.getFilesList(schemaName, '/', {order_by: 'Key'});
+                const rootFolderResponse = await pfsService.getFilesList(schemaName, '/', { order_by: 'Key' });
                 expect(rootFolderResponse)
                     .to.be.an('Array')
                     .with.lengthOf(startingListLength.length + 21);
@@ -955,7 +955,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             it(`Page size parameter`, async () => {
                 const getFileResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
                     page_size: 2,
-                    order_by: 'Key'
+                    order_by: 'Key',
                 });
                 expect(getFileResponse).to.be.an('Array').with.lengthOf(2);
                 expect(getFileResponse[0].Description).to.include(folderFiletempDescription + ' 1');
@@ -1011,7 +1011,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             it(`Where Clause In group`, async () => {
                 const getFileResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
                     where: `Description IN ('${folderFiletempDescription} 1', '${folderFiletempDescription} 2')`,
-                    order_by: 'Key'
+                    order_by: 'Key',
                 });
                 expect(getFileResponse).to.be.an('Array').with.lengthOf(2);
                 expect(getFileResponse[0].Description).to.include(folderFiletempDescription + ' 1');

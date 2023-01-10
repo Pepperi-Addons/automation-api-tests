@@ -341,7 +341,6 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let legacyPageAccounts;
 
             it('Create Account', async () => {
-
                 accounts = await objectsService.getAccounts();
                 accountExternalID = 'Automated API Account' + Math.floor(Math.random() * 1000000).toString();
                 legacyAccountExternalID = 'Automated API Account' + Math.floor(Math.random() * 1000000).toString();
@@ -552,7 +551,11 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     });
                     expect(legacyFieldsAccounts.Objects.length).to.equal(legacyAccounts.length);
                     expect(legacyFieldsAccounts.Objects).to.deep.equal([
-                        { InternalID: accounts[0].InternalID, ExternalID: accounts[0].ExternalID, Key: accounts[0].UUID },
+                        {
+                            InternalID: accounts[0].InternalID,
+                            ExternalID: accounts[0].ExternalID,
+                            Key: accounts[0].UUID,
+                        },
                     ]);
                 });
 
@@ -566,14 +569,18 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
             describe('DIMX + Delete', () => {
                 it('DIMX export', async () => {
-                    const accountsForComparison = await objectsService.getAccounts({page_size: -1});
+                    const accountsForComparison = await objectsService.getAccounts({ page_size: -1 });
                     const exportAudit = await service.dimxExport('accounts');
                     const dimxResult = await service.getDimxResult(exportAudit.URI);
-                    dimxResult.forEach(object => {
+                    dimxResult.forEach((object) => {
                         delete object['Key'];
-                      });
-                    accountsForComparison.sort((a,b) => {return a.InternalID! - b.InternalID!});
-                    dimxResult.sort((a,b) => {return a.InternalID - b.InternalID});
+                    });
+                    accountsForComparison.sort((a, b) => {
+                        return (a as any).InternalID - (b as any).InternalID;
+                    });
+                    dimxResult.sort((a, b) => {
+                        return a.InternalID - b.InternalID;
+                    });
                     expect(accountsForComparison.length).to.equal(dimxResult.length);
                     expect(accountsForComparison).to.deep.equal(dimxResult);
                 });
@@ -825,7 +832,12 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 contacts = await objectsService.getContacts();
                 contactExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
                 legacyContactExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
-                contactEmail = 'Email' + Math.floor(Math.random() * 1000000).toString() + '@' + Math.floor(Math.random() * 1000000).toString() + '.com'
+                contactEmail =
+                    'Email' +
+                    Math.floor(Math.random() * 1000000).toString() +
+                    '@' +
+                    Math.floor(Math.random() * 1000000).toString() +
+                    '.com';
                 accountForContact = await objectsService.getAccounts();
                 accountForContact = accountForContact[0];
 
@@ -880,11 +892,16 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 expect(legacyCreatedContact.ModificationDateTime).to.include('Z');
                 expect(legacyCreatedContact).to.have.property('TypeDefinitionID').that.is.a('number');
                 expect(legacyCreatedContact).to.have.property('Key').that.equals(legacyCreatedContact.UUID);
-                expect(legacyCreatedContact.Account.Data).to.have.property('InternalID').that.equals(accountForContact.InternalID);
+                expect(legacyCreatedContact.Account.Data)
+                    .to.have.property('InternalID')
+                    .that.equals(accountForContact.InternalID);
                 expect(legacyCreatedContact.Account.Data).to.have.property('UUID').that.equals(accountForContact.UUID);
-                expect(legacyCreatedContact.Account.Data).to.have.property('ExternalID').that.equals(accountForContact.ExternalID);
+                expect(legacyCreatedContact.Account.Data)
+                    .to.have.property('ExternalID')
+                    .that.equals(accountForContact.ExternalID);
                 expect(legacyCreatedContact.Account)
-                .to.have.property('URI').that.equals(`/accounts/${accountForContact.InternalID}`);
+                    .to.have.property('URI')
+                    .that.equals(`/accounts/${accountForContact.InternalID}`);
                 expect(legacyCreatedContact).to.have.property('Profile').that.is.null;
             });
 
@@ -1035,7 +1052,11 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     });
                     expect(legacyFieldsContacts.Objects.length).to.equal(legacyContacts.length);
                     expect(legacyFieldsContacts.Objects).to.deep.equal([
-                        { InternalID: contacts[0].InternalID, ExternalID: contacts[0].ExternalID, Key: contacts[0].UUID },
+                        {
+                            InternalID: contacts[0].InternalID,
+                            ExternalID: contacts[0].ExternalID,
+                            Key: contacts[0].UUID,
+                        },
                     ]);
                 });
 
@@ -1254,10 +1275,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
         // });
 
         describe('AccountUsers', () => {
-            let AccountUsers;
             let account;
             let legacyAccount;
-            let accountExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
+            const accountExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
             let users;
             let legacyCreatedAccountUsers;
             let createdAccountUsers;
@@ -1265,24 +1285,23 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             it('Create AccountUsers', async () => {
                 account = await objectsService.createAccount({
                     ExternalID: accountExternalID,
-                    Name: accountExternalID
+                    Name: accountExternalID,
                 });
 
                 legacyAccount = await objectsService.createAccount({
                     ExternalID: accountExternalID + ' L',
-                    Name: accountExternalID + ' L'
+                    Name: accountExternalID + ' L',
                 });
                 users = await objectsService.getUsers();
-                AccountUsers = await objectsService.getAccountUsers();
 
                 createdAccountUsers = await objectsService.postAccountUsers({
-                    Account: {Data: {InternalID: account.InternalID}},
-                    User: {Data: {InternalID: users[0].InternalID}}
+                    Account: { Data: { InternalID: account.InternalID } },
+                    User: { Data: { InternalID: users[0].InternalID } },
                 });
 
                 legacyCreatedAccountUsers = await service.post('account_users', {
                     Account: legacyAccount.UUID,
-                    User: users[0].UUID
+                    User: users[0].UUID,
                 });
 
                 createdAccountUsers.Key = createdAccountUsers.UUID;
@@ -1294,7 +1313,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 expect(legacyCreatedAccountUsers).to.have.property('ConnectedWithFullAccountAccess').that.is.false;
                 expect(legacyCreatedAccountUsers.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(legacyCreatedAccountUsers.CreationDateTime).to.include('Z');
-                expect(legacyCreatedAccountUsers.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(legacyCreatedAccountUsers.ModificationDateTime).to.include(
+                    new Date().toISOString().split('T')[0],
+                );
                 expect(legacyCreatedAccountUsers.ModificationDateTime).to.include('Z');
                 expect(legacyCreatedAccountUsers).to.have.property('InternalID').that.is.a('Number');
                 expect(legacyCreatedAccountUsers).to.have.property('User').that.is.equals(users[0].UUID);
@@ -1315,9 +1336,17 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     legacyCreatedAccountUsers.InternalID,
                 );
                 expect(getAccountUsersByInternalID).to.deep.equal(legacyCreatedAccountUsers);
-                const getAccountUsersByUUID = await service.getByUniqueKey('account_users', 'UUID', legacyCreatedAccountUsers.UUID);
+                const getAccountUsersByUUID = await service.getByUniqueKey(
+                    'account_users',
+                    'UUID',
+                    legacyCreatedAccountUsers.UUID,
+                );
                 expect(getAccountUsersByUUID).to.deep.equal(legacyCreatedAccountUsers);
-                const getAccountUsersByKey = await service.getByUniqueKey('account_users', 'Key', legacyCreatedAccountUsers.Key);
+                const getAccountUsersByKey = await service.getByUniqueKey(
+                    'account_users',
+                    'Key',
+                    legacyCreatedAccountUsers.Key,
+                );
                 expect(getAccountUsersByKey).to.deep.equal(legacyCreatedAccountUsers);
                 await expect(service.getByUniqueKey('account_users', 'InternalID', '123412')).eventually.to.be.rejected;
                 await expect(service.getByUniqueKey('account_users', 'Price', '123412')).eventually.to.be.rejected;
@@ -1363,7 +1392,12 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         `account_users?where=UUID IN ('${legacyAccountUsers[0].UUID}','${legacyAccountUsers[1].UUID}','${legacyAccountUsers[2].UUID}','${legacyAccountUsers[3].UUID}')`,
                     );
                     const legacyKeyListAccountUsers = await service.search('account_users', {
-                        KeyList: [legacyAccountUsers[0].UUID, legacyAccountUsers[1].UUID, legacyAccountUsers[2].UUID, legacyAccountUsers[3].UUID],
+                        KeyList: [
+                            legacyAccountUsers[0].UUID,
+                            legacyAccountUsers[1].UUID,
+                            legacyAccountUsers[2].UUID,
+                            legacyAccountUsers[3].UUID,
+                        ],
                     });
                     expect(legacyKeyListAccountUsers.Objects.length).to.equal(legacyAccountUsers.length);
                     expect(legacyKeyListAccountUsers.Objects).to.deep.equal(legacyAccountUsers);
@@ -1394,7 +1428,11 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     });
                     expect(legacyFieldsAccountUsers.Objects.length).to.equal(legacyAccountUsers.length);
                     expect(legacyFieldsAccountUsers.Objects).to.deep.equal([
-                        { UUID: legacyAccountUsers[0].UUID, Hidden: legacyAccountUsers[0].Hidden, Key: legacyAccountUsers[0].UUID },
+                        {
+                            UUID: legacyAccountUsers[0].UUID,
+                            Hidden: legacyAccountUsers[0].Hidden,
+                            Key: legacyAccountUsers[0].UUID,
+                        },
                     ]);
                 });
 
@@ -1407,14 +1445,20 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
                 describe('DIMX + Delete', () => {
                     it('DIMX export', async () => {
-                        const accountsUsersForComparison = await objectsService.getAccountUsersClause('where=Hidden=0&page_size=-1');
+                        const accountsUsersForComparison = await objectsService.getAccountUsersClause(
+                            'where=Hidden=0&page_size=-1',
+                        );
                         const exportAudit = await service.dimxExport('account_users');
                         const dimxResult = await service.getDimxResult(exportAudit.URI);
-                        dimxResult.forEach(object => {
+                        dimxResult.forEach((object) => {
                             delete object['Key'];
-                          });
-                          accountsUsersForComparison.sort((a,b) => {return a.InternalID - b.InternalID});
-                        dimxResult.sort((a,b) => {return a.InternalID - b.InternalID});
+                        });
+                        accountsUsersForComparison.sort((a, b) => {
+                            return a.InternalID - b.InternalID;
+                        });
+                        dimxResult.sort((a, b) => {
+                            return a.InternalID - b.InternalID;
+                        });
                         expect(accountsUsersForComparison.length).to.equal(dimxResult.length);
                     });
 
@@ -1442,7 +1486,6 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         expect(deletedAccount1).to.have.property('Hidden').that.is.true;
                     });
                 });
-
             });
         });
     });
