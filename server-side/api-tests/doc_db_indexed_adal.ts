@@ -90,7 +90,6 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             it('Test Initiation', async () => {
                 // this will run the first test that will run the second and so on..Its test initiation
                 await getSecretKey();
-                //await createSchemaHardLimitNegative();
             });
             it('Get schema from GR (type PAPI, name accounts', async () => {
                 assert(logcash.getPapiSchemaStatus, logcash.getPapiSchemaErrorMessage);
@@ -158,6 +157,17 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 assert(logcash.dropSurveyTableStatus, logcash.dropSurveyTableError);
             });
         });
+        describe('Search by KeyList(on elastic) and SuperTypes verification', () => {
+            it('Get dedicated schema - SuperTypes verification', () => {
+                assert(logcash.getFromDedicatedStatus, logcash.getFromDedicatedError);
+            });
+            it('Search by Keys', () => {
+                assert(logcash.searchPostStatus, logcash.searchPostError);
+            });
+            it('Drop created schems ', () => {
+                assert(logcash.dropTablesStatus, logcash.dropTablesError);
+            });
+        });
     });
 
     //#endregion Mocha
@@ -171,7 +181,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             throw new Error(`Fail To Get Addon Secret Key ${error}`);
         }
         //Oren added this to skip insatll after I talked with Oleg, the installADallAddon, upgradADallAddon and getAuditLogInstallStatus functions are suspended for now
-        //await installADallAddon();
+        //await  createAbstractSchemaPositive();
         await getPapiSchema();
     }
 
@@ -577,7 +587,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
         //     for (let index = 0; index < logcash.getDataDedicated.length - 1; index++) {
         if (
             logcash.searchURL ==
-            '/v1.0/addons/shared_index/index/' +
+            '/addons/shared_index/index/' +
                 logcash.createSecondSchema1.DataSourceData.IndexName +
                 '/search/' +
                 adalOwnerId +
@@ -589,7 +599,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.searchURLStatus = true;
         } else {
             logcash.searchURLStatus = false;
-            logcash.searchURLError = 'Will get one field value';
+            logcash.searchURLError = ' GET wrong URL';
         }
         //debugger;
         await getDataDedicated1();
@@ -728,7 +738,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.getFromAdal2Status = false;
             logcash.getFromAdal2Error = 'Accounts table document with key 5 not updated on ADAL table';
         }
-        generalService.sleep(30000);
+        generalService.sleep(40000);
         const res2 = await getFromElastic1();
         //debugger;
         if (res2.test == '123' && res2['Account.Name'] == 'Updated first table') {
@@ -938,9 +948,340 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.createSchemaHardLimitNegativeErrorMessage =
                 'The schema creation will failed. The indexed fields hard limit is 20';
         }
-        //await getDedicatedSchemeAferUpsert();
+        await createAbstractSchemaPositive();
     }
     //#endregion - hard limit
+
+    //#region New search by Keys function
+    async function createAbstractSchemaPositive() {
+        //extendet schema
+        //user define is default = false
+        logcash.createAbstractSchemaPositive = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': whaitOwnerUUID,
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    //Name: 'Test-positive' + newUuid(),
+                    Name: 'Test_positive' + generalService.generateRandomString(16),
+                    Type: 'abstract', // will be abstract type
+                    DataSourceData: {
+                        IndexName: 'my_index_' + generalService.generateRandomString(3),
+                    },
+                    UserDefined: true,
+                    Fields: {
+                        testString1: { Type: 'String', Indexed: true },
+                    },
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.createAbstractSchemaPositive.Name.includes('Test_positive')) {
+            logcash.createAbstractSchemaPositiveStatus = true;
+        } else {
+            logcash.createAbstractSchemaPositiveStatus = false;
+            logcash.createAbstractSchemaPositiveErrorMessage =
+                'Schema will be created successfully, but actually failed';
+        }
+        await createSchema1();
+    }
+
+    async function createSchema1() {
+        logcash.createSchema1 = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': whaitOwnerUUID,
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'search1_test' + generalService.generateRandomString(16),
+                    Type: 'data',
+                    DataSourceData: {
+                        IndexName: 'my_index_' + generalService.generateRandomString(3),
+                        //NumberOfShards: 3
+                    },
+                    StringIndexName: 'my_index',
+                    Fields: {
+                        Name1: { Type: 'String' },
+                        Name2: { Type: 'String', Indexed: true },
+                        Num1: { Type: 'Integer', Indexed: true },
+                    },
+                    Extends: {
+                        AddonUUID: whaitOwnerUUID,
+                        Name: logcash.createAbstractSchemaPositive.Name,
+                    },
+                }),
+            })
+            .then((res) => res.Body);
+
+        //debugger;
+        if (
+            logcash.createSchema1.Name.includes('search1_test') &&
+            logcash.createSchema1.Hidden == false &&
+            logcash.createSchema1.Type == 'data' &&
+            logcash.createSchema1.Fields.Name1.Type == 'String'
+            // logcash.createMainSchema.DataSourceData.IndexName.includes('my_index')
+        ) {
+            logcash.createSchema1Status = true;
+        } else {
+            logcash.createSchema1Status = false;
+            logcash.createSchema1ErrorMessage = 'Schema1 creation failed';
+        }
+        await insertDataToSchema1();
+    }
+
+    async function insertDataToSchema1() {
+        logcash.insertDataToSchema1 = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSchema1.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    Key: '5',
+                    Name1: 'Tab1',
+                    Name2: 'Tab2',
+                    Num1: 10,
+                    testString1: 'abs1',
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.insertDataToSchema1[0] == 200) {
+            logcash.insertDataToSchema1Status = true;
+        } else {
+            logcash.insertDataToSchema1Status = false;
+            logcash.insertDataToSchema1Error = 'Insert data to Schema1 table failed';
+        }
+        //debugger;
+        //await createSecondSchema();
+        await createSchema2();
+    }
+    async function createSchema2() {
+        logcash.createSchema2 = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': whaitOwnerUUID,
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'search2_test' + generalService.generateRandomString(16),
+                    Type: 'data',
+                    // DataSourceData: {
+                    //     IndexName: 'my_index_' + generalService.generateRandomString(3),
+                    //NumberOfShards: 3
+                    // },
+                    StringIndexName: 'my_index',
+                    Fields: {
+                        Name1_1: { Type: 'String' },
+                        Name2_1: { Type: 'String', Indexed: true },
+                        Num1: { Type: 'Integer', Indexed: true },
+                    },
+                    Extends: {
+                        AddonUUID: whaitOwnerUUID,
+                        Name: logcash.createAbstractSchemaPositive.Name,
+                    },
+                }),
+            })
+            .then((res) => res.Body);
+
+        //debugger;
+        if (
+            logcash.createSchema2.Name.includes('search2_test') &&
+            logcash.createSchema2.Hidden == false &&
+            logcash.createSchema2.Type == 'data' //&&
+            //logcash.createSchema1.Fields.Name.Type == 'String'
+            // logcash.createMainSchema.DataSourceData.IndexName.includes('my_index')
+        ) {
+            logcash.createSchema2Status = true;
+        } else {
+            logcash.createSchema2Status = false;
+            logcash.createSchema2ErrorMessage = 'Schema2 creation failed';
+        }
+        await insertDataToSchema2();
+    }
+
+    async function insertDataToSchema2() {
+        logcash.insertDataToSchema2 = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSchema2.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    Key: '7',
+                    Name1_1: 'Tab1_2',
+                    Name2_1: 'Tab2_2',
+                    Num1: 5,
+                    testString1: 'abs2',
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.insertDataToSchema2[0] == 200) {
+            logcash.insertDataToSchema2Status = true;
+        } else {
+            logcash.insertDataToSchema2Status = false;
+            logcash.insertDataToSchema2Error = 'Insert data to Schema1 table failed';
+        }
+        //debugger;
+        //await createSecondSchema();
+        generalService.sleep(20000);
+        await getFromDedicated();
+    }
+
+    async function getFromDedicated() {
+        // get data from elastic
+        //logcash.getDataDedicatedStatus = true;
+        logcash.getFromDedicated = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/shared_index/index/' +
+                    logcash.createSchema2.DataSourceData.IndexName +
+                    '/' +
+                    adalOwnerId +
+                    '/' +
+                    whaitOwnerUUID +
+                    '~' +
+                    logcash.createSchema2.Name +
+                    '?fields=testString1,ElasticSearchType,Key',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        // if (logcash.getDataDedicated.length == 10) {
+        //     for (let index = 0; index < logcash.getDataDedicated.length - 1; index++) {
+        if (
+            logcash.getFromDedicated.length == 1 &&
+            logcash.getFromDedicated[0].ElasticSearchType.includes('search2_test') &&
+            logcash.getFromDedicated[0].Key &&
+            logcash.getFromDedicated[0].testString1 == 'abs2'
+        ) {
+            logcash.getFromDedicatedStatus = true;
+        } else {
+            logcash.getFromDedicatedStatus = false;
+            logcash.getFromDedicatedError = 'Will get SuperTypes value';
+        }
+        //debugger;
+        await searchPost();
+    }
+
+    async function searchPost() {
+        //logcash.searchPostStatus = false;
+        logcash.searchPost = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/api/' +
+                    adalOwnerId +
+                    '/api/search_abstract?table=' +
+                    logcash.createAbstractSchemaPositive.Name +
+                    '&addon_uuid=' +
+                    whaitOwnerUUID,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //  'X-Pepperi-OwnerID': addonUUID,
+                        //  'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        KeyList: [
+                            { Key: '5', ElasticSearchType: logcash.createSchema1.Name },
+                            { Key: '7', ElasticSearchType: logcash.createSchema2.Name },
+                        ],
+                        Fields: 'Name1,Name1_1,Num1,testString1',
+                    }),
+                },
+            )
+            .then((res) => res.Body);
+
+        //debugger;
+        if (logcash.searchPost.Objects.length == 2 && logcash.searchPost.Objects[0].Name1 == undefined) {
+            if (
+                logcash.searchPost.Objects[0].Name1_1 == 'Tab1_2' &&
+                logcash.searchPost.Objects[0].testString1 == 'abs2' &&
+                logcash.searchPost.Objects[0].Num1 == 5 &&
+                logcash.searchPost.Objects[1].Name1 == 'Tab1' &&
+                logcash.searchPost.Objects[1].testString1 == 'abs1' &&
+                logcash.searchPost.Objects[1].Num1 == 10
+            ) {
+                logcash.searchPostStatus = true;
+            } else {
+                logcash.searchPostStatus = false;
+                logcash.searchPostError = 'The search by key return wrong values';
+            }
+        } else if (logcash.searchPost.Objects.length == 2 && logcash.searchPost.Objects[0].Name1_1 == undefined) {
+            if (
+                logcash.searchPost.Objects[1].Name1_1 == 'Tab1_2' &&
+                logcash.searchPost.Objects[1].testString1 == 'abs2' &&
+                logcash.searchPost.Objects[1].Num1 == 5 &&
+                logcash.searchPost.Objects[0].Name1 == 'Tab1' &&
+                logcash.searchPost.Objects[0].testString1 == 'abs1' &&
+                logcash.searchPost.Objects[0].Num1 == 10
+            ) {
+                logcash.searchPostStatus = true;
+            } else {
+                logcash.searchPostStatus = false;
+                logcash.searchPostError = 'The search by key return wrong values';
+            }
+        }
+        logcash.dropTablesCount = 0;
+        logcash.dropTablesSchemaName = logcash.createAbstractSchemaPositive.Name;
+        await dropTables();
+    }
+
+    async function dropTables() {
+        //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
+        const res = await generalService.fetchStatus(
+            baseURL + '/addons/data/schemes/' + logcash.dropTablesSchemaName + '/purge',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': whaitOwnerUUID,
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+            },
+        ); //.then((data) => data.json())
+        debugger;
+
+        //if(logcash.dropExistingTable.success == true){
+        if (res.Ok) {
+            logcash.dropTablesCount++;
+            if (logcash.dropTablesCount == 1) {
+                logcash.dropTablesSchemaName = logcash.createSchema1.Name;
+                await dropTables();
+            } else if (logcash.dropTablesCount == 2) {
+                logcash.dropTablesSchemaName = logcash.createSchema2.Name;
+                //await dropTables();
+                logcash.dropTablesStatus = true;
+            }
+        } else {
+            logcash.dropTablesStatus = false;
+            logcash.dropTablesError = 'Drop tables failed.';
+        }
+        //await dropExtendingTable();
+    }
+
+    //#endregion
     /////////////////////////////////Get from ADAL and from Elastic
     async function getSurveyScheme1() {
         logcash.getSurveyScheme1 = await generalService
