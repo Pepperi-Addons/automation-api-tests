@@ -793,6 +793,7 @@ export default class GeneralService {
                 addonName == 'Relations Framework' || // evgeny 4/12: done to be able to test latest relation fw version
                 addonName == 'Pepperitest (Jenkins Special Addon) - Code Jobs' || // evgeny 6/12: trying to fix wiered jenkins issue
                 addonName == 'Audit Log' || // evgeny 13/12: newest audit to fix SB
+                addonName == 'Notification Service' || // evgeny 15/1/23: to get newest PNS we have
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;

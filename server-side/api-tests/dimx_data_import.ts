@@ -64,7 +64,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
     };
-    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.7.36'];
 
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
