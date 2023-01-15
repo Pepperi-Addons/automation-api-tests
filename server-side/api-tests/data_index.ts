@@ -354,7 +354,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
     }
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    debugger;
+    //debugger;
     //#endregion Upgrade Data Index
 
     // var date = new Date();
