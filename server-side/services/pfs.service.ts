@@ -120,6 +120,15 @@ export class PFSService {
             .then((res) => res.Body);
     }
 
+    async getPFSSchema(pfsSchemaName) {
+        return await this.generalService.fetchStatus('/addons/data/schemes/' + pfsSchemaName, {
+            method: 'GET',
+            headers: {
+                'X-Pepperi-OwnerID': '00000000-0000-0000-0000-0000000f11e5',
+            },
+        });
+    }
+
     async hardDelete(distUUID, addonUUID, addonSecretKey, fileKey) {
         return await this.generalService.fetchStatus(
             '/addons/api/00000000-0000-0000-0000-00000000ada1/api/hard_delete?addon_uuid=00000000-0000-0000-0000-0000000f11e5&table=S3ObjectsMetadata&key=' +
