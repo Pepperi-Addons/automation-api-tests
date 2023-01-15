@@ -138,7 +138,11 @@ export class Slugs extends AddonPage {
 
     public async getSlugUUIDbySlugName(slugName: string, client: Client) {
         const allSlugs = await this.getSlugs(client);
-        const findSlugBySlugName = allSlugs.Body.find(slugObj => { if (slugObj.Slug === slugName) { return slugObj.Key } });
+        const findSlugBySlugName = allSlugs.Body.find((slugObj) => {
+            if (slugObj.Slug === slugName) {
+                return slugObj.Key;
+            }
+        });
         return findSlugBySlugName.Key;
     }
 }

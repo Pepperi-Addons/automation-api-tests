@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { Browser } from './browser';
 import { WebAppHeader } from '../pom/WebAppHeader';
 import { WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
@@ -14,7 +13,7 @@ import {
 } from '@pepperi-addons/papi-sdk';
 import { BasePomObject } from '../pom/base/BasePomObject';
 
-export default class ResourceListUtils extends BasePomObject{
+export default class ResourceListUtils extends BasePomObject {
     public constructor(protected browser: Browser) {
         super(browser);
     }
@@ -50,16 +49,20 @@ export default class ResourceListUtils extends BasePomObject{
         return;
     }
 
-    public async addEditor(editorData: { nameOfEditor: string, descriptionOfEditor: string, nameOfResource: string }) {
+    public async addEditor(editorData: { nameOfEditor: string; descriptionOfEditor: string; nameOfResource: string }) {
         const rlEditors: ResourceEditors = new ResourceEditors(this.browser);
         await this.navigateTo('Resource Views');
         await rlEditors.clickTab('Editors_Tab');
         await rlEditors.validateEditorsListPageIsLoaded();
-        await rlEditors.addToResourceList(editorData.nameOfEditor, editorData.descriptionOfEditor, editorData.nameOfResource);
+        await rlEditors.addToResourceList(
+            editorData.nameOfEditor,
+            editorData.descriptionOfEditor,
+            editorData.nameOfResource,
+        );
         await rlEditors.verifyEditorEditPageOpen(editorData.nameOfEditor);
     }
 
-    public async addView(viewData: { nameOfView: string, descriptionOfView: string, nameOfResource: string }) {
+    public async addView(viewData: { nameOfView: string; descriptionOfView: string; nameOfResource: string }) {
         const rlViews: ResourceViews = new ResourceViews(this.browser);
         await this.navigateTo('Resource Views');
         await rlViews.validateViewsListPageIsLoaded();
@@ -92,6 +95,13 @@ export default class ResourceListUtils extends BasePomObject{
         await resourceViews.deleteAll();
     }
 
+    public async deleteAllPagesViaUI() {
+        const pageBuilder: PageBuilder = new PageBuilder(this.browser);
+        await this.navigateTo('Page Builder');
+        await pageBuilder.validatePageBuilderIsLoaded();
+        await pageBuilder.deleteAll();
+    }
+
     public async gotoEditPageOfSelectedEditorByName(editorName: string) {
         const resourceEditors: ResourceEditors = new ResourceEditors(this.browser);
         await this.navigateTo('Resource Views');
@@ -112,13 +122,21 @@ export default class ResourceListUtils extends BasePomObject{
         // Add Editor
         const editor_name = `${resourceName}_RL_Editors_Test_${uniqueName}`;
         const editor_decsription = `${resourceName} Editor for RL automated testing`;
-        await this.addEditor({ nameOfEditor: editor_name, descriptionOfEditor: editor_decsription, nameOfResource: resourceName });
+        await this.addEditor({
+            nameOfEditor: editor_name,
+            descriptionOfEditor: editor_decsription,
+            nameOfResource: resourceName,
+        });
         // Configure Editor
         await resourceEditors.basicEditorConfig();
         // Add View
         const view_name = `${resourceName}_RL_Views_Test_${uniqueName}`;
         const view_decsription = `${resourceName} View for RL automated testing`;
-        await this.addView({ nameOfView: view_name, descriptionOfView: view_decsription, nameOfResource: resourceName });
+        await this.addView({
+            nameOfView: view_name,
+            descriptionOfView: view_decsription,
+            nameOfResource: resourceName,
+        });
         // Configure View
         await resourceViews.basicViewConfig(editor_name);
         // Create Page
@@ -193,10 +211,10 @@ export default class ResourceListUtils extends BasePomObject{
         return fields;
     }
 
-    public prepareDataForDragAndDropAtSlugs(slugsData: {slug_path: string, slugUUID: string}[]) {
+    public prepareDataForDragAndDropAtSlugs(slugsData: { slug_path: string; slugUUID: string }[]) {
         const fields: MenuDataViewField[] = [];
         let field: MenuDataViewField;
-        slugsData.forEach((slugData: {slug_path: string, slugUUID: string}) => {
+        slugsData.forEach((slugData: { slug_path: string; slugUUID: string }) => {
             field = new SlugField(slugData.slug_path, slugData.slugUUID);
             fields.push(field);
         });

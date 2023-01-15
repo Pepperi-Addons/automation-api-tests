@@ -11,11 +11,7 @@ import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import ResourceListUtils from '../utilities/resource_list';
 import { BaseFormDataViewField, GridDataViewField, MenuDataViewField } from '@pepperi-addons/papi-sdk';
 
-import {
-    UpsertResourceFieldsToEditor,
-    UpsertResourceFieldsToView,
-    UpsertFieldsToMappedSlugs,
-} from '../blueprints/DataViewBlueprints';
+import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
 
 import { ResourceListBasicViewerEditorBlocksStructurePage } from '../blueprints/PageBlocksBlueprints';
 import { ResourceListBlock } from '../pom/ResourceList.block';
@@ -26,7 +22,7 @@ chai.use(promised);
 export async function ResourceListTests(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
     const dataViewsService = new DataViewsService(generalService.papiClient);
-    const papi_resources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
+    // const papi_resources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
 
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
@@ -54,10 +50,11 @@ export async function ResourceListTests(email: string, password: string, varPass
     let slugDisplayName: string;
     let slug_path: string;
     let pageName: string;
+    let createdPage: { page: any; name: string };
     let resource_at_block: string;
 
     const detailsByResource = {
-        'accounts': {
+        accounts: {
             view_fields_names: ['Name', 'Email', 'Country', 'City', 'Type', 'UUID'],
             view_fields: [
                 { fieldName: 'Name', dataViewType: 'TextBox', mandatory: true, readonly: true },
@@ -68,7 +65,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 { fieldName: 'UUID', dataViewType: 'TextBox', mandatory: true, readonly: true },
             ],
         },
-        'items': {
+        items: {
             view_fields_names: ['Name', 'Price', 'Discount', 'UPC', 'UUID', 'Image', 'ExternalID'],
             view_fields: [
                 { fieldName: 'Name', dataViewType: 'TextBox', mandatory: true, readonly: true },
@@ -80,8 +77,17 @@ export async function ResourceListTests(email: string, password: string, varPass
                 { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: true, readonly: true },
             ],
         },
-        'users': {
-            view_fields_names: ['ExternalID', 'Email', 'FirstName', 'LastName', 'Mobile', 'Phone', 'IsInTradeShowMode', 'UUID'],
+        users: {
+            view_fields_names: [
+                'ExternalID',
+                'Email',
+                'FirstName',
+                'LastName',
+                'Mobile',
+                'Phone',
+                'IsInTradeShowMode',
+                'UUID',
+            ],
             view_fields: [
                 { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: true, readonly: true },
                 { fieldName: 'Email', dataViewType: 'TextBox', mandatory: true, readonly: true },
@@ -93,8 +99,8 @@ export async function ResourceListTests(email: string, password: string, varPass
                 { fieldName: 'UUID', dataViewType: 'TextBox', mandatory: true, readonly: true },
             ],
         },
-        'catalogs': {
-            view_fields_names: ["UUID", "ExternalID", "Description", "ExpirationDate", "IsActive", "TSAImage"],
+        catalogs: {
+            view_fields_names: ['UUID', 'ExternalID', 'Description', 'ExpirationDate', 'IsActive', 'TSAImage'],
             view_fields: [
                 { fieldName: 'UUID', dataViewType: 'TextBox', mandatory: true, readonly: true },
                 { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: true, readonly: true },
@@ -104,17 +110,22 @@ export async function ResourceListTests(email: string, password: string, varPass
                 { fieldName: 'TSAImage', dataViewType: 'TextBox', mandatory: true, readonly: true },
             ],
         },
-        'account_users': {
-            view_fields_names: ["Account", "User", "ConnectedWithFullAccountAccess", "UUID"],
+        account_users: {
+            view_fields_names: ['Account', 'User', 'ConnectedWithFullAccountAccess', 'UUID'],
             view_fields: [
                 { fieldName: 'Account', dataViewType: 'TextBox', mandatory: true, readonly: true },
                 { fieldName: 'User', dataViewType: 'TextBox', mandatory: true, readonly: true },
-                { fieldName: 'ConnectedWithFullAccountAccess', dataViewType: 'Boolean', mandatory: true, readonly: true },
+                {
+                    fieldName: 'ConnectedWithFullAccountAccess',
+                    dataViewType: 'Boolean',
+                    mandatory: true,
+                    readonly: true,
+                },
                 { fieldName: 'UUID', dataViewType: 'TextBox', mandatory: true, readonly: true },
             ],
         },
-        'contacts': {
-            view_fields_names: ["FirstName", "LastName", "Email", "IsBuyer", "Role", "TypeDefinitionID", "Status"],
+        contacts: {
+            view_fields_names: ['FirstName', 'LastName', 'Email', 'IsBuyer', 'Role', 'TypeDefinitionID', 'Status'],
             view_fields: [
                 { fieldName: 'FirstName', dataViewType: 'TextBox', mandatory: true, readonly: true },
                 { fieldName: 'LastName', dataViewType: 'TextBox', mandatory: true, readonly: true },
@@ -125,16 +136,16 @@ export async function ResourceListTests(email: string, password: string, varPass
                 { fieldName: 'Status', dataViewType: 'NumberInteger', mandatory: true, readonly: true },
             ],
         },
-        'OfflineArraysToOnline': {
-            view_fields_names: ["strArr", "intArr", "doubArr"],
+        OfflineArraysToOnline: {
+            view_fields_names: ['strArr', 'intArr', 'doubArr'],
         },
-        'NameAge': {
-            view_fields_names: ["name", "age", "Key"],
+        NameAge: {
+            view_fields_names: ['name', 'age', 'Key'],
         },
-        'Dataless': {
-            view_fields_names: ["Key", "integerhavenodata"],
+        Dataless: {
+            view_fields_names: ['Key', 'integerhavenodata'],
         },
-    }
+    };
 
     describe('Resource List UI tests', async () => {
         before(async function () {
@@ -150,7 +161,6 @@ export async function ResourceListTests(email: string, password: string, varPass
             pageBuilder = new PageBuilder(driver);
             slugs = new Slugs(driver);
             resourceListUtils = new ResourceListUtils(driver);
-
         });
 
         after(async function () {
@@ -197,17 +207,17 @@ export async function ResourceListTests(email: string, password: string, varPass
                 expect(listTitle).to.equal('Views');
                 const resultsDivText = await (await driver.findElement(resourceList.ResultsDiv)).getText();
                 expect(resultsDivText).to.contain('result');
-                await resourceViews.deleteAll();
-                const numberOfResults = await (await driver.findElement(resourceList.NumberOfItemsInList)).getText();
-                expect(Number(numberOfResults)).to.be.equal(0);
-                const noData = (await (await driver.findElement(resourceList.List_NoDataFound)).getText()).trim();
-                expect(noData).to.be.oneOf(['No Data Found', 'No results were found.']);
+                // await resourceViews.deleteAll();
+                // const numberOfResults = await (await driver.findElement(resourceList.NumberOfItemsInList)).getText();
+                // expect(Number(numberOfResults)).to.be.equal(0);
+                // const noData = (await (await driver.findElement(resourceList.List_NoDataFound)).getText()).trim();
+                // expect(noData).to.be.oneOf(['No Data Found', 'No results were found.']);
             });
 
-            it('Editors Tab', async () => {
-                await resourceList.clickTab('Editors_Tab');
-                //TODO
-            });
+            // it('Editors Tab', async () => {
+            //     await resourceList.clickTab('Editors_Tab');
+            //     //TODO
+            // });
         });
 
         describe('Operations (e.g Addition, Deletion)', async () => {
@@ -226,209 +236,239 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
         });
 
-        // describe('Pre-clean', async () => {
-        //     before(function () {
-        //         resource_name = 'NameAge';
-        //         random_name = generalService.generateRandomString(5);
-        //     });
-        //     afterEach(async function () {
-        //         driver.sleep(500);
-        //         await webAppHomePage.collectEndTestData(this);
-        //     });
+        describe('Pre-clean', async () => {
+            before(function () {
+                resource_name = 'NameAge';
+                random_name = generalService.generateRandomString(5);
+            });
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
 
-        //     it('Delete All Views', async () => {
-        //         await resourceListUtils.deleteAllViewsViaUI();
-        //     });
-        //     it('Delete All Editors', async () => {
-        //         await resourceListUtils.deleteAllEditorsViaUI();
-        //     });
-        // });
+            it('Delete All Views', async () => {
+                await resourceListUtils.deleteAllViewsViaUI();
+            });
+            it('Delete All Editors', async () => {
+                await resourceListUtils.deleteAllEditorsViaUI();
+            });
+            it('Delete All Pages', async () => {
+                await resourceListUtils.deleteAllPagesViaUI();
+            });
+        });
 
-        // describe('Pipeline', async () => {
-        //     before(function () {
-        //         resource_name = 'Dataless';
-        //         // random_name = generalService.generateRandomString(5);
-        //     });
-        //     afterEach(async function () {
-        //         driver.sleep(500);
-        //         await webAppHomePage.collectEndTestData(this);
-        //     });
+        describe('Pipeline', async () => {
+            before(function () {
+                resource_name = 'NameAge';
+                random_name = generalService.generateRandomString(5);
+            });
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
 
-        //     it('Add & Configure Editor', async () => {
-        //         // Add Editor
-        //         editorName = `${resource_name} Editor Auto_(${random_name})`;
-        //         editor_decsription = `Editor of resource: ${resource_name} - ${test_generic_decsription}`;
-        //         await resourceListUtils.addEditor({ nameOfEditor: editorName, descriptionOfEditor: editor_decsription, nameOfResource: resource_name });
-        //         // Configure Editor
-        //         await resourceListUtils.gotoEditPageOfSelectedEditorByName(editorName);
-        //         editorKey = await resourceListUtils.getUUIDfromURL();
-        //         const editorFields: BaseFormDataViewField[] =
-        //             resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-        //                 { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: true },
-        //                 { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: false },
-        //             ]);
-        //         await resourceEditors.customEditorConfig(dataViewsService, {
-        //             editorKey: editorKey,
-        //             fieldsToConfigureInView: editorFields
-        //         });
-        //         resourceEditors.pause(5 * 1000);
-        //     });
-        //     it('Add & Configure View', async () => {
-        //         // Add View
-        //         viewName = `${resource_name} View Auto_(${random_name})`;
-        //         view_decsription = `View of resource: ${resource_name} - ${test_generic_decsription}`;
-        //         await resourceListUtils.addView({ nameOfView: viewName, descriptionOfView: view_decsription, nameOfResource: resource_name });
-        //         // Configure View
-        //         await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
-        //         viewKey = await resourceListUtils.getUUIDfromURL();
-        //         const viewFields: GridDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-        //             { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
-        //             { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: false },
-        //             { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
-        //         ]);
-        //         await resourceViews.customViewConfig(dataViewsService, {
-        //             matchingEditorName: editorName,
-        //             viewKey: viewKey,
-        //             fieldsToConfigureInView: viewFields
-        //         });
-        //         resourceViews.pause(5 * 1000);
-        //     });
-        //     it('Get Editor UUID', async () => {
-        //         await resourceListUtils.gotoEditPageOfSelectedEditorByName('Dataless Editor');
-        //         editorKey = await resourceListUtils.getUUIDfromURL();
-        //         await webAppHeader.goHome();
-        //     });
-        //     it('Get View UUID', async () => {
-        //         await resourceListUtils.gotoEditPageOfSelectedViewByName('Dataless View');
-        //         viewKey = await resourceListUtils.getUUIDfromURL();
-        //         await webAppHeader.goHome();
-        //     });
-        //     it('Create Page', async () => {
-        //         await resourceListUtils.navigateTo('Page Builder');
-        //         // debugger
-        //         await pageBuilder.validatePageBuilderIsLoaded();
-        //         // await pageBuilder.deleteAll();
-        //         await pageBuilder.addBlankPage(`${resource_name} (${random_name})`, `Automation Testing Page for resource ${resource_name}`);
-        //         driver.sleep(2 * 1000);
-        //         // await pageBuilder.addBlankPage(`My Page`, `Manual Testing`);
-        //         const pageKey = await resourceListUtils.getUUIDfromURL();
-        //         const viewerBlockKey = '2cb38ac8-3952-9ee5-7e17-860f97ac4de1';
-        //         const configurationBlockKey = 'f0eedf57-fbe6-168f-dca0-a498da63bb07';
-        //         const pageObj = new ResourceListBasicViewerEditorBlocksStructurePage(
-        //             pageKey,
-        //             [
-        //                 {
-        //                     blockKey: viewerBlockKey,
-        //                     blockResource: 'DataViewerBlock',
-        //                     collectionName: resource_name,
-        //                     selectedView: {
-        //                         selectedViewUUID: viewKey,
-        //                         selectedViewName: viewName,
-        //                     },
-        //                 },
-        //                 {
-        //                     blockKey: configurationBlockKey,
-        //                     blockResource: 'DataConfigurationBlock',
-        //                     collectionName: resource_name,
-        //                     editorUUID: editorKey,
-        //                 },
-        //             ],
-        //             [
-        //                 {
-        //                     sectionKey: 'daef8f6c-1d91-cfba-ec3c-9da2828fb800',
-        //                     listOfBlockKeys: [viewerBlockKey],
-        //                 },
-        //                 {
-        //                     sectionKey: 'e23cc2d1-3e2a-f745-d41c-60b8020fb167',
-        //                     listOfBlockKeys: [configurationBlockKey],
-        //                 },
-        //             ],
-        //         );
-        //         // console.info(`pageObj: ${JSON.stringify(pageObj, null, 2)}`)
-        //         const responseOfPublishPage = await pageBuilder.publishPage(pageObj, client);
-        //         expect(responseOfPublishPage.Ok).to.be.true;
-        //         expect(responseOfPublishPage.Status).to.equal(200);
-        //         console.info(`RESPONSE: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
-        //         pageBuilder.pause(6 * 1000);
-        //     });
-        //     it('Drag & Drop Cards to Mapped slugs', async () => {
-        //         const slugsFields: MenuDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtSlugs([
-        //             { slug_path: 'arrays', slugUUID: await slugs.getSlugUUIDbySlugName('arrays', client) },
-        //             { slug_path: 'manual_tests', slugUUID: await slugs.getSlugUUIDbySlugName('manual_tests', client) },
-        //             { slug_path: 'resource-list-0-6', slugUUID: await slugs.getSlugUUIDbySlugName('resource-list-0-6', client) },
-        //         ]);
-        //         // console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`)
-        //         const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
-        //         // console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`)
-        //         const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
-        //         console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
-        //         driver.sleep(2 * 1000);
-        //         await resourceListUtils.logOutLogIn(email, password);
-        //         await webAppHomePage.isSpinnerDone();
-        //         await resourceListUtils.navigateTo('Slugs');
-        //         await slugs.clickTab('Mapping_Tab');
-        //         driver.sleep(7 * 1000);
-        //     });
-        // });
+            it('Add & Configure Editor', async () => {
+                // Add Editor
+                editorName = `${resource_name} Editor Auto_(${random_name})`;
+                editor_decsription = `Editor of resource: ${resource_name} - ${test_generic_decsription}`;
+                await resourceListUtils.addEditor({
+                    nameOfEditor: editorName,
+                    descriptionOfEditor: editor_decsription,
+                    nameOfResource: resource_name,
+                });
+                // Configure Editor
+                await resourceListUtils.gotoEditPageOfSelectedEditorByName(editorName);
+                editorKey = await resourceListUtils.getUUIDfromURL();
+                const editorFields: BaseFormDataViewField[] =
+                    resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
+                        { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                        { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    ]);
+                await resourceEditors.customEditorConfig(dataViewsService, {
+                    editorKey: editorKey,
+                    fieldsToConfigureInView: editorFields,
+                });
+                resourceEditors.pause(5 * 1000);
+            });
+            it('Add & Configure View', async () => {
+                // Add View
+                viewName = `${resource_name} View Auto_(${random_name})`;
+                view_decsription = `View of resource: ${resource_name} - ${test_generic_decsription}`;
+                await resourceListUtils.addView({
+                    nameOfView: viewName,
+                    descriptionOfView: view_decsription,
+                    nameOfResource: resource_name,
+                });
+                // Configure View
+                await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
+                viewKey = await resourceListUtils.getUUIDfromURL();
+                const viewFields: GridDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
+                    { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                ]);
+                await resourceViews.customViewConfig(dataViewsService, {
+                    matchingEditorName: editorName,
+                    viewKey: viewKey,
+                    fieldsToConfigureInView: viewFields,
+                });
+                resourceViews.pause(5 * 1000);
+            });
+            it('Get Editor UUID', async () => {
+                await resourceListUtils.gotoEditPageOfSelectedEditorByName(editorName);
+                editorKey = await resourceListUtils.getUUIDfromURL();
+                await webAppHeader.goHome();
+            });
+            it('Get View UUID', async () => {
+                await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
+                viewKey = await resourceListUtils.getUUIDfromURL();
+                await webAppHeader.goHome();
+            });
+            it('Create Page', async () => {
+                await resourceListUtils.navigateTo('Page Builder');
+                // debugger
+                await pageBuilder.validatePageBuilderIsLoaded();
+                // await pageBuilder.deleteAll();
+                pageName = `${resource_name} Page Auto_(${random_name})`;
+                await pageBuilder.addBlankPage(pageName, `Automation Testing Page for resource ${resource_name}`);
+                driver.sleep(2 * 1000);
+                // await pageBuilder.addBlankPage(`My Page`, `Manual Testing`);
+                const pageKey = await resourceListUtils.getUUIDfromURL();
+                createdPage = await pageBuilder.getPageByUUID(pageKey, client);
+                const viewerBlockKey = createdPage.page.Blocks.find((block) => {
+                    if (block.Configuration.Resource === 'DataViewerBlock') {
+                        return block.Key;
+                    }
+                }); //'2cb38ac8-3952-9ee5-7e17-860f97ac4de1';
+                const configurationBlockKey = createdPage.page.Blocks.find((block) => {
+                    if (block.Configuration.Resource === 'DataConfigurationBlock') {
+                        return block.Key;
+                    }
+                }); //'f0eedf57-fbe6-168f-dca0-a498da63bb07';
 
-        // describe('Teardown', async () => {
-        //     afterEach(async function () {
-        //         driver.sleep(500);
-        //         await webAppHomePage.collectEndTestData(this);
-        //     });
+                console.info(`createdPage: ${JSON.stringify(createdPage, null, 2)}`);
+                // console.info(`viewerBlockKey: ${JSON.stringify(viewerBlockKey, null, 2)}`);
+                console.info(`viewerBlockKey: ${viewerBlockKey.Key}`);
+                // console.info(`configurationBlockKey: ${JSON.stringify(configurationBlockKey, null, 2)}`);
+                console.info(`configurationBlockKey: ${configurationBlockKey.Key}`);
 
-        //     it('Delete Editor', async () => {
-        //         await resourceListUtils.navigateTo('Resource Views');
-        //         await resourceEditors.clickTab('Editors_Tab');
-        //         await resourceEditors.deleteFromListByName(editorName);
-        //     });
-        //     it('Delete View', async () => {
-        //         await resourceListUtils.navigateTo('Resource Views');
-        //         await resourceViews.deleteFromListByName(viewName);
-        //     });
-        // });
+                const pageObj = new ResourceListBasicViewerEditorBlocksStructurePage(
+                    pageKey,
+                    [
+                        {
+                            blockKey: viewerBlockKey,
+                            blockResource: 'DataViewerBlock',
+                            collectionName: resource_name,
+                            selectedView: {
+                                selectedViewUUID: viewKey,
+                                selectedViewName: viewName,
+                            },
+                        },
+                        {
+                            blockKey: configurationBlockKey,
+                            blockResource: 'DataConfigurationBlock',
+                            collectionName: resource_name,
+                            editorUUID: editorKey,
+                        },
+                    ],
+                    [
+                        {
+                            sectionKey: 'daef8f6c-1d91-cfba-ec3c-9da2828fb800',
+                            listOfBlockKeys: [viewerBlockKey],
+                        },
+                        {
+                            sectionKey: 'e23cc2d1-3e2a-f745-d41c-60b8020fb167',
+                            listOfBlockKeys: [configurationBlockKey],
+                        },
+                    ],
+                );
+                // console.info(`pageObj: ${JSON.stringify(pageObj, null, 2)}`)
+                const responseOfPublishPage = await pageBuilder.publishPage(pageObj, client);
+                expect(responseOfPublishPage.Ok).to.be.true;
+                expect(responseOfPublishPage.Status).to.equal(200);
+                console.info(`RESPONSE: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
+                pageBuilder.pause(6 * 1000);
+            });
+            it('Map Page to Slug and go to Block', async () => {
+                slugDisplayName = 'Manual Tests';
+                slug_path = 'manual_tests';
+                resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
+                await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
+                await webAppHeader.goHome();
+                await webAppHomePage.isSpinnerDone();
+                await resourceListUtils.logOutLogIn(email, password);
+                await webAppHomePage.isSpinnerDone();
+                await webAppHomePage.clickOnBtn(slugDisplayName);
+                await resourceListBlock.isSpinnerDone();
+                await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
+                driver.sleep(0.5 * 1000);
+                const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
+                expect(columnsTitles.length).to.equal(detailsByResource[resource_at_block].view_fields_names.length);
+                columnsTitles.forEach(async (columnTitle) => {
+                    const columnTitleText = await columnTitle.getText();
+                    expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
+                });
+                driver.sleep(15 * 1000);
+                await webAppHeader.goHome();
+                await webAppHomePage.isSpinnerDone();
+            });
+            it('Drag & Drop Cards to Mapped slugs', async () => {
+                const slugsFields: MenuDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtSlugs([
+                    { slug_path: 'arrays', slugUUID: await slugs.getSlugUUIDbySlugName('arrays', client) },
+                    { slug_path: 'manual_tests', slugUUID: await slugs.getSlugUUIDbySlugName('manual_tests', client) },
+                    {
+                        slug_path: 'resource-list-0-6',
+                        slugUUID: await slugs.getSlugUUIDbySlugName('resource-list-0-6', client),
+                    },
+                ]);
+                // console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`)
+                const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
+                // console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`)
+                const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
+                console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
+                driver.sleep(2 * 1000);
+                await resourceListUtils.logOutLogIn(email, password);
+                await webAppHomePage.isSpinnerDone();
+                await resourceListUtils.navigateTo('Slugs');
+                await slugs.clickTab('Mapping_Tab');
+                driver.sleep(7 * 1000);
+            });
+        });
 
-        // describe('E2E Method', async () => {
-        //     beforeEach(async function () {
-        //         random_name = generalService.generateRandomString(5);
-        //     });
-        //     afterEach(async function () {
-        //         driver.sleep(500);
-        //         await webAppHomePage.collectEndTestData(this);
-        //     });
+        describe('Teardown', async () => {
+            beforeEach(async function () {
+                await driver.navigate(`https://app.pepperi.com/HomePage`);
+                await webAppHomePage.isSpinnerDone();
+            });
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
 
-        //     it('Full Flow for resource: accounts', async () => {
-        //         await resourceListUtils.createBlock('accounts', random_name);
-        //     });
+            it('Delete Editor', async () => {
+                await resourceListUtils.navigateTo('Resource Views');
+                await resourceEditors.clickTab('Editors_Tab');
+                await resourceEditors.deleteFromListByName(editorName);
+            });
+            it('Delete View', async () => {
+                await resourceListUtils.navigateTo('Resource Views');
+                await resourceViews.deleteFromListByName(viewName);
+            });
+        });
 
-        //     it('Full Flow for resource: items', async () => {
-        //         await resourceListUtils.createBlock('items', random_name);
-        //     });
+        describe('E2E Method', async () => {
+            beforeEach(async function () {
+                random_name = generalService.generateRandomString(5);
+            });
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
 
-        //     it('Full Flow for resource: users', async () => {
-        //         await resourceListUtils.createBlock('users', random_name);
-        //     });
-
-        //     it('Full Flow for resource: NameAge', async () => {
-        //         await resourceListUtils.createBlock('NameAge', random_name);
-        //     });
-
-        //     it('Full Flow for resource: IntegerArray', async () => {
-        //         await resourceListUtils.createBlock('IntegerArray', random_name);
-        //     });
-
-        //     it('Full Flow for resource: IntegerArray', async () => {
-        //         await resourceListUtils.createBlock('DoubleArray', random_name);
-        //     });
-
-        //     it('Full Flow for resource: IntegerArray', async () => {
-        //         await resourceListUtils.createBlock('StringArray', random_name);
-        //     });
-
-        //     it('Full Flow for resource: ContainedArrayNoScheme', async () => {
-        //         await resourceListUtils.createBlock('ContainedArrayNoScheme', random_name);
-        //     });
-        // });
+            it('Full Flow for resource: accounts', async () => {
+                await resourceListUtils.createBlock('accounts', random_name);
+            });
+        });
 
         describe('Blocks', async () => {
             beforeEach(async function () {
@@ -437,15 +477,10 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
             describe('PAPI Resources', async () => {
                 before(function () {
-                    // await driver.navigate(`https://app.pepperi.com/HomePage`);
-                    // await webAppHomePage.isSpinnerDone();
                     slugDisplayName = 'RL0.6';
                     slug_path = 'resource-list-0-6';
                     resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
                 });
-                // beforeEach(async function () {
-                //     pageName = 'OfflineArraysToOnline Page';
-                // });
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
@@ -464,7 +499,9 @@ export async function ResourceListTests(email: string, password: string, varPass
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                     driver.sleep(5 * 1000);
                     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    expect(columnsTitles.length).to.equal(detailsByResource[resource_at_block].view_fields_names.length);
+                    expect(columnsTitles.length).to.equal(
+                        detailsByResource[resource_at_block].view_fields_names.length,
+                    );
                     columnsTitles.forEach(async (columnTitle) => {
                         const columnTitleText = await columnTitle.getText();
                         expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
@@ -484,7 +521,9 @@ export async function ResourceListTests(email: string, password: string, varPass
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                     driver.sleep(5 * 1000);
                     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    expect(columnsTitles.length).to.equal(detailsByResource[resource_at_block].view_fields_names.length);
+                    expect(columnsTitles.length).to.equal(
+                        detailsByResource[resource_at_block].view_fields_names.length,
+                    );
                     columnsTitles.forEach(async (columnTitle) => {
                         const columnTitleText = await columnTitle.getText();
                         expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
@@ -504,7 +543,9 @@ export async function ResourceListTests(email: string, password: string, varPass
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                     driver.sleep(5 * 1000);
                     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    expect(columnsTitles.length).to.equal(detailsByResource[resource_at_block].view_fields_names.length);
+                    expect(columnsTitles.length).to.equal(
+                        detailsByResource[resource_at_block].view_fields_names.length,
+                    );
                     columnsTitles.forEach(async (columnTitle) => {
                         const columnTitleText = await columnTitle.getText();
                         expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
@@ -514,8 +555,6 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
             describe('Arrays Block', async () => {
                 before(function () {
-                    // await driver.navigate(`https://app.pepperi.com/HomePage`);
-                    // await webAppHomePage.isSpinnerDone();
                     slugDisplayName = 'Arrays';
                     slug_path = 'arrays';
                     resource_at_block = 'OfflineArraysToOnline';
@@ -527,30 +566,20 @@ export async function ResourceListTests(email: string, password: string, varPass
                     await webAppHomePage.collectEndTestData(this);
                 });
 
-                it(`Mapping ${pageName} to Slug ${slugDisplayName}`, async () => {
+                it('Arrays Block is Shown in Table', async () => {
                     await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await resourceListUtils.logOutLogIn(email, password);
                     await webAppHomePage.isSpinnerDone();
-                });
-                it('Click Button from Homepage', async () => {
-                    await webAppHomePage.clickOnBtn(slugDisplayName);
-                    await resourceListBlock.isSpinnerDone();
-                    await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-                    driver.sleep(5 * 1000);
-                    await webAppHeader.goHome();
-                    await webAppHomePage.isSpinnerDone();
-                });
-                it('Navigating to Slug via Deeplink', async () => {
                     await resourceListBlock.navigate();
                     await resourceListBlock.isSpinnerDone();
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                     driver.sleep(5 * 1000);
-                });
-                it('Arrays Block is Shown in Table', async () => {
                     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    expect(columnsTitles.length).to.equal(detailsByResource[resource_at_block].view_fields_names.length);
+                    expect(columnsTitles.length).to.equal(
+                        detailsByResource[resource_at_block].view_fields_names.length,
+                    );
                     columnsTitles.forEach(async (columnTitle) => {
                         const columnTitleText = await columnTitle.getText();
                         expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
@@ -560,8 +589,6 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
             describe('Simple Collection Block', async () => {
                 before(function () {
-                    // await driver.navigate(`https://app.pepperi.com/HomePage`);
-                    // await webAppHomePage.isSpinnerDone();
                     slugDisplayName = 'Manual Tests';
                     slug_path = 'manual_tests';
                     resource_at_block = 'NameAge';
@@ -573,7 +600,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                     await webAppHomePage.collectEndTestData(this);
                 });
 
-                it(`Mapping ${pageName} to Slug ${slugDisplayName}`, async () => {
+                it(`Mapping Page to Slug`, async () => {
                     await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
@@ -581,25 +608,18 @@ export async function ResourceListTests(email: string, password: string, varPass
                     await webAppHomePage.isSpinnerDone();
                     // expect(await webAppHeader.safeUntilIsVisible(webAppHeader.UserBtn)).eventually.to.be.true;
                 });
-                it('Click Button from Homepage', async () => {
-                    // Check Data Viewer Block Table Appears
-                    await webAppHomePage.clickOnBtn(slugDisplayName);
-                    await resourceListBlock.isSpinnerDone();
-                    await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-                    driver.sleep(5 * 1000);
-                    await webAppHeader.goHome();
-                    await webAppHomePage.isSpinnerDone();
-                });
                 it('Navigating to Slug via Deeplink', async () => {
                     // Check Data Viewer Block Table Appears
                     await resourceListBlock.navigate();
                     await resourceListBlock.isSpinnerDone();
+                });
+                it('NameAge Block is Shown in Table', async () => {
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                     driver.sleep(5 * 1000);
-                });
-                it('Arrays Block is Shown in Table', async () => {
                     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    expect(columnsTitles.length).to.equal(detailsByResource[resource_at_block].view_fields_names.length);
+                    expect(columnsTitles.length).to.equal(
+                        detailsByResource[resource_at_block].view_fields_names.length,
+                    );
                     columnsTitles.forEach(async (columnTitle) => {
                         const columnTitleText = await columnTitle.getText();
                         expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
@@ -609,8 +629,6 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
             describe('NoScheme Block', async () => {
                 before(function () {
-                    // await driver.navigate(`https://app.pepperi.com/HomePage`);
-                    // await webAppHomePage.isSpinnerDone();
                     slugDisplayName = 'Manual Tests';
                     slug_path = 'manual_tests';
                     resource_at_block = 'Dataless';
@@ -622,7 +640,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                     await webAppHomePage.collectEndTestData(this);
                 });
 
-                it(`Mapping ${pageName} to Slug ${slugDisplayName}`, async () => {
+                it(`Mapping Page to Slug`, async () => {
                     await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
@@ -632,6 +650,8 @@ export async function ResourceListTests(email: string, password: string, varPass
                 });
                 it('Click Button from Homepage', async () => {
                     // Check Data Viewer Block Table Appears
+                    await webAppHeader.goHome();
+                    await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn(slugDisplayName);
                     await resourceListBlock.isSpinnerDone();
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
@@ -643,12 +663,14 @@ export async function ResourceListTests(email: string, password: string, varPass
                     // Check Data Viewer Block Table Appears
                     await resourceListBlock.navigate();
                     await resourceListBlock.isSpinnerDone();
+                });
+                it('Dataless Block is Shown in Table', async () => {
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                     driver.sleep(5 * 1000);
-                });
-                it('Arrays Block is Shown in Table', async () => {
                     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    expect(columnsTitles.length).to.equal(detailsByResource[resource_at_block].view_fields_names.length);
+                    expect(columnsTitles.length).to.equal(
+                        detailsByResource[resource_at_block].view_fields_names.length,
+                    );
                     columnsTitles.forEach(async (columnTitle) => {
                         const columnTitleText = await columnTitle.getText();
                         expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);

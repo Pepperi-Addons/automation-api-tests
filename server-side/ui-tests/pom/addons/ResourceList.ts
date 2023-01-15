@@ -6,10 +6,12 @@ import { AddonPage } from './base/AddonPage';
 
 export class ResourceList extends AddonPage {
     // *general selectors for Resource Views*
-    public PepTopArea_title: By = By.xpath('//div[contains(@class, "pep-top-area")]/h2');
+    public PepTopArea_title: By = By.xpath('//div[contains(@class, "pep-top-area")]');
     public TabsContainer: By = By.xpath('//div[contains(@class, "mat-tab-labels")]');
     // Tabs
-    public Highlighted_Tab: By = By.xpath('//div[contains(@class,"mat-tab-labels")]/div[@role="tab"][@aria-selected="true"]/div');
+    public Highlighted_Tab: By = By.xpath(
+        '//div[contains(@class,"mat-tab-labels")]/div[@role="tab"][@aria-selected="true"]/div',
+    );
     public Views_Tab: By = this.getSelectorOfResourceListSettingsTab('Views');
     public Editors_Tab: By = this.getSelectorOfResourceListSettingsTab('Editors');
     public General_Tab: By = this.getSelectorOfResourceListSettingsTab('General');
@@ -50,7 +52,7 @@ export class ResourceList extends AddonPage {
         '//*[contains(@id,"mat-dialog")]/app-add-form/pep-dialog/div[2]/pep-generic-form/pep-page-layout/div[4]/div[2]/div/div/pep-form/fieldset/mat-grid-list/div/mat-grid-tile[3]/div/pep-field-generator/pep-select/mat-form-field/div/div[1]',
     );
     // Edit page
-    public EditPage_Title: By = By.xpath('//span[contains(text(), "Edit - ")]');
+    public EditPage_Title: By = By.xpath('//pep-top-bar/div/div/div/div/div/div[2]/span');
     public EditPage_BackToList_Button: By = By.xpath('//span[@title="Back to list"]/ancestor::button');
     public EditPage_Update_Button: By = By.xpath('//button[@data-qa="Update"]');
     // Update Popup
@@ -94,7 +96,7 @@ export class ResourceList extends AddonPage {
     }
 
     public getSelectorOfRowInListByName(name: string) {
-        return By.xpath(`//span[@id="Name"][text()="${name}"]/ancestor::pep-form`);
+        return By.xpath(`//span[@id="Name"][@title="${name}"]/ancestor::pep-textbox/ancestor::pep-form`);
     }
 
     public getSelectorOfRowInListByPartialName(name: string) {
@@ -283,7 +285,7 @@ export class ResourceList extends AddonPage {
 export class ResourceViews extends ResourceList {
     /* specific selectors for Views TAB under Resource Views */
     public Views_List_Title: By = By.xpath('//span[@title="Views"]');
-    public View_Edit_Title: By = By.xpath('//div[contains(@class,"pep-top-area")]/div[contains(@class,"header")]/h4');
+    public View_Edit_Title: By = By.xpath('//pep-top-bar/div/div/div/div/div/div[2]/span');
     // Tabs
     public Menu_Tab: By = this.getSelectorOfResourceListSettingsTab('Menu');
     public LineMenu_Tab: By = this.getSelectorOfResourceListSettingsTab('Line Menu');
@@ -336,8 +338,14 @@ export class ResourceViews extends ResourceList {
         this.pause(5 * 1000);
     }
 
-    public async customViewConfig(dataViewsService, viewData: { matchingEditorName: string, viewKey: string, fieldsToConfigureInView: GridDataViewField[] }) {
-        const resourceFieldsToAddToViewObj = new UpsertResourceFieldsToView(viewData.viewKey, viewData.fieldsToConfigureInView);
+    public async customViewConfig(
+        dataViewsService,
+        viewData: { matchingEditorName: string; viewKey: string; fieldsToConfigureInView: GridDataViewField[] },
+    ) {
+        const resourceFieldsToAddToViewObj = new UpsertResourceFieldsToView(
+            viewData.viewKey,
+            viewData.fieldsToConfigureInView,
+        );
         // POST https://papi.pepperi.com/V1.0/meta_data/data_views
         const upsertFieldsToView = await dataViewsService.postDataView(resourceFieldsToAddToViewObj);
         console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToView, null, 2)}`);
@@ -431,8 +439,14 @@ export class ResourceEditors extends ResourceList {
         await this.click(this.EditPage_BackToList_Button);
     }
 
-    public async customEditorConfig(dataViewsService, editorData: { editorKey: string, fieldsToConfigureInView: BaseFormDataViewField[] }) {
-        const resourceFieldsToAddToEditorObj = new UpsertResourceFieldsToEditor(editorData.editorKey, editorData.fieldsToConfigureInView);
+    public async customEditorConfig(
+        dataViewsService,
+        editorData: { editorKey: string; fieldsToConfigureInView: BaseFormDataViewField[] },
+    ) {
+        const resourceFieldsToAddToEditorObj = new UpsertResourceFieldsToEditor(
+            editorData.editorKey,
+            editorData.fieldsToConfigureInView,
+        );
         // POST https://papi.pepperi.com/V1.0/meta_data/data_views
         const upsertFieldsToEditor = await dataViewsService.postDataView(resourceFieldsToAddToEditorObj);
         console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToEditor, null, 2)}`);

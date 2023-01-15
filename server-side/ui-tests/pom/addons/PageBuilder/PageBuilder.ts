@@ -81,7 +81,7 @@ export class PageBuilder extends AddonPage {
         this.pause(1500);
         await this.clickElement('EditSideBar_AddSection_Button');
         await this.waitTillVisible(this.Section_Frame, 5000);
-        await this.clickElement('EditPage_EditMenu_Button_Save');
+        await this.clickElement('EditPage_EditMenu_Button_Publish');
         this.pause(1500);
         await this.clickElement('EditPage_SideBar_ArrowBack_Button');
         if (await this.browser.isElementVisible(this.NoticePopup_Title)) {
@@ -133,22 +133,29 @@ export class PageBuilder extends AddonPage {
     }
 
     public async deleteAll() {
+        // needs to be fixed: can't choose checkbox from the second time on... Hagit, Jan 10th 2023
         let numOfEditors: string;
         do {
+            debugger;
             numOfEditors = await (await this.browser.findElement(this.PagesList_NumberOfItemsInList)).getText();
             try {
                 this.browser.sleep(500);
-                await this.browser.click(this.PagesList_FirstCheckboxInList);
+                const availablePagesCheckboxs = await this.browser.findElements(this.PagesList_FirstCheckboxInList);
+                this.browser.sleep(500);
+                availablePagesCheckboxs[0].click();
                 this.browser.sleep(500);
                 await this.openPencilChooseDelete();
                 this.browser.sleep(500);
                 await this.confirmDeleteClickRedButton();
                 this.browser.sleep(500);
+                await this.browser.click(this.PagesList_NumberOfItemsInList);
             } catch (error) {
                 const errorMessage: string = (error as any).message;
                 console.info(`MESSAGE thrown in deleteAllEditors: ${errorMessage}`);
             }
+            debugger;
         } while (Number(numOfEditors) > 0);
+        debugger;
         numOfEditors = await (await this.browser.findElement(this.PagesList_NumberOfItemsInList)).getText();
         expect(Number(numOfEditors)).to.equal(0);
     }
@@ -172,8 +179,16 @@ export class PageBuilder extends AddonPage {
         );
     }
 
-    public async getPages(client: Client) {
+    public async getAllPages(client: Client) {
         const generalService = new GeneralService(client);
         return await generalService.fetchStatus('/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/api/pages');
+    }
+
+    public async getPageByUUID(pageUUID: string, client: Client) {
+        const generalService = new GeneralService(client);
+        const pageBuilderData = await generalService.fetchStatus(
+            `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/get_page_builder_data?key=${pageUUID}`,
+        );
+        return { page: pageBuilderData.Body.page, name: pageBuilderData.Body.Name };
     }
 }
