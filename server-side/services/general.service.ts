@@ -776,8 +776,8 @@ export default class GeneralService {
         isPhased: boolean,
     ): Promise<{ [any: string]: string[] }> {
         const dimxName = this.papiClient['options'].baseURL.includes('staging')
-        ? 'Export and Import Framework'
-        : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
+            ? 'Export and Import Framework'
+            : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
         testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.7.36'];
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
