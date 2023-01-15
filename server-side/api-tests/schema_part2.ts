@@ -1085,7 +1085,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.insertDataToContainedTableNegative.fault.faultstring.includes("Unsupported schema type 'contained")
+            logcash.insertDataToContainedTableNegative.fault.faultstring.includes('Unsupported schema type contained')
         ) {
             logcash.insertDataToContainedTableNegativeStatus = true;
         } else {
@@ -1108,9 +1108,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             })
             .then((res) => res.Body);
         //debugger;
-        if (
-            logcash.getDataFromContainedTableNegative.fault.faultstring.includes("Unsupported schema type 'contained")
-        ) {
+        if (logcash.getDataFromContainedTableNegative.fault.faultstring.includes('Unsupported schema type contained')) {
             logcash.getDataFromContainedTableNegativeStatus = true;
         } else {
             logcash.getDataFromContainedTableNegativeStatus = false;

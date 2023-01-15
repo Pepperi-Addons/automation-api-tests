@@ -1261,7 +1261,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 },
             },
         ); //.then((data) => data.json())
-        debugger;
+        //debugger;
 
         //if(logcash.dropExistingTable.success == true){
         if (res.Ok) {
