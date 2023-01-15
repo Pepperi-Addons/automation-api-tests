@@ -1,5 +1,6 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { v4 as newUuid } from 'uuid';
+//import { Fields } from '@pepperi-addons/papi-sdk/dist/endpoints';
 
 export async function SchemaTypeDataIndexedTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
@@ -117,6 +118,9 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             });
             it('Insert Data(10 objects) to all fields ', () => {
                 assert(logcash.insertDataToDataTableStatus, logcash.insertDataToDataTableError);
+            });
+            it('Issue https://pepperi.atlassian.net/browse/DI-21625 verification - count and iisue https://pepperi.atlassian.net/browse/DI-22105', () => {
+                assert(logcash.getDataIncludeCountStatus, logcash.getDataIncludeCountError);
             });
             it('Get Data From dedicated table', () => {
                 assert(logcash.getDataDedicatedStatus, logcash.getDataDedicatedError);
@@ -492,8 +496,45 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
         }
         //debugger;
         generalService.sleep(20000);
+        await getDataIncludeCount();
+    }
+    /////////includecount verification
+    async function getDataIncludeCount() {
+        logcash.getDataIncludeCount = await generalService
+            .fetchStatus(
+                baseURL + '/addons/data/search/' + whaitOwnerUUID + '/' + logcash.createSchemaTypeDataIndex.Name,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        IncludeCount: true,
+                        Fields: ['TestDateTime', 'ModificationDateTime', 'TestDouble'],
+                        OrderBy: 'CreationDateTime',
+                    }),
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataIncludeCount.Count == 10 &&
+            logcash.getDataIncludeCount.Objects[5].TestDouble == '5.5' &&
+            logcash.getDataIncludeCount.Objects[5].TestDateTime != '' &&
+            logcash.getDataIncludeCount.Objects[5].secString == undefined &&
+            logcash.getDataIncludeCount.Objects[5].ModificationDateTime != ''
+        ) {
+            logcash.getDataIncludeCountStatus = true;
+        } else {
+            logcash.getDataIncludeCountStatus = false;
+            logcash.getDataIncludeCountError = 'Only indexed fields will be added to dedicated scheme';
+        }
+        //debugger;
         await getDataDedicated();
     }
+    /////////
 
     //#endregion Schema creation positive - Owner and SekretKey fom white list addon
     //#region  Get data from ADAL and ADAL indexed schemes
