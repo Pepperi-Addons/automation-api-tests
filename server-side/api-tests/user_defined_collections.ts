@@ -16,15 +16,17 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.1.16'],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.4.77'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.4.78'],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
+        'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
         'User Defined Collections': [UserDefinedCollectionsUUID, '0.8.16'], //currently un-phased versions of this addon cannot be installed
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
         'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     };
-    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.7.36'];
 
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -872,7 +874,6 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             });
             it('Positive Test: pushing accounts data to acc resource UDC', async () => {
                 const fieldValues = {
-                    //{"myAcc.ExternalID":"be14-96da166b"}
                     'myAcc.ExternalID': 'Account for order scenarios',
                 };
                 let accUUID = '';
@@ -922,7 +923,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         Delimiter: ',',
                     };
                     console.log(
-                        `%c#F87217\t\tRunning The Test On:${collectionName},fields:${bodyToSend.Fields}\t`,
+                        `%c#F87217\tRunning The Test On:${collectionName},fields:${bodyToSend.Fields}\t`,
                         `${ConsoleColors.MenuBackground}; ${ConsoleColors.SystemInformation}`,
                     ); //Pumpkin Orange
                     const a = await generalService.fetchStatus(
@@ -1020,7 +1021,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     accUUID = 'ffd14354-aa2c-4767-8b3a-89b88451207e';
                 }
                 const bodyToImport = {};
-                bodyToImport['Objects'] = [{ 'myAcc#ExternalID': 'Account for order scenarios' }];
+                bodyToImport['Objects'] = [{ 'myAcc.ExternalID': 'Account for order scenarios' }];
                 const response = await generalService.fetchStatus(
                     `/addons/data/import/122c0e9d-c240-4865-b446-f37ece866c22/${accResourceCollectionName}`,
                     { method: 'POST', body: JSON.stringify(bodyToImport) },
