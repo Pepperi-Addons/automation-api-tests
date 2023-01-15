@@ -310,6 +310,36 @@ export async function user_events() {
     };
 }
 
+export async function user_events2() {
+    return {
+        Events: [
+            {
+                Title: 'evgenyEvent',
+                EventKey: 'evgeny',
+                EventFilter: {},
+                EventData: {},
+            },
+        ],
+    };
+}
+
+export async function user_eventsF() {
+    return {
+        Events: [
+            {
+                Title: 'evgenyEvent',
+                EventKey: 'evgeny',
+                EventFilter: {},
+                EventData: {
+                    str: {
+                        Type: 'String',
+                    },
+                },
+            },
+        ],
+    };
+}
+
 //#endregion All Tests
 export async function pages_api(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
