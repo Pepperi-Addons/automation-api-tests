@@ -41,7 +41,7 @@ export async function ChartManagerTests(generalService: GeneralService, request,
         'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''], //papi index
         'Data Visualization': ['00000000-0000-0000-0000-0da1a0de41e5', ''],
     };
-    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.7.36'];
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
