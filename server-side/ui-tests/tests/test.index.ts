@@ -33,6 +33,7 @@ import {
     LoginPerfSqlitefTests,
     ResourceListTests,
     RLdataPrep,
+    VisitFlowTests,
     MockTest,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
@@ -271,6 +272,10 @@ const addon = process.env.npm_config_addon as string;
     if (tests.includes('ResourceList')) {
         // await RLdataPrep(client);
         await ResourceListTests(email, pass, varPass, client);
+    }
+
+    if (tests.includes('VisitFlow')) {
+        await VisitFlowTests(email, pass, client);
     }
 
     if (tests.includes('MockTest')) {
