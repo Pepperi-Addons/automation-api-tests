@@ -75,7 +75,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'],
     };
-    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.7.%'];
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.7.36'];
     await generalService.baseAddonVersionsInstallation(varKey);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);

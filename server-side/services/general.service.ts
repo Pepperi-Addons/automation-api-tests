@@ -775,6 +775,10 @@ export default class GeneralService {
         testData: { [any: string]: string[] },
         isPhased: boolean,
     ): Promise<{ [any: string]: string[] }> {
+        const dimxName = this.papiClient['options'].baseURL.includes('staging')
+            ? 'Export and Import Framework'
+            : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
+        testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.7.36'];
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
@@ -793,6 +797,8 @@ export default class GeneralService {
                 addonName == 'Relations Framework' || // evgeny 4/12: done to be able to test latest relation fw version
                 addonName == 'Pepperitest (Jenkins Special Addon) - Code Jobs' || // evgeny 6/12: trying to fix wiered jenkins issue
                 addonName == 'Audit Log' || // evgeny 13/12: newest audit to fix SB
+                addonName == 'Notification Service' || // evgeny 15/1/23: to get newest PNS we have
+                addonName == dimxName || // evgeny 15/1/23: to get newest DIMX
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
