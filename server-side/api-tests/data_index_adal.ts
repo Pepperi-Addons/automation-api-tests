@@ -931,20 +931,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             });
 
             it('Read After Delete Shared Index Document', async () => {
-                // let a;
-                // try{
-                // a = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
-                //     typedIndexSchema,
-                //     'shared_index',
-                //     generalService.papiClient['options'].addonUUID,
-                //     typedSchemeName,
-                // );
-                // debugger;
-                // }catch(e){
-                //     const b = e;
-                //     debugger;
-                // }
-                // debugger;
+                generalService.sleep(5000);
                 await expect(
                     dataIndexAdalService.getDocumentByNameAndOptionalKey(
                         typedIndexSchema,
@@ -958,6 +945,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
             });
 
             it('Read After Delete Index Document', async () => {
+                generalService.sleep(5000);
                 await expect(
                     dataIndexAdalService.getDocumentByNameAndOptionalKey(
                         indexSchema,
