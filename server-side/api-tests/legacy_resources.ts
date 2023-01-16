@@ -1,7 +1,7 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { ObjectsService } from '../services/objects.service';
 import { LegacyResourcesService } from '../services/legacy-resources.service';
-// import { v4 as newUuid } from 'uuid';
+import { v4 as newUuid } from 'uuid';
 
 export async function LegacyResourcesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const objectsService = new ObjectsService(generalService);
@@ -13,9 +13,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
     //#region Upgrade Legacy Resources
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '0.0.11'],
-        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.6.27'],
-        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.26'],
+        'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     };
 
     let varKey;
@@ -67,7 +67,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let legacyItemExternalID;
             let itemExternalID;
             let legacyCreatedItem;
-            let createdItem;
+            // let createdItem;
             let mainCategoryID;
             let updatedItem;
             let legacyUpdatedItem;
@@ -79,50 +79,27 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 itemExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
                 legacyItemExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
 
-                createdItem = await objectsService.postItem({
-                    ExternalID: itemExternalID,
-                    MainCategoryID: mainCategoryID,
-                });
+                // createdItem = await objectsService.postItem({
+                //     ExternalID: itemExternalID,
+                //     MainCategoryID: mainCategoryID,
+                // });
 
                 legacyCreatedItem = await service.post('items', {
                     ExternalID: legacyItemExternalID,
                     MainCategoryID: mainCategoryID,
                 });
 
-                createdItem.Key = createdItem.UUID;
-                const createdItemKeys = Object.keys(createdItem);
-                const legacyCreatedItemKeys = Object.keys(legacyCreatedItem);
-                expect(createdItemKeys).to.deep.equal(legacyCreatedItemKeys);
                 expect(legacyCreatedItem).to.have.property('InternalID').that.is.a('number');
-                expect(legacyCreatedItem).to.have.property('UUID').that.is.a('string').with.lengthOf(36);
                 expect(legacyCreatedItem).to.have.property('ExternalID').that.equals(legacyItemExternalID);
-                expect(legacyCreatedItem).to.have.property('MainCategoryID').that.equals(mainCategoryID);
-                expect(legacyCreatedItem).to.have.property('AllowDecimal').that.is.a('boolean');
-                expect(legacyCreatedItem).to.have.property('CampaignID');
-                expect(legacyCreatedItem).to.have.property('CaseQuantity').that.is.a('number');
-                expect(legacyCreatedItem).to.have.property('CostPrice');
-                expect(legacyCreatedItem).to.have.property('Discount');
-                expect(legacyCreatedItem).to.have.property('FutureAvailabilityQuantity');
-                expect(legacyCreatedItem).to.have.property('MinimumQuantity').that.is.a('number');
-                expect(legacyCreatedItem).to.have.property('Price');
-                expect(legacyCreatedItem).to.have.property('SecondaryPrice');
-                expect(legacyCreatedItem.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(legacyCreatedItem.CreationDateTime).to.include('Z');
-                expect(legacyCreatedItem.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(legacyCreatedItem.ModificationDateTime).to.include('Z');
-                expect(legacyCreatedItem).to.have.property('Dimension1Code').that.is.a('string');
-                expect(legacyCreatedItem).to.have.property('Dimension1Name').that.is.a('string');
-                expect(legacyCreatedItem).to.have.property('Dimension2Code').that.is.a('string');
-                expect(legacyCreatedItem).to.have.property('Dimension2Name').that.is.a('string');
-                expect(legacyCreatedItem).to.have.property('FutureAvailabilityDate');
-                expect(legacyCreatedItem).to.have.property('Hidden').that.is.a('boolean').and.is.false;
-                expect(legacyCreatedItem).to.have.property('Key').that.equals(legacyCreatedItem.UUID);
-                expect(legacyCreatedItem).to.have.property('Parent');
+                expect(legacyCreatedItem).to.have.property('Key').that.is.a('string').with.lengthOf(36);
+                expect(legacyCreatedItem).to.have.property('MainCategory').that.equals(mainCategoryID);
                 expect(legacyCreatedItem).to.have.property('UPC');
-                expect(legacyCreatedItem).to.have.property('Inventory');
-                expect(legacyCreatedItem.Inventory)
-                    .to.have.property('URI')
-                    .that.equals(`/inventory?where=ItemInternalID=${legacyCreatedItem.InternalID}`);
+                expect(legacyCreatedItem).to.have.property('Name');
+                expect(legacyCreatedItem).to.have.property('LongDescription');
+                expect(legacyCreatedItem).to.have.property('Image');
+                expect(legacyCreatedItem).to.have.property('Price');
+                expect(legacyCreatedItem).to.have.property('CostPrice');
+                expect(legacyCreatedItem).to.have.property('AllowDecimal').that.is.a('boolean');
                 expect(legacyCreatedItem).to.have.property('Prop1');
                 expect(legacyCreatedItem).to.have.property('Prop2');
                 expect(legacyCreatedItem).to.have.property('Prop3');
@@ -132,6 +109,11 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 expect(legacyCreatedItem).to.have.property('Prop7');
                 expect(legacyCreatedItem).to.have.property('Prop8');
                 expect(legacyCreatedItem).to.have.property('Prop9');
+                expect(legacyCreatedItem).to.have.property('Hidden').that.is.a('boolean');
+                expect(legacyCreatedItem.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(legacyCreatedItem.CreationDateTime).to.include('Z');
+                expect(legacyCreatedItem.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(legacyCreatedItem.ModificationDateTime).to.include('Z');
             });
 
             it('Update Item', async () => {
@@ -150,28 +132,11 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     Name: 'Testing12345',
                     Price: 25,
                 });
-
-                updatedItem.Key = updatedItem.UUID;
-                const updatedItemKeys = Object.keys(createdItem);
-                const legacyUpdatedItemKeys = Object.keys(legacyCreatedItem);
-                expect(updatedItemKeys).to.deep.equal(legacyUpdatedItemKeys);
                 expect(updatedItem.AllowDecimal).to.equal(legacyUpdatedItem.AllowDecimal);
-                expect(updatedItem.MainCategoryID).to.equal(legacyUpdatedItem.MainCategoryID);
-                expect(updatedItem.CampaignID).to.equal(legacyUpdatedItem.CampaignID);
-                expect(updatedItem.CaseQuantity).to.equal(legacyUpdatedItem.CaseQuantity);
                 expect(updatedItem.CostPrice).to.equal(legacyUpdatedItem.CostPrice);
-                expect(updatedItem.Dimension1Code).to.equal(legacyUpdatedItem.Dimension1Code);
-                expect(updatedItem.Dimension1Name).to.equal(legacyUpdatedItem.Dimension1Name);
-                expect(updatedItem.Dimension2Code).to.equal(legacyUpdatedItem.Dimension2Code);
-                expect(updatedItem.Dimension2Name).to.equal(legacyUpdatedItem.Dimension2Name);
-                expect(updatedItem.Discount).to.equal(legacyUpdatedItem.Discount);
-                expect(updatedItem.FutureAvailabilityDate).to.equal(legacyUpdatedItem.FutureAvailabilityDate);
-                expect(updatedItem.FutureAvailabilityQuantity).to.equal(legacyUpdatedItem.FutureAvailabilityQuantity);
                 expect(updatedItem.Hidden).to.equal(legacyUpdatedItem.Hidden);
-                expect(updatedItem.CostPrice).to.equal(legacyUpdatedItem.CostPrice);
                 expect(updatedItem.LongDescription).to.equal(legacyUpdatedItem.LongDescription);
                 expect(updatedItem.MainCategory).to.equal(legacyUpdatedItem.MainCategory);
-                expect(updatedItem.MinimumQuantity).to.equal(legacyUpdatedItem.MinimumQuantity);
                 expect(updatedItem.Name).to.equal(legacyUpdatedItem.Name);
                 expect(updatedItem.Price).to.equal(legacyUpdatedItem.Price);
                 expect(updatedItem.Prop1).to.equal(legacyUpdatedItem.Prop1);
@@ -183,7 +148,6 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 expect(updatedItem.Prop7).to.equal(legacyUpdatedItem.Prop7);
                 expect(updatedItem.Prop8).to.equal(legacyUpdatedItem.Prop8);
                 expect(updatedItem.Prop9).to.equal(legacyUpdatedItem.Prop9);
-                expect(updatedItem.SecondaryPrice).to.equal(legacyUpdatedItem.SecondaryPrice);
             });
 
             it('Get Item by key', async () => {
@@ -199,8 +163,6 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     legacyCreatedItem.InternalID,
                 );
                 expect(getItemByInternalID).to.deep.equal(legacyUpdatedItem);
-                const getItemByUUID = await service.getByUniqueKey('items', 'UUID', legacyCreatedItem.UUID);
-                expect(getItemByUUID).to.deep.equal(legacyUpdatedItem);
                 const getItemByExternalID = await service.getByUniqueKey(
                     'items',
                     'ExternalID',
@@ -312,6 +274,42 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     expect(legacyPageItems.Objects).to.deep.equal(dimxResult);
                 });
 
+                it('DIMX import insert + update', async () => {
+                    const uuidForImport = newUuid();
+                    let dimxImportResult = await service.dimxImport('items', {
+                        Objects: [
+                            {
+                                Key: uuidForImport,
+                                ExternalID: itemExternalID + 'DIMX',
+                                MainCategoryID: mainCategoryID,
+                            },
+                        ],
+                    });
+                    expect(dimxImportResult).to.deep.equal([
+                        {
+                            Key: uuidForImport,
+                            Status: 'Insert',
+                        },
+                    ]);
+
+                    dimxImportResult = await service.dimxImport('items', {
+                        Objects: [
+                            {
+                                Key: uuidForImport,
+                                ExternalID: itemExternalID + 'DIMX',
+                                MainCategoryID: mainCategoryID,
+                                Name: 'DIMX Import Test',
+                            },
+                        ],
+                    });
+                    expect(dimxImportResult).to.deep.equal([
+                        {
+                            Key: uuidForImport,
+                            Status: 'Update',
+                        },
+                    ]);
+                });
+
                 it('Delete items', async () => {
                     const deletedItem = await objectsService.postItem({
                         ExternalID: itemExternalID,
@@ -324,8 +322,15 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         MainCategoryID: mainCategoryID,
                         Hidden: true,
                     });
+
+                    const DIMXDeletedItem = await service.post('items', {
+                        ExternalID: itemExternalID + 'DIMX',
+                        MainCategoryID: mainCategoryID,
+                        Hidden: true,
+                    });
                     expect(deletedItem).to.have.property('Hidden').that.is.true;
                     expect(legacyDeletedItem).to.have.property('Hidden').that.is.true;
+                    expect(DIMXDeletedItem).to.have.property('Hidden').that.is.true;
                 });
             });
         });
@@ -353,51 +358,28 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     ExternalID: legacyAccountExternalID,
                 });
 
-                createdAccount.Key = createdAccount.UUID;
-                const createdAccountKeys = Object.keys(createdAccount);
-                const legacyCreatedAccountKeys = Object.keys(legacyCreatedAccount);
-                expect(createdAccountKeys).to.deep.equal(legacyCreatedAccountKeys);
                 expect(legacyCreatedAccount).to.have.property('InternalID').that.is.a('number');
-                expect(legacyCreatedAccount).to.have.property('UUID').that.is.a('string').with.lengthOf(36);
+                expect(legacyCreatedAccount).to.have.property('Key').that.is.a('string').with.lengthOf(36);
                 expect(legacyCreatedAccount).to.have.property('ExternalID').that.equals(legacyAccountExternalID);
+                expect(legacyCreatedAccount).to.have.property('Name');
+                expect(legacyCreatedAccount).to.have.property('Phone');
+                expect(legacyCreatedAccount).to.have.property('Email').that.is.a('string');
+                expect(legacyCreatedAccount).to.have.property('Note');
+                expect(legacyCreatedAccount).to.have.property('Street');
                 expect(legacyCreatedAccount).to.have.property('City').that.equals(createdAccount.City);
                 expect(legacyCreatedAccount).to.have.property('Country').that.equals(createdAccount.Country);
-                expect(legacyCreatedAccount).to.have.property('Debts30').that.is.a('number');
-                expect(legacyCreatedAccount).to.have.property('Debts60').that.is.a('number');
-                expect(legacyCreatedAccount).to.have.property('Debts90').that.is.a('number');
+                expect(legacyCreatedAccount).to.have.property('State');
+                expect(legacyCreatedAccount).to.have.property('ZipCode');
                 expect(legacyCreatedAccount).to.have.property('Discount').that.is.a('number');
-                expect(legacyCreatedAccount).to.have.property('DebtsAbove90').that.is.a('number');
-                expect(legacyCreatedAccount).to.have.property('Email').that.is.a('string');
+                expect(legacyCreatedAccount).to.have.property('TypeDefinitionID').that.is.a('number');
+                expect(legacyCreatedAccount).to.have.property('Type');
+                expect(legacyCreatedAccount).to.have.property('Hidden').that.is.a('boolean').and.is.false;
                 expect(legacyCreatedAccount).to.have.property('Latitude').that.is.a('number');
                 expect(legacyCreatedAccount).to.have.property('Longitude').that.is.a('number');
                 expect(legacyCreatedAccount.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(legacyCreatedAccount.CreationDateTime).to.include('Z');
                 expect(legacyCreatedAccount.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(legacyCreatedAccount.ModificationDateTime).to.include('Z');
-                expect(legacyCreatedAccount).to.have.property('Mobile');
-                expect(legacyCreatedAccount).to.have.property('Name');
-                expect(legacyCreatedAccount).to.have.property('Note');
-                expect(legacyCreatedAccount).to.have.property('Phone');
-                expect(legacyCreatedAccount).to.have.property('State');
-                expect(legacyCreatedAccount).to.have.property('Hidden').that.is.a('boolean').and.is.false;
-                expect(legacyCreatedAccount).to.have.property('Key').that.equals(legacyCreatedAccount.UUID);
-                expect(legacyCreatedAccount).to.have.property('Status').that.is.a('number').and.equals(2);
-                expect(legacyCreatedAccount).to.have.property('StatusName').that.is.a('string').and.equals('Submitted');
-                expect(legacyCreatedAccount).to.have.property('Street');
-                expect(legacyCreatedAccount.Catalogs)
-                    .to.have.property('URI')
-                    .that.equals(`/account_catalogs?where=AccountInternalID=${legacyCreatedAccount.InternalID}`);
-                expect(legacyCreatedAccount).to.have.property('Prop1');
-                expect(legacyCreatedAccount).to.have.property('Prop2');
-                expect(legacyCreatedAccount).to.have.property('Prop3');
-                expect(legacyCreatedAccount).to.have.property('Prop4');
-                expect(legacyCreatedAccount).to.have.property('Prop5');
-                expect(legacyCreatedAccount).to.have.property('Type');
-                expect(legacyCreatedAccount).to.have.property('TypeDefinitionID').that.is.a('number');
-                expect(legacyCreatedAccount).to.have.property('ZipCode');
-                expect(legacyCreatedAccount).to.have.property('PriceList');
-                expect(legacyCreatedAccount).to.have.property('SpecialPriceList');
-                expect(legacyCreatedAccount).to.have.property('Users');
             });
 
             it('Update account', async () => {
@@ -415,44 +397,42 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     Discount: 25,
                 });
 
-                updatedAccount.Key = updatedAccount.UUID;
-                const updatedAccountKeys = Object.keys(createdAccount);
-                const legacyUpdatedAccountKeys = Object.keys(legacyCreatedAccount);
-                expect(updatedAccountKeys).to.deep.equal(legacyUpdatedAccountKeys);
+                expect(updatedAccount.Name).to.equal(legacyUpdatedAccount.Name);
                 expect(updatedAccount.City).to.equal(legacyUpdatedAccount.City);
                 expect(updatedAccount.Country).to.equal(legacyUpdatedAccount.Country);
-                expect(updatedAccount.Debts30).to.equal(legacyUpdatedAccount.Debts30);
-                expect(updatedAccount.Debts60).to.equal(legacyUpdatedAccount.Debts60);
-                expect(updatedAccount.Debts90).to.equal(legacyUpdatedAccount.Debts90);
-                expect(updatedAccount.DebtsAbove90).to.equal(legacyUpdatedAccount.DebtsAbove90);
                 expect(updatedAccount.Discount).to.equal(legacyUpdatedAccount.Discount);
                 expect(updatedAccount.Hidden).to.equal(legacyUpdatedAccount.Hidden);
                 expect(updatedAccount.Latitude).to.equal(legacyUpdatedAccount.Latitude);
                 expect(updatedAccount.Longitude).to.equal(legacyUpdatedAccount.Longitude);
-                expect(updatedAccount.Name).to.equal(legacyUpdatedAccount.Name);
                 expect(updatedAccount.Note).to.equal(legacyUpdatedAccount.Note);
-                expect(updatedAccount.Mobile).to.equal(legacyUpdatedAccount.Mobile);
                 expect(updatedAccount.Phone).to.equal(legacyUpdatedAccount.Phone);
                 expect(updatedAccount.State).to.equal(legacyUpdatedAccount.State);
-                expect(updatedAccount.Status).to.equal(legacyUpdatedAccount.Status);
-                expect(updatedAccount.StatusName).to.equal(legacyUpdatedAccount.StatusName);
                 expect(updatedAccount.Street).to.equal(legacyUpdatedAccount.Street);
                 expect(updatedAccount.Type).to.equal(legacyUpdatedAccount.Type);
-                expect(updatedAccount.Prop1).to.equal(legacyUpdatedAccount.Prop1);
-                expect(updatedAccount.Prop2).to.equal(legacyUpdatedAccount.Prop2);
-                expect(updatedAccount.Prop3).to.equal(legacyUpdatedAccount.Prop3);
-                expect(updatedAccount.Prop4).to.equal(legacyUpdatedAccount.Prop4);
-                expect(updatedAccount.Prop5).to.equal(legacyUpdatedAccount.Prop5);
-                expect(updatedAccount.TypeDefinitionID).to.equal(legacyUpdatedAccount.TypeDefinitionID);
                 expect(updatedAccount.ZipCode).to.equal(legacyUpdatedAccount.ZipCode);
-                expect(updatedAccount.Parent).to.equal(legacyUpdatedAccount.Parent);
-                expect(updatedAccount.PriceList).to.equal(legacyUpdatedAccount.PriceList);
-                expect(updatedAccount.SpecialPriceList).to.equal(legacyUpdatedAccount.SpecialPriceList);
             });
 
             it('Get account by key', async () => {
                 const accountAfterUpdate = await objectsService.getAccountByID(legacyCreatedAccount.InternalID);
-                accountAfterUpdate.Key = legacyCreatedAccount.UUID;
+                accountAfterUpdate.Key = legacyCreatedAccount.Key;
+                delete accountAfterUpdate['UUID'];
+                delete accountAfterUpdate['Catalogs'];
+                delete accountAfterUpdate['Debts30'];
+                delete accountAfterUpdate['Debts60'];
+                delete accountAfterUpdate['Debts90'];
+                delete accountAfterUpdate['DebtsAbove90'];
+                delete accountAfterUpdate['Parent'];
+                delete accountAfterUpdate['PriceList'];
+                delete accountAfterUpdate['Prop1'];
+                delete accountAfterUpdate['Prop2'];
+                delete accountAfterUpdate['Prop3'];
+                delete accountAfterUpdate['Prop4'];
+                delete accountAfterUpdate['Prop5'];
+                delete accountAfterUpdate['Status'];
+                delete accountAfterUpdate['StatusName'];
+                delete accountAfterUpdate['SpecialPriceList'];
+                delete accountAfterUpdate['Users'];
+                delete accountAfterUpdate['Mobile'];
                 const getByKeyAccount = await service.getByKey('accounts', legacyCreatedAccount.Key);
                 expect(getByKeyAccount).to.deep.equal(accountAfterUpdate);
                 await expect(service.getByKey('accounts', '1234')).eventually.to.be.rejected;
@@ -465,8 +445,6 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     legacyCreatedAccount.InternalID,
                 );
                 expect(getAccountByInternalID).to.deep.equal(legacyUpdatedAccount);
-                const getAccountByUUID = await service.getByUniqueKey('accounts', 'UUID', legacyCreatedAccount.UUID);
-                expect(getAccountByUUID).to.deep.equal(legacyUpdatedAccount);
                 const getAccountByExternalID = await service.getByUniqueKey(
                     'accounts',
                     'ExternalID',
@@ -575,6 +553,26 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     dimxResult.forEach((object) => {
                         delete object['Key'];
                     });
+                    accountsForComparison.forEach((object) => {
+                        delete object['UUID'];
+                        delete object['Catalogs'];
+                        delete object['Debts30'];
+                        delete object['Debts60'];
+                        delete object['Debts90'];
+                        delete object['DebtsAbove90'];
+                        delete object['Parent'];
+                        delete object['PriceList'];
+                        delete object['Prop1'];
+                        delete object['Prop2'];
+                        delete object['Prop3'];
+                        delete object['Prop4'];
+                        delete object['Prop5'];
+                        delete object['Status'];
+                        delete object['StatusName'];
+                        delete object['SpecialPriceList'];
+                        delete object['Users'];
+                        delete object['Mobile'];
+                    });
                     accountsForComparison.sort((a, b) => {
                         return (a as any).InternalID - (b as any).InternalID;
                     });
@@ -583,6 +581,40 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     });
                     expect(accountsForComparison.length).to.equal(dimxResult.length);
                     expect(accountsForComparison).to.deep.equal(dimxResult);
+                });
+
+                it('DIMX import insert + update', async () => {
+                    const uuidForImport = newUuid();
+                    let dimxImportResult = await service.dimxImport('accounts', {
+                        Objects: [
+                            {
+                                Key: uuidForImport,
+                                ExternalID: accountExternalID + 'DIMX',
+                            },
+                        ],
+                    });
+                    expect(dimxImportResult).to.deep.equal([
+                        {
+                            Key: uuidForImport,
+                            Status: 'Insert',
+                        },
+                    ]);
+
+                    dimxImportResult = await service.dimxImport('accounts', {
+                        Objects: [
+                            {
+                                Key: uuidForImport,
+                                ExternalID: accountExternalID + 'DIMX',
+                                Name: 'DIMX Import Test',
+                            },
+                        ],
+                    });
+                    expect(dimxImportResult).to.deep.equal([
+                        {
+                            Key: uuidForImport,
+                            Status: 'Update',
+                        },
+                    ]);
                 });
 
                 it('Delete accounts', async () => {
@@ -595,7 +627,13 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         ExternalID: legacyAccountExternalID,
                         Hidden: true,
                     });
+
+                    const dimxDeletedAccount = await objectsService.createAccount({
+                        ExternalID: accountExternalID + 'DIMX',
+                        Hidden: true,
+                    });
                     expect(deletedAccount).to.have.property('Hidden').that.is.true;
+                    expect(dimxDeletedAccount).to.have.property('Hidden').that.is.true;
                     expect(legacyDeletedAccount).to.have.property('Hidden').that.is.true;
                 });
             });
@@ -606,7 +644,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let legacyUserExternalID;
             let userExternalID;
             let legacyCreatedUser;
-            let createdUser;
+            // let createdUser;
             let userEmail;
             let legacyUserEmail;
             let updatedUser;
@@ -629,37 +667,28 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     Math.floor(Math.random() * 1000000).toString() +
                     '.com';
 
-                createdUser = await objectsService.createUser({
-                    ExternalID: userExternalID,
-                    Email: userEmail,
-                });
+                // createdUser = await objectsService.createUser({
+                //     ExternalID: userExternalID,
+                //     Email: userEmail,
+                // });
 
                 legacyCreatedUser = await service.post('users', {
                     ExternalID: legacyUserExternalID,
                     Email: legacyUserEmail,
                 });
 
-                createdUser.Key = createdUser.UUID;
-                const createdUserKeys = Object.keys(createdUser);
-                const legacyCreatedUserKeys = Object.keys(legacyCreatedUser);
-                expect(createdUserKeys).to.deep.equal(legacyCreatedUserKeys);
                 expect(legacyCreatedUser).to.have.property('InternalID').that.is.a('number');
-                expect(legacyCreatedUser).to.have.property('UUID').that.is.a('string').with.lengthOf(36);
+                expect(legacyCreatedUser).to.have.property('Key').that.is.a('string').with.lengthOf(36);
                 expect(legacyCreatedUser).to.have.property('ExternalID').that.equals(legacyUserExternalID);
                 expect(legacyCreatedUser).to.have.property('Email').that.equals(legacyUserEmail);
                 expect(legacyCreatedUser).to.have.property('FirstName').that.is.a('string');
                 expect(legacyCreatedUser).to.have.property('Hidden').that.is.a('boolean').and.is.false;
-                expect(legacyCreatedUser).to.have.property('IsInTradeShowMode').that.is.a('boolean').and.is.false;
                 expect(legacyCreatedUser).to.have.property('LastName').that.is.a('string');
                 expect(legacyCreatedUser).to.have.property('Mobile').that.is.a('string');
-                expect(legacyCreatedUser).to.have.property('Phone').that.is.a('string');
                 expect(legacyCreatedUser.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(legacyCreatedUser.CreationDateTime).to.include('Z');
                 expect(legacyCreatedUser.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(legacyCreatedUser.ModificationDateTime).to.include('Z');
-                expect(legacyCreatedUser).to.have.property('SecurityGroup');
-                expect(legacyCreatedUser).to.have.property('Profile');
-                expect(legacyCreatedUser).to.have.property('Role');
             });
 
             it('Update user', async () => {
@@ -675,19 +704,10 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     FirstName: 'Testing12345',
                 });
 
-                updatedUser.Key = updatedUser.UUID;
-                const updatedUserKeys = Object.keys(createdUser);
-                const legacyUpdatedUserKeys = Object.keys(legacyCreatedUser);
-                expect(updatedUserKeys).to.deep.equal(legacyUpdatedUserKeys);
                 expect(updatedUser.FirstName).to.equal(legacyUpdatedUser.FirstName);
                 expect(updatedUser.Hidden).to.equal(legacyUpdatedUser.Hidden);
-                expect(updatedUser.IsInTradeShowMode).to.equal(legacyUpdatedUser.IsInTradeShowMode);
                 expect(updatedUser.LastName).to.equal(legacyUpdatedUser.LastName);
                 expect(updatedUser.Mobile).to.equal(legacyUpdatedUser.Mobile);
-                expect(updatedUser.Phone).to.equal(legacyUpdatedUser.Phone);
-                expect(updatedUser.SecurityGroup).to.deep.equal(legacyUpdatedUser.SecurityGroup);
-                expect(updatedUser.Profile).to.deep.equal(legacyUpdatedUser.Profile);
-                expect(updatedUser.Role).to.deep.equal(legacyUpdatedUser.Role);
             });
 
             it('Get user by key', async () => {
@@ -703,8 +723,6 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     legacyCreatedUser.InternalID,
                 );
                 expect(getUserByInternalID).to.deep.equal(legacyUpdatedUser);
-                const getUserByUUID = await service.getByUniqueKey('users', 'UUID', legacyCreatedUser.UUID);
-                expect(getUserByUUID).to.deep.equal(legacyUpdatedUser);
                 const getUserByExternalID = await service.getByUniqueKey(
                     'users',
                     'ExternalID',
@@ -720,9 +738,11 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             describe('Users search', () => {
                 let legacyUsers;
                 it('Where', async () => {
-                    const whereUsers = await objectsService.getUsers({ where: `ExternalID='Automated API User'` });
+                    const whereUsers = await objectsService.getUsers({
+                        where: `ExternalID like 'Automated API User%'`,
+                    });
                     const legacyWhereUsers = await service.search('users', {
-                        where: `ExternalID='Automated API User'`,
+                        Where: `ExternalID like 'Automated API User%'`,
                     });
                     expect(whereUsers.length).to.equal(legacyWhereUsers.Objects.length);
                 });
@@ -823,7 +843,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let contactExternalID;
             let accountForContact;
             let legacyCreatedContact;
-            let createdContact;
+            // let createdContact;
             let contactEmail;
             let updatedContact;
             let legacyUpdatedContact;
@@ -841,24 +861,22 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 accountForContact = await objectsService.getAccounts();
                 accountForContact = accountForContact[0];
 
-                createdContact = await objectsService.createContact({
-                    ExternalID: contactExternalID,
-                    Email: contactEmail,
-                    Phone: '123-45678',
-                    Mobile: '123-45678',
-                    FirstName: 'Contact',
-                    LastName: 'Test',
-                    Account: {
-                        Data: {
-                            InternalID: accountForContact.InternalID,
-                        },
-                    },
-                });
+                // createdContact = await objectsService.createContact({
+                //     ExternalID: contactExternalID,
+                //     Email: contactEmail,
+                //     Mobile: '123-45678',
+                //     FirstName: 'Contact',
+                //     LastName: 'Test',
+                //     Account: {
+                //         Data: {
+                //             InternalID: accountForContact.InternalID,
+                //         },
+                //     },
+                // });
 
                 legacyCreatedContact = await service.post('contacts', {
                     ExternalID: legacyContactExternalID,
                     Email: contactEmail,
-                    Phone: '123-45678',
                     Mobile: '123-45678',
                     FirstName: 'Contact',
                     LastName: 'Test',
@@ -869,47 +887,27 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     },
                 });
 
-                createdContact.Key = createdContact.UUID;
-                const createdContactKeys = Object.keys(createdContact);
-                const legacyCreatedContactKeys = Object.keys(legacyCreatedContact);
-                expect(createdContactKeys).to.deep.equal(legacyCreatedContactKeys);
                 expect(legacyCreatedContact).to.have.property('InternalID').that.is.a('number');
-                expect(legacyCreatedContact).to.have.property('UUID').that.is.a('string').with.lengthOf(36);
+                expect(legacyCreatedContact).to.have.property('Key').that.is.a('string').with.lengthOf(36);
                 expect(legacyCreatedContact).to.have.property('ExternalID').that.equals(legacyContactExternalID);
                 expect(legacyCreatedContact).to.have.property('Email').that.equals(contactEmail);
-                expect(legacyCreatedContact).to.have.property('Email2').that.is.null;
-                expect(legacyCreatedContact).to.have.property('FirstName').that.equals('Contact');
-                expect(legacyCreatedContact).to.have.property('Hidden').that.is.false;
-                expect(legacyCreatedContact).to.have.property('IsBuyer').that.is.false;
-                expect(legacyCreatedContact).to.have.property('LastName').that.equals('Test');
-                expect(legacyCreatedContact).to.have.property('Mobile').that.equals('123-45678');
-                expect(legacyCreatedContact).to.have.property('Phone').that.equals('123-45678');
                 expect(legacyCreatedContact).to.have.property('Role').that.is.null;
-                expect(legacyCreatedContact).to.have.property('Status').that.equals(2);
+                expect(legacyCreatedContact).to.have.property('FirstName').that.equals('Contact');
+                expect(legacyCreatedContact).to.have.property('LastName').that.equals('Test');
+                expect(legacyCreatedContact).to.have.property('Hidden').that.is.false;
+                expect(legacyCreatedContact).to.have.property('Mobile').that.equals('123-45678');
                 expect(legacyCreatedContact.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(legacyCreatedContact.CreationDateTime).to.include('Z');
                 expect(legacyCreatedContact.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(legacyCreatedContact.ModificationDateTime).to.include('Z');
                 expect(legacyCreatedContact).to.have.property('TypeDefinitionID').that.is.a('number');
-                expect(legacyCreatedContact).to.have.property('Key').that.equals(legacyCreatedContact.UUID);
-                expect(legacyCreatedContact.Account.Data)
-                    .to.have.property('InternalID')
-                    .that.equals(accountForContact.InternalID);
-                expect(legacyCreatedContact.Account.Data).to.have.property('UUID').that.equals(accountForContact.UUID);
-                expect(legacyCreatedContact.Account.Data)
-                    .to.have.property('ExternalID')
-                    .that.equals(accountForContact.ExternalID);
-                expect(legacyCreatedContact.Account)
-                    .to.have.property('URI')
-                    .that.equals(`/accounts/${accountForContact.InternalID}`);
-                expect(legacyCreatedContact).to.have.property('Profile').that.is.null;
+                expect(legacyCreatedContact).to.have.property('Status').that.equals(2);
             });
 
             it('Update Contact', async () => {
                 updatedContact = await objectsService.createContact({
                     ExternalID: contactExternalID,
                     Email: contactEmail,
-                    Phone: '1234-456789',
                     Mobile: '1234-456789',
                     FirstName: 'Contact Update',
                     LastName: 'Test Update',
@@ -923,7 +921,6 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 legacyUpdatedContact = await service.post('contacts', {
                     ExternalID: legacyContactExternalID,
                     Email: contactEmail,
-                    Phone: '1234-456789',
                     Mobile: '1234-456789',
                     FirstName: 'Contact Update',
                     LastName: 'Test Update',
@@ -934,22 +931,14 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     },
                 });
 
-                updatedContact.Key = updatedContact.UUID;
-                const updatedContactKeys = Object.keys(updatedContact);
-                const legacyUpdatedContactKeys = Object.keys(legacyUpdatedContact);
-                expect(updatedContactKeys).to.deep.equal(legacyUpdatedContactKeys);
                 expect(updatedContact.Email).to.equal(legacyUpdatedContact.Email);
-                expect(updatedContact.Email2).to.equal(legacyUpdatedContact.Email2);
                 expect(updatedContact.FirstName).to.equal(legacyUpdatedContact.FirstName);
                 expect(updatedContact.Hidden).to.equal(legacyUpdatedContact.Hidden);
-                expect(updatedContact.IsBuyer).to.equal(legacyUpdatedContact.IsBuyer);
                 expect(updatedContact.LastName).to.equal(legacyUpdatedContact.LastName);
                 expect(updatedContact.Mobile).to.equal(legacyUpdatedContact.Mobile);
-                expect(updatedContact.Phone).to.equal(legacyUpdatedContact.Phone);
                 expect(updatedContact.Role).to.equal(legacyUpdatedContact.Role);
                 expect(updatedContact.Status).to.equal(legacyUpdatedContact.Status);
                 expect(updatedContact.TypeDefinitionID).to.equal(legacyUpdatedContact.TypeDefinitionID);
-                expect(updatedContact.Profile).to.equal(legacyUpdatedContact.Profile);
             });
 
             it('Get Contact by key', async () => {
@@ -965,8 +954,6 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     legacyCreatedContact.InternalID,
                 );
                 expect(getContactByInternalID).to.deep.equal(legacyUpdatedContact);
-                const getContactByUUID = await service.getByUniqueKey('contacts', 'UUID', legacyCreatedContact.UUID);
-                expect(getContactByUUID).to.deep.equal(legacyUpdatedContact);
                 const getContactByExternalID = await service.getByUniqueKey(
                     'contacts',
                     'ExternalID',
@@ -1304,22 +1291,16 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     User: users[0].UUID,
                 });
 
-                createdAccountUsers.Key = createdAccountUsers.UUID;
-                const createdAccountUsersKeys = Object.keys(createdAccountUsers);
-                const legacyCreatedAccountUsersKeys = Object.keys(legacyCreatedAccountUsers);
-                expect(createdAccountUsersKeys).to.deep.equal(legacyCreatedAccountUsersKeys);
+                expect(legacyCreatedAccountUsers).to.have.property('InternalID').that.is.a('Number');
                 expect(legacyCreatedAccountUsers).to.have.property('Account').that.is.equals(legacyAccount.UUID);
-                expect(legacyCreatedAccountUsers).to.have.property('UUID').that.is.a('string').with.lengthOf(36);
-                expect(legacyCreatedAccountUsers).to.have.property('ConnectedWithFullAccountAccess').that.is.false;
+                expect(legacyCreatedAccountUsers).to.have.property('Key').that.is.a('string').with.lengthOf(36);
                 expect(legacyCreatedAccountUsers.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(legacyCreatedAccountUsers.CreationDateTime).to.include('Z');
                 expect(legacyCreatedAccountUsers.ModificationDateTime).to.include(
                     new Date().toISOString().split('T')[0],
                 );
                 expect(legacyCreatedAccountUsers.ModificationDateTime).to.include('Z');
-                expect(legacyCreatedAccountUsers).to.have.property('InternalID').that.is.a('Number');
                 expect(legacyCreatedAccountUsers).to.have.property('User').that.is.equals(users[0].UUID);
-                expect(legacyCreatedAccountUsers).to.have.property('Key').that.equals(legacyCreatedAccountUsers.UUID);
                 expect(legacyCreatedAccountUsers).to.have.property('Hidden').that.is.false;
             });
 
@@ -1336,12 +1317,6 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     legacyCreatedAccountUsers.InternalID,
                 );
                 expect(getAccountUsersByInternalID).to.deep.equal(legacyCreatedAccountUsers);
-                const getAccountUsersByUUID = await service.getByUniqueKey(
-                    'account_users',
-                    'UUID',
-                    legacyCreatedAccountUsers.UUID,
-                );
-                expect(getAccountUsersByUUID).to.deep.equal(legacyCreatedAccountUsers);
                 const getAccountUsersByKey = await service.getByUniqueKey(
                     'account_users',
                     'Key',
@@ -1354,6 +1329,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
             describe('AccountUsers search', () => {
                 let legacyAccountUsers;
+                let legacyAccountUsersManipulation;
                 it('Where', async () => {
                     const whereAccountUsers = await objectsService.getAccountUsersClause(
                         `where=UUID like '${createdAccountUsers.UUID}'`,
@@ -1388,9 +1364,10 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('KeyList', async () => {
-                    legacyAccountUsers = await service.get(
-                        `account_users?where=UUID IN ('${legacyAccountUsers[0].UUID}','${legacyAccountUsers[1].UUID}','${legacyAccountUsers[2].UUID}','${legacyAccountUsers[3].UUID}')`,
+                    legacyAccountUsers = await objectsService.getAccountUsersClause(
+                        `where=UUID IN ('${legacyAccountUsers[0].UUID}','${legacyAccountUsers[1].UUID}','${legacyAccountUsers[2].UUID}','${legacyAccountUsers[3].UUID}')`,
                     );
+                    legacyAccountUsersManipulation = JSON.parse(JSON.stringify(legacyAccountUsers));
                     const legacyKeyListAccountUsers = await service.search('account_users', {
                         KeyList: [
                             legacyAccountUsers[0].UUID,
@@ -1399,13 +1376,21 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                             legacyAccountUsers[3].UUID,
                         ],
                     });
-                    expect(legacyKeyListAccountUsers.Objects.length).to.equal(legacyAccountUsers.length);
-                    expect(legacyKeyListAccountUsers.Objects).to.deep.equal(legacyAccountUsers);
+
+                    for (let index = 0; index < legacyAccountUsersManipulation.length; index++) {
+                        legacyAccountUsersManipulation[index].Account = legacyAccountUsers[index].Account.Data.UUID;
+                        legacyAccountUsersManipulation[index].User = legacyAccountUsers[index].User.Data.UUID;
+                        legacyAccountUsersManipulation[index].Key = legacyAccountUsers[index].UUID;
+                        delete legacyAccountUsersManipulation[index].UUID;
+                        delete legacyAccountUsersManipulation[index].ConnectedWithFullAccountAccess;
+                    }
+                    expect(legacyKeyListAccountUsers.Objects.length).to.equal(legacyAccountUsersManipulation.length);
+                    expect(legacyKeyListAccountUsers.Objects).to.deep.equal(legacyAccountUsersManipulation);
                 });
 
                 it('UniqueFieldList', async () => {
-                    legacyAccountUsers = await service.get(
-                        `account_users?where=UUID IN ('${legacyAccountUsers[0].UUID}','${legacyAccountUsers[1].UUID}','${legacyAccountUsers[2].UUID}','${legacyAccountUsers[3].UUID}')`,
+                    legacyAccountUsers = await objectsService.getAccountUsersClause(
+                        `where=UUID IN ('${legacyAccountUsers[0].UUID}','${legacyAccountUsers[1].UUID}','${legacyAccountUsers[2].UUID}','${legacyAccountUsers[3].UUID}')`,
                     );
                     const legacyUniqueFieldAccountUsers = await service.search('account_users', {
                         UniqueFieldList: [
@@ -1414,24 +1399,25 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                             legacyAccountUsers[2].UUID,
                             legacyAccountUsers[3].UUID,
                         ],
-                        UniqueFieldID: 'UUID',
+                        UniqueFieldID: 'Key',
                     });
                     expect(legacyUniqueFieldAccountUsers.Objects.length).to.equal(legacyAccountUsers.length);
-                    expect(legacyUniqueFieldAccountUsers.Objects).to.deep.equal(legacyAccountUsers);
+                    expect(legacyUniqueFieldAccountUsers.Objects).to.deep.equal(legacyAccountUsersManipulation);
                 });
 
                 it('Fields', async () => {
-                    legacyAccountUsers = await service.get(`account_users?where=UUID='${legacyAccountUsers[0].UUID}'`);
+                    legacyAccountUsers = await objectsService.getAccountUsersClause(
+                        `where=InternalID=${legacyAccountUsers[0].InternalID}`,
+                    );
                     const legacyFieldsAccountUsers = await service.search(`account_users`, {
-                        Where: `UUID='${legacyAccountUsers[0].UUID}'`,
-                        Fields: ['UUID', 'Hidden', 'Key'],
+                        Where: `InternalID=${legacyAccountUsers[0].InternalID}`,
+                        Fields: ['Hidden', 'InternalID'],
                     });
                     expect(legacyFieldsAccountUsers.Objects.length).to.equal(legacyAccountUsers.length);
                     expect(legacyFieldsAccountUsers.Objects).to.deep.equal([
                         {
-                            UUID: legacyAccountUsers[0].UUID,
                             Hidden: legacyAccountUsers[0].Hidden,
-                            Key: legacyAccountUsers[0].UUID,
+                            InternalID: legacyAccountUsers[0].InternalID,
                         },
                     ]);
                 });
@@ -1462,6 +1448,25 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         expect(accountsUsersForComparison.length).to.equal(dimxResult.length);
                     });
 
+                    it('DIMX import insert', async () => {
+                        const uuidForImport = newUuid();
+                        const dimxImportResult = await service.dimxImport('account_users', {
+                            Objects: [
+                                {
+                                    Key: uuidForImport,
+                                    Account: legacyAccount.UUID,
+                                    User: users[1].UUID,
+                                },
+                            ],
+                        });
+                        expect(dimxImportResult).to.deep.equal([
+                            {
+                                Key: uuidForImport,
+                                Status: 'Insert',
+                            },
+                        ]);
+                    });
+
                     it('Delete AccountUsers and account', async () => {
                         const deletedAccountUsers = await objectsService.postAccountUsers({
                             UUID: createdAccountUsers.UUID,
@@ -1469,7 +1474,12 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         });
 
                         const legacyDeletedAccountUsers = await service.post('account_users', {
-                            UUID: legacyCreatedAccountUsers.UUID,
+                            Key: legacyCreatedAccountUsers.Key,
+                            Hidden: true,
+                        });
+
+                        const DimxDeletedAccountUsers = await service.post('account_users', {
+                            Key: legacyCreatedAccountUsers.Key,
                             Hidden: true,
                         });
                         expect(deletedAccountUsers).to.have.property('Hidden').that.is.true;
@@ -1484,6 +1494,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                             Hidden: true,
                         });
                         expect(deletedAccount1).to.have.property('Hidden').that.is.true;
+                        expect(DimxDeletedAccountUsers).to.have.property('Hidden').that.is.true;
                     });
                 });
             });
