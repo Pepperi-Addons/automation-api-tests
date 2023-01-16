@@ -155,7 +155,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
         describe('Scenarios', () => {
             describe('Positive', () => {
                 it('CRUD Transactions Of Sales Order (DI-17083)', async () => {
-                    const fieldID = `TSA Creation Test ${
+                    const fieldID = `TSA_Creation_Test_${
                         Math.floor(Math.random() * 10000).toString() + Math.random().toString(36).substring(10)
                     }`;
                     const postField = await service.upsertField(
@@ -225,9 +225,9 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                 for (let index = 0; index < resourceTypesArray.length; index++) {
                     const resourceType = resourceTypesArray[index];
                     it(`CRUD ${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)} (DI-17083)`, async () => {
-                        const fieldID = `TSA Creation Test ${
+                        const fieldID = `TSA_Creation_Test_${
                             Math.floor(Math.random() * 10000).toString() + Math.random().toString(36).substring(10)
-                        } ${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)} 12345 (For-Positive)`;
+                        } ${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)}_12345_(For-Positive)`;
 
                         if (resourceType == 'accounts' || resourceType == 'catalogs' || resourceType == 'items') {
                             const postField = await service.upsertField(resourceType, {
@@ -849,11 +849,11 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
         //Remove all CURD Tests Fields
         async function TestCleanUp(service: FieldsService) {
             const allFieldsObject = await service.papiClient.get(
-                `/type_safe_attribute?where=Name LIKE 'TSA Creation Test %'`,
+                `/type_safe_attribute?where=Name LIKE 'TSA_Creation_Test_%'`,
             );
             let deletedCounter = 0;
             for (let index = 0; index < allFieldsObject.length; index++) {
-                if (allFieldsObject[index].Name?.toString().startsWith('TSA Creation Test ')) {
+                if (allFieldsObject[index].Name?.toString().startsWith('TSA_Creation_Test_')) {
                     await service.papiClient.post('/type_safe_attribute', {
                         InternalID: allFieldsObject[index].InternalID,
                         Hidden: true,

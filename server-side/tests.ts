@@ -1105,8 +1105,9 @@ export async function legacy_resources(client: Client, request: Request, testerF
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await LegacyResourcesTests(service, request, testerFunctions);
     await test_data(client, testerFunctions);
+    const results = await testerFunctions.run();
     service.PrintMemoryUseToLog('End', testName);
-    return await testerFunctions.run();
+    return results;
 }
 
 export async function maintenance_job(client: Client, request: Request, testerFunctions: TesterFunctions) {
