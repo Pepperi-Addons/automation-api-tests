@@ -926,7 +926,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             )
             .then((res) => res.Body);
         //debugger;
-        if (logcash.getDataDedicatedAfterDrop.fault.faultstring == 'Failed due to exception: Index not found') {
+        if (logcash.getDataDedicatedAfterDrop.fault.faultstring.includes('Failed due to exception: Schema doesn')) {
             logcash.getDataDedicatedAfterDropStatus = true;
         } else {
             logcash.getDataDedicatedAfterDropStatus = false;
