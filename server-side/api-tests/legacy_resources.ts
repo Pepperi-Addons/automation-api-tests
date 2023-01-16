@@ -67,7 +67,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let legacyItemExternalID;
             let itemExternalID;
             let legacyCreatedItem;
-            let createdItem;
+            // let createdItem;
             let mainCategoryID;
             let updatedItem;
             let legacyUpdatedItem;
@@ -79,10 +79,10 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 itemExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
                 legacyItemExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
 
-                createdItem = await objectsService.postItem({
-                    ExternalID: itemExternalID,
-                    MainCategoryID: mainCategoryID,
-                });
+                // createdItem = await objectsService.postItem({
+                //     ExternalID: itemExternalID,
+                //     MainCategoryID: mainCategoryID,
+                // });
 
                 legacyCreatedItem = await service.post('items', {
                     ExternalID: legacyItemExternalID,
@@ -277,29 +277,37 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 it('DIMX import insert + update', async () => {
                     const uuidForImport = newUuid();
                     let dimxImportResult = await service.dimxImport('items', {
-                        Objects: [{
-                            Key: uuidForImport,
-                            ExternalID: itemExternalID + 'DIMX',
-                            MainCategoryID: mainCategoryID,
-                        }]
+                        Objects: [
+                            {
+                                Key: uuidForImport,
+                                ExternalID: itemExternalID + 'DIMX',
+                                MainCategoryID: mainCategoryID,
+                            },
+                        ],
                     });
-                    expect(dimxImportResult).to.deep.equal([{
-                        Key: uuidForImport,
-                        Status: 'Insert',
-                    }]);
+                    expect(dimxImportResult).to.deep.equal([
+                        {
+                            Key: uuidForImport,
+                            Status: 'Insert',
+                        },
+                    ]);
 
                     dimxImportResult = await service.dimxImport('items', {
-                        Objects: [{
-                            Key: uuidForImport,
-                            ExternalID: itemExternalID + 'DIMX',
-                            MainCategoryID: mainCategoryID,
-                            Name: 'DIMX Import Test'
-                        }]
+                        Objects: [
+                            {
+                                Key: uuidForImport,
+                                ExternalID: itemExternalID + 'DIMX',
+                                MainCategoryID: mainCategoryID,
+                                Name: 'DIMX Import Test',
+                            },
+                        ],
                     });
-                    expect(dimxImportResult).to.deep.equal([{
-                        Key: uuidForImport,
-                        Status: 'Update',
-                    }]);
+                    expect(dimxImportResult).to.deep.equal([
+                        {
+                            Key: uuidForImport,
+                            Status: 'Update',
+                        },
+                    ]);
                 });
 
                 it('Delete items', async () => {
@@ -407,24 +415,24 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             it('Get account by key', async () => {
                 const accountAfterUpdate = await objectsService.getAccountByID(legacyCreatedAccount.InternalID);
                 accountAfterUpdate.Key = legacyCreatedAccount.Key;
-                    delete accountAfterUpdate['UUID'];
-                    delete accountAfterUpdate['Catalogs'];
-                    delete accountAfterUpdate['Debts30'];
-                    delete accountAfterUpdate['Debts60'];
-                    delete accountAfterUpdate['Debts90'];
-                    delete accountAfterUpdate['DebtsAbove90'];
-                    delete accountAfterUpdate['Parent'];
-                    delete accountAfterUpdate['PriceList'];
-                    delete accountAfterUpdate['Prop1'];
-                    delete accountAfterUpdate['Prop2'];
-                    delete accountAfterUpdate['Prop3'];
-                    delete accountAfterUpdate['Prop4'];
-                    delete accountAfterUpdate['Prop5'];
-                    delete accountAfterUpdate['Status'];
-                    delete accountAfterUpdate['StatusName'];
-                    delete accountAfterUpdate['SpecialPriceList'];
-                    delete accountAfterUpdate['Users'];
-                    delete accountAfterUpdate['Mobile'];
+                delete accountAfterUpdate['UUID'];
+                delete accountAfterUpdate['Catalogs'];
+                delete accountAfterUpdate['Debts30'];
+                delete accountAfterUpdate['Debts60'];
+                delete accountAfterUpdate['Debts90'];
+                delete accountAfterUpdate['DebtsAbove90'];
+                delete accountAfterUpdate['Parent'];
+                delete accountAfterUpdate['PriceList'];
+                delete accountAfterUpdate['Prop1'];
+                delete accountAfterUpdate['Prop2'];
+                delete accountAfterUpdate['Prop3'];
+                delete accountAfterUpdate['Prop4'];
+                delete accountAfterUpdate['Prop5'];
+                delete accountAfterUpdate['Status'];
+                delete accountAfterUpdate['StatusName'];
+                delete accountAfterUpdate['SpecialPriceList'];
+                delete accountAfterUpdate['Users'];
+                delete accountAfterUpdate['Mobile'];
                 const getByKeyAccount = await service.getByKey('accounts', legacyCreatedAccount.Key);
                 expect(getByKeyAccount).to.deep.equal(accountAfterUpdate);
                 await expect(service.getByKey('accounts', '1234')).eventually.to.be.rejected;
@@ -578,27 +586,35 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 it('DIMX import insert + update', async () => {
                     const uuidForImport = newUuid();
                     let dimxImportResult = await service.dimxImport('accounts', {
-                        Objects: [{
-                            Key: uuidForImport,
-                            ExternalID: accountExternalID + 'DIMX',
-                        }]
+                        Objects: [
+                            {
+                                Key: uuidForImport,
+                                ExternalID: accountExternalID + 'DIMX',
+                            },
+                        ],
                     });
-                    expect(dimxImportResult).to.deep.equal([{
-                        Key: uuidForImport,
-                        Status: 'Insert',
-                    }]);
+                    expect(dimxImportResult).to.deep.equal([
+                        {
+                            Key: uuidForImport,
+                            Status: 'Insert',
+                        },
+                    ]);
 
                     dimxImportResult = await service.dimxImport('accounts', {
-                        Objects: [{
-                            Key: uuidForImport,
-                            ExternalID: accountExternalID + 'DIMX',
-                            Name: 'DIMX Import Test'
-                        }]
+                        Objects: [
+                            {
+                                Key: uuidForImport,
+                                ExternalID: accountExternalID + 'DIMX',
+                                Name: 'DIMX Import Test',
+                            },
+                        ],
                     });
-                    expect(dimxImportResult).to.deep.equal([{
-                        Key: uuidForImport,
-                        Status: 'Update',
-                    }]);
+                    expect(dimxImportResult).to.deep.equal([
+                        {
+                            Key: uuidForImport,
+                            Status: 'Update',
+                        },
+                    ]);
                 });
 
                 it('Delete accounts', async () => {
@@ -628,7 +644,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let legacyUserExternalID;
             let userExternalID;
             let legacyCreatedUser;
-            let createdUser;
+            // let createdUser;
             let userEmail;
             let legacyUserEmail;
             let updatedUser;
@@ -651,10 +667,10 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     Math.floor(Math.random() * 1000000).toString() +
                     '.com';
 
-                createdUser = await objectsService.createUser({
-                    ExternalID: userExternalID,
-                    Email: userEmail,
-                });
+                // createdUser = await objectsService.createUser({
+                //     ExternalID: userExternalID,
+                //     Email: userEmail,
+                // });
 
                 legacyCreatedUser = await service.post('users', {
                     ExternalID: legacyUserExternalID,
@@ -722,7 +738,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             describe('Users search', () => {
                 let legacyUsers;
                 it('Where', async () => {
-                    const whereUsers = await objectsService.getUsers({ where: `ExternalID like 'Automated API User%'` });
+                    const whereUsers = await objectsService.getUsers({
+                        where: `ExternalID like 'Automated API User%'`,
+                    });
                     const legacyWhereUsers = await service.search('users', {
                         Where: `ExternalID like 'Automated API User%'`,
                     });
@@ -825,7 +843,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let contactExternalID;
             let accountForContact;
             let legacyCreatedContact;
-            let createdContact;
+            // let createdContact;
             let contactEmail;
             let updatedContact;
             let legacyUpdatedContact;
@@ -843,18 +861,18 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 accountForContact = await objectsService.getAccounts();
                 accountForContact = accountForContact[0];
 
-                createdContact = await objectsService.createContact({
-                    ExternalID: contactExternalID,
-                    Email: contactEmail,
-                    Mobile: '123-45678',
-                    FirstName: 'Contact',
-                    LastName: 'Test',
-                    Account: {
-                        Data: {
-                            InternalID: accountForContact.InternalID,
-                        },
-                    },
-                });
+                // createdContact = await objectsService.createContact({
+                //     ExternalID: contactExternalID,
+                //     Email: contactEmail,
+                //     Mobile: '123-45678',
+                //     FirstName: 'Contact',
+                //     LastName: 'Test',
+                //     Account: {
+                //         Data: {
+                //             InternalID: accountForContact.InternalID,
+                //         },
+                //     },
+                // });
 
                 legacyCreatedContact = await service.post('contacts', {
                     ExternalID: legacyContactExternalID,
@@ -1278,7 +1296,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 expect(legacyCreatedAccountUsers).to.have.property('Key').that.is.a('string').with.lengthOf(36);
                 expect(legacyCreatedAccountUsers.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(legacyCreatedAccountUsers.CreationDateTime).to.include('Z');
-                expect(legacyCreatedAccountUsers.ModificationDateTime).to.include(new Date().toISOString().split('T')[0],);
+                expect(legacyCreatedAccountUsers.ModificationDateTime).to.include(
+                    new Date().toISOString().split('T')[0],
+                );
                 expect(legacyCreatedAccountUsers.ModificationDateTime).to.include('Z');
                 expect(legacyCreatedAccountUsers).to.have.property('User').that.is.equals(users[0].UUID);
                 expect(legacyCreatedAccountUsers).to.have.property('Hidden').that.is.false;
@@ -1362,8 +1382,8 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         legacyAccountUsersManipulation[index].User = legacyAccountUsers[index].User.Data.UUID;
                         legacyAccountUsersManipulation[index].Key = legacyAccountUsers[index].UUID;
                         delete legacyAccountUsersManipulation[index].UUID;
-                        delete legacyAccountUsersManipulation[index].ConnectedWithFullAccountAccess; 
-                    };
+                        delete legacyAccountUsersManipulation[index].ConnectedWithFullAccountAccess;
+                    }
                     expect(legacyKeyListAccountUsers.Objects.length).to.equal(legacyAccountUsersManipulation.length);
                     expect(legacyKeyListAccountUsers.Objects).to.deep.equal(legacyAccountUsersManipulation);
                 });
@@ -1386,7 +1406,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Fields', async () => {
-                    legacyAccountUsers = await objectsService.getAccountUsersClause(`where=InternalID=${legacyAccountUsers[0].InternalID}`);
+                    legacyAccountUsers = await objectsService.getAccountUsersClause(
+                        `where=InternalID=${legacyAccountUsers[0].InternalID}`,
+                    );
                     const legacyFieldsAccountUsers = await service.search(`account_users`, {
                         Where: `InternalID=${legacyAccountUsers[0].InternalID}`,
                         Fields: ['Hidden', 'InternalID'],
@@ -1428,17 +1450,21 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
                     it('DIMX import insert', async () => {
                         const uuidForImport = newUuid();
-                        let dimxImportResult = await service.dimxImport('account_users', {
-                            Objects: [{
-                                Key: uuidForImport,
-                                Account: legacyAccount.UUID,
-                                User: users[1].UUID
-                            }]
+                        const dimxImportResult = await service.dimxImport('account_users', {
+                            Objects: [
+                                {
+                                    Key: uuidForImport,
+                                    Account: legacyAccount.UUID,
+                                    User: users[1].UUID,
+                                },
+                            ],
                         });
-                        expect(dimxImportResult).to.deep.equal([{
-                            Key: uuidForImport,
-                            Status: 'Insert',
-                        }]);
+                        expect(dimxImportResult).to.deep.equal([
+                            {
+                                Key: uuidForImport,
+                                Status: 'Insert',
+                            },
+                        ]);
                     });
 
                     it('Delete AccountUsers and account', async () => {
