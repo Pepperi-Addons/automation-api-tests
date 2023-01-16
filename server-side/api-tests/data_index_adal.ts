@@ -940,7 +940,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         typedSchemeName,
                     ),
                 ).eventually.to.be.rejectedWith(
-                    `${generalService.papiClient['options'].baseURL}/addons/shared_index/index/tester/${addonUUID}/test_shared_index failed with status: 404 - Not Found error: {"fault":{"faultstring":"Failed due to exception: Index not found","detail":{"errorcode":"NotFound"}}}`,
+                    `${generalService.papiClient['options'].baseURL}/addons/shared_index/index/tester/${addonUUID}/test_shared_index failed with status: 404 - Not Found error: {"fault":{"faultstring":"Failed due to exception: Schema doesn\'t exist","detail":{"errorcode":"NotFound"}}}`,
                 );
             });
 
@@ -954,7 +954,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                         indexSchemeName,
                     ),
                 ).eventually.to.be.rejectedWith(
-                    `${generalService.papiClient['options'].baseURL}/addons/index/${addonUUID}/test_index failed with status: 404 - Not Found error: {"fault":{"faultstring":"Failed due to exception: Index not found","detail":{"errorcode":"NotFound"}}}`,
+                    `${generalService.papiClient['options'].baseURL}/addons/index/${addonUUID}/test_index failed with status: 404 - Not Found error: {"fault":{"faultstring":"Failed due to exception: Schema doesn\'t exist","detail":{"errorcode":"NotFound"}}}`,
                 );
             });
 
