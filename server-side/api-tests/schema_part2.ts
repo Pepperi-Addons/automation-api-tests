@@ -35,6 +35,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
         // 'Generic Resource':['df90dba6-e7cc-477b-95cf-2c70114e44e0',''],
         // 'User Defined Collections' :['122c0e9d-c240-4865-b446-f37ece866c22', '0.6.126'],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -1084,7 +1085,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.insertDataToContainedTableNegative.fault.faultstring.includes("Unsupported schema type 'contained")
+            logcash.insertDataToContainedTableNegative.fault.faultstring.includes('Unsupported schema type contained')
         ) {
             logcash.insertDataToContainedTableNegativeStatus = true;
         } else {
@@ -1107,9 +1108,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
             })
             .then((res) => res.Body);
         //debugger;
-        if (
-            logcash.getDataFromContainedTableNegative.fault.faultstring.includes("Unsupported schema type 'contained")
-        ) {
+        if (logcash.getDataFromContainedTableNegative.fault.faultstring.includes('Unsupported schema type contained')) {
             logcash.getDataFromContainedTableNegativeStatus = true;
         } else {
             logcash.getDataFromContainedTableNegativeStatus = false;
