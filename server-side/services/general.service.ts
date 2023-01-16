@@ -31,7 +31,7 @@ export const testData = {
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.1.%'],
     'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.'],
-    ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.4.87'],
+    ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.4.%'],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', '1.0.2'],
     'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.0.134'], //hardcoded because newest isn't phased and otherwise wont match new webapp
