@@ -520,7 +520,15 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
         //debugger;
         // if (logcash.getDataDedicated.length == 10) {
         //     for (let index = 0; index < logcash.getDataDedicated.length - 1; index++) {
-        if (logcash.getDataDedicated[0].test == '123' && logcash.getDataDedicated[0]['PappiAccount.Country'] != '') {
+        if (
+            logcash.getDataDedicated[0].test == '123' &&
+            logcash.getDataDedicated[0]['PappiAccount.Country'] != '' &&
+            logcash.getDataDedicated[0].Key == '1' &&
+            logcash.getDataDedicated[0].Hidden == false &&
+            logcash.getDataDedicated[0]['PappiAccount.key'] != '' &&
+            logcash.getDataDedicated[0].CreationDateTime != '' &&
+            logcash.getDataDedicated[0].ModificationDateTime != ''
+        ) {
             logcash.getDataDedicatedStatus = true;
         } else {
             logcash.getDataDedicatedStatus = false;
@@ -636,7 +644,12 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
         if (
             logcash.getDataDedicated1[0]['Account.Name'] == 'First Table' &&
             logcash.getDataDedicated1[0]['PappiAccount.Country'] != '' &&
-            logcash.getDataDedicated1[0].test == '123'
+            logcash.getDataDedicated1[0].test == '123' &&
+            logcash.getDataDedicated[0].Key == '1' &&
+            logcash.getDataDedicated[0].Hidden == false &&
+            logcash.getDataDedicated[0]['PappiAccount.key'] != '' &&
+            logcash.getDataDedicated[0].CreationDateTime != '' &&
+            logcash.getDataDedicated[0].ModificationDateTime != ''
         ) {
             logcash.getDataDedicated1Status = true;
         } else {
