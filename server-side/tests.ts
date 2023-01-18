@@ -86,6 +86,7 @@ import {
     AsyncAddonGetRemoveTests,
 } from './api-tests/index';
 import { SingleMaintenanceAndDependenciesAddonsTestsPart3 } from './api-tests/addons';
+import { DataIndexDor } from './api-tests/dor_data_index_tests';
 // import { checkVersionsTest } from './api-tests/check_versions';
 
 let testName = '';
@@ -1123,6 +1124,18 @@ export async function data_index_adal(client: Client, request: Request, testerFu
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await DataIndexADALTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function data_index_dor(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    debugger;
+    testName = 'Data_Index_DOR';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await DataIndexDor(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
