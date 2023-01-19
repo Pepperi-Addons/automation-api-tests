@@ -1,7 +1,7 @@
 [
     {
-        "Name": "DIMX Test",
-        "Description": "DIMX Test 0",
+        "Name": "DIMX_Test",
+        "Description": "DIMX_Test 0",
         "Column1": [
             "Value1",
             "Value2",
@@ -14,7 +14,7 @@
                 "Value2": 2,
                 "Value3": 3
             },
-            "String": "DIMX Test 0",
+            "String": "DIMX_Test 0",
             "Array": [
                 "Value1",
                 "Value2",
@@ -23,8 +23,8 @@
         }
     },
     {
-        "Name": "DIMX Test",
-        "Description": "DIMX Test 1",
+        "Name": "DIMX_Test",
+        "Description": "DIMX_Test 1",
         "Column1": [
             "Value1",
             "Value2",
@@ -37,7 +37,7 @@
                 "Value2": 2,
                 "Value3": 3
             },
-            "String": "DIMX Test 1",
+            "String": "DIMX_Test 1",
             "Array": [
                 "Value1",
                 "Value2",
