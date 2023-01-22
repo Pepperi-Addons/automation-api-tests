@@ -168,6 +168,14 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 assert(logcash.dropTablesStatus, logcash.dropTablesError);
             });
         });
+        describe('GET from doc DB on schema with references fields doesnt return the default fields (except Key) - DI-22546', () => {
+            it('Get schema - fields and data verification', () => {
+                assert(logcash.getDataADAL2Status, logcash.getDataADAL2Error);
+            });
+            it('Drop created schems ', () => {
+                assert(logcash.dropTables1Status, logcash.dropTables1Error);
+            });
+        });
     });
 
     //#endregion Mocha
@@ -181,7 +189,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             throw new Error(`Fail To Get Addon Secret Key ${error}`);
         }
         //Oren added this to skip insatll after I talked with Oleg, the installADallAddon, upgradADallAddon and getAuditLogInstallStatus functions are suspended for now
-        //await  createAbstractSchemaPositive();
+        //await  createFirstSchema();
         await getPapiSchema();
     }
 
@@ -520,7 +528,15 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
         //debugger;
         // if (logcash.getDataDedicated.length == 10) {
         //     for (let index = 0; index < logcash.getDataDedicated.length - 1; index++) {
-        if (logcash.getDataDedicated[0].test == '123' && logcash.getDataDedicated[0]['PappiAccount.Country'] != '') {
+        if (
+            logcash.getDataDedicated[0].test == '123' &&
+            logcash.getDataDedicated[0]['PappiAccount.Country'] != '' &&
+            logcash.getDataDedicated[0].Key == '1' &&
+            logcash.getDataDedicated[0].Hidden == false &&
+            logcash.getDataDedicated[0]['PappiAccount.key'] != '' &&
+            logcash.getDataDedicated[0].CreationDateTime != '' &&
+            logcash.getDataDedicated[0].ModificationDateTime != ''
+        ) {
             logcash.getDataDedicatedStatus = true;
         } else {
             logcash.getDataDedicatedStatus = false;
@@ -636,7 +652,12 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
         if (
             logcash.getDataDedicated1[0]['Account.Name'] == 'First Table' &&
             logcash.getDataDedicated1[0]['PappiAccount.Country'] != '' &&
-            logcash.getDataDedicated1[0].test == '123'
+            logcash.getDataDedicated1[0].test == '123' &&
+            logcash.getDataDedicated[0].Key == '1' &&
+            logcash.getDataDedicated[0].Hidden == false &&
+            logcash.getDataDedicated[0]['PappiAccount.key'] != '' &&
+            logcash.getDataDedicated[0].CreationDateTime != '' &&
+            logcash.getDataDedicated[0].ModificationDateTime != ''
         ) {
             logcash.getDataDedicated1Status = true;
         } else {
@@ -1271,17 +1292,236 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 await dropTables();
             } else if (logcash.dropTablesCount == 2) {
                 logcash.dropTablesSchemaName = logcash.createSchema2.Name;
-                //await dropTables();
+                await dropTables();
+            } else if (logcash.dropTablesCount == 3) {
                 logcash.dropTablesStatus = true;
+                await createFirstSchema();
             }
         } else {
             logcash.dropTablesStatus = false;
             logcash.dropTablesError = 'Drop tables failed.';
         }
-        //await dropExtendingTable();
+        //await createFirstSchema();
     }
 
     //#endregion
+
+    //#region GET from doc DB on schema with references fields doesn't return the default fields (except Key)
+    async function createFirstSchema() {
+        logcash.createFirstSchema = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    // Name: 'account_test' + newUuid(),
+                    Name: 'account_test1' + generalService.generateRandomString(16),
+                    Type: 'data',
+                    DataSourceData: {
+                        IndexName: 'my_index_' + generalService.generateRandomString(3),
+                        //NumberOfShards: 3
+                    },
+                    StringIndexName: 'my_index',
+                    Fields: {
+                        Name: { Type: 'String' },
+                    },
+                }),
+            })
+            .then((res) => res.Body);
+
+        //debugger;
+        if (
+            logcash.createFirstSchema.Name.includes('account_test') &&
+            logcash.createFirstSchema.Hidden == false &&
+            logcash.createFirstSchema.Type == 'data' &&
+            logcash.createFirstSchema.Fields.Name.Type == 'String' &&
+            logcash.createFirstSchema.DataSourceData.IndexName.includes('my_index')
+        ) {
+            logcash.createFirstSchemaStatus = true;
+        } else {
+            logcash.createFirstSchemaStatus = false;
+            logcash.createFirstSchemaErrorMessage = 'MAin Schema creation failed';
+        }
+        await insertDataToFirstTable();
+    }
+
+    async function insertDataToFirstTable() {
+        logcash.insertDataToAccountsTable = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createFirstSchema.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: '5',
+                    Name: 'First Table',
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.insertDataToAccountsTable[0] == 200) {
+            logcash.insertDataToAccountsTableStatus = true;
+        } else {
+            logcash.insertDataToAccountsTableStatus = false;
+            logcash.insertDataToAccountsTableError = 'Insert data to First table failed';
+        }
+        //debugger;
+        //await createSecondSchema();
+        await createSecondSchema2();
+    }
+
+    ////////// test case to validate rebuild (dedicated schema) on referance fields
+    async function createSecondSchema2() {
+        logcash.createSecondSchema2 = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    //Name: 'survey_test' + newUuid(),
+                    Name: 'survey_test' + generalService.generateRandomString(16),
+                    Type: 'data',
+                    DataSourceData: {
+                        IndexName: 'my_index_' + generalService.generateRandomString(3),
+                        //NumberOfShards: 3
+                    },
+                    StringIndexName: 'my_index',
+                    Fields: {
+                        test: { Type: 'Integer' },
+                        // },
+                        Account: {
+                            Type: 'Resource',
+                            Resource: logcash.createFirstSchema.Name,
+                            AddonUUID: addonUUID,
+                            Indexed: false,
+                            IndexedFields: {
+                                Name: { Type: 'String' },
+                            },
+                        },
+                    },
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createSecondSchema2.Name.includes('survey_test') &&
+            logcash.createSecondSchema2.Hidden == false &&
+            logcash.createSecondSchema2.Type == 'data' &&
+            logcash.createSecondSchema2.Fields.test.Type == 'Integer' &&
+            logcash.createSecondSchema2.Fields.Account.Type == 'Resource' &&
+            logcash.createSecondSchema2.DataSourceData.IndexName.includes('my_index')
+        ) {
+            logcash.createSecondSchema2Status = true;
+        } else {
+            logcash.createSecondSchema2Status = false;
+            logcash.createSecondSchema2ErrorMessage = 'Second Schema creation failed';
+        }
+        //debugger;
+        await insertDataSecondTable();
+    }
+
+    async function insertDataSecondTable() {
+        logcash.insertDataSecondTable = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSecondSchema2.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    Key: '1',
+                    test: '123',
+                    Account: '5',
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.insertDataSecondTable[0] == 200) {
+            logcash.insertDataSecondTableStatus = true;
+        } else {
+            logcash.insertDataSecondTableStatus = false;
+            logcash.insertDataSecondTableError = 'Insert data to Survey table failed';
+        }
+        //debugger;
+        //await getSurveyScheme();
+        generalService.sleep(5000);
+        await getDataADAL2();
+    }
+
+    async function getDataADAL2() {
+        //logcash.getDataADALStatus = true;
+        logcash.getDataADAL2 = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSecondSchema2.Name, {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    //'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataADAL2[0].Account == '5' &&
+            logcash.getDataADAL2[0]['Account.CreationDateTime'] == undefined &&
+            logcash.getDataADAL2[0]['Account.Hidden'] == undefined &&
+            logcash.getDataADAL2[0]['Account.ModificationDateTime'] == undefined &&
+            logcash.getDataADAL2[0]['Account.Name'] == 'First Table' &&
+            logcash.getDataADAL2[0].CreationDateTime != '' &&
+            logcash.getDataADAL2[0].Hidden == false &&
+            logcash.getDataADAL2[0].Key == '1' &&
+            logcash.getDataADAL2[0].ModificationDateTime != '' &&
+            logcash.getDataADAL2[0].test == '123'
+        ) {
+            logcash.getDataADAL2Status = true;
+        } else {
+            logcash.getDataADAL2Status = false;
+            logcash.getDataADAL2Error = 'GET value is wrong';
+        }
+
+        //debugger;
+        logcash.dropTablesSchemaName1 = logcash.createFirstSchema.Name;
+        logcash.dropTablesCount1 = 0;
+        await dropTables1();
+    }
+    async function dropTables1() {
+        //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
+        const res = await generalService.fetchStatus(
+            baseURL + '/addons/data/schemes/' + logcash.dropTablesSchemaName1 + '/purge',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+            },
+        );
+        if (res.Ok) {
+            logcash.dropTablesCount1++;
+            if (logcash.dropTablesCount1 == 1) {
+                logcash.dropTablesSchemaName1 = logcash.createSecondSchema2.Name;
+                await dropTables1();
+            } else {
+                logcash.dropTables1Status = true;
+            }
+        } else {
+            logcash.dropTables1Status = false;
+            logcash.dropTables1Error = 'Drop tables failed.';
+        }
+    }
+
+    //#endregion GET from doc DB on schema with references fields doesn't return the default fields (except Key)
+
     /////////////////////////////////Get from ADAL and from Elastic
     async function getSurveyScheme1() {
         logcash.getSurveyScheme1 = await generalService
