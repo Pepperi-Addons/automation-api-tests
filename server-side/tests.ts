@@ -1131,7 +1131,6 @@ export async function data_index_adal(client: Client, request: Request, testerFu
 
 export async function data_index_dor(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
-    debugger;
     testName = 'Data_Index_DOR';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
