@@ -46,19 +46,19 @@ export interface SurveyQuestion {
     Key: string;
     Title: string;
     Type:
-    | 'Short Text'
-    | 'Long Text'
-    | 'Multiple Select'
-    | 'Single Select'
-    | 'Checkbox'
-    | 'Radio Group'
-    | 'Yes/No'
-    | 'Number'
-    | 'Decimal'
-    | 'Currency'
-    | 'Percentage'
-    | 'Date'
-    | 'Date Time';
+        | 'Short Text'
+        | 'Long Text'
+        | 'Multiple Select'
+        | 'Single Select'
+        | 'Checkbox'
+        | 'Radio Group'
+        | 'Yes/No'
+        | 'Number'
+        | 'Decimal'
+        | 'Currency'
+        | 'Percentage'
+        | 'Date'
+        | 'Date Time';
 }
 
 // export interface ScriptParams {
