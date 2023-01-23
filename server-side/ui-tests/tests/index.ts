@@ -35,5 +35,5 @@ export {
     LoginPerfSqlitefTests,
     ResourceListTests,
     MockTest,
-    SurveyTests
+    SurveyTests,
 };
