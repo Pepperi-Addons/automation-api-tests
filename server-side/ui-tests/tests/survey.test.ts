@@ -118,6 +118,10 @@ export async function SurveyTests(email: string, password: string) {
                         Questions: [
                             { Name: '', Key: '', Title: 'what have i done', Type: 'Number' },
                             { Name: '', Key: '', Title: 'what have i done', Type: 'Decimal' },
+                            { Name: '', Key: '', Title: 'what have i done', Type: 'Currency' },
+                            { Name: '', Key: '', Title: 'what have i done', Type: 'Date' },
+                            { Name: '', Key: '', Title: 'what have i done', Type: 'Date Time' },
+                            { Name: '', Key: '', Title: 'what have i done', Type: 'Percentage' },
                         ],
                     },
                 ]);

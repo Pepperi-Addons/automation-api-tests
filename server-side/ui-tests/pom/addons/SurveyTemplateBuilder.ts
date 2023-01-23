@@ -46,19 +46,19 @@ export interface SurveyQuestion {
     Key: string;
     Title: string;
     Type:
-        | 'Short Text'
-        | 'Long Text'
-        | 'Multiple Select'
-        | 'Single Select'
-        | 'Checkbox'
-        | 'Radio Group'
-        | 'Yes/No'
-        | 'Number'
-        | 'Decimal'
-        | 'Currency'
-        | 'Percentage'
-        | 'Date'
-        | 'Date Time';
+    | 'Short Text'
+    | 'Long Text'
+    | 'Multiple Select'
+    | 'Single Select'
+    | 'Checkbox'
+    | 'Radio Group'
+    | 'Yes/No'
+    | 'Number'
+    | 'Decimal'
+    | 'Currency'
+    | 'Percentage'
+    | 'Date'
+    | 'Date Time';
 }
 
 // export interface ScriptParams {
@@ -172,9 +172,27 @@ export class SurveyTemplateBuilder extends AddonPage {
             question.Type,
         );
         await this.browser.click(By.xpath(xpathQueryForQuestionType));
-        await this.browser.sendKeys(this.TextQuestionInput, question.Title + Key.ENTER);
-        if (await this.browser.isElementVisible(this.ErrorDialogText, 3000)) {
-            await this.browser.click(this.CloseErrorDialogButtont);
+        switch (question.Type) {
+            case 'Short Text':
+            case 'Long Text':
+            case 'Currency':
+            case 'Number':
+            case 'Decimal':
+            case 'Date':
+            case 'Percentage':
+            case 'Date Time':
+                await this.browser.sendKeys(this.TextQuestionInput, question.Title + Key.ENTER);
+                if (await this.browser.isElementVisible(this.ErrorDialogText, 3000)) {
+                    await this.browser.click(this.CloseErrorDialogButtont);
+                }
+            case 'Multiple Select':
+            case 'Single Select':
+            //TODO
+            case 'Yes/No':
+            //TODO
+            case 'Checkbox':
+            case 'Radio Group':
+            //TODO
         }
     }
 }
