@@ -15,8 +15,8 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
     //#region Upgrade PFS
     const testData = {
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.1.17'],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.4.66'],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
 
     let varKey;
@@ -280,7 +280,8 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                         '/' +
                         tempKey,
                 );
-                const fileBeforeUpdate = await pfsService.getFileFromURL(getFileResponse.URL);
+                let fileBeforeUpdate = await pfsService.getFileFromURL(getFileResponse.URL);
+                fileBeforeUpdate = await pfsService.getFileFromURL(getFileResponse.URL);
                 const updateFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
                     URI: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
