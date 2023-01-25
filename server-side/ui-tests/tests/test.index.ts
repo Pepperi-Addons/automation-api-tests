@@ -34,6 +34,7 @@ import {
     ResourceListTests,
     RLdataPrep,
     MockTest,
+    SurveyTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -44,6 +45,7 @@ import { PFSTestser } from '../../api-tests/pepperi_file_service';
 import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
 import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
 import { LoginPerfTestsReload } from './login_performance_reload.test';
+import { UDCTestser } from '../../api-tests/user_defined_collections';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -323,6 +325,21 @@ const addon = process.env.npm_config_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
+    if (tests.includes('ApiUDC')) {
+        await UDCTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
     if (tests.includes('AsyncAddonGetRemoveCodeJobsCLI')) {
         await AsyncAddonGetRemoveTestser(
             generalService,
@@ -383,8 +400,12 @@ const addon = process.env.npm_config_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
-    if (tests.includes('Udc')) {
+    if (tests.includes('UdcUI')) {
         await UDCTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+    if (tests.includes('Survey')) {
+        await SurveyTests(email, pass); //, varPass, client
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_performance')) {
