@@ -239,6 +239,10 @@ export async function SingleMaintenanceAndDependenciesAddonsTestsPart3(
         await ExecuteAddonsTests(generalService, request, tester);
 }
 
+export async function maintenance3APITestser(generalService: GeneralService, request, tester: TesterFunctions) {
+    await SingleMaintenanceAndDependenciesAddonsTestsPart3(generalService, request, tester);
+}
+
 export async function MaintenanceFullTests(generalService: GeneralService, request, tester: TesterFunctions) {
     (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
         (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
@@ -266,6 +270,13 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         varKey = request.body.varKeyStage;
     } else {
         varKey = request.body.varKeyPro;
+    }
+
+    //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
+    if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
+        const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, varKey);
+        generalService['client'].AddonSecretKey = addonSecretKey;
+        generalService.papiClient['options'].addonSecretKey = addonSecretKey;
     }
 
     console.log('Initiate Addons Tests | ' + generalService.getTime());
