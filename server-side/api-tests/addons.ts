@@ -1182,7 +1182,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             // debugger;
             //console.log({ Audit_Log_Addon_Without_Version: postAddonApiResponse });
 
-            debugger;
+            //debugger;
             mandatoryStepsInstallAddonWithNonAvailableVersion.failedToInstallAddon =
                 postAddonApiResponse.Status.Name == 'Success';
             addTestResultUnderHeadline(
