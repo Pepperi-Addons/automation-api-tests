@@ -318,7 +318,7 @@ const addon = process.env.npm_config_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
-    if (tests.includes('UdcAPI')) {
+    if (tests.includes('ApiUDC')) {
         await UDCTestser(
             generalService,
             {
@@ -393,7 +393,7 @@ const addon = process.env.npm_config_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
-    if (tests.includes('Udc')) {
+    if (tests.includes('UdcUI')) {
         await UDCTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
