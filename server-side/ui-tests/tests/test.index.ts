@@ -33,6 +33,7 @@ import {
     LoginPerfSqlitefTests,
     ResourceListTests,
     MockTest,
+    SurveyTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -378,6 +379,10 @@ const addon = process.env.npm_config_addon as string;
 
     if (tests.includes('Udc')) {
         await UDCTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+    if (tests.includes('Survey')) {
+        await SurveyTests(email, pass); //, varPass, client
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_performance')) {

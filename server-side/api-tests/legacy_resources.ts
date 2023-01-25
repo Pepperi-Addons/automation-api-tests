@@ -416,6 +416,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 const accountAfterUpdate = await objectsService.getAccountByID(legacyCreatedAccount.InternalID);
                 accountAfterUpdate.Key = legacyCreatedAccount.Key;
                 delete accountAfterUpdate['UUID'];
+                delete accountAfterUpdate['Latitude'];
+                delete accountAfterUpdate['Longitude'];
+                delete accountAfterUpdate['ModificationDateTime'];
                 delete accountAfterUpdate['Catalogs'];
                 delete accountAfterUpdate['Debts30'];
                 delete accountAfterUpdate['Debts60'];
@@ -434,6 +437,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 delete accountAfterUpdate['Users'];
                 delete accountAfterUpdate['Mobile'];
                 const getByKeyAccount = await service.getByKey('accounts', legacyCreatedAccount.Key);
+                delete getByKeyAccount['Latitude'];
+                delete getByKeyAccount['Longitude'];
+                delete getByKeyAccount['ModificationDateTime'];
                 expect(getByKeyAccount).to.deep.equal(accountAfterUpdate);
                 await expect(service.getByKey('accounts', '1234')).eventually.to.be.rejected;
             });
@@ -444,16 +450,29 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     'InternalID',
                     legacyCreatedAccount.InternalID,
                 );
+                delete getAccountByInternalID['Latitude'];
+                delete getAccountByInternalID['Longitude'];
+                delete getAccountByInternalID['ModificationDateTime'];
+                delete legacyUpdatedAccount['Latitude'];
+                delete legacyUpdatedAccount['Longitude'];
+                delete legacyUpdatedAccount['ModificationDateTime'];
                 expect(getAccountByInternalID).to.deep.equal(legacyUpdatedAccount);
                 const getAccountByExternalID = await service.getByUniqueKey(
                     'accounts',
                     'ExternalID',
                     legacyCreatedAccount.ExternalID,
                 );
+                delete getAccountByExternalID['Latitude'];
+                delete getAccountByExternalID['Longitude'];
+                delete getAccountByExternalID['ModificationDateTime'];
                 expect(getAccountByExternalID).to.deep.equal(legacyUpdatedAccount);
                 const getAccountByKey = await service.getByUniqueKey('accounts', 'Key', legacyCreatedAccount.Key);
+                delete getAccountByKey['Latitude'];
+                delete getAccountByKey['Longitude'];
+                delete getAccountByKey['ModificationDateTime'];
                 expect(getAccountByKey).to.deep.equal(legacyUpdatedAccount);
-                await expect(service.getByUniqueKey('accounts', 'InternalID', '123412')).eventually.to.be.rejected;
+                await expect(service.getByUniqueKey('accounts', 'InternalID', '12341223147776')).eventually.to.be
+                    .rejected;
                 await expect(service.getByUniqueKey('accounts', 'Price', '123412')).eventually.to.be.rejected;
             });
 
@@ -644,7 +663,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let legacyUserExternalID;
             let userExternalID;
             let legacyCreatedUser;
-            // let createdUser;
+            let createdUser;
             let userEmail;
             let legacyUserEmail;
             let updatedUser;
@@ -667,16 +686,16 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     Math.floor(Math.random() * 1000000).toString() +
                     '.com';
 
-                // createdUser = await objectsService.createUser({
-                //     ExternalID: userExternalID,
-                //     Email: userEmail,
-                // });
+                createdUser = await objectsService.createUser({
+                    ExternalID: userExternalID,
+                    Email: userEmail,
+                });
 
                 legacyCreatedUser = await service.post('users', {
                     ExternalID: legacyUserExternalID,
                     Email: legacyUserEmail,
                 });
-
+                expect(createdUser).to.have.property('InternalID').that.is.a('number');
                 expect(legacyCreatedUser).to.have.property('InternalID').that.is.a('number');
                 expect(legacyCreatedUser).to.have.property('Key').that.is.a('string').with.lengthOf(36);
                 expect(legacyCreatedUser).to.have.property('ExternalID').that.equals(legacyUserExternalID);

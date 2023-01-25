@@ -30,12 +30,15 @@ export async function AddonDataImportExportPerformanceTests(
     await AddonDataImportExportTests(generalService, request, tester);
 }
 
+const email = process.env.npm_config_user_email as string;
+const pass = process.env.npm_config_user_pass as string;
+
 export async function AddonDataImportExportTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
-    const relationService = new AddonRelationService(generalService);
-    const dimxService = new DIMXService(generalService.papiClient);
+    let relationService = new AddonRelationService(generalService);
+    let dimxService = new DIMXService(generalService.papiClient);
 
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -116,6 +119,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
         describe(`Create Function For Relation, File: ${addonFunctionsFileName}, Function Name: ${addonExportFunctionName}`, () => {
             it(`Post Function`, async () => {
+                debugger;
                 const adoonVersionResponse = await generalService.papiClient.addons.versions.find({
                     where: `AddonUUID='${addonUUID}' AND Version='${version}'`,
                 });
@@ -1319,6 +1323,15 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     }
                 });
 
+                describe('Token Renewal', async () => {
+                    it(`Token Renewal: Test Is Too Long To Run With Same Token`, async () => {
+                        const client = await generalService.initiateTester(email, pass);
+                        generalService = new GeneralService(client);
+                        relationService = new AddonRelationService(generalService);
+                        dimxService = new DIMXService(generalService.papiClient);
+                    });
+                });
+
                 describe(`Check Object Schema (DI-19026)`, async () => {
                     let dimxExport;
                     let dimxExportAfterChange;
@@ -2444,6 +2457,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         });
 
                         it(`Create Schema With Array, Object and Number Mixed With Delimieter: "${delimiterArr[i]}"`, async () => {
+                            if (i === 1) {
+                                debugger;
+                            }
                             const adalService = new ADALService(generalService.papiClient);
                             adalService.papiClient['options'].addonUUID = addonUUID;
                             adalService.papiClient['options'].addonSecretKey = secretKey;
