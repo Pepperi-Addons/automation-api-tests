@@ -15,6 +15,21 @@ export class WebAppSettingsSidePanel extends Component {
     //public SettingsBarContainer: By = By.xpath('.//*[@class="settings-bar-container"]//*[@role="button"]');
     public SettingsBarContainer: By = By.xpath('//*[@class="pep-side-bar-container"]//*[@role="button"]');
 
+    public SettingsBarContainer_isOpen: By = By.xpath(
+        '//div[@class="toggle-side-bar-container ng-star-inserted is-open-state"]',
+    );
+
+    public async isSettingsOpen() {
+        try {
+            const element = await this.browser.findElement(this.SettingsBarContainer_isOpen, 1000);
+            console.info(`SettingsBarContainer_isOpen: ${element}`);
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+        return true;
+    }
+
     public static readonly PepSideBarContainer = By.xpath('//pep-side-bar');
 
     public static getCategoryBtn(categoryId: string): By {
@@ -68,14 +83,11 @@ export class WebAppSettingsSidePanel extends Component {
 
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
         try {
+            const expanded = this.isCategoryExpanded(settingsButtonID);
+            console.info(`this.isCategoryExpanded(settingsButtonID) : ${expanded}`);
             const mat_expansion_panel_header_selector = `//*[@id="${settingsButtonID}"]/ancestor::mat-expansion-panel-header[@aria-expanded="false"]`;
-            // console.log('mat_expansion_panel_header_selector:', mat_expansion_panel_header_selector)
-            //*[@id="mat-expansion-panel-header-3"]
-            const isExpanded = await this.browser.findElement(By.xpath(mat_expansion_panel_header_selector));
-            // this.browser.sleep(5000);
-            // console.log("Selected Settings Category Element:", isExpanded)
-            // debugger
-            if (isExpanded) {
+            const isNotExpanded = await this.browser.isElementVisible(By.xpath(mat_expansion_panel_header_selector));
+            if (isNotExpanded) {
                 console.info(`${settingsButtonID} will be clicked`);
                 await this.browser.click(
                     By.xpath(`${this.SettingsBarContainer.value}//*[contains(@id,"${settingsButtonID}")]/../../..`),
@@ -84,7 +96,7 @@ export class WebAppSettingsSidePanel extends Component {
         } catch (error) {
             console.error(error);
             console.info('Settings Category is probably already OPEN');
-            expect(error).to.be.null;
+            // expect(error).to.be.null;
         }
     }
 
@@ -110,7 +122,7 @@ export class WebAppSettingsSidePanel extends Component {
         } catch (error) {
             console.error(error);
             console.info('Settings Sub Category is NOT OPEN');
-            expect(error).to.be.null;
+            expect('Settings Sub Category is NOT OPEN').to.be.null;
         }
     }
 

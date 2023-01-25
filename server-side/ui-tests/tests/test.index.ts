@@ -32,6 +32,7 @@ import {
     ScriptPickerTests,
     LoginPerfSqlitefTests,
     ResourceListTests,
+    RLdataPrep,
     MockTest,
     SurveyTests,
 } from './index';
@@ -265,12 +266,18 @@ const addon = process.env.npm_config_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
+    if (tests.includes('DataPrepRL')) {
+        await RLdataPrep(varPass, client);
+    }
+
     if (tests.includes('ResourceList')) {
+        // await RLdataPrep(client);
         await ResourceListTests(email, pass, varPass, client);
     }
 
     if (tests.includes('MockTest')) {
-        await MockTest(email, pass, varPass, client);
+        await MockTest(client);
+        await ResourceListTests(email, pass, varPass, client);
     }
 
     if (tests.includes('Distributor')) {

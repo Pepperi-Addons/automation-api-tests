@@ -100,6 +100,22 @@ export class AddonPage extends Page {
     //TODO:activitys page --> has to be moved
     public OrderIdTextElement: By = By.xpath(`//span[@id='Type' and text()='|textToFill|']/../../div//a//span`);
 
+    // Edit Tabs Configuration
+    public EditPage_ConfigProfileCard_Rep: By = this.getSelectorOfConfigProfileCardByName('Rep');
+    public EditPage_AddProfile_Button: By = By.xpath('//button[@data-qa="Add profile"]');
+    public EditPage_ProfileCard_Menu: By = By.xpath('//button[@data-qa="Add profile"]');
+    public EditPage_ConfigProfileCard_EditButton_Rep: By = this.getSelectorOfProfileCardEditButtonByName('Rep');
+
+    private getSelectorOfConfigProfileCardByName(name: string) {
+        return By.xpath(`//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card`);
+    }
+
+    private getSelectorOfProfileCardEditButtonByName(name: string) {
+        return By.xpath(
+            `//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card //pep-button[@iconname="system_edit"]/button`,
+        );
+    }
+
     public async selectTabByText(tabText: string): Promise<void> {
         const selectedTab = Object.assign({}, this.AddonContainerTablistXpath);
         selectedTab['value'] += ` [contains(., '${tabText}')]`;
@@ -266,11 +282,12 @@ export class AddonPage extends Page {
 
     public async waitTillVisible(element: By, waitForTime: number): Promise<any> {
         try {
+            this.browser.sleep(2000);
             await this.browser.untilIsVisible(element, waitForTime);
         } catch (error) {
             console.info(`Element: ${element} - IS NOT LOCATED!!!`);
             console.error(error);
-            expect(error).to.be.null;
+            expect(`Element: ${element} - IS NOT LOCATED!!!`).to.be.null;
         }
     }
 
@@ -284,22 +301,20 @@ export class AddonPage extends Page {
         } catch (error) {
             console.info(`Element: ${elem} - is not clicked - make sure you've provided a string and not By`);
             console.error(error);
-            expect(error).to.be.null;
+            expect(`The Element: ${elem} -> to be Found, but it's NOT!`).to.be.undefined;
         }
     }
 
     public async checkThatElementIsNotFound(elem: string): Promise<void> {
         if (this[elem]) {
-            console.info(`We are in method checkThatElementIsNotFound looking for: ${this[elem]}`);
             try {
-                const isElementFound = await this.browser.findElement(this[elem]);
-                console.info(`isElementFound: ${isElementFound}`);
+                await this.browser.findElement(this[elem]);
             } catch (error) {
-                expect(error).contains('The element is not visible');
+                expect(`ERROR -> The element: ${elem} is not visible`).to.be.undefined;
             }
         } else {
             console.info(`Element: ${elem} - is NOT declared in the Addon file`);
-            expect(`${this[elem]} to be `).to.contain('in the Addon file, but is NOT');
+            expect(`${this[elem]} to be in the Addon file, but is NOT`).to.be.undefined;
         }
     }
 
@@ -308,7 +323,7 @@ export class AddonPage extends Page {
             expect(await (await this.browser.findElement(this[elem])).isSelected()).to.be.true;
         } else {
             console.info(`Element: ${elem} - is NOT declared in the Addon file`);
-            expect(`${this[elem]} to be `).to.contain('in the Addon file, but is NOT');
+            expect(`${this[elem]} to be in the Addon file, but is NOT`).to.be.undefined;
         }
     }
 
