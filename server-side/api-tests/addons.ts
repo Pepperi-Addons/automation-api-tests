@@ -1182,7 +1182,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             // debugger;
             //console.log({ Audit_Log_Addon_Without_Version: postAddonApiResponse });
 
-            debugger;
+            //debugger;
             mandatoryStepsInstallAddonWithNonAvailableVersion.failedToInstallAddon =
                 postAddonApiResponse.Status.Name == 'Success';
             addTestResultUnderHeadline(
@@ -2882,7 +2882,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             deleteAddon: false,
         };
 
-        const versionsArr: AddonVersion[] = [];
+        const versionsArr: any[] = [];
         versionsArr.length = 3;
         let versionTestDataBody;
 
@@ -2968,6 +2968,8 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //Update
             const tempNewAddonVersionBody = versionsArr[0];
             tempNewAddonVersionBody.Available = false;
+            tempNewAddonVersionBody.Files[0].FileName = 'file1'; //Oleg
+            tempNewAddonVersionBody.Files[1].FileName = 'file2';
 
             //const getAdonsVersionApiResponse =
             await generalService.fetchStatus(

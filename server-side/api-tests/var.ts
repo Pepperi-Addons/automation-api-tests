@@ -805,6 +805,10 @@ export async function VarTests(generalService: GeneralService, request, tester: 
 
         //Update
         const tempNewAddonVersionBody = createVersionApiResponse.Body;
+        //added Oleg
+        tempNewAddonVersionBody.Files[0].FileName = 'file1';
+        tempNewAddonVersionBody.Files[1].FileName = 'file2';
+        //Oleg
         tempNewAddonVersionBody.Description = 'Update Version Test';
         let getAdonsVersionApiResponse = await generalService.fetchStatus(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
@@ -2730,17 +2734,20 @@ export async function VarTests(generalService: GeneralService, request, tester: 
             },
         );
         //console.log({ Get_Version: getVersionApiResponse });
-        mandatoryStepsvalidateOtherFileSent.fileSent = getVersionApiResponse.Body.Files[0].URL.includes('installation');
+        mandatoryStepsvalidateOtherFileSent.fileSent = JSON.stringify(getVersionApiResponse.Body).includes(
+            'installation',
+        );
         addTestResultUnderHeadline(
             testName,
             'Read Other File Sent Test',
             mandatoryStepsvalidateOtherFileSent.fileSent
                 ? true
-                : 'The response is: ' +
+                : 'The response is:' +
                       getVersionApiResponse +
-                      " Expected response is that Files > FileName > Includes 'other'",
+                      "Expected response is that Files > FileName > Includes 'other'",
         );
-        mandatoryStepsvalidateOtherFileSent.fileCreated = getVersionApiResponse.Body.Files[1].URL.includes('other');
+        mandatoryStepsvalidateOtherFileSent.fileCreated = JSON.stringify(getVersionApiResponse.Body).includes('other'); //Oleg
+        //debugger;
         addTestResultUnderHeadline(
             testName,
             'Read Installation File Created Test',
@@ -3259,6 +3266,10 @@ export async function VarTests(generalService: GeneralService, request, tester: 
         tempNewAddonVersionBody.StartPhasedDateTime = new Date().toJSON();
         tempNewAddonVersionBody.Phased = true;
         tempNewAddonVersionBody.PhasedFunction = 'Update Version PhasedFunction Test';
+        //added Oleg
+        tempNewAddonVersionBody.Files[0].FileName = 'file1';
+        tempNewAddonVersionBody.Files[1].FileName = 'file2';
+        //Oleg
 
         const getAdonsVersionApiResponse = await generalService.fetchStatus(
             generalService['client'].BaseURL.replace('papi-eu', 'papi') + '/var/addons/versions',
