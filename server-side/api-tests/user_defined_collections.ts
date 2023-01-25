@@ -22,7 +22,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
-        'User Defined Collections': [UserDefinedCollectionsUUID, ''], 
+        'User Defined Collections': [UserDefinedCollectionsUUID, ''],
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.1.25'],
         'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.1.10'],
     };
@@ -622,7 +622,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Ok).to.equal(false);
                 expect(response.Status).to.equal(400);
                 expect(response.Body).to.haveOwnProperty('fault');
-                expect(response.Body.fault.faultstring).to.include("Unsupported schema type contained");
+                expect(response.Body.fault.faultstring).to.include('Unsupported schema type contained');
             });
             it('Positive Test: create a UDC based on "scheme only" UDC', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
@@ -938,7 +938,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     expect(a.Status).to.equal(200);
                     const b = await generalService.getAuditLogResultObjectIfValid(a.Body.URI, 90);
                     if (collectionName.includes('SchemeOnlyTesting')) {
-                        expect(b.AuditInfo.ErrorMessage).to.include("Unsupported schema type contained");
+                        expect(b.AuditInfo.ErrorMessage).to.include('Unsupported schema type contained');
                     } else {
                         if (b.Status) {
                             expect(b.Status.ID).to.equal(1);

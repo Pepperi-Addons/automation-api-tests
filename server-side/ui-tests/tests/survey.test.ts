@@ -108,8 +108,24 @@ export async function SurveyTests(email: string, password: string) {
                         Title: 'boolean',
                         Key: '',
                         Questions: [
-                            { Key: '', Title: 'what have i done1', Type: 'Multiple Select', OptionalValues: [{ Value: "T" }, { Value: "F" }, { Value: "C" }], isMandatory: true },
-                            { Key: '', Title: 'what have i done2', Type: 'Radio Group', OptionalValues: [{ Value: "A" }, { Value: "B" }], isMandatory: false, ShowIf: { Operator: "And", FilterData: { QuestionName: "what have i done1", ValueToLookFor: ["T", "C"] } } },
+                            {
+                                Key: '',
+                                Title: 'what have i done1',
+                                Type: 'Multiple Select',
+                                OptionalValues: [{ Value: 'T' }, { Value: 'F' }, { Value: 'C' }],
+                                isMandatory: true,
+                            },
+                            {
+                                Key: '',
+                                Title: 'what have i done2',
+                                Type: 'Radio Group',
+                                OptionalValues: [{ Value: 'A' }, { Value: 'B' }],
+                                isMandatory: false,
+                                ShowIf: {
+                                    Operator: 'And',
+                                    FilterData: { QuestionName: 'what have i done1', ValueToLookFor: ['T', 'C'] },
+                                },
+                            },
                         ],
                     },
                 ]);
