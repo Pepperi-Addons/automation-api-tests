@@ -15,18 +15,18 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
     const testData = {
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.1.16'],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.4.78'],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
-        'User Defined Collections': [UserDefinedCollectionsUUID, '0.8.16'], //currently un-phased versions of this addon cannot be installed
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
-        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+        'User Defined Collections': [UserDefinedCollectionsUUID, ''],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.1.25'],
+        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.1.10'],
     };
-    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.7.36'];
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
 
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -592,6 +592,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.dou.Type).to.equal('Double');
                 expect(response.int.Type).to.equal('Integer');
                 expect(response.str.Type).to.equal('String');
+                generalService.sleep(2500);
                 const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
                 const newCollection = documents.filter((doc) => doc.Name === schemeOnlyCollectionName)[0];
@@ -621,7 +622,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Ok).to.equal(false);
                 expect(response.Status).to.equal(400);
                 expect(response.Body).to.haveOwnProperty('fault');
-                expect(response.Body.fault.faultstring).to.include("Unsupported schema type 'contained'");
+                expect(response.Body.fault.faultstring).to.include('Unsupported schema type contained');
             });
             it('Positive Test: create a UDC based on "scheme only" UDC', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
@@ -937,7 +938,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     expect(a.Status).to.equal(200);
                     const b = await generalService.getAuditLogResultObjectIfValid(a.Body.URI, 90);
                     if (collectionName.includes('SchemeOnlyTesting')) {
-                        expect(b.AuditInfo.ErrorMessage).to.include("Unsupported schema type 'contained'");
+                        expect(b.AuditInfo.ErrorMessage).to.include('Unsupported schema type contained');
                     } else {
                         if (b.Status) {
                             expect(b.Status.ID).to.equal(1);

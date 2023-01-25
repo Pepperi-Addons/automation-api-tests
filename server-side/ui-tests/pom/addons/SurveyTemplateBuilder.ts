@@ -42,7 +42,6 @@ export interface SurveySection {
 }
 
 export interface SurveyQuestion {
-    Name: string;
     Key: string;
     Title: string;
     Type:
@@ -59,6 +58,26 @@ export interface SurveyQuestion {
         | 'Percentage'
         | 'Date'
         | 'Date Time';
+    isMandatory: boolean;
+    OptionalValues?: SelectValues[];
+    ShowIf?: ShowIf;
+}
+
+export interface SelectValues {
+    Value: string;
+    WhichBoolVal?: boolean;
+}
+
+export interface ShowIf {
+    Operator: 'And' | 'Or';
+    FilterData: FilterData;
+    FilterGroup?: FilterData;
+}
+
+export interface FilterData {
+    QuestionName: string;
+    ValueToLookFor: string[];
+    FilterGroup?: FilterData;
 }
 
 // export interface ScriptParams {
@@ -95,6 +114,33 @@ export class SurveyTemplateBuilder extends AddonPage {
     public SaveSurveyButton: By = By.css(`[data-qa="Save"]`);
     public PublishSurveyButton: By = By.css(`[data-qa="Publish"]`);
     public GoBackButton: By = By.xpath(`//pep-button[@iconname='arrow_left_alt']`);
+    public MakeQuestionMandatoryCheckBox: By = By.xpath(
+        `//mat-checkbox[contains(@title,'Make Mandatory')]//span//input`,
+    );
+    public ShowIfCheckBox: By = By.xpath(`//mat-checkbox[contains(@title,'Show If')]//span//input`);
+    public AddLogicButton: By = By.css(`[data-qa="Add Logic"]`);
+
+    //selection component
+    public SelectOptionValueTextBox: By = By.xpath(`//textarea[@id="question"]`);
+    public AddAnotherOptionButton: By = By.css(`[data-qa="Add item to Selection"]`);
+    public ArrowDownButtonOnSelection: By = By.xpath(`//pep-button[@iconname="arrow_down"]`);
+    //boolean option component
+    public TrueValueName: By = By.xpath(`//mat-label[@title="True"]//..//..//..//input`);
+    public FalseValueName: By = By.xpath(`//mat-label[@title="False"]//..//..//..//input`);
+
+    //Add Logic Component
+    public AndOperatorSelector: By = By.xpath(`//span[@title="And"]`);
+    public OrOperatorSelector: By = By.xpath(`//span[@title="Or"]`);
+    public AddFilterButton: By = By.css(`[data-qa="Add Filter"]`);
+    public AddFilterGroupButton: By = By.css(`[data-qa="Add Filter Group"]`);
+    public SelectQuestionButton: By = By.xpath(`//pep-query-builder-item//pep-select`);
+    public SelectQuestionDropDown: By = By.xpath(`//mat-option[contains(@title,'{placeholder}')]`);
+    public QuestionToFilterByDropDownValue: By = By.xpath(`//pep-multi-select-filter`);
+    public ValueFromDropDownOfSearchingValues: By = By.xpath(`//mat-option//span[contains(text(),'{placeholder}')]`);
+    public EmptySpaceToSaveValue: By = By.xpath(`//div[@class='cdk-overlay-container']`);
+    public SaveFilterButton: By = By.xpath(`//mat-dialog-container//pep-button//button[@data-qa="Save"]`);
+    //-
+    //-
     //
 
     // const xpathQueryForFieldTypeBtn: string = this.FeildTypeButton.valueOf()['value'].replace(
@@ -135,8 +181,11 @@ export class SurveyTemplateBuilder extends AddonPage {
             }
             if (index !== sections.length - 1) await this.browser.click(this.AddSectionButton);
         }
+        this.browser.sleep(3000);
         await this.browser.click(this.SaveSurveyButton);
+        this.browser.sleep(3000);
         await this.browser.click(this.PublishSurveyButton);
+        this.browser.sleep(3000);
         await this.browser.click(this.GoBackButton);
     }
 
@@ -165,6 +214,13 @@ export class SurveyTemplateBuilder extends AddonPage {
         await this.browser.sendKeys(this.SurveyDescriptionnput, surveyDesc);
     }
 
+    private async setQuestionTitle(questionTitle: string) {
+        await this.browser.sendKeys(this.TextQuestionInput, questionTitle + Key.ENTER);
+        if (await this.browser.isElementVisible(this.ErrorDialogText, 3000)) {
+            await this.browser.click(this.CloseErrorDialogButtont);
+        }
+    }
+
     private async addQuestionToSurvey(question: SurveyQuestion) {
         await this.browser.click(this.AddQuestionButton);
         const xpathQueryForQuestionType: string = this.QuestionSelectionFromList.valueOf()['value'].replace(
@@ -181,18 +237,97 @@ export class SurveyTemplateBuilder extends AddonPage {
             case 'Date':
             case 'Percentage':
             case 'Date Time':
-                await this.browser.sendKeys(this.TextQuestionInput, question.Title + Key.ENTER);
-                if (await this.browser.isElementVisible(this.ErrorDialogText, 3000)) {
-                    await this.browser.click(this.CloseErrorDialogButtont);
-                }
+                await this.setQuestionTitle(question.Title + Key.ENTER);
+                break;
             case 'Multiple Select':
             case 'Single Select':
-            //TODO
-            case 'Yes/No':
-            //TODO
             case 'Checkbox':
             case 'Radio Group':
-            //TODO
+                await this.browser.click(this.TextQuestionInput);
+                await this.setQuestionTitle(question.Title + Key.ENTER);
+                if (question.OptionalValues)
+                    for (let index = 0; index < question.OptionalValues.length; index++) {
+                        const optionSelect = question.OptionalValues[index];
+                        await this.browser.click(this.ArrowDownButtonOnSelection);
+                        this.browser.sleep(3000);
+                        await this.browser.click(this.SelectOptionValueTextBox, index);
+                        const selectAll = Key.chord(Key.CONTROL, 'a');
+                        await this.browser.sendKeys(this.SelectOptionValueTextBox, selectAll, index);
+                        await this.browser.sendKeys(
+                            this.SelectOptionValueTextBox,
+                            optionSelect.Value + Key.ENTER,
+                            index,
+                        );
+                        if (index !== question.OptionalValues.length - 1)
+                            await this.browser.click(this.AddAnotherOptionButton);
+                    }
+                break;
+            case 'Yes/No':
+                await this.browser.click(this.TextQuestionInput);
+                await this.setQuestionTitle(question.Title + Key.ENTER);
+                if (question.OptionalValues)
+                    for (let index = 0; index < question.OptionalValues.length; index++) {
+                        const optionBoolean = question.OptionalValues[index];
+                        if (optionBoolean.WhichBoolVal !== undefined)
+                            if (optionBoolean.WhichBoolVal) {
+                                await this.browser.click(this.TrueValueName);
+                                const selectAll = Key.chord(Key.CONTROL, 'a');
+                                await this.browser.sendKeys(this.TrueValueName, selectAll);
+                                await this.browser.sendKeys(this.TrueValueName, optionBoolean.Value);
+                            } else {
+                                await this.browser.click(this.FalseValueName);
+                                const selectAll = Key.chord(Key.CONTROL, 'a');
+                                await this.browser.sendKeys(this.FalseValueName, selectAll);
+                                await this.browser.sendKeys(this.FalseValueName, optionBoolean.Value);
+                            }
+                    }
+                break;
+            default:
+                throw `Error: No Such Question Type As ${question.Type}`;
+        }
+        if (question.isMandatory) {
+            await this.browser.click(this.MakeQuestionMandatoryCheckBox);
+        }
+
+        if (question.ShowIf) {
+            //1. check "show if" checkbox
+            await this.browser.click(this.ShowIfCheckBox);
+            //2. click "AddLogic" button
+            await this.browser.click(this.AddLogicButton);
+            //3. select which operator
+            if (question.ShowIf.Operator === 'And') {
+                await this.browser.click(this.AndOperatorSelector);
+            } else if (question.ShowIf.Operator === 'Or') {
+                await this.browser.click(this.OrOperatorSelector);
+            }
+            //4. add filter
+            if (question.ShowIf.FilterGroup !== undefined) {
+                //TODO
+                await this.browser.click(this.AddFilterGroupButton);
+            } else if (question.ShowIf.FilterGroup == undefined) {
+                await this.browser.click(this.AddFilterButton);
+            }
+            //5. select question name
+            await this.browser.click(this.SelectQuestionButton);
+            const xpathQueryForQuestionFromDropDown: string = this.SelectQuestionDropDown.valueOf()['value'].replace(
+                '{placeholder}',
+                question.ShowIf.FilterData.QuestionName,
+            );
+            await this.browser.click(By.xpath(xpathQueryForQuestionFromDropDown));
+            //6. select value to look for from Drop Down
+            for (let index = 0; index < question.ShowIf.FilterData.ValueToLookFor.length; index++) {
+                const value = question.ShowIf.FilterData.ValueToLookFor[index];
+                await this.browser.click(this.QuestionToFilterByDropDownValue);
+                const xpathQueryForValueFromDropDown: string = this.ValueFromDropDownOfSearchingValues.valueOf()[
+                    'value'
+                ].replace('{placeholder}', value);
+                await this.browser.click(By.xpath(xpathQueryForValueFromDropDown));
+            }
+            this.browser.sleep(1500);
+            await this.browser.click(this.EmptySpaceToSaveValue);
+            this.browser.sleep(1500);
+            await this.browser.click(this.SaveFilterButton);
+            await this.browser.click(this.SaveFilterButton);
         }
     }
 }
