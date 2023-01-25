@@ -105,28 +105,31 @@ export async function SurveyTests(email: string, password: string) {
                 expect(isSurveyBuilderPageShown).to.equal(true);
                 await surveyService.configureTheSurveyTemplate('first', 'first d', [
                     {
-                        Title: 'text',
+                        Title: 'boolean',
                         Key: '',
                         Questions: [
-                            { Name: '', Key: '', Title: 'why god why', Type: 'Short Text' },
-                            { Name: '', Key: '', Title: 'why god why', Type: 'Long Text' },
-                        ],
-                    },
-                    {
-                        Title: 'numbers',
-                        Key: '',
-                        Questions: [
-                            { Name: '', Key: '', Title: 'what have i done', Type: 'Number' },
-                            { Name: '', Key: '', Title: 'what have i done', Type: 'Decimal' },
-                            { Name: '', Key: '', Title: 'what have i done', Type: 'Currency' },
-                            { Name: '', Key: '', Title: 'what have i done', Type: 'Date' },
-                            { Name: '', Key: '', Title: 'what have i done', Type: 'Date Time' },
-                            { Name: '', Key: '', Title: 'what have i done', Type: 'Percentage' },
+                            {
+                                Key: '',
+                                Title: 'what have i done1',
+                                Type: 'Multiple Select',
+                                OptionalValues: [{ Value: 'T' }, { Value: 'F' }, { Value: 'C' }],
+                                isMandatory: true,
+                            },
+                            {
+                                Key: '',
+                                Title: 'what have i done2',
+                                Type: 'Radio Group',
+                                OptionalValues: [{ Value: 'A' }, { Value: 'B' }],
+                                isMandatory: false,
+                                ShowIf: {
+                                    Operator: 'And',
+                                    FilterData: { QuestionName: 'what have i done1', ValueToLookFor: ['T', 'C'] },
+                                },
+                            },
                         ],
                     },
                 ]);
             });
-
             it('Data Cleansing', async function () {
                 //TODO
             });
