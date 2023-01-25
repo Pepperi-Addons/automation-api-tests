@@ -148,7 +148,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     [],
                     'automation testing UDC',
                 );
+                expect(response.Fail).to.be.undefined;
                 expect(response).to.deep.equal({});
+                generalService.sleep(5000);
                 const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
             });
@@ -181,10 +183,12 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     fieldsArray,
                     'automation testing UDC',
                 );
+                expect(response.Fail).to.be.undefined;
                 expect(response.bool.Type).to.equal('Bool');
                 expect(response.dou.Type).to.equal('Double');
                 expect(response.int.Type).to.equal('Integer');
                 expect(response.str.Type).to.equal('String');
+                generalService.sleep(5000);
                 const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
                 const newCollection = documents.filter((doc) => doc.Name === basicCollectionName)[0];
@@ -270,6 +274,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
             });
             it('Positive Test: getting the new UDC data just upserted', async () => {
+                generalService.sleep(5000);
                 const document = (await udcService.getDocuments(basicCollectionName))[0];
                 expect(document.ModificationDateTime).to.include(parsedTodayDate);
                 expect(document.CreationDateTime).to.include(parsedTodayDate);
@@ -302,10 +307,12 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     undefined,
                     fieldsArray,
                 );
+                expect(response.Fail).to.be.undefined;
                 expect(response.str.Type).to.equal('String');
                 expect(response.str.Mandatory).to.equal(true);
                 expect(response.int.Type).to.equal('Integer');
                 expect(response.int.Mandatory).to.equal(true);
+                generalService.sleep(5000);
                 const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
                 const newCollection = documents.filter((doc) => doc.Name === keyCollectionName)[0];
@@ -349,9 +356,11 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     [],
                     'automation testing UDC',
                 );
+                expect(response.Fail).to.contain('Object already Exist');
                 expect(response.Ok).to.equal(false);
                 expect(response.Status).to.equal(400);
                 expect(response.Body.fault.faultstring).to.include('Object already Exist');
+                generalService.sleep(5000);
                 const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections);
             });
@@ -371,6 +380,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     fieldsArray,
                     'automation testing UDC',
                 );
+                generalService.sleep(5000);
+                expect(response.Fail).to.be.undefined;
                 expect(response).to.haveOwnProperty(fieldContained.Name);
                 expect(response.containedRes.Resource).to.equal(fieldContained.Resource);
                 expect(response.containedRes.Type).to.equal(fieldContained.Type);
@@ -459,6 +470,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     fieldsArray,
                     'automation testing UDC',
                 );
+                expect(response.Fail).to.be.undefined;
                 expect(response.bool.Type).to.equal('Bool');
                 expect(response.bool.Indexed).to.equal(true);
                 expect(response.dou.Type).to.equal('Double');
@@ -467,6 +479,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.int.Indexed).to.equal(true);
                 expect(response.str.Type).to.equal('String');
                 expect(response.str.Indexed).to.equal(true);
+                generalService.sleep(5000);
                 const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
                 const newCollection = documents.filter((doc) => doc.Name === indexedCollectionName)[0];
@@ -511,7 +524,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
                     expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
                 }
-                generalService.sleep(3000);
+                generalService.sleep(5000);
                 const allObjects = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 130);
                 expect(allObjects.objects.length).to.equal(arrayOfValues.length);
                 expect(allObjects.count).to.equal(arrayOfValues.length);
@@ -554,7 +567,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(hideResponse.Body.Key).to.equal(allObjects50page1.objects[0].Key);
                 expect(hideResponse.Body.ModificationDateTime).to.include(parsedTodayDate);
                 expect(hideResponse.Body.Hidden).to.equal(true);
-                generalService.sleep(3000);
+                generalService.sleep(5000);
                 const allObjects = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 130);
                 expect(allObjects.count).to.equal(129);
             });
@@ -588,11 +601,12 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     'automation testing UDC',
                     'contained',
                 );
+                expect(response.Fail).to.be.undefined;
                 expect(response.bool.Type).to.equal('Bool');
                 expect(response.dou.Type).to.equal('Double');
                 expect(response.int.Type).to.equal('Integer');
                 expect(response.str.Type).to.equal('String');
-                generalService.sleep(2500);
+                generalService.sleep(5000);
                 const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
                 const newCollection = documents.filter((doc) => doc.Name === schemeOnlyCollectionName)[0];
@@ -603,6 +617,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 let documentKey = {};
                 if (newCollection.DocumentKey) {
                     documentKey = newCollection.DocumentKey;
+                } else {
+                    throw 'Error: No Document Key Recived';
                 }
                 expect(documentKey['Delimiter']).to.equal('@');
                 expect(documentKey['Fields']).to.deep.equal([]);
@@ -639,6 +655,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     [fieldBasedOnSchemeOnly],
                     'automation testing UDC',
                 );
+                expect(response.Fail).to.be.undefined;
                 expect(response.basedOn.Type).to.equal('ContainedResource');
                 const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
@@ -711,6 +728,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     allFieldsToCreate,
                     'automation testing UDC',
                 );
+                expect(response.Fail).to.be.undefined;
                 expect(response.int2.Type).to.equal('Array');
                 expect(response.str2.Type).to.equal('Array');
                 expect(response.dou2.Type).to.equal('Array');
@@ -786,6 +804,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     undefined,
                     true,
                 );
+                expect(response.Fail).to.be.undefined;
                 expect(response.bool1.Type).to.equal('Bool');
                 expect(response.dou1.Type).to.equal('Double');
                 expect(response.int1.Type).to.equal('Integer');
@@ -847,6 +866,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     [accField],
                     'automation testing UDC',
                 );
+                expect(response.Fail).to.be.undefined;
                 expect(response.myAcc.Type).to.equal('Resource');
                 expect(response.myAcc.Resource).to.equal('accounts');
                 const documents = await udcService.getSchemes({ page_size: -1 });
