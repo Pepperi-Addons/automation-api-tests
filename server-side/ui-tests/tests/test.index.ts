@@ -44,6 +44,7 @@ import { PFSTestser } from '../../api-tests/pepperi_file_service';
 import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
 import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
 import { LoginPerfTestsReload } from './login_performance_reload.test';
+import { UDCTestser } from '../../api-tests/user_defined_collections';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -304,6 +305,21 @@ const addon = process.env.npm_config_addon as string;
 
     if (tests.includes('PfsAPI')) {
         await PFSTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('UdcAPI')) {
+        await UDCTestser(
             generalService,
             {
                 body: {

@@ -1,6 +1,9 @@
 import GeneralService, { ConsoleColors, TesterFunctions } from '../services/general.service';
 import { UdcField, UDCService } from '../services/user-defined-collections.service';
 
+export async function UDCTestser(generalService: GeneralService, request, tester: TesterFunctions) {
+    await UDCTests(generalService, request, tester);
+}
 export async function UDCTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
     const udcService = new UDCService(generalService);
