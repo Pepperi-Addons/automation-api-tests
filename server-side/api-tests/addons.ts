@@ -803,6 +803,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     testExecutionData.changePhasedGroupVersionDays = 0;
 
     if (testConfigObj.isMaintenanceUpgrade) {
+        debugger;
         const datePlusZero = new Date();
         testExecutionData.changePhasedGroupVersionDays = 0;
         testExecutionData.testDate = new Date(datePlusZero.getTime() + 0);
@@ -815,6 +816,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     }
 
     if (testConfigObj.isMaintenanceInstall) {
+        debugger;
         const datePlusZero = new Date();
         testExecutionData.changePhasedGroupVersionDays = 0;
         testExecutionData.testDate = new Date(datePlusZero.getTime() + 0);
@@ -827,6 +829,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     }
 
     if (testConfigObj.isMaintenanceFull) {
+        debugger;
         let datePlusZero = new Date();
         testExecutionData.changePhasedGroupVersionDays = 0;
         testExecutionData.testDate = new Date(datePlusZero.getTime() + 0);
@@ -9326,7 +9329,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             console.log(`file is created!`);
             debugger;
             */
-
+            debugger;
             const maintenanceApiResponse = await generalService.papiClient.post(
                 '/addons/api/00000000-0000-0000-0000-000000000a91/version/' +
                     getAPIVersion +
