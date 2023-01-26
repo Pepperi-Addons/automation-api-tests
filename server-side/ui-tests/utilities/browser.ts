@@ -119,6 +119,13 @@ export class Browser {
             .perform();
     }
 
+    public async hoverOver(elem: WebElement) {
+        return await this.driver
+            .actions()
+            .mouseMove(elem)
+            .perform();
+    }
+
     //TODO: 19/04 By Oren:
     //Try with this code:
     // const draggable = await driver.findElement(By.css('[title="Chart"]'));

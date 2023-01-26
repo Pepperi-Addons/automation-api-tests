@@ -17,6 +17,5 @@
   "dependencies": {
     "@pepperi-addons/scripts": "^2.0.6"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }

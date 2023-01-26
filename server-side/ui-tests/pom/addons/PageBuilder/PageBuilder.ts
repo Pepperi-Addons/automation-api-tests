@@ -6,7 +6,9 @@ import { AddonPage } from '../base/AddonPage';
 
 export class PageBuilder extends AddonPage {
     public PageBuilder_Title: By = By.xpath('//span[@title="Page Builder"]');
-    public AddPage_Button: By = By.xpath('//span[@title="Add Page"]/ancestor::pep-button');
+    public AddPage_Button: By = By.xpath('//span[@title="Add Page"]/ancestor::pep-button/button');
+    public PageBuilder_Search_Input: By = By.xpath('//input[@placeholder="Search..."]');
+    public PageBuilder_Search_Submit: By = By.xpath('//input[@placeholder="Search..."]/parent::div/following-sibling::div //mat-icon[2]');
     // Add a new Page
     public SelectPage_Title: By = By.xpath('//span[@title="Select a Page"]');
     public BlankTemplatePage: By = By.xpath('//*[text()="Blank"]/parent::div[contains(@class,"page-cube-inner")]');
@@ -16,6 +18,7 @@ export class PageBuilder extends AddonPage {
         '//div[contains(text(), "result")]/span[contains(@class, "bold number")]',
     );
     public PagesList_FirstCheckboxInList: By = By.xpath('//virtual-scroller/div[2]/div/fieldset/mat-checkbox');
+    // public PagesList_PageSelectCheckbox_ByName: By = By.xpath(`${this.getSelectorOfRowInListByName('').value}/mat-checkbox/label/span`);
     // Single Selection
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu/div/button');
     public Pencil_Edit: By = this.getSelectorOfButtonUnderPencilMenu('Edit');
@@ -44,6 +47,14 @@ export class PageBuilder extends AddonPage {
     public NoticePopup_Cancel_Button: By = By.xpath(
         '//span[contains(@class,"mat-button-wrapper")][contains(text(), "Cancel")]/parent::button',
     );
+
+    private getSelectorOfRowInListByName(title: string) {
+        return By.xpath(`//a[@id="Name"][text()="${title}"]/ancestor::fieldset`);
+    }
+
+    private getSelectorOfSelectedPageCheckboxByName(title: string) {
+        return By.xpath(`//a[@id="Name"][text()="${title}"]/ancestor::fieldset/mat-checkbox/label/span`);
+    }
 
     private getSelectorOfButtonUnderPencilMenu(title: string) {
         return By.xpath(`//span[@title="${title}"]/parent::button`);
@@ -83,6 +94,9 @@ export class PageBuilder extends AddonPage {
         await this.waitTillVisible(this.Section_Frame, 5000);
         await this.clickElement('EditPage_EditMenu_Button_Publish');
         this.pause(1500);
+    }
+
+    public async returnToPageBuilderFromPage() {
         await this.clickElement('EditPage_SideBar_ArrowBack_Button');
         if (await this.browser.isElementVisible(this.NoticePopup_Title)) {
             await this.clickElement('NoticePopup_LeavePage_Button');
@@ -160,6 +174,46 @@ export class PageBuilder extends AddonPage {
         expect(Number(numOfEditors)).to.equal(0);
     }
 
+    // public async selectFromList(selector: By, name?: string) {
+    //     try {
+    //         await this.browser.click(selector);
+    //         await this.browser.untilIsVisible(this.SelectedRadioButton);
+    //         await expect(this.untilIsVisible(this.Pencil_Button, 90000)).eventually.to.be.true;
+    //     } catch (error) {
+    //         console.info(`UNABLE TO SELECT: ${name}`);
+    //         console.error(error);
+    //         expect(`ERROR -> UNABLE TO SELECT: ${name}`).to.be.undefined;
+    //     }
+    // }
+
+    public async selectFromListByName(name: string) {
+        const pageRow_selector: By = this.getSelectorOfRowInListByName(name);
+        const pageRowCheckbox_selector: By = this.getSelectorOfSelectedPageCheckboxByName(name);
+        // debugger
+        const selectedPageRow = await this.browser.findElement(pageRow_selector);
+        selectedPageRow.click();
+        // await this.browser.hoverOver(selectedPageRow);
+        // await this.browser.click(pageRow_selector);
+        await (await this.browser.findElement(pageRowCheckbox_selector)).click();
+    }
+
+    // public async selectFromListByPartialName(name: string) {
+    //     const selector: By = this.getSelectorOfRowInListByName(name);
+    //     await this.selectFromList(selector, name);
+    // }
+
+    public async deleteFromListByName(name: string) {
+        await this.selectFromListByName(name);
+        await this.openPencilMenu();
+        await this.selectUnderPencil('Delete');
+        await this.confirmDeleteClickRedButton();
+    }
+
+    public async searchForPageByName(name: string) {
+        await this.insertTextToInputElement(name, this.PageBuilder_Search_Input);
+        await (await this.browser.findElement(this.PageBuilder_Search_Submit)).click();
+    }
+
     public async publishPage(pageObj, client: Client) {
         return await this.upsertPage('publish_page', pageObj, client);
     }
@@ -189,6 +243,7 @@ export class PageBuilder extends AddonPage {
         const pageBuilderData = await generalService.fetchStatus(
             `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/get_page_builder_data?key=${pageUUID}`,
         );
-        return { page: pageBuilderData.Body.page, name: pageBuilderData.Body.Name };
+        // return { page: pageBuilderData.Body.page, name: pageBuilderData.Body.Name };
+        return pageBuilderData.Body.page;
     }
 }
