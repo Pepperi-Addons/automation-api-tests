@@ -22,16 +22,16 @@ import tester from '../tester';
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on TLS 2 version
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.%'], //cpapi locked on TLS 2 version
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.0.%'], //cpi-node (Cross Platform Engine)
-    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.97'], //NG14 latest webapp
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi locked on TLS 2 version
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.0.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.%'], //cpi-node (Cross Platform Engine)
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.%'], //NG14 latest webapp
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
-    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.0.41'],
-    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.0.13'],
-    ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
+    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.1.%'],
+    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.'],
+    ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.4.%'],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', '1.0.2'],
     'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.0.134'], //hardcoded because newest isn't phased and otherwise wont match new webapp
@@ -46,16 +46,16 @@ export const testData = {
 export const testDataForInitUser = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on newest
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.5.%'], //cpapi
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.0.%'], //cpi-node (Cross Platform Engine)
-    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.97'], //NG14 latest webapp
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.0.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.%'], //cpi-node (Cross Platform Engine)
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.%'], //NG14 latest webapp
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
-    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.1.%'],
     'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
-    ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.'],
+    ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.4.87'],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
     'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.0.134'],
@@ -67,7 +67,7 @@ export const testDataForInitUser = {
     'Key Management Service': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
     'Operation Invoker': ['f8d964d7-aad0-4d29-994b-5977a8f22dca', '9.5.%'],
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'],
-    Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.8.%'],
+    Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.9.%'],
     'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', '1.2.%'],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
     'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
@@ -775,6 +775,12 @@ export default class GeneralService {
         testData: { [any: string]: string[] },
         isPhased: boolean,
     ): Promise<{ [any: string]: string[] }> {
+        if (!testData['Export and Import Framework'] && !testData['Export and Import Framework (DIMX)']) {
+            const dimxName = this.papiClient['options'].baseURL.includes('staging')
+                ? 'Export and Import Framework'
+                : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
+            testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
+        }
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
@@ -786,20 +792,24 @@ export default class GeneralService {
                 addonName == 'API Testing Framework' ||
                 addonName == 'Object Types Editor' || //evgeny (2/11/22)
                 addonName == 'WebApp Platform' || //evgeny
-                // addonName == 'ADAL' || //evgeny
+                addonName == 'ADAL' || //evgeny
+                addonName == 'Data Index Framework' || //evgeny
                 addonName == 'system_health' || //evgeny
                 addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
                 addonName == 'Relations Framework' || // evgeny 4/12: done to be able to test latest relation fw version
                 addonName == 'Pepperitest (Jenkins Special Addon) - Code Jobs' || // evgeny 6/12: trying to fix wiered jenkins issue
                 addonName == 'Audit Log' || // evgeny 13/12: newest audit to fix SB
+                addonName == 'Notification Service' || // evgeny 15/1/23: to get newest PNS we have
+                addonName == 'Export and Import Framework' ||
+                addonName == 'Export and Import Framework (DIMX)' || // evgeny 15/1/23: to get newest DIMX
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version}%' AND Available Like 1`;
             }
-            if (addonName == 'File Service Framework') {
-                //because 1.0.2 works but 1.0.29 isnt - 1.0.2% = 1.0.29 (evgeny - 6/11)
-                searchString = `AND Version Like '${version}' AND Available Like 1`;
-            }
+            // if (addonName == 'File Service Framework') {
+            //     //because 1.0.2 works but 1.0.29 isnt - 1.0.2% = 1.0.29 (evgeny - 6/11)
+            //     searchString = `AND Version Like '${version}' AND Available Like 1`;
+            // }
             const fetchVarResponse = await this.fetchStatus(
                 `${this.client.BaseURL.replace(
                     'papi-eu',

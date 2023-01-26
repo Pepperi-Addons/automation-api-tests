@@ -39,6 +39,7 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {

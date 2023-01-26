@@ -86,6 +86,7 @@ import {
     AsyncAddonGetRemoveTests,
 } from './api-tests/index';
 import { SingleMaintenanceAndDependenciesAddonsTestsPart3 } from './api-tests/addons';
+import { DataIndexDor } from './api-tests/dor_data_index_tests';
 // import { checkVersionsTest } from './api-tests/check_versions';
 
 let testName = '';
@@ -259,6 +260,87 @@ export async function sync_clean(client: Client, testerFunctions: TesterFunction
     testName = '';
     return await testerFunctions.run();
 }
+
+export async function user_events() {
+    return {
+        Events: [
+            {
+                Title: 'loading survey object',
+                EventKey: 'SurveyLoad',
+                EventFilter: {
+                    HasQuestions: false,
+                },
+                EventData: {
+                    SurveyName: {
+                        Type: 'String',
+                    },
+                    HasQuestions: {
+                        Type: 'Boolean',
+                    },
+                    Survey: {
+                        Type: 'Object',
+                    },
+                    SurveyID: {
+                        Type: 'Integer',
+                    },
+                    Factor: {
+                        Type: 'Double',
+                    },
+                },
+            },
+            {
+                Title: 'loading transaction scope',
+                EventKey: 'TransactionScopeLoaded',
+                EventFilter: {
+                    DataObject: {
+                        TypeDefinition: {
+                            InternalID: 255154,
+                        },
+                    },
+                },
+                EventData: {
+                    DataObject: {
+                        Type: 'Object',
+                    },
+                    HasQuestions: {
+                        Type: 'Boolean',
+                    },
+                },
+            },
+        ],
+    };
+}
+
+export async function user_events2() {
+    return {
+        Events: [
+            {
+                Title: 'evgenyEvent',
+                EventKey: 'evgeny',
+                EventFilter: {},
+                EventData: {},
+            },
+        ],
+    };
+}
+
+export async function user_eventsF() {
+    return {
+        Events: [
+            {
+                Title: 'evgenyEvent',
+                EventKey: 'evgeny',
+                EventFilter: {},
+                EventData: {
+                    str: {
+                        Type: 'String',
+                    },
+                },
+            },
+        ],
+    };
+}
+
 //#endregion All Tests
 export async function pages_api(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
@@ -1047,6 +1129,17 @@ export async function data_index_adal(client: Client, request: Request, testerFu
     return await testerFunctions.run();
 }
 
+export async function data_index_dor(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Data_Index_DOR';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await DataIndexDor(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
 export async function legacy_resources(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Legacy_Resources';
@@ -1054,8 +1147,9 @@ export async function legacy_resources(client: Client, request: Request, testerF
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await LegacyResourcesTests(service, request, testerFunctions);
     await test_data(client, testerFunctions);
+    const results = await testerFunctions.run();
     service.PrintMemoryUseToLog('End', testName);
-    return await testerFunctions.run();
+    return results;
 }
 
 export async function maintenance_job(client: Client, request: Request, testerFunctions: TesterFunctions) {

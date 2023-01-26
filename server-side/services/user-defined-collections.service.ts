@@ -88,7 +88,6 @@ export class UDCService {
                 body: JSON.stringify(field),
             },
         );
-        // debugger;
         return response;
     }
 
@@ -348,10 +347,12 @@ export class UDCService {
             return udcCreateResponse;
         }
         //3. test we can find the collection
-        const udcGetResponse = await this.generalService.fetchStatus('/user_defined_collections/schemes?where=');
+        this.generalService.sleep(6000);
+        const udcGetResponse = await this.generalService.fetchStatus(`/user_defined_collections/schemes?page_size=-1`);
         const createdCollection = udcGetResponse.Body.filter((collection) => collection.Name === collecitonName);
         if (createdCollection.length < 1) {
             console.log(`Cant Find Collection: ${collecitonName} inside UDC after Upserting`);
+            udcGetResponse['Fail'] = `Cant Find Collection: ${collecitonName} inside UDC after Upserting`;
             return udcGetResponse;
         }
         const udcUpsertItemResponse: any[] = [];

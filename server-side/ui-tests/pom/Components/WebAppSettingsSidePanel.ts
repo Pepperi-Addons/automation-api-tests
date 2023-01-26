@@ -79,6 +79,8 @@ export class WebAppSettingsSidePanel extends Component {
     //config Selectors
     public ScriptsEditor: By = By.id('settings/9f3b727c-e88c-4311-8ec4-3857bc8621f3/scripts');
 
+    public SurveysEditor: By = By.id('settings/cf17b569-1af4-45a9-aac5-99f23cae45d8/surveys');
+
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
         try {
             const expanded = this.isCategoryExpanded(settingsButtonID);

@@ -326,6 +326,72 @@ export class Browser {
         return;
     }
 
+    public async sendKeysNoClear(selector: By, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {
+        const isSecret = selector.valueOf()['value'].includes(`input[type="password"]`);
+        try {
+            // await (await this.findElements(selector, waitUntil))[index].clear();
+            console.log('Wait after clear, beofre send keys');
+            this.sleep(400);
+            await (await this.findElements(selector, waitUntil))[index].sendKeys(keys);
+            console.log(
+                `%cSentKeys with defult selector: '${
+                    selector.valueOf()['value']
+                }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
+                ConsoleColors.SentKeysMessage,
+            );
+        } catch (error) {
+            if (error instanceof Error) {
+                if (error.name === 'StaleElementReferenceError') {
+                } else if (
+                    error.name === 'ElementClickInterceptedError' ||
+                    error.name === 'TypeError' ||
+                    error.name === 'JavascriptError' ||
+                    error.name === 'InvalidElementStateError' ||
+                    (error.name === 'Error' && error.message.includes('textarea'))
+                ) {
+                    try {
+                        const el = await this.driver.findElements(selector);
+                        await this.driver.actions().keyDown(Key.CONTROL).sendKeys('a').keyUp(Key.CONTROL).perform();
+                        await el[index].sendKeys(keys);
+                        console.log(
+                            `%cSentKeys with actions and defult selector: '${
+                                selector.valueOf()['value']
+                            }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
+                            ConsoleColors.SentKeysMessage,
+                        );
+                    } catch (error) {
+                        if (selector['using'] == 'xpath') {
+                            await this.driver.executeScript(
+                                `document.evaluate("${selector['value']}", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(${index}).value='${keys}';`,
+                            );
+                            console.log(
+                                `%cSet value with xpath selector: '${
+                                    selector.valueOf()['value']
+                                }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
+                                ConsoleColors.SentKeysMessage,
+                            );
+                        } else {
+                            await this.driver.executeScript(
+                                `document.querySelectorAll("${selector['value']}")[${index}].value='${keys}';`,
+                            );
+                            console.log(
+                                `%cSet value with css selector: '${
+                                    selector.valueOf()['value']
+                                }', on element with index of: ${index}, Keys: '${isSecret ? '******' : keys}'`,
+                                ConsoleColors.SentKeysMessage,
+                            );
+                        }
+                    }
+                } else {
+                    throw error;
+                }
+            } else {
+                throw error;
+            }
+        }
+        return;
+    }
+
     public async findElement(selector: By, waitUntil = 15000, isVisible = true): Promise<WebElement> {
         return await this.findElements(selector, waitUntil, isVisible).then((webElement) =>
             webElement ? webElement[0] : webElement,

@@ -39,8 +39,8 @@ export class LegacyResourcesService {
         return this.papiClient.get(`/addons/data/export/file/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/${resource}`);
     }
 
-    dimxImport(resource) {
-        return this.papiClient.get(`/addons/data/import/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/${resource}`);
+    dimxImport(resource, body) {
+        return this.papiClient.post(`/addons/data/import/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/${resource}`, body);
     }
 
     async getDimxResult(uri) {
