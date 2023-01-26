@@ -32,6 +32,7 @@ import {
     ScriptPickerTests,
     LoginPerfSqlitefTests,
     ResourceListTests,
+    RLdataPrep,
     MockTest,
     SurveyTests,
 } from './index';
@@ -44,6 +45,8 @@ import { PFSTestser } from '../../api-tests/pepperi_file_service';
 import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
 import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
 import { LoginPerfTestsReload } from './login_performance_reload.test';
+import { UDCTestser } from '../../api-tests/user_defined_collections';
+import { maintenance3APITestser } from '../../api-tests/addons';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -264,12 +267,18 @@ const addon = process.env.npm_config_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
+    if (tests.includes('DataPrepRL')) {
+        await RLdataPrep(varPass, client);
+    }
+
     if (tests.includes('ResourceList')) {
+        // await RLdataPrep(client);
         await ResourceListTests(email, pass, varPass, client);
     }
 
     if (tests.includes('MockTest')) {
-        await MockTest(email, pass, varPass, client);
+        await MockTest(client);
+        await ResourceListTests(email, pass, varPass, client);
     }
 
     if (tests.includes('Distributor')) {
@@ -315,6 +324,38 @@ const addon = process.env.npm_config_addon as string;
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('ApiUDC')) {
+        await UDCTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('maintenance3API')) {
+        const service = new GeneralService(client);
+        const testerFunctions = service.initiateTesterFunctions(client, 'maintenance3API');
+        await maintenance3APITestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            testerFunctions,
+        );
+        await TestDataTests(generalService, testerFunctions);
     }
 
     if (tests.includes('AsyncAddonGetRemoveCodeJobsCLI')) {
@@ -377,7 +418,7 @@ const addon = process.env.npm_config_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
-    if (tests.includes('Udc')) {
+    if (tests.includes('UdcUI')) {
         await UDCTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }

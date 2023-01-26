@@ -1,4 +1,10 @@
-import { PapiClient, FindOptions } from '@pepperi-addons/papi-sdk';
+import { PapiClient, FindOptions, SchemeFieldType, DataViewFieldType } from '@pepperi-addons/papi-sdk';
+import { DataViewBaseField, UpsertUdcGridDataView } from '../ui-tests/blueprints/DataViewBlueprints';
+import {
+    ArrayOfPrimitiveTypeUdcField,
+    BodyToUpsertUdcWithFields,
+    PrimitiveTypeUdcField,
+} from '../ui-tests/blueprints/UdcBlueprints';
 import GeneralService from './general.service';
 
 export interface UdcField {
@@ -341,10 +347,12 @@ export class UDCService {
             return udcCreateResponse;
         }
         //3. test we can find the collection
-        const udcGetResponse = await this.generalService.fetchStatus('/user_defined_collections/schemes?where=');
+        this.generalService.sleep(6000);
+        const udcGetResponse = await this.generalService.fetchStatus(`/user_defined_collections/schemes?page_size=-1`);
         const createdCollection = udcGetResponse.Body.filter((collection) => collection.Name === collecitonName);
         if (createdCollection.length < 1) {
             console.log(`Cant Find Collection: ${collecitonName} inside UDC after Upserting`);
+            udcGetResponse['Fail'] = `Cant Find Collection: ${collecitonName} inside UDC after Upserting`;
             return udcGetResponse;
         }
         const udcUpsertItemResponse: any[] = [];
@@ -412,5 +420,97 @@ export class UDCService {
             }
         }
         return udcWithFieldGetResponse.Body.Fields;
+    }
+
+    async upsertUDC(bodyObj, path: 'create' | 'schemes') {
+        return await this.generalService.fetchStatus(`/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/${path}`, {
+            method: 'POST',
+            body: JSON.stringify(bodyObj),
+        });
+    }
+
+    async upsertValuesToCollection(valuesObj, collectionName) {
+        return await this.generalService.fetchStatus(
+            `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName}`,
+            {
+                method: 'POST',
+                body: JSON.stringify(valuesObj),
+            },
+        );
+    }
+
+    prepareDataForUdcCreation(collectionData: {
+        nameOfCollection: string;
+        fieldsOfCollection: {
+            classType: 'Primitive' | 'Array' | 'Contained' | 'Resource';
+            fieldName: string;
+            fieldType?: SchemeFieldType;
+            indexed?: boolean;
+            mandatory?: boolean;
+            fieldDescription?: string;
+            dataViewType?: DataViewFieldType;
+            readonly?: boolean;
+        }[];
+        descriptionOfCollection?: string;
+        syncDefinitionOfCollection?: { Sync: boolean; SyncFieldLevel?: boolean };
+        typeOfCollection?:
+            | 'data'
+            | 'meta_data'
+            | 'indexed_data'
+            | 'index'
+            | 'shared_index'
+            | 'pfs'
+            | 'contained'
+            | 'papi'
+            | 'abstract';
+    }) {
+        const collectionFields = {};
+        const udcListViewFields = collectionData.fieldsOfCollection.map((schemeField) => {
+            switch (schemeField.classType) {
+                case 'Primitive':
+                    collectionFields[schemeField.fieldName] = new PrimitiveTypeUdcField(
+                        schemeField.fieldDescription ? schemeField.fieldDescription : '',
+                        schemeField.hasOwnProperty('mandatory') ? schemeField.mandatory : false,
+                        schemeField.fieldType ? schemeField.fieldType : 'String',
+                        schemeField.hasOwnProperty('indexed') ? schemeField.indexed : false,
+                    );
+                    break;
+                case 'Array':
+                    collectionFields[schemeField.fieldName] = new ArrayOfPrimitiveTypeUdcField(
+                        schemeField.fieldDescription ? schemeField.fieldDescription : '',
+                        schemeField.hasOwnProperty('mandatory') ? schemeField.mandatory : false,
+                        schemeField.fieldType
+                            ? schemeField.fieldType !== 'String'
+                                ? schemeField.fieldType !== 'Integer'
+                                    ? schemeField.fieldType !== 'Double'
+                                        ? undefined
+                                        : schemeField.fieldType
+                                    : schemeField.fieldType
+                                : schemeField.fieldType
+                            : undefined,
+                    );
+                    break;
+
+                default:
+                    break;
+            }
+            return new DataViewBaseField(
+                schemeField.fieldName,
+                schemeField.dataViewType ? schemeField.dataViewType : 'TextBox',
+                schemeField.hasOwnProperty('mandatory') ? schemeField.mandatory : false,
+                schemeField.hasOwnProperty('readonly') ? schemeField.readonly : true,
+            );
+        });
+        const udcListView = new UpsertUdcGridDataView(udcListViewFields);
+        const bodyOfCollectionWithFields = new BodyToUpsertUdcWithFields(
+            collectionData.nameOfCollection,
+            collectionFields,
+            udcListView,
+            collectionData.descriptionOfCollection ? collectionData.descriptionOfCollection : undefined,
+            collectionData.syncDefinitionOfCollection ? collectionData.syncDefinitionOfCollection : undefined,
+            collectionData.typeOfCollection ? collectionData.typeOfCollection : undefined,
+        );
+
+        return bodyOfCollectionWithFields;
     }
 }

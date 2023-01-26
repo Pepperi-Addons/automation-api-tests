@@ -20,6 +20,11 @@ export class WebAppHomePage extends WebAppPage {
     public HomeScreenButtonArr: By = By.css('#homepage-footer-btns button');
     public HomeScreenSpesificButton: By = By.xpath(`//button[@title='|textToFill|']`);
 
+    // supportmenu popup
+    public SupportMenuPopup_Container: By = By.xpath('//div[contains(@class,"supportMenu")]');
+    public SupportMenuPopup_Refresh: By = By.xpath('//a[@data-toggle="dropdown"][contains(text(),"Refresh")]');
+    public SupportMenuPopup_RefreshData: By = By.xpath('//a[text()="Refresh Data"]');
+
     public async clickOnBtn(btnTxt: string): Promise<void> {
         await this.browser.ClickByText(this.HomeScreenButtonArr, btnTxt);
         return;
