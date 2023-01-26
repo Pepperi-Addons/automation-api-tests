@@ -795,7 +795,7 @@ export default class GeneralService {
                 addonName == 'ADAL' || //evgeny
                 addonName == 'Data Index Framework' || //evgeny
                 addonName == 'system_health' || //evgeny
-                addonName == 'Cross Platform Engine (CPI Node)' || //evgeny
+                addonName == 'Cross Platform Engine' || //evgeny
                 addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
                 addonName == 'Relations Framework' || // evgeny 4/12: done to be able to test latest relation fw version
                 addonName == 'Pepperitest (Jenkins Special Addon) - Code Jobs' || // evgeny 6/12: trying to fix wiered jenkins issue
