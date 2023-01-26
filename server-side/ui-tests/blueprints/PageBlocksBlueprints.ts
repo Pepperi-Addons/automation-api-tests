@@ -3,7 +3,7 @@ export class BasePage {
         this.Blocks = [];
         this.Layout = new BasePageLayout();
         this.Hidden = false;
-        this.Key = "";
+        this.Key = '';
     }
     public Layout: BasePageLayout;
     public Hidden: boolean;
@@ -32,7 +32,7 @@ export class BasePageLayout {
 
 export class BasePageBlock {
     constructor() {
-        this.Key = "";
+        this.Key = '';
         this.Relation = new BaseBlockRelation();
     }
     public Key: string;
@@ -42,14 +42,14 @@ export class BasePageBlock {
 
 export class BaseBlockRelation {
     constructor() {
-        this.Type = "NgComponent";
-        this.SubType = "NG14";
-        this.RelationName = "PageBlock";
-        this.AddonRelativeURL = "";
-        this.AddonUUID = "";
-        this.ModuleName = "";
-        this.ComponentName = "";
-        this.Name = "";
+        this.Type = 'NgComponent';
+        this.SubType = 'NG14';
+        this.RelationName = 'PageBlock';
+        this.AddonRelativeURL = '';
+        this.AddonUUID = '';
+        this.ModuleName = '';
+        this.ComponentName = '';
+        this.Name = '';
     }
     public Type: string;
     public SubType: string;
@@ -286,41 +286,41 @@ export class BlockID {
 
 export class VisitFlowBlock {
     public Configuration: VisitFlowBlockConfiguration = new VisitFlowBlockConfiguration();
-    public Key: string = "aed9174b-9c01-6fba-982f-67a19e80e124";
+    public Key = 'aed9174b-9c01-6fba-982f-67a19e80e124';
     public Relation: VisitFlowBlockRelation = new VisitFlowBlockRelation();
 }
 
 export class VisitFlowBlockConfiguration {
-    public Resource: string = "VisitFlow";
+    public Resource = 'VisitFlow';
     public Data: VisitFlowBlockConfigurationData = new VisitFlowBlockConfigurationData();
 }
 
 export class VisitFlowBlockConfigurationData {
-    public resourceName: string = "VisitFlows";
+    public resourceName = 'VisitFlows';
 }
 
 export class VisitFlowBlockRelation extends BaseBlockRelation {
     constructor() {
         super();
-        this.AddonRelativeURL = "file_2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e";
-        this.AddonUUID = "2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e";
-        this.ModuleName = "BlockModule";
-        this.ComponentName = "BlockComponent";
-        this.Name = "VisitFlow";
+        this.AddonRelativeURL = 'file_2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e';
+        this.AddonUUID = '2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e';
+        this.ModuleName = 'BlockModule';
+        this.ComponentName = 'BlockComponent';
+        this.Name = 'VisitFlow';
     }
 }
 
 export class VisitFlowBlockColumn {
     public BlockContainer = {
-        BlockKey: "aed9174b-9c01-6fba-982f-67a19e80e124"
-    }
+        BlockKey: 'aed9174b-9c01-6fba-982f-67a19e80e124',
+    };
 }
 
 export class VisitFlowBlockStructurePage extends BasePage {
-    constructor(pageKey:string, pageName? : string, pageDescription? : string) {
+    constructor(pageKey: string, pageName?: string, pageDescription?: string) {
         super();
         this.Key = pageKey;
-        pageName? this.Name = pageName : null;
-        pageDescription ? this.Description = pageDescription : null; 
+        pageName ? (this.Name = pageName) : null;
+        pageDescription ? (this.Description = pageDescription) : null;
     }
 }

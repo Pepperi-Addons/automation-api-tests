@@ -8,7 +8,9 @@ export class PageBuilder extends AddonPage {
     public PageBuilder_Title: By = By.xpath('//span[@title="Page Builder"]');
     public AddPage_Button: By = By.xpath('//span[@title="Add Page"]/ancestor::pep-button/button');
     public PageBuilder_Search_Input: By = By.xpath('//input[@placeholder="Search..."]');
-    public PageBuilder_Search_Submit: By = By.xpath('//input[@placeholder="Search..."]/parent::div/following-sibling::div //mat-icon[2]');
+    public PageBuilder_Search_Submit: By = By.xpath(
+        '//input[@placeholder="Search..."]/parent::div/following-sibling::div //mat-icon[2]',
+    );
     // Add a new Page
     public SelectPage_Title: By = By.xpath('//span[@title="Select a Page"]');
     public BlankTemplatePage: By = By.xpath('//*[text()="Blank"]/parent::div[contains(@class,"page-cube-inner")]');
