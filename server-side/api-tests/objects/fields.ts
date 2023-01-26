@@ -78,7 +78,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
 
             describe('Upsert', () => {
                 it('Upsert Fields (DI-17371)', async () => {
-                    const fieldID = `TSATest 2 Upsert 1234`;
+                    const fieldID = `TSATest_2_Upsert_1234`; //oleg
                     const postField = await service.upsertField(
                         'transactions',
                         {
@@ -117,7 +117,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
 
             describe('Delete', () => {
                 it('Delete Fields', async () => {
-                    const fieldID = `TSATest 2 Delete 1234`;
+                    const fieldID = `TSATest_2_Delete_1234`; //oleg
                     return Promise.all([
                         await expect(
                             service.upsertField(
@@ -227,7 +227,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                     it(`CRUD ${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)} (DI-17083)`, async () => {
                         const fieldID = `TSA_Creation_Test_${
                             Math.floor(Math.random() * 10000).toString() + Math.random().toString(36).substring(10)
-                        } ${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)}_12345_(For-Positive)`;
+                        }${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)}_12345_(For-Positive)`;
 
                         if (resourceType == 'accounts' || resourceType == 'catalogs' || resourceType == 'items') {
                             const postField = await service.upsertField(resourceType, {
@@ -346,7 +346,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                 }
 
                 it('RUD Existing Transactions Of Sales Order', async () => {
-                    const fieldID = `TSATest 2 transactions 1234`;
+                    const fieldID = `TSATest_2_transactions_1234`; //oleg
                     const postField = await service.upsertField(
                         'transactions',
                         {
@@ -405,9 +405,10 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                 for (let index = 0; index < resourceTypesArray.length; index++) {
                     const resourceType = resourceTypesArray[index];
                     it(`RUD Existing ${resourceType.charAt(0).toUpperCase() + resourceType.slice(1)}`, async () => {
-                        const fieldID = `TSATest 2 ${
+                        const fieldID = `TSATest_2_${
+                            //oleg
                             resourceType.charAt(0).toUpperCase() + resourceType.slice(1)
-                        } 12345 (For-Positive)`;
+                        }12345(For-Positive)`;
 
                         if (resourceType == 'accounts' || resourceType == 'catalogs' || resourceType == 'items') {
                             const postField = await service.upsertField(resourceType, {
@@ -526,7 +527,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                 }
 
                 it('Recreating flaky bug (DI-17083)', async () => {
-                    const fieldID = 'TSATestHadar SB12';
+                    const fieldID = 'TSATestHadar_SB12'; //oleg
                     const postField = await service.upsertField(
                         'transactions',
                         {
@@ -598,9 +599,10 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                     it(`Missing UITypeID or Sub TypeID ${
                         resourceType.charAt(0).toUpperCase() + resourceType.slice(1)
                     }`, async () => {
-                        const fieldID = `TSATest 2 ${
+                        const fieldID = `TSATest_2_${
+                            //oleg
                             resourceType.charAt(0).toUpperCase() + resourceType.slice(1)
-                        } 12345 (For-Negative)`;
+                        }12345(For-Negative)`;
 
                         if (resourceType == 'accounts' || resourceType == 'catalogs' || resourceType == 'items') {
                             await expect(
@@ -649,7 +651,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
 
         describe('Known Bugs', () => {
             it('Temporary Property CRUD (DI-16194)', async () => {
-                const fieldID = `TSATest 2 Temp 1234`;
+                const fieldID = `TSATest_2_Temp_1234`; //oleg
                 const postField = await service.upsertField(
                     'transactions',
                     {
@@ -709,7 +711,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
             });
 
             it('Create Transaction from undefined to valid Field (DI-17012)', async () => {
-                const fieldID = `TSATest 2 Steps 12345`;
+                const fieldID = `TSATest_2_Steps_12345`; //oleg
                 return Promise.all([
                     //Test was removed in 21/12/2020 since all the responses of 500 will return in HTML and are not formattable
                     // await expect(
@@ -781,7 +783,7 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
             });
 
             it('Reject With Correct Error Message (DI-17013)', async () => {
-                const fieldID = `TSATest 2 1234 (Negative)`;
+                const fieldID = `TSATest_2_1234(Negative)`; //oleg
                 return Promise.all([
                     await expect(
                         service.upsertField(
@@ -830,7 +832,8 @@ export async function FieldsTests(generalService: GeneralService, tester: Tester
                         //     transactionsTypeArr[transactionsTypeArr[0]]
                         // }'&fields=Name&include_deleted=1`,
                         //Version 2 of Fields tests
-                        `/type_safe_attribute?where=Name LIKE 'TSATest 2 %' AND ActivityTypeDefinitionID LIKE '${
+                        `/type_safe_attribute?where=Name LIKE 'TSATest_2%' AND ActivityTypeDefinitionID LIKE '${
+                            //oleg
                             transactionsTypeArr[transactionsTypeArr[0]]
                         }'&fields=Name&include_deleted=1`,
                     ),
