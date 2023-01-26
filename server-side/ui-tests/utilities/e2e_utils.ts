@@ -13,7 +13,7 @@ import {
 } from '@pepperi-addons/papi-sdk';
 import { BasePomObject } from '../pom/base/BasePomObject';
 
-export default class ResourceListUtils extends BasePomObject {
+export default class E2EUtils extends BasePomObject {
     public constructor(protected browser: Browser) {
         super(browser);
     }
@@ -77,7 +77,12 @@ export default class ResourceListUtils extends BasePomObject {
         await pageBuilder.waitTillVisible(pageBuilder.AddPage_Button, 15000);
         pageBuilder.pause(1000);
         await pageBuilder.addBlankPage(nameOfPage, descriptionOfPage);
-        pageBuilder.pause(6000);
+        pageBuilder.pause(2 * 1000);
+        const pageUUID = await this.getUUIDfromURL();
+        pageBuilder.pause(3 * 1000);
+        await pageBuilder.returnToPageBuilderFromPage();
+        pageBuilder.pause(1000);
+        return pageUUID;
     }
 
     public async deleteAllEditorsViaUI() {
