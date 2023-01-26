@@ -46,6 +46,7 @@ import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_
 import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
 import { LoginPerfTestsReload } from './login_performance_reload.test';
 import { UDCTestser } from '../../api-tests/user_defined_collections';
+import { maintenance3APITestser } from '../../api-tests/addons';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -338,6 +339,23 @@ const addon = process.env.npm_config_addon as string;
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('maintenance3API')) {
+        const service = new GeneralService(client);
+        const testerFunctions = service.initiateTesterFunctions(client, 'maintenance3API');
+        await maintenance3APITestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            testerFunctions,
+        );
+        await TestDataTests(generalService, testerFunctions);
     }
 
     if (tests.includes('AsyncAddonGetRemoveCodeJobsCLI')) {
