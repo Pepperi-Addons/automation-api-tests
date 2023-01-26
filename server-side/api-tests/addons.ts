@@ -814,6 +814,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     testExecutionData.changePhasedGroupVersionDays = 0;
 
     if (testConfigObj.isMaintenanceUpgrade) {
+        debugger;
         const datePlusZero = new Date();
         testExecutionData.changePhasedGroupVersionDays = 0;
         testExecutionData.testDate = new Date(datePlusZero.getTime() + 0);
@@ -826,6 +827,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     }
 
     if (testConfigObj.isMaintenanceInstall) {
+        debugger;
         const datePlusZero = new Date();
         testExecutionData.changePhasedGroupVersionDays = 0;
         testExecutionData.testDate = new Date(datePlusZero.getTime() + 0);
@@ -838,6 +840,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     }
 
     if (testConfigObj.isMaintenanceFull) {
+        debugger;
         let datePlusZero = new Date();
         testExecutionData.changePhasedGroupVersionDays = 0;
         testExecutionData.testDate = new Date(datePlusZero.getTime() + 0);
