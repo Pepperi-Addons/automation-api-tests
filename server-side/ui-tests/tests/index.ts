@@ -16,6 +16,7 @@ import { LoginPerfSqlitefTests } from './login_performance_Sqlite.test';
 import { ResourceListTests } from './resource_list.test';
 import { MockTest } from './mock_test.test';
 import { RLdataPrep } from './rl_data_prep.test';
+import { VisitFlowTests } from './visit_flow.test';
 import { SurveyTests } from './survey.test';
 
 export {
@@ -36,6 +37,7 @@ export {
     LoginPerfSqlitefTests,
     ResourceListTests,
     RLdataPrep,
+    VisitFlowTests,
     MockTest,
     SurveyTests,
 };
