@@ -8,7 +8,7 @@ import promised from 'chai-as-promised';
 import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
-import ResourceListUtils from '../utilities/resource_list';
+import E2EUtils from '../utilities/e2e_utils';
 import { BaseFormDataViewField, GridDataViewField, MenuDataViewField } from '@pepperi-addons/papi-sdk';
 
 import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
@@ -35,7 +35,7 @@ export async function ResourceListTests(email: string, password: string, varPass
     let resourceViews: ResourceViews;
     let pageBuilder: PageBuilder;
     let slugs: Slugs;
-    let resourceListUtils: ResourceListUtils;
+    let resourceListUtils: E2EUtils;
     let resourceListBlock: ResourceListBlock;
 
     let random_name: string;
@@ -160,7 +160,7 @@ export async function ResourceListTests(email: string, password: string, varPass
             resourceViews = new ResourceViews(driver);
             pageBuilder = new PageBuilder(driver);
             slugs = new Slugs(driver);
-            resourceListUtils = new ResourceListUtils(driver);
+            resourceListUtils = new E2EUtils(driver);
         });
 
         after(async function () {

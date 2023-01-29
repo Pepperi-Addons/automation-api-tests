@@ -1,3 +1,66 @@
+export class BasePage {
+    constructor() {
+        this.Blocks = [];
+        this.Layout = new BasePageLayout();
+        this.Hidden = false;
+        this.Key = '';
+    }
+    public Layout: BasePageLayout;
+    public Hidden: boolean;
+    public Key: string;
+    public Name?: string;
+    public Description?: string;
+    public Blocks;
+}
+
+export class BasePageLayout {
+    constructor() {
+        this.Sections = [];
+        this.ColumnsGap = 'md';
+        this.SectionsGap = 'md';
+        this.HorizontalSpacing = 'md';
+        this.VerticalSpacing = 'md';
+        this.MaxWidth = 0;
+    }
+    public ColumnsGap: string;
+    public SectionsGap: string;
+    public HorizontalSpacing: string;
+    public VerticalSpacing: string;
+    public MaxWidth: number;
+    public Sections;
+}
+
+export class BasePageBlock {
+    constructor() {
+        this.Key = '';
+        this.Relation = new BaseBlockRelation();
+    }
+    public Key: string;
+    public Relation: BaseBlockRelation;
+    public Configuration;
+}
+
+export class BaseBlockRelation {
+    constructor() {
+        this.Type = 'NgComponent';
+        this.SubType = 'NG14';
+        this.RelationName = 'PageBlock';
+        this.AddonRelativeURL = '';
+        this.AddonUUID = '';
+        this.ModuleName = '';
+        this.ComponentName = '';
+        this.Name = '';
+    }
+    public Type: string;
+    public SubType: string;
+    public RelationName: string;
+    public AddonRelativeURL: string;
+    public AddonUUID: string;
+    public ModuleName: string;
+    public ComponentName: string;
+    public Name: string;
+}
+
 export class ResourceListBasicViewerEditorBlocksStructurePage {
     constructor(
         pageKey: string,
@@ -45,18 +108,18 @@ export class ResourceListBlock {
         blockResource: string,
         collectionName: string,
         editorUUID?: string,
-        selecedView?: { selectedViewUUID: string; selectedViewName: string },
+        selectedView?: { selectedViewUUID: string; selectedViewName: string },
     ) {
         this.Key = blockKey;
         this.Relation = new ResourceListBlockRelation(blockResource);
         switch (blockResource) {
             case 'DataViewerBlock':
-                if (selecedView) {
+                if (selectedView) {
                     this.Configuration = new ResourceListBlockConfiguration(
                         blockResource,
                         collectionName,
                         '',
-                        selecedView,
+                        selectedView,
                     );
                 }
                 break;
@@ -154,11 +217,9 @@ export class ViewID {
     public key: string;
 }
 
-export class ResourceListBlockRelation {
+export class ResourceListBlockRelation extends BaseBlockRelation {
     constructor(resourceOfBlock: string) {
-        this.Type = 'NgComponent';
-        this.SubType = 'NG14';
-        this.RelationName = 'PageBlock';
+        super();
         this.AddonRelativeURL = 'file_0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3';
         this.AddonUUID = '0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3';
 
@@ -182,46 +243,34 @@ export class ResourceListBlockRelation {
                 break;
         }
     }
-
-    public Type: string;
-    public SubType: string;
-    public ModuleName: string;
-    public RelationName: string;
-    public ComponentName: string;
-    public AddonRelativeURL: string;
-    public AddonUUID: string;
-    public Name: string;
 }
 
-export class ResourceListLayout {
+export class ResourceListLayout extends BasePageLayout {
     constructor(listOfSectionsKeyBlocklist: { sectionKey: string; listOfBlockKeys: string[] }[]) {
+        super();
         listOfSectionsKeyBlocklist.forEach((sectionKeyBlocklist) => {
             this.Sections.push(
                 new ResourceListLayoutSection(sectionKeyBlocklist.sectionKey, sectionKeyBlocklist.listOfBlockKeys),
             );
         });
     }
-    public ColumnsGap = 'md';
-    public SectionsGap = 'md';
-    public HorizontalSpacing = 'md';
+
     public Sections: ResourceListLayoutSection[] = [];
-    public VerticalSpacing = 'md';
-    public MaxWidth = 0;
 }
 
 export class ResourceListLayoutSection {
     constructor(sectionKey: string, blockKeysList: string[]) {
         this.Key = sectionKey;
         blockKeysList.forEach((blockKey) => {
-            this.Columns.push(new ResourceListLayoutSectionColumn(blockKey));
+            this.Columns.push(new PageLayoutSectionColumn(blockKey));
         });
     }
     public Hide = [];
-    public Columns: ResourceListLayoutSectionColumn[] = [];
+    public Columns: PageLayoutSectionColumn[] = [];
     public Key: string;
 }
 
-export class ResourceListLayoutSectionColumn {
+export class PageLayoutSectionColumn {
     constructor(blockKey: string) {
         this.BlockContainer = new BlockID(blockKey);
     }
@@ -233,4 +282,45 @@ export class BlockID {
         this.BlockKey = blockKey;
     }
     public BlockKey: string;
+}
+
+export class VisitFlowBlock {
+    public Configuration: VisitFlowBlockConfiguration = new VisitFlowBlockConfiguration();
+    public Key = 'aed9174b-9c01-6fba-982f-67a19e80e124';
+    public Relation: VisitFlowBlockRelation = new VisitFlowBlockRelation();
+}
+
+export class VisitFlowBlockConfiguration {
+    public Resource = 'VisitFlow';
+    public Data: VisitFlowBlockConfigurationData = new VisitFlowBlockConfigurationData();
+}
+
+export class VisitFlowBlockConfigurationData {
+    public resourceName = 'VisitFlows';
+}
+
+export class VisitFlowBlockRelation extends BaseBlockRelation {
+    constructor() {
+        super();
+        this.AddonRelativeURL = 'file_2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e';
+        this.AddonUUID = '2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e';
+        this.ModuleName = 'BlockModule';
+        this.ComponentName = 'BlockComponent';
+        this.Name = 'VisitFlow';
+    }
+}
+
+export class VisitFlowBlockColumn {
+    public BlockContainer = {
+        BlockKey: 'aed9174b-9c01-6fba-982f-67a19e80e124',
+    };
+}
+
+export class VisitFlowBlockStructurePage extends BasePage {
+    constructor(pageKey: string, pageName?: string, pageDescription?: string) {
+        super();
+        this.Key = pageKey;
+        pageName ? (this.Name = pageName) : null;
+        pageDescription ? (this.Description = pageDescription) : null;
+    }
 }
