@@ -35,6 +35,10 @@ export class Slugs extends AddonPage {
     public Info_Popup_Close_Button: By = By.xpath(
         '//span[contains(text(),"Info")]/ancestor::pep-dialog //span[contains(text(),"Close")]/parent::button',
     );
+    // Delete Pop-up
+    public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
+    public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
+    public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
 
     private getSelectorOfTabByText(title: string) {
         return By.xpath(`//div[text()="${title}"]/parent::div[@role="tab"][contains(@id,"mat-tab-label-")]`);
@@ -64,6 +68,22 @@ export class Slugs extends AddonPage {
         return By.xpath(`//span[@title="${title}"]/ancestor::pep-button`);
     }
 
+    // private getSelectorOfRowInListByName(title: string) {
+    //     return By.xpath(`//a[@id="Name"][text()="${title}"]/ancestor::fieldset`);
+    // }
+
+    private getSelectorOfSelectedSlugCheckboxByName(title: string) {
+        return By.xpath(`//a[@id="Name"][text()="${title}"]/ancestor::fieldset/mat-checkbox/label/span`);
+    }
+
+    private getSelectorOfSlugCheckboxByPartialName(title: string) {
+        return By.xpath(`//a[@id="Name"][contains(text(),"${title}")]/ancestor::fieldset/mat-checkbox/label/span`);
+    }
+
+    private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
+        return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
+    }
+
     public async selectFromList(selector: By, name?: string) {
         try {
             await this.browser.click(selector);
@@ -76,10 +96,59 @@ export class Slugs extends AddonPage {
         }
     }
 
-    // public async selectFromListByName(name: string) {
-    //     //     const selector: By = this.getSelectorOfRowInListByName(name); // selector is missing
-    //     //     await this.selectFromList(selector, name);
-    // }
+    public async selectFromListByName(name: string) {
+        const slugRowCheckbox_selector: By = this.getSelectorOfSelectedSlugCheckboxByName(name);
+        await (await this.browser.findElement(slugRowCheckbox_selector)).click();
+    }
+
+    public async selectFromListByPartialName(name: string) {
+        const selector: By = this.getSelectorOfSlugCheckboxByPartialName(name);
+        await (await this.browser.findElement(selector)).click();
+    }
+
+    public async openPencilMenu() {
+        try {
+            await this.browser.untilIsVisible(this.Pencil_Button, 500);
+            await this.clickElement('Pencil_Button');
+        } catch (error) {
+            console.info('Unable to Click Pencil_Button!!!');
+            console.error(error);
+            expect('Unable to Click Pencil_Button!!!').to.be.undefined;
+        }
+    }
+
+    public async selectUnderPencil(buttonTitle: string) {
+        try {
+            await this.browser.untilIsVisible(this[`Pencil_${buttonTitle}`], 500);
+            await this.clickElement(`Pencil_${buttonTitle}`);
+            await this.browser.untilIsVisible(this.DeletePopup_Dialog, 500);
+        } catch (error) {
+            console.info(`UNABLE TO SELECT: ${buttonTitle}`);
+            console.error(error);
+            expect(`ERROR -> UNABLE TO SELECT: ${buttonTitle}`).to.be.undefined;
+        }
+    }
+
+    public async confirmDeleteClickRedButton() {
+        try {
+            this.pause(500);
+            const redDeleteButton = await this.browser.findElement(this.DeletePopup_Delete_Button);
+            redDeleteButton.click();
+            this.pause(1000);
+            await this.checkThatElementIsNotFound('DeletePopup_Delete_Button');
+        } catch (error) {
+            console.info('RED DELETE Button NOT CLICKED!');
+            console.error(error);
+            expect('RED DELETE Button NOT CLICKED!').to.be.null;
+        }
+    }
+
+    public async deleteFromListByName(name: string) {
+        await this.selectFromListByName(name);
+        await this.openPencilMenu();
+        await this.selectUnderPencil('Delete');
+        await this.confirmDeleteClickRedButton();
+    }
 
     public async clickTab(tabName: string): Promise<void> {
         if (this[tabName]) {
@@ -113,6 +182,8 @@ export class Slugs extends AddonPage {
         this.pause(5000);
     }
 
+    // TODO: method of drag & drop
+
     public async mapPageToSlug(pathOfSlug: string, nameOfPage: string) {
         await this.clickTab('Mapping_Tab');
         await this.isSpinnerDone();
@@ -120,7 +191,6 @@ export class Slugs extends AddonPage {
         await this.waitTillVisible(this.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
         await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
         await this.waitTillVisible(this.MappedSlugs, 5000);
-        // TODO: method of drag & drop
         await this.forSlugByNameSelectPageByName(pathOfSlug, nameOfPage);
         this.pause(500);
         await this.click(this.PageMapping_ProfileEditButton_Save);

@@ -68,7 +68,7 @@ export class BodyToUpsertUdcWithFields implements Collection {
 export class BaseUdcField implements CollectionField {
     constructor(
         description: string,
-        mandatory = false,
+        mandatory: boolean = false,
         type: SchemeFieldType = 'String',
         optionalValues?: string[],
         items?: CollectionField,

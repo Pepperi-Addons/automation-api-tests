@@ -236,26 +236,26 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
         });
 
-        describe('Pre-clean', async () => {
-            before(function () {
-                resource_name = 'NameAge';
-                random_name = generalService.generateRandomString(5);
-            });
-            afterEach(async function () {
-                driver.sleep(500);
-                await webAppHomePage.collectEndTestData(this);
-            });
+        // describe('Pre-clean', async () => {
+        //     before(function () {
+        //         resource_name = 'NameAge';
+        //         random_name = generalService.generateRandomString(5);
+        //     });
+        //     afterEach(async function () {
+        //         driver.sleep(500);
+        //         await webAppHomePage.collectEndTestData(this);
+        //     });
 
-            it('Delete All Views', async () => {
-                await resourceListUtils.deleteAllViewsViaUI();
-            });
-            it('Delete All Editors', async () => {
-                await resourceListUtils.deleteAllEditorsViaUI();
-            });
-            it('Delete All Pages', async () => {
-                await resourceListUtils.deleteAllPagesViaUI();
-            });
-        });
+        //     it('Delete All Views', async () => {
+        //         await resourceListUtils.deleteAllViewsViaUI();
+        //     });
+        //     it('Delete All Editors', async () => {
+        //         await resourceListUtils.deleteAllEditorsViaUI();
+        //     });
+        //     it('Delete All Pages', async () => {
+        //         await resourceListUtils.deleteAllPagesViaUI();
+        //     });
+        // });
 
         describe('Pipeline', async () => {
             before(function () {
@@ -314,16 +314,16 @@ export async function ResourceListTests(email: string, password: string, varPass
                 });
                 resourceViews.pause(5 * 1000);
             });
-            it('Get Editor UUID', async () => {
-                await resourceListUtils.gotoEditPageOfSelectedEditorByName(editorName);
-                editorKey = await resourceListUtils.getUUIDfromURL();
-                await webAppHeader.goHome();
-            });
-            it('Get View UUID', async () => {
-                await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
-                viewKey = await resourceListUtils.getUUIDfromURL();
-                await webAppHeader.goHome();
-            });
+            // it('Get Editor UUID', async () => {
+            //     await resourceListUtils.gotoEditPageOfSelectedEditorByName(editorName);
+            //     editorKey = await resourceListUtils.getUUIDfromURL();
+            //     await webAppHeader.goHome();
+            // });
+            // it('Get View UUID', async () => {
+            //     await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
+            //     viewKey = await resourceListUtils.getUUIDfromURL();
+            //     await webAppHeader.goHome();
+            // });
             it('Create Page', async () => {
                 await resourceListUtils.navigateTo('Page Builder');
                 // debugger
@@ -358,27 +358,29 @@ export async function ResourceListTests(email: string, password: string, varPass
                         {
                             blockKey: viewerBlockKey,
                             blockResource: 'DataViewerBlock',
-                            collectionName: resource_name,
-                            selectedView: {
-                                selectedViewUUID: viewKey,
-                                selectedViewName: viewName,
-                            },
+                            selectedViews: [
+                                {
+                                    collectionName: resource_name,
+                                    collectionID: '',
+                                    selectedViewUUID: viewKey,
+                                    selectedViewName: viewName,
+                                }
+                            ],
                         },
                         {
                             blockKey: configurationBlockKey,
                             blockResource: 'DataConfigurationBlock',
-                            collectionName: resource_name,
-                            editorUUID: editorKey,
+                            selectedEditor: { collectionName: resource_name, editorUUID: editorKey }
                         },
                     ],
                     [
                         {
                             sectionKey: 'daef8f6c-1d91-cfba-ec3c-9da2828fb800',
-                            listOfBlockKeys: [viewerBlockKey],
+                            blockKeysForSectionColumns: [viewerBlockKey],
                         },
                         {
                             sectionKey: 'e23cc2d1-3e2a-f745-d41c-60b8020fb167',
-                            listOfBlockKeys: [configurationBlockKey],
+                            blockKeysForSectionColumns: [configurationBlockKey],
                         },
                     ],
                 );

@@ -1,16 +1,17 @@
 import { describe, it, before, after, afterEach } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
-import chai from 'chai';
+import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { Browser } from '../utilities/browser';
 import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 // import { ResourceEditors, ResourceList, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
-// import { Slugs } from '../pom/addons/Slugs';
+import { Slugs } from '../pom/addons/Slugs';
 import E2EUtils from '../utilities/e2e_utils';
-import { VisitFlowBlock, VisitFlowBlockColumn } from '../blueprints/PageBlocksBlueprints';
+import { VisitFlowPage } from '../blueprints/PageBlocksBlueprints';
 import { VisitFlow } from '../pom/addons/VisitFlow';
+import { v4 as newUuid } from 'uuid';
 
 chai.use(promised);
 
@@ -26,11 +27,13 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     // let resourceEditors: ResourceEditors;
     // let resourceViews: ResourceViews;
     let pageBuilder: PageBuilder;
-    // let slugs: Slugs;
+    let slugs: Slugs;
     let e2eUtils: E2EUtils;
     let pageUUID: string;
     let pageName: string;
     let randomString: string;
+    let slugDisplayName: string = 'Visit Flow Auto';
+    let slug_path: string
 
     describe('Visit Flow UI tests', () => {
         before(async function () {
@@ -43,8 +46,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             // resourceEditors = new ResourceEditors(driver);
             // resourceViews = new ResourceViews(driver);
             pageBuilder = new PageBuilder(driver);
-            // slugs = new Slugs(driver);
+            slugs = new Slugs(driver);
             e2eUtils = new E2EUtils(driver);
+            slugDisplayName = 'Visit Flow Auto';
+            slug_path = 'visit_flow_auto';
         });
 
         after(async function () {
@@ -60,54 +65,66 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
         //     it('Activity type "VF_VisitFlowMainActivity" was created', async () => {
         //     });
         // });
-        // describe('Inserting Data to the UDCs', () => {
+        // describe('Creating a Catalogs View (if does not exist)', () => {
         //     it('Configuring Groups', async () => {
         //     });
         //     it('Configuring Flows', async () => {
         //     });
         // });
-        describe('Creating a Page', () => {
+        describe('Inserting Data to the UDCs', () => {
+            it('Configuring Groups', async () => {
+            });
+            it('Configuring Flows', async () => {
+            });
+        });
+        describe('Creating a Page with VisitFlow Block', () => {
             before(() => {
                 randomString = generalService.generateRandomString(5);
-                randomString = '';
                 pageName = `VisitFlow Page Auto_${randomString}`;
             });
             afterEach(async function () {
                 driver.sleep(500);
                 await webAppHomePage.collectEndTestData(this);
             });
-            it('Performing an API call to create Visit Flow Page', async () => {
+            it('New Page through the UI + VisitFlow Block through API', async () => {
                 pageUUID = await e2eUtils.addPage(pageName, 'Visit Flow 0.5 tests');
-                console.info('pageUUID: ', pageUUID);
+                // console.info('pageUUID: ', pageUUID);
                 const createdPage = await pageBuilder.getPageByUUID(pageUUID, client);
-                createdPage.Blocks.push(new VisitFlowBlock());
-                createdPage.Layout.Sections[0].Columns[0] = new VisitFlowBlockColumn();
-                console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
-                const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
+                // console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
+                const sectionKey = createdPage.Layout.Sections[0].Key;
+                const blockKey = newUuid();
+                const visitFlowPage = new VisitFlowPage(pageUUID, blockKey, sectionKey, pageName, 'pageDescription');
+                // console.info('visitFlowPage: ', JSON.stringify(visitFlowPage, null, 2));
+                const responseOfPublishPage = await pageBuilder.publishPage(visitFlowPage, client);
                 console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 2));
             });
-            it('Page cleanup', async () => {
+            it('Verifying Page was created successfully', async () => {
                 await e2eUtils.navigateTo('Page Builder');
                 await pageBuilder.searchForPageByName(pageName);
-                pageBuilder.pause(3 * 1000);
-                // debugger
-                await pageBuilder.selectFromListByName(pageName);
-                pageBuilder.pause(10 * 1000);
+                pageBuilder.pause(2 * 1000);
+                // add expect
             });
         });
-        // describe('Creating and Mapping a Slug', () => {
-        //     it('Creating a Visit Flow Slug', async () => {
-        //     });
-        //     it('Mapping Visit Flow Page on Visit Flow Slug using an API call', async () => {
-        //     });
-        // });
-        // describe('Configuring Account Dashboard', () => {
-        //     it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async () => {
-        //     });
-        //     it('Adding the Visit Flow Slug by the search input, clicking the (+) button and Save', async () => {
-        //     });
-        // });
-        describe('Going Through a Basic Flow', () => {
+        describe('Creating and Mapping a Slug', () => {
+            it('Creating a Visit Flow Slug for Automation', async () => {
+                await e2eUtils.navigateTo('Slugs');
+                await slugs.createSlug(slugDisplayName, slug_path, 'slug for Visit Flow Automation');
+            });
+            it('Dragging the created slug to the mapped fields section', async () => {
+                // TODO
+            });
+            it('Mapping Visit Flow Page on Visit Flow Slug using an API call', async () => {
+                await e2eUtils.navigateTo('Slugs');
+                await slugs.mapPageToSlug(slug_path, pageName);
+            });
+        });
+        describe('Configuring Account Dashboard', () => {
+            it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async () => {
+            });
+            it('Adding the Visit Flow Slug by the search input, clicking the (+) button and Save', async () => {
+            });
+        });
+        describe('Going Through a Basic Visit', () => {
             it('Navigating to a specific Account', async () => {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
@@ -192,6 +209,28 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await visitFlow.isSpinnerDone();
                 await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                 visitFlow.pause(5 * 1000);
+            });
+        });
+        describe('Teardown', () => {
+            it('Unconfiguring Slug from Account Dashboard', async () => {
+            });
+            it('Deleting Slug', async () => {
+                await e2eUtils.navigateTo('Slugs');
+                await slugs.deleteFromListByName(slugDisplayName);
+            });
+            it('Deleting Page', async () => {
+                await e2eUtils.navigateTo('Page Builder');
+                await pageBuilder.searchForPageByName(pageName);
+                pageBuilder.pause(2 * 1000);
+                await pageBuilder.deleteFromListByName(pageName);
+                pageBuilder.pause(5 * 1000);
+                await pageBuilder.searchForPageByName(pageName);
+                expect(await (await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)).getText()).to.contain('No results were found.');
+                pageBuilder.pause(1 * 1000);
+            });
+            it('Deleting UDCs listings', async () => {
+            });
+            it('Deleting Catalogs View', async () => {
             });
         });
     });
