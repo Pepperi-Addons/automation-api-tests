@@ -176,6 +176,12 @@ export default class E2EUtils extends BasePomObject {
         await slugs.mapPageToSlug(slugPath, pageName);
     }
 
+    public async mappingSlugWithPageEvgeny(slugPath: string, pageName: string) {
+        const slugs: Slugs = new Slugs(this.browser);
+        await this.navigateTo('Slugs');
+        await slugs.mapPageToSlugEVGENY(slugPath, pageName);
+    }
+
     public prepareListOfBaseFields(
         arrayOfFields: {
             fieldName: string;

@@ -6,13 +6,14 @@ import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 import { SurveyBlock, SurveyBlockColumn, SurveyTemplateBuilder } from '../pom/addons/SurveyTemplateBuilder';
 import E2EUtils from '../utilities/e2e_utils';
 import { GridDataViewField } from '@pepperi-addons/papi-sdk';
-import { ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
+import { ResourceViews } from '../pom/addons/ResourceList';
 import { DataViewsService } from '../../services/data-views.service';
 import GeneralService from '../../services/general.service';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
-import { ResourceListBasicViewerEditorBlocksStructurePage, VisitFlowBlockColumn } from '../blueprints/PageBlocksBlueprints';
 import { Slugs } from '../pom/addons/Slugs';
+import * as fs from 'fs';
+import * as path from 'path';
 
 chai.use(promised);
 
@@ -21,6 +22,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
     // const generalService = new GeneralService(client);
     let driver: Browser;
     let surveyBlockPageName;
+    let surveyViewUUID;
+    let accountViewUUID;
 
     // const templateToCreate: SurveyTemplate = {
     //     Name: 'first',
@@ -106,92 +109,92 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
             it('1. Create A Survey Template', async function () {
-                //     const webAppLoginPage = new WebAppLoginPage(driver);
-                //     await webAppLoginPage.login(email, password);
-                //     const surveyService = new SurveyTemplateBuilder(driver);
-                //     const isSurveyBuilderSettingsShown = await surveyService.enterSurveyBuilderSettingsPage();
-                //     expect(isSurveyBuilderSettingsShown).to.equal(true);
-                //     const isSurveyBuilderPageShown = await surveyService.enterSurveyBuilderActualBuilder();
-                //     expect(isSurveyBuilderPageShown).to.equal(true);
-                //     await surveyService.configureTheSurveyTemplate('first', 'first d', [
-                //         {
-                //             Title: 'boolean',
-                //             Key: '',
-                //             Questions: [
-                //                 {
-                //                     Key: '',
-                //                     Title: 'what have i done1',
-                //                     Type: 'Multiple Select',
-                //                     OptionalValues: [{ Value: 'T' }, { Value: 'F' }, { Value: 'C' }],
-                //                     isMandatory: true,
-                //                 },
-                //                 {
-                //                     Key: '',
-                //                     Title: 'what have i done2',
-                //                     Type: 'Radio Group',
-                //                     OptionalValues: [{ Value: 'A' }, { Value: 'B' }],
-                //                     isMandatory: false,
-                //                     ShowIf: {
-                //                         Operator: 'And',
-                //                         FilterData: { QuestionName: 'what have i done1', ValueToLookFor: ['T', 'C'] },
-                //                     },
-                //                 },
-                //             ],
-                //         },
-                //     ]);
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
+                const surveyService = new SurveyTemplateBuilder(driver);
+                const isSurveyBuilderSettingsShown = await surveyService.enterSurveyBuilderSettingsPage();
+                expect(isSurveyBuilderSettingsShown).to.equal(true);
+                const isSurveyBuilderPageShown = await surveyService.enterSurveyBuilderActualBuilder();
+                expect(isSurveyBuilderPageShown).to.equal(true);
+                await surveyService.configureTheSurveyTemplate('first', 'first d', [
+                    {
+                        Title: 'boolean',
+                        Key: '',
+                        Questions: [
+                            {
+                                Key: '',
+                                Title: 'what have i done1',
+                                Type: 'Multiple Select',
+                                OptionalValues: [{ Value: 'T' }, { Value: 'F' }, { Value: 'C' }],
+                                isMandatory: true,
+                            },
+                            {
+                                Key: '',
+                                Title: 'what have i done2',
+                                Type: 'Radio Group',
+                                OptionalValues: [{ Value: 'A' }, { Value: 'B' }],
+                                isMandatory: false,
+                                ShowIf: {
+                                    Operator: 'And',
+                                    FilterData: { QuestionName: 'what have i done1', ValueToLookFor: ['T', 'C'] },
+                                },
+                            },
+                        ],
+                    },
+                ]);
             });
-            // it('2. Configure Resource Views For Account + Survey', async function () {
-            //     const resourceListUtils = new ResourceListUtils(driver);
-            //     const resourceViews = new ResourceViews(driver);
-            //     const generalService = new GeneralService(client);
-            //     const dataViewsService = new DataViewsService(generalService.papiClient);
-            //     const webAppLoginPage = new WebAppLoginPage(driver);
-            //     await webAppLoginPage.login(email, password);
-            //     // Configure View - Accounts
-            //     await resourceListUtils.addView({
-            //         nameOfView: "Accounts22",
-            //         descriptionOfView: "Acc",
-            //         nameOfResource: "accounts",
-            //     });
-            //     const accViewKey = await resourceListUtils.getUUIDfromURL();
-            //     let viewFields: GridDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-            //         { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
-            //         { fieldName: 'InternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
-            //         { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
-            //         { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
-            //     ]);
-            //     await resourceViews.customViewConfig(dataViewsService, {
-            //         matchingEditorName: "",
-            //         viewKey: accViewKey,
-            //         fieldsToConfigureInView: viewFields,
-            //     });
-            //     await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
-            //     // Configure View - Survey
-            //     await resourceListUtils.addView({
-            //         nameOfView: "Surveys",
-            //         descriptionOfView: "Sur",
-            //         nameOfResource: "surveys",
-            //     });
-            //     // Configure View
-            //     const surveyViewKey = await resourceListUtils.getUUIDfromURL();
-            //     viewFields = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-            //         { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
-            //         { fieldName: 'StatusName', dataViewType: 'TextBox', mandatory: false, readonly: false },
-            //         { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
-            //         { fieldName: 'Template', dataViewType: 'TextBox', mandatory: false, readonly: false },
-            //     ]);
-            //     await resourceViews.customViewConfig(dataViewsService, {
-            //         matchingEditorName: "",
-            //         viewKey: surveyViewKey,
-            //         fieldsToConfigureInView: viewFields,
-            //     });
-            //     await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
-            // });
+            it('2. Configure Resource Views For Account + Survey', async function () {
+                const resourceListUtils = new E2EUtils(driver);
+                const resourceViews = new ResourceViews(driver);
+                const generalService = new GeneralService(client);
+                const dataViewsService = new DataViewsService(generalService.papiClient);
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
+                // Configure View - Accounts
+                await resourceListUtils.addView({
+                    nameOfView: 'Accounts22',
+                    descriptionOfView: 'Acc',
+                    nameOfResource: 'accounts',
+                });
+                accountViewUUID = await resourceListUtils.getUUIDfromURL();
+                let viewFields: GridDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
+                    { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'InternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                ]);
+                await resourceViews.customViewConfig(dataViewsService, {
+                    matchingEditorName: '',
+                    viewKey: accountViewUUID,
+                    fieldsToConfigureInView: viewFields,
+                });
+                await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
+                // Configure View - Survey
+                await resourceListUtils.addView({
+                    nameOfView: 'Surveys',
+                    descriptionOfView: 'Sur',
+                    nameOfResource: 'surveys',
+                });
+                // Configure View
+                surveyViewUUID = await resourceListUtils.getUUIDfromURL();
+                viewFields = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
+                    { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'StatusName', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'Template', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                ]);
+                await resourceViews.customViewConfig(dataViewsService, {
+                    matchingEditorName: '',
+                    viewKey: surveyViewUUID,
+                    fieldsToConfigureInView: viewFields,
+                });
+                await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
+            });
             it('3. Create Page With Survey Block Inside It', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const e2eUtils = new E2EUtils(driver);
-                surveyBlockPageName = "surveyBlockPage";
+                surveyBlockPageName = 'surveyBlockPage';
                 const pageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
                 const pageBuilder = new PageBuilder(driver);
                 const createdPage = await pageBuilder.getPageByUUID(pageUUID, client);
@@ -211,8 +214,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const resourceListUtils = new E2EUtils(driver);
                 await resourceListUtils.navigateTo('Slugs');
                 const slugs: Slugs = new Slugs(driver);
-                await slugs.createSlugEvgeny("survey_slug", "survey_slug", "for testing");
-                await resourceListUtils.mappingSlugWithPage("survey_slug", surveyBlockPageName);
+                await slugs.createSlugEvgeny('survey_slug', 'survey_slug', 'for testing');
+                await resourceListUtils.mappingSlugWithPageEvgeny('survey_slug', surveyBlockPageName);
                 debugger;
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
@@ -224,7 +227,16 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 debugger;
             });
             it('5. Create Script Based On Config File With New Resource Views Configured', async function () {
-                //TODO
+                try {
+                    const script = fs.readFileSync(path.join(__dirname, 'surveyScriptFile.txt'), 'utf-8');
+                    const script1 = script.replace('{surveyViewPlaceHolder}', surveyViewUUID);
+                    const script2 = script1.replace('{accountViewPlaceHolder}', accountViewUUID);
+                    const script3 = script2.replace('{surveySlugNamePlaceHolder}', 'survey_slug');
+                    debugger;
+                } catch (error) {
+                    debugger;
+                }
+                debugger;
             });
             it('6. Create Page With SlideShow Which Will Run The Script', async function () {
                 //TODO

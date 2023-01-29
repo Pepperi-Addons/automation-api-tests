@@ -361,7 +361,8 @@ export class ResourceViews extends ResourceList {
         const upsertFieldsToView = await dataViewsService.postDataView(resourceFieldsToAddToViewObj);
         console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToView, null, 2)}`);
         this.pause(0.5 * 1000);
-        if (viewData.matchingEditorName !== "") {//can i create a view only AFTER editor is created?
+        if (viewData.matchingEditorName !== '') {
+            //can i create a view only AFTER editor is created?
             await this.selectEditor(this.SelectEditor_DropDown, viewData.matchingEditorName);
             await this.click(this.EditPage_Update_Button);
             await this.waitTillVisible(this.Update_Popup_PepDialog, 5000);

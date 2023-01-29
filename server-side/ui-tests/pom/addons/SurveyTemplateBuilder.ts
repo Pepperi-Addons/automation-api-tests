@@ -1,6 +1,11 @@
 import { Key } from 'selenium-webdriver';
 import { By } from 'selenium-webdriver/lib/by';
-import { BaseBlockRelation, VisitFlowBlockConfiguration, VisitFlowBlockConfigurationData, VisitFlowBlockRelation } from '../../blueprints/PageBlocksBlueprints';
+import {
+    BaseBlockRelation,
+    VisitFlowBlockConfiguration,
+    VisitFlowBlockConfigurationData,
+    VisitFlowBlockRelation,
+} from '../../blueprints/PageBlocksBlueprints';
 import { WebAppSettingsSidePanel } from '../Components/WebAppSettingsSidePanel';
 import { WebAppHeader } from '../WebAppHeader';
 import { AddonPage } from './base/AddonPage';
@@ -47,19 +52,19 @@ export interface SurveyQuestion {
     Key: string;
     Title: string;
     Type:
-    | 'Short Text'
-    | 'Long Text'
-    | 'Multiple Select'
-    | 'Single Select'
-    | 'Checkbox'
-    | 'Radio Group'
-    | 'Yes/No'
-    | 'Number'
-    | 'Decimal'
-    | 'Currency'
-    | 'Percentage'
-    | 'Date'
-    | 'Date Time';
+        | 'Short Text'
+        | 'Long Text'
+        | 'Multiple Select'
+        | 'Single Select'
+        | 'Checkbox'
+        | 'Radio Group'
+        | 'Yes/No'
+        | 'Number'
+        | 'Decimal'
+        | 'Currency'
+        | 'Percentage'
+        | 'Date'
+        | 'Date Time';
     isMandatory: boolean;
     OptionalValues?: SelectValues[];
     ShowIf?: ShowIf;
@@ -367,16 +372,15 @@ export class SurveyBlockRelation extends BaseBlockRelation {
         this.ModuleName = 'BlockModule';
         this.ComponentName = 'BlockComponent';
         this.Name = 'Survey';
-        this.RelationName = "PageBlock";
-        this.SubType = "NG14";
-        this.Type = "NgComponent";
+        this.RelationName = 'PageBlock';
+        this.SubType = 'NG14';
+        this.Type = 'NgComponent';
     }
     public ElementName: string;
     public EditorElementName: string;
     public EditorComponentName: string;
     public EditorModuleName: string;
     public Key: string;
-
 }
 
 export class SurveyBlockColumn {
