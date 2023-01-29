@@ -17,6 +17,7 @@ export class Slugs extends AddonPage {
         '//mat-label[contains(@title,"Description")]/ancestor::pep-field-title/parent::div/mat-form-field //textarea',
     );
     public CreateSlugPopup_CreateSlug_Button: By = this.getSelectorOfCreateSlugPopupButtonByTitle('Create Slug'); //By.xpath('//span[@title="Create Slug"]/ancestor::button[@data-qa="Create Slug"]');
+    public CreateSlugPopup_CreateSlug_ButtonEvgeny: By = By.xpath(`(//*[@data-qa="Create Slug"])[2]`);
     public CreateSlugPopup_Cancel_Button: By = this.getSelectorOfCreateSlugPopupButtonByTitle('Cancel');
     // Slugs List
     public SelectedCheckbox: By = By.xpath(
@@ -26,6 +27,7 @@ export class Slugs extends AddonPage {
     public Uncheck_Checkbox: By = By.xpath('//mat-checkbox //input[@aria-checked="mixed"]');
     // Mapped Slugs
     public MappedSlugs: By = By.id('mappedSlugs');
+    public MappedSlugsEVGENY: By = By.xpath(`//span[contains(text(),'Mapped slugs')]`);
     // Page Mapping Profile Edit Button
     public PageMapping_ProfileEditButton_Save: By = this.getSelectorOfPageMappingProfileEditButton('Save');
     public PageMapping_ProfileEditButton_Cancel: By = this.getSelectorOfPageMappingProfileEditButton('Cancel');
@@ -113,6 +115,18 @@ export class Slugs extends AddonPage {
         this.pause(5000);
     }
 
+    public async createSlugEvgeny(displayNameOfSlug: string, slugPath: string, descriptionOfSlug: string) {
+        this.pause(500);
+        await this.click(this.CreateSlug_Button);
+        await this.waitTillVisible(this.CreateSlugPopup_Title, 10000);
+        await this.insertTextToInputElement(displayNameOfSlug, this.CreateSlugPopup_DisplayName_Input);
+        await this.insertTextToInputElement(slugPath, this.CreateSlugPopup_Slug_Input);
+        await this.insertTextToInputElement(descriptionOfSlug, this.CreateSlugPopup_Description_Input);
+        this.pause(500);
+        await this.click(this.CreateSlugPopup_CreateSlug_ButtonEvgeny);
+        this.pause(5000);
+    }
+
     public async mapPageToSlug(pathOfSlug: string, nameOfPage: string) {
         await this.clickTab('Mapping_Tab');
         await this.isSpinnerDone();
@@ -120,6 +134,25 @@ export class Slugs extends AddonPage {
         await this.waitTillVisible(this.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
         await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
         await this.waitTillVisible(this.MappedSlugs, 5000);
+        // TODO: method of drag & drop
+        await this.forSlugByNameSelectPageByName(pathOfSlug, nameOfPage);
+        this.pause(500);
+        await this.click(this.PageMapping_ProfileEditButton_Save);
+        await this.waitTillVisible(this.Info_Popup_PepDialog, 5000);
+        expect(await (await this.browser.findElement(this.Info_Popup_MessageDiv)).getText()).to.contain(
+            'The mapped slugs are saved.',
+        );
+        await this.click(this.Info_Popup_Close_Button);
+    }
+
+    public async mapPageToSlugEVGENY(pathOfSlug: string, nameOfPage: string) {
+        debugger;
+        await this.clickTab('Mapping_Tab');
+        await this.isSpinnerDone();
+        //click Rep Pencil button
+        await this.waitTillVisible(this.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
+        await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
+        await this.waitTillVisible(this.MappedSlugsEVGENY, 5000);
         // TODO: method of drag & drop
         await this.forSlugByNameSelectPageByName(pathOfSlug, nameOfPage);
         this.pause(500);
