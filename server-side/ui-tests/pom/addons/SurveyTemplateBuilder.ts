@@ -1,11 +1,6 @@
 import { Key } from 'selenium-webdriver';
 import { By } from 'selenium-webdriver/lib/by';
-import {
-    BaseBlockRelation,
-    VisitFlowBlockConfiguration,
-    VisitFlowBlockConfigurationData,
-    VisitFlowBlockRelation,
-} from '../../blueprints/PageBlocksBlueprints';
+import { BaseBlockRelation } from '../../blueprints/PageBlocksBlueprints';
 import { WebAppSettingsSidePanel } from '../Components/WebAppSettingsSidePanel';
 import { WebAppHeader } from '../WebAppHeader';
 import { AddonPage } from './base/AddonPage';
@@ -355,7 +350,7 @@ export class SurveyBlockConfiguration {
         this.AddonUUID = 'cf17b569-1af4-45a9-aac5-99f23cae45d8';
     }
     public Resource: string;
-    public Data: {};
+    public Data: any;
     public AddonUUID: string;
 }
 

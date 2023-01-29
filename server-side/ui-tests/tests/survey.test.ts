@@ -198,7 +198,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const pageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
                 const pageBuilder = new PageBuilder(driver);
                 const createdPage = await pageBuilder.getPageByUUID(pageUUID, client);
-                const sectionKey = createdPage.Layout.Sections[0].Key;
                 const surveyBlockInstance = new SurveyBlock();
                 createdPage.Blocks.push(surveyBlockInstance);
                 createdPage.Layout.Sections[0].Columns[0] = new SurveyBlockColumn(surveyBlockInstance.Key);
@@ -209,14 +208,15 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHeader.goHome();
             });
             it('4. Create Slug And Map It To Show The Page With Survey Block + Configure On Home Screen', async function () {
-                const slugDisplayName = 'Manual Tests';
-                const slug_path = 'manual_tests';
+                const slugDisplayName = 'survey_slug';
+                const slug_path = 'survey_slug';
                 const resourceListUtils = new E2EUtils(driver);
                 await resourceListUtils.navigateTo('Slugs');
                 const slugs: Slugs = new Slugs(driver);
-                await slugs.createSlugEvgeny('survey_slug', 'survey_slug', 'for testing');
+                await slugs.createSlugEvgeny(slugDisplayName, slug_path, 'for testing');
                 await resourceListUtils.mappingSlugWithPageEvgeny('survey_slug', surveyBlockPageName);
                 debugger;
+                //do i need these
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
                 const webAppHomePage = new WebAppHomePage(driver);
@@ -232,6 +232,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     const script1 = script.replace('{surveyViewPlaceHolder}', surveyViewUUID);
                     const script2 = script1.replace('{accountViewPlaceHolder}', accountViewUUID);
                     const script3 = script2.replace('{surveySlugNamePlaceHolder}', 'survey_slug');
+                    console.log(script3);
                     debugger;
                 } catch (error) {
                     debugger;
