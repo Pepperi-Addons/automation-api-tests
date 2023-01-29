@@ -1,8 +1,10 @@
 import { Key } from 'selenium-webdriver';
 import { By } from 'selenium-webdriver/lib/by';
+import { BaseBlockRelation, VisitFlowBlockConfiguration, VisitFlowBlockConfigurationData, VisitFlowBlockRelation } from '../../blueprints/PageBlocksBlueprints';
 import { WebAppSettingsSidePanel } from '../Components/WebAppSettingsSidePanel';
 import { WebAppHeader } from '../WebAppHeader';
 import { AddonPage } from './base/AddonPage';
+import { v4 as uuidv4 } from 'uuid';
 
 // {
 //     "surveyTemplate": {
@@ -45,19 +47,19 @@ export interface SurveyQuestion {
     Key: string;
     Title: string;
     Type:
-        | 'Short Text'
-        | 'Long Text'
-        | 'Multiple Select'
-        | 'Single Select'
-        | 'Checkbox'
-        | 'Radio Group'
-        | 'Yes/No'
-        | 'Number'
-        | 'Decimal'
-        | 'Currency'
-        | 'Percentage'
-        | 'Date'
-        | 'Date Time';
+    | 'Short Text'
+    | 'Long Text'
+    | 'Multiple Select'
+    | 'Single Select'
+    | 'Checkbox'
+    | 'Radio Group'
+    | 'Yes/No'
+    | 'Number'
+    | 'Decimal'
+    | 'Currency'
+    | 'Percentage'
+    | 'Date'
+    | 'Date Time';
     isMandatory: boolean;
     OptionalValues?: SelectValues[];
     ShowIf?: ShowIf;
@@ -330,4 +332,58 @@ export class SurveyTemplateBuilder extends AddonPage {
             await this.browser.click(this.SaveFilterButton);
         }
     }
+}
+
+export class SurveyBlock {
+    constructor() {
+        this.Key = uuidv4();
+    }
+    public Configuration: SurveyBlockConfiguration = new SurveyBlockConfiguration();
+    public Key: string;
+    public Relation: SurveyBlockRelation = new SurveyBlockRelation();
+}
+
+export class SurveyBlockConfiguration {
+    constructor() {
+        this.Resource = 'Survey';
+        this.Data = {};
+        this.AddonUUID = 'cf17b569-1af4-45a9-aac5-99f23cae45d8';
+    }
+    public Resource: string;
+    public Data: {};
+    public AddonUUID: string;
+}
+
+export class SurveyBlockRelation extends BaseBlockRelation {
+    constructor() {
+        super();
+        this.ElementName = 'block-element-cf17b569-1af4-45a9-aac5-99f23cae45d8';
+        this.EditorElementName = 'block-editor-element-cf17b569-1af4-45a9-aac5-99f23cae45d8';
+        this.EditorComponentName = 'BlockEditorComponent';
+        this.EditorModuleName = 'BlockEditorModule';
+        this.Key = 'Survey_cf17b569-1af4-45a9-aac5-99f23cae45d8_PageBlock';
+        this.AddonRelativeURL = 'survey_builder';
+        this.AddonUUID = 'cf17b569-1af4-45a9-aac5-99f23cae45d8';
+        this.ModuleName = 'BlockModule';
+        this.ComponentName = 'BlockComponent';
+        this.Name = 'Survey';
+        this.RelationName = "PageBlock";
+        this.SubType = "NG14";
+        this.Type = "NgComponent";
+    }
+    public ElementName: string;
+    public EditorElementName: string;
+    public EditorComponentName: string;
+    public EditorModuleName: string;
+    public Key: string;
+
+}
+
+export class SurveyBlockColumn {
+    constructor(key: string) {
+        this.BlockContainer.BlockKey = key;
+    }
+    public BlockContainer = {
+        BlockKey: '',
+    };
 }

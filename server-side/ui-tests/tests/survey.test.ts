@@ -2,16 +2,17 @@ import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage, WebAppLoginPage } from '../pom';
-import { SurveyTemplateBuilder } from '../pom/addons/SurveyTemplateBuilder';
-import ResourceListUtils from '../utilities/resource_list';
+import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
+import { SurveyBlock, SurveyBlockColumn, SurveyTemplateBuilder } from '../pom/addons/SurveyTemplateBuilder';
+import E2EUtils from '../utilities/e2e_utils';
 import { GridDataViewField } from '@pepperi-addons/papi-sdk';
 import { ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { DataViewsService } from '../../services/data-views.service';
 import GeneralService from '../../services/general.service';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
-import { ResourceListBasicViewerEditorBlocksStructurePage } from '../blueprints/PageBlocksBlueprints';
+import { ResourceListBasicViewerEditorBlocksStructurePage, VisitFlowBlockColumn } from '../blueprints/PageBlocksBlueprints';
+import { Slugs } from '../pom/addons/Slugs';
 
 chai.use(promised);
 
@@ -19,6 +20,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
     //varPass: string, client: Client
     // const generalService = new GeneralService(client);
     let driver: Browser;
+    let surveyBlockPageName;
 
     // const templateToCreate: SurveyTemplate = {
     //     Name: 'first',
@@ -104,39 +106,39 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
             it('1. Create A Survey Template', async function () {
-            //     const webAppLoginPage = new WebAppLoginPage(driver);
-            //     await webAppLoginPage.login(email, password);
-            //     const surveyService = new SurveyTemplateBuilder(driver);
-            //     const isSurveyBuilderSettingsShown = await surveyService.enterSurveyBuilderSettingsPage();
-            //     expect(isSurveyBuilderSettingsShown).to.equal(true);
-            //     const isSurveyBuilderPageShown = await surveyService.enterSurveyBuilderActualBuilder();
-            //     expect(isSurveyBuilderPageShown).to.equal(true);
-            //     await surveyService.configureTheSurveyTemplate('first', 'first d', [
-            //         {
-            //             Title: 'boolean',
-            //             Key: '',
-            //             Questions: [
-            //                 {
-            //                     Key: '',
-            //                     Title: 'what have i done1',
-            //                     Type: 'Multiple Select',
-            //                     OptionalValues: [{ Value: 'T' }, { Value: 'F' }, { Value: 'C' }],
-            //                     isMandatory: true,
-            //                 },
-            //                 {
-            //                     Key: '',
-            //                     Title: 'what have i done2',
-            //                     Type: 'Radio Group',
-            //                     OptionalValues: [{ Value: 'A' }, { Value: 'B' }],
-            //                     isMandatory: false,
-            //                     ShowIf: {
-            //                         Operator: 'And',
-            //                         FilterData: { QuestionName: 'what have i done1', ValueToLookFor: ['T', 'C'] },
-            //                     },
-            //                 },
-            //             ],
-            //         },
-            //     ]);
+                //     const webAppLoginPage = new WebAppLoginPage(driver);
+                //     await webAppLoginPage.login(email, password);
+                //     const surveyService = new SurveyTemplateBuilder(driver);
+                //     const isSurveyBuilderSettingsShown = await surveyService.enterSurveyBuilderSettingsPage();
+                //     expect(isSurveyBuilderSettingsShown).to.equal(true);
+                //     const isSurveyBuilderPageShown = await surveyService.enterSurveyBuilderActualBuilder();
+                //     expect(isSurveyBuilderPageShown).to.equal(true);
+                //     await surveyService.configureTheSurveyTemplate('first', 'first d', [
+                //         {
+                //             Title: 'boolean',
+                //             Key: '',
+                //             Questions: [
+                //                 {
+                //                     Key: '',
+                //                     Title: 'what have i done1',
+                //                     Type: 'Multiple Select',
+                //                     OptionalValues: [{ Value: 'T' }, { Value: 'F' }, { Value: 'C' }],
+                //                     isMandatory: true,
+                //                 },
+                //                 {
+                //                     Key: '',
+                //                     Title: 'what have i done2',
+                //                     Type: 'Radio Group',
+                //                     OptionalValues: [{ Value: 'A' }, { Value: 'B' }],
+                //                     isMandatory: false,
+                //                     ShowIf: {
+                //                         Operator: 'And',
+                //                         FilterData: { QuestionName: 'what have i done1', ValueToLookFor: ['T', 'C'] },
+                //                     },
+                //                 },
+                //             ],
+                //         },
+                //     ]);
             });
             // it('2. Configure Resource Views For Account + Survey', async function () {
             //     const resourceListUtils = new ResourceListUtils(driver);
@@ -187,64 +189,39 @@ export async function SurveyTests(email: string, password: string, client: Clien
             // });
             it('3. Create Page With Survey Block Inside It', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                const pageBuilder = new PageBuilder(driver);
-                const resourceListUtils = new ResourceListUtils(driver);
                 await webAppLoginPage.login(email, password);
-                debugger;
-                await resourceListUtils.navigateTo('Page Builder');
-                await pageBuilder.addBlankPage("surveyBlockPage", `Automation Testing Page for survey`);
-                driver.sleep(2 * 1000);
-                const pageKey = await resourceListUtils.getUUIDfromURL();
-                const createdPage = await pageBuilder.getPageByUUID(pageKey, client);
-                const viewerBlockKey = createdPage.page.Blocks.find((block) => {
-                    if (block.Configuration.Resource === 'DataViewerBlock') {
-                        return block.Key;
-                    }
-                });
-                const configurationBlockKey = createdPage.page.Blocks.find((block) => {
-                    if (block.Configuration.Resource === 'DataConfigurationBlock') {
-                        return block.Key;
-                    }
-                });
-                console.info(`createdPage: ${JSON.stringify(createdPage, null, 2)}`);
-                // console.info(`viewerBlockKey: ${JSON.stringify(viewerBlockKey, null, 2)}`);
-                console.info(`viewerBlockKey: ${viewerBlockKey.Key}`);
-                // console.info(`configurationBlockKey: ${JSON.stringify(configurationBlockKey, null, 2)}`);
-                console.info(`configurationBlockKey: ${configurationBlockKey.Key}`);
-              //TODO: do API call to set the page with survey block
-            //   const pageObj = new ResourceListBasicViewerEditorBlocksStructurePage(
-            //     pageKey,
-            //     [
-            //         {
-            //             blockKey: viewerBlockKey,
-            //             blockResource: 'DataViewerBlock',
-            //             collectionName: resource_name,
-            //             selectedView: {
-            //                 selectedViewUUID: viewKey,
-            //                 selectedViewName: viewName,
-            //             },
-            //         },
-            //         {
-            //             blockKey: configurationBlockKey,
-            //             blockResource: 'DataConfigurationBlock',
-            //             collectionName: resource_name,
-            //             editorUUID: editorKey,
-            //         },
-            //     ],
-            //     [
-            //         {
-            //             sectionKey: 'daef8f6c-1d91-cfba-ec3c-9da2828fb800',
-            //             listOfBlockKeys: [viewerBlockKey],
-            //         },
-            //         {
-            //             sectionKey: 'e23cc2d1-3e2a-f745-d41c-60b8020fb167',
-            //             listOfBlockKeys: [configurationBlockKey],
-            //         },
-            //     ],
-            // );
+                const e2eUtils = new E2EUtils(driver);
+                surveyBlockPageName = "surveyBlockPage";
+                const pageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
+                const pageBuilder = new PageBuilder(driver);
+                const createdPage = await pageBuilder.getPageByUUID(pageUUID, client);
+                const sectionKey = createdPage.Layout.Sections[0].Key;
+                const surveyBlockInstance = new SurveyBlock();
+                createdPage.Blocks.push(surveyBlockInstance);
+                createdPage.Layout.Sections[0].Columns[0] = new SurveyBlockColumn(surveyBlockInstance.Key);
+                console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
+                const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
+                console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 2));
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.goHome();
             });
             it('4. Create Slug And Map It To Show The Page With Survey Block + Configure On Home Screen', async function () {
-                //TODO
+                const slugDisplayName = 'Manual Tests';
+                const slug_path = 'manual_tests';
+                const resourceListUtils = new E2EUtils(driver);
+                await resourceListUtils.navigateTo('Slugs');
+                const slugs: Slugs = new Slugs(driver);
+                await slugs.createSlugEvgeny("survey_slug", "survey_slug", "for testing");
+                await resourceListUtils.mappingSlugWithPage("survey_slug", surveyBlockPageName);
+                debugger;
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.goHome();
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.isSpinnerDone();
+                await resourceListUtils.logOutLogIn(email, password);
+                await webAppHomePage.isSpinnerDone();
+                await webAppHomePage.clickOnBtn(slugDisplayName);
+                debugger;
             });
             it('5. Create Script Based On Config File With New Resource Views Configured', async function () {
                 //TODO

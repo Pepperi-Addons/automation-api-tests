@@ -17,6 +17,7 @@ export class Slugs extends AddonPage {
         '//mat-label[contains(@title,"Description")]/ancestor::pep-field-title/parent::div/mat-form-field //textarea',
     );
     public CreateSlugPopup_CreateSlug_Button: By = this.getSelectorOfCreateSlugPopupButtonByTitle('Create Slug'); //By.xpath('//span[@title="Create Slug"]/ancestor::button[@data-qa="Create Slug"]');
+    public CreateSlugPopup_CreateSlug_ButtonEvgeny: By = By.xpath(`(//*[@data-qa="Create Slug"])[2]`);
     public CreateSlugPopup_Cancel_Button: By = this.getSelectorOfCreateSlugPopupButtonByTitle('Cancel');
     // Slugs List
     public SelectedCheckbox: By = By.xpath(
@@ -110,6 +111,18 @@ export class Slugs extends AddonPage {
         await this.insertTextToInputElement(descriptionOfSlug, this.CreateSlugPopup_Description_Input);
         this.pause(500);
         await this.click(this.CreateSlugPopup_CreateSlug_Button);
+        this.pause(5000);
+    }
+
+    public async createSlugEvgeny(displayNameOfSlug: string, slugPath: string, descriptionOfSlug: string) {
+        this.pause(500);
+        await this.click(this.CreateSlug_Button);
+        await this.waitTillVisible(this.CreateSlugPopup_Title, 10000);
+        await this.insertTextToInputElement(displayNameOfSlug, this.CreateSlugPopup_DisplayName_Input);
+        await this.insertTextToInputElement(slugPath, this.CreateSlugPopup_Slug_Input);
+        await this.insertTextToInputElement(descriptionOfSlug, this.CreateSlugPopup_Description_Input);
+        this.pause(500);
+        await this.click(this.CreateSlugPopup_CreateSlug_ButtonEvgeny);
         this.pause(5000);
     }
 
