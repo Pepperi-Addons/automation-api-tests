@@ -1,8 +1,7 @@
 import { AddonVersion, InstalledAddon } from '@pepperi-addons/papi-sdk';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { v4 as uuidv4 } from 'uuid';
-// this needs to be un-commneted if the other section is un-commneted:
-import fs from 'fs';
+//import fs from 'fs';// this needs to be un-commneted if the other section is un-commneted:
 
 export interface TestDataBody {
     ApiData: {
@@ -239,6 +238,10 @@ export async function SingleMaintenanceAndDependenciesAddonsTestsPart3(
         await ExecuteAddonsTests(generalService, request, tester);
 }
 
+export async function maintenance3APITestser(generalService: GeneralService, request, tester: TesterFunctions) {
+    await SingleMaintenanceAndDependenciesAddonsTestsPart3(generalService, request, tester);
+}
+
 export async function MaintenanceFullTests(generalService: GeneralService, request, tester: TesterFunctions) {
     (testConfigObj.isAddonsAPIInstallAndUpgrade = false), //Addons API Install and Upgrade
         (testConfigObj.isAddonsAPIDowngradeAndUninstall = false), //Addons API Downgrade and Uninstall
@@ -266,6 +269,13 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
         varKey = request.body.varKeyStage;
     } else {
         varKey = request.body.varKeyPro;
+    }
+
+    //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
+    if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
+        const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, varKey);
+        generalService['client'].AddonSecretKey = addonSecretKey;
+        generalService.papiClient['options'].addonSecretKey = addonSecretKey;
     }
 
     console.log('Initiate Addons Tests | ' + generalService.getTime());
@@ -804,6 +814,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     testExecutionData.changePhasedGroupVersionDays = 0;
 
     if (testConfigObj.isMaintenanceUpgrade) {
+        debugger;
         const datePlusZero = new Date();
         testExecutionData.changePhasedGroupVersionDays = 0;
         testExecutionData.testDate = new Date(datePlusZero.getTime() + 0);
@@ -816,6 +827,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     }
 
     if (testConfigObj.isMaintenanceInstall) {
+        debugger;
         const datePlusZero = new Date();
         testExecutionData.changePhasedGroupVersionDays = 0;
         testExecutionData.testDate = new Date(datePlusZero.getTime() + 0);
@@ -828,6 +840,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
     }
 
     if (testConfigObj.isMaintenanceFull) {
+        debugger;
         let datePlusZero = new Date();
         testExecutionData.changePhasedGroupVersionDays = 0;
         testExecutionData.testDate = new Date(datePlusZero.getTime() + 0);
@@ -9318,18 +9331,18 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             //var maintenanceApiResponse = await generalService.papiClient.'POST', "addons/api/00000000-0000-0000-0000-000000000a91/version/" + getAPIVersion + "/installation.js/maintenance", testDataObject);
             //debug: this is the callitself to the endpoint - here you can find the data, version var etc
             /****EVGENY****: every time the 'maintenance2' test is failing you can un-comment this area and get the body sent as a file*/
-            debugger;
-            try {
-                fs.writeFileSync('testData.txt', JSON.stringify(testDataObject));
-            } catch (error) {
-                console.log(`file was not created:${(error as any).message}`);
-                return;
-            }
-            console.log(`file is created!`);
-            debugger;
-            //*/
+            // debugger;
+            // try {
+            //     fs.writeFileSync('testData.txt', JSON.stringify(testDataObject));
+            // } catch (error) {
+            //     console.log(`file was not created:${(error as any).message}`);
+            //     return;
+            // }
+            // console.log(`file is created!`);
+            // debugger;
+            // //*/
 
-            debugger;
+            // debugger;
             const maintenanceApiResponse = await generalService.papiClient.post(
                 '/addons/api/00000000-0000-0000-0000-000000000a91/version/' +
                     getAPIVersion +

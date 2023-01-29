@@ -130,6 +130,9 @@ export async function SurveyTests(email: string, password: string) {
                     },
                 ]);
             });
+            it('Configure Resource Views For Account + Survey', async function () {
+                //TODO
+            });
             it('Data Cleansing', async function () {
                 //TODO
             });
