@@ -40,7 +40,7 @@ import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
 // import { testData } from './../../services/general.service';
-import {} from './script_picker.test';
+import { } from './script_picker.test';
 import { PFSTestser } from '../../api-tests/pepperi_file_service';
 import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
 import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
@@ -423,7 +423,7 @@ const addon = process.env.npm_config_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('Survey')) {
-        await SurveyTests(email, pass); //, varPass, client
+        await SurveyTests(email, pass, client); //, varPass, client
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_performance')) {
@@ -633,6 +633,78 @@ const addon = process.env.npm_config_addon as string;
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 break;
             }
+            case 'DATA INDEX': {
+                addonUUID = '00000000-0000-0000-0000-00000e1a571c';
+                const responseProd = await service.fetchStatus(
+                    `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Basic ${base64VARCredentialsProd}`,
+                        },
+                    },
+                );
+                addonVersionProd = responseProd.Body[0].Version;
+                addonEntryUUIDProd = responseProd.Body[0].UUID;
+                const responseEu = await service.fetchStatus(
+                    `https://papi-eu.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Basic ${base64VARCredentialsEU}`,
+                        },
+                    },
+                );
+                addonVersionEU = responseEu.Body[0].Version;
+                addonEntryUUIDEu = responseEu.Body[0].UUID;
+                const responseSb = await service.fetchStatus(
+                    `https://papi.staging.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Basic ${base64VARCredentialsSB}`,
+                        },
+                    },
+                );
+                addonVersionSb = responseSb.Body[0].Version;
+                addonEntryUUIDSb = responseSb.Body[0].UUID;
+                if (
+                    addonVersionSb !== addonVersionEU ||
+                    addonVersionProd !== addonVersionEU ||
+                    addonVersionProd !== addonVersionSb
+                ) {
+                    throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                }
+                console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
+                jobPathPROD =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20C1%20Production%20-%20DATA%20INDEX%20FRAMEWORK';
+                jobPathEU =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20C1%20EU%20-%20DATA%20INDEX%20FRAMEWORK';
+                jobPathSB =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20C1%20Stage%20-%20DATA%20INDEX%20FRAMEWORK';
+                JenkinsBuildResultsAllEnvs = await Promise.all([
+                    service.runJenkinsJobRemotely(
+                        kmsSecret,
+                        `${jobPathPROD}/build?token=DATAINDEXApprovmentTests`,
+                        'Test - C1 Production - DATA INDEX FRAMEWORK',
+                    ),
+                    service.runJenkinsJobRemotely(
+                        kmsSecret,
+                        `${jobPathEU}/build?token=DATAINDEXApprovmentTests`,
+                        'Test - C1 EU - DATA INDEX FRAMEWORK',
+                    ),
+                    service.runJenkinsJobRemotely(
+                        kmsSecret,
+                        `${jobPathSB}/build?token=DATAINDEXApprovmentTests`,
+                        'Test - C1 Stage - DATA INDEX FRAMEWORK',
+                    ),
+                ]);
+                latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
+                latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
+                latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
+                break;
+            }
         }
         // 2. parse which envs failed
         const passingEnvs: string[] = [];
@@ -767,72 +839,72 @@ const addon = process.env.npm_config_addon as string;
         }
 
         //3. send to Teams
-        if (failingEnvs.length > 0) {
-            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
-                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On: ${failingEnvs.join(', ')}`;
-            const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
-            const bodyToSend = {
-                Name: `${addonName} Approvment Tests Status`,
-                Description: message,
-                Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
-                Message: message2,
-                UserWebhook: handleTeamsURL(addonName),
-            };
-            const monitoringResponse = await service.fetchStatus(
-                'https://papi.pepperi.com/v1.0/system_health/notifications',
-                {
-                    method: 'POST',
-                    headers: {
-                        'X-Pepperi-SecretKey': await generalService.getSecret()[1],
-                        'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                    },
-                    body: JSON.stringify(bodyToSend),
-                },
-            );
-            if (monitoringResponse.Ok !== true) {
-                throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
-            }
-            if (monitoringResponse.Status !== 200) {
-                throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
-            }
-            if (Object.keys(monitoringResponse.Error).length !== 0) {
-                throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
-            }
-        } else {
-            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
-                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On:  ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
-            const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
-            const bodyToSend = {
-                Name: `${addonName} Approvment Tests Status`,
-                Description: message,
-                Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
-                Message: message2,
-                UserWebhook:
-                    'https://wrnty.webhook.office.com/webhookb2/89287949-3767-4525-ac10-80a303806a44@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/39160258118a4430bf577aebeabe1c7d/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
-            };
-            const monitoringResponse = await service.fetchStatus(
-                'https://papi.pepperi.com/v1.0/system_health/notifications',
-                {
-                    method: 'POST',
-                    headers: {
-                        'X-Pepperi-SecretKey': await generalService.getSecret()[1],
-                        'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                    },
-                    body: JSON.stringify(bodyToSend),
-                },
-            );
-            if (monitoringResponse.Ok !== true) {
-                throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
-            }
-            if (monitoringResponse.Status !== 200) {
-                throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
-            }
-            if (Object.keys(monitoringResponse.Error).length !== 0) {
-                throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
-            }
-        }
+        // if (failingEnvs.length > 0) {
+        //     const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
+        //         passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+        //     } ||| Failed On: ${failingEnvs.join(', ')}`;
+        //     const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
+        //     const bodyToSend = {
+        //         Name: `${addonName} Approvment Tests Status`,
+        //         Description: message,
+        //         Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
+        //         Message: message2,
+        //         UserWebhook: handleTeamsURL(addonName),
+        //     };
+        //     const monitoringResponse = await service.fetchStatus(
+        //         'https://papi.pepperi.com/v1.0/system_health/notifications',
+        //         {
+        //             method: 'POST',
+        //             headers: {
+        //                 'X-Pepperi-SecretKey': await generalService.getSecret()[1],
+        //                 'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+        //             },
+        //             body: JSON.stringify(bodyToSend),
+        //         },
+        //     );
+        //     if (monitoringResponse.Ok !== true) {
+        //         throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
+        //     }
+        //     if (monitoringResponse.Status !== 200) {
+        //         throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
+        //     }
+        //     if (Object.keys(monitoringResponse.Error).length !== 0) {
+        //         throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
+        //     }
+        // } else {
+        //     const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
+        //         passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+        //     } ||| Failed On:  ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
+        //     const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
+        //     const bodyToSend = {
+        //         Name: `${addonName} Approvment Tests Status`,
+        //         Description: message,
+        //         Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
+        //         Message: message2,
+        //         UserWebhook:
+        //             'https://wrnty.webhook.office.com/webhookb2/89287949-3767-4525-ac10-80a303806a44@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/39160258118a4430bf577aebeabe1c7d/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
+        //     };
+        //     const monitoringResponse = await service.fetchStatus(
+        //         'https://papi.pepperi.com/v1.0/system_health/notifications',
+        //         {
+        //             method: 'POST',
+        //             headers: {
+        //                 'X-Pepperi-SecretKey': await generalService.getSecret()[1],
+        //                 'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+        //             },
+        //             body: JSON.stringify(bodyToSend),
+        //         },
+        //     );
+        //     if (monitoringResponse.Ok !== true) {
+        //         throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
+        //     }
+        //     if (monitoringResponse.Status !== 200) {
+        //         throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
+        //     }
+        //     if (Object.keys(monitoringResponse.Error).length !== 0) {
+        //         throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
+        //     }
+        // }
     }
     run();
 })();
@@ -957,8 +1029,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
-                                    maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));

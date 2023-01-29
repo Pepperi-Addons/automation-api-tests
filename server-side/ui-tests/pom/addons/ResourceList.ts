@@ -338,6 +338,17 @@ export class ResourceViews extends ResourceList {
         this.pause(5 * 1000);
     }
 
+    public async clickUpdateHandleUpdatePopUpGoBack() {
+        await this.click(this.EditPage_Update_Button);
+        await this.waitTillVisible(this.Update_Popup_PepDialog, 5000);
+        expect(await (await this.browser.findElement(this.Update_Popup_MessageDiv)).getText()).to.contain(
+            'Successfully updated',
+        );
+        await this.click(this.Update_Popup_Close_Button);
+        this.pause(5 * 1000);
+        await this.click(this.EditPage_BackToList_Button);
+    }
+
     public async customViewConfig(
         dataViewsService,
         viewData: { matchingEditorName: string; viewKey: string; fieldsToConfigureInView: GridDataViewField[] },
@@ -350,14 +361,16 @@ export class ResourceViews extends ResourceList {
         const upsertFieldsToView = await dataViewsService.postDataView(resourceFieldsToAddToViewObj);
         console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToView, null, 2)}`);
         this.pause(0.5 * 1000);
-        await this.selectEditor(this.SelectEditor_DropDown, viewData.matchingEditorName);
-        await this.click(this.EditPage_Update_Button);
-        await this.waitTillVisible(this.Update_Popup_PepDialog, 5000);
-        expect(await (await this.browser.findElement(this.Update_Popup_MessageDiv)).getText()).to.contain(
-            'Successfully updated',
-        );
-        await this.click(this.Update_Popup_Close_Button);
-        this.pause(5 * 1000);
+        if (viewData.matchingEditorName !== "") {//can i create a view only AFTER editor is created?
+            await this.selectEditor(this.SelectEditor_DropDown, viewData.matchingEditorName);
+            await this.click(this.EditPage_Update_Button);
+            await this.waitTillVisible(this.Update_Popup_PepDialog, 5000);
+            expect(await (await this.browser.findElement(this.Update_Popup_MessageDiv)).getText()).to.contain(
+                'Successfully updated',
+            );
+            await this.click(this.Update_Popup_Close_Button);
+            this.pause(5 * 1000);
+        }
         await this.click(this.Form_Tab);
         await this.waitTillVisible(this.EditPage_ConfigProfileCard_Rep, 15000);
         await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
