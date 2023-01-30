@@ -4,7 +4,7 @@ import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { Browser } from '../utilities/browser';
-import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
+import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
 // import { ResourceEditors, ResourceList, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
@@ -12,28 +12,36 @@ import E2EUtils from '../utilities/e2e_utils';
 import { VisitFlowPage } from '../blueprints/PageBlocksBlueprints';
 import { VisitFlow } from '../pom/addons/VisitFlow';
 import { v4 as newUuid } from 'uuid';
+import { MenuDataViewField } from '@pepperi-addons/papi-sdk';
+import { DataViewsService } from '../../services/data-views.service';
+import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
+import { UDCService } from '../../services/user-defined-collections.service';
 
 chai.use(promised);
 
 export async function VisitFlowTests(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
+    const udcService = new UDCService(generalService);
+    const dataViewsService = new DataViewsService(generalService.papiClient);
 
     let driver: Browser;
+    let e2eUtils: E2EUtils;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
+    let settingsSidePanel: WebAppSettingsSidePanel;
     let visitFlow: VisitFlow;
+    let pageBuilder: PageBuilder;
+    let slugs: Slugs;
+    let randomString: string;
+    let pageUUID: string;
+    let pageName: string;
+    let slugDisplayName: string;
+    let slug_path: string;
+    let slugUUID: string;
     // let resourceList: ResourceList;
     // let resourceEditors: ResourceEditors;
     // let resourceViews: ResourceViews;
-    let pageBuilder: PageBuilder;
-    let slugs: Slugs;
-    let e2eUtils: E2EUtils;
-    let pageUUID: string;
-    let pageName: string;
-    let randomString: string;
-    let slugDisplayName: string = 'Visit Flow Auto';
-    let slug_path: string
 
     describe('Visit Flow UI tests', () => {
         before(async function () {
@@ -41,13 +49,14 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             webAppLoginPage = new WebAppLoginPage(driver);
             webAppHomePage = new WebAppHomePage(driver);
             webAppHeader = new WebAppHeader(driver);
+            settingsSidePanel = new WebAppSettingsSidePanel(driver);
+            e2eUtils = new E2EUtils(driver);
             visitFlow = new VisitFlow(driver);
+            pageBuilder = new PageBuilder(driver);
+            slugs = new Slugs(driver);
             // resourceList = new ResourceList(driver);
             // resourceEditors = new ResourceEditors(driver);
             // resourceViews = new ResourceViews(driver);
-            pageBuilder = new PageBuilder(driver);
-            slugs = new Slugs(driver);
-            e2eUtils = new E2EUtils(driver);
             slugDisplayName = 'Visit Flow Auto';
             slug_path = 'visit_flow_auto';
         });
@@ -71,12 +80,49 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
         //     it('Configuring Flows', async () => {
         //     });
         // });
-        describe('Inserting Data to the UDCs', () => {
-            it('Configuring Groups', async () => {
-            });
-            it('Configuring Flows', async () => {
-            });
-        });
+        // describe('Inserting Data to the UDCs', () => {
+        //     it('Configuring Groups', async () => {
+        //         const collectionName = 'VisitFlowGroups';
+        //         let upsertingValues_Response = await udcService.upsertValuesToCollection(
+        //             {
+        //                 Title: "Start Auto",
+        //                 SortIndex: 0,
+        //             },
+        //             collectionName,
+        //         );
+        //         // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/schemes
+        //         console.info(`Response ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+        //         expect(upsertingValues_Response.Ok).to.be.true;
+        //         expect(upsertingValues_Response.Status).to.equal(200);
+        //         expect(upsertingValues_Response.Error).to.eql({});
+
+        //         upsertingValues_Response = await udcService.upsertValuesToCollection(
+        //             {
+        //                 Title: "Orders Auto",
+        //                 SortIndex: 10,
+        //             },
+        //             collectionName,
+        //         );
+        //         console.info(`Response ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+        //         expect(upsertingValues_Response.Ok).to.be.true;
+        //         expect(upsertingValues_Response.Status).to.equal(200);
+        //         expect(upsertingValues_Response.Error).to.eql({});
+
+        //         upsertingValues_Response = await udcService.upsertValuesToCollection(
+        //             {
+        //                 Title: "End Auto",
+        //                 SortIndex: 100,
+        //             },
+        //             collectionName,
+        //         );
+        //         console.info(`Response ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+        //         expect(upsertingValues_Response.Ok).to.be.true;
+        //         expect(upsertingValues_Response.Status).to.equal(200);
+        //         expect(upsertingValues_Response.Error).to.eql({});
+        //     });
+        //     it('Configuring Flows', async () => {
+        //     });
+        // });
         describe('Creating a Page with VisitFlow Block', () => {
             before(() => {
                 randomString = generalService.generateRandomString(5);
@@ -109,9 +155,43 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             it('Creating a Visit Flow Slug for Automation', async () => {
                 await e2eUtils.navigateTo('Slugs');
                 await slugs.createSlug(slugDisplayName, slug_path, 'slug for Visit Flow Automation');
+                try {
+                    
+                } catch (error) {
+                    
+                }
             });
             it('Dragging the created slug to the mapped fields section', async () => {
-                // TODO
+                await e2eUtils.navigateTo('Slugs');
+                await slugs.isSpinnerDone();
+                await slugs.clickTab('Mapping_Tab');
+                await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
+                await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
+                await slugs.isSpinnerDone();
+                await slugs.waitTillVisible(slugs.MappedSlugs, 5000);
+                // const existingMappedSlugs = await slugs.getMappedSlugsFromUI(client);
+                const getSlugs = await dataViewsService.getDataViews({ where: "Context.Name='Slugs'" });
+                // console.info(`getSlugs: ${JSON.stringify(getSlugs, null, 2)}`);
+                const getExistingSlugs = getSlugs[0];
+                const existingMappedSlugs = getExistingSlugs ? getExistingSlugs.Fields ? getExistingSlugs.Fields : [] : [] as any[];
+                console.info("existingMappedSlugs: ", JSON.stringify(existingMappedSlugs, null, 4));
+                const slugsFields: MenuDataViewField[] = e2eUtils.prepareDataForDragAndDropAtSlugs(
+                    [
+                        { slug_path: slug_path, pageUUID: pageUUID },
+                    ],
+                    existingMappedSlugs
+                );
+                console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`);
+                const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
+                console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`)
+                const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
+                console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
+                driver.sleep(2 * 1000);
+                await e2eUtils.logOutLogIn(email, password);
+                await webAppHomePage.isSpinnerDone();
+                await e2eUtils.navigateTo('Slugs');
+                await slugs.clickTab('Mapping_Tab');
+                driver.sleep(15 * 1000);
             });
             it('Mapping Visit Flow Page on Visit Flow Slug using an API call', async () => {
                 await e2eUtils.navigateTo('Slugs');
@@ -120,6 +200,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
         });
         describe('Configuring Account Dashboard', () => {
             it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async () => {
+                await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
+                driver.sleep(7 * 1000);
             });
             it('Adding the Visit Flow Slug by the search input, clicking the (+) button and Save', async () => {
             });
@@ -220,6 +302,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             });
             it('Deleting Page', async () => {
                 await e2eUtils.navigateTo('Page Builder');
+                await pageBuilder.waitTillVisible(pageBuilder.PagesList_Title, 15000);
+                await pageBuilder.waitTillVisible(pageBuilder.PagesList_NumberOfItemsInList, 15000);
                 await pageBuilder.searchForPageByName(pageName);
                 pageBuilder.pause(2 * 1000);
                 await pageBuilder.deleteFromListByName(pageName);
@@ -231,6 +315,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             it('Deleting UDCs listings', async () => {
             });
             it('Deleting Catalogs View', async () => {
+            });
+            it('Deleting Activities', async () => {
             });
         });
     });

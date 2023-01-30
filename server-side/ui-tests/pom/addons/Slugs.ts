@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
 import GeneralService from '../../../services/general.service';
 import { AddonPage } from './base/AddonPage';
+import { PageBuilder } from './PageBuilder/PageBuilder';
 
 export class Slugs extends AddonPage {
     public Slugs_Title: By = By.xpath('//span[@title="Page Mapping"]');
@@ -26,6 +27,8 @@ export class Slugs extends AddonPage {
     public Uncheck_Checkbox: By = By.xpath('//mat-checkbox //input[@aria-checked="mixed"]');
     // Mapped Slugs
     public MappedSlugs: By = By.id('mappedSlugs');
+    public MappedSlugs_SlugsPaths: By = By.xpath('//div[@id="mappedSlugs"]//input');
+    public MappedSlugs_MappedPages: By = By.xpath('//div[@id="mappedSlugs"]//mat-select');
     // Page Mapping Profile Edit Button
     public PageMapping_ProfileEditButton_Save: By = this.getSelectorOfPageMappingProfileEditButton('Save');
     public PageMapping_ProfileEditButton_Cancel: By = this.getSelectorOfPageMappingProfileEditButton('Cancel');
@@ -201,9 +204,28 @@ export class Slugs extends AddonPage {
         await this.click(this.Info_Popup_Close_Button);
     }
 
+    public async getMappedSlugsFromUI(client: Client) { // stops retrieving after 5 elements. Hagit, Jan 2023
+        const mappedSlugsPages: any[] = [];
+        const pageBuilder = new PageBuilder(this.browser);
+        const listOfMappedSlugsNames = await this.browser.findElements(this.MappedSlugs_SlugsPaths);
+        const listOfMappedPagesNames = await this.browser.findElements(this.MappedSlugs_MappedPages);
+        for (let i = 0; i < listOfMappedSlugsNames.length; i++) {
+            const slug = await listOfMappedSlugsNames[i].getAttribute('title');
+            const pageName = await listOfMappedPagesNames[i].getAttribute('title');
+            const pageUUID = await pageBuilder.getPageUUIDbyPageName(pageName, client);
+            mappedSlugsPages.push({ FieldID: slug, Title: pageUUID });
+        }
+        return mappedSlugsPages;
+    }
+
     public async getSlugs(client: Client) {
         const generalService = new GeneralService(client);
         return await generalService.fetchStatus('/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs');
+    }
+
+    public async getSlugByUUID(slugUUID: string, client: Client) {
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus(`/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs${slugUUID}`);
     }
 
     public async getSlugUUIDbySlugName(slugName: string, client: Client) {
@@ -214,5 +236,13 @@ export class Slugs extends AddonPage {
             }
         });
         return findSlugBySlugName.Key;
+    }
+
+    public async upsertSlugByUUID(slugUUID: string, slugObj, client: Client) {
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus(`/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs/${slugUUID}`, {
+            method: 'POST',
+            body: JSON.stringify(slugObj),
+        },);
     }
 }

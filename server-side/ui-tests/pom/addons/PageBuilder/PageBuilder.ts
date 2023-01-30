@@ -246,4 +246,14 @@ export class PageBuilder extends AddonPage {
         // return { page: pageBuilderData.Body.page, name: pageBuilderData.Body.Name };
         return pageBuilderData.Body.page;
     }
+
+    public async getPageUUIDbyPageName(pageName: string, client: Client) {
+        const allPages = await this.getAllPages(client);
+        const findPageByPageName = allPages.Body.find((pageObj) => {
+            if (pageObj.Name === pageName) {
+                return pageObj.Key;
+            }
+        });
+        return findPageByPageName.Key ? findPageByPageName.Key : '';
+    }
 }
