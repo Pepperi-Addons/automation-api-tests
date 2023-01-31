@@ -174,9 +174,9 @@ export class UpsertFieldsToMappedSlugs extends UpsertFieldsToMenuDataView {
 }
 
 export class SlugField implements MenuDataViewField {
-    constructor(slugName: string, slugUUID: string) {
-        this.FieldID = slugName;
-        this.Title = slugUUID;
+    constructor(slugPath: string, pageUUID: string) {
+        this.FieldID = slugPath;
+        this.Title = pageUUID;
     }
     public FieldID: string;
     public Title: string;

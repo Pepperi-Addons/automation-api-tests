@@ -15,10 +15,13 @@ export class PageBuilder extends AddonPage {
     public SelectPage_Title: By = By.xpath('//span[@title="Select a Page"]');
     public BlankTemplatePage: By = By.xpath('//*[text()="Blank"]/parent::div[contains(@class,"page-cube-inner")]');
     // List
-    public PagesList_Title: By = By.xpath('');
+    public PagesList_Title: By = By.xpath(
+        '//pep-generic-list//div[contains(@class,"header-content")]//div[contains(@class,"left-container")]//div[contains(@class,"title")]//span',
+    );
     public PagesList_NumberOfItemsInList: By = By.xpath(
         '//div[contains(text(), "result")]/span[contains(@class, "bold number")]',
     );
+    public PagesList_EmptyList_Paragraph: By = By.xpath('//pep-list//p');
     public PagesList_FirstCheckboxInList: By = By.xpath('//virtual-scroller/div[2]/div/fieldset/mat-checkbox');
     // public PagesList_PageSelectCheckbox_ByName: By = By.xpath(`${this.getSelectorOfRowInListByName('').value}/mat-checkbox/label/span`);
     // Single Selection
@@ -212,11 +215,8 @@ export class PageBuilder extends AddonPage {
     public async selectFromListByName(name: string) {
         const pageRow_selector: By = this.getSelectorOfRowInListByName(name);
         const pageRowCheckbox_selector: By = this.getSelectorOfSelectedPageCheckboxByName(name);
-        // debugger
         const selectedPageRow = await this.browser.findElement(pageRow_selector);
         selectedPageRow.click();
-        // await this.browser.hoverOver(selectedPageRow);
-        // await this.browser.click(pageRow_selector);
         await (await this.browser.findElement(pageRowCheckbox_selector)).click();
     }
 
@@ -245,7 +245,7 @@ export class PageBuilder extends AddonPage {
         return await this.upsertPage('save_draft_page', pageObj, client);
     }
 
-    public async upsertPage(path: string, pageObj, client: Client) {
+    public async upsertPage(path: 'publish_page' | 'save_draft_page', pageObj, client: Client) {
         const generalService = new GeneralService(client);
         return await generalService.fetchStatus(
             `https://papi.pepperi.com/V1.0/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/${path}`,
@@ -268,5 +268,15 @@ export class PageBuilder extends AddonPage {
         );
         // return { page: pageBuilderData.Body.page, name: pageBuilderData.Body.Name };
         return pageBuilderData.Body.page;
+    }
+
+    public async getPageUUIDbyPageName(pageName: string, client: Client) {
+        const allPages = await this.getAllPages(client);
+        const findPageByPageName = allPages.Body.find((pageObj) => {
+            if (pageObj.Name === pageName) {
+                return pageObj.Key;
+            }
+        });
+        return findPageByPageName.Key ? findPageByPageName.Key : '';
     }
 }
