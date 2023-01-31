@@ -238,16 +238,19 @@ export default class E2EUtils extends BasePomObject {
         return fields;
     }
 
-    public prepareDataForDragAndDropAtSlugs(slugsData: { slug_path: string; pageUUID: string }[], existingMappedSlugs: MenuDataViewField[]) {
+    public prepareDataForDragAndDropAtSlugs(
+        slugsData: { slug_path: string; pageUUID: string }[],
+        existingMappedSlugs: MenuDataViewField[],
+    ) {
         const fields: MenuDataViewField[] = existingMappedSlugs;
         let field: MenuDataViewField;
         let slugExistInMapped;
         slugsData.forEach((slugData: { slug_path: string; pageUUID: string }) => {
             field = new SlugField(slugData.slug_path, slugData.pageUUID);
             if (existingMappedSlugs.length) {
-                slugExistInMapped = existingMappedSlugs.find(slug => slug.FieldID === slugData.slug_path);
+                slugExistInMapped = existingMappedSlugs.find((slug) => slug.FieldID === slugData.slug_path);
             }
-            if(!slugExistInMapped) {
+            if (!slugExistInMapped) {
                 fields.push(field);
             }
         });

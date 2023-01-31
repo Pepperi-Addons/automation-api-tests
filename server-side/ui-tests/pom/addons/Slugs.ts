@@ -192,8 +192,12 @@ export class Slugs extends AddonPage {
         const getSlugs = await dataViewsService.getDataViews({ where: "Context.Name='Slugs'" });
         // console.info(`getSlugs: ${JSON.stringify(getSlugs, null, 2)}`);
         const getExistingSlugs = getSlugs[0];
-        const existingMappedSlugs = getExistingSlugs ? getExistingSlugs.Fields ? getExistingSlugs.Fields : [] : [] as any[];
-        console.info("existingMappedSlugs: ", JSON.stringify(existingMappedSlugs, null, 4));
+        const existingMappedSlugs = getExistingSlugs
+            ? getExistingSlugs.Fields
+                ? getExistingSlugs.Fields
+                : []
+            : ([] as any[]);
+        console.info('existingMappedSlugs: ', JSON.stringify(existingMappedSlugs, null, 4));
         return existingMappedSlugs;
     }
 
@@ -226,7 +230,8 @@ export class Slugs extends AddonPage {
         await this.click(this.Info_Popup_Close_Button);
     }
 
-    public async getMappedSlugsFromUI(client: Client) { // stops retrieving after 5 elements. Hagit, Jan 2023
+    public async getMappedSlugsFromUI(client: Client) {
+        // stops retrieving after 5 elements. Hagit, Jan 2023
         const mappedSlugsPages: any[] = [];
         const pageBuilder = new PageBuilder(this.browser);
         const listOfMappedSlugsNames = await this.browser.findElements(this.MappedSlugs_SlugsPaths);
@@ -266,7 +271,9 @@ export class Slugs extends AddonPage {
 
     public async getSlugByUUID(slugUUID: string, client: Client) {
         const generalService = new GeneralService(client);
-        return await generalService.fetchStatus(`/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs${slugUUID}`);
+        return await generalService.fetchStatus(
+            `/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs${slugUUID}`,
+        );
     }
 
     public async getSlugUUIDbySlugName(slugName: string, client: Client) {
@@ -281,9 +288,12 @@ export class Slugs extends AddonPage {
 
     public async upsertSlugByUUID(slugUUID: string, slugObj, client: Client) {
         const generalService = new GeneralService(client);
-        return await generalService.fetchStatus(`/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs/${slugUUID}`, {
-            method: 'POST',
-            body: JSON.stringify(slugObj),
-        },);
+        return await generalService.fetchStatus(
+            `/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs/${slugUUID}`,
+            {
+                method: 'POST',
+                body: JSON.stringify(slugObj),
+            },
+        );
     }
 }

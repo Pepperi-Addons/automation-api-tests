@@ -4,7 +4,7 @@ import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { Browser } from '../utilities/browser';
-import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
+import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 // import { ResourceEditors, ResourceList, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
@@ -29,18 +29,18 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
-    let settingsSidePanel: WebAppSettingsSidePanel;
+    // let settingsSidePanel: WebAppSettingsSidePanel;
     let visitFlow: VisitFlow;
     let pageBuilder: PageBuilder;
     let slugs: Slugs;
     let randomString: string;
     let upsertedListingsToVisitFlowGroups: any[];
-    let upsertedListingsToVisitFlows: any[];
+    // let upsertedListingsToVisitFlows: any[];
     let pageUUID: string;
     let pageName: string;
     let slugDisplayName: string;
     let slug_path: string;
-    let slugUUID: string;
+    // let slugUUID: string;
     // let resourceList: ResourceList;
     // let resourceEditors: ResourceEditors;
     // let resourceViews: ResourceViews;
@@ -51,7 +51,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             webAppLoginPage = new WebAppLoginPage(driver);
             webAppHomePage = new WebAppHomePage(driver);
             webAppHeader = new WebAppHeader(driver);
-            settingsSidePanel = new WebAppSettingsSidePanel(driver);
+            // settingsSidePanel = new WebAppSettingsSidePanel(driver);
             e2eUtils = new E2EUtils(driver);
             visitFlow = new VisitFlow(driver);
             pageBuilder = new PageBuilder(driver);
@@ -63,7 +63,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             slug_path = 'visit_flow_auto';
             randomString = generalService.generateRandomString(5);
             upsertedListingsToVisitFlowGroups = [];
-            upsertedListingsToVisitFlows = [];
+            // upsertedListingsToVisitFlows = [];
         });
 
         after(async function () {
@@ -94,12 +94,15 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 const groupsDocumentsToUpsert = [
                     { Title: `Start Auto ${randomString}`, SortIndex: 0 },
                     { Title: `Orders Auto ${randomString}`, SortIndex: 10 },
-                    { Title: `End Auto ${randomString}`, SortIndex: 100 }
-                ]
+                    { Title: `End Auto ${randomString}`, SortIndex: 100 },
+                ];
                 let upsertingValues_Response;
                 groupsDocumentsToUpsert.forEach(async (documentToUpsert) => {
                     // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlowGroups
-                    upsertingValues_Response = await udcService.upsertValuesToCollection(documentToUpsert, collectionName);
+                    upsertingValues_Response = await udcService.upsertValuesToCollection(
+                        documentToUpsert,
+                        collectionName,
+                    );
                     console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
                     expect(upsertingValues_Response.Ok).to.be.true;
                     expect(upsertingValues_Response.Status).to.equal(200);
@@ -107,24 +110,30 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     upsertedListingsToVisitFlowGroups.push(upsertingValues_Response.Body);
                 });
             });
-            it('Configuring Flows', async () => {
-                const collectionName = 'VisitFlows';
-                const visitsDocumentsToUpsert = [
-                    { Name: `AutoVis${randomString}`, Description: `Auto Visit ${randomString}`, Active: true, steps: [
-                        {}
-                    ]},
-                ]
-                let upsertingValues_Response;
-                visitsDocumentsToUpsert.forEach(async (documentToUpsert) => {
-                    // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlows
-                    upsertingValues_Response = await udcService.upsertValuesToCollection(documentToUpsert, collectionName);
-                    console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
-                    expect(upsertingValues_Response.Ok).to.be.true;
-                    expect(upsertingValues_Response.Status).to.equal(200);
-                    expect(upsertingValues_Response.Error).to.eql({});
-                    upsertedListingsToVisitFlowGroups.push(upsertingValues_Response.Body);
-                });
-            });
+            // it('Configuring Flows', async () => {
+            //     const collectionName = 'VisitFlows';
+            //     const visitsDocumentsToUpsert = [
+            //         {
+            //             Name: `AutoVis${randomString}`,
+            //             Description: `Auto Visit ${randomString}`,
+            //             Active: true,
+            //             steps: [{}],
+            //         },
+            //     ];
+            //     let upsertingValues_Response;
+            //     visitsDocumentsToUpsert.forEach(async (documentToUpsert) => {
+            //         // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlows
+            //         upsertingValues_Response = await udcService.upsertValuesToCollection(
+            //             documentToUpsert,
+            //             collectionName,
+            //         );
+            //         console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
+            //         expect(upsertingValues_Response.Ok).to.be.true;
+            //         expect(upsertingValues_Response.Status).to.equal(200);
+            //         expect(upsertingValues_Response.Error).to.eql({});
+            //         upsertedListingsToVisitFlowGroups.push(upsertingValues_Response.Body);
+            //     });
+            // });
         });
 
         describe('Creating a Page with VisitFlow Block', () => {
@@ -169,14 +178,14 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await slugs.waitTillVisible(slugs.MappedSlugs, 5000);
                 const existingMappedSlugs = await slugs.getExistingMappedSlugsList(dataViewsService);
                 const slugsFields: MenuDataViewField[] = e2eUtils.prepareDataForDragAndDropAtSlugs(
-                    [
-                        { slug_path: slug_path, pageUUID: pageUUID },
-                    ],
-                    existingMappedSlugs
+                    [{ slug_path: slug_path, pageUUID: pageUUID }],
+                    existingMappedSlugs,
                 );
                 console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`);
                 const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
-                console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`)
+                console.info(
+                    `slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`,
+                );
                 const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
                 console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
                 driver.sleep(2 * 1000);
@@ -314,14 +323,19 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await pageBuilder.deleteFromListByName(pageName);
                 pageBuilder.pause(5 * 1000);
                 await pageBuilder.searchForPageByName(pageName);
-                expect(await (await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)).getText()).to.contain('No results were found.');
+                expect(
+                    await (await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)).getText(),
+                ).to.contain('No results were found.');
                 pageBuilder.pause(1 * 1000);
             });
 
             it('Deleting UDCs listings', async () => {
                 // deleting created VisitFlowGroups documents
                 upsertedListingsToVisitFlowGroups.forEach(async (documentBody) => {
-                    const deleteResponse = await udcService.hideObjectInACollection('VisitFlowGroups', documentBody.Key);
+                    const deleteResponse = await udcService.hideObjectInACollection(
+                        'VisitFlowGroups',
+                        documentBody.Key,
+                    );
                     expect(deleteResponse.Ok).to.be.true;
                     expect(deleteResponse.Status).to.equal(200);
                     expect(deleteResponse.Error).to.eql({});

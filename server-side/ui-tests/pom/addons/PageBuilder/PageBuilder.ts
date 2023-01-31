@@ -15,7 +15,9 @@ export class PageBuilder extends AddonPage {
     public SelectPage_Title: By = By.xpath('//span[@title="Select a Page"]');
     public BlankTemplatePage: By = By.xpath('//*[text()="Blank"]/parent::div[contains(@class,"page-cube-inner")]');
     // List
-    public PagesList_Title: By = By.xpath('//pep-generic-list//div[contains(@class,"header-content")]//div[contains(@class,"left-container")]//div[contains(@class,"title")]//span');
+    public PagesList_Title: By = By.xpath(
+        '//pep-generic-list//div[contains(@class,"header-content")]//div[contains(@class,"left-container")]//div[contains(@class,"title")]//span',
+    );
     public PagesList_NumberOfItemsInList: By = By.xpath(
         '//div[contains(text(), "result")]/span[contains(@class, "bold number")]',
     );

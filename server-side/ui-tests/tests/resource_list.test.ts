@@ -364,13 +364,13 @@ export async function ResourceListTests(email: string, password: string, varPass
                                     collectionID: '',
                                     selectedViewUUID: viewKey,
                                     selectedViewName: viewName,
-                                }
+                                },
                             ],
                         },
                         {
                             blockKey: configurationBlockKey,
                             blockResource: 'DataConfigurationBlock',
-                            selectedEditor: { collectionName: resource_name, editorUUID: editorKey }
+                            selectedEditor: { collectionName: resource_name, editorUUID: editorKey },
                         },
                     ],
                     [
@@ -395,14 +395,20 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await resourceListUtils.navigateTo('Slugs');
                 await slugs.isSpinnerDone();
                 await slugs.clickTab('Mapping_Tab');
-                const slugsFields: MenuDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtSlugs([
-                    { slug_path: 'arrays', pageUUID: await slugs.getSlugUUIDbySlugName('arrays', client) },
-                    { slug_path: 'manual_tests', pageUUID: await slugs.getSlugUUIDbySlugName('manual_tests', client) },
-                    {
-                        slug_path: 'resource-list-0-6',
-                        pageUUID: await slugs.getSlugUUIDbySlugName('resource-list-0-6', client),
-                    },
-                ], []);
+                const slugsFields: MenuDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtSlugs(
+                    [
+                        { slug_path: 'arrays', pageUUID: await slugs.getSlugUUIDbySlugName('arrays', client) },
+                        {
+                            slug_path: 'manual_tests',
+                            pageUUID: await slugs.getSlugUUIDbySlugName('manual_tests', client),
+                        },
+                        {
+                            slug_path: 'resource-list-0-6',
+                            pageUUID: await slugs.getSlugUUIDbySlugName('resource-list-0-6', client),
+                        },
+                    ],
+                    [],
+                );
                 // console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`)
                 const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
                 // console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`)
