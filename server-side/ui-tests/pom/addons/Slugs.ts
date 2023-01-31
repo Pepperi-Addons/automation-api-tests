@@ -28,12 +28,9 @@ export class Slugs extends AddonPage {
     public Uncheck_Checkbox: By = By.xpath('//mat-checkbox //input[@aria-checked="mixed"]');
     // Mapped Slugs
     public MappedSlugs: By = By.id('mappedSlugs');
-<<<<<<< HEAD
     public MappedSlugs_SlugsPaths: By = By.xpath('//div[@id="mappedSlugs"]//input');
     public MappedSlugs_MappedPages: By = By.xpath('//div[@id="mappedSlugs"]//mat-select');
-=======
     public MappedSlugsEVGENY: By = By.xpath(`//span[contains(text(),'Mapped slugs')]`);
->>>>>>> c4452d19ed0c00b8620228c261dab2a6dd73d2bd
     // Page Mapping Profile Edit Button
     public PageMapping_ProfileEditButton_Save: By = this.getSelectorOfPageMappingProfileEditButton('Save');
     public PageMapping_ProfileEditButton_Cancel: By = this.getSelectorOfPageMappingProfileEditButton('Cancel');
@@ -190,7 +187,6 @@ export class Slugs extends AddonPage {
         this.pause(5000);
     }
 
-<<<<<<< HEAD
     public async getExistingMappedSlugsList(dataViewsService) {
         // GET https://papi.pepperi.com/V1.0/meta_data/data_views?where=Context.Name='Slugs'
         const getSlugs = await dataViewsService.getDataViews({ where: "Context.Name='Slugs'" });
@@ -200,8 +196,7 @@ export class Slugs extends AddonPage {
         console.info("existingMappedSlugs: ", JSON.stringify(existingMappedSlugs, null, 4));
         return existingMappedSlugs;
     }
-    // TODO: method of drag & drop
-=======
+
     public async createSlugEvgeny(displayNameOfSlug: string, slugPath: string, descriptionOfSlug: string) {
         this.pause(500);
         await this.click(this.CreateSlug_Button);
@@ -213,7 +208,6 @@ export class Slugs extends AddonPage {
         await this.click(this.CreateSlugPopup_CreateSlug_ButtonEvgeny);
         this.pause(5000);
     }
->>>>>>> c4452d19ed0c00b8620228c261dab2a6dd73d2bd
 
     public async mapPageToSlug(pathOfSlug: string, nameOfPage: string) {
         await this.clickTab('Mapping_Tab');
@@ -232,7 +226,6 @@ export class Slugs extends AddonPage {
         await this.click(this.Info_Popup_Close_Button);
     }
 
-<<<<<<< HEAD
     public async getMappedSlugsFromUI(client: Client) { // stops retrieving after 5 elements. Hagit, Jan 2023
         const mappedSlugsPages: any[] = [];
         const pageBuilder = new PageBuilder(this.browser);
@@ -245,7 +238,8 @@ export class Slugs extends AddonPage {
             mappedSlugsPages.push({ FieldID: slug, Title: pageUUID });
         }
         return mappedSlugsPages;
-=======
+    }
+
     public async mapPageToSlugEVGENY(pathOfSlug: string, nameOfPage: string) {
         debugger;
         await this.clickTab('Mapping_Tab');
@@ -263,7 +257,6 @@ export class Slugs extends AddonPage {
             'The mapped slugs are saved.',
         );
         await this.click(this.Info_Popup_Close_Button);
->>>>>>> c4452d19ed0c00b8620228c261dab2a6dd73d2bd
     }
 
     public async getSlugs(client: Client) {
