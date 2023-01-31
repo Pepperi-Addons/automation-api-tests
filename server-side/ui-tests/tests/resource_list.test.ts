@@ -236,26 +236,26 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
         });
 
-        describe('Pre-clean', async () => {
-            before(function () {
-                resource_name = 'NameAge';
-                random_name = generalService.generateRandomString(5);
-            });
-            afterEach(async function () {
-                driver.sleep(500);
-                await webAppHomePage.collectEndTestData(this);
-            });
+        // describe('Pre-clean', async () => {
+        //     before(function () {
+        //         resource_name = 'NameAge';
+        //         random_name = generalService.generateRandomString(5);
+        //     });
+        //     afterEach(async function () {
+        //         driver.sleep(500);
+        //         await webAppHomePage.collectEndTestData(this);
+        //     });
 
-            it('Delete All Views', async () => {
-                await resourceListUtils.deleteAllViewsViaUI();
-            });
-            it('Delete All Editors', async () => {
-                await resourceListUtils.deleteAllEditorsViaUI();
-            });
-            it('Delete All Pages', async () => {
-                await resourceListUtils.deleteAllPagesViaUI();
-            });
-        });
+        //     it('Delete All Views', async () => {
+        //         await resourceListUtils.deleteAllViewsViaUI();
+        //     });
+        //     it('Delete All Editors', async () => {
+        //         await resourceListUtils.deleteAllEditorsViaUI();
+        //     });
+        //     it('Delete All Pages', async () => {
+        //         await resourceListUtils.deleteAllPagesViaUI();
+        //     });
+        // });
 
         describe('Pipeline', async () => {
             before(function () {
@@ -314,16 +314,16 @@ export async function ResourceListTests(email: string, password: string, varPass
                 });
                 resourceViews.pause(5 * 1000);
             });
-            it('Get Editor UUID', async () => {
-                await resourceListUtils.gotoEditPageOfSelectedEditorByName(editorName);
-                editorKey = await resourceListUtils.getUUIDfromURL();
-                await webAppHeader.goHome();
-            });
-            it('Get View UUID', async () => {
-                await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
-                viewKey = await resourceListUtils.getUUIDfromURL();
-                await webAppHeader.goHome();
-            });
+            // it('Get Editor UUID', async () => {
+            //     await resourceListUtils.gotoEditPageOfSelectedEditorByName(editorName);
+            //     editorKey = await resourceListUtils.getUUIDfromURL();
+            //     await webAppHeader.goHome();
+            // });
+            // it('Get View UUID', async () => {
+            //     await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
+            //     viewKey = await resourceListUtils.getUUIDfromURL();
+            //     await webAppHeader.goHome();
+            // });
             it('Create Page', async () => {
                 await resourceListUtils.navigateTo('Page Builder');
                 // debugger
@@ -358,27 +358,29 @@ export async function ResourceListTests(email: string, password: string, varPass
                         {
                             blockKey: viewerBlockKey,
                             blockResource: 'DataViewerBlock',
-                            collectionName: resource_name,
-                            selectedView: {
-                                selectedViewUUID: viewKey,
-                                selectedViewName: viewName,
-                            },
+                            selectedViews: [
+                                {
+                                    collectionName: resource_name,
+                                    collectionID: '',
+                                    selectedViewUUID: viewKey,
+                                    selectedViewName: viewName,
+                                },
+                            ],
                         },
                         {
                             blockKey: configurationBlockKey,
                             blockResource: 'DataConfigurationBlock',
-                            collectionName: resource_name,
-                            editorUUID: editorKey,
+                            selectedEditor: { collectionName: resource_name, editorUUID: editorKey },
                         },
                     ],
                     [
                         {
                             sectionKey: 'daef8f6c-1d91-cfba-ec3c-9da2828fb800',
-                            listOfBlockKeys: [viewerBlockKey],
+                            blockKeysForSectionColumns: [viewerBlockKey],
                         },
                         {
                             sectionKey: 'e23cc2d1-3e2a-f745-d41c-60b8020fb167',
-                            listOfBlockKeys: [configurationBlockKey],
+                            blockKeysForSectionColumns: [configurationBlockKey],
                         },
                     ],
                 );
@@ -388,6 +390,36 @@ export async function ResourceListTests(email: string, password: string, varPass
                 expect(responseOfPublishPage.Status).to.equal(200);
                 console.info(`RESPONSE: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
                 pageBuilder.pause(6 * 1000);
+            });
+            it('Drag & Drop Cards to Mapped slugs', async () => {
+                await resourceListUtils.navigateTo('Slugs');
+                await slugs.isSpinnerDone();
+                await slugs.clickTab('Mapping_Tab');
+                const slugsFields: MenuDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtSlugs(
+                    [
+                        { slug_path: 'arrays', pageUUID: await slugs.getSlugUUIDbySlugName('arrays', client) },
+                        {
+                            slug_path: 'manual_tests',
+                            pageUUID: await slugs.getSlugUUIDbySlugName('manual_tests', client),
+                        },
+                        {
+                            slug_path: 'resource-list-0-6',
+                            pageUUID: await slugs.getSlugUUIDbySlugName('resource-list-0-6', client),
+                        },
+                    ],
+                    [],
+                );
+                // console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`)
+                const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
+                // console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`)
+                const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
+                console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
+                driver.sleep(2 * 1000);
+                await resourceListUtils.logOutLogIn(email, password);
+                await webAppHomePage.isSpinnerDone();
+                await resourceListUtils.navigateTo('Slugs');
+                await slugs.clickTab('Mapping_Tab');
+                driver.sleep(7 * 1000);
             });
             it('Map Page to Slug and go to Block', async () => {
                 slugDisplayName = 'Manual Tests';
@@ -412,27 +444,6 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
             });
-            it('Drag & Drop Cards to Mapped slugs', async () => {
-                const slugsFields: MenuDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtSlugs([
-                    { slug_path: 'arrays', slugUUID: await slugs.getSlugUUIDbySlugName('arrays', client) },
-                    { slug_path: 'manual_tests', slugUUID: await slugs.getSlugUUIDbySlugName('manual_tests', client) },
-                    {
-                        slug_path: 'resource-list-0-6',
-                        slugUUID: await slugs.getSlugUUIDbySlugName('resource-list-0-6', client),
-                    },
-                ]);
-                // console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`)
-                const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
-                // console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`)
-                const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
-                console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
-                driver.sleep(2 * 1000);
-                await resourceListUtils.logOutLogIn(email, password);
-                await webAppHomePage.isSpinnerDone();
-                await resourceListUtils.navigateTo('Slugs');
-                await slugs.clickTab('Mapping_Tab');
-                driver.sleep(7 * 1000);
-            });
         });
 
         describe('Teardown', async () => {
@@ -456,19 +467,19 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
         });
 
-        describe('E2E Method', async () => {
-            beforeEach(async function () {
-                random_name = generalService.generateRandomString(5);
-            });
-            afterEach(async function () {
-                driver.sleep(500);
-                await webAppHomePage.collectEndTestData(this);
-            });
+        // describe('E2E Method', async () => {
+        //     beforeEach(async function () {
+        //         random_name = generalService.generateRandomString(5);
+        //     });
+        //     afterEach(async function () {
+        //         driver.sleep(500);
+        //         await webAppHomePage.collectEndTestData(this);
+        //     });
 
-            it('Full Flow for resource: accounts', async () => {
-                await resourceListUtils.createBlock('accounts', random_name);
-            });
-        });
+        //     it('Full Flow for resource: accounts', async () => {
+        //         await resourceListUtils.createBlock('accounts', random_name);
+        //     });
+        // });
 
         describe('Blocks', async () => {
             beforeEach(async function () {

@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
 import GeneralService from '../../../services/general.service';
 import { AddonPage } from './base/AddonPage';
+import { PageBuilder } from './PageBuilder/PageBuilder';
 
 export class Slugs extends AddonPage {
     public Slugs_Title: By = By.xpath('//span[@title="Page Mapping"]');
@@ -27,6 +28,8 @@ export class Slugs extends AddonPage {
     public Uncheck_Checkbox: By = By.xpath('//mat-checkbox //input[@aria-checked="mixed"]');
     // Mapped Slugs
     public MappedSlugs: By = By.id('mappedSlugs');
+    public MappedSlugs_SlugsPaths: By = By.xpath('//div[@id="mappedSlugs"]//input');
+    public MappedSlugs_MappedPages: By = By.xpath('//div[@id="mappedSlugs"]//mat-select');
     public MappedSlugsEVGENY: By = By.xpath(`//span[contains(text(),'Mapped slugs')]`);
     // Page Mapping Profile Edit Button
     public PageMapping_ProfileEditButton_Save: By = this.getSelectorOfPageMappingProfileEditButton('Save');
@@ -37,6 +40,10 @@ export class Slugs extends AddonPage {
     public Info_Popup_Close_Button: By = By.xpath(
         '//span[contains(text(),"Info")]/ancestor::pep-dialog //span[contains(text(),"Close")]/parent::button',
     );
+    // Delete Pop-up
+    public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
+    public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
+    public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
 
     private getSelectorOfTabByText(title: string) {
         return By.xpath(`//div[text()="${title}"]/parent::div[@role="tab"][contains(@id,"mat-tab-label-")]`);
@@ -66,6 +73,22 @@ export class Slugs extends AddonPage {
         return By.xpath(`//span[@title="${title}"]/ancestor::pep-button`);
     }
 
+    // private getSelectorOfRowInListByName(title: string) {
+    //     return By.xpath(`//a[@id="Name"][text()="${title}"]/ancestor::fieldset`);
+    // }
+
+    private getSelectorOfSelectedSlugCheckboxByName(title: string) {
+        return By.xpath(`//a[@id="Name"][text()="${title}"]/ancestor::fieldset/mat-checkbox/label/span`);
+    }
+
+    private getSelectorOfSlugCheckboxByPartialName(title: string) {
+        return By.xpath(`//a[@id="Name"][contains(text(),"${title}")]/ancestor::fieldset/mat-checkbox/label/span`);
+    }
+
+    private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
+        return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
+    }
+
     public async selectFromList(selector: By, name?: string) {
         try {
             await this.browser.click(selector);
@@ -78,10 +101,59 @@ export class Slugs extends AddonPage {
         }
     }
 
-    // public async selectFromListByName(name: string) {
-    //     //     const selector: By = this.getSelectorOfRowInListByName(name); // selector is missing
-    //     //     await this.selectFromList(selector, name);
-    // }
+    public async selectFromListByName(name: string) {
+        const slugRowCheckbox_selector: By = this.getSelectorOfSelectedSlugCheckboxByName(name);
+        await (await this.browser.findElement(slugRowCheckbox_selector)).click();
+    }
+
+    public async selectFromListByPartialName(name: string) {
+        const selector: By = this.getSelectorOfSlugCheckboxByPartialName(name);
+        await (await this.browser.findElement(selector)).click();
+    }
+
+    public async openPencilMenu() {
+        try {
+            await this.browser.untilIsVisible(this.Pencil_Button, 500);
+            await this.clickElement('Pencil_Button');
+        } catch (error) {
+            console.info('Unable to Click Pencil_Button!!!');
+            console.error(error);
+            expect('Unable to Click Pencil_Button!!!').to.be.undefined;
+        }
+    }
+
+    public async selectUnderPencil(buttonTitle: string) {
+        try {
+            await this.browser.untilIsVisible(this[`Pencil_${buttonTitle}`], 500);
+            await this.clickElement(`Pencil_${buttonTitle}`);
+            await this.browser.untilIsVisible(this.DeletePopup_Dialog, 500);
+        } catch (error) {
+            console.info(`UNABLE TO SELECT: ${buttonTitle}`);
+            console.error(error);
+            expect(`ERROR -> UNABLE TO SELECT: ${buttonTitle}`).to.be.undefined;
+        }
+    }
+
+    public async confirmDeleteClickRedButton() {
+        try {
+            this.pause(500);
+            const redDeleteButton = await this.browser.findElement(this.DeletePopup_Delete_Button);
+            redDeleteButton.click();
+            this.pause(1000);
+            await this.checkThatElementIsNotFound('DeletePopup_Delete_Button');
+        } catch (error) {
+            console.info('RED DELETE Button NOT CLICKED!');
+            console.error(error);
+            expect('RED DELETE Button NOT CLICKED!').to.be.null;
+        }
+    }
+
+    public async deleteFromListByName(name: string) {
+        await this.selectFromListByName(name);
+        await this.openPencilMenu();
+        await this.selectUnderPencil('Delete');
+        await this.confirmDeleteClickRedButton();
+    }
 
     public async clickTab(tabName: string): Promise<void> {
         if (this[tabName]) {
@@ -115,6 +187,20 @@ export class Slugs extends AddonPage {
         this.pause(5000);
     }
 
+    public async getExistingMappedSlugsList(dataViewsService) {
+        // GET https://papi.pepperi.com/V1.0/meta_data/data_views?where=Context.Name='Slugs'
+        const getSlugs = await dataViewsService.getDataViews({ where: "Context.Name='Slugs'" });
+        // console.info(`getSlugs: ${JSON.stringify(getSlugs, null, 2)}`);
+        const getExistingSlugs = getSlugs[0];
+        const existingMappedSlugs = getExistingSlugs
+            ? getExistingSlugs.Fields
+                ? getExistingSlugs.Fields
+                : []
+            : ([] as any[]);
+        console.info('existingMappedSlugs: ', JSON.stringify(existingMappedSlugs, null, 4));
+        return existingMappedSlugs;
+    }
+
     public async createSlugEvgeny(displayNameOfSlug: string, slugPath: string, descriptionOfSlug: string) {
         this.pause(500);
         await this.click(this.CreateSlug_Button);
@@ -134,7 +220,6 @@ export class Slugs extends AddonPage {
         await this.waitTillVisible(this.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
         await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
         await this.waitTillVisible(this.MappedSlugs, 5000);
-        // TODO: method of drag & drop
         await this.forSlugByNameSelectPageByName(pathOfSlug, nameOfPage);
         this.pause(500);
         await this.click(this.PageMapping_ProfileEditButton_Save);
@@ -143,6 +228,21 @@ export class Slugs extends AddonPage {
             'The mapped slugs are saved.',
         );
         await this.click(this.Info_Popup_Close_Button);
+    }
+
+    public async getMappedSlugsFromUI(client: Client) {
+        // stops retrieving after 5 elements. Hagit, Jan 2023
+        const mappedSlugsPages: any[] = [];
+        const pageBuilder = new PageBuilder(this.browser);
+        const listOfMappedSlugsNames = await this.browser.findElements(this.MappedSlugs_SlugsPaths);
+        const listOfMappedPagesNames = await this.browser.findElements(this.MappedSlugs_MappedPages);
+        for (let i = 0; i < listOfMappedSlugsNames.length; i++) {
+            const slug = await listOfMappedSlugsNames[i].getAttribute('title');
+            const pageName = await listOfMappedPagesNames[i].getAttribute('title');
+            const pageUUID = await pageBuilder.getPageUUIDbyPageName(pageName, client);
+            mappedSlugsPages.push({ FieldID: slug, Title: pageUUID });
+        }
+        return mappedSlugsPages;
     }
 
     public async mapPageToSlugEVGENY(pathOfSlug: string, nameOfPage: string) {
@@ -169,6 +269,13 @@ export class Slugs extends AddonPage {
         return await generalService.fetchStatus('/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs');
     }
 
+    public async getSlugByUUID(slugUUID: string, client: Client) {
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus(
+            `/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs${slugUUID}`,
+        );
+    }
+
     public async getSlugUUIDbySlugName(slugName: string, client: Client) {
         const allSlugs = await this.getSlugs(client);
         const findSlugBySlugName = allSlugs.Body.find((slugObj) => {
@@ -177,5 +284,16 @@ export class Slugs extends AddonPage {
             }
         });
         return findSlugBySlugName.Key;
+    }
+
+    public async upsertSlugByUUID(slugUUID: string, slugObj, client: Client) {
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus(
+            `/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs/${slugUUID}`,
+            {
+                method: 'POST',
+                body: JSON.stringify(slugObj),
+            },
+        );
     }
 }

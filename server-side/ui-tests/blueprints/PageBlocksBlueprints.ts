@@ -1,9 +1,9 @@
 export class BasePage {
-    constructor() {
+    constructor(pageKey: string) {
         this.Blocks = [];
         this.Layout = new BasePageLayout();
         this.Hidden = false;
-        this.Key = '';
+        this.Key = pageKey;
     }
     public Layout: BasePageLayout;
     public Hidden: boolean;
@@ -27,12 +27,42 @@ export class BasePageLayout {
     public HorizontalSpacing: string;
     public VerticalSpacing: string;
     public MaxWidth: number;
-    public Sections;
+    public Sections: BasePageLayoutSection[];
+}
+
+export class BasePageLayoutSection {
+    constructor(sectionKey: string, addonsBlocksKeys?: string[]) {
+        this.Key = sectionKey;
+        this.Columns = [];
+        if (addonsBlocksKeys) {
+            addonsBlocksKeys.forEach((addonBlockKey) => {
+                this.Columns.push(new BasePageLayoutSectionColumn(addonBlockKey));
+            });
+        } else {
+            this.Columns.push({});
+        }
+    }
+    public Key: string;
+    public Columns: BasePageLayoutSectionColumn[];
+}
+
+export class BasePageLayoutSectionColumn {
+    constructor(blockKey?: string) {
+        blockKey ? (this.BlockContainer = new BlockID(blockKey)) : null;
+    }
+    public BlockContainer?: BlockID;
+}
+
+export class BlockID {
+    constructor(blockKey: string) {
+        this.BlockKey = blockKey;
+    }
+    public BlockKey: string;
 }
 
 export class BasePageBlock {
-    constructor() {
-        this.Key = '';
+    constructor(addonBlockKey: string) {
+        this.Key = addonBlockKey;
         this.Relation = new BaseBlockRelation();
     }
     public Key: string;
@@ -61,38 +91,66 @@ export class BaseBlockRelation {
     public Name: string;
 }
 
+export class BlockModuleRelation extends BaseBlockRelation {
+    constructor(addonKey: string, blockRelationName: string) {
+        super();
+        this.AddonRelativeURL = `file_${addonKey}`;
+        this.AddonUUID = addonKey;
+        this.ModuleName = 'BlockModule';
+        this.ComponentName = 'BlockComponent';
+        this.Name = blockRelationName;
+    }
+}
+
+export class BaseBlockConfiguration {
+    constructor(resource: string, addonUUID: string) {
+        this.Resource = resource;
+        this.AddonUUID = addonUUID;
+    }
+    public Resource: string;
+    public AddonUUID: string;
+    public Data;
+}
+
+export class AddonBlockModule extends BasePageBlock {
+    constructor(blockUUID: string, resourceAddonName: string, addonKey: string) {
+        super(blockUUID);
+        this.Configuration = new BaseBlockConfiguration(resourceAddonName, addonKey);
+        this.Relation = new BlockModuleRelation(addonKey, resourceAddonName);
+    }
+
+    public Configuration: BaseBlockConfiguration;
+    public Relation: BlockModuleRelation;
+}
+
 export class ResourceListBasicViewerEditorBlocksStructurePage {
     constructor(
         pageKey: string,
         blockList: {
             blockKey: string;
             blockResource: string;
-            collectionName: string;
-            editorUUID?: string;
-            selectedView?: { selectedViewUUID: string; selectedViewName: string };
+            selectedEditor?: { collectionName: string; editorUUID: string };
+            selectedViews?: {
+                collectionName: string;
+                collectionID: string;
+                selectedViewUUID: string;
+                selectedViewName: string;
+            }[];
         }[],
-        listOfSectionsKeyBlocklist: { sectionKey: string; listOfBlockKeys: string[] }[],
+        sectionDataList: { sectionKey: string; blockKeysForSectionColumns: string[] }[],
     ) {
         this.Key = pageKey;
         blockList.forEach((block) => {
-            if (block.editorUUID) {
-                this.Blocks.push(
-                    new ResourceListBlock(block.blockKey, block.blockResource, block.collectionName, block.editorUUID),
-                );
+            if (block.selectedEditor) {
+                this.Blocks.push(new ResourceListBlock(block.blockKey, block.blockResource, block.selectedEditor));
             }
-            if (block.selectedView) {
+            if (block.selectedViews) {
                 this.Blocks.push(
-                    new ResourceListBlock(
-                        block.blockKey,
-                        block.blockResource,
-                        block.collectionName,
-                        '',
-                        block.selectedView,
-                    ),
+                    new ResourceListBlock(block.blockKey, block.blockResource, undefined, block.selectedViews),
                 );
             }
         });
-        this.Layout = new ResourceListLayout(listOfSectionsKeyBlocklist);
+        this.Layout = new ResourceListLayout(sectionDataList);
     }
     public Blocks: ResourceListBlock[] = [];
     public Layout: ResourceListLayout;
@@ -106,27 +164,26 @@ export class ResourceListBlock {
     constructor(
         blockKey: string,
         blockResource: string,
-        collectionName: string,
-        editorUUID?: string,
-        selectedView?: { selectedViewUUID: string; selectedViewName: string },
+        selectedEditor?: { collectionName: string; editorUUID: string },
+        selectedViews?: {
+            collectionName: string;
+            collectionID: string;
+            selectedViewUUID: string;
+            selectedViewName: string;
+        }[],
     ) {
         this.Key = blockKey;
         this.Relation = new ResourceListBlockRelation(blockResource);
         switch (blockResource) {
             case 'DataViewerBlock':
-                if (selectedView) {
-                    this.Configuration = new ResourceListBlockConfiguration(
-                        blockResource,
-                        collectionName,
-                        '',
-                        selectedView,
-                    );
+                if (selectedViews) {
+                    this.Configuration = new ResourceListBlockConfiguration(blockResource, undefined, selectedViews);
                 }
                 break;
 
             case 'DataConfigurationBlock':
-                if (editorUUID) {
-                    this.Configuration = new ResourceListBlockConfiguration(blockResource, collectionName, editorUUID);
+                if (selectedEditor) {
+                    this.Configuration = new ResourceListBlockConfiguration(blockResource, selectedEditor);
                 }
                 break;
 
@@ -140,26 +197,32 @@ export class ResourceListBlock {
     public Relation: ResourceListBlockRelation;
 }
 
-export class ResourceListBlockConfiguration {
+export class ResourceListBlockConfiguration extends BaseBlockConfiguration {
     constructor(
-        blockResource: string,
-        collectionName: string,
-        editorUUID?: string,
-        selectedView?: { selectedViewUUID: string; selectedViewName: string },
+        blockResource: 'DataViewerBlock' | 'DataConfigurationBlock',
+        selectedEditor?: { collectionName: string; editorUUID: string },
+        selectedViews?: {
+            collectionName: string;
+            collectionID: string;
+            selectedViewUUID: string;
+            selectedViewName: string;
+        }[],
     ) {
-        this.Resource = blockResource;
-        this.AddonUUID = '0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3';
+        super(blockResource, '0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3');
 
         switch (blockResource) {
             case 'DataViewerBlock':
-                if (selectedView) {
-                    this.Data = new ResourceListBlockConfigurationDataView(collectionName, selectedView);
+                if (selectedViews) {
+                    this.Data = new ResourceListBlockConfigurationDataView(selectedViews);
                 }
                 break;
 
             case 'DataConfigurationBlock':
-                if (editorUUID) {
-                    this.Data = new ResourceListBlockConfigurationDataEditor(editorUUID, collectionName);
+                if (selectedEditor) {
+                    this.Data = new ResourceListBlockConfigurationDataEditor(
+                        selectedEditor.editorUUID,
+                        selectedEditor.collectionName,
+                    );
                 }
                 break;
 
@@ -168,9 +231,7 @@ export class ResourceListBlockConfiguration {
                 break;
         }
     }
-    public Resource: string;
     public Data: ResourceListBlockConfigurationDataView | ResourceListBlockConfigurationDataEditor | any;
-    public AddonUUID: string;
 }
 
 export class ResourceListBlockConfigurationDataEditor {
@@ -183,29 +244,44 @@ export class ResourceListBlockConfigurationDataEditor {
 }
 
 export class ResourceListBlockConfigurationDataView {
-    constructor(collectionName: string, selectedView: { selectedViewUUID: string; selectedViewName: string }) {
-        this.resource = collectionName;
-        this.viewsList.push(
-            new ResourceListBlockConfigurationDataViewInViewsList(
-                selectedView.selectedViewUUID,
-                selectedView.selectedViewName,
-            ),
-        );
+    constructor(
+        selectedViews: {
+            collectionName: string;
+            collectionID: string;
+            selectedViewUUID: string;
+            selectedViewName: string;
+        }[],
+    ) {
+        selectedViews.forEach((selectedView) => {
+            this.viewsList.push(
+                new ResourceListBlockConfigurationDataViewInViewsList(
+                    selectedView.collectionName,
+                    selectedView.collectionID,
+                    selectedView.selectedViewUUID,
+                    selectedView.selectedViewName,
+                ),
+            );
+        });
     }
-    public resource: string;
     public viewsList: ResourceListBlockConfigurationDataViewInViewsList[] = [];
 }
 
 export class ResourceListBlockConfigurationDataViewInViewsList {
-    constructor(selectedViewUUID: string, selectedViewName: string) {
+    constructor(collectionName: string, collectionID: string, selectedViewUUID: string, selectedViewName: string) {
+        this.selectedResource = collectionName;
+        this.id = collectionID;
+        this.title = 'Grid';
+        this.views = [];
+        this.showContent = true;
         this.selectedView = new ViewID(selectedViewUUID, selectedViewName);
     }
 
-    public id?: string;
+    public selectedResource: string;
+    public id: string;
     public title?: string;
     public selectedView: ViewID;
     public views?: ViewID[];
-    public showContent = true;
+    public showContent: boolean;
 }
 
 export class ViewID {
@@ -246,11 +322,11 @@ export class ResourceListBlockRelation extends BaseBlockRelation {
 }
 
 export class ResourceListLayout extends BasePageLayout {
-    constructor(listOfSectionsKeyBlocklist: { sectionKey: string; listOfBlockKeys: string[] }[]) {
+    constructor(sectionDataList: { sectionKey: string; blockKeysForSectionColumns: string[] }[]) {
         super();
-        listOfSectionsKeyBlocklist.forEach((sectionKeyBlocklist) => {
+        sectionDataList.forEach((sectionData) => {
             this.Sections.push(
-                new ResourceListLayoutSection(sectionKeyBlocklist.sectionKey, sectionKeyBlocklist.listOfBlockKeys),
+                new ResourceListLayoutSection(sectionData.sectionKey, sectionData.blockKeysForSectionColumns),
             );
         });
     }
@@ -262,64 +338,32 @@ export class ResourceListLayoutSection {
     constructor(sectionKey: string, blockKeysList: string[]) {
         this.Key = sectionKey;
         blockKeysList.forEach((blockKey) => {
-            this.Columns.push(new PageLayoutSectionColumn(blockKey));
+            this.Columns.push(new BasePageLayoutSectionColumn(blockKey));
         });
     }
     public Hide = [];
-    public Columns: PageLayoutSectionColumn[] = [];
+    public Columns: BasePageLayoutSectionColumn[] = [];
     public Key: string;
 }
 
-export class PageLayoutSectionColumn {
+export class VisitFlowBlock extends AddonBlockModule {
     constructor(blockKey: string) {
-        this.BlockContainer = new BlockID(blockKey);
-    }
-    public BlockContainer: BlockID;
-}
-
-export class BlockID {
-    constructor(blockKey: string) {
-        this.BlockKey = blockKey;
-    }
-    public BlockKey: string;
-}
-
-export class VisitFlowBlock {
-    public Configuration: VisitFlowBlockConfiguration = new VisitFlowBlockConfiguration();
-    public Key = 'aed9174b-9c01-6fba-982f-67a19e80e124';
-    public Relation: VisitFlowBlockRelation = new VisitFlowBlockRelation();
-}
-
-export class VisitFlowBlockConfiguration {
-    public Resource = 'VisitFlow';
-    public Data: VisitFlowBlockConfigurationData = new VisitFlowBlockConfigurationData();
-}
-
-export class VisitFlowBlockConfigurationData {
-    public resourceName = 'VisitFlows';
-}
-
-export class VisitFlowBlockRelation extends BaseBlockRelation {
-    constructor() {
-        super();
-        this.AddonRelativeURL = 'file_2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e';
-        this.AddonUUID = '2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e';
-        this.ModuleName = 'BlockModule';
-        this.ComponentName = 'BlockComponent';
-        this.Name = 'VisitFlow';
+        const addonName = 'VisitFlow';
+        const addonID = '2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e';
+        super(blockKey, addonName, addonID);
+        this.Configuration = new BaseBlockConfiguration(addonName, addonID);
+        this.Configuration.Data = {
+            resourceName: 'VisitFlows',
+        };
     }
 }
 
-export class VisitFlowBlockColumn {
-    public BlockContainer = {
-        BlockKey: 'aed9174b-9c01-6fba-982f-67a19e80e124',
-    };
-}
-
-export class VisitFlowBlockStructurePage extends BasePage {
-    constructor(pageKey: string, pageName?: string, pageDescription?: string) {
-        super();
-        this.Key = pageKey;
+export class VisitFlowPage extends BasePage {
+    constructor(pageKey: string, blockKey: string, sectionKey: string, pageName?: string, pageDescription?: string) {
+        // const blockUUID = '26755fdd-c5f0-10e6-8612-ab83dc94af0c';
+        super(pageKey);
+        this.Blocks = [new VisitFlowBlock(blockKey)];
+        this.Layout.Sections = [new BasePageLayoutSection(sectionKey, [blockKey])];
         pageName ? (this.Name = pageName) : null;
         pageDescription ? (this.Description = pageDescription) : null;
     }
