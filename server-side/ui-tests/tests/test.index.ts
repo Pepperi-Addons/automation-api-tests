@@ -638,7 +638,8 @@ const addon = process.env.npm_config_addon as string;
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 break;
             }
-            case 'DATA INDEX': {
+            case 'DATA INDEX':
+            case 'DATA-INDEX': {
                 addonUUID = '00000000-0000-0000-0000-00000e1a571c';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
