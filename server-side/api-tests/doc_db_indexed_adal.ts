@@ -533,7 +533,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.getDataDedicated[0]['PappiAccount.Country'] != '' &&
             logcash.getDataDedicated[0].Key == '1' &&
             logcash.getDataDedicated[0].Hidden == false &&
-            logcash.getDataDedicated[0]['PappiAccount.key'] != '' &&
+            logcash.getDataDedicated[0]['PappiAccount.Key'] != '' &&
             logcash.getDataDedicated[0].CreationDateTime != '' &&
             logcash.getDataDedicated[0].ModificationDateTime != ''
         ) {
@@ -655,7 +655,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.getDataDedicated1[0].test == '123' &&
             logcash.getDataDedicated[0].Key == '1' &&
             logcash.getDataDedicated[0].Hidden == false &&
-            logcash.getDataDedicated[0]['PappiAccount.key'] != '' &&
+            logcash.getDataDedicated[0]['PappiAccount.Key'] != '' &&
             logcash.getDataDedicated[0].CreationDateTime != '' &&
             logcash.getDataDedicated[0].ModificationDateTime != ''
         ) {

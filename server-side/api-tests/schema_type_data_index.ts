@@ -926,8 +926,11 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             )
             .then((res) => res.Body);
         //debugger;
-        if (logcash.getDataDedicatedAfterDrop.fault.faultstring.includes('Failed due to exception: Schema doesn')) {
+        if (logcash.getDataDedicatedAfterDrop == '') {
             logcash.getDataDedicatedAfterDropStatus = true;
+            // changed back to [] from exeption on data index 1.1.29   (31-01-23)
+            // if (logcash.getDataDedicatedAfterDrop.fault.faultstring.includes('Failed due to exception: Schema doesn')) {
+            //     logcash.getDataDedicatedAfterDropStatus = true;
         } else {
             logcash.getDataDedicatedAfterDropStatus = false;
             logcash.getDataDedicatedAfterDropError = 'Dedicated schema need be deleted ';

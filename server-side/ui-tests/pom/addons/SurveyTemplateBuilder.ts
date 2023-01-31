@@ -95,7 +95,7 @@ export interface FilterData {
 export class SurveyTemplateBuilder extends AddonPage {
     public SurveyBuilderMainTitle: By = By.xpath(`//*[@title='Survey Builder']`);
     public SurveyBuilderGenericListTitle: By = By.xpath(`//span[text()='Surveys' and @title='Surveys']`);
-    public InternalGenericListLine: By = By.className(`table-header-fieldset`);
+    // public InternalGenericListLine: By = By.className(`table-header-fieldset`);
     public AddASurveyButton: By = By.xpath(`//span[text()=' Add a Survey ']//..//..`);
     public DeafultSurveySection: By = By.xpath(`//mat-label[text()=' Section 1 ']`);
     public LeftSideSurveyTitle: By = By.xpath(`//span[text()='Survey Builder']`);
@@ -197,8 +197,7 @@ export class SurveyTemplateBuilder extends AddonPage {
             this.SurveyBuilderGenericListTitle,
             2000,
         );
-        const isInternalGenericListLineShown = await this.browser.isElementVisible(this.InternalGenericListLine, 2000);
-        return isMainTitleShown && isGenericResourceTitleShown && isInternalGenericListLineShown;
+        return isMainTitleShown && isGenericResourceTitleShown;
     }
 
     private async validateBuilderPageIsOpened(): Promise<boolean> {

@@ -63,6 +63,14 @@ export class ScriptEditor extends AddonPage {
     );
     public ScriptEditorDescriptionTxtArea: By = By.xpath('//mat-dialog-container//div//textarea');
 
+    public addScriptButton: By = By.xpath(`//div//pep-button//button//span[contains(text(),'Add')]`);
+    public addScriptMainTitle: By = By.xpath(`//span[contains(text(),"Add script")]`);
+    public addScriptModal: By = By.xpath(`//div[@class='mat-dialog-content']`);
+    public NameInput: By = By.xpath(`(//div[@class='mat-dialog-content']//input)[1]`);
+    public DescInput: By = By.xpath(`(//div[@class='mat-dialog-content']//input)[2]`);
+    public CodeTextArea: By = By.xpath(`//textarea`);
+    public ModalCloseBtn: By = By.xpath(`//mat-dialog-container//button`);
+
     public async enterPickerModal(): Promise<void> {
         await this.browser.click(this.PencilMenuBtn);
         await expect(this.untilIsVisible(this.PickerInternalBtn, 90000)).eventually.to.be.true; //picker menu drop down is loaded
