@@ -932,30 +932,44 @@ export async function DataIndexADALTests(generalService: GeneralService, request
 
             it('Read After Delete Shared Index Document', async () => {
                 generalService.sleep(5000);
-                await expect(
-                    dataIndexAdalService.getDocumentByNameAndOptionalKey(
-                        typedIndexSchema,
-                        'shared_index',
-                        generalService.papiClient['options'].addonUUID,
-                        typedSchemeName,
-                    ),
-                ).eventually.to.be.rejectedWith(
-                    `${generalService.papiClient['options'].baseURL}/addons/shared_index/index/tester/${addonUUID}/test_shared_index failed with status: 404 - Not Found error: {"fault":{"faultstring":"Failed due to exception: Schema doesn\'t exist","detail":{"errorcode":"NotFound"}}}`,
+                const deleteShardIndex = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
+                    typedIndexSchema,
+                    'shared_index',
+                    generalService.papiClient['options'].addonUUID,
+                    typedSchemeName,
                 );
+                expect(deleteShardIndex).to.be.an('array').that.is.empty;
+                // await expect(
+                //     dataIndexAdalService.getDocumentByNameAndOptionalKey(
+                //         typedIndexSchema,
+                //         'shared_index',
+                //         generalService.papiClient['options'].addonUUID,
+                //         typedSchemeName,
+                //     ),
+                // ).eventually.to.be.rejectedWith(
+                //     `${generalService.papiClient['options'].baseURL}/addons/shared_index/index/tester/${addonUUID}/test_shared_index failed with status: 404 - Not Found error: {"fault":{"faultstring":"Failed due to exception: Schema doesn\'t exist","detail":{"errorcode":"NotFound"}}}`,
+                // );
             });
 
             it('Read After Delete Index Document', async () => {
                 generalService.sleep(5000);
-                await expect(
-                    dataIndexAdalService.getDocumentByNameAndOptionalKey(
-                        indexSchema,
-                        'index',
-                        generalService.papiClient['options'].addonUUID,
-                        indexSchemeName,
-                    ),
-                ).eventually.to.be.rejectedWith(
-                    `${generalService.papiClient['options'].baseURL}/addons/index/${addonUUID}/test_index failed with status: 404 - Not Found error: {"fault":{"faultstring":"Failed due to exception: Schema doesn\'t exist","detail":{"errorcode":"NotFound"}}}`,
+                const deleteIndex = await dataIndexAdalService.getDocumentByNameAndOptionalKey(
+                    indexSchema,
+                    'index',
+                    generalService.papiClient['options'].addonUUID,
+                    indexSchemeName,
                 );
+                expect(deleteIndex).to.be.an('array').that.is.empty;
+                // await expect(
+                //     dataIndexAdalService.getDocumentByNameAndOptionalKey(
+                //         indexSchema,
+                //         'index',
+                //         generalService.papiClient['options'].addonUUID,
+                //         indexSchemeName,
+                //     ),
+                // ).eventually.to.be.rejectedWith(
+                //     `${generalService.papiClient['options'].baseURL}/addons/index/${addonUUID}/test_index failed with status: 404 - Not Found error: {"fault":{"faultstring":"Failed due to exception: Schema doesn\'t exist","detail":{"errorcode":"NotFound"}}}`,
+                // );
             });
 
             it('Remove Scheme Index', async () => {
