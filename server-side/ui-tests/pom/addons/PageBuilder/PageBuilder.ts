@@ -99,6 +99,27 @@ export class PageBuilder extends AddonPage {
         this.pause(1500);
     }
 
+    public async addBlankPageNoSections(pageName: string, pageDescription: string) {
+        await this.clickElement('AddPage_Button');
+        await this.waitTillVisible(this.SelectPage_Title, 5000);
+        await this.waitTillVisible(this.BlankTemplatePage, 5000);
+        this.pause(500);
+        await this.clickElement('BlankTemplatePage');
+        await this.waitTillVisible(this.EditPage_EditMenu_Button_Publish, 5000);
+        this.pause(500);
+        await this.waitTillVisible(this.EditSideBar_AddSection_Button, 5000);
+        const pageNameElement = await this.browser.findElement(this.EditPage_SideBar_PageName_TextInput);
+        pageNameElement.clear();
+        pageNameElement.sendKeys(pageName);
+        const pageDescriptionElement = await this.browser.findElement(this.EditPage_SideBar_PageDescription_Textarea);
+        pageDescriptionElement.clear();
+        pageDescriptionElement.sendKeys(pageDescription);
+        this.pause(1500);
+        await this.waitTillVisible(this.Section_Frame, 5000);
+        await this.clickElement('EditPage_EditMenu_Button_Publish');
+        this.pause(1500);
+    }
+
     public async returnToPageBuilderFromPage() {
         await this.clickElement('EditPage_SideBar_ArrowBack_Button');
         if (await this.browser.isElementVisible(this.NoticePopup_Title)) {

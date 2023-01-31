@@ -428,7 +428,7 @@ const addon = process.env.npm_config_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('Survey')) {
-        await SurveyTests(email, pass); //, varPass, client
+        await SurveyTests(email, pass, client); //, varPass, client
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_performance')) {
@@ -638,6 +638,78 @@ const addon = process.env.npm_config_addon as string;
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 break;
             }
+            // case 'DATA INDEX': {
+            //     addonUUID = '00000000-0000-0000-0000-00000e1a571c';
+            //     const responseProd = await service.fetchStatus(
+            //         `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+            //         {
+            //             method: 'GET',
+            //             headers: {
+            //                 Authorization: `Basic ${base64VARCredentialsProd}`,
+            //             },
+            //         },
+            //     );
+            //     addonVersionProd = responseProd.Body[0].Version;
+            //     addonEntryUUIDProd = responseProd.Body[0].UUID;
+            //     const responseEu = await service.fetchStatus(
+            //         `https://papi-eu.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+            //         {
+            //             method: 'GET',
+            //             headers: {
+            //                 Authorization: `Basic ${base64VARCredentialsEU}`,
+            //             },
+            //         },
+            //     );
+            //     addonVersionEU = responseEu.Body[0].Version;
+            //     addonEntryUUIDEu = responseEu.Body[0].UUID;
+            //     const responseSb = await service.fetchStatus(
+            //         `https://papi.staging.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+            //         {
+            //             method: 'GET',
+            //             headers: {
+            //                 Authorization: `Basic ${base64VARCredentialsSB}`,
+            //             },
+            //         },
+            //     );
+            //     addonVersionSb = responseSb.Body[0].Version;
+            //     addonEntryUUIDSb = responseSb.Body[0].UUID;
+            //     if (
+            //         addonVersionSb !== addonVersionEU ||
+            //         addonVersionProd !== addonVersionEU ||
+            //         addonVersionProd !== addonVersionSb
+            //     ) {
+            //         throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+            //     }
+            //     console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+            //     const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
+            //     jobPathPROD =
+            //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20C1%20Production%20-%20DATA%20INDEX%20FRAMEWORK';
+            //     jobPathEU =
+            //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20C1%20EU%20-%20DATA%20INDEX%20FRAMEWORK';
+            //     jobPathSB =
+            //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20C1%20Stage%20-%20DATA%20INDEX%20FRAMEWORK';
+            //     JenkinsBuildResultsAllEnvs = await Promise.all([
+            //         service.runJenkinsJobRemotely(
+            //             kmsSecret,
+            //             `${jobPathPROD}/build?token=DATAINDEXApprovmentTests`,
+            //             'Test - C1 Production - DATA INDEX FRAMEWORK',
+            //         ),
+            //         service.runJenkinsJobRemotely(
+            //             kmsSecret,
+            //             `${jobPathEU}/build?token=DATAINDEXApprovmentTests`,
+            //             'Test - C1 EU - DATA INDEX FRAMEWORK',
+            //         ),
+            //         service.runJenkinsJobRemotely(
+            //             kmsSecret,
+            //             `${jobPathSB}/build?token=DATAINDEXApprovmentTests`,
+            //             'Test - C1 Stage - DATA INDEX FRAMEWORK',
+            //         ),
+            //     ]);
+            //     latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
+            //     latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
+            //     latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
+            //     break;
+            // }
         }
         // 2. parse which envs failed
         const passingEnvs: string[] = [];
