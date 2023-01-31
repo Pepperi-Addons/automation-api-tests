@@ -34,6 +34,10 @@ export class Slugs extends AddonPage {
     // Page Mapping Profile Edit Button
     public PageMapping_ProfileEditButton_Save: By = this.getSelectorOfPageMappingProfileEditButton('Save');
     public PageMapping_ProfileEditButton_Cancel: By = this.getSelectorOfPageMappingProfileEditButton('Cancel');
+    // Mapping Tab
+    public MappingTab_RepCard_InnerListOfMappedSlugs: By = By.xpath(
+        '//pep-profile-data-views-card//div[contains(@class,"title")][@title="Rep (Default profile)"]/parent::div/following-sibling::pep-profile-data-view//div[contains(@class,"fields-container")]',
+    );
     // Info Popup
     public Info_Popup_PepDialog: By = By.xpath('//span[contains(text(),"Info")]/ancestor::pep-dialog');
     public Info_Popup_MessageDiv: By = By.xpath('//span[contains(text(),"Info")]/ancestor::pep-dialog/div[2]/div');
@@ -87,6 +91,18 @@ export class Slugs extends AddonPage {
 
     private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
         return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
+    }
+
+    public getSelectorOfMappedSlugInRepCardSmallDisplayByText(text: string) {
+        return By.xpath(
+            `//pep-profile-data-views-card//div[contains(@class,"title")][@title="Rep (Default profile)"]/parent::div/following-sibling::pep-profile-data-view//div[contains(@class,"fields-container")]/span[contains(text(),"${text}")]`,
+        );
+    }
+
+    public getSelectorOfMappedSlugDeleteButtonByName(title: string) {
+        return By.xpath(
+            `input[@title="${title}"]/ancestor::div[contains(@class,"mapped-slug-container")]//pep-button/button`,
+        );
     }
 
     public async selectFromList(selector: By, name?: string) {
@@ -295,5 +311,28 @@ export class Slugs extends AddonPage {
                 body: JSON.stringify(slugObj),
             },
         );
+    }
+
+    public async deleteSlugByUUID(slugUUID: string, client: Client) {
+        // expected response body: { "success": true }
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus(`/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs/`, {
+            method: 'POST',
+            body: JSON.stringify({
+                slug: null,
+                isDelete: true,
+                selectedObj: {
+                    selectionType: 1,
+                    rows: [slugUUID],
+                    rowTypes: ['0'],
+                },
+            }),
+        });
+    }
+
+    public async deleteSlugByName(slugName: string, client: Client) {
+        // expected response body: { "success": true }
+        const slugUUID = await this.getSlugUUIDbySlugName(slugName, client);
+        return await this.deleteSlugByUUID(slugUUID, client);
     }
 }

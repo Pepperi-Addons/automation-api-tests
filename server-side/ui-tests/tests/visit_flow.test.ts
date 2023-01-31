@@ -4,7 +4,7 @@ import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { Browser } from '../utilities/browser';
-import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
+import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
 // import { ResourceEditors, ResourceList, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
@@ -29,7 +29,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
-    // let settingsSidePanel: WebAppSettingsSidePanel;
+    let settingsSidePanel: WebAppSettingsSidePanel;
     let visitFlow: VisitFlow;
     let pageBuilder: PageBuilder;
     let slugs: Slugs;
@@ -40,7 +40,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let pageName: string;
     let slugDisplayName: string;
     let slug_path: string;
-    // let slugUUID: string;
+    let slugUUID: string;
     // let resourceList: ResourceList;
     // let resourceEditors: ResourceEditors;
     // let resourceViews: ResourceViews;
@@ -51,7 +51,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             webAppLoginPage = new WebAppLoginPage(driver);
             webAppHomePage = new WebAppHomePage(driver);
             webAppHeader = new WebAppHeader(driver);
-            // settingsSidePanel = new WebAppSettingsSidePanel(driver);
+            settingsSidePanel = new WebAppSettingsSidePanel(driver);
             e2eUtils = new E2EUtils(driver);
             visitFlow = new VisitFlow(driver);
             pageBuilder = new PageBuilder(driver);
@@ -59,9 +59,9 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             // resourceList = new ResourceList(driver);
             // resourceEditors = new ResourceEditors(driver);
             // resourceViews = new ResourceViews(driver);
-            slugDisplayName = 'Visit Flow Auto';
-            slug_path = 'visit_flow_auto';
             randomString = generalService.generateRandomString(5);
+            slugDisplayName = `Visit Flow Auto ${randomString}`;
+            slug_path = `visit_flow_auto_${randomString}`;
             upsertedListingsToVisitFlowGroups = [];
             // upsertedListingsToVisitFlows = [];
         });
@@ -114,7 +114,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             //     const collectionName = 'VisitFlows';
             //     const visitsDocumentsToUpsert = [
             //         {
-            //             Name: `AutoVis${randomString}`,
+            //             Name: `AutoVisiT${randomString}`,
             //             Description: `Auto Visit ${randomString}`,
             //             Active: true,
             //             steps: [{}],
@@ -146,6 +146,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             });
             it('New Page through the UI + VisitFlow Block through API', async () => {
                 pageUUID = await e2eUtils.addPage(pageName, 'Visit Flow 0.5 tests');
+                expect(pageUUID).to.not.be.undefined;
                 // console.info('pageUUID: ', pageUUID);
                 const createdPage = await pageBuilder.getPageByUUID(pageUUID, client);
                 // console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
@@ -160,7 +161,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await e2eUtils.navigateTo('Page Builder');
                 await pageBuilder.searchForPageByName(pageName);
                 pageBuilder.pause(2 * 1000);
-                // add expect
+                expect(await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)).to.throw();
             });
         });
 
@@ -168,6 +169,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             it('Creating a Visit Flow Slug for Automation', async () => {
                 await e2eUtils.navigateTo('Slugs');
                 await slugs.createSlug(slugDisplayName, slug_path, 'slug for Visit Flow Automation');
+                slugs.pause(3 * 1000);
+                slugUUID = await slugs.getSlugUUIDbySlugName(slug_path, client);
+                console.info('slugUUID: ', slugUUID);
+                expect(slugUUID).to.not.be.undefined;
             });
 
             it('Dragging the created slug to the mapped fields section and Posting via API', async () => {
@@ -193,24 +198,25 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await webAppHomePage.isSpinnerDone();
                 await e2eUtils.navigateTo('Slugs');
                 await slugs.clickTab('Mapping_Tab');
+                await slugs.waitTillVisible(slugs.MappingTab_RepCard_InnerListOfMappedSlugs, 15000);
+                expect(
+                    await driver.findElement(
+                        slugs.getSelectorOfMappedSlugInRepCardSmallDisplayByText(slug_path),
+                        10000,
+                    ),
+                ).to.not.throw();
                 driver.sleep(15 * 1000);
             });
-
-            // it('Mapping Visit Flow Page on Visit Flow Slug using an API call', async () => {
-            //     await e2eUtils.navigateTo('Slugs');
-            //     await slugs.mapPageToSlug(slug_path, pageName);
-            // });
         });
 
-        // describe('Configuring Account Dashboard', () => {
-        //     it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async () => {
-        //         await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
-        //         driver.sleep(7 * 1000);
-        //     });
+        describe('Configuring Account Dashboard', () => {
+            it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async () => {
+                await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
+                driver.sleep(7 * 1000);
+            });
 
-        //     it('Adding the Visit Flow Slug by the search input, clicking the (+) button and Save', async () => {
-        //     });
-        // });
+            // it('Adding the Visit Flow Slug by the search input, clicking the (+) button and Save', async () => {});
+        });
 
         describe('Going Through a Basic Visit', () => {
             it('Navigating to a specific Account', async () => {
@@ -308,13 +314,27 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             // it('Unconfiguring Slug from Account Dashboard', async () => {
             // });
 
-            // it('Deleting Slug', async () => {
-            //     await e2eUtils.navigateTo('Slugs');
-            //     // doesn't work:
-            //     // await slugs.deleteFromListByName(slugDisplayName);
-            // });
+            it('Deleting Slug via API', async () => {
+                const res = await slugs.deleteSlugByName(slug_path, client);
+                expect(res.Ok).to.be.true;
+                expect(res.Status).to.equal(200);
+                expect(res.Error).to.eql({});
+                expect(res.Body.success).to.be.true;
+                expect(await slugs.getSlugUUIDbySlugName(slug_path, client)).to.be.undefined;
+            });
 
-            it('Deleting Page', async () => {
+            it('Deleting Slug from Mapped Slugs via UI', async () => {
+                await e2eUtils.navigateTo('Slugs');
+                await slugs.clickTab('Mapping_Tab');
+                await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
+                await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
+                await slugs.isSpinnerDone();
+                await slugs.waitTillVisible(slugs.MappedSlugs, 5000);
+                await slugs.click(slugs.getSelectorOfMappedSlugDeleteButtonByName(slug_path));
+                await slugs.clickElement('PageMapping_ProfileEditButton_Save');
+            });
+
+            it('Deleting Page via UI', async () => {
                 await e2eUtils.navigateTo('Page Builder');
                 await pageBuilder.waitTillVisible(pageBuilder.PagesList_Title, 15000);
                 await pageBuilder.waitTillVisible(pageBuilder.PagesList_NumberOfItemsInList, 15000);
