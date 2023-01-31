@@ -185,6 +185,15 @@ export class Slugs extends AddonPage {
         this.pause(5000);
     }
 
+    public async getExistingMappedSlugsList(dataViewsService) {
+        // GET https://papi.pepperi.com/V1.0/meta_data/data_views?where=Context.Name='Slugs'
+        const getSlugs = await dataViewsService.getDataViews({ where: "Context.Name='Slugs'" });
+        // console.info(`getSlugs: ${JSON.stringify(getSlugs, null, 2)}`);
+        const getExistingSlugs = getSlugs[0];
+        const existingMappedSlugs = getExistingSlugs ? getExistingSlugs.Fields ? getExistingSlugs.Fields : [] : [] as any[];
+        console.info("existingMappedSlugs: ", JSON.stringify(existingMappedSlugs, null, 4));
+        return existingMappedSlugs;
+    }
     // TODO: method of drag & drop
 
     public async mapPageToSlug(pathOfSlug: string, nameOfPage: string) {
