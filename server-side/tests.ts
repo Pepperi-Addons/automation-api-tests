@@ -87,6 +87,7 @@ import {
 } from './api-tests/index';
 import { SingleMaintenanceAndDependenciesAddonsTestsPart3 } from './api-tests/addons';
 import { DataIndexDor } from './api-tests/dor_data_index_tests';
+// import { PapiClient } from '@pepperi-addons/papi-sdk'; WIP - dev tests
 // import { checkVersionsTest } from './api-tests/check_versions';
 
 let testName = '';
@@ -1236,6 +1237,98 @@ export async function security(client: Client, request: Request, testerFunctions
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
 }
+
+//WIP - dev tests
+// export async function handleDevTest(client: Client, request: Request, testerFunctions: TesterFunctions) {
+//     const service = new GeneralService(client);
+//     testerFunctions = service.initiateTesterFunctions(client, testName);
+//     let varKey;
+//     if (service.papiClient['options'].baseURL.includes('staging')) {
+//         varKey = request.body.varKeyStage;
+//     } else {
+//         varKey = request.body.varKeyPro;
+//     }
+//     //1. convert Name to UUID
+//     const addonName = request.body.requestedADDON;
+//     const addonUUID = convertNameToUUID(addonName);
+//     testName = `Dev Test: ${addonName}, Tested Addon UUID: ${addonUUID}`;
+//     service.PrintMemoryUseToLog('Start', testName);
+//     //2. upgrade dependencys - basic: correct for all addons
+//     // await UpgradeDependenciesTests(service, request, testerFunctions);
+//     //2.1 install template automation addon
+//     const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varKey, {
+//         automation_template_addon: ['02754342-e0b5-4300-b728-a94ea5e0e8f4', ''],
+//     });
+//     if (!templateAddonResponse[0]) {
+//         throw "Error: can't install automation_template_addon";
+//     }
+//     //3. get dependencys of tested addon
+//     const papiClient = service.papiClient;
+//     const latestVer = (
+//         await papiClient.addons.versions.find({
+//             where: `AddonUUID='${addonUUID} AND Available=1'`,
+//             order_by: 'CreationDateTime DESC',
+//         })
+//     )[0] as any;
+//     const latestVerPublishConfig = JSON.parse(latestVer.PublishConfig);
+//     const dependenciesFromPublishConfig = latestVerPublishConfig.Dependencies;
+//     let dependeciesUUIDs;
+//     if (Object.entries(dependenciesFromPublishConfig).length !== 0) {
+//         dependeciesUUIDs = await buildTheDependencyArray(service, dependenciesFromPublishConfig);
+//     }
+//     //4. install on dist
+//     for (const [name, uuid] of Object.entries(dependeciesUUIDs)) {
+//         //TODO
+//         const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varKey, {
+//             automation_template_addon: ['02754342-e0b5-4300-b728-a94ea5e0e8f4', ''],
+//         });
+//         debugger;
+//     }
+//     const response = await service.changeToAnyAvailableVersion(dependeciesUUIDs);
+//     debugger;
+//     const allInstalledAddons = await service.getVARInstalledAddons(varKey);
+//     debugger;
+//     //5. run test//TODO
+//     service.PrintMemoryUseToLog('End', testName);
+//     return await testerFunctions.run();
+// }
+
+//WIP - dev tests
+// function convertNameToUUID(addonName: string) {
+//     switch (addonName.toLocaleLowerCase()) {
+//         case 'data index':
+//             return '00000000-0000-0000-0000-00000e1a571c';
+//         case 'user defined collections':
+//             return '122c0e9d-c240-4865-b446-f37ece866c22';
+//     }
+// }
+
+// {
+// adal:'1.4.77'
+// cpas:'16.80.8'
+// cpi_node:'1.1.6'
+// dimx:'0.0.163'
+// generic_resource:'0.5.1'
+// pepperi_elastic_search:'1.0.40'
+// user_defined_events:'0.5.3'
+// }
+
+//WIP - dev tests
+// async function buildTheDependencyArray(service: GeneralService, dependenciesFromPublishConfig) {
+//     const allAddonDependencys = await service.fetchStatus('/configuration_fields?key=AddonsForDependencies');
+//     const allAddonDependencysAsObject = JSON.parse(allAddonDependencys.Body.Value);
+//     const arrayOfAllUUIDs = {};
+//     for (const dependecyAddon in dependenciesFromPublishConfig) {
+//         // const testData = {
+//         //     'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.4.13'],
+//         //     Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
+//         //     'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', ''],
+//         //     Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.0.100'],
+//         // };
+//         arrayOfAllUUIDs[dependecyAddon] = [allAddonDependencysAsObject[dependecyAddon], ''];
+//     }
+//     return arrayOfAllUUIDs;
+// }
 
 export async function async_addon_get_remove_codejobs(
     client: Client,

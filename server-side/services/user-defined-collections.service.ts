@@ -431,7 +431,7 @@ export class UDCService {
 
     async upsertValuesToCollection(valuesObj, collectionName) {
         return await this.generalService.fetchStatus(
-            `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName}`,
+            `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=${collectionName}`,
             {
                 method: 'POST',
                 body: JSON.stringify(valuesObj),
