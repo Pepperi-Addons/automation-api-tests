@@ -3,7 +3,13 @@ import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
-import { SlideShowBlock, SlideShowBlockColumn, SurveyBlock, SurveyBlockColumn, SurveyTemplateBuilder } from '../pom/addons/SurveyTemplateBuilder';
+import {
+    SlideShowBlock,
+    SlideShowBlockColumn,
+    SurveyBlock,
+    SurveyBlockColumn,
+    SurveyTemplateBuilder,
+} from '../pom/addons/SurveyTemplateBuilder';
 import E2EUtils from '../utilities/e2e_utils';
 import { GridDataViewField, MenuDataViewField } from '@pepperi-addons/papi-sdk';
 import { ResourceViews } from '../pom/addons/ResourceList';
@@ -294,7 +300,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const foundScript = allListElemsText.find((elem) => elem.includes('SurveyScript'));
                 expect(foundScript).to.not.be.undefined;
                 expect(foundScript).to.include('SurveyScript');
-                let allScripts = await generalService.fetchStatus(
+                const allScripts = await generalService.fetchStatus(
                     'https://papi.pepperi.com/V1.0/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts',
                     {
                         method: 'GET',
@@ -303,8 +309,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 let surveyScript;
                 for (let index = 0; index < allScripts.Body.length; index++) {
                     const script = allScripts.Body[index];
-                    if(script.Name === 'SurveyScript')
-                    surveyScript = script;
+                    if (script.Name === 'SurveyScript') surveyScript = script;
                 }
                 scriptUUID = surveyScript.Key;
                 await webAppHeader.goHome();
