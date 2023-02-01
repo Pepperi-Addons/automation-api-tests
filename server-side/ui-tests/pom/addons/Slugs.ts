@@ -27,6 +27,7 @@ export class Slugs extends AddonPage {
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu //button');
     public Uncheck_Checkbox: By = By.xpath('//mat-checkbox //input[@aria-checked="mixed"]');
     // Mapped Slugs
+    public SlugMappingScreenTitle: By = By.xpath(`//span[contains(text(),'Page Mapping')]`);
     public MappedSlugs: By = By.id('mappedSlugs');
     public MappedSlugs_SlugsPaths: By = By.xpath('//div[@id="mappedSlugs"]//input');
     public MappedSlugs_MappedPages: By = By.xpath('//div[@id="mappedSlugs"]//mat-select');
