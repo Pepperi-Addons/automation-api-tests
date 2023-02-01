@@ -60,7 +60,7 @@ export class Slugs extends AddonPage {
     }
 
     private getSelectorOfCreateSlugPopupButtonByTitle(title: string) {
-        return By.xpath(`//span[@title="${title}"]/ancestor::button[@data-qa="${title}"]`);
+        return By.xpath(`//span[contains(@title,"${title}")]/ancestor::button[contains(@data-qa,"${title}")]`);
     }
 
     // private getSelectorOfRowInListByName(name: string) {
@@ -198,9 +198,10 @@ export class Slugs extends AddonPage {
         await this.insertTextToInputElement(displayNameOfSlug, this.CreateSlugPopup_DisplayName_Input);
         await this.insertTextToInputElement(slugPath, this.CreateSlugPopup_Slug_Input);
         await this.insertTextToInputElement(descriptionOfSlug, this.CreateSlugPopup_Description_Input);
-        this.pause(500);
-        await this.click(this.CreateSlugPopup_CreateSlug_Button);
-        this.pause(5000);
+        this.pause(0.5 * 1000);
+        await this.click(this.CreateSlugPopup_CreateSlug_ButtonEvgeny);
+        // await this.click(this.CreateSlugPopup_CreateSlug_Button);
+        this.pause(5 * 1000);
     }
 
     public async getExistingMappedSlugsList(dataViewsService) {
