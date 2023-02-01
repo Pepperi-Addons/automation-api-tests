@@ -89,6 +89,7 @@ export default class E2EUtils extends BasePomObject {
     public async addPageNoSections(nameOfPage: string, descriptionOfPage: string) {
         const pageBuilder: PageBuilder = new PageBuilder(this.browser);
         await this.navigateTo('Page Builder');
+        pageBuilder.pause(1000);
         await pageBuilder.waitTillVisible(pageBuilder.PageBuilder_Title, 15000);
         await pageBuilder.waitTillVisible(pageBuilder.AddPage_Button, 15000);
         pageBuilder.pause(1000);
