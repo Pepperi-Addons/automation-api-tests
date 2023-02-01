@@ -2,7 +2,7 @@ import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
+import { BrandedApp, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
 import {
     SlideShowBlock,
     SlideShowBlockColumn,
@@ -219,7 +219,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            it('4. Create Slug And Map It To Show The Page With Survey Block + Configure On Home Screen', async function () {
+            it('4. Create Slug And Map It To Show The Page With Survey Block', async function () {
                 const slugDisplayName = 'survey_slug';
                 const slug_path = 'survey_slug';
                 const e2eUiService = new E2EUtils(driver);
@@ -288,10 +288,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await driver.sendKeys(scriptEditor.CodeTextArea, selectAll);
                 await driver.sendKeys(scriptEditor.CodeTextArea, Key.DELETE);
                 await driver.sendKeys(scriptEditor.CodeTextArea, script3);
-                driver.sleep(2000);
+                driver.sleep(3500);
                 //4. save
                 await driver.click(scriptEditor.SaveBtn);
-                driver.sleep(2000);
+                driver.sleep(4500);
                 await driver.click(scriptEditor.ModalCloseBtn);
                 //5. validate script is found in list
                 const webAppList = new WebAppList(driver);
@@ -336,6 +336,9 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await e2eUiService.navigateTo('Slugs');
                 const slugs: Slugs = new Slugs(driver);
                 driver.sleep(2000);
+                if (await driver.isElementVisible(slugs.SlugMappingScreenTitle)) {
+                    await slugs.clickTab('Slugs_Tab');
+                }
                 await slugs.createSlugEvgeny(slugDisplayName, slug_path, 'for testing');
                 await slugs.clickTab('Mapping_Tab');
                 driver.sleep(1000);
@@ -365,9 +368,21 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 driver.sleep(15 * 1000);
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
+                await webAppHeader.openSettings();
+                const brandedApp = new BrandedApp(driver);
+                await brandedApp.addAdminHomePageButtons(slugDisplayName);
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);    
+                }
+                await webAppHomePage.validateATDIsApearingOnHomeScreen(slugDisplayName);
             });
             it('Data Cleansing', async function () {
                 //TODO
+                //1. delete survey template
+                //2. delete resource views
+                //3. delete relevant pages
+                //4. delete slugs
+                //5. delete from homescreen 
                 debugger;
             });
         });
