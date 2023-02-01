@@ -3,7 +3,7 @@ import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
-import { SurveyBlock, SurveyBlockColumn, SurveyTemplateBuilder } from '../pom/addons/SurveyTemplateBuilder';
+import { SlideShowBlock, SlideShowBlockColumn, SurveyBlock, SurveyBlockColumn, SurveyTemplateBuilder } from '../pom/addons/SurveyTemplateBuilder';
 import E2EUtils from '../utilities/e2e_utils';
 import { GridDataViewField, MenuDataViewField } from '@pepperi-addons/papi-sdk';
 import { ResourceViews } from '../pom/addons/ResourceList';
@@ -26,8 +26,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
     let driver: Browser;
     let surveyBlockPageName;
     let surveyBlockPageUUID;
+    let slideshowBlockPageUUID;
     let surveyViewUUID;
     let accountViewUUID;
+    let scriptUUID;
 
     // const templateToCreate: SurveyTemplate = {
     //     Name: 'first',
@@ -120,7 +122,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(isSurveyBuilderSettingsShown).to.equal(true);
                 const isSurveyBuilderPageShown = await surveyService.enterSurveyBuilderActualBuilder();
                 expect(isSurveyBuilderPageShown).to.equal(true);
-                await surveyService.configureTheSurveyTemplate('first', 'first d', [
+                await surveyService.configureTheSurveyTemplate('surveyTemplate', 'template', [
                     {
                         Title: 'boolean',
                         Key: '',
@@ -146,14 +148,14 @@ export async function SurveyTests(email: string, password: string, client: Clien
                         ],
                     },
                 ]);
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.goHome();
             });
             it('2. Configure Resource Views For Account + Survey', async function () {
                 const resourceListUtils = new E2EUtils(driver);
                 const resourceViews = new ResourceViews(driver);
                 const generalService = new GeneralService(client);
                 const dataViewsService = new DataViewsService(generalService.papiClient);
-                const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
                 // Configure View - Accounts
                 await resourceListUtils.addView({
                     nameOfView: 'Accounts',
@@ -193,10 +195,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     fieldsToConfigureInView: viewFields,
                 });
                 await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.goHome();
             });
             it('3. Create Page With Survey Block Inside It', async function () {
-                const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password); //?
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveyBlockPage';
                 surveyBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
@@ -217,8 +219,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const e2eUiService = new E2EUtils(driver);
                 await e2eUiService.navigateTo('Slugs');
                 const slugs: Slugs = new Slugs(driver);
+                driver.sleep(2000);
                 await slugs.createSlugEvgeny(slugDisplayName, slug_path, 'for testing');
                 await slugs.clickTab('Mapping_Tab');
+                driver.sleep(1000);
                 await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
                 await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
                 await slugs.isSpinnerDone();
@@ -243,7 +247,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await e2eUiService.navigateTo('Slugs');
                 await slugs.clickTab('Mapping_Tab');
                 driver.sleep(15 * 1000);
-                debugger;
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.goHome();
             });
             it('5. Create Script Based On Config File With New Resource Views Configured', async function () {
                 let script;
@@ -257,7 +262,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const script3 = script2.replace('{surveySlugNamePlaceHolder}', 'survey_slug');
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
-                //TODO has to move to script
+                //TODO has to move to scripts
                 await webAppHeader.openSettings();
                 const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
                 await webAppSettingsSidePanel.selectSettingsByID('Configuration');
@@ -287,13 +292,78 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const allListElemsText = await webAppList.getAllListElementsTextValue();
                 expect(allListElemsText.length).to.be.at.least(1);
                 const foundScript = allListElemsText.find((elem) => elem.includes('SurveyScript'));
-                expect(foundScript).to.not.be.undefined.and.to.include('SurveyScript');
+                expect(foundScript).to.not.be.undefined;
+                expect(foundScript).to.include('SurveyScript');
+                let allScripts = await generalService.fetchStatus(
+                    'https://papi.pepperi.com/V1.0/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts',
+                    {
+                        method: 'GET',
+                    },
+                );
+                let surveyScript;
+                for (let index = 0; index < allScripts.Body.length; index++) {
+                    const script = allScripts.Body[index];
+                    if(script.Name === 'SurveyScript')
+                    surveyScript = script;
+                }
+                scriptUUID = surveyScript.Key;
+                await webAppHeader.goHome();
             });
             it('6. Create Page With SlideShow Which Will Run The Script', async function () {
-                //TODO
+                const e2eUtils = new E2EUtils(driver);
+                surveyBlockPageName = 'surveySlideShow';
+                slideshowBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
+                const pageBuilder = new PageBuilder(driver);
+                const createdPage = await pageBuilder.getPageByUUID(slideshowBlockPageUUID, client);
+                const SlideShowBlockInstance = new SlideShowBlock(scriptUUID);
+                createdPage.Blocks.push(SlideShowBlockInstance);
+                createdPage.Layout.Sections[0].Columns[0] = new SlideShowBlockColumn(SlideShowBlockInstance.Key);
+                console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
+                const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
+                console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 2));
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.goHome();
+            });
+            it('7. create a slug for the slideshow page and set it to show on homepage', async function () {
+                const slugDisplayName = 'slideshow_slug';
+                const slug_path = 'slideshow_slug';
+                const e2eUiService = new E2EUtils(driver);
+                await e2eUiService.navigateTo('Slugs');
+                const slugs: Slugs = new Slugs(driver);
+                driver.sleep(2000);
+                await slugs.createSlugEvgeny(slugDisplayName, slug_path, 'for testing');
+                await slugs.clickTab('Mapping_Tab');
+                driver.sleep(1000);
+                await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
+                await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
+                await slugs.isSpinnerDone();
+                driver.sleep(2500);
+                const dataViewsService = new DataViewsService(generalService.papiClient);
+                const existingMappedSlugs = await slugs.getExistingMappedSlugsList(dataViewsService);
+                const slugsFields: MenuDataViewField[] = e2eUiService.prepareDataForDragAndDropAtSlugs(
+                    [{ slug_path: slug_path, pageUUID: slideshowBlockPageUUID }],
+                    existingMappedSlugs,
+                );
+                console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`);
+                const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
+                console.info(
+                    `slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`,
+                );
+                const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
+                console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
+                driver.sleep(2 * 1000);
+                await e2eUiService.logOutLogIn(email, password);
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.isSpinnerDone();
+                await e2eUiService.navigateTo('Slugs');
+                await slugs.clickTab('Mapping_Tab');
+                driver.sleep(15 * 1000);
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.goHome();
             });
             it('Data Cleansing', async function () {
                 //TODO
+                debugger;
             });
         });
     });

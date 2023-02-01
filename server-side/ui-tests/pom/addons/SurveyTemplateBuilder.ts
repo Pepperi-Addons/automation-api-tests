@@ -47,19 +47,19 @@ export interface SurveyQuestion {
     Key: string;
     Title: string;
     Type:
-        | 'Short Text'
-        | 'Long Text'
-        | 'Multiple Select'
-        | 'Single Select'
-        | 'Checkbox'
-        | 'Radio Group'
-        | 'Yes/No'
-        | 'Number'
-        | 'Decimal'
-        | 'Currency'
-        | 'Percentage'
-        | 'Date'
-        | 'Date Time';
+    | 'Short Text'
+    | 'Long Text'
+    | 'Multiple Select'
+    | 'Single Select'
+    | 'Checkbox'
+    | 'Radio Group'
+    | 'Yes/No'
+    | 'Number'
+    | 'Decimal'
+    | 'Currency'
+    | 'Percentage'
+    | 'Date'
+    | 'Date Time';
     isMandatory: boolean;
     OptionalValues?: SelectValues[];
     ShowIf?: ShowIf;
@@ -384,4 +384,350 @@ export class SurveyBlockColumn {
     public BlockContainer = {
         BlockKey: '',
     };
+}
+
+export class SlideShowBlockColumn {
+    constructor(key: string) {
+        this.BlockContainer.BlockKey = key;
+    }
+    public BlockContainer = {
+        BlockKey: '',
+    };
+}
+
+export class SlideShowBlock {
+    constructor(scriptKey) {
+        this.Key = uuidv4();
+        this.PageConfiguration = { Parameters: [] };
+        this.Configuration = new SlideShowConfiguration(scriptKey);
+    }
+    public Configuration: SlideShowConfiguration;
+    public Key: string;
+    public PageConfiguration: PageConfiguration;
+    public Relation: SlideShowBlockRelation = new SlideShowBlockRelation();
+}
+
+export interface PageConfiguration {
+    Parameters: any[];
+}
+
+export class SlideShowConfiguration {
+    constructor(scriptKey) {
+        this.Resource = 'Slideshow';
+        this.Data = {
+            slideshowConfig: {
+                isUseArrows: true,
+                arrowsStyle: 'weak',
+                innerPadding: 'md',
+                controllersDisplay: 'show',
+                useRoundCorners: false,
+                transitionTime: '0.75',
+                fillHeight: false,
+                transitionDuration: 5,
+                roundCornersSize: 'md',
+                arrowsDisplay: 'show',
+                heightUnit: 'REM',
+                height: '16',
+                dropShadow: {
+                    size: 'md',
+                    intensity: 'soft',
+                    use: false,
+                },
+                arrowShape: 'round',
+                usePauseButton: true,
+                showControllersInSlider: true,
+                arrowsColor: 'system',
+                useInverStyle: true,
+                controllerSize: 'md',
+                controllerStyle: 'weak',
+                isTransition: true,
+                arrowType: 'arrow_right',
+                editSlideIndex: 0,
+                transitionType: 'fade',
+            },
+            slides: [
+                {
+                    verticalAlign: 'start',
+                    image: {
+                        verticalPosition: '50',
+                        useImage: false,
+                        horizontalPosition: '50',
+                        asset: '',
+                        assetURL: '',
+                    },
+                    overlay: {
+                        opacity: 75,
+                        value: 'hsl(0, 0%, 0%)',
+                        use: true,
+                    },
+                    buttonColor: 'system-primary',
+                    titleSize: 'md',
+                    subTitleSize: 'md',
+                    textColor: 'inverted',
+                    buttonsSize: 'md',
+                    useTitle: true,
+                    innerSpacing: 'md',
+                    contentWidth: 'Regular',
+                    secondButton: {
+                        style: 'strong',
+                        label: 'Noo',
+                        useButton: false,
+                        script: {},
+                    },
+                    useSubTitle: true,
+                    horizontalAlign: 'left',
+                    titleContent: '1st Title',
+                    gradientOverlay: {
+                        opacity: 75,
+                        value: 'hsl(0, 100%, 50%)',
+                        use: true,
+                    },
+                    subTitleContent: 'Sub title',
+                    firstButton: {
+                        style: 'weak-invert',
+                        label: 'survey',
+                        useButton: true,
+                        script: {
+                            runScriptData: {
+                                ScriptData: {},
+                                ScriptKey: scriptKey,
+                            },
+                        },
+                    },
+                    id: 0,
+                    titleWeight: 'normal',
+                },
+                {
+                    verticalAlign: 'start',
+                    image: {
+                        verticalPosition: '50',
+                        useImage: false,
+                        horizontalPosition: '50',
+                        asset: '',
+                        assetURL: '',
+                    },
+                    overlay: {
+                        opacity: 75,
+                        value: 'hsl(0, 0%, 0%)',
+                        use: true,
+                    },
+                    buttonColor: 'system-primary',
+                    titleSize: 'md',
+                    subTitleSize: 'md',
+                    textColor: 'inverted',
+                    buttonsSize: 'md',
+                    useTitle: true,
+                    innerSpacing: 'md',
+                    contentWidth: 'Regular',
+                    secondButton: {
+                        style: 'strong',
+                        label: 'Noo',
+                        useButton: false,
+                        script: {},
+                    },
+                    useSubTitle: true,
+                    horizontalAlign: 'left',
+                    titleContent: '2nd Title',
+                    gradientOverlay: {
+                        opacity: 75,
+                        value: 'hsl(0, 100%, 50%)',
+                        use: true,
+                    },
+                    subTitleContent: 'Sub title',
+                    firstButton: {
+                        style: 'weak-invert',
+                        label: 'Yess',
+                        useButton: true,
+                        script: {},
+                    },
+                    id: 1,
+                    titleWeight: 'normal',
+                },
+            ],
+        };
+        this.AddonUUID = 'f93658be-17b6-4c92-9df3-4e6c7151e038';
+    }
+    public Resource: string;
+    public Data: any;
+    public AddonUUID: string;
+}
+
+export class SlideShowBlockRelation extends BaseBlockRelation {
+    constructor() {
+        super();
+        (this.Type = 'NgComponent'),
+            (this.SubType = 'NG14'),
+            (this.ModuleName = 'SlideshowModule'),
+            (this.Schema = {
+                Fields: {
+                    slideshowConfig: {
+                        Type: 'Object',
+                        Fields: {
+                            controllersDisplay: {
+                                Type: 'String',
+                                ConfigurationPerScreenSize: true,
+                            },
+                            innerPadding: {
+                                Type: 'String',
+                                ConfigurationPerScreenSize: true,
+                            },
+                            arrowsDisplay: {
+                                Type: 'String',
+                                ConfigurationPerScreenSize: true,
+                            },
+                            heightUnit: {
+                                Type: 'String',
+                                ConfigurationPerScreenSize: true,
+                            },
+                            height: {
+                                Type: 'String',
+                                ConfigurationPerScreenSize: true,
+                            },
+                            controllerSize: {
+                                Type: 'String',
+                                ConfigurationPerScreenSize: true,
+                            },
+                        },
+                    },
+                    slides: {
+                        Type: 'Array',
+                        Items: {
+                            Type: 'Object',
+                            Fields: {
+                                verticalAlign: {
+                                    Type: 'String',
+                                    ConfigurationPerScreenSize: true,
+                                },
+                                image: {
+                                    Type: 'Object',
+                                    Fields: {
+                                        verticalPosition: {
+                                            Type: 'String',
+                                            ConfigurationPerScreenSize: true,
+                                        },
+                                        useImage: {
+                                            Type: 'Bool',
+                                            ConfigurationPerScreenSize: false,
+                                        },
+                                        horizontalPosition: {
+                                            Type: 'String',
+                                            ConfigurationPerScreenSize: true,
+                                        },
+                                        asset: {
+                                            Type: 'Resource',
+                                            Fields: {
+                                                url: {
+                                                    Type: 'String',
+                                                },
+                                                key: {
+                                                    Type: 'String',
+                                                },
+                                            },
+                                            ConfigurationPerScreenSize: false,
+                                        },
+                                    },
+                                },
+                                contentWidth: {
+                                    Type: 'String',
+                                    ConfigurationPerScreenSize: true,
+                                },
+                                horizontalAlign: {
+                                    Type: 'String',
+                                    ConfigurationPerScreenSize: true,
+                                },
+                                titleSize: {
+                                    Type: 'String',
+                                    ConfigurationPerScreenSize: true,
+                                },
+                                subTitleSize: {
+                                    Type: 'String',
+                                    ConfigurationPerScreenSize: true,
+                                },
+                                buttonsSize: {
+                                    Type: 'String',
+                                    ConfigurationPerScreenSize: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            }),
+            (this.RelationName = 'PageBlock'),
+            (this.ComponentName = 'SlideshowComponent'),
+            (this.AddonRelativeURL = 'slideshow'),
+            (this.AddonUUID = 'f93658be-17b6-4c92-9df3-4e6c7151e038'),
+            (this.Name = 'Slideshow');
+    }
+    public Schema: SlideShowSchema;
+}
+
+export interface SlideShowSchema {
+    Fields: SlideShowSchemaFields;
+}
+
+export interface SlideShowSchemaFields {
+    slideshowConfig: SlideshowConfig;
+    slides: SlideShowSlides;
+}
+
+export interface SlideshowConfig {
+    Type: any;
+    Fields: SlideshowConfigFields;
+}
+
+export interface SlideshowConfigFields {
+    controllersDisplay: SlideshowConfigData;
+    innerPadding: SlideshowConfigData;
+    arrowsDisplay: SlideshowConfigData;
+    heightUnit: SlideshowConfigData;
+    height: SlideshowConfigData;
+    controllerSize: SlideshowConfigData;
+}
+
+export interface SlideshowConfigData {
+    Type: string;
+    ConfigurationPerScreenSize: boolean;
+}
+
+export interface SlideShowSlides {
+    Type: string;
+    Items: SlideShowSlidesItems;
+}
+
+export interface SlideShowSlidesItems {
+    Type: string;
+    Fields: SlideShowSlidesFields;
+}
+
+export interface SlideShowSlidesFields {
+    verticalAlign: SlideshowConfigData;
+    image: SlideShowSlidesImage;
+    contentWidth: SlideshowConfigData;
+    horizontalAlign: SlideshowConfigData;
+    titleSize: SlideshowConfigData;
+    subTitleSize: SlideshowConfigData;
+    buttonsSize: SlideshowConfigData;
+}
+
+export interface SlideShowSlidesImage {
+    Type: string;
+    Fields: SlideShowSlidesImageFields;
+}
+
+export interface SlideShowSlidesImageFields {
+    verticalPosition: SlideshowConfigData;
+    useImage: SlideshowConfigData;
+    horizontalPosition: SlideshowConfigData;
+    asset: SlideShowSlidesImageFieldsAssets;
+}
+
+export interface SlideShowSlidesImageFieldsAssets {
+    Type: string;
+    Fields: SlideShowSlidesImageFieldsAssetsFields;
+    ConfigurationPerScreenSize: boolean;
+}
+
+export interface SlideShowSlidesImageFieldsAssetsFields {
+    url: { Type: string };
+    key: { Type: string };
 }
