@@ -372,7 +372,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.addAdminHomePageButtons(slugDisplayName);
                 for (let index = 0; index < 2; index++) {
-                    await webAppHomePage.manualResync(client);    
+                    await webAppHomePage.manualResync(client);
                 }
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slugDisplayName);
             });
@@ -382,7 +382,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 //2. delete resource views
                 //3. delete relevant pages
                 //4. delete slugs
-                //5. delete from homescreen 
+                //5. delete from homescreen
                 debugger;
             });
         });
