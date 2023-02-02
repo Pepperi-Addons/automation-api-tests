@@ -4,7 +4,12 @@ import { WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } 
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
-import { DataViewBaseField, DataFieldForEditorView, SlugField } from '../blueprints/DataViewBlueprints';
+import {
+    DataViewBaseField,
+    DataFieldForEditorView,
+    SlugField,
+    UpsertFieldsToMappedSlugs,
+} from '../blueprints/DataViewBlueprints';
 import {
     BaseFormDataViewField,
     DataViewFieldType,
@@ -12,6 +17,9 @@ import {
     MenuDataViewField,
 } from '@pepperi-addons/papi-sdk';
 import { BasePomObject } from '../pom/base/BasePomObject';
+import { DataViewsService } from '../../services/data-views.service';
+import { GeneralService } from '../../services';
+import { Client } from '@pepperi-addons/debug-server/dist';
 
 export default class E2EUtils extends BasePomObject {
     public constructor(protected browser: Browser) {
@@ -23,7 +31,9 @@ export default class E2EUtils extends BasePomObject {
         const settingsSidePanel: WebAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         try {
             await header.goHome();
+            await header.isSpinnerDone();
             await header.openSettings();
+            await header.isSpinnerDone();
             await settingsSidePanel.selectSettingsByID('Pages');
             switch (destiny) {
                 case 'Resource Views':
@@ -71,7 +81,7 @@ export default class E2EUtils extends BasePomObject {
     }
 
     public async addPage(nameOfPage: string, descriptionOfPage: string) {
-        debugger;
+        // debugger;
         const pageBuilder: PageBuilder = new PageBuilder(this.browser);
         await this.navigateTo('Page Builder');
         await pageBuilder.waitTillVisible(pageBuilder.PageBuilder_Title, 15000);
@@ -305,5 +315,33 @@ export default class E2EUtils extends BasePomObject {
     public async getUUIDfromURL() {
         const currentUrl = (await this.browser.getCurrentUrl()).split('/');
         return currentUrl[currentUrl.length - 1];
+    }
+
+    public async addToMappedSlugs(slugsPagesPairsToAdd: { slug_path: string; pageUUID: string }[], client: Client) {
+        const generalService = new GeneralService(client);
+        const dataViewsService = new DataViewsService(generalService.papiClient);
+        const slugs: Slugs = new Slugs(this.browser);
+        const existingMappedSlugs = await slugs.getExistingMappedSlugsList(dataViewsService);
+        const slugsFields: MenuDataViewField[] = this.prepareDataForDragAndDropAtSlugs(
+            slugsPagesPairsToAdd,
+            existingMappedSlugs,
+        );
+        console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 4)}`);
+        const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
+        console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 4)}`);
+        const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
+        return { previouslyExistingMappedSlugs: existingMappedSlugs, postResponse: upsertFieldsToMappedSlugs };
+    }
+
+    public async runOverMappedSlugs(mappedSlugsList: MenuDataViewField[], client: Client) {
+        const generalService = new GeneralService(client);
+        const dataViewsService = new DataViewsService(generalService.papiClient);
+        const slugsFields: MenuDataViewField[] = this.prepareDataForDragAndDropAtSlugs([], mappedSlugsList);
+        console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 4)}`);
+        const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
+        console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 4)}`);
+        const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
+        console.info(`upsertFieldsToMappedSlugs RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 4)}`);
+        return upsertFieldsToMappedSlugs;
     }
 }

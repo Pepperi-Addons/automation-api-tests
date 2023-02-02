@@ -4,6 +4,10 @@ import { AddonPage } from './base/AddonPage';
 export class VisitFlow extends AddonPage {
     // *general selectors for Visit Flow*
     public VisitFlow_Content: By = By.xpath('//visit-details');
+    public VisitFlow_VisitsContainer: By = By.xpath('//div[contains(@class,"visits-container")]');
+    public VisitFlow_SelectVisit_Title: By = By.xpath(
+        '//div[contains(@class,"visit-selection")]//div[contains(@class,"header")]',
+    );
     public VisitFlow_Groups_Content: By = By.xpath('//div[contains(@class,"flow-groups")]');
     public VisitFlow_GroupButton_Start: By = this.getSelectorOfVisitFlowGroupButtonByName('Start'); //By.xpath('//visit-details//div[contains(@class,"flow-groups")]//pep-button//button[@data-qa="Start"]');
     public VisitFlow_GroupButton_Orders: By = this.getSelectorOfVisitFlowGroupButtonByName('Orders');
@@ -12,6 +16,33 @@ export class VisitFlow extends AddonPage {
     public VisitFlow_StepButton_StartVisit: By = this.getSelectorOfVisitFlowStepButtonByName('Start Visit'); //By.xpath('//visit-details//div[contains(@class,"group-steps")]//pep-button//button[@data-qa="Start Visit"]');
     public VisitFlow_StepButton_SalesOrder: By = this.getSelectorOfVisitFlowStepButtonByName('Sales Order');
     public VisitFlow_StepButton_EndVisit: By = this.getSelectorOfVisitFlowStepButtonByName('End Visit');
+
+    // Account Dashborad Layout
+    public AccountDashboardLayout_Container: By = By.xpath('//div[@id="appContainer"]');
+    public AccountDashboardLayout_Title: By = By.xpath('//h1[contains(@class,"page-title")]/span');
+    public AccountDashboardLayout_ListContainer: By = By.xpath('//div[@id="tamplateListCont"]');
+    public AccountDashboardLayout_MenuRow_Container: By = By.xpath('//div[text()="Menu"]/parent::div');
+    // public AccountDashboardLayout_Menu_PencilButton: By = By.xpath('//div[text()="Menu"]/parent::div//div[@title="Edit"]');
+    public AccountDashboardLayout_MenuRow_PencilButton: By = By.xpath(
+        '//div[text()="Menu"]/parent::div[contains(@class,"active")]//div[@title="Edit"]',
+    );
+    public AccountDashboardLayout_ConfigPage_Title: By = By.xpath(
+        '//div[contains(@class,"previewAndRestoreDiv")]/div/b',
+    );
+    public AccountDashboardLayout_Menu_CancelButton: By = By.xpath('//div[contains(@class,"cancel")][text()="Cancel"]');
+    public AccountDashboardLayout_Menu_RepCard_PencilButton: By = By.xpath(
+        '//span[@title="Rep"]/following-sibling::span[contains(@class,"editPenIcon")]',
+    );
+    public AccountDashboardLayout_Menu_RepCard_SearchBox: By = By.xpath('//input[@id="txtSearchBankFields"]');
+    public AccountDashboardLayout_Menu_RepCard_SearchResult: By = By.xpath(
+        '//div[text()="Available Fields"]/parent::div//ul/div[4]/ul/li[contains(@class,"filter-selected")]',
+    );
+    public AccountDashboardLayout_Menu_RepCard_SearchResult_PlusButton: By = By.xpath(
+        '//div[text()="Available Fields"]/parent::div//ul/div[4]/ul/li[contains(@class,"filter-selected")]//div[contains(@class,"plusIcon")]',
+    );
+    public AccountDashboardLayout_Menu_RepCard_SaveButton: By = By.xpath(
+        '//div[contains(@class,"footer-buttons")]/div[contains(@class,"save")]',
+    );
 
     // Visit Flow Main Activity
     public VisitFlowMainActivity_FormPage_Header_CancelButton: By = By.xpath('//button[@data-qa="cancelButton"]');
@@ -37,6 +68,17 @@ export class VisitFlow extends AddonPage {
     // Account Page - will be moved later
     public FirstAccountInList: By = By.xpath('//virtual-scroller//fieldset//span[@id="Name"]');
     public AccountHomePage_HamburgerMenu_Button: By = By.xpath('//list-menu[@data-qa="firstMenu"]//button');
+    public AccountHomePage_ListSelectAll_Checkbox: By = By.xpath(
+        '//fieldset[contains(@class,"table-header-fieldset")]/mat-checkbox',
+    );
+    public AccountHomePage_List_PencilButton: By = By.xpath('//list-actions//button');
+    public AccountHomePage_List_UnderPencilButton_Delete: By = By.xpath('//button[@title="Delete"]');
+    public AccountHomePage_List_DeletePopUpDialog_RedDeleteButton: By = By.xpath(
+        '//pep-dialog/div[3]//span[contains(text(),"Delete")]/parent::button',
+    );
+    public AccountHomePage_List_EmptyList_Message: By = By.xpath(
+        '//pep-list//p[contains(text(),"No Activities found")]',
+    );
     public AccountHomePage_HamburgerMenu_Content: By = By.xpath('//div[contains(@id,"cdk-overlay-")]');
     public AccountHomePage_HamburgerMenu_VisitFlowSlug: By = By.xpath(
         '//div[contains(@id,"cdk-overlay-")]//button[@title="VisitFlow"]',
@@ -61,8 +103,14 @@ export class VisitFlow extends AddonPage {
     public VisitFlow_DefaultCatalog_CartButton: By = By.xpath('//button[@data-qa="cartButton"]');
     public VisitFlow_DefaultCatalog_SubmitButton: By = By.xpath('//button[@data-qa="Submit"]');
 
+    public getSelectorOfVisitFlowButtonByName(name: string) {
+        return By.xpath(`//div[contains(@class,"visit-selection")]//button[@data-qa="${name}"]`);
+    }
+
     public getSelectorOfVisitFlowGroupButtonByName(name: string) {
-        return By.xpath(`//visit-details//div[contains(@class,"flow-groups")]//pep-button//button[@data-qa="${name}"]`);
+        return By.xpath(
+            `//visit-details//div[contains(@class,"flow-groups")]//pep-button//button[contains(@data-qa,"${name}")]`,
+        );
     }
 
     public getSelectorOfVisitFlowStepButtonByName(name: string) {
@@ -71,5 +119,17 @@ export class VisitFlow extends AddonPage {
 
     public getSelectorOfVisitFlowCancelDialogButtonByText(text: string) {
         return By.xpath(`//mat-dialog-container//span[contains(text(),"${text}")]/parent::button`);
+    }
+
+    public getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText(slugpath: string) {
+        return By.xpath(`//div[text()="Layout"]/following-sibling::ul/li[contains(@data-id,"${slugpath}")]`);
+    }
+
+    public getSelectorOfSlugConfiguredToAccountDashboardMenuDELETEbuttonByText(slugpath: string) {
+        return By.xpath(`//div[text()="Layout"]/following-sibling::ul/li[contains(@data-id,"${slugpath}")]//span[4]`);
+    }
+
+    public getSelectorOfAccountHomePageHamburgerMenuVisitFlowAutomatedSlug(slugName: string) {
+        return By.xpath(`//div[contains(@id,"cdk-overlay-")]//button[@title="${slugName}"]`);
     }
 }
