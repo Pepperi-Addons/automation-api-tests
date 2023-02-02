@@ -254,10 +254,10 @@ export class ScriptEditor extends AddonPage {
         await this.browser.sendKeys(scriptEditor.CodeTextArea, selectAll);
         await this.browser.sendKeys(scriptEditor.CodeTextArea, Key.DELETE);
         await this.browser.sendKeys(scriptEditor.CodeTextArea, sciptText);
-        this.browser.sleep(3500);
+        this.browser.sleep(4500);
         //4. save
         await this.browser.click(scriptEditor.SaveBtn);
-        this.browser.sleep(4500);
+        this.browser.sleep(5500);
         await this.browser.click(scriptEditor.ModalCloseBtn);
         //5. validate script is found in list
         const webAppList = new WebAppList(this.browser);
