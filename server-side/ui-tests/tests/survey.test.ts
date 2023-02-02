@@ -170,7 +170,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 });
                 accountViewUUID = await resourceListUtils.getUUIDfromURL();
                 let viewFields: GridDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-                    { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
                     { fieldName: 'InternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
                     { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
                     { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
@@ -185,15 +185,15 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await resourceListUtils.addView({
                     nameOfView: 'Surveys',
                     descriptionOfView: 'Sur',
-                    nameOfResource: 'surveys',
+                    nameOfResource: 'survey_templates',
                 });
                 // Configure View
                 surveyViewUUID = await resourceListUtils.getUUIDfromURL();
                 viewFields = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
                     { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'StatusName', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'Template', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'Description', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'Sections', dataViewType: 'TextBox', mandatory: false, readonly: false },
                 ]);
                 await resourceViews.customViewConfig(dataViewsService, {
                     matchingEditorName: '',
@@ -368,7 +368,9 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 driver.sleep(15 * 1000);
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
+                driver.sleep(5000);
                 await webAppHeader.openSettings();
+                driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.addAdminHomePageButtons(slugDisplayName);
                 for (let index = 0; index < 2; index++) {
