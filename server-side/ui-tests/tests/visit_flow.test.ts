@@ -30,16 +30,33 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let pageBuilder: PageBuilder;
     let slugs: Slugs;
     let randomString: string;
-    let upsertedListingsToVisitFlowGroups: any[];
-    // let upsertedListingsToVisitFlows: any[];
+    let upsertedListingsToVisitFlowGroups: {
+        Title: string;
+        SortIndex: number;
+        Key: string;
+        Hidden: boolean;
+        CreationDateTime?: Date;
+        ModificationDateTime?: Date;
+    }[];
+    let upsertedListingsToVisitFlows: {
+        Completed: string;
+        Resource: string;
+        Title: string;
+        Group: string;
+        ResourceCreationData: string;
+        Mandatory: boolean;
+        Key: string;
+        Hidden: boolean;
+        CreationDateTime?: Date;
+        ModificationDateTime?: Date;
+    }[];
     let pageUUID: string;
     let pageName: string;
+    let visitFlowName: string;
+    let visitFlowDescription: string;
     let slugDisplayName: string;
     let slug_path: string;
     let slugUUID: string;
-    // let existingMappedSlugs: any[];
-    // let resourceList: ResourceList;
-    // let resourceEditors: ResourceEditors;
     // let resourceViews: ResourceViews;
 
     describe('Visit Flow UI tests', () => {
@@ -53,14 +70,14 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             visitFlow = new VisitFlow(driver);
             pageBuilder = new PageBuilder(driver);
             slugs = new Slugs(driver);
-            // resourceList = new ResourceList(driver);
-            // resourceEditors = new ResourceEditors(driver);
             // resourceViews = new ResourceViews(driver);
             randomString = generalService.generateRandomString(5);
+            visitFlowName = `AutoVisiT${randomString}`;
+            visitFlowDescription = `Auto Visit ${randomString}`;
             slugDisplayName = `Visit Flow Auto ${randomString}`;
             slug_path = `visit_flow_auto_${randomString}`;
             upsertedListingsToVisitFlowGroups = [];
-            // upsertedListingsToVisitFlows = [];
+            upsertedListingsToVisitFlows = [];
         });
 
         after(async function () {
@@ -107,65 +124,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     upsertedListingsToVisitFlowGroups.push(upsertingValues_Response.Body);
                 });
             });
-            it('Configuring Flows', async () => {
-                driver.sleep(5 * 1000);
-                // debugger
-                // const group_Start_Key = upsertedListingsToVisitFlowGroups.find(groupObj => { if (groupObj.Title.contains('Start')) { return groupObj.Key } });
-                // const group_Orders_Key = upsertedListingsToVisitFlowGroups.find(groupObj => { if (groupObj.Title.contains('Orders')) { return groupObj.Key } });
-                // const group_End_Key = upsertedListingsToVisitFlowGroups.find(groupObj => { if (groupObj.Title.contains('End')) { return groupObj.Key } });
-                const collectionName = 'VisitFlows';
-                const visitsDocumentsToUpsert = [
-                    {
-                        Name: `AutoVisiT${randomString}`,
-                        Description: `Auto Visit ${randomString}`,
-                        Active: true,
-                        steps: [
-                            JSON.stringify({
-                                Completed: 'In Creation',
-                                Resource: 'activities',
-                                Title: 'Start Visit',
-                                Group: upsertedListingsToVisitFlowGroups.length
-                                    ? upsertedListingsToVisitFlowGroups[0].Key
-                                    : '',
-                                ResourceCreationData: 'VF_VisitFlowMainActivity',
-                                Mandatory: true,
-                            }),
-                            JSON.stringify({
-                                Completed: 'In Creation',
-                                Resource: 'transactions',
-                                Title: 'Sales Order',
-                                Group: upsertedListingsToVisitFlowGroups.length
-                                    ? upsertedListingsToVisitFlowGroups[1].Key
-                                    : '',
-                                ResourceCreationData: 'Sales Order',
-                            }),
-                            JSON.stringify({
-                                Completed: 'Submitted',
-                                Resource: 'activities',
-                                Title: 'End Visit',
-                                Group: upsertedListingsToVisitFlowGroups.length
-                                    ? upsertedListingsToVisitFlowGroups[2].Key
-                                    : '',
-                                ResourceCreationData: 'VF_VisitFlowMainActivity',
-                                Mandatory: true,
-                            }),
-                        ],
-                    },
-                ];
-                let upsertingValues_Response;
-                visitsDocumentsToUpsert.forEach(async (documentToUpsert) => {
-                    // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlows
-                    upsertingValues_Response = await udcService.upsertValuesToCollection(
-                        documentToUpsert,
-                        collectionName,
-                    );
-                    console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
-                    expect(upsertingValues_Response.Ok).to.be.true;
-                    expect(upsertingValues_Response.Status).to.equal(200);
-                    expect(upsertingValues_Response.Error).to.eql({});
-                    upsertedListingsToVisitFlowGroups.push(upsertingValues_Response.Body);
-                });
-            });
         });
 
         describe('Creating a Page with VisitFlow Block', () => {
@@ -194,6 +152,79 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await pageBuilder.searchForPageByName(pageName);
                 pageBuilder.pause(2 * 1000);
                 // expect(await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)).to.throw();
+            });
+        });
+
+        describe('Inserting Data to the UDCs', () => {
+            it('Configuring Flows', async () => {
+                driver.sleep(5 * 1000);
+                const collectionName = 'VisitFlows';
+                const group_Start = upsertedListingsToVisitFlowGroups.length
+                    ? upsertedListingsToVisitFlowGroups.find((group) => {
+                          if (group.Title.includes('Start')) {
+                              return group.Key;
+                          }
+                      })
+                    : '';
+                const group_Orders = upsertedListingsToVisitFlowGroups.length
+                    ? upsertedListingsToVisitFlowGroups.find((group) => {
+                          if (group.Title.includes('Orders')) {
+                              return group.Key;
+                          }
+                      })
+                    : '';
+                const group_End = upsertedListingsToVisitFlowGroups.length
+                    ? upsertedListingsToVisitFlowGroups.find((group) => {
+                          if (group.Title.includes('End')) {
+                              return group.Key;
+                          }
+                      })
+                    : '';
+                const visitsDocumentsToUpsert = [
+                    {
+                        Name: visitFlowName,
+                        Description: visitFlowDescription,
+                        Active: true,
+                        steps: [
+                            {
+                                Completed: 'In Creation',
+                                Resource: 'activities',
+                                Title: 'Start Visit',
+                                Group: group_Start ? group_Start.Key : '',
+                                ResourceCreationData: 'VF_VisitFlowMainActivity',
+                                Mandatory: true,
+                            },
+                            {
+                                Completed: 'In Creation',
+                                Resource: 'transactions',
+                                Title: 'Sales Order',
+                                Group: group_Orders ? group_Orders.Key : '',
+                                ResourceCreationData: 'Sales Order',
+                            },
+                            {
+                                Completed: 'Submitted',
+                                Resource: 'activities',
+                                Title: 'End Visit',
+                                Group: group_End ? group_End.Key : '',
+                                ResourceCreationData: 'VF_VisitFlowMainActivity',
+                                Mandatory: true,
+                            },
+                        ],
+                    },
+                ];
+                let upsertingValues_Response;
+                visitsDocumentsToUpsert.forEach(async (documentToUpsert) => {
+                    // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlows
+                    upsertingValues_Response = await udcService.upsertValuesToCollection(
+                        documentToUpsert,
+                        collectionName,
+                    );
+                    console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
+                    expect(upsertingValues_Response.Ok).to.be.true;
+                    expect(upsertingValues_Response.Status).to.equal(200);
+                    expect(upsertingValues_Response.Error).to.eql({});
+                    upsertedListingsToVisitFlows.push(upsertingValues_Response.Body);
+                });
             });
         });
 
@@ -316,12 +347,12 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await webAppHomePage.clickOnBtn('Accounts');
                 driver.sleep(1 * 1000);
                 await webAppHeader.isSpinnerDone();
-            });
-
-            it('Entering Visit Flow slug from Menu', async () => {
                 await visitFlow.waitTillVisible(visitFlow.FirstAccountInList, 15000);
                 await visitFlow.clickElement('FirstAccountInList');
                 driver.sleep(1 * 1000);
+            });
+
+            it('Entering Visit Flow slug from Menu', async () => {
                 await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Button, 15000);
                 await visitFlow.clickElement('AccountHomePage_HamburgerMenu_Button');
                 await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Content, 15000);
@@ -330,7 +361,17 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await visitFlow.click(
                     visitFlow.getSelectorOfAccountHomePageHamburgerMenuVisitFlowAutomatedSlug(slugDisplayName),
                 );
-                await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
+                visitFlow.pause(1 * 1000);
+            });
+
+            it('If more than one slug - Choosing a Slug', async () => {
+                if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
+                    visitFlow.pause(1.5 * 1000);
+                    // await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName('First Visit'));
+                    await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowDescription));
+                } else {
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
+                }
                 visitFlow.pause(1 * 1000);
             });
 
@@ -399,7 +440,12 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 visitFlow.pause(0.5 * 1000);
                 await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
                 await visitFlow.isSpinnerDone();
-                await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
+                if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
+                    visitFlow.pause(1.5 * 1000);
+                    await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowDescription));
+                } else {
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
+                }
                 visitFlow.pause(5 * 1000);
             });
         });
@@ -528,27 +574,52 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     expect(deleteResponse.Body.SortIndex).to.equal(documentBody.SortIndex);
                 });
 
-                // // deleting created VisitFlows documents
-                // upsertedListingsToVisitFlowGroups.forEach(async (documentBody) => {
-                //     const deleteResponse = await udcService.hideObjectInACollection(
-                //         'VisitFlows',
-                //         documentBody.Key,
-                //     );
-                //     expect(deleteResponse.Ok).to.be.true;
-                //     expect(deleteResponse.Status).to.equal(200);
-                //     expect(deleteResponse.Error).to.eql({});
-                //     expect(deleteResponse.Body.Hidden).to.be.true;
-                //     expect(deleteResponse.Body.Key).to.equal(documentBody.Key);
-                //     expect(deleteResponse.Body.Name).to.equal(documentBody.Name);
-                //     expect(deleteResponse.Body.Description).to.equal(documentBody.Description);
-                // });
+                // deleting created VisitFlows documents
+                upsertedListingsToVisitFlows.forEach(async (documentBody) => {
+                    const deleteResponse = await udcService.hideObjectInACollection('VisitFlows', documentBody.Key);
+                    expect(deleteResponse.Ok).to.be.true;
+                    expect(deleteResponse.Status).to.equal(200);
+                    expect(deleteResponse.Error).to.eql({});
+                    expect(deleteResponse.Body.Hidden).to.be.true;
+                    expect(deleteResponse.Body.Key).to.equal(documentBody.Key);
+                    expect(deleteResponse.Body.Title).to.equal(documentBody.Title);
+                });
             });
 
             // it('Deleting Catalogs View', async () => {
             // });
 
-            // it('Deleting Activities', async () => {
-            // });
+            it('Deleting Activities', async () => {
+                await webAppHeader.goHome();
+                await webAppHomePage.isSpinnerDone();
+                await webAppHomePage.clickOnBtn('Accounts');
+                driver.sleep(0.5 * 1000);
+                await webAppHeader.isSpinnerDone();
+                await visitFlow.waitTillVisible(visitFlow.FirstAccountInList, 15000);
+                await visitFlow.clickElement('FirstAccountInList');
+                driver.sleep(0.5 * 1000);
+                await visitFlow.waitTillVisible(visitFlow.AccountHomePage_ListSelectAll_Checkbox, 15000);
+                await visitFlow.clickElement('AccountHomePage_ListSelectAll_Checkbox');
+                driver.sleep(0.5 * 1000);
+                await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_PencilButton, 15000);
+                await visitFlow.clickElement('AccountHomePage_List_PencilButton');
+                driver.sleep(0.5 * 1000);
+                await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_UnderPencilButton_Delete, 15000);
+                await visitFlow.clickElement('AccountHomePage_List_UnderPencilButton_Delete');
+                driver.sleep(0.5 * 1000);
+                await visitFlow.waitTillVisible(
+                    visitFlow.AccountHomePage_List_DeletePopUpDialog_RedDeleteButton,
+                    15000,
+                );
+                await visitFlow.clickElement('AccountHomePage_List_DeletePopUpDialog_RedDeleteButton');
+                driver.sleep(0.5 * 1000);
+                await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_EmptyList_Message, 15000);
+                driver.sleep(2.5 * 1000);
+            });
+
+            it('Performing Manual Sync', async () => {
+                await e2eUtils.performManualSync();
+            });
         });
     });
 }
