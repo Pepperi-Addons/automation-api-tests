@@ -32,7 +32,7 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
 
     //#region Upgrade ADAL
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
         training: ['2c199913-dba2-4533-ad78-747b6553acf8', '0.0.12'],
         Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
@@ -926,8 +926,11 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             )
             .then((res) => res.Body);
         //debugger;
-        if (logcash.getDataDedicatedAfterDrop.fault.faultstring.includes('Failed due to exception: Schema doesn')) {
+        if (logcash.getDataDedicatedAfterDrop == '') {
             logcash.getDataDedicatedAfterDropStatus = true;
+            // changed back to [] from exeption on data index 1.1.29   (31-01-23)
+            // if (logcash.getDataDedicatedAfterDrop.fault.faultstring.includes('Failed due to exception: Schema doesn')) {
+            //     logcash.getDataDedicatedAfterDropStatus = true;
         } else {
             logcash.getDataDedicatedAfterDropStatus = false;
             logcash.getDataDedicatedAfterDropError = 'Dedicated schema need be deleted ';

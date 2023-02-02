@@ -1,0 +1,62 @@
+export async function main(data) { // your predefined parameters will be properties on data object    
+    let accountUUID: string = data.account_uuid || '';
+    let templateKey: string = data.template_key || '';
+    // Choose survey template if not supply as parameter    
+    if (templateKey.length === 0) {
+        const templateMmodalOptions: any = {
+            addonBlockName: 'ResourcePicker',
+            hostObject: {
+                resource: 'MySurveyTemplates',
+                view: '{surveyViewPlaceHolder}',
+                selectionMode: 'single', // multi
+                selectedObjectKeys: [],
+            },
+            title: 'Select template',
+            allowCancel: true,
+        }; // const templatesResult = { canceled: false, result: JSON.stringify({ selectedObjectKeys: ['9233b3ed-e930-4652-a22f-a91fd29852ec'] }) };
+        const templatesResult = await client?.["showModal"](templateMmodalOptions);
+        console.log(templatesResult); // If survey template was choosen        
+        if (!templatesResult.canceled && templatesResult.result.length > 0) {
+            const resObject = JSON.parse(templatesResult.result);
+            if (resObject?.selectedObjectKeys.length > 0) {
+                templateKey = resObject.selectedObjectKeys[0];
+            }
+        }
+    } // Choose account if not supply as parameter.   
+    if (templateKey.length > 0 && accountUUID.length === 0) {
+        const accountsModalOptions: any = {
+            addonBlockName: 'ResourcePicker',
+            hostObject: {
+                resource: 'accounts',
+                view: '{accountViewPlaceHolder}',
+                selectionMode: 'single', // multi                
+                selectedObjectKeys: [],
+            },
+            title: 'Select account',
+            allowCancel: true,
+        }; // const accountsResult = { canceled: false, result: JSON.stringify({ selectedObjectKeys: ['6fc3dd58-6a17-4593-ab8a-fb7a7156eae6'] })};       
+        const accountsResult = await client?.["showModal"](accountsModalOptions);
+        // If account was choosen        
+        if (!accountsResult.canceled && accountsResult.result.length > 0) {
+            const resObject = JSON.parse(accountsResult.result);
+            if (resObject?.selectedObjectKeys.length > 0) {
+                accountUUID = resObject.selectedObjectKeys[0];
+            }
+        }
+    } // Create new survey    
+    if (templateKey.length > 0 && accountUUID.length > 0) {
+        const newSurvey = {
+            'Template': templateKey,
+            'Account': accountUUID,
+            'StatusName': 'InCreation'
+        };
+        console.log(newSurvey);
+        const res = await pepperi.resources.resource('MySurveys').post(newSurvey);
+        console.log(res);
+        await client?.navigateTo({
+            url: '{surveySlugNamePlaceHolder}?survey_key=' + res.Key
+        });
+    } else {
+        await client?.alert('Info', `Cannot create survey, ${templateKey.length === 0 ? 'template' : 'account'} is not supply.`);
+    }
+}

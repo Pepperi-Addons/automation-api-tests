@@ -29,9 +29,9 @@ export const testData = {
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
-    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.1.%'],
-    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.'],
-    ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.4.%'],
+    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+    ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', '1.0.2'],
     'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.0.134'], //hardcoded because newest isn't phased and otherwise wont match new webapp
@@ -53,9 +53,9 @@ export const testDataForInitUser = {
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
-    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.1.%'],
+    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
-    ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.4.87'],
+    ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
     'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.0.134'],
@@ -795,6 +795,7 @@ export default class GeneralService {
                 addonName == 'ADAL' || //evgeny
                 addonName == 'Data Index Framework' || //evgeny
                 addonName == 'system_health' || //evgeny
+                addonName == 'Cross Platform Engine' || //evgeny
                 addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
                 addonName == 'Relations Framework' || // evgeny 4/12: done to be able to test latest relation fw version
                 addonName == 'Pepperitest (Jenkins Special Addon) - Code Jobs' || // evgeny 6/12: trying to fix wiered jenkins issue
@@ -882,6 +883,31 @@ export default class GeneralService {
             }
         }
         return testData;
+    }
+
+    //currently immplemented only for dev-tests: will get better with time
+    async installLatestAvalibaleVersionOfAddon(varKey: string, testData: { [any: string]: string[] }) {
+        const addonName = Object.entries(testData)[0][0];
+        const addonUUID = testData[addonName][0];
+        const searchString = `AND Version Like '%' AND Available Like 1`;
+        const fetchVarResponse = (
+            await this.fetchStatus(
+                `${this.client.BaseURL.replace(
+                    'papi-eu',
+                    'papi',
+                )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                    },
+                },
+            )
+        ).Body[0];
+        const latestVersion = fetchVarResponse.Version;
+        const installObj = {};
+        installObj[addonName] = [testData[addonName][0], latestVersion];
+        return await this.areAddonsInstalled(installObj);
     }
 
     async changeToAnyAvailableVersion(testData: { [any: string]: string[] }): Promise<{ [any: string]: string[] }> {

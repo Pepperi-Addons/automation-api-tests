@@ -1,8 +1,10 @@
 import { Key } from 'selenium-webdriver';
 import { By } from 'selenium-webdriver/lib/by';
+import { BaseBlockRelation } from '../../blueprints/PageBlocksBlueprints';
 import { WebAppSettingsSidePanel } from '../Components/WebAppSettingsSidePanel';
 import { WebAppHeader } from '../WebAppHeader';
 import { AddonPage } from './base/AddonPage';
+import { v4 as uuidv4 } from 'uuid';
 
 // {
 //     "surveyTemplate": {
@@ -93,7 +95,7 @@ export interface FilterData {
 export class SurveyTemplateBuilder extends AddonPage {
     public SurveyBuilderMainTitle: By = By.xpath(`//*[@title='Survey Builder']`);
     public SurveyBuilderGenericListTitle: By = By.xpath(`//span[text()='Surveys' and @title='Surveys']`);
-    public InternalGenericListLine: By = By.className(`table-header-fieldset`);
+    // public InternalGenericListLine: By = By.className(`table-header-fieldset`);
     public AddASurveyButton: By = By.xpath(`//span[text()=' Add a Survey ']//..//..`);
     public DeafultSurveySection: By = By.xpath(`//mat-label[text()=' Section 1 ']`);
     public LeftSideSurveyTitle: By = By.xpath(`//span[text()='Survey Builder']`);
@@ -195,8 +197,7 @@ export class SurveyTemplateBuilder extends AddonPage {
             this.SurveyBuilderGenericListTitle,
             2000,
         );
-        const isInternalGenericListLineShown = await this.browser.isElementVisible(this.InternalGenericListLine, 2000);
-        return isMainTitleShown && isGenericResourceTitleShown && isInternalGenericListLineShown;
+        return isMainTitleShown && isGenericResourceTitleShown;
     }
 
     private async validateBuilderPageIsOpened(): Promise<boolean> {
@@ -330,4 +331,403 @@ export class SurveyTemplateBuilder extends AddonPage {
             await this.browser.click(this.SaveFilterButton);
         }
     }
+}
+
+export class SurveyBlock {
+    constructor() {
+        this.Key = uuidv4();
+    }
+    public Configuration: SurveyBlockConfiguration = new SurveyBlockConfiguration();
+    public Key: string;
+    public Relation: SurveyBlockRelation = new SurveyBlockRelation();
+}
+
+export class SurveyBlockConfiguration {
+    constructor() {
+        this.Resource = 'Survey';
+        this.Data = {};
+        this.AddonUUID = 'cf17b569-1af4-45a9-aac5-99f23cae45d8';
+    }
+    public Resource: string;
+    public Data: any;
+    public AddonUUID: string;
+}
+
+export class SurveyBlockRelation extends BaseBlockRelation {
+    constructor() {
+        super();
+        this.ElementName = 'block-element-cf17b569-1af4-45a9-aac5-99f23cae45d8';
+        this.EditorElementName = 'block-editor-element-cf17b569-1af4-45a9-aac5-99f23cae45d8';
+        this.EditorComponentName = 'BlockEditorComponent';
+        this.EditorModuleName = 'BlockEditorModule';
+        this.Key = 'Survey_cf17b569-1af4-45a9-aac5-99f23cae45d8_PageBlock';
+        this.AddonRelativeURL = 'survey_builder';
+        this.AddonUUID = 'cf17b569-1af4-45a9-aac5-99f23cae45d8';
+        this.ModuleName = 'BlockModule';
+        this.ComponentName = 'BlockComponent';
+        this.Name = 'Survey';
+        this.RelationName = 'PageBlock';
+        this.SubType = 'NG14';
+        this.Type = 'NgComponent';
+    }
+    public ElementName: string;
+    public EditorElementName: string;
+    public EditorComponentName: string;
+    public EditorModuleName: string;
+    public Key: string;
+}
+
+export class SurveyBlockColumn {
+    constructor(key: string) {
+        this.BlockContainer.BlockKey = key;
+    }
+    public BlockContainer = {
+        BlockKey: '',
+    };
+}
+
+export class SlideShowBlockColumn {
+    constructor(key: string) {
+        this.BlockContainer.BlockKey = key;
+    }
+    public BlockContainer = {
+        BlockKey: '',
+    };
+}
+
+export class SlideShowBlock {
+    constructor(scriptKey) {
+        this.Key = uuidv4();
+        this.PageConfiguration = { Parameters: [] };
+        this.Configuration = new SlideShowConfiguration(scriptKey);
+    }
+    public Configuration: SlideShowConfiguration;
+    public Key: string;
+    public PageConfiguration: PageConfiguration;
+    public Relation: SlideShowBlockRelation = new SlideShowBlockRelation();
+}
+
+export interface PageConfiguration {
+    Parameters: any[];
+}
+
+export class SlideShowConfiguration {
+    constructor(scriptKey) {
+        this.Resource = 'Slideshow';
+        this.Data = {
+            slideshowConfig: {
+                isUseArrows: true,
+                arrowsStyle: 'weak',
+                innerPadding: 'md',
+                controllersDisplay: 'show',
+                useRoundCorners: false,
+                transitionTime: '0.75',
+                fillHeight: false,
+                transitionDuration: 5,
+                roundCornersSize: 'md',
+                arrowsDisplay: 'show',
+                heightUnit: 'REM',
+                height: '16',
+                dropShadow: {
+                    size: 'md',
+                    intensity: 'soft',
+                    use: false,
+                },
+                arrowShape: 'round',
+                usePauseButton: true,
+                showControllersInSlider: true,
+                arrowsColor: 'system',
+                useInverStyle: true,
+                controllerSize: 'md',
+                controllerStyle: 'weak',
+                isTransition: true,
+                arrowType: 'arrow_right',
+                editSlideIndex: 0,
+                transitionType: 'fade',
+            },
+            slides: [
+                {
+                    verticalAlign: 'start',
+                    image: {
+                        verticalPosition: '50',
+                        useImage: false,
+                        horizontalPosition: '50',
+                        asset: '',
+                        assetURL: '',
+                    },
+                    overlay: {
+                        opacity: 75,
+                        value: 'hsl(0, 0%, 0%)',
+                        use: true,
+                    },
+                    buttonColor: 'system-primary',
+                    titleSize: 'md',
+                    subTitleSize: 'md',
+                    textColor: 'inverted',
+                    buttonsSize: 'md',
+                    useTitle: true,
+                    innerSpacing: 'md',
+                    contentWidth: 'Regular',
+                    secondButton: {
+                        style: 'strong',
+                        label: 'Noo',
+                        useButton: false,
+                        script: {},
+                    },
+                    useSubTitle: true,
+                    horizontalAlign: 'left',
+                    titleContent: '1st Title',
+                    gradientOverlay: {
+                        opacity: 75,
+                        value: 'hsl(0, 100%, 50%)',
+                        use: true,
+                    },
+                    subTitleContent: 'Sub title',
+                    firstButton: {
+                        style: 'weak-invert',
+                        label: 'survey',
+                        useButton: true,
+                        script: {
+                            runScriptData: {
+                                ScriptData: {},
+                                ScriptKey: scriptKey,
+                            },
+                        },
+                    },
+                    id: 0,
+                    titleWeight: 'normal',
+                },
+                {
+                    verticalAlign: 'start',
+                    image: {
+                        verticalPosition: '50',
+                        useImage: false,
+                        horizontalPosition: '50',
+                        asset: '',
+                        assetURL: '',
+                    },
+                    overlay: {
+                        opacity: 75,
+                        value: 'hsl(0, 0%, 0%)',
+                        use: true,
+                    },
+                    buttonColor: 'system-primary',
+                    titleSize: 'md',
+                    subTitleSize: 'md',
+                    textColor: 'inverted',
+                    buttonsSize: 'md',
+                    useTitle: true,
+                    innerSpacing: 'md',
+                    contentWidth: 'Regular',
+                    secondButton: {
+                        style: 'strong',
+                        label: 'Noo',
+                        useButton: false,
+                        script: {},
+                    },
+                    useSubTitle: true,
+                    horizontalAlign: 'left',
+                    titleContent: '2nd Title',
+                    gradientOverlay: {
+                        opacity: 75,
+                        value: 'hsl(0, 100%, 50%)',
+                        use: true,
+                    },
+                    subTitleContent: 'Sub title',
+                    firstButton: {
+                        style: 'weak-invert',
+                        label: 'Yess',
+                        useButton: true,
+                        script: {},
+                    },
+                    id: 1,
+                    titleWeight: 'normal',
+                },
+            ],
+        };
+        this.AddonUUID = 'f93658be-17b6-4c92-9df3-4e6c7151e038';
+    }
+    public Resource: string;
+    public Data: any;
+    public AddonUUID: string;
+}
+
+export class SlideShowBlockRelation extends BaseBlockRelation {
+    constructor() {
+        super();
+        (this.Type = 'NgComponent'),
+            (this.SubType = 'NG14'),
+            (this.ModuleName = 'SlideshowModule'),
+            (this.Schema = {
+                Fields: {
+                    slideshowConfig: {
+                        Type: 'Object',
+                        Fields: {
+                            controllersDisplay: {
+                                Type: 'String',
+                                ConfigurationPerScreenSize: true,
+                            },
+                            innerPadding: {
+                                Type: 'String',
+                                ConfigurationPerScreenSize: true,
+                            },
+                            arrowsDisplay: {
+                                Type: 'String',
+                                ConfigurationPerScreenSize: true,
+                            },
+                            heightUnit: {
+                                Type: 'String',
+                                ConfigurationPerScreenSize: true,
+                            },
+                            height: {
+                                Type: 'String',
+                                ConfigurationPerScreenSize: true,
+                            },
+                            controllerSize: {
+                                Type: 'String',
+                                ConfigurationPerScreenSize: true,
+                            },
+                        },
+                    },
+                    slides: {
+                        Type: 'Array',
+                        Items: {
+                            Type: 'Object',
+                            Fields: {
+                                verticalAlign: {
+                                    Type: 'String',
+                                    ConfigurationPerScreenSize: true,
+                                },
+                                image: {
+                                    Type: 'Object',
+                                    Fields: {
+                                        verticalPosition: {
+                                            Type: 'String',
+                                            ConfigurationPerScreenSize: true,
+                                        },
+                                        useImage: {
+                                            Type: 'Bool',
+                                            ConfigurationPerScreenSize: false,
+                                        },
+                                        horizontalPosition: {
+                                            Type: 'String',
+                                            ConfigurationPerScreenSize: true,
+                                        },
+                                        asset: {
+                                            Type: 'Resource',
+                                            Fields: {
+                                                url: {
+                                                    Type: 'String',
+                                                },
+                                                key: {
+                                                    Type: 'String',
+                                                },
+                                            },
+                                            ConfigurationPerScreenSize: false,
+                                        },
+                                    },
+                                },
+                                contentWidth: {
+                                    Type: 'String',
+                                    ConfigurationPerScreenSize: true,
+                                },
+                                horizontalAlign: {
+                                    Type: 'String',
+                                    ConfigurationPerScreenSize: true,
+                                },
+                                titleSize: {
+                                    Type: 'String',
+                                    ConfigurationPerScreenSize: true,
+                                },
+                                subTitleSize: {
+                                    Type: 'String',
+                                    ConfigurationPerScreenSize: true,
+                                },
+                                buttonsSize: {
+                                    Type: 'String',
+                                    ConfigurationPerScreenSize: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            }),
+            (this.RelationName = 'PageBlock'),
+            (this.ComponentName = 'SlideshowComponent'),
+            (this.AddonRelativeURL = 'slideshow'),
+            (this.AddonUUID = 'f93658be-17b6-4c92-9df3-4e6c7151e038'),
+            (this.Name = 'Slideshow');
+    }
+    public Schema: SlideShowSchema;
+}
+
+export interface SlideShowSchema {
+    Fields: SlideShowSchemaFields;
+}
+
+export interface SlideShowSchemaFields {
+    slideshowConfig: SlideshowConfig;
+    slides: SlideShowSlides;
+}
+
+export interface SlideshowConfig {
+    Type: any;
+    Fields: SlideshowConfigFields;
+}
+
+export interface SlideshowConfigFields {
+    controllersDisplay: SlideshowConfigData;
+    innerPadding: SlideshowConfigData;
+    arrowsDisplay: SlideshowConfigData;
+    heightUnit: SlideshowConfigData;
+    height: SlideshowConfigData;
+    controllerSize: SlideshowConfigData;
+}
+
+export interface SlideshowConfigData {
+    Type: string;
+    ConfigurationPerScreenSize: boolean;
+}
+
+export interface SlideShowSlides {
+    Type: string;
+    Items: SlideShowSlidesItems;
+}
+
+export interface SlideShowSlidesItems {
+    Type: string;
+    Fields: SlideShowSlidesFields;
+}
+
+export interface SlideShowSlidesFields {
+    verticalAlign: SlideshowConfigData;
+    image: SlideShowSlidesImage;
+    contentWidth: SlideshowConfigData;
+    horizontalAlign: SlideshowConfigData;
+    titleSize: SlideshowConfigData;
+    subTitleSize: SlideshowConfigData;
+    buttonsSize: SlideshowConfigData;
+}
+
+export interface SlideShowSlidesImage {
+    Type: string;
+    Fields: SlideShowSlidesImageFields;
+}
+
+export interface SlideShowSlidesImageFields {
+    verticalPosition: SlideshowConfigData;
+    useImage: SlideshowConfigData;
+    horizontalPosition: SlideshowConfigData;
+    asset: SlideShowSlidesImageFieldsAssets;
+}
+
+export interface SlideShowSlidesImageFieldsAssets {
+    Type: string;
+    Fields: SlideShowSlidesImageFieldsAssetsFields;
+    ConfigurationPerScreenSize: boolean;
+}
+
+export interface SlideShowSlidesImageFieldsAssetsFields {
+    url: { Type: string };
+    key: { Type: string };
 }

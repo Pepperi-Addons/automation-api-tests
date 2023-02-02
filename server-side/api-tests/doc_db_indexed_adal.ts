@@ -31,7 +31,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
 
     //#region Upgrade ADAL
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''], // 22-08-21 changed to last phased version 1.0.131. To run on last phased version will be empty
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
         training: ['2c199913-dba2-4533-ad78-747b6553acf8', '0.0.12'],
         Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
@@ -533,7 +533,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.getDataDedicated[0]['PappiAccount.Country'] != '' &&
             logcash.getDataDedicated[0].Key == '1' &&
             logcash.getDataDedicated[0].Hidden == false &&
-            logcash.getDataDedicated[0]['PappiAccount.key'] != '' &&
+            logcash.getDataDedicated[0]['PappiAccount.Key'] != '' &&
             logcash.getDataDedicated[0].CreationDateTime != '' &&
             logcash.getDataDedicated[0].ModificationDateTime != ''
         ) {
@@ -655,7 +655,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.getDataDedicated1[0].test == '123' &&
             logcash.getDataDedicated[0].Key == '1' &&
             logcash.getDataDedicated[0].Hidden == false &&
-            logcash.getDataDedicated[0]['PappiAccount.key'] != '' &&
+            logcash.getDataDedicated[0]['PappiAccount.Key'] != '' &&
             logcash.getDataDedicated[0].CreationDateTime != '' &&
             logcash.getDataDedicated[0].ModificationDateTime != ''
         ) {
