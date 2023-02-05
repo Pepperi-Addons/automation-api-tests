@@ -278,7 +278,7 @@ const addon = process.env.npm_config_addon as string;
     }
 
     if (tests.includes('VisitFlow')) {
-        await VisitFlowTests(email, pass, client);
+        await VisitFlowTests(email, pass, client, varPass);
     }
 
     if (tests.includes('MockTest')) {
