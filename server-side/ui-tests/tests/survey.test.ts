@@ -2,12 +2,13 @@ import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { BrandedApp, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
+import { BrandedApp, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 import {
     SlideShowBlock,
     SlideShowBlockColumn,
     SurveyBlock,
     SurveyBlockColumn,
+    SurveySection,
     SurveyTemplateBuilder,
 } from '../pom/addons/SurveyTemplateBuilder';
 import E2EUtils from '../utilities/e2e_utils';
@@ -21,13 +22,11 @@ import { Slugs } from '../pom/addons/Slugs';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ScriptEditor } from '../pom/addons/ScriptPicker';
-import { Key } from 'selenium-webdriver';
 import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
 
 chai.use(promised);
 
-export async function SurveyTests(email: string, password: string, client: Client) {
-    //varPass: string, client: Client
+export async function SurveyTests(email: string, password: string, client: Client, varPass) {
     const generalService = new GeneralService(client);
     let driver: Browser;
     let surveyBlockPageName;
@@ -37,73 +36,90 @@ export async function SurveyTests(email: string, password: string, client: Clien
     let accountViewUUID;
     let scriptUUID;
 
-    // const templateToCreate: SurveyTemplate = {
-    //     Name: 'first',
-    //     Active: true,
-    //     Key: '',
-    //     Description: 'first',
-    //     Sections: [
-    //         {
-    //             Key: '',
-    //             Title: 'first section',
-    //             Questions: [
-    //                 {
-    //                     Name: 'firstQ',
-    //                     Key: '',
-    //                     Title: 'firstQ',
-    //                     Type: 'Short Text',
-    //                 },
-    //             ],
-    //         },
-    //     ],
-    // };
+    const surveyTemplateToCreate: SurveySection[] = [
+        {
+            Title: 'boolean',
+            Key: '',
+            Questions: [
+                {
+                    Key: '',
+                    Title: 'what have i done1',
+                    Type: 'Multiple Select',
+                    OptionalValues: [{ Value: 'T' }, { Value: 'F' }, { Value: 'C' }],
+                    isMandatory: true,
+                },
+                {
+                    Key: '',
+                    Title: 'what have i done2',
+                    Type: 'Radio Group',
+                    OptionalValues: [{ Value: 'A' }, { Value: 'B' }],
+                    isMandatory: false,
+                    ShowIf: {
+                        Operator: 'And',
+                        FilterData: { QuestionName: 'what have i done1', ValueToLookFor: ['T', 'C'] },
+                    },
+                },
+            ],
+        },
+    ];
 
-    //TODO: add dependency installation for this
-    // await generalService.baseAddonVersionsInstallation(varPass);
+    await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade script dependencies
-    // const testData = {
-    //     'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.4.13'],
-    //     Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
-    //     'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', ''],
-    //     Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.0.100'],
-    // };
 
-    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const testData = {
+        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x to
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.32'], //has to remain untouched
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.8'], //has to remain untouched
+        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+        'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
+        'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', ''],
+        survey: ['dd0a85ea-7ef0-4bc1-b14f-959e0372877a', ''],
+        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
+        'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
+        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
+        'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''],
+    };
+
+    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
     // #endregion Upgrade script dependencies
 
-    describe('Scripts Tests Suit', async function () {
-        // describe('Prerequisites Addons for Scripts Tests', () => {
-        //     //Test Data
-        //     //Scripts
-        //     isInstalledArr.forEach((isInstalled, index) => {
-        //         it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-        //             expect(isInstalled).to.be.true;
-        //         });
-        //     });
-        //     for (const addonName in testData) {
-        //         const addonUUID = testData[addonName][0];
-        //         const version = testData[addonName][1];
-        //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
-        //         const changeType = chnageVersionResponseArr[addonName][3];
-        //         describe(`Test Data: ${addonName}`, () => {
-        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-        //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-        //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-        //                 } else {
-        //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-        //                 }
-        //             });
-        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-        //                     .eventually.to.have.property('Version')
-        //                     .a('string')
-        //                     .that.is.equal(varLatestVersion);
-        //             });
-        //         });
-        //     }
-        // });
+    describe('Survey Builder Tests Suit', async function () {
+        describe('Prerequisites Addons for Survey Builder Tests', () => {
+            //Test Data
+            //Scripts
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
+        });
 
         describe('Configuring Survey', () => {
             this.retries(0);
@@ -128,32 +144,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(isSurveyBuilderSettingsShown).to.equal(true);
                 const isSurveyBuilderPageShown = await surveyService.enterSurveyBuilderActualBuilder();
                 expect(isSurveyBuilderPageShown).to.equal(true);
-                await surveyService.configureTheSurveyTemplate('surveyTemplate', 'template', [
-                    {
-                        Title: 'boolean',
-                        Key: '',
-                        Questions: [
-                            {
-                                Key: '',
-                                Title: 'what have i done1',
-                                Type: 'Multiple Select',
-                                OptionalValues: [{ Value: 'T' }, { Value: 'F' }, { Value: 'C' }],
-                                isMandatory: true,
-                            },
-                            {
-                                Key: '',
-                                Title: 'what have i done2',
-                                Type: 'Radio Group',
-                                OptionalValues: [{ Value: 'A' }, { Value: 'B' }],
-                                isMandatory: false,
-                                ShowIf: {
-                                    Operator: 'And',
-                                    FilterData: { QuestionName: 'what have i done1', ValueToLookFor: ['T', 'C'] },
-                                },
-                            },
-                        ],
-                    },
-                ]);
+                await surveyService.configureTheSurveyTemplate('surveyTemplate', 'template', surveyTemplateToCreate);
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
@@ -170,7 +161,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 });
                 accountViewUUID = await resourceListUtils.getUUIDfromURL();
                 let viewFields: GridDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-                    { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
                     { fieldName: 'InternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
                     { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
                     { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
@@ -185,15 +176,15 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await resourceListUtils.addView({
                     nameOfView: 'Surveys',
                     descriptionOfView: 'Sur',
-                    nameOfResource: 'surveys',
+                    nameOfResource: 'survey_templates',
                 });
                 // Configure View
                 surveyViewUUID = await resourceListUtils.getUUIDfromURL();
                 viewFields = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
                     { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'StatusName', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'Template', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'Description', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'Sections', dataViewType: 'TextBox', mandatory: false, readonly: false },
                 ]);
                 await resourceViews.customViewConfig(dataViewsService, {
                     matchingEditorName: '',
@@ -221,40 +212,16 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it('4. Create Slug And Map It To Show The Page With Survey Block', async function () {
                 const slugDisplayName = 'survey_slug';
-                const slug_path = 'survey_slug';
-                const e2eUiService = new E2EUtils(driver);
-                await e2eUiService.navigateTo('Slugs');
-                const slugs: Slugs = new Slugs(driver);
-                driver.sleep(2000);
-                await slugs.createSlugEvgeny(slugDisplayName, slug_path, 'for testing');
-                await slugs.clickTab('Mapping_Tab');
-                driver.sleep(1000);
-                await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
-                await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
-                await slugs.isSpinnerDone();
-                driver.sleep(2500);
-                const dataViewsService = new DataViewsService(generalService.papiClient);
-                const existingMappedSlugs = await slugs.getExistingMappedSlugsList(dataViewsService);
-                const slugsFields: MenuDataViewField[] = e2eUiService.prepareDataForDragAndDropAtSlugs(
-                    [{ slug_path: slug_path, pageUUID: surveyBlockPageUUID }],
-                    existingMappedSlugs,
+                const slugPath = 'survey_slug';
+                await CreateSlug(
+                    email,
+                    password,
+                    driver,
+                    generalService,
+                    slugDisplayName,
+                    slugPath,
+                    surveyBlockPageUUID,
                 );
-                console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`);
-                const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
-                console.info(
-                    `slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`,
-                );
-                const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
-                console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
-                driver.sleep(2 * 1000);
-                await e2eUiService.logOutLogIn(email, password);
-                const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.isSpinnerDone();
-                await e2eUiService.navigateTo('Slugs');
-                await slugs.clickTab('Mapping_Tab');
-                driver.sleep(15 * 1000);
-                const webAppHeader = new WebAppHeader(driver);
-                await webAppHeader.goHome();
             });
             it('5. Create Script Based On Config File With New Resource Views Configured', async function () {
                 let script;
@@ -268,50 +235,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const script3 = script2.replace('{surveySlugNamePlaceHolder}', 'survey_slug');
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
-                //TODO has to move to scripts
-                await webAppHeader.openSettings();
-                const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
-                await webAppSettingsSidePanel.selectSettingsByID('Configuration');
-                await driver.click(webAppSettingsSidePanel.ScriptsEditor);
                 const scriptEditor = new ScriptEditor(driver);
-                await driver.click(scriptEditor.addScriptButton);
-                const isModalFound = await driver.isElementVisible(scriptEditor.addScriptModal);
-                const isMainTitleFound = await driver.isElementVisible(scriptEditor.addScriptMainTitle);
-                expect(isModalFound).to.equal(true);
-                expect(isMainTitleFound).to.equal(true);
-                //1. give name
-                await driver.sendKeys(scriptEditor.NameInput, 'SurveyScript');
-                //2. give desc
-                await driver.sendKeys(scriptEditor.DescInput, 'script for survey');
-                //3. push code of script instead of the code found in the UI
-                const selectAll = Key.chord(Key.CONTROL, 'a');
-                await driver.sendKeys(scriptEditor.CodeTextArea, selectAll);
-                await driver.sendKeys(scriptEditor.CodeTextArea, Key.DELETE);
-                await driver.sendKeys(scriptEditor.CodeTextArea, script3);
-                driver.sleep(3500);
-                //4. save
-                await driver.click(scriptEditor.SaveBtn);
-                driver.sleep(4500);
-                await driver.click(scriptEditor.ModalCloseBtn);
-                //5. validate script is found in list
-                const webAppList = new WebAppList(driver);
-                const allListElemsText = await webAppList.getAllListElementsTextValue();
-                expect(allListElemsText.length).to.be.at.least(1);
-                const foundScript = allListElemsText.find((elem) => elem.includes('SurveyScript'));
-                expect(foundScript).to.not.be.undefined;
-                expect(foundScript).to.include('SurveyScript');
-                const allScripts = await generalService.fetchStatus(
-                    'https://papi.pepperi.com/V1.0/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts',
-                    {
-                        method: 'GET',
-                    },
-                );
-                let surveyScript;
-                for (let index = 0; index < allScripts.Body.length; index++) {
-                    const script = allScripts.Body[index];
-                    if (script.Name === 'SurveyScript') surveyScript = script;
-                }
-                scriptUUID = surveyScript.Key;
+                scriptUUID = await scriptEditor.enterScriptsAndConfigureAScript(script3, generalService);
                 await webAppHeader.goHome();
             });
             it('6. Create Page With SlideShow Which Will Run The Script', async function () {
@@ -331,46 +256,23 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it('7. create a slug for the slideshow page and set it to show on homepage', async function () {
                 const slugDisplayName = 'slideshow_slug';
-                const slug_path = 'slideshow_slug';
-                const e2eUiService = new E2EUtils(driver);
-                await e2eUiService.navigateTo('Slugs');
-                const slugs: Slugs = new Slugs(driver);
-                driver.sleep(2000);
-                if (await driver.isElementVisible(slugs.SlugMappingScreenTitle)) {
-                    await slugs.clickTab('Slugs_Tab');
-                }
-                await slugs.createSlugEvgeny(slugDisplayName, slug_path, 'for testing');
-                await slugs.clickTab('Mapping_Tab');
-                driver.sleep(1000);
-                await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
-                await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
-                await slugs.isSpinnerDone();
-                driver.sleep(2500);
-                const dataViewsService = new DataViewsService(generalService.papiClient);
-                const existingMappedSlugs = await slugs.getExistingMappedSlugsList(dataViewsService);
-                const slugsFields: MenuDataViewField[] = e2eUiService.prepareDataForDragAndDropAtSlugs(
-                    [{ slug_path: slug_path, pageUUID: slideshowBlockPageUUID }],
-                    existingMappedSlugs,
+                const slugPath = 'slideshow_slug';
+                await CreateSlug(
+                    email,
+                    password,
+                    driver,
+                    generalService,
+                    slugDisplayName,
+                    slugPath,
+                    slideshowBlockPageUUID,
                 );
-                console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`);
-                const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
-                console.info(
-                    `slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`,
-                );
-                const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
-                console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
-                driver.sleep(2 * 1000);
-                await e2eUiService.logOutLogIn(email, password);
-                const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.isSpinnerDone();
-                await e2eUiService.navigateTo('Slugs');
-                await slugs.clickTab('Mapping_Tab');
-                driver.sleep(15 * 1000);
+                driver.sleep(5000);
                 const webAppHeader = new WebAppHeader(driver);
-                await webAppHeader.goHome();
                 await webAppHeader.openSettings();
+                driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.addAdminHomePageButtons(slugDisplayName);
+                const webAppHomePage = new WebAppHomePage(driver);
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }
@@ -387,4 +289,53 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
         });
     });
+}
+
+async function CreateSlug(
+    email: string,
+    password: string,
+    driver: Browser,
+    generalService: GeneralService,
+    slugDisplayName: string,
+    slug_path: string,
+    pageToMapToKey: string,
+) {
+    // const slugDisplayName = 'slideshow_slug';
+    // const slug_path = 'slideshow_slug';
+    const e2eUiService = new E2EUtils(driver);
+    await e2eUiService.navigateTo('Slugs');
+    const slugs: Slugs = new Slugs(driver);
+    driver.sleep(2000);
+    if (await driver.isElementVisible(slugs.SlugMappingScreenTitle)) {
+        await slugs.clickTab('Slugs_Tab');
+    }
+    driver.sleep(2000);
+    await slugs.createSlugEvgeny(slugDisplayName, slug_path, 'for testing');
+    driver.sleep(1000);
+    await slugs.clickTab('Mapping_Tab');
+    driver.sleep(1000);
+    await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
+    await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
+    await slugs.isSpinnerDone();
+    driver.sleep(2500);
+    const dataViewsService = new DataViewsService(generalService.papiClient);
+    const existingMappedSlugs = await slugs.getExistingMappedSlugsList(dataViewsService);
+    const slugsFields: MenuDataViewField[] = e2eUiService.prepareDataForDragAndDropAtSlugs(
+        [{ slug_path: slug_path, pageUUID: pageToMapToKey }],
+        existingMappedSlugs,
+    );
+    console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`);
+    const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
+    console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`);
+    const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
+    console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
+    driver.sleep(2 * 1000);
+    await e2eUiService.logOutLogIn(email, password);
+    const webAppHomePage = new WebAppHomePage(driver);
+    await webAppHomePage.isSpinnerDone();
+    await e2eUiService.navigateTo('Slugs');
+    await slugs.clickTab('Mapping_Tab');
+    driver.sleep(15 * 1000);
+    const webAppHeader = new WebAppHeader(driver);
+    await webAppHeader.goHome();
 }
