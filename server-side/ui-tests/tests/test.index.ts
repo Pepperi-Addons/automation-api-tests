@@ -428,7 +428,7 @@ const addon = process.env.npm_config_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('Survey')) {
-        await SurveyTests(email, pass, client); //, varPass, client
+        await SurveyTests(email, pass, client, varPass); //, varPass, client
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_performance')) {
