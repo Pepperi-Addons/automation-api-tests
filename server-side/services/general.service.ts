@@ -865,10 +865,18 @@ export default class GeneralService {
                 varLatestValidVersion = auditLogResponse.AuditInfo.ToVersion;
             }
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
-                if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
+                if (
+                    auditLogResponse.AuditInfo.ErrorMessage.includes(
+                        `is already working on version ${varLatestValidVersion}`,
+                    )
+                ) {
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);
                     testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
+                } else if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
+                    testData[addonName].push(changeType);
+                    testData[addonName].push('Success');
+                    testData[addonName].push('');
                 } else {
                     changeType = 'Downgrade';
                     upgradeResponse = await this.papiClient.addons.installedAddons

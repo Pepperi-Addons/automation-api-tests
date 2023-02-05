@@ -63,15 +63,17 @@ export async function SurveyTests(email: string, password: string, client: Clien
         },
     ];
 
-    //await generalService.baseAddonVersionsInstallation(varPass);
+    await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade script dependencies
 
     const testData = {
+        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x to
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.32'], //has to remain untouched
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.8'], //has to remain untouched
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
-        'User defined collections (UDC) manager': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', ''],
         survey: ['dd0a85ea-7ef0-4bc1-b14f-959e0372877a', ''],
