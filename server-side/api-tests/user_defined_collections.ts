@@ -11,6 +11,14 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
     const expect = tester.expect;
     const it = tester.it;
 
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
+
+    await generalService.baseAddonVersionsInstallation(varKey);
     //#region Upgrade UDC
     const testData = {
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
@@ -28,12 +36,6 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
 
-    let varKey;
-    if (generalService.papiClient['options'].baseURL.includes('staging')) {
-        varKey = request.body.varKeyStage;
-    } else {
-        varKey = request.body.varKeyPro;
-    }
     //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
     if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
         const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, varKey);
