@@ -752,7 +752,8 @@ export default class GeneralService {
                 }
                 const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
                 if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
-                    isInstalledArr.push(false);
+                    if (!auditLogResponse.AuditInfo.ErrorMessage.includes('Addon already installed'))
+                        isInstalledArr.push(false);
                     continue;
                 }
             }
@@ -866,12 +867,12 @@ export default class GeneralService {
                     )
                 ) {
                     testData[addonName].push(changeType);
-                    testData[addonName].push(auditLogResponse.Status.Name);
+                    testData[addonName].push('Success');
                     testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
                 } else if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
-                    testData[addonName].push('Success');
-                    testData[addonName].push('');
+                    testData[addonName].push(auditLogResponse.Status.Name);
+                    testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
                 } else {
                     changeType = 'Downgrade';
                     upgradeResponse = await this.papiClient.addons.installedAddons
