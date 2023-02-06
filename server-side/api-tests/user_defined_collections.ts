@@ -19,7 +19,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.4.102'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
@@ -953,8 +953,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         Delimiter: ',',
                     };
                     console.log(
-                        `%c#F87217\tRunning The Test On:${collectionName},fields:${bodyToSend.Fields}\t`,
-                        `${ConsoleColors.MenuBackground}; ${ConsoleColors.SystemInformation}`,
+                        `Running The Test On:${collectionName},fields:${bodyToSend.Fields}`,
+                        ConsoleColors.Information,
                     ); //Pumpkin Orange
                     const a = await generalService.fetchStatus(
                         `/addons/data/export/file/122c0e9d-c240-4865-b446-f37ece866c22/${collectionName}`,

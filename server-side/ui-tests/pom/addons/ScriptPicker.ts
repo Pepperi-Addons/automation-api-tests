@@ -92,7 +92,7 @@ export class ScriptEditor extends AddonPage {
 
     public async clickDropDownByText(text: string) {
         const spesificDropDownElem = this.SpesificDropDownValue.valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('|placeholder|', text);
         await this.browser.click(By.xpath(spesificDropDownElem));
         await expect(this.untilIsVisible(this.ModalMainParamArea, 90000)).eventually.to.be.true; //params part of modal is loaded
@@ -159,7 +159,7 @@ export class ScriptEditor extends AddonPage {
         let runningDropDownIndex = 2;
         for (let index = 0; index < listOfParam.length; index++) {
             const spesificParamInput = this.StaticParamInput.valueOf()
-            ['value'].slice()
+                ['value'].slice()
                 .replace('|placeholder|', listOfParam[index].Name);
             await this.setParamTypeToStatic(runningDropDownIndex, By.xpath(spesificParamInput));
             await this.browser.sendKeys(By.xpath(spesificParamInput), newValue[index] + Key.ENTER);
@@ -194,7 +194,7 @@ export class ScriptEditor extends AddonPage {
         //TODO: refactor this stupid flow
         for (let index = 0; index < listOfParam.length; index++) {
             const spesificParamCheckboxInput = this.SpesificParamCheckbox.valueOf()
-            ['value'].slice()
+                ['value'].slice()
                 .replace('|placeholder|', listOfParam[index].Name);
             await this.browser.click(this.EditorRow, index);
             this.browser.sleep(1000);
