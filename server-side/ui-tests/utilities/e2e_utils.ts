@@ -80,14 +80,14 @@ export default class E2EUtils extends BasePomObject {
         await rlViews.verifyViewEditPageOpen(viewData.nameOfView); // IS DIFFERENT than: Editor Edit Page !  DO NOT CHANGE (Hagit, Dec2022)
     }
 
-    public async addPage(nameOfPage: string, descriptionOfPage: string) {
+    public async addPage(nameOfPage: string, descriptionOfPage: string, extraSection: boolean = false) {
         // debugger;
         const pageBuilder: PageBuilder = new PageBuilder(this.browser);
         await this.navigateTo('Page Builder');
         await pageBuilder.waitTillVisible(pageBuilder.PageBuilder_Title, 15000);
         await pageBuilder.waitTillVisible(pageBuilder.AddPage_Button, 15000);
         pageBuilder.pause(1000);
-        await pageBuilder.addBlankPage(nameOfPage, descriptionOfPage);
+        await pageBuilder.addBlankPage(nameOfPage, descriptionOfPage, extraSection ? extraSection : false);
         pageBuilder.pause(2 * 1000);
         const pageUUID = await this.getUUIDfromURL();
         pageBuilder.pause(3 * 1000);
@@ -131,6 +131,11 @@ export default class E2EUtils extends BasePomObject {
         const pageBuilder: PageBuilder = new PageBuilder(this.browser);
         await this.navigateTo('Page Builder');
         await pageBuilder.validatePageBuilderIsLoaded();
+        // await pageBuilder.clickElement('PagesList_SelectAll_Checkbox');
+        // await pageBuilder.openPencilChooseDelete();
+        // this.browser.sleep(500);
+        // await pageBuilder.confirmDeleteClickRedButton();
+        // this.browser.sleep(500);
         await pageBuilder.deleteAll();
     }
 
@@ -268,19 +273,21 @@ export default class E2EUtils extends BasePomObject {
         return fields;
     }
 
-    public async performManualSync() {
+    public async performManualSync(client: Client) {
         const webAppHeader: WebAppHeader = new WebAppHeader(this.browser);
         const webAppHomePage: WebAppHomePage = new WebAppHomePage(this.browser);
         const webAppList: WebAppList = new WebAppList(this.browser);
-        for (let index = 0; index < 4; index++) {
-            await webAppHeader.goHome();
-            await webAppHomePage.isSpinnerDone();
-            await webAppHomePage.clickOnBtn('Accounts');
-            await webAppList.isSpinnerDone();
-            await webAppList.validateListRowElements();
-        }
         await webAppHeader.goHome();
-        await webAppHomePage.isSpinnerDone();
+        await webAppHomePage.manualResync(client);
+        // for (let index = 0; index < 4; index++) {
+        //     await webAppHeader.goHome();
+        //     await webAppHomePage.isSpinnerDone();
+        //     await webAppHomePage.clickOnBtn('Accounts');
+        //     await webAppList.isSpinnerDone();
+        //     await webAppList.validateListRowElements();
+        // }
+        // await webAppHeader.goHome();
+        // await webAppHomePage.isSpinnerDone();
     }
 
     public async performManualResync() {

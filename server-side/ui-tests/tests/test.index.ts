@@ -34,6 +34,7 @@ import {
     ResourceListTests,
     RLdataPrep,
     VisitFlowTests,
+    VFdataPrep,
     MockTest,
     SurveyTests,
 } from './index';
@@ -272,12 +273,17 @@ const addon = process.env.npm_config_addon as string;
         await RLdataPrep(varPass, client);
     }
 
+    if (tests.includes('DataPrepVF')) {
+        await RLdataPrep(varPass, client);
+    }
+
     if (tests.includes('ResourceList')) {
         // await RLdataPrep(client);
         await ResourceListTests(email, pass, varPass, client);
     }
 
     if (tests.includes('VisitFlow')) {
+        await VFdataPrep(varPass, client);
         await VisitFlowTests(email, pass, client, varPass);
     }
 

@@ -1,6 +1,6 @@
 import { describe, it, before, after, afterEach } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService, { FetchStatusResponse } from '../../services/general.service';
+import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { Browser } from '../utilities/browser';
@@ -21,6 +21,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const udcService = new UDCService(generalService);
+    // await generalService.baseAddonVersionsInstallation(varPass);
 
     let driver: Browser;
     let e2eUtils: E2EUtils;
@@ -63,38 +64,27 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let getCreatedSalesOrderTransaction;
     // let resourceViews: ResourceViews;
 
+    // const testData = {
+    //     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x to
+    //     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+    //     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+    //     Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.32'], //has to remain untouched
+    //     sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.8'], //has to remain untouched
+    //     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+    //     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+    //     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+    //     'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
+    //     'VisitFlow': ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
+    //     'Slugs': ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
+    // };
+
+    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
+
     describe('Visit Flow Test Suite', async () => {
-        await before(() => {
-            randomString = generalService.generateRandomString(5);
-        });
-
         // await describe(`Prerequisites Addons for Visit Flow Tests (${randomString})`, async () => {
-        //     const baseAddonsInstallationResponse = await generalService.baseAddonVersionsInstallation(varPass);
-        //     let chnageVersionResponseArr = baseAddonsInstallationResponse.chnageVersionResponseArr;
-        //     let isInstalledArr = baseAddonsInstallationResponse.isInstalledArr;
         //     isInstalledArr.forEach((isInstalled, index) => {
-        //         it(`Validate That Base Addon: ${Object.keys(baseAddonsInstallationResponse)[index]} - Is Installed`, () => {
-        //             console.info(`Base Addon: ${Object.keys(baseAddonsInstallationResponse)[index]} - Is Installed ? ${isInstalled}`);
-        //             expect(isInstalled).to.be.true;
-        //         });
-        //     });
-        //     // Visit Flow Required Addons
-        //     const testAddonsDependencies = {
-        //         'VisitFlow': ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', '0.5.24'],
-        //         'Slugs': ['4ba5d6f9-6642-4817-af67-c79b68c96977', '1.2.2'],
-        //     };
-
-        //     const testAddonsInstallationResponse = await generalService.baseAddonVersionsInstallation(varPass, testAddonsDependencies);
-        //     chnageVersionResponseArr = testAddonsInstallationResponse.chnageVersionResponseArr;
-        //     isInstalledArr = testAddonsInstallationResponse.isInstalledArr;
-        //     // debugger
-        //     // chnageVersionResponseArr = await generalService.changeVersion(varPass, testAddonsDependencies, false);
-        //     // debugger
-        //     // isInstalledArr = await generalService.areAddonsInstalled(testAddonsDependencies);
-        //     // debugger
-        //     isInstalledArr.forEach((isInstalled, index) => {
-        //         it(`Validate That Needed Addon: ${Object.keys(testAddonsDependencies)[index]} - Is Installed`, () => {
-        //             console.info(`Needed Addon: ${Object.keys(testAddonsDependencies)[index]} - Is Installed ? ${isInstalled}`);
+        //         it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
         //             expect(isInstalled).to.be.true;
         //         });
         //     });
@@ -102,20 +92,20 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
         //     let version: string;
         //     let varLatestVersion: string;
         //     let changeType: string;
-        //     for (const addonName in testAddonsDependencies) {
-        //         addonUUID = testAddonsDependencies[addonName][0];
-        //         version = testAddonsDependencies[addonName][1];
+        //     for (const addonName in testData) {
+        //         addonUUID = testData[addonName][0];
+        //         version = testData[addonName][1];
         //         varLatestVersion = chnageVersionResponseArr[addonName][2];
         //         changeType = chnageVersionResponseArr[addonName][3];
-        //         await describe(`Test Required Addon's Installation: ${addonName}`, async () => {
-        //             await it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+        //         describe(`Test Data: ${addonName}`, () => {
+        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
         //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
         //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
         //                 } else {
         //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
         //                 }
         //             });
-        //             await it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
         //                 await expect(await generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
         //                     .eventually.to.have.property('Version')
         //                     .a('string')
@@ -124,109 +114,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
         //         });
         //     }
         // });
-
-        await describe('Inserting Data to the UDC VisitFlowGroups', () => {
-            it('Configuring Groups', async () => {
-                const collectionName = 'VisitFlowGroups';
-                const groupsDocumentsToUpsert = [
-                    { Title: `Start Auto ${randomString}`, SortIndex: 0 },
-                    { Title: `Orders Auto ${randomString}`, SortIndex: 10 },
-                    { Title: `End Auto ${randomString}`, SortIndex: 100 },
-                ];
-                let upsertingValues_Response;
-                groupsDocumentsToUpsert.forEach(async (documentToUpsert) => {
-                    // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlowGroups
-                    upsertingValues_Response = await udcService.upsertValuesToCollection(
-                        documentToUpsert,
-                        collectionName,
-                    );
-                    console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
-                    expect(upsertingValues_Response.Ok).to.be.true;
-                    expect(upsertingValues_Response.Status).to.equal(200);
-                    expect(upsertingValues_Response.Error).to.eql({});
-                    upsertedListingsToVisitFlowGroups.push(upsertingValues_Response.Body);
-                });
-            });
-        });
-
-        await describe('Inserting Data to the UDC VisitFlows', () => {
-            it('Configuring Flows', async () => {
-                driver.sleep(5 * 1000);
-                const collectionName = 'VisitFlows';
-                const group_Start = upsertedListingsToVisitFlowGroups.length
-                    ? upsertedListingsToVisitFlowGroups.find((group) => {
-                        if (group.Title.includes('Start')) {
-                            return group.Key;
-                        }
-                    })
-                    : '';
-                const group_Orders = upsertedListingsToVisitFlowGroups.length
-                    ? upsertedListingsToVisitFlowGroups.find((group) => {
-                        if (group.Title.includes('Orders')) {
-                            return group.Key;
-                        }
-                    })
-                    : '';
-                const group_End = upsertedListingsToVisitFlowGroups.length
-                    ? upsertedListingsToVisitFlowGroups.find((group) => {
-                        if (group.Title.includes('End')) {
-                            return group.Key;
-                        }
-                    })
-                    : '';
-                const visitsDocumentsToUpsert = [
-                    {
-                        Name: visitFlowName,
-                        Description: visitFlowDescription,
-                        Active: true,
-                        steps: [
-                            {
-                                Completed: 'In Creation',
-                                Resource: 'activities',
-                                Title: 'Start Visit',
-                                Group: group_Start ? group_Start.Key : '',
-                                ResourceCreationData: 'VF_VisitFlowMainActivity',
-                                Mandatory: true,
-                            },
-                            {
-                                Completed: 'In Creation',
-                                Resource: 'transactions',
-                                Title: 'Sales Order',
-                                Group: group_Orders ? group_Orders.Key : '',
-                                ResourceCreationData: 'Sales Order',
-                            },
-                            {
-                                Completed: 'Submitted',
-                                Resource: 'activities',
-                                Title: 'End Visit',
-                                Group: group_End ? group_End.Key : '',
-                                ResourceCreationData: 'VF_VisitFlowMainActivity',
-                                Mandatory: true,
-                            },
-                        ],
-                    },
-                    {
-                        Name: 'MockVisit',
-                        Description: 'Mock Visit',
-                        Active: true,
-                        steps: [],
-                    },
-                ];
-                let upsertingValues_Response;
-                visitsDocumentsToUpsert.forEach(async (documentToUpsert) => {
-                    // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlows
-                    upsertingValues_Response = await udcService.upsertValuesToCollection(
-                        documentToUpsert,
-                        collectionName,
-                    );
-                    console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
-                    expect(upsertingValues_Response.Ok).to.be.true;
-                    expect(upsertingValues_Response.Status).to.equal(200);
-                    expect(upsertingValues_Response.Error).to.eql({});
-                    upsertedListingsToVisitFlows.push(upsertingValues_Response.Body);
-                });
-            });
-        });
 
         describe('Visit Flow UI tests', () => {
             before(async function () {
@@ -240,7 +127,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 pageBuilder = new PageBuilder(driver);
                 slugs = new Slugs(driver);
                 // resourceViews = new ResourceViews(driver);
-                // randomString = generalService.generateRandomString(5);
+                randomString = generalService.generateRandomString(5);
                 visitFlowName = `AutoVisiT${randomString}`;
                 visitFlowDescription = `Auto Visit ${randomString}`;
                 slugDisplayName = `Visit Flow Auto ${randomString}`;
@@ -254,11 +141,20 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             });
 
             afterEach(async function () {
-                await webAppHeader.goHome();
+                try {
+                    await webAppHeader.goHome();
+                } catch (error) {
+                    console.error(error);
+                }
             });
 
             it('Login', async () => {
                 await webAppLoginPage.login(email, password);
+            });
+
+            it('Pre-clean: deleting all Pages', async () => {
+                await e2eUtils.deleteAllPagesViaUI();
+                await webAppHeader.goHome();
             });
 
             // describe("Verifying Addon's installation generated required data", () => {
@@ -275,29 +171,29 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             //     });
             // });
 
-            // describe('Inserting Data to the UDC VisitFlowGroups', () => {
-            //     it('Configuring Groups', async () => {
-            //         const collectionName = 'VisitFlowGroups';
-            //         const groupsDocumentsToUpsert = [
-            //             { Title: `Start Auto ${randomString}`, SortIndex: 0 },
-            //             { Title: `Orders Auto ${randomString}`, SortIndex: 10 },
-            //             { Title: `End Auto ${randomString}`, SortIndex: 100 },
-            //         ];
-            //         let upsertingValues_Response;
-            //         groupsDocumentsToUpsert.forEach(async (documentToUpsert) => {
-            //             // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlowGroups
-            //             upsertingValues_Response = await udcService.upsertValuesToCollection(
-            //                 documentToUpsert,
-            //                 collectionName,
-            //             );
-            //             console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
-            //             expect(upsertingValues_Response.Ok).to.be.true;
-            //             expect(upsertingValues_Response.Status).to.equal(200);
-            //             expect(upsertingValues_Response.Error).to.eql({});
-            //             upsertedListingsToVisitFlowGroups.push(upsertingValues_Response.Body);
-            //         });
-            //     });
-            // });
+            describe('Inserting Data to the UDC VisitFlowGroups', () => {
+                it('Configuring Groups', async () => {
+                    const collectionName = 'VisitFlowGroups';
+                    const groupsDocumentsToUpsert = [
+                        { Title: `Start Auto ${randomString}`, SortIndex: 0 },
+                        { Title: `Orders Auto ${randomString}`, SortIndex: 10 },
+                        { Title: `End Auto ${randomString}`, SortIndex: 100 },
+                    ];
+                    let upsertingValues_Response;
+                    groupsDocumentsToUpsert.forEach(async (documentToUpsert) => {
+                        // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlowGroups
+                        upsertingValues_Response = await udcService.upsertValuesToCollection(
+                            documentToUpsert,
+                            collectionName,
+                        );
+                        console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
+                        expect(upsertingValues_Response.Ok).to.be.true;
+                        expect(upsertingValues_Response.Status).to.equal(200);
+                        expect(upsertingValues_Response.Error).to.eql({});
+                        upsertedListingsToVisitFlowGroups.push(upsertingValues_Response.Body);
+                    });
+                });
+            });
 
             describe('Creating a Page with VisitFlow Block', () => {
                 before(() => {
@@ -328,84 +224,84 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
             });
 
-            // describe('Inserting Data to the UDC VisitFlows', () => {
-            //     it('Configuring Flows', async () => {
-            //         driver.sleep(5 * 1000);
-            //         const collectionName = 'VisitFlows';
-            //         const group_Start = upsertedListingsToVisitFlowGroups.length
-            //             ? upsertedListingsToVisitFlowGroups.find((group) => {
-            //                 if (group.Title.includes('Start')) {
-            //                     return group.Key;
-            //                 }
-            //             })
-            //             : '';
-            //         const group_Orders = upsertedListingsToVisitFlowGroups.length
-            //             ? upsertedListingsToVisitFlowGroups.find((group) => {
-            //                 if (group.Title.includes('Orders')) {
-            //                     return group.Key;
-            //                 }
-            //             })
-            //             : '';
-            //         const group_End = upsertedListingsToVisitFlowGroups.length
-            //             ? upsertedListingsToVisitFlowGroups.find((group) => {
-            //                 if (group.Title.includes('End')) {
-            //                     return group.Key;
-            //                 }
-            //             })
-            //             : '';
-            //         const visitsDocumentsToUpsert = [
-            //             {
-            //                 Name: visitFlowName,
-            //                 Description: visitFlowDescription,
-            //                 Active: true,
-            //                 steps: [
-            //                     {
-            //                         Completed: 'In Creation',
-            //                         Resource: 'activities',
-            //                         Title: 'Start Visit',
-            //                         Group: group_Start ? group_Start.Key : '',
-            //                         ResourceCreationData: 'VF_VisitFlowMainActivity',
-            //                         Mandatory: true,
-            //                     },
-            //                     {
-            //                         Completed: 'In Creation',
-            //                         Resource: 'transactions',
-            //                         Title: 'Sales Order',
-            //                         Group: group_Orders ? group_Orders.Key : '',
-            //                         ResourceCreationData: 'Sales Order',
-            //                     },
-            //                     {
-            //                         Completed: 'Submitted',
-            //                         Resource: 'activities',
-            //                         Title: 'End Visit',
-            //                         Group: group_End ? group_End.Key : '',
-            //                         ResourceCreationData: 'VF_VisitFlowMainActivity',
-            //                         Mandatory: true,
-            //                     },
-            //                 ],
-            //             },
-            //             {
-            //                 Name: 'MockVisit',
-            //                 Description: 'Mock Visit',
-            //                 Active: true,
-            //                 steps: [],
-            //             },
-            //         ];
-            //         let upsertingValues_Response;
-            //         visitsDocumentsToUpsert.forEach(async (documentToUpsert) => {
-            //             // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlows
-            //             upsertingValues_Response = await udcService.upsertValuesToCollection(
-            //                 documentToUpsert,
-            //                 collectionName,
-            //             );
-            //             console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
-            //             expect(upsertingValues_Response.Ok).to.be.true;
-            //             expect(upsertingValues_Response.Status).to.equal(200);
-            //             expect(upsertingValues_Response.Error).to.eql({});
-            //             upsertedListingsToVisitFlows.push(upsertingValues_Response.Body);
-            //         });
-            //     });
-            // });
+            describe('Inserting Data to the UDC VisitFlows', () => {
+                it('Configuring Flows', async () => {
+                    driver.sleep(5 * 1000);
+                    const collectionName = 'VisitFlows';
+                    const group_Start = upsertedListingsToVisitFlowGroups.length
+                        ? upsertedListingsToVisitFlowGroups.find((group) => {
+                            if (group.Title.includes('Start')) {
+                                return group.Key;
+                            }
+                        })
+                        : '';
+                    const group_Orders = upsertedListingsToVisitFlowGroups.length
+                        ? upsertedListingsToVisitFlowGroups.find((group) => {
+                            if (group.Title.includes('Orders')) {
+                                return group.Key;
+                            }
+                        })
+                        : '';
+                    const group_End = upsertedListingsToVisitFlowGroups.length
+                        ? upsertedListingsToVisitFlowGroups.find((group) => {
+                            if (group.Title.includes('End')) {
+                                return group.Key;
+                            }
+                        })
+                        : '';
+                    const visitsDocumentsToUpsert = [
+                        {
+                            Name: visitFlowName,
+                            Description: visitFlowDescription,
+                            Active: true,
+                            steps: [
+                                {
+                                    Completed: 'In Creation',
+                                    Resource: 'activities',
+                                    Title: 'Start Visit',
+                                    Group: group_Start ? group_Start.Key : '',
+                                    ResourceCreationData: 'VF_VisitFlowMainActivity',
+                                    Mandatory: true,
+                                },
+                                {
+                                    Completed: 'In Creation',
+                                    Resource: 'transactions',
+                                    Title: 'Sales Order',
+                                    Group: group_Orders ? group_Orders.Key : '',
+                                    ResourceCreationData: 'Sales Order',
+                                },
+                                {
+                                    Completed: 'Submitted',
+                                    Resource: 'activities',
+                                    Title: 'End Visit',
+                                    Group: group_End ? group_End.Key : '',
+                                    ResourceCreationData: 'VF_VisitFlowMainActivity',
+                                    Mandatory: true,
+                                },
+                            ],
+                        },
+                        {
+                            Name: 'MockVisit',
+                            Description: 'Mock Visit',
+                            Active: true,
+                            steps: [],
+                        },
+                    ];
+                    let upsertingValues_Response;
+                    visitsDocumentsToUpsert.forEach(async (documentToUpsert) => {
+                        // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlows
+                        upsertingValues_Response = await udcService.upsertValuesToCollection(
+                            documentToUpsert,
+                            collectionName,
+                        );
+                        console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
+                        expect(upsertingValues_Response.Ok).to.be.true;
+                        expect(upsertingValues_Response.Status).to.equal(200);
+                        expect(upsertingValues_Response.Error).to.eql({});
+                        upsertedListingsToVisitFlows.push(upsertingValues_Response.Body);
+                    });
+                });
+            });
 
             describe('Creating and Mapping a Slug', () => {
                 it('Creating a Visit Flow Slug for Automation', async () => {
@@ -452,31 +348,39 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
 
             describe('Configuring Account Dashboard', () => {
                 it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async () => {
-                    await webAppHeader.goHome();
-                    await webAppHomePage.isSpinnerDone();
-                    await webAppHeader.openSettings();
-                    await webAppHeader.isSpinnerDone();
-                    visitFlow.pause(0.5 * 1000);
-                    await settingsSidePanel.selectSettingsByID('Accounts');
-                    await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
                     for (let i = 0; i < 2; i++) {
-                        visitFlow.pause(10 * 1000);
                         try {
+                            await webAppHeader.goHome();
+                            await webAppHomePage.isSpinnerDone();
+                            await webAppHeader.openSettings();
+                            await webAppHeader.isSpinnerDone();
+                            visitFlow.pause(0.5 * 1000);
+                            await settingsSidePanel.selectSettingsByID('Accounts');
+                            await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
                             await visitFlow.isSpinnerDone();
+                            visitFlow.pause(10 * 1000);
                             await driver.switchTo(visitFlow.AddonContainerIframe);
                             await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Container, 15000);
+                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Title, 15000);
                             break;
                         } catch (error) {
                             console.error(error);
                         }
                     }
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Title, 15000);
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_ListContainer, 15000);
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
-                    await visitFlow.clickElement('AccountDashboardLayout_MenuRow_Container');
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_PencilButton, 15000);
-                    await visitFlow.clickElement('AccountDashboardLayout_MenuRow_PencilButton');
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_ConfigPage_Title, 15000);
+                    for (let i = 0; i < 2; i++) {
+                        try {
+                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_ListContainer, 15000);
+                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
+                            await visitFlow.clickElement('AccountDashboardLayout_MenuRow_Container');
+                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_PencilButton, 15000);
+                            await visitFlow.clickElement('AccountDashboardLayout_MenuRow_PencilButton');
+                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_ConfigPage_Title, 15000);
+                        } catch (error) {
+                            await driver.switchToDefaultContent();
+                            console.error(error);
+                            await webAppHeader.goHome();
+                        }
+                    }
                     expect(
                         await (await driver.findElement(visitFlow.AccountDashboardLayout_ConfigPage_Title)).getText(),
                     ).to.equal('Menu');
@@ -511,12 +415,13 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
                     driver.sleep(2 * 1000);
                     await driver.switchToDefaultContent();
-                    driver.sleep(7 * 1000);
+                    driver.sleep(2 * 1000);
+                    await webAppHeader.goHome();
                 });
 
                 it('Performing Manual Sync', async () => {
                     // await webAppHomePage.manualResync(client);
-                    await e2eUtils.performManualSync();
+                    await e2eUtils.performManualSync(client);
                 });
             });
 
@@ -828,7 +733,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
 
                 it('Performing Manual Sync', async () => {
-                    await e2eUtils.performManualSync();
+                    await e2eUtils.performManualSync(client);
                 });
             });
         });
