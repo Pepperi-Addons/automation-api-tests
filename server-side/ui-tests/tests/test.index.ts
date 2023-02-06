@@ -341,7 +341,7 @@ const addon = process.env.npm_config_addon as string;
                     varKeyEU: varPassEU,
                 },
             },
-            { describe, expect, it } as TesterFunctions,
+            { describe, expect, it } as TesterFunctions
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
