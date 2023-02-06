@@ -25,7 +25,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         'User Defined Collections': [UserDefinedCollectionsUUID, ''],
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.1.25'],
         'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.1.10'],
-        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc','']
+        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
 
     let varKey;

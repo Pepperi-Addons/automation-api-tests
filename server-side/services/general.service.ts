@@ -41,7 +41,7 @@ export const testData = {
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 2/2/23 - has to be upgraded
-    'Export and Import Framework (DIMX)':['44c97115-6d14-4626-91dc-83f176e9a0fc',''],
+    'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     // system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '0.0.77'], //needed to be able to report tests results -- notice were locked on a certin version
 };
 
