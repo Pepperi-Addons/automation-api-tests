@@ -82,7 +82,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''],
-        'Slideshow' :[]
+        Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);

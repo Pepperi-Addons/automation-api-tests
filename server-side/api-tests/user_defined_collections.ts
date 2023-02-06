@@ -36,7 +36,6 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
 
-    
     //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
     if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
         const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, varKey);
@@ -944,12 +943,12 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                             collectionName === basicOnlineCollectionName
                                 ? 'str1,int1,dou1,Key'
                                 : collectionName === accResourceCollectionName
-                                    ? 'myAcc,Key'
-                                    : collectionName === basicArrayCollectionName
-                                        ? 'Key,dou2,int2,str2'
-                                        : collectionName === baseedOnSchemeOnlyCollectionName
-                                            ? 'basedOn,Key'
-                                            : 'str,bool,int,dou,Key',
+                                ? 'myAcc,Key'
+                                : collectionName === basicArrayCollectionName
+                                ? 'Key,dou2,int2,str2'
+                                : collectionName === baseedOnSchemeOnlyCollectionName
+                                ? 'basedOn,Key'
+                                : 'str,bool,int,dou,Key',
                         Delimiter: ',',
                     };
                     console.log(
