@@ -69,6 +69,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
     const testData = {
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x to
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.32'], //has to remain untouched
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.8'], //has to remain untouched
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
