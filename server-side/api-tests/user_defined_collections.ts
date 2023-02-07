@@ -1,4 +1,4 @@
-import GeneralService, { ConsoleColors, TesterFunctions } from '../services/general.service';
+import GeneralService, { TesterFunctions } from '../services/general.service';
 import { UdcField, UDCService } from '../services/user-defined-collections.service';
 
 export async function UDCTestser(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -911,7 +911,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
                     accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
                 } else {
-                    accUUID = 'ffd14354-aa2c-4767-8b3a-89b88451207e';
+                    accUUID = '257cd6cc-3e90-450b-bc16-1dc8f67a2ec8';
                 }
                 const response = await udcService.sendDataToField(accResourceCollectionName, fieldValues);
                 expect(response.Ok).to.equal(true);
@@ -951,10 +951,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                                 : 'str,bool,int,dou,Key',
                         Delimiter: ',',
                     };
-                    console.log(
-                        `Running The Test On:${collectionName},fields:${bodyToSend.Fields}`,
-                        ConsoleColors.Information,
-                    ); //Pumpkin Orange
+                    console.log(`Running The Test On:${collectionName},fields:${bodyToSend.Fields}`);
                     const a = await generalService.fetchStatus(
                         `/addons/data/export/file/122c0e9d-c240-4865-b446-f37ece866c22/${collectionName}`,
                         {
@@ -984,7 +981,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                             distUUIDToLookFor = 'c87efcca-7170-4e46-8d58-04d2f6817b71';
                         } else {
                             uriToLookFor = `"URI":"https://eupfs.pepperi.com`;
-                            distUUIDToLookFor = 'd35b5b12-47ec-4076-9d59-1450f15e0fdf';
+                            distUUIDToLookFor = 'a9620f87-7990-428e-a7c6-7d0dda6c3f51';
                         }
                         expect(b.AuditInfo.ResultObject).to.contain(uriToLookFor);
                         expect(b.AuditInfo.ResultObject).to.contain(`"DistributorUUID":"${distUUIDToLookFor}"`);
@@ -1047,7 +1044,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
                     accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
                 } else {
-                    accUUID = 'ffd14354-aa2c-4767-8b3a-89b88451207e';
+                    accUUID = '257cd6cc-3e90-450b-bc16-1dc8f67a2ec8';
                 }
                 const bodyToImport = {};
                 bodyToImport['Objects'] = [{ 'myAcc.ExternalID': 'Account for order scenarios' }];
