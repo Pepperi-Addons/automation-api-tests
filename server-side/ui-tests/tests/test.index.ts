@@ -48,7 +48,7 @@ import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
 import { LoginPerfTestsReload } from './login_performance_reload.test';
 import { UDCTestser } from '../../api-tests/user_defined_collections';
 import { maintenance3APITestser } from '../../api-tests/addons';
-import { handleDevTest } from '../../tests';
+import { handleDevTestInstallation } from '../../tests';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -475,7 +475,7 @@ const addon = process.env.npm_config_addon as string;
         const addonName = addon.toUpperCase();
         const addonUUID = generalService.convertNameToUUID(addonName);
         //1. install all dependencys on testing user + template addon
-        await handleDevTest(client, addonName, addonUUID, { describe, expect, it } as TesterFunctions, varPass, varPassEU, varPassSB);
+        await handleDevTestInstallation(client, addonName, addonUUID, { describe, expect, it } as TesterFunctions, varPass, varPassEU, varPassSB);
         //2. validate tested addon is installed
         const latestVersionOfTestedAddon = await generalService.getLatestAvailableVersion(addonUUID, Buffer.from(varPass).toString('base64'));
         const installedAddonsArr = await generalService.getInstalledAddons({ page_size: -1 });
@@ -489,23 +489,16 @@ const addon = process.env.npm_config_addon as string;
         };
         //current prod test user - DevTests@pepperitest.com : Aa123456
         const latestVersionOfAutomationTemplateAddon = await generalService.getLatestAvailableVersion("02754342-e0b5-4300-b728-a94ea5e0e8f4", Buffer.from(varPass).toString('base64'));
-        const zz = await service.fetchStatus(`/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`, {
+        const devTestResponse = await service.fetchStatus(`/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`, {
             body: JSON.stringify(body),
             method: "POST",
             headers: {
                 Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
             },
         });
+        const auditLogDevTestResponse = await this.getAuditLogResultObjectIfValid(devTestResponse.Body.URI as string, 40);
         debugger;
         //////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
         // getting VAR credentials for all envs
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');

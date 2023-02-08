@@ -1239,7 +1239,7 @@ export async function security(client: Client, request: Request, testerFunctions
 }
 
 //WIP - dev tests
-export async function handleDevTest(client: Client, addonName: string, addonUUID: string, testerFunctions: TesterFunctions, varPass, varPassEU, varPassSB) {
+export async function handleDevTestInstallation(client: Client, addonName: string, addonUUID: string, testerFunctions: TesterFunctions, varPass, varPassEU, varPassSB) {
     const service = new GeneralService(client);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     //1. convert Name to UUID
