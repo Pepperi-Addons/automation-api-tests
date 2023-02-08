@@ -1273,14 +1273,14 @@ export async function handleDevTestInstallation(
     let dependeciesUUIDs;
     if (Object.entries(dependenciesFromPublishConfig).length !== 0) {
         dependeciesUUIDs = await buildTheDependencyArray(service, dependenciesFromPublishConfig);
-    }
-    //4. install on dist
-    for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
-        const addonToInstall = {};
-        addonToInstall[addonName] = uuid;
-        const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
-        if (!installAddonResponse[0]) {
-            throw `Error: can't install ${addonName} - ${uuid}`;
+        //4. install on dist
+        for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
+            const addonToInstall = {};
+            addonToInstall[addonName] = uuid;
+            const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
+            if (!installAddonResponse[0]) {
+                throw `Error: can't install ${addonName} - ${uuid}`;
+            }
         }
     }
     const addonToInstall = {};

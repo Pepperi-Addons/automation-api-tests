@@ -515,6 +515,7 @@ const addon = process.env.npm_config_addon as string;
                 },
             },
         );
+        debugger;
         const auditLogDevTestResponse = await this.getAuditLogResultObjectIfValid(
             devTestResponse.Body.URI as string,
             40,
