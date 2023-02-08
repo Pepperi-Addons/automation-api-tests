@@ -176,8 +176,15 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 assert(logcash.dropTables1Status, logcash.dropTables1Error);
             });
         });
+        describe('PageKey verification  ', () => {
+            it('Get data with PageKey (NextPageKey)', () => {
+                assert(logcash.getDataPageKey3Status, logcash.getDataPageKey3Error);
+            });
+            it('Drop created schema ', () => {
+                assert(logcash.dropPageKeyTestTableStatus, logcash.dropPageKeyTestTableError);
+            });
+        });
     });
-
     //#endregion Mocha
 
     //get secret key
@@ -189,7 +196,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             throw new Error(`Fail To Get Addon Secret Key ${error}`);
         }
         //Oren added this to skip insatll after I talked with Oleg, the installADallAddon, upgradADallAddon and getAuditLogInstallStatus functions are suspended for now
-        //await  createFirstSchema();
+        //await  createSchemaToPageKeyTest();
         await getPapiSchema();
     }
 
@@ -387,6 +394,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     Authorization: 'Bearer ' + token,
                     //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
                     'X-Pepperi-SecretKey': whaitSecretKey,
+                    //'x-pepperi-await-indexing': 'true',//oleg DI-22540
                 },
                 body: JSON.stringify({
                     Key: '1',
@@ -779,6 +787,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     Authorization: 'Bearer ' + token,
                     //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
                     'X-Pepperi-SecretKey': logcash.secretKey,
+                    // 'x-pepperi-await-indexing': 'true',//oleg DI-22540
                 },
                 body: JSON.stringify({
                     Key: '6',
@@ -1518,9 +1527,207 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.dropTables1Status = false;
             logcash.dropTables1Error = 'Drop tables failed.';
         }
+        await createSchemaToPageKeyTest();
     }
 
     //#endregion GET from doc DB on schema with references fields doesn't return the default fields (except Key)
+
+    //#region https://pepperi.atlassian.net/browse/DI-21960 PageKey
+
+    async function createSchemaToPageKeyTest() {
+        //positive: change field by type Int to indexed String
+        logcash.createSchemaToPageKeyTest = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': whaitOwnerUUID,
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'pageKeyTest' + generalService.generateRandomString(6),
+                    Type: 'data',
+                    Fields: {
+                        // IndexedString1: { Type: 'String', Indexed: true },
+                        Field1: { Type: 'Integer', Indexed: true },
+                        Field2: { Type: 'String' },
+                        IndexedString2: { Type: 'String', Indexed: true },
+                        IndexedInt1: { Type: 'Integer', Indexed: true },
+                    },
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createSchemaToPageKeyTest.Hidden == false &&
+            logcash.createSchemaToPageKeyTest.Type == 'data' &&
+            logcash.createSchemaToPageKeyTest.Fields.IndexedString2.Type == 'String' &&
+            logcash.createSchemaToPageKeyTest.Fields.IndexedString2.Indexed == true &&
+            logcash.createSchemaToPageKeyTest.Fields.IndexedInt1.Type == 'Integer' &&
+            logcash.createSchemaToPageKeyTest.Fields.IndexedInt1.Indexed == true
+        ) {
+            logcash.createSchemaToPageKeyTestStatus = true;
+        } else {
+            logcash.createSchemaToPageKeyTestStatus = false;
+            logcash.createSchemaToPageKeyTestErrorMessage = 'One of parameters on Schema creation get with wrong value';
+        }
+        await insertDataToIndexedTableFirst100();
+    }
+
+    async function insertDataToIndexedTableFirst100() {
+        let counter = 0;
+        for (counter; counter < 99; counter++) {
+            logcash.randomInt = Math.floor(Math.random() * 5);
+            logcash.insertDataToIndexedTableFirst100 = await generalService
+                .fetchStatus(
+                    baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSchemaToPageKeyTest.Name,
+                    {
+                        method: 'POST',
+                        headers: {
+                            Authorization: 'Bearer ' + token,
+                            //'X-Pepperi-OwnerID': addonUUID,
+                            'X-Pepperi-SecretKey': whaitSecretKey,
+                        },
+                        body: JSON.stringify({
+                            Key: `${counter}`,
+                            IndexedInt1: logcash.randomInt, //counter,
+                            IndexedString2: 'IndexedString2-' + counter,
+                            Field1: counter,
+                            Field2: 'String1-' + counter,
+                        }),
+                    },
+                )
+                .then((res) => [res.Status, res.Body]);
+            //debugger;
+            if (logcash.insertDataToIndexedTableFirst100[0] == 200) {
+                logcash.insertDataToIndexedTableFirst100Status = true;
+            } else {
+                logcash.insertDataToIndexedTableFirst100Status = false;
+                logcash.insertDataToIndexedTableFirst100Error = 'Insert data failed on try number: ' + counter;
+            }
+        }
+        counter = 0;
+        //debugger;
+        await getDataPageKey1();
+    }
+    async function getDataPageKey1() {
+        logcash.getDataPageKey1 = await generalService
+            .fetchStatus(
+                baseURL + '/addons/data/search/' + whaitOwnerUUID + '/' + logcash.createSchemaToPageKeyTest.Name,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        PageSize: 40,
+                        Fields: ['IndexedInt1', 'IndexedString2', 'Field1'],
+                        OrderBy: 'Field1',
+                    }),
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataPageKey1.Objects.length == 40) {
+            logcash.getDataPageKey1Status = true;
+        } else {
+            logcash.getDataPageKey1Status = false;
+            logcash.getDataPageKey1Error = 'Will get 40 docs on page';
+        }
+        //debugger;
+        await getDataPageKey2();
+    }
+    async function getDataPageKey2() {
+        logcash.getDataPageKey2 = await generalService
+            .fetchStatus(
+                baseURL + '/addons/data/search/' + whaitOwnerUUID + '/' + logcash.createSchemaToPageKeyTest.Name,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        PageSize: 40,
+                        Fields: ['IndexedInt1', 'IndexedString2', 'Field2'],
+                        OrderBy: 'Field1',
+                        PageKey: logcash.getDataPageKey1.NextPageKey,
+                    }),
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.getDataPageKey2.Objects.length == 40) {
+            logcash.getDataPageKey2Status = true;
+        } else {
+            logcash.getDataPageKey2Status = false;
+            logcash.getDataPageKey2Error = 'Will get 40 docs on page';
+        }
+        //debugger;
+        await getDataPageKey3();
+    }
+
+    async function getDataPageKey3() {
+        logcash.getDataPageKey3 = await generalService
+            .fetchStatus(
+                baseURL + '/addons/data/search/' + whaitOwnerUUID + '/' + logcash.createSchemaToPageKeyTest.Name,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        PageSize: 40,
+                        Fields: ['IndexedInt1', 'IndexedString2', 'Field1'],
+                        OrderBy: 'Field1',
+                        PageKey: logcash.getDataPageKey2.NextPageKey,
+                    }),
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataPageKey3.Objects.length == 19 &&
+            logcash.getDataPageKey1Status == true &&
+            logcash.getDataPageKey2Status == true
+        ) {
+            logcash.getDataPageKey3Status = true;
+        } else {
+            logcash.getDataPageKey3Status = false;
+            logcash.getDataPageKey3Error = 'Failed on one of 3 gets with PageKey';
+        }
+        //debugger;
+        await dropPageKeyTestTable();
+    }
+
+    async function dropPageKeyTestTable() {
+        //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
+        const res = await generalService.fetchStatus(
+            baseURL + '/addons/data/schemes/' + logcash.createSchemaToPageKeyTest.Name + '/purge',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': whaitOwnerUUID,
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+            },
+        );
+        //debugger;
+        if (res.Ok) {
+            logcash.dropPageKeyTestTableStatus = true;
+        } else {
+            logcash.dropPageKeyTestTableStatus = false;
+            logcash.dropPageKeyTestTableError = 'Drop table failed.';
+        }
+    }
+
+    //#endregion
 
     /////////////////////////////////Get from ADAL and from Elastic
     async function getSurveyScheme1() {
