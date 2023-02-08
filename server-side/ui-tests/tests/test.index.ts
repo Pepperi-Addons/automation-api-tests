@@ -41,13 +41,14 @@ import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
 // import { testData } from './../../services/general.service';
-import {} from './script_picker.test';
+import { } from './script_picker.test';
 import { PFSTestser } from '../../api-tests/pepperi_file_service';
 import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
 import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
 import { LoginPerfTestsReload } from './login_performance_reload.test';
 import { UDCTestser } from '../../api-tests/user_defined_collections';
 import { maintenance3APITestser } from '../../api-tests/addons';
+import { handleDevTest } from '../../tests';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -472,13 +473,46 @@ const addon = process.env.npm_config_addon as string;
         }
         const service = new GeneralService(client);
         const addonName = addon.toUpperCase();
+        const addonUUID = generalService.convertNameToUUID(addonName);
+        //1. install all dependencys on testing user + template addon
+        await handleDevTest(client, addonName, addonUUID, { describe, expect, it } as TesterFunctions, varPass, varPassEU, varPassSB);
+        //2. validate tested addon is installed
+        const latestVersionOfTestedAddon = await generalService.getLatestAvailableVersion(addonUUID, Buffer.from(varPass).toString('base64'));
+        const installedAddonsArr = await generalService.getInstalledAddons({ page_size: -1 });
+        const isInstalled = installedAddonsArr.find((addon) => addon.Addon.UUID == addonUUID && addon.Version == latestVersionOfTestedAddon) ? true : false;
+        if(isInstalled === false){
+            throw `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddon}`;
+        }
+        const body = {
+            AddonUUID: addonUUID,
+            isLocal: "false",
+        };
+        //current prod test user - DevTests@pepperitest.com : Aa123456
+        const latestVersionOfAutomationTemplateAddon = await generalService.getLatestAvailableVersion("02754342-e0b5-4300-b728-a94ea5e0e8f4", Buffer.from(varPass).toString('base64'));
+        const zz = await service.fetchStatus(`/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`, {
+            body: JSON.stringify(body),
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
+            },
+        });
+        debugger;
+        //////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
         // getting VAR credentials for all envs
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         // global ugly variable
         let JenkinsBuildResultsAllEnvs: string[][] = [[]];
-        let addonUUID = '';
+        // let addonUUID = '';
         let addonVersionProd = '';
         let addonVersionEU = '';
         let addonVersionSb = '';
@@ -495,7 +529,7 @@ const addon = process.env.npm_config_addon as string;
         switch (addonName) {
             //add another 'case' here when adding new addons to this mehcanisem
             case 'ADAL': {
-                addonUUID = '00000000-0000-0000-0000-00000000ada1';
+                // addonUUID = '00000000-0000-0000-0000-00000000ada1';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
                     {
@@ -567,7 +601,7 @@ const addon = process.env.npm_config_addon as string;
                 break;
             }
             case 'DIMX': {
-                addonUUID = '44c97115-6d14-4626-91dc-83f176e9a0fc';
+                // addonUUID = '44c97115-6d14-4626-91dc-83f176e9a0fc';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
                     {
@@ -640,7 +674,7 @@ const addon = process.env.npm_config_addon as string;
             }
             case 'DATA INDEX':
             case 'DATA-INDEX': {
-                addonUUID = '00000000-0000-0000-0000-00000e1a571c';
+                // addonUUID = '00000000-0000-0000-0000-00000e1a571c';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
                     {
@@ -711,6 +745,9 @@ const addon = process.env.npm_config_addon as string;
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 break;
             }
+            default:
+                console.log(`no approvement tests for addon: ${addonName}`);
+                return;
         }
         // 2. parse which envs failed
         const passingEnvs: string[] = [];
@@ -846,9 +883,8 @@ const addon = process.env.npm_config_addon as string;
 
         //3. send to Teams
         if (failingEnvs.length > 0) {
-            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
-                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On: ${failingEnvs.join(', ')}`;
+            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+                } ||| Failed On: ${failingEnvs.join(', ')}`;
             const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
             const bodyToSend = {
                 Name: `${addonName} Approvment Tests Status`,
@@ -878,9 +914,8 @@ const addon = process.env.npm_config_addon as string;
                 throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
             }
         } else {
-            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
-                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On:  ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
+            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+                } ||| Failed On:  ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
             const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
             const bodyToSend = {
                 Name: `${addonName} Approvment Tests Status`,
@@ -1038,8 +1073,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
-                                    maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));
@@ -1295,4 +1329,5 @@ async function setOrderCenterClosedFooter(generalService: GeneralService, OrderC
         expect(upsertUIControlResponse.Type).to.include('OrderCenterClosedFooter');
     }
 }
+
 //#endregion Replacing UI Functions
