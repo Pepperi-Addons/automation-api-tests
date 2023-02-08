@@ -1239,7 +1239,13 @@ export async function security(client: Client, request: Request, testerFunctions
 }
 
 //WIP - dev tests
-export async function handleDevTestInstallation(client: Client, addonName: string, addonUUID: string, testerFunctions: TesterFunctions, varPass, varPassEU, varPassSB) {
+export async function handleDevTestInstallation(
+    client: Client,
+    addonName: string,
+    addonUUID: string,
+    testerFunctions: TesterFunctions,
+    varPass,
+) {
     const service = new GeneralService(client);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     //1. convert Name to UUID
@@ -1285,7 +1291,6 @@ export async function handleDevTestInstallation(client: Client, addonName: strin
     }
     service.PrintMemoryUseToLog('End', testName);
 }
-
 
 // {
 // adal:'1.4.77'
