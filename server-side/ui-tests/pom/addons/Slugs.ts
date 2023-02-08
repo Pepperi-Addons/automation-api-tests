@@ -18,7 +18,9 @@ export class Slugs extends AddonPage {
         '//mat-label[contains(@title,"Description")]/ancestor::pep-field-title/parent::div/mat-form-field //textarea',
     );
     public CreateSlugPopup_CreateSlug_Button: By = this.getSelectorOfCreateSlugPopupButtonByTitle('Create Slug'); //By.xpath('//span[@title="Create Slug"]/ancestor::button[@data-qa="Create Slug"]');
-    public CreateSlugPopup_CreateSlug_ButtonEvgeny: By = By.xpath(`(//*[@data-qa="Create Slug"])[2]`);
+    public CreateSlugPopup_CreateSlug_ButtonEvgeny: By = By.xpath(
+        `//add-slug//pep-button//button[@data-qa="Create Slug"]`,
+    );
     public CreateSlugPopup_Cancel_Button: By = this.getSelectorOfCreateSlugPopupButtonByTitle('Cancel');
     // Slugs List
     public SelectedCheckbox: By = By.xpath(
@@ -27,7 +29,7 @@ export class Slugs extends AddonPage {
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu //button');
     public Uncheck_Checkbox: By = By.xpath('//mat-checkbox //input[@aria-checked="mixed"]');
     // Mapped Slugs
-    public SlugMappingScreenTitle: By = By.xpath(`//span[contains(text(),'Page Mapping')]`);
+    public SlugMappingScreenTitle: By = By.xpath(`//div[@title='Rep (Default profile)']`);
     public MappedSlugs: By = By.id('mappedSlugs');
     public MappedSlugs_SlugsPaths: By = By.xpath('//div[@id="mappedSlugs"]//input');
     public MappedSlugs_MappedPages: By = By.xpath('//div[@id="mappedSlugs"]//mat-select');
@@ -35,6 +37,10 @@ export class Slugs extends AddonPage {
     // Page Mapping Profile Edit Button
     public PageMapping_ProfileEditButton_Save: By = this.getSelectorOfPageMappingProfileEditButton('Save');
     public PageMapping_ProfileEditButton_Cancel: By = this.getSelectorOfPageMappingProfileEditButton('Cancel');
+    // Mapping Tab
+    public MappingTab_RepCard_InnerListOfMappedSlugs: By = By.xpath(
+        '//pep-profile-data-views-card//div[contains(@class,"title")][@title="Rep (Default profile)"]/parent::div/following-sibling::pep-profile-data-view//div[contains(@class,"fields-container")]',
+    );
     // Info Popup
     public Info_Popup_PepDialog: By = By.xpath('//span[contains(text(),"Info")]/ancestor::pep-dialog');
     public Info_Popup_MessageDiv: By = By.xpath('//span[contains(text(),"Info")]/ancestor::pep-dialog/div[2]/div');
@@ -57,7 +63,7 @@ export class Slugs extends AddonPage {
     }
 
     private getSelectorOfCreateSlugPopupButtonByTitle(title: string) {
-        return By.xpath(`//span[@title="${title}"]/ancestor::button[@data-qa="${title}"]`);
+        return By.xpath(`//span[contains(@title,"${title}")]/ancestor::button[contains(@data-qa,"${title}")]`);
     }
 
     // private getSelectorOfRowInListByName(name: string) {
@@ -88,6 +94,18 @@ export class Slugs extends AddonPage {
 
     private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
         return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
+    }
+
+    public getSelectorOfMappedSlugInRepCardSmallDisplayByText(text: string) {
+        return By.xpath(
+            `//pep-profile-data-views-card//div[contains(@class,"title")][@title="Rep (Default profile)"]/parent::div/following-sibling::pep-profile-data-view//div[contains(@class,"fields-container")]/span[contains(text(),"${text}")]`,
+        );
+    }
+
+    public getSelectorOfMappedSlugDeleteButtonByName(title: string) {
+        return By.xpath(
+            `input[@title="${title}"]/ancestor::div[contains(@class,"mapped-slug-container")]//pep-button/button`,
+        );
     }
 
     public async selectFromList(selector: By, name?: string) {
@@ -183,9 +201,10 @@ export class Slugs extends AddonPage {
         await this.insertTextToInputElement(displayNameOfSlug, this.CreateSlugPopup_DisplayName_Input);
         await this.insertTextToInputElement(slugPath, this.CreateSlugPopup_Slug_Input);
         await this.insertTextToInputElement(descriptionOfSlug, this.CreateSlugPopup_Description_Input);
-        this.pause(500);
-        await this.click(this.CreateSlugPopup_CreateSlug_Button);
-        this.pause(5000);
+        this.pause(0.5 * 1000);
+        await this.click(this.CreateSlugPopup_CreateSlug_ButtonEvgeny);
+        // await this.click(this.CreateSlugPopup_CreateSlug_Button);
+        this.pause(5 * 1000);
     }
 
     public async getExistingMappedSlugsList(dataViewsService) {
@@ -211,7 +230,7 @@ export class Slugs extends AddonPage {
         await this.insertTextToInputElement(descriptionOfSlug, this.CreateSlugPopup_Description_Input);
         this.pause(500);
         await this.click(this.CreateSlugPopup_CreateSlug_ButtonEvgeny);
-        this.pause(5000);
+        this.pause(1500);
     }
 
     public async mapPageToSlug(pathOfSlug: string, nameOfPage: string) {
@@ -296,5 +315,28 @@ export class Slugs extends AddonPage {
                 body: JSON.stringify(slugObj),
             },
         );
+    }
+
+    public async deleteSlugByUUID(slugUUID: string, client: Client) {
+        // expected response body: { "success": true }
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus(`/addons/api/4ba5d6f9-6642-4817-af67-c79b68c96977/api/slugs/`, {
+            method: 'POST',
+            body: JSON.stringify({
+                slug: null,
+                isDelete: true,
+                selectedObj: {
+                    selectionType: 1,
+                    rows: [slugUUID],
+                    rowTypes: ['0'],
+                },
+            }),
+        });
+    }
+
+    public async deleteSlugByName(slugName: string, client: Client) {
+        // expected response body: { "success": true }
+        const slugUUID = await this.getSlugUUIDbySlugName(slugName, client);
+        return await this.deleteSlugByUUID(slugUUID, client);
     }
 }
