@@ -394,7 +394,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     Authorization: 'Bearer ' + token,
                     //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
                     'X-Pepperi-SecretKey': whaitSecretKey,
-                    //'x-pepperi-await-indexing': 'true',//oleg DI-22540
+                    'x-pepperi-await-indexing': 'true', //oleg DI-22540
                 },
                 body: JSON.stringify({
                     Key: '1',
@@ -787,7 +787,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     Authorization: 'Bearer ' + token,
                     //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
                     'X-Pepperi-SecretKey': logcash.secretKey,
-                    // 'x-pepperi-await-indexing': 'true',//oleg DI-22540
+                    'x-pepperi-await-indexing': 'true', //oleg DI-22540
                 },
                 body: JSON.stringify({
                     Key: '6',
