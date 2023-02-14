@@ -119,9 +119,9 @@ process.on('unhandledRejection', async (error) => {
         console.debug(`%cSleep: ${10000} milliseconds`, ConsoleColors.Information);
         msSleep(10000);
     } else if (error instanceof Error && JSON.stringify(error.message).includes('Error')) {
-        console.log(`%cError unhandledRejection: ${error.message}`, ConsoleColors.Error);
+        console.log(`%Unhandled Rejection: ${error.message}`, ConsoleColors.Error);
         console.log(
-            `%cIn cases of unhandledRejection that include message of "Error" the process stopped`,
+            `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
             ConsoleColors.SystemInformation,
         );
         process.exit(1);
@@ -730,14 +730,14 @@ export default class GeneralService {
                 //API Testing Framework AddonUUID
                 if (addonUUID == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
                     installResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${addonUUID} `)
+                        .addonUUID(`${addonUUID}`)
                         .install('0.0.235');
                 } else {
                     if (version.match(/\d+[\.]\d+[/.]\d+/)) {
                         const versionToInstall = version.match(/\d+[\.]\d+[/.]\d+/);
                         if (version?.length && typeof version[0] === 'string') {
                             installResponse = await this.papiClient.addons.installedAddons
-                                .addonUUID(`${addonUUID} `)
+                                .addonUUID(`${addonUUID}`)
                                 .install(String(versionToInstall));
                         } else {
                             installResponse = await this.papiClient.addons.installedAddons
@@ -746,7 +746,7 @@ export default class GeneralService {
                         }
                     } else {
                         installResponse = await this.papiClient.addons.installedAddons
-                            .addonUUID(`${addonUUID} `)
+                            .addonUUID(`${addonUUID}`)
                             .install();
                     }
                 }
@@ -773,11 +773,11 @@ export default class GeneralService {
 
             if (!isInstalled) {
                 installResponse = await this.papiClient.addons.installedAddons
-                    .addonUUID(`${addonUUID} `)
+                    .addonUUID(`${addonUUID}`)
                     .install(version);
             } else {
                 installResponse = await this.papiClient.addons.installedAddons
-                    .addonUUID(`${addonUUID} `)
+                    .addonUUID(`${addonUUID}`)
                     .upgrade(version);
             }
             const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
@@ -1260,6 +1260,8 @@ export default class GeneralService {
                 return '00000000-0000-0000-0000-00000e1a571c';
             case 'UDC':
                 return '122c0e9d-c240-4865-b446-f37ece866c22';
+            case 'NEBULA':
+                return '00000000-0000-0000-0000-000000006a91';
             default:
                 return '';
         }

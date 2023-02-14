@@ -494,8 +494,11 @@ const addon = process.env.npm_config_addon as string;
             ? true
             : false;
         if (isInstalled === false) {
-            throw `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddon}`;
+            throw new Error(
+                `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddon}`,
+            );
         }
+        debugger;
         const body = {
             AddonUUID: addonUUID,
             isLocal: 'false',
@@ -585,7 +588,9 @@ const addon = process.env.npm_config_addon as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    throw new Error(
+                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
+                    );
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
@@ -657,7 +662,9 @@ const addon = process.env.npm_config_addon as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    throw new Error(
+                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
+                    );
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
@@ -730,7 +737,9 @@ const addon = process.env.npm_config_addon as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    throw new Error(
+                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
+                    );
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
@@ -791,19 +800,29 @@ const addon = process.env.npm_config_addon as string;
                             },
                         );
                         if (varResponseEU.Ok !== true) {
-                            throw `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseEU.Ok}`;
+                            throw new Error(
+                                `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseEU.Ok}`,
+                            );
                         }
                         if (varResponseEU.Status !== 200) {
-                            throw `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseEU.Status}`;
+                            throw new Error(
+                                `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseEU.Status}`,
+                            );
                         }
                         if (varResponseEU.Body.AddonUUID !== addonUUID) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseEU.Body.AddonUUID} instead of ${addonUUID}`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseEU.Body.AddonUUID} instead of ${addonUUID}`,
+                            );
                         }
                         if (varResponseEU.Body.Version !== addonVersionEU) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseEU.Body.Version} instead of ${addonVersionEU}`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseEU.Body.Version} instead of ${addonVersionEU}`,
+                            );
                         }
                         if (varResponseEU.Body.Available !== false) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseEU.Body.Available} instead of false`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseEU.Body.Available} instead of false`,
+                            );
                         }
                         console.log(
                             `${addonName}, version: ${addonVersionEU}  on EU became unavailable: Approvment tests didnt pass`,
@@ -828,19 +847,29 @@ const addon = process.env.npm_config_addon as string;
                             },
                         );
                         if (varResponseProd.Ok !== true) {
-                            throw `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseProd.Ok}`;
+                            throw new Error(
+                                `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseProd.Ok}`,
+                            );
                         }
                         if (varResponseProd.Status !== 200) {
-                            throw `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseProd.Status}`;
+                            throw new Error(
+                                `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseProd.Status}`,
+                            );
                         }
                         if (varResponseProd.Body.AddonUUID !== addonUUID) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseProd.Body.AddonUUID} instead of ${addonUUID}`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseProd.Body.AddonUUID} instead of ${addonUUID}`,
+                            );
                         }
                         if (varResponseProd.Body.Version !== addonVersionProd) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseProd.Body.Version} instead of ${addonVersionProd}`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseProd.Body.Version} instead of ${addonVersionProd}`,
+                            );
                         }
                         if (varResponseProd.Body.Available !== false) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseProd.Body.Available} instead of false`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseProd.Body.Available} instead of false`,
+                            );
                         }
                         console.log(
                             `${addonName}, version: ${addonVersionProd}  on Production became unavailable: Approvment tests didnt pass`,
@@ -865,19 +894,29 @@ const addon = process.env.npm_config_addon as string;
                             },
                         );
                         if (varResponseSb.Ok !== true) {
-                            throw `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseSb.Ok}`;
+                            throw new Error(
+                                `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseSb.Ok}`,
+                            );
                         }
                         if (varResponseSb.Status !== 200) {
-                            throw `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseSb.Status}`;
+                            throw new Error(
+                                `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseSb.Status}`,
+                            );
                         }
                         if (varResponseSb.Body.AddonUUID !== addonUUID) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseSb.Body.AddonUUID} instead of ${addonUUID}`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseSb.Body.AddonUUID} instead of ${addonUUID}`,
+                            );
                         }
                         if (varResponseSb.Body.Version !== addonVersionSb) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseSb.Body.Version} instead of ${addonVersionSb}`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseSb.Body.Version} instead of ${addonVersionSb}`,
+                            );
                         }
                         if (varResponseSb.Body.Available !== false) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseSb.Body.Available} instead of false`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseSb.Body.Available} instead of false`,
+                            );
                         }
                         console.log(
                             `${addonName}, version: ${addonVersionSb} on Staging became unavailable: Approvment tests didnt pass`,
@@ -923,13 +962,13 @@ const addon = process.env.npm_config_addon as string;
                 },
             );
             if (monitoringResponse.Ok !== true) {
-                throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
+                throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
             }
             if (monitoringResponse.Status !== 200) {
-                throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
+                throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
             }
             if (Object.keys(monitoringResponse.Error).length !== 0) {
-                throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
+                throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
             }
         } else {
             const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
@@ -956,13 +995,13 @@ const addon = process.env.npm_config_addon as string;
                 },
             );
             if (monitoringResponse.Ok !== true) {
-                throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
+                throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
             }
             if (monitoringResponse.Status !== 200) {
-                throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
+                throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
             }
             if (Object.keys(monitoringResponse.Error).length !== 0) {
-                throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
+                throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
             }
         }
     }

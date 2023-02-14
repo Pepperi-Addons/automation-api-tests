@@ -1258,7 +1258,9 @@ export async function handleDevTestInstallation(
         automation_template_addon: ['02754342-e0b5-4300-b728-a94ea5e0e8f4', ''],
     });
     if (templateAddonResponse[0] != true) {
-        throw `Error: can't install automation_template_addon, exception: ${templateAddonResponse}`;
+        throw new Error(
+            `Error: can't install automation_template_addon, got the exception: ${templateAddonResponse} from audit log`,
+        );
     }
     //3. get dependencys of tested addon
     const papiClient = service.papiClient;
@@ -1279,7 +1281,7 @@ export async function handleDevTestInstallation(
             addonToInstall[addonName] = uuid;
             const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
             if (!installAddonResponse[0]) {
-                throw `Error: can't install ${addonName} - ${uuid}`;
+                throw new Error(`Error: can't install ${addonName} - ${uuid}`);
             }
         }
     }
@@ -1287,7 +1289,7 @@ export async function handleDevTestInstallation(
     addonToInstall[addonName] = [addonUUID, ''];
     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
     if (installAddonResponse[0] != true) {
-        throw `Error: can't install ${addonName} - ${addonUUID}, exception: ${installAddonResponse}`;
+        throw new Error(`Error: can't install ${addonName} - ${addonUUID}, exception: ${installAddonResponse}`);
     }
     service.PrintMemoryUseToLog('End', testName);
 }
