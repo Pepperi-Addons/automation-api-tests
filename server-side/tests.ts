@@ -1306,16 +1306,11 @@ export async function handleDevTestInstallation(
 
 //WIP - dev tests
 async function buildTheDependencyArray(service: GeneralService, dependenciesFromPublishConfig) {
+    //map the dependency addons to thier real name in VAR
     const allAddonDependencys = await service.fetchStatus('/configuration_fields?key=AddonsForDependencies');
     const allAddonDependencysAsObject = JSON.parse(allAddonDependencys.Body.Value);
     const arrayOfAllUUIDs = {};
     for (const dependecyAddon in dependenciesFromPublishConfig) {
-        // const testData = {
-        //     'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.4.13'],
-        //     Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
-        //     'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', ''],
-        //     Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.0.100'],
-        // };
         arrayOfAllUUIDs[dependecyAddon] = [allAddonDependencysAsObject[dependecyAddon], ''];
     }
     return arrayOfAllUUIDs;
