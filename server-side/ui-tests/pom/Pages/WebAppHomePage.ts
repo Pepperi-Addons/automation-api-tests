@@ -167,7 +167,7 @@ export class WebAppHomePage extends WebAppPage {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
             ['value'].slice()
             .replace('|textToFill|', ATDname);
-        await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 5000);
+        await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 10000);
     }
 
     public async returnToHomePage(): Promise<void> {

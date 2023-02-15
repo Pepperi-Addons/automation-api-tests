@@ -73,6 +73,7 @@ export class ScriptEditor extends AddonPage {
     public DescInput: By = By.xpath(`(//div[@class='mat-dialog-content']//input)[2]`);
     public CodeTextArea: By = By.xpath(`//textarea`);
     public ModalCloseBtn: By = By.xpath(`//mat-dialog-container//button`);
+    public Modal: By = By.xpath(`//div[contains(text(),'New script was added successfully')]`);
 
     public async enterPickerModal(): Promise<void> {
         await this.browser.click(this.PencilMenuBtn);
@@ -257,8 +258,10 @@ export class ScriptEditor extends AddonPage {
         this.browser.sleep(4500);
         //4. save
         await this.browser.click(scriptEditor.SaveBtn);
-        this.browser.sleep(5500);
+        this.browser.sleep(2000);
+        await this.browser.untilIsVisible(scriptEditor.ModalCloseBtn, 6000);
         await this.browser.click(scriptEditor.ModalCloseBtn);
+        this.browser.sleep(1000);
         //5. validate script is found in list
         const webAppList = new WebAppList(this.browser);
         const allListElemsText = await webAppList.getAllListElementsTextValue();

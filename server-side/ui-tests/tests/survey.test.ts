@@ -69,6 +69,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
     const testData = {
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x to
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.32'], //has to remain untouched
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.8'], //has to remain untouched
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
@@ -82,6 +83,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''],
+        Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);

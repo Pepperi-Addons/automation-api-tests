@@ -41,6 +41,7 @@ export const testData = {
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 2/2/23 - has to be upgraded
+    'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     // system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '0.0.77'], //needed to be able to report tests results -- notice were locked on a certin version
 };
 
@@ -751,7 +752,8 @@ export default class GeneralService {
                 }
                 const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
                 if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
-                    isInstalledArr.push(false);
+                    if (!auditLogResponse.AuditInfo.ErrorMessage.includes('Addon already installed'))
+                        isInstalledArr.push(false);
                     continue;
                 }
             }
@@ -776,12 +778,6 @@ export default class GeneralService {
         testData: { [any: string]: string[] },
         isPhased: boolean,
     ): Promise<{ [any: string]: string[] }> {
-        if (!testData['Export and Import Framework'] && !testData['Export and Import Framework (DIMX)']) {
-            const dimxName = this.papiClient['options'].baseURL.includes('staging')
-                ? 'Export and Import Framework'
-                : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
-            testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
-        }
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
@@ -871,12 +867,12 @@ export default class GeneralService {
                     )
                 ) {
                     testData[addonName].push(changeType);
-                    testData[addonName].push(auditLogResponse.Status.Name);
+                    testData[addonName].push('Success');
                     testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
                 } else if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
-                    testData[addonName].push('Success');
-                    testData[addonName].push('');
+                    testData[addonName].push(auditLogResponse.Status.Name);
+                    testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
                 } else {
                     changeType = 'Downgrade';
                     upgradeResponse = await this.papiClient.addons.installedAddons

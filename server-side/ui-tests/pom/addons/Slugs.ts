@@ -18,7 +18,9 @@ export class Slugs extends AddonPage {
         '//mat-label[contains(@title,"Description")]/ancestor::pep-field-title/parent::div/mat-form-field //textarea',
     );
     public CreateSlugPopup_CreateSlug_Button: By = this.getSelectorOfCreateSlugPopupButtonByTitle('Create Slug'); //By.xpath('//span[@title="Create Slug"]/ancestor::button[@data-qa="Create Slug"]');
-    public CreateSlugPopup_CreateSlug_ButtonEvgeny: By = By.xpath(`(//*[@data-qa="Create Slug"])[2]`);
+    public CreateSlugPopup_CreateSlug_ButtonEvgeny: By = By.xpath(
+        `//add-slug//pep-button//button[@data-qa="Create Slug"]`,
+    );
     public CreateSlugPopup_Cancel_Button: By = this.getSelectorOfCreateSlugPopupButtonByTitle('Cancel');
     // Slugs List
     public SelectedCheckbox: By = By.xpath(
@@ -27,7 +29,7 @@ export class Slugs extends AddonPage {
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu //button');
     public Uncheck_Checkbox: By = By.xpath('//mat-checkbox //input[@aria-checked="mixed"]');
     // Mapped Slugs
-    public SlugMappingScreenTitle: By = By.xpath(`//span[contains(text(),'Page Mapping')]`);
+    public SlugMappingScreenTitle: By = By.xpath(`//div[@title='Rep (Default profile)']`);
     public MappedSlugs: By = By.id('mappedSlugs');
     public MappedSlugs_SlugsPaths: By = By.xpath('//div[@id="mappedSlugs"]//input');
     public MappedSlugs_MappedPages: By = By.xpath('//div[@id="mappedSlugs"]//mat-select');
@@ -228,7 +230,7 @@ export class Slugs extends AddonPage {
         await this.insertTextToInputElement(descriptionOfSlug, this.CreateSlugPopup_Description_Input);
         this.pause(500);
         await this.click(this.CreateSlugPopup_CreateSlug_ButtonEvgeny);
-        this.pause(5000);
+        this.pause(1500);
     }
 
     public async mapPageToSlug(pathOfSlug: string, nameOfPage: string) {
