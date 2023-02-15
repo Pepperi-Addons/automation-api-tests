@@ -21,7 +21,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const udcService = new UDCService(generalService);
-    // await generalService.baseAddonVersionsInstallation(varPass);
 
     let driver: Browser;
     let e2eUtils: E2EUtils;
@@ -64,57 +63,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let getCreatedSalesOrderTransaction;
     // let resourceViews: ResourceViews;
 
-    // const testData = {
-    //     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x to
-    //     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
-    //     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-    //     Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.32'], //has to remain untouched
-    //     sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.8'], //has to remain untouched
-    //     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-    //     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
-    //     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-    //     'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
-    //     'VisitFlow': ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
-    //     'Slugs': ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
-    // };
-
-    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
-
     describe('Visit Flow Test Suite', async () => {
-        // await describe(`Prerequisites Addons for Visit Flow Tests (${randomString})`, async () => {
-        //     isInstalledArr.forEach((isInstalled, index) => {
-        //         it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-        //             expect(isInstalled).to.be.true;
-        //         });
-        //     });
-        //     let addonUUID: string;
-        //     let version: string;
-        //     let varLatestVersion: string;
-        //     let changeType: string;
-        //     for (const addonName in testData) {
-        //         addonUUID = testData[addonName][0];
-        //         version = testData[addonName][1];
-        //         varLatestVersion = chnageVersionResponseArr[addonName][2];
-        //         changeType = chnageVersionResponseArr[addonName][3];
-        //         describe(`Test Data: ${addonName}`, () => {
-        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-        //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-        //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-        //                 } else {
-        //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-        //                 }
-        //             });
-        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-        //                 await expect(await generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-        //                     .eventually.to.have.property('Version')
-        //                     .a('string')
-        //                     .that.is.equal(varLatestVersion);
-        //             });
-        //         });
-        //     }
-        // });
-
         describe('Visit Flow UI tests', () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
@@ -152,10 +101,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await webAppLoginPage.login(email, password);
             });
 
-            it('Pre-clean: deleting all Pages', async () => {
-                await e2eUtils.deleteAllPagesViaUI();
-                await webAppHeader.goHome();
-            });
+            // it('Pre-clean: deleting all Pages', async () => {
+            //     await e2eUtils.deleteAllPagesViaUI();
+            //     await webAppHeader.goHome();
+            // });
 
             // describe("Verifying Addon's installation generated required data", () => {
             //     it('Three UDC collections were created (VisitFlows, VisitFlowGroups, VisitFlowSteps)', async () => {
@@ -310,15 +259,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     slugs.pause(3 * 1000);
                     slugUUID = await slugs.getSlugUUIDbySlugName(slug_path, client);
                     console.info('slugUUID: ', slugUUID);
+                    await webAppHeader.goHome();
                     expect(slugUUID).to.not.be.undefined;
                 });
 
                 it('Dragging the created slug to the mapped fields section and Posting via API', async () => {
-                    await slugs.clickTab('Mapping_Tab');
-                    await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
-                    await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
-                    await slugs.isSpinnerDone();
-                    await slugs.waitTillVisible(slugs.MappedSlugs, 5000);
                     const mappedSlugsUpsertResponse = await e2eUtils.addToMappedSlugs(
                         [{ slug_path: slug_path, pageUUID: pageUUID }],
                         client,
@@ -331,6 +276,12 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                             4,
                         )}`,
                     );
+                    await e2eUtils.navigateTo('Slugs');
+                    await slugs.clickTab('Mapping_Tab');
+                    await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
+                    await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
+                    await slugs.isSpinnerDone();
+                    await slugs.waitTillVisible(slugs.MappedSlugs, 5000);
                     driver.sleep(2 * 1000);
                     await e2eUtils.logOutLogIn(email, password);
                     await webAppHomePage.isSpinnerDone();
@@ -348,6 +299,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
 
             describe('Configuring Account Dashboard', () => {
                 it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async () => {
+                    debugger
                     for (let i = 0; i < 2; i++) {
                         try {
                             await webAppHeader.goHome();
@@ -362,65 +314,90 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                             await driver.switchTo(visitFlow.AddonContainerIframe);
                             await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Container, 15000);
                             await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Title, 15000);
-                            break;
-                        } catch (error) {
-                            console.error(error);
-                        }
-                    }
-                    for (let i = 0; i < 2; i++) {
-                        try {
                             await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_ListContainer, 15000);
                             await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
                             await visitFlow.clickElement('AccountDashboardLayout_MenuRow_Container');
                             await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_PencilButton, 15000);
                             await visitFlow.clickElement('AccountDashboardLayout_MenuRow_PencilButton');
                             await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_ConfigPage_Title, 15000);
+                            expect(
+                                await (await driver.findElement(visitFlow.AccountDashboardLayout_ConfigPage_Title)).getText(),
+                            ).to.equal('Menu');
+                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
+                            await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_PencilButton');
+                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox, 15000);
+                            await visitFlow.insertTextToInputElement(
+                                slugDisplayName,
+                                visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox,
+                            );
+                            expect(
+                                await (
+                                    await driver.findElement(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchResult)
+                                ).getAttribute('data-id'),
+                            ).to.equal(`SLUG_${slug_path}`);
+                            await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SearchResult_PlusButton');
+                            await visitFlow.waitTillVisible(
+                                visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText(slug_path),
+                                15000,
+                            );
+                            await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SaveButton');
+                            // is there a function to wait for round loader to finish?
+                            driver.sleep(5 * 1000);
+                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
+                            await visitFlow.clickElement('AccountDashboardLayout_Menu_CancelButton');
+                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
+                            driver.sleep(2 * 1000);
+                            await driver.switchToDefaultContent();
+                            driver.sleep(2 * 1000);
+                            await webAppHeader.goHome();
+                            break;
                         } catch (error) {
                             await driver.switchToDefaultContent();
                             console.error(error);
                             await webAppHeader.goHome();
                         }
                     }
-                    expect(
-                        await (await driver.findElement(visitFlow.AccountDashboardLayout_ConfigPage_Title)).getText(),
-                    ).to.equal('Menu');
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
-                    await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_PencilButton');
                 });
 
-                it('Adding the Visit Flow Slug by the Search input, clicking the (+) button and Save', async () => {
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox, 15000);
-                    await visitFlow.insertTextToInputElement(
-                        slugDisplayName,
-                        visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox,
-                    );
-                    // await visitFlow.insertTextToInputElement('Visit Flow Auto', visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox);
-                    expect(
-                        await (
-                            await driver.findElement(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchResult)
-                        ).getAttribute('data-id'),
-                    ).to.equal(`SLUG_${slug_path}`);
-                    // expect(await (await driver.findElement(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchResult)).getAttribute('data-id')).to.contain('SLUG_visit_flow_auto');
-                    await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SearchResult_PlusButton');
-                    await visitFlow.waitTillVisible(
-                        visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText(slug_path),
-                        15000,
-                    );
-                    // await visitFlow.waitTillVisible(visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText('visit_flow_auto'), 15000);
-                    await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SaveButton');
-                    // is there a function to wait for round loader to finish?
-                    driver.sleep(5 * 1000);
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
-                    await visitFlow.clickElement('AccountDashboardLayout_Menu_CancelButton');
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
-                    driver.sleep(2 * 1000);
-                    await driver.switchToDefaultContent();
-                    driver.sleep(2 * 1000);
-                    await webAppHeader.goHome();
-                });
+                // it('Adding the Visit Flow Slug by the Search input, clicking the (+) button and Save', async () => {
+                //     debugger
+                //     try {
+                //         await driver.switchTo(visitFlow.AddonContainerIframe);
+                //         await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox, 15000);
+                //         await visitFlow.insertTextToInputElement(
+                //             slugDisplayName,
+                //             visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox,
+                //         );
+                //         // await visitFlow.insertTextToInputElement('Visit Flow Auto', visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox);
+                //         expect(
+                //             await (
+                //                 await driver.findElement(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchResult)
+                //             ).getAttribute('data-id'),
+                //         ).to.equal(`SLUG_${slug_path}`);
+                //         // expect(await (await driver.findElement(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchResult)).getAttribute('data-id')).to.contain('SLUG_visit_flow_auto');
+                //         await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SearchResult_PlusButton');
+                //         await visitFlow.waitTillVisible(
+                //             visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText(slug_path),
+                //             15000,
+                //         );
+                //         // await visitFlow.waitTillVisible(visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText('visit_flow_auto'), 15000);
+                //         await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SaveButton');
+                //         // is there a function to wait for round loader to finish?
+                //         driver.sleep(5 * 1000);
+                //         await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
+                //         await visitFlow.clickElement('AccountDashboardLayout_Menu_CancelButton');
+                //         await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
+                //         driver.sleep(2 * 1000);
+                //         await driver.switchToDefaultContent();
+                //         driver.sleep(2 * 1000);
+                //         await webAppHeader.goHome();
+                //     } catch (error) {
+
+                //     }
+                // });
 
                 it('Performing Manual Sync', async () => {
-                    // await webAppHomePage.manualResync(client);
+                    await e2eUtils.logOutLogIn(email, password);
                     await e2eUtils.performManualSync(client);
                 });
             });
