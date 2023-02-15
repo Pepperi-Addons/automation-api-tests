@@ -48,6 +48,7 @@ import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
 import { LoginPerfTestsReload } from './login_performance_reload.test';
 import { UDCTestser } from '../../api-tests/user_defined_collections';
 import { maintenance3APITestser } from '../../api-tests/addons';
+// import { handleDevTestInstallation } from '../../tests';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -472,13 +473,65 @@ const addon = process.env.npm_config_addon as string;
         }
         const service = new GeneralService(client);
         const addonName = addon.toUpperCase();
+        const addonUUID = generalService.convertNameToUUID(addonName);
+        //1. install all dependencys on testing user + template addon
+        // await handleDevTestInstallation(
+        //     client,
+        //     addonName,
+        //     addonUUID,
+        //     { describe, expect, it } as TesterFunctions,
+        //     varPass,
+        // );
+        // //2. validate tested addon is installed
+        // const latestVersionOfTestedAddon = await generalService.getLatestAvailableVersion(
+        //     addonUUID,
+        //     Buffer.from(varPass).toString('base64'),
+        // );
+        // const installedAddonsArr = await generalService.getInstalledAddons({ page_size: -1 });
+        // const isInstalled = installedAddonsArr.find(
+        //     (addon) => addon.Addon.UUID == addonUUID && addon.Version == latestVersionOfTestedAddon,
+        // )
+        //     ? true
+        //     : false;
+        // if (isInstalled === false) {
+        //     throw new Error(
+        //         `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddon}`,
+        //     );
+        // }
+        // const body = {
+        //     AddonUUID: addonUUID,
+        //     isLocal: false,
+        // };
+        // //current prod test user - DevTests@pepperitest.com : Aa123456
+        // const latestVersionOfAutomationTemplateAddon = await generalService.getLatestAvailableVersion(
+        //     '02754342-e0b5-4300-b728-a94ea5e0e8f4',
+        //     Buffer.from(varPass).toString('base64'),
+        // );
+        // const devTestResponse = await service.fetchStatus(
+        //     `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`,
+        //     {
+        //         body: JSON.stringify(body),
+        //         method: 'POST',
+        //         headers: {
+        //             Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
+        //         },
+        //     },
+        // );
+        // debugger;
+        // const auditLogDevTestResponse = await generalService.getAuditLogResultObjectIfValid(
+        //     devTestResponse.Body.URI as string,
+        //     40,
+        // );
+        // console.log(auditLogDevTestResponse); //only for fix lint currently
+        // debugger;
+        //////////////////////////////////////////////////////////
         // getting VAR credentials for all envs
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         // global ugly variable
         let JenkinsBuildResultsAllEnvs: string[][] = [[]];
-        let addonUUID = '';
+        // let addonUUID = '';
         let addonVersionProd = '';
         let addonVersionEU = '';
         let addonVersionSb = '';
@@ -495,7 +548,7 @@ const addon = process.env.npm_config_addon as string;
         switch (addonName) {
             //add another 'case' here when adding new addons to this mehcanisem
             case 'ADAL': {
-                addonUUID = '00000000-0000-0000-0000-00000000ada1';
+                // addonUUID = '00000000-0000-0000-0000-00000000ada1';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
                     {
@@ -534,7 +587,9 @@ const addon = process.env.npm_config_addon as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    throw new Error(
+                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
+                    );
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
@@ -567,7 +622,7 @@ const addon = process.env.npm_config_addon as string;
                 break;
             }
             case 'DIMX': {
-                addonUUID = '44c97115-6d14-4626-91dc-83f176e9a0fc';
+                // addonUUID = '44c97115-6d14-4626-91dc-83f176e9a0fc';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
                     {
@@ -606,7 +661,9 @@ const addon = process.env.npm_config_addon as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    throw new Error(
+                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
+                    );
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
@@ -640,7 +697,7 @@ const addon = process.env.npm_config_addon as string;
             }
             case 'DATA INDEX':
             case 'DATA-INDEX': {
-                addonUUID = '00000000-0000-0000-0000-00000e1a571c';
+                // addonUUID = '00000000-0000-0000-0000-00000e1a571c';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
                     {
@@ -679,7 +736,9 @@ const addon = process.env.npm_config_addon as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    throw new Error(
+                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
+                    );
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
@@ -711,6 +770,9 @@ const addon = process.env.npm_config_addon as string;
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 break;
             }
+            default:
+                console.log(`no approvement tests for addon: ${addonName}`);
+                return;
         }
         // 2. parse which envs failed
         const passingEnvs: string[] = [];
@@ -737,19 +799,29 @@ const addon = process.env.npm_config_addon as string;
                             },
                         );
                         if (varResponseEU.Ok !== true) {
-                            throw `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseEU.Ok}`;
+                            throw new Error(
+                                `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseEU.Ok}`,
+                            );
                         }
                         if (varResponseEU.Status !== 200) {
-                            throw `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseEU.Status}`;
+                            throw new Error(
+                                `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseEU.Status}`,
+                            );
                         }
                         if (varResponseEU.Body.AddonUUID !== addonUUID) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseEU.Body.AddonUUID} instead of ${addonUUID}`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseEU.Body.AddonUUID} instead of ${addonUUID}`,
+                            );
                         }
                         if (varResponseEU.Body.Version !== addonVersionEU) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseEU.Body.Version} instead of ${addonVersionEU}`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseEU.Body.Version} instead of ${addonVersionEU}`,
+                            );
                         }
                         if (varResponseEU.Body.Available !== false) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseEU.Body.Available} instead of false`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseEU.Body.Available} instead of false`,
+                            );
                         }
                         console.log(
                             `${addonName}, version: ${addonVersionEU}  on EU became unavailable: Approvment tests didnt pass`,
@@ -774,19 +846,29 @@ const addon = process.env.npm_config_addon as string;
                             },
                         );
                         if (varResponseProd.Ok !== true) {
-                            throw `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseProd.Ok}`;
+                            throw new Error(
+                                `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseProd.Ok}`,
+                            );
                         }
                         if (varResponseProd.Status !== 200) {
-                            throw `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseProd.Status}`;
+                            throw new Error(
+                                `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseProd.Status}`,
+                            );
                         }
                         if (varResponseProd.Body.AddonUUID !== addonUUID) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseProd.Body.AddonUUID} instead of ${addonUUID}`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseProd.Body.AddonUUID} instead of ${addonUUID}`,
+                            );
                         }
                         if (varResponseProd.Body.Version !== addonVersionProd) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseProd.Body.Version} instead of ${addonVersionProd}`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseProd.Body.Version} instead of ${addonVersionProd}`,
+                            );
                         }
                         if (varResponseProd.Body.Available !== false) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseProd.Body.Available} instead of false`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseProd.Body.Available} instead of false`,
+                            );
                         }
                         console.log(
                             `${addonName}, version: ${addonVersionProd}  on Production became unavailable: Approvment tests didnt pass`,
@@ -811,19 +893,29 @@ const addon = process.env.npm_config_addon as string;
                             },
                         );
                         if (varResponseSb.Ok !== true) {
-                            throw `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseSb.Ok}`;
+                            throw new Error(
+                                `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseSb.Ok}`,
+                            );
                         }
                         if (varResponseSb.Status !== 200) {
-                            throw `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseSb.Status}`;
+                            throw new Error(
+                                `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseSb.Status}`,
+                            );
                         }
                         if (varResponseSb.Body.AddonUUID !== addonUUID) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseSb.Body.AddonUUID} instead of ${addonUUID}`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseSb.Body.AddonUUID} instead of ${addonUUID}`,
+                            );
                         }
                         if (varResponseSb.Body.Version !== addonVersionSb) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseSb.Body.Version} instead of ${addonVersionSb}`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseSb.Body.Version} instead of ${addonVersionSb}`,
+                            );
                         }
                         if (varResponseSb.Body.Available !== false) {
-                            throw `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseSb.Body.Available} instead of false`;
+                            throw new Error(
+                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseSb.Body.Available} instead of false`,
+                            );
                         }
                         console.log(
                             `${addonName}, version: ${addonVersionSb} on Staging became unavailable: Approvment tests didnt pass`,
@@ -845,72 +937,73 @@ const addon = process.env.npm_config_addon as string;
         }
 
         //3. send to Teams
-        if (failingEnvs.length > 0) {
-            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
-                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On: ${failingEnvs.join(', ')}`;
-            const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
-            const bodyToSend = {
-                Name: `${addonName} Approvment Tests Status`,
-                Description: message,
-                Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
-                Message: message2,
-                UserWebhook: handleTeamsURL(addonName),
-            };
-            const monitoringResponse = await service.fetchStatus(
-                'https://papi.pepperi.com/v1.0/system_health/notifications',
-                {
-                    method: 'POST',
-                    headers: {
-                        'X-Pepperi-SecretKey': await generalService.getSecret()[1],
-                        'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                    },
-                    body: JSON.stringify(bodyToSend),
+        // if (failingEnvs.length > 0) {
+        const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
+            passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+        } ||| Failed On: ${failingEnvs.join(', ')}`;
+        const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
+        const bodyToSend = {
+            Name: `${addonName} Approvment Tests Status`,
+            Description: message,
+            Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
+            Message: message2,
+            UserWebhook: handleTeamsURL(addonName),
+        };
+        const monitoringResponse = await service.fetchStatus(
+            'https://papi.pepperi.com/v1.0/system_health/notifications',
+            {
+                method: 'POST',
+                headers: {
+                    'X-Pepperi-SecretKey': await generalService.getSecret()[1],
+                    'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                 },
-            );
-            if (monitoringResponse.Ok !== true) {
-                throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
-            }
-            if (monitoringResponse.Status !== 200) {
-                throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
-            }
-            if (Object.keys(monitoringResponse.Error).length !== 0) {
-                throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
-            }
-        } else {
-            const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
-                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On:  ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
-            const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
-            const bodyToSend = {
-                Name: `${addonName} Approvment Tests Status`,
-                Description: message,
-                Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
-                Message: message2,
-                UserWebhook:
-                    'https://wrnty.webhook.office.com/webhookb2/89287949-3767-4525-ac10-80a303806a44@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/39160258118a4430bf577aebeabe1c7d/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
-            };
-            const monitoringResponse = await service.fetchStatus(
-                'https://papi.pepperi.com/v1.0/system_health/notifications',
-                {
-                    method: 'POST',
-                    headers: {
-                        'X-Pepperi-SecretKey': await generalService.getSecret()[1],
-                        'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                    },
-                    body: JSON.stringify(bodyToSend),
-                },
-            );
-            if (monitoringResponse.Ok !== true) {
-                throw `Error: system monitor returned error OK: ${monitoringResponse.Ok}`;
-            }
-            if (monitoringResponse.Status !== 200) {
-                throw `Error: system monitor returned error STATUS: ${monitoringResponse.Status}`;
-            }
-            if (Object.keys(monitoringResponse.Error).length !== 0) {
-                throw `Error: system monitor returned ERROR: ${monitoringResponse.Error}`;
-            }
+                body: JSON.stringify(bodyToSend),
+            },
+        );
+        if (monitoringResponse.Ok !== true) {
+            throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
         }
+        if (monitoringResponse.Status !== 200) {
+            throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+        }
+        if (Object.keys(monitoringResponse.Error).length !== 0) {
+            throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+        }
+        // }
+        // else {
+        //     const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
+        //         passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+        //     } ||| Failed On:  ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
+        //     const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
+        //     const bodyToSend = {
+        //         Name: `${addonName} Approvment Tests Status`,
+        //         Description: message,
+        //         Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
+        //         Message: message2,
+        //         UserWebhook:
+        //             'https://wrnty.webhook.office.com/webhookb2/89287949-3767-4525-ac10-80a303806a44@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/39160258118a4430bf577aebeabe1c7d/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
+        //     };
+        //     const monitoringResponse = await service.fetchStatus(
+        //         'https://papi.pepperi.com/v1.0/system_health/notifications',
+        //         {
+        //             method: 'POST',
+        //             headers: {
+        //                 'X-Pepperi-SecretKey': await generalService.getSecret()[1],
+        //                 'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+        //             },
+        //             body: JSON.stringify(bodyToSend),
+        //         },
+        //     );
+        //     if (monitoringResponse.Ok !== true) {
+        //         throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+        //     }
+        //     if (monitoringResponse.Status !== 200) {
+        //         throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+        //     }
+        //     if (Object.keys(monitoringResponse.Error).length !== 0) {
+        //         throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+        //     }
+        // }
     }
     run();
 })();
@@ -1295,4 +1388,5 @@ async function setOrderCenterClosedFooter(generalService: GeneralService, OrderC
         expect(upsertUIControlResponse.Type).to.include('OrderCenterClosedFooter');
     }
 }
+
 //#endregion Replacing UI Functions
