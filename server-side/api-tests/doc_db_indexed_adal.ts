@@ -1632,6 +1632,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                             Authorization: 'Bearer ' + token,
                             //'X-Pepperi-OwnerID': addonUUID,
                             'X-Pepperi-SecretKey': whaitSecretKey,
+                            'x-pepperi-await-indexing': 'true', //oleg DI-22540
                         },
                         body: JSON.stringify({
                             Key: `${counter}`,
@@ -1829,6 +1830,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                             Authorization: 'Bearer ' + token,
                             //'X-Pepperi-OwnerID': addonUUID,
                             'X-Pepperi-SecretKey': whaitSecretKey,
+                            'x-pepperi-await-indexing': 'true', //oleg DI-22540
                         },
                         body: JSON.stringify({
                             Key: `${counter}`,
