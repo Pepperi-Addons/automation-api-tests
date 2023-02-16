@@ -2,11 +2,59 @@ import { Connector, validateOrderOfResponseBySpecificField } from '../services/d
 import { DataIndexService } from '../services/dor_data_index_service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
-export async function DataIndexDor(generalService: GeneralService, addonService: GeneralService, tester: TesterFunctions) {
-    const service = new DataIndexService(generalService, addonService.papiClient);
+export async function DataIndexDor(generalService: GeneralService, request, tester: TesterFunctions) {
+    const dataObj = request.body.Data; // the 'Data' object passsed inside the http request sent to start the test -- put all the data you need here
+    const service = new DataIndexService(generalService, dataObj);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
+
+    const testData = {
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+    };
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
+
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    describe('Data Index Dor Tests Suites', () => {
+        describe('Prerequisites Addon forData Index Dor Tests', () => {
+            //Test Data
+            //Logs Addon Service
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
+        });
+    });
 
     describe('Index Tests:', async () => {
         const connector = service.indexType('regular');
