@@ -281,6 +281,8 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
                     returnedObject.Body[param] == jsFileName;
                 } else if (param == 'AddonUUID') {
                     returnedObject.Body[param] == addonUUID;
+                } else if (param == 'SupportAdminUUID') {
+                    returnedObject.Body[param] != ''; //OLeg 15/02/23
                 } else {
                     logcash.statusb = false;
                     logcash.errorMessageb =
@@ -377,6 +379,8 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
                 returnedObject.Body[param] == jsFileName;
             } else if (param == 'AddonUUID') {
                 returnedObject.Body[param] == addonUUID;
+            } else if (param == 'SupportAdminUUID') {
+                returnedObject.Body[param] != ''; //OLeg 15/02/23
             } else {
                 logcash.statusd = false;
                 logcash.errorMessaged =
