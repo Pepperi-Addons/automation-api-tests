@@ -1,64 +1,12 @@
-// import { expect } from 'chai';
 import { Connector, validateOrderOfResponseBySpecificField } from '../services/dor_data_index_service';
-// import { PapiClient } from '@pepperi-addons/papi-sdk';
-//00000000-0000-0000-0000-00000e1a571c
 import { DataIndexService } from '../services/dor_data_index_service';
-// import { ADALService } from '../services/adal.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
-export async function DataIndexDor(generalService: GeneralService, request, tester: TesterFunctions) {
-    const dataObj = request.body.Data; // the 'Data' object passsed inside the http request sent to start the test -- put all the data you need here
-    const service = new DataIndexService(generalService, dataObj);
+export async function DataIndex(generalService: GeneralService, addonService: GeneralService, tester: TesterFunctions) {
+    const service = new DataIndexService(generalService, addonService.papiClient);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
-
-    const testData = {
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-    };
-    let varKey;
-    if (generalService.papiClient['options'].baseURL.includes('staging')) {
-        varKey = request.body.varKeyStage;
-    } else {
-        varKey = request.body.varKeyPro;
-    }
-
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
-    describe('Data Index Dor Tests Suites', () => {
-        describe('Prerequisites Addon forData Index Dor Tests', () => {
-            //Test Data
-            //Logs Addon Service
-            isInstalledArr.forEach((isInstalled, index) => {
-                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-                    expect(isInstalled).to.be.true;
-                });
-            });
-            for (const addonName in testData) {
-                const addonUUID = testData[addonName][0];
-                const version = testData[addonName][1];
-                const varLatestVersion = chnageVersionResponseArr[addonName][2];
-                const changeType = chnageVersionResponseArr[addonName][3];
-                describe(`Test Data: ${addonName}`, () => {
-                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-                        } else {
-                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-                        }
-                    });
-
-                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                            .eventually.to.have.property('Version')
-                            .a('string')
-                            .that.is.equal(varLatestVersion);
-                    });
-                });
-            }
-        });
-    });
 
     describe('Index Tests:', async () => {
         const connector = service.indexType('regular');
@@ -105,7 +53,7 @@ function baseTester(it: any, expect, connector: Connector, generalService: Gener
                     Type: 'String',
                     Indexed: false,
                 },
-                'name.key': {
+                'name.Key': {
                     Type: 'String',
                     Indexed: true,
                 },
@@ -131,7 +79,7 @@ function baseTester(it: any, expect, connector: Connector, generalService: Gener
                 double_field: 9.5,
                 date_field: '2022-11-24T12:43:32.166Z',
                 unindexed_field: "shouldn't be indexed",
-                'name.key': '10',
+                'name.Key': '10',
                 'name.first': 'Susann',
                 'name.last': 'Renato',
             },
@@ -143,7 +91,7 @@ function baseTester(it: any, expect, connector: Connector, generalService: Gener
                 double_field: 6.2,
                 date_field: '2022-11-24T12:45:32.166Z',
                 unindexed_field: "shouldn't be indexed",
-                'name.key': '20',
+                'name.Key': '20',
                 'name.first': 'Jessika',
                 'name.last': 'Renato',
             },
@@ -155,7 +103,7 @@ function baseTester(it: any, expect, connector: Connector, generalService: Gener
                 double_field: 1.5,
                 date_field: '2022-11-24T12:47:32.166Z',
                 unindexed_field: "shouldn't be indexed",
-                'name.key': '30',
+                'name.Key': '30',
                 'name.first': 'Jessika',
                 'name.last': 'Silvano',
             },
@@ -167,7 +115,7 @@ function baseTester(it: any, expect, connector: Connector, generalService: Gener
                 double_field: 2.3,
                 date_field: '2022-11-24T12:46:32.166Z',
                 unindexed_field: "shouldn't be indexed",
-                'name.key': '40',
+                'name.Key': '40',
                 'name.first': 'Shani',
                 'name.last': 'Silvano',
             },
@@ -179,7 +127,7 @@ function baseTester(it: any, expect, connector: Connector, generalService: Gener
                 double_field: 8.4,
                 date_field: '2022-11-24T12:44:32.166Z',
                 unindexed_field: "shouldn't be indexed",
-                'name.key': '50',
+                'name.Key': '50',
                 'name.first': 'Susann',
                 'name.last': 'Kimbell',
             },
@@ -191,7 +139,7 @@ function baseTester(it: any, expect, connector: Connector, generalService: Gener
                 double_field: 10.0,
                 date_field: '2022-11-24T12:42:32.166Z',
                 unindexed_field: "shouldn't be indexed",
-                'name.key': '60',
+                'name.Key': '60',
                 'name.first': 'Shani',
                 'name.last': 'Kimbell',
             },
