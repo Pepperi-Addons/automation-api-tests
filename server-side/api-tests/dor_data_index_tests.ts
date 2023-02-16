@@ -2,7 +2,7 @@ import { Connector, validateOrderOfResponseBySpecificField } from '../services/d
 import { DataIndexService } from '../services/dor_data_index_service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 
-export async function DataIndex(generalService: GeneralService, addonService: GeneralService, tester: TesterFunctions) {
+export async function DataIndexDor(generalService: GeneralService, addonService: GeneralService, tester: TesterFunctions) {
     const service = new DataIndexService(generalService, addonService.papiClient);
     const describe = tester.describe;
     const expect = tester.expect;
