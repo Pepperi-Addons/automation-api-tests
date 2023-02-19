@@ -48,7 +48,7 @@ import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
 import { LoginPerfTestsReload } from './login_performance_reload.test';
 import { UDCTestser } from '../../api-tests/user_defined_collections';
 import { maintenance3APITestser } from '../../api-tests/addons';
-// import { handleDevTestInstallation } from '../../tests';
+import { handleDevTestInstallation } from '../../tests';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -474,56 +474,59 @@ const addon = process.env.npm_config_addon as string;
         const service = new GeneralService(client);
         const addonName = addon.toUpperCase();
         const addonUUID = generalService.convertNameToUUID(addonName);
-        //1. install all dependencys on testing user + template addon
-        // await handleDevTestInstallation(
-        //     client,
-        //     addonName,
-        //     addonUUID,
-        //     { describe, expect, it } as TesterFunctions,
-        //     varPass,
-        // );
-        // //2. validate tested addon is installed
-        // const latestVersionOfTestedAddon = await generalService.getLatestAvailableVersion(
-        //     addonUUID,
-        //     Buffer.from(varPass).toString('base64'),
-        // );
-        // const installedAddonsArr = await generalService.getInstalledAddons({ page_size: -1 });
-        // const isInstalled = installedAddonsArr.find(
-        //     (addon) => addon.Addon.UUID == addonUUID && addon.Version == latestVersionOfTestedAddon,
-        // )
-        //     ? true
-        //     : false;
-        // if (isInstalled === false) {
-        //     throw new Error(
-        //         `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddon}`,
-        //     );
-        // }
-        // const body = {
-        //     AddonUUID: addonUUID,
-        //     isLocal: false,
-        // };
-        // //current prod test user - DevTests@pepperitest.com : Aa123456
-        // const latestVersionOfAutomationTemplateAddon = await generalService.getLatestAvailableVersion(
-        //     '02754342-e0b5-4300-b728-a94ea5e0e8f4',
-        //     Buffer.from(varPass).toString('base64'),
-        // );
-        // const devTestResponse = await service.fetchStatus(
-        //     `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`,
-        //     {
-        //         body: JSON.stringify(body),
-        //         method: 'POST',
-        //         headers: {
-        //             Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
-        //         },
-        //     },
-        // );
-        // debugger;
-        // const auditLogDevTestResponse = await generalService.getAuditLogResultObjectIfValid(
-        //     devTestResponse.Body.URI as string,
-        //     40,
-        // );
-        // console.log(auditLogDevTestResponse); //only for fix lint currently
-        // debugger;
+        // 1. install all dependencys on testing user + template addon
+        await handleDevTestInstallation(
+            client,
+            addonName,
+            addonUUID,
+            { describe, expect, it } as TesterFunctions,
+            varPass,
+        );
+        //2. validate tested addon is installed
+        const latestVersionOfTestedAddon = await generalService.getLatestAvailableVersion(
+            addonUUID,
+            Buffer.from(varPass).toString('base64'),
+        );
+        const installedAddonsArr = await generalService.getInstalledAddons({ page_size: -1 });
+        const isInstalled = installedAddonsArr.find(
+            (addon) => addon.Addon.UUID == addonUUID && addon.Version == latestVersionOfTestedAddon,
+        )
+            ? true
+            : false;
+        if (isInstalled === false) {
+            throw new Error(
+                `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddon}`,
+            );
+        }
+        const body = {
+            AddonUUID: addonUUID,
+            isLocal: false,
+        };
+        //current prod test user - evgenyTestProdQA@pepperitest.com : Evg123456
+        const latestVersionOfAutomationTemplateAddon = await generalService.getLatestAvailableVersion(
+            '02754342-e0b5-4300-b728-a94ea5e0e8f4',
+            Buffer.from(varPass).toString('base64'),
+        );
+        const devTestResponse = await service.fetchStatus(
+            `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`,
+            {
+                body: JSON.stringify(body),
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
+                },
+            },
+        );
+        const auditLogDevTestResponse = await generalService.getAuditLogResultObjectIfValid(
+            devTestResponse.Body.URI as string,
+            120,
+            7000,
+        );
+        //how to parse the response?
+        const parsedTestResults = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject)[0];
+        service.reportResults(parsedTestResults);
+        debugger;
+        console.log(auditLogDevTestResponse); //only for fix lint currently
         //////////////////////////////////////////////////////////
         // getting VAR credentials for all envs
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');

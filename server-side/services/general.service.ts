@@ -628,7 +628,7 @@ export default class GeneralService {
         return this.papiClient.get('/distributor');
     }
 
-    async getAuditLogResultObjectIfValid(uri: string, loopsAmount = 30): Promise<AuditLog> {
+    async getAuditLogResultObjectIfValid(uri: string, loopsAmount = 30, sleepTime?: number): Promise<AuditLog> {
         let auditLogResponse;
         do {
             auditLogResponse = await this.papiClient.get(uri);
@@ -646,7 +646,7 @@ export default class GeneralService {
             }
             //This case will only retry the get call again as many times as the "loopsAmount"
             else if (auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') {
-                this.sleep(2000);
+                this.sleep(sleepTime !== undefined && sleepTime > 0 ? sleepTime : 2000);
                 console.log(
                     `%c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${
                         auditLogResponse.Status.ID
@@ -954,6 +954,7 @@ export default class GeneralService {
             )
         ).Body[0];
         const latestVersion = fetchVarResponse.Version;
+        console.log(`Installing Version ${latestVersion} Of ${addonName} - ${addonUUID}`);
         const installObj = {};
         installObj[addonName] = [testData[addonName][0], latestVersion];
         return await this.areAddonsInstalledEVGENY(installObj);
@@ -1164,6 +1165,32 @@ export default class GeneralService {
     //     //except(monitoringResult.Error).to.equal({});
     // }
 
+    reportResults(testResultsObj) {
+        console.log('Total Failures: ' + testResultsObj.stats.failures);
+        console.log('Total Passes: ' + testResultsObj.stats.passes);
+        //1. run on all suites
+        for (let index1 = 0; index1 < testResultsObj.results[0].suites.length; index1++) {
+            const testSuite = testResultsObj.results[0].suites[index1];
+            for (let index2 = 0; index2 < testSuite.tests.length; index2++) {
+                const test = testSuite.tests[index2];
+                const testTitle = test.fullTitle.split(':').join(' - ');
+                if (
+                    testTitle.includes('TestDataStartTestServerTimeAndDate') ||
+                    testTitle.includes('TestDataTestedUser')
+                ) {
+                    console.log(`*  ${testTitle}`);
+                } else if (testTitle.includes('TestDataTestPrerequisites')) {
+                    for (let index3 = 0; index3 < testSuite.suites[0].tests.length; index3++) {
+                        const installResponse = testSuite.suites[0].tests[index3];
+                        console.log(`${index3 + 1}.  ${installResponse.fullTitle.split('Versions')[1]}`);
+                    }
+                } else {
+                    console.log(`${test.pass ? '√' : '𝑥'}  ${testTitle}: ${test.pass ? 'Passed' : 'Failed'}`);
+                }
+            }
+        }
+    }
+
     extractSchema(schema, key: string, filterAttributes: FilterAttributes) {
         outerLoop: for (let j = 0; j < schema.length; j++) {
             const entery = schema[j];
@@ -1245,7 +1272,7 @@ export default class GeneralService {
     }
 
     async executeScriptFromTestData(scriptName: string): Promise<void> {
-        await execFileSync(`${__dirname.split('services')[0]}api-tests\\test-data\\${scriptName}`);
+        await execFileSync(`${__dirname.split('services')[0]}api - tests\\test - data\\${scriptName} `);
         return;
     }
 
@@ -1332,11 +1359,11 @@ function parseResponse(responseStr) {
     const bodyStrTagsArr = bodyStrTagsMatched.split(/,|<\//);
     for (let index = 1; index < headerTagsArr.length; index += 2) {
         errorMessage.Header = {};
-        errorMessage.Header[`${headerTagsArr[index]}`] = headerTagsArr[index - 1];
+        errorMessage.Header[`${headerTagsArr[index]} `] = headerTagsArr[index - 1];
     }
     for (let index = 1; index < bodyStrTagsArr.length; index += 2) {
         errorMessage.Body = {};
-        errorMessage.Body[`${bodyStrTagsArr[index]}`] = bodyStrTagsArr[index - 1];
+        errorMessage.Body[`${bodyStrTagsArr[index]} `] = bodyStrTagsArr[index - 1];
     }
     return errorMessage;
 }

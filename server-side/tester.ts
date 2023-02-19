@@ -111,6 +111,7 @@ export default function Tester(client?: Client, testName?: string, environment?:
                     .on('end', () => {
                         // resolve((runner as any).testResults);
                         setTimeout(() => {
+                            debugger;
                             fs.readFile(path.join(mochaDir, fileName + '.json'), async (err, data) => {
                                 if (err) {
                                     console.error(err);
