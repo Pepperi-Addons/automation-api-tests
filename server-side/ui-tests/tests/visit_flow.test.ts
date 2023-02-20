@@ -17,7 +17,7 @@ import { ObjectsService } from '../../services';
 
 chai.use(promised);
 
-export async function VisitFlowTests(email: string, password: string, client: Client, varPass: string) {
+export async function VisitFlowTests(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const udcService = new UDCService(generalService);
@@ -160,7 +160,13 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     // console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
                     const sectionKey = createdPage.Layout.Sections[0].Key;
                     const blockKey = newUuid();
-                    const visitFlowPage = new VisitFlowPage(pageUUID, blockKey, sectionKey, pageName, 'pageDescription');
+                    const visitFlowPage = new VisitFlowPage(
+                        pageUUID,
+                        blockKey,
+                        sectionKey,
+                        pageName,
+                        'pageDescription',
+                    );
                     // console.info('visitFlowPage: ', JSON.stringify(visitFlowPage, null, 2));
                     const responseOfPublishPage = await pageBuilder.publishPage(visitFlowPage, client);
                     console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 4));
@@ -179,24 +185,24 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     const collectionName = 'VisitFlows';
                     const group_Start = upsertedListingsToVisitFlowGroups.length
                         ? upsertedListingsToVisitFlowGroups.find((group) => {
-                            if (group.Title.includes('Start')) {
-                                return group.Key;
-                            }
-                        })
+                              if (group.Title.includes('Start')) {
+                                  return group.Key;
+                              }
+                          })
                         : '';
                     const group_Orders = upsertedListingsToVisitFlowGroups.length
                         ? upsertedListingsToVisitFlowGroups.find((group) => {
-                            if (group.Title.includes('Orders')) {
-                                return group.Key;
-                            }
-                        })
+                              if (group.Title.includes('Orders')) {
+                                  return group.Key;
+                              }
+                          })
                         : '';
                     const group_End = upsertedListingsToVisitFlowGroups.length
                         ? upsertedListingsToVisitFlowGroups.find((group) => {
-                            if (group.Title.includes('End')) {
-                                return group.Key;
-                            }
-                        })
+                              if (group.Title.includes('End')) {
+                                  return group.Key;
+                              }
+                          })
                         : '';
                     const visitsDocumentsToUpsert = [
                         {
@@ -299,7 +305,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
 
             describe('Configuring Account Dashboard', () => {
                 it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async () => {
-                    debugger
+                    debugger;
                     for (let i = 0; i < 2; i++) {
                         try {
                             await webAppHeader.goHome();
@@ -317,15 +323,26 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                             await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_ListContainer, 15000);
                             await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
                             await visitFlow.clickElement('AccountDashboardLayout_MenuRow_Container');
-                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_PencilButton, 15000);
+                            await visitFlow.waitTillVisible(
+                                visitFlow.AccountDashboardLayout_MenuRow_PencilButton,
+                                15000,
+                            );
                             await visitFlow.clickElement('AccountDashboardLayout_MenuRow_PencilButton');
                             await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_ConfigPage_Title, 15000);
                             expect(
-                                await (await driver.findElement(visitFlow.AccountDashboardLayout_ConfigPage_Title)).getText(),
+                                await (
+                                    await driver.findElement(visitFlow.AccountDashboardLayout_ConfigPage_Title)
+                                ).getText(),
                             ).to.equal('Menu');
-                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
+                            await visitFlow.waitTillVisible(
+                                visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton,
+                                15000,
+                            );
                             await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_PencilButton');
-                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox, 15000);
+                            await visitFlow.waitTillVisible(
+                                visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox,
+                                15000,
+                            );
                             await visitFlow.insertTextToInputElement(
                                 slugDisplayName,
                                 visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox,
@@ -343,7 +360,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                             await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SaveButton');
                             // is there a function to wait for round loader to finish?
                             driver.sleep(5 * 1000);
-                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
+                            await visitFlow.waitTillVisible(
+                                visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton,
+                                15000,
+                            );
                             await visitFlow.clickElement('AccountDashboardLayout_Menu_CancelButton');
                             await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
                             driver.sleep(2 * 1000);
@@ -449,8 +469,14 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     );
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
-                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline, 15000);
-                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button, 15000);
+                    await visitFlow.waitTillVisible(
+                        visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
+                        15000,
+                    );
+                    await visitFlow.waitTillVisible(
+                        visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
+                        15000,
+                    );
                     await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);

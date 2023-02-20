@@ -22,7 +22,9 @@ export class PageBuilder extends AddonPage {
         '//div[contains(text(), "result")]/span[contains(@class, "bold number")]',
     );
     public PagesList_SelectAll_Checkbox: By = By.xpath('//pep-list/div/fieldset/mat-checkbox');
-    public PagesList_SelectAllisChecked_Checkbox: By = By.xpath('//pep-list/div/fieldset/mat-checkbox[contains(@class,"mat-checkbox-checked")]');
+    public PagesList_SelectAllisChecked_Checkbox: By = By.xpath(
+        '//pep-list/div/fieldset/mat-checkbox[contains(@class,"mat-checkbox-checked")]',
+    );
     public PagesList_EmptyList_Paragraph: By = By.xpath('//pep-list//p');
     public PagesList_FirstCheckboxInList: By = By.xpath('//virtual-scroller/div[2]/div/fieldset/mat-checkbox');
     // public PagesList_PageSelectCheckbox_ByName: By = By.xpath(`${this.getSelectorOfRowInListByName('').value}/mat-checkbox/label/span`);
@@ -81,7 +83,7 @@ export class PageBuilder extends AddonPage {
         this.pause(1000);
     }
 
-    public async addBlankPage(pageName: string, pageDescription: string, extraSection: boolean = false) {
+    public async addBlankPage(pageName: string, pageDescription: string, extraSection = false) {
         await this.clickElement('AddPage_Button');
         await this.waitTillVisible(this.SelectPage_Title, 5000);
         await this.waitTillVisible(this.BlankTemplatePage, 5000);
@@ -184,9 +186,11 @@ export class PageBuilder extends AddonPage {
         this.browser.sleep(500);
         await this.confirmDeleteClickRedButton();
         this.browser.sleep(500);
-        const numOfEditors: string = await (await this.browser.findElement(this.PagesList_NumberOfItemsInList)).getText();;
+        const numOfEditors: string = await (
+            await this.browser.findElement(this.PagesList_NumberOfItemsInList)
+        ).getText();
         this.browser.sleep(500);
-        
+
         // // needs to be fixed: can't choose checkbox from the second time on... Hagit, Jan 10th 2023
         // let numOfEditors: string;
         // do {

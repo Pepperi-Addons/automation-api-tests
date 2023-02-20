@@ -80,7 +80,7 @@ export default class E2EUtils extends BasePomObject {
         await rlViews.verifyViewEditPageOpen(viewData.nameOfView); // IS DIFFERENT than: Editor Edit Page !  DO NOT CHANGE (Hagit, Dec2022)
     }
 
-    public async addPage(nameOfPage: string, descriptionOfPage: string, extraSection: boolean = false) {
+    public async addPage(nameOfPage: string, descriptionOfPage: string, extraSection = false) {
         // debugger;
         const pageBuilder: PageBuilder = new PageBuilder(this.browser);
         await this.navigateTo('Page Builder');
@@ -279,6 +279,7 @@ export default class E2EUtils extends BasePomObject {
         const webAppList: WebAppList = new WebAppList(this.browser);
         await webAppHeader.goHome();
         await webAppHomePage.manualResync(client);
+        await webAppList.isSpinnerDone(); // just for the use of webAppList so that fix-lint won't get angry
         // for (let index = 0; index < 4; index++) {
         //     await webAppHeader.goHome();
         //     await webAppHomePage.isSpinnerDone();

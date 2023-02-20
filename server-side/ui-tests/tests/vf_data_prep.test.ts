@@ -14,16 +14,16 @@ export async function VFdataPrep(varPass: string, client: Client) {
     //#region Upgrade script dependencies
     const testData = {
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x to
-        'Nebula': ['00000000-0000-0000-0000-000000006a91', ''],
-        'sync': ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-        'Slugs': ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
+        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
-        'VisitFlow': ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
+        VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
