@@ -960,6 +960,28 @@ export default class GeneralService {
         return await this.areAddonsInstalledEVGENY(installObj);
     }
 
+    async getLatestAvalibaleVersionOfAddon(varKey: string, testData: { [any: string]: string[] }) {
+        const addonName = Object.entries(testData)[0][0];
+        const addonUUID = testData[addonName][0];
+        const searchString = `AND Version Like '%' AND Available Like 1`;
+        const fetchVarResponse = (
+            await this.fetchStatus(
+                `${this.client.BaseURL.replace(
+                    'papi-eu',
+                    'papi',
+                )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                    },
+                },
+            )
+        ).Body[0];
+        const latestVersion = fetchVarResponse.Version;
+        return latestVersion;
+    }
+
     async changeToAnyAvailableVersion(testData: { [any: string]: string[] }): Promise<{ [any: string]: string[] }> {
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
@@ -1165,7 +1187,7 @@ export default class GeneralService {
     //     //except(monitoringResult.Error).to.equal({});
     // }
 
-    reportResults(testResultsObj) {
+    reportResults(testResultsObj, testedAddonObject) {
         console.log('Total Failures: ' + testResultsObj.stats.failures);
         console.log('Total Passes: ' + testResultsObj.stats.passes);
         //1. run on all suites
@@ -1176,14 +1198,20 @@ export default class GeneralService {
                 const testTitle = test.fullTitle.split(':').join(' - ');
                 if (
                     testTitle.includes('TestDataStartTestServerTimeAndDate') ||
-                    testTitle.includes('TestDataTestedUser')
+                    testTitle.includes('TestDataTestedUser') ||
+                    testTitle.includes('Test Data Start Test Server Time And Date') ||
+                    testTitle.includes('Test Data Tested User')
                 ) {
                     console.log(`*  ${testTitle}`);
-                } else if (testTitle.includes('TestDataTestPrerequisites')) {
+                } else if (
+                    testTitle.includes('Test Data Test Prerequisites') ||
+                    testTitle.includes('TestDataTestPrerequisites')
+                ) {
                     for (let index3 = 0; index3 < testSuite.suites[0].tests.length; index3++) {
                         const installResponse = testSuite.suites[0].tests[index3];
                         console.log(`${index3 + 1}.  ${installResponse.fullTitle.split('Versions')[1]}`);
                     }
+                    console.log(`Tested Addon: ${testedAddonObject.Addon.Name} Version: ${testedAddonObject.Version}`);
                 } else {
                     console.log(`${test.pass ? '√' : '𝑥'}  ${testTitle}: ${test.pass ? 'Passed' : 'Failed'}`);
                 }
@@ -1289,8 +1317,10 @@ export default class GeneralService {
                 return '122c0e9d-c240-4865-b446-f37ece866c22';
             case 'NEBULA':
                 return '00000000-0000-0000-0000-000000006a91';
+            case 'OBJECT TYPES EDITOR':
+                return '04de9428-8658-4bf7-8171-b59f6327bbf1';
             default:
-                return '';
+                return 'none';
         }
     }
 

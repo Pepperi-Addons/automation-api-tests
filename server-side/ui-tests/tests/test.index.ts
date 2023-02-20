@@ -473,61 +473,114 @@ const addon = process.env.npm_config_addon as string;
         }
         const service = new GeneralService(client);
         const addonName = addon.toUpperCase();
-        const addonUUID = generalService.convertNameToUUID(addonName);
-        // 1. install all dependencys on testing user + template addon
-        await handleDevTestInstallation(
-            client,
-            addonName,
-            addonUUID,
-            { describe, expect, it } as TesterFunctions,
-            varPass,
-        );
-        //2. validate tested addon is installed
-        const latestVersionOfTestedAddon = await generalService.getLatestAvailableVersion(
-            addonUUID,
-            Buffer.from(varPass).toString('base64'),
-        );
-        const installedAddonsArr = await generalService.getInstalledAddons({ page_size: -1 });
-        const isInstalled = installedAddonsArr.find(
-            (addon) => addon.Addon.UUID == addonUUID && addon.Version == latestVersionOfTestedAddon,
-        )
-            ? true
-            : false;
-        if (isInstalled === false) {
-            throw new Error(
-                `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddon}`,
+        let addonUUID;
+        if (addonName === 'none') {
+            console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
+        } else {
+            addonUUID = generalService.convertNameToUUID(addonName);
+            // 1. install all dependencys latest available versions on testing user + template addon latest available version
+            await handleDevTestInstallation(
+                client,
+                addonName,
+                addonUUID,
+                { describe, expect, it } as TesterFunctions,
+                varPass,
+            );
+            //2. validate tested addon is installed on latest available version
+            const latestVersionOfTestedAddon = await generalService.getLatestAvailableVersion(
+                addonUUID,
+                Buffer.from(varPass).toString('base64'),
+            );
+            const installedAddonsArr = await generalService.getInstalledAddons({ page_size: -1 });
+            const isInstalled = installedAddonsArr.find(
+                (addon) => addon.Addon.UUID == addonUUID && addon.Version == latestVersionOfTestedAddon,
+            )
+                ? true
+                : false;
+            if (isInstalled === false) {
+                throw new Error(
+                    `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddon}`,
+                );
+            }
+            const body = {
+                AddonUUID: addonUUID,
+                isLocal: false,
+            };
+            //3. run the test on latest version of the template addon
+            //current prod test user - evgenyTestProdQA@pepperitest.com : Evg123456
+            const latestVersionOfAutomationTemplateAddon = await generalService.getLatestAvailableVersion(
+                '02754342-e0b5-4300-b728-a94ea5e0e8f4',
+                Buffer.from(varPass).toString('base64'),
+            );
+            const devTestResponse = await service.fetchStatus(
+                `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`,
+                {
+                    body: JSON.stringify(body),
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
+                    },
+                },
+            );
+            const auditLogDevTestResponse = await generalService.getAuditLogResultObjectIfValid(
+                devTestResponse.Body.URI as string,
+                120,
+                7000,
+            );
+            const devPassingEnvs: any[] = [];
+            const devFailedEnvs: any[] = [];
+            const testResultArray = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject);
+            let didSucceed = true;
+            //4. print the results + report to teams
+            for (let index = 0; index < testResultArray.length; index++) {
+                const testResult = testResultArray[index];
+                if (testResult.stats.failures > 0) {
+                    didSucceed = false;
+                    devFailedEnvs.push('Production');
+                }
+                service.reportResults(
+                    testResult,
+                    installedAddonsArr.find(
+                        (addon) => addon.Addon.UUID == addonUUID && addon.Version == latestVersionOfTestedAddon,
+                    ),
+                );
+            }
+            if (!devFailedEnvs.includes('Production')) {
+                devPassingEnvs.push('Production');
+            }
+            // if (!failingEnvs.includes('Stage') || failingEnvs.includes('Staging')) {
+            //     passingEnvs.push('Stage');
+            // }
+            // if (!failingEnvs.includes('Production')) {
+            //     passingEnvs.push('Production');
+            // }
+            //5. un - available this version if needed
+            if (!didSucceed) {
+                const addonToInstall = {};
+                addonToInstall[addonName] = [addonUUID, ''];
+                const addon = await generalService.getLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
+                await unavailableAddonVersion(
+                    addonName,
+                    addon.UUID,
+                    latestVersionOfTestedAddon,
+                    addonUUID,
+                    service,
+                    Buffer.from(varPass).toString('base64'),
+                );
+            }
+            //6. report to Teams
+            await reportToTeams(
+                addonName,
+                addonUUID,
+                service,
+                latestVersionOfTestedAddon,
+                devPassingEnvs,
+                devFailedEnvs,
+                true,
             );
         }
-        const body = {
-            AddonUUID: addonUUID,
-            isLocal: false,
-        };
-        //current prod test user - evgenyTestProdQA@pepperitest.com : Evg123456
-        const latestVersionOfAutomationTemplateAddon = await generalService.getLatestAvailableVersion(
-            '02754342-e0b5-4300-b728-a94ea5e0e8f4',
-            Buffer.from(varPass).toString('base64'),
-        );
-        const devTestResponse = await service.fetchStatus(
-            `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`,
-            {
-                body: JSON.stringify(body),
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
-                },
-            },
-        );
-        const auditLogDevTestResponse = await generalService.getAuditLogResultObjectIfValid(
-            devTestResponse.Body.URI as string,
-            120,
-            7000,
-        );
-        //how to parse the response?
-        const parsedTestResults = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject)[0];
-        service.reportResults(parsedTestResults);
         debugger;
-        console.log(auditLogDevTestResponse); //only for fix lint currently
-        //////////////////////////////////////////////////////////
+        ///////////////////////APPROVMENT TESTS///////////////////////////////////
         // getting VAR credentials for all envs
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
@@ -551,7 +604,7 @@ const addon = process.env.npm_config_addon as string;
         switch (addonName) {
             //add another 'case' here when adding new addons to this mehcanisem
             case 'ADAL': {
-                // addonUUID = '00000000-0000-0000-0000-00000000ada1';
+                addonUUID = '00000000-0000-0000-0000-00000000ada1';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
                     {
@@ -625,7 +678,7 @@ const addon = process.env.npm_config_addon as string;
                 break;
             }
             case 'DIMX': {
-                // addonUUID = '44c97115-6d14-4626-91dc-83f176e9a0fc';
+                addonUUID = '44c97115-6d14-4626-91dc-83f176e9a0fc';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
                     {
@@ -700,7 +753,7 @@ const addon = process.env.npm_config_addon as string;
             }
             case 'DATA INDEX':
             case 'DATA-INDEX': {
-                // addonUUID = '00000000-0000-0000-0000-00000e1a571c';
+                addonUUID = '00000000-0000-0000-0000-00000e1a571c';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
                     {
@@ -972,41 +1025,6 @@ const addon = process.env.npm_config_addon as string;
         if (Object.keys(monitoringResponse.Error).length !== 0) {
             throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
         }
-        // }
-        // else {
-        //     const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${
-        //         passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        //     } ||| Failed On:  ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
-        //     const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
-        //     const bodyToSend = {
-        //         Name: `${addonName} Approvment Tests Status`,
-        //         Description: message,
-        //         Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
-        //         Message: message2,
-        //         UserWebhook:
-        //             'https://wrnty.webhook.office.com/webhookb2/89287949-3767-4525-ac10-80a303806a44@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/39160258118a4430bf577aebeabe1c7d/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
-        //     };
-        //     const monitoringResponse = await service.fetchStatus(
-        //         'https://papi.pepperi.com/v1.0/system_health/notifications',
-        //         {
-        //             method: 'POST',
-        //             headers: {
-        //                 'X-Pepperi-SecretKey': await generalService.getSecret()[1],
-        //                 'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-        //             },
-        //             body: JSON.stringify(bodyToSend),
-        //         },
-        //     );
-        //     if (monitoringResponse.Ok !== true) {
-        //         throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
-        //     }
-        //     if (monitoringResponse.Status !== 200) {
-        //         throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-        //     }
-        //     if (Object.keys(monitoringResponse.Error).length !== 0) {
-        //         throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-        //     }
-        // }
     }
     run();
 })();
@@ -1389,6 +1407,105 @@ async function setOrderCenterClosedFooter(generalService: GeneralService, OrderC
         const upsertUIControlResponse = await generalService.papiClient.uiControls.upsert(orderCenterClosedFooter[0]);
         expect(upsertUIControlResponse.Hidden).to.be.false;
         expect(upsertUIControlResponse.Type).to.include('OrderCenterClosedFooter');
+    }
+}
+
+async function unavailableAddonVersion(
+    addonName,
+    addonEntryUUID,
+    addonVersion,
+    addonUUID,
+    service: GeneralService,
+    base64VARCredentials,
+) {
+    const bodyToSendVARProd = {
+        UUID: addonEntryUUID,
+        Version: addonVersion,
+        Available: false,
+        AddonUUID: addonUUID,
+    };
+    const varResponseProd = await service.fetchStatus(
+        `https://papi.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersion}' AND Available=1`,
+        {
+            method: 'POST',
+            headers: {
+                Authorization: `Basic ${base64VARCredentials}`,
+            },
+            body: JSON.stringify(bodyToSendVARProd),
+        },
+    );
+    if (varResponseProd.Ok !== true) {
+        throw new Error(`Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseProd.Ok}`);
+    }
+    if (varResponseProd.Status !== 200) {
+        throw new Error(
+            `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseProd.Status}`,
+        );
+    }
+    if (varResponseProd.Body.AddonUUID !== addonUUID) {
+        throw new Error(
+            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseProd.Body.AddonUUID} instead of ${addonUUID}`,
+        );
+    }
+    if (varResponseProd.Body.Version !== addonVersion) {
+        throw new Error(
+            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseProd.Body.Version} instead of ${addonVersion}`,
+        );
+    }
+    if (varResponseProd.Body.Available !== false) {
+        throw new Error(
+            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseProd.Body.Available} instead of false`,
+        );
+    }
+    console.log(
+        `${addonName}, version: ${addonVersion}  on Production became unavailable: Approvment tests didnt pass`,
+    );
+}
+
+async function reportToTeams(
+    addonName,
+    addonUUID,
+    service: GeneralService,
+    addonVersion,
+    passingEnvs,
+    failingEnvs,
+    isDev,
+) {
+    let message;
+    if (isDev) {
+        message = `Dev Test: ${addonName}(${addonUUID}), Version:${addonVersion} ||| Passed On: ${
+            passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+        } ||| Failed On: ${failingEnvs.join(', ')}`;
+    } else {
+        message = `QA Approvment Test: ${addonName}(${addonUUID}), Version:${addonVersion} ||| Passed On: ${
+            passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+        } ||| Failed On: ${failingEnvs.join(', ')}`;
+    }
+    // const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
+    const message2 = `EVGENY DEV TEST TESTING`;
+    const bodyToSend = {
+        Name: isDev ? `${addonName} Dev Test Status` : `${addonName} Approvment Tests Status`,
+        Description: message,
+        Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
+        Message: message2,
+        UserWebhook: handleTeamsURL(addonName),
+    };
+    const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
+        method: 'POST',
+        headers: {
+            'X-Pepperi-SecretKey': await service.getSecret()[1],
+            'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+        },
+        body: JSON.stringify(bodyToSend),
+    });
+    if (monitoringResponse.Ok !== true) {
+        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+    }
+    if (monitoringResponse.Status !== 200) {
+        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+    }
+    if (Object.keys(monitoringResponse.Error).length !== 0) {
+        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
     }
 }
 
