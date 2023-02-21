@@ -172,6 +172,9 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             it('Get schema - fields and data verification', () => {
                 assert(logcash.getDataADAL2Status, logcash.getDataADAL2Error);
             });
+            it('Get schema - get by referance fields', () => {
+                assert(logcash.getDataADAL3Status, logcash.getDataADAL3Error);
+            });
             it('Drop created schems ', () => {
                 assert(logcash.dropTables1Status, logcash.dropTables1Error);
             });
@@ -207,7 +210,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             throw new Error(`Fail To Get Addon Secret Key ${error}`);
         }
         //Oren added this to skip insatll after I talked with Oleg, the installADallAddon, upgradADallAddon and getAuditLogInstallStatus functions are suspended for now
-        //await  createSchemaToPageKeyTestDinamo();
+        //await  createFirstSchema();
         await getPapiSchema();
     }
 
@@ -1529,7 +1532,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.getDataADAL2[0]['Account.CreationDateTime'] == undefined &&
             logcash.getDataADAL2[0]['Account.Hidden'] == undefined &&
             logcash.getDataADAL2[0]['Account.ModificationDateTime'] == undefined &&
-            logcash.getDataADAL2[0]['Account.Name'] == 'First Table' &&
+            logcash.getDataADAL2[0]['Account.Name'] == undefined && //Oleg - changed from buid 1.4.119
             logcash.getDataADAL2[0].CreationDateTime != '' &&
             logcash.getDataADAL2[0].Hidden == false &&
             logcash.getDataADAL2[0].Key == '1' &&
@@ -1541,12 +1544,56 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.getDataADAL2Status = false;
             logcash.getDataADAL2Error = 'GET value is wrong';
         }
+        //debugger;
+        // logcash.dropTablesSchemaName1 = logcash.createFirstSchema.Name;
+        // logcash.dropTablesCount1 = 0;
+        await getDataADAL3();
+    }
+    async function getDataADAL3() {
+        //logcash.getDataADALStatus = true;
+        logcash.getDataADAL3 = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSecondSchema2.Name +
+                    '?fields=Account,Account.Name,Account.Hidden,Key',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataADAL3[0].Account == '5' &&
+            logcash.getDataADAL3[0]['Account.CreationDateTime'] == undefined &&
+            logcash.getDataADAL3[0]['Account.Hidden'] == false &&
+            logcash.getDataADAL3[0]['Account.ModificationDateTime'] == undefined &&
+            logcash.getDataADAL3[0]['Account.Name'] == 'First Table' && //Oleg - changed from buid 1.4.119
+            //logcash.getDataADAL3[0].CreationDateTime != '' &&
+            //logcash.getDataADAL3[0].Hidden == false &&
+            logcash.getDataADAL3[0].Key == '1' //&&
+            //logcash.getDataADAL3[0].ModificationDateTime != '' &&
+            //logcash.getDataADAL3[0].test == '123'
+        ) {
+            logcash.getDataADAL3Status = true;
+        } else {
+            logcash.getDataADAL3Status = false;
+            logcash.getDataADAL3Error = 'GET value is wrong';
+        }
 
         //debugger;
         logcash.dropTablesSchemaName1 = logcash.createFirstSchema.Name;
         logcash.dropTablesCount1 = 0;
         await dropTables1();
     }
+
     async function dropTables1() {
         //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
         const res = await generalService.fetchStatus(

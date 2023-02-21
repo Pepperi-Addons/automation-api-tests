@@ -287,7 +287,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 //3. delete relevant pages
                 //4. delete slugs
                 //5. delete from homescreen
-                debugger;
+                // debugger;
             });
         });
     });

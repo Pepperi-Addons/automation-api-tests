@@ -35,8 +35,10 @@ import {
     ResourceListTests,
     RLdataPrep,
     VisitFlowTests,
+    VFdataPrep,
     MockTest,
     SurveyTests,
+    PricingTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -274,13 +276,22 @@ const addon = process.env.npm_config_addon as string;
         await RLdataPrep(varPass, client);
     }
 
+    if (tests.includes('DataPrepVF')) {
+        await VFdataPrep(varPass, client);
+    }
+
     if (tests.includes('ResourceList')) {
         // await RLdataPrep(client);
         await ResourceListTests(email, pass, varPass, client);
     }
 
     if (tests.includes('VisitFlow')) {
+        // await VFdataPrep(varPass, client);
         await VisitFlowTests(email, pass, client);
+    }
+
+    if (tests.includes('Pricing')) {
+        await PricingTests(email, pass, client);
     }
 
     if (tests.includes('MockTest')) {
