@@ -479,11 +479,11 @@ const addon = process.env.npm_config_addon as string;
         const service = new GeneralService(client);
         const addonName = addon.toUpperCase();
         let addonUUID;
-        if (addonName === 'none') {
+        addonUUID = generalService.convertNameToUUID(addonName);
+        if (addonUUID === 'none') {
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
         } else {
             const [euUser, prodUser, sbUser] = resolveUserPerTest(addonName);
-            addonUUID = generalService.convertNameToUUID(addonName);
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
             await Promise.all([
                 handleDevTestInstallation(
@@ -517,27 +517,9 @@ const addon = process.env.npm_config_addon as string;
                 Buffer.from(varPass).toString('base64'),
             );
             const isInstalled = await Promise.all([
-                validateLatestVersionOfAddonIsInstalled(
-                    euUser,
-                    addonUUID,
-                    latestVersionOfTestedAddon,
-                    addonName,
-                    'prod',
-                ),
-                validateLatestVersionOfAddonIsInstalled(
-                    prodUser,
-                    addonUUID,
-                    latestVersionOfTestedAddon,
-                    addonName,
-                    'prod',
-                ),
-                validateLatestVersionOfAddonIsInstalled(
-                    sbUser,
-                    addonUUID,
-                    latestVersionOfTestedAddon,
-                    addonName,
-                    'stage',
-                ),
+                validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddon, 'prod'),
+                validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddon, 'prod'),
+                validateLatestVersionOfAddonIsInstalled(sbUser, addonUUID, latestVersionOfTestedAddon, 'stage'),
             ]);
             for (let index = 0; index < isInstalled.length; index++) {
                 const isTestedAddonInstalled = isInstalled[index];
@@ -1059,7 +1041,7 @@ const addon = process.env.npm_config_addon as string;
             addonVersionProd,
             passingEnvs,
             failingEnvs,
-            true,
+            false,
             jobPathPROD,
             latestRunProd,
             jobPathEU,
@@ -1067,37 +1049,6 @@ const addon = process.env.npm_config_addon as string;
             jobPathSB,
             latestRunSB,
         );
-        // if (failingEnvs.length > 0) {
-        // const message = `${addonName}(${addonUUID}), Version:${addonVersionProd} ||| Passed On: ${passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        //     } ||| Failed On: ${failingEnvs.join(', ')}`;
-        // const message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
-        // const bodyToSend = {
-        //     Name: `${addonName} Approvment Tests Status`,
-        //     Description: message,
-        //     Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
-        //     Message: message2,
-        //     UserWebhook: handleTeamsURL(addonName),
-        // };
-        // const monitoringResponse = await service.fetchStatus(
-        //     'https://papi.pepperi.com/v1.0/system_health/notifications',
-        //     {
-        //         method: 'POST',
-        //         headers: {
-        //             'X-Pepperi-SecretKey': await generalService.getSecret()[1],
-        //             'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-        //         },
-        //         body: JSON.stringify(bodyToSend),
-        //     },
-        // );
-        // if (monitoringResponse.Ok !== true) {
-        //     throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
-        // }
-        // if (monitoringResponse.Status !== 200) {
-        //     throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-        // }
-        // if (Object.keys(monitoringResponse.Error).length !== 0) {
-        //     throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-        // }
     }
     run();
 })();
@@ -1564,7 +1515,7 @@ async function reportToTeams(
     } else {
         message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
             passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        } ||| Failed On: ${failingEnvs.join(', ')}`;
+        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
         message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
     }
     const bodyToSend = {
@@ -1603,13 +1554,7 @@ function resolveUserPerTest(addonName): any[] {
     }
 }
 
-async function validateLatestVersionOfAddonIsInstalled(
-    userName,
-    addonUUID,
-    latestVersionOfTestedAddon,
-    addonName,
-    env,
-) {
+async function validateLatestVersionOfAddonIsInstalled(userName, addonUUID, latestVersionOfTestedAddon, env) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
     const installedAddonsArr = await service.getInstalledAddons({ page_size: -1 });
