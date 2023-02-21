@@ -628,7 +628,7 @@ export default class GeneralService {
         return this.papiClient.get('/distributor');
     }
 
-    async getAuditLogResultObjectIfValid(uri: string, loopsAmount = 30): Promise<AuditLog> {
+    async getAuditLogResultObjectIfValid(uri: string, loopsAmount = 30, sleepTime?: number): Promise<AuditLog> {
         let auditLogResponse;
         do {
             auditLogResponse = await this.papiClient.get(uri);
@@ -646,7 +646,7 @@ export default class GeneralService {
             }
             //This case will only retry the get call again as many times as the "loopsAmount"
             else if (auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') {
-                this.sleep(2000);
+                this.sleep(sleepTime !== undefined && sleepTime > 0 ? sleepTime : 2000);
                 console.log(
                     `%c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${
                         auditLogResponse.Status.ID
@@ -954,9 +954,32 @@ export default class GeneralService {
             )
         ).Body[0];
         const latestVersion = fetchVarResponse.Version;
+        console.log(`Installing Version ${latestVersion} Of ${addonName} - ${addonUUID}`);
         const installObj = {};
         installObj[addonName] = [testData[addonName][0], latestVersion];
         return await this.areAddonsInstalledEVGENY(installObj);
+    }
+
+    async getLatestAvalibaleVersionOfAddon(varKey: string, testData: { [any: string]: string[] }) {
+        const addonName = Object.entries(testData)[0][0];
+        const addonUUID = testData[addonName][0];
+        const searchString = `AND Version Like '%' AND Available Like 1`;
+        const fetchVarResponse = (
+            await this.fetchStatus(
+                `${this.client.BaseURL.replace(
+                    'papi-eu',
+                    'papi',
+                )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                    },
+                },
+            )
+        ).Body[0];
+        const latestVersion = fetchVarResponse.Version;
+        return latestVersion;
     }
 
     async changeToAnyAvailableVersion(testData: { [any: string]: string[] }): Promise<{ [any: string]: string[] }> {
@@ -1164,6 +1187,38 @@ export default class GeneralService {
     //     //except(monitoringResult.Error).to.equal({});
     // }
 
+    reportResults(testResultsObj, testedAddonObject) {
+        console.log('Total Failures: ' + testResultsObj.stats.failures);
+        console.log('Total Passes: ' + testResultsObj.stats.passes);
+        //1. run on all suites
+        for (let index1 = 0; index1 < testResultsObj.results[0].suites.length; index1++) {
+            const testSuite = testResultsObj.results[0].suites[index1];
+            for (let index2 = 0; index2 < testSuite.tests.length; index2++) {
+                const test = testSuite.tests[index2];
+                const testTitle = test.fullTitle.split(':').join(' - ');
+                if (
+                    testTitle.includes('TestDataStartTestServerTimeAndDate') ||
+                    testTitle.includes('TestDataTestedUser') ||
+                    testTitle.includes('Test Data Start Test Server Time And Date') ||
+                    testTitle.includes('Test Data Tested User')
+                ) {
+                    console.log(`*  ${testTitle}`);
+                } else if (
+                    testTitle.includes('Test Data Test Prerequisites') ||
+                    testTitle.includes('TestDataTestPrerequisites')
+                ) {
+                    for (let index3 = 0; index3 < testSuite.suites[0].tests.length; index3++) {
+                        const installResponse = testSuite.suites[0].tests[index3];
+                        console.log(`${index3 + 1}.  ${installResponse.fullTitle.split('Versions')[1]}`);
+                    }
+                    console.log(`Tested Addon: ${testedAddonObject.Addon.Name} Version: ${testedAddonObject.Version}`);
+                } else {
+                    console.log(`${test.pass ? '√' : '𝑥'}  ${testTitle}: ${test.pass ? 'Passed' : 'Failed'}`);
+                }
+            }
+        }
+    }
+
     extractSchema(schema, key: string, filterAttributes: FilterAttributes) {
         outerLoop: for (let j = 0; j < schema.length; j++) {
             const entery = schema[j];
@@ -1245,25 +1300,27 @@ export default class GeneralService {
     }
 
     async executeScriptFromTestData(scriptName: string): Promise<void> {
-        await execFileSync(`${__dirname.split('services')[0]}api-tests\\test-data\\${scriptName}`);
+        await execFileSync(`${__dirname.split('services')[0]}api - tests\\test - data\\${scriptName} `);
         return;
     }
 
     convertNameToUUID(addonName: string) {
         switch (addonName) {
-            case 'ADAL':
-                return '00000000-0000-0000-0000-00000000ada1';
-            case 'DIMX':
-                return '44c97115-6d14-4626-91dc-83f176e9a0fc';
+            // case 'ADAL':
+            //     return '00000000-0000-0000-0000-00000000ada1';
+            // case 'DIMX':
+            //     return '44c97115-6d14-4626-91dc-83f176e9a0fc';
             case 'DATA INDEX':
             case 'DATA-INDEX':
                 return '00000000-0000-0000-0000-00000e1a571c';
-            case 'UDC':
-                return '122c0e9d-c240-4865-b446-f37ece866c22';
-            case 'NEBULA':
-                return '00000000-0000-0000-0000-000000006a91';
+            // case 'UDC':
+            //     return '122c0e9d-c240-4865-b446-f37ece866c22';
+            // case 'NEBULA':
+            //     return '00000000-0000-0000-0000-000000006a91';
+            // case 'OBJECT TYPES EDITOR':
+            //     return '04de9428-8658-4bf7-8171-b59f6327bbf1';
             default:
-                return '';
+                return 'none';
         }
     }
 
@@ -1332,11 +1389,76 @@ function parseResponse(responseStr) {
     const bodyStrTagsArr = bodyStrTagsMatched.split(/,|<\//);
     for (let index = 1; index < headerTagsArr.length; index += 2) {
         errorMessage.Header = {};
-        errorMessage.Header[`${headerTagsArr[index]}`] = headerTagsArr[index - 1];
+        errorMessage.Header[`${headerTagsArr[index]} `] = headerTagsArr[index - 1];
     }
     for (let index = 1; index < bodyStrTagsArr.length; index += 2) {
         errorMessage.Body = {};
-        errorMessage.Body[`${bodyStrTagsArr[index]}`] = bodyStrTagsArr[index - 1];
+        errorMessage.Body[`${bodyStrTagsArr[index]} `] = bodyStrTagsArr[index - 1];
     }
     return errorMessage;
+}
+
+async function getToken(email: any, pass: any, env) {
+    const urlencoded = new URLSearchParams();
+    urlencoded.append('username', email);
+    urlencoded.append('password', pass);
+    urlencoded.append('scope', 'pepperi.apint pepperi.wacd offline_access');
+    urlencoded.append('grant_type', 'password');
+    urlencoded.append('client_id', 'ios.com.wrnty.peppery');
+
+    const server = env;
+    const getToken = await fetch(`https://idp${server == 'stage' ? '.sandbox' : ''}.pepperi.com/connect/token`, {
+        method: 'POST',
+        body: urlencoded,
+    })
+        .then((res) => res.text())
+        .then((res) => (res ? JSON.parse(res) : ''));
+
+    if (!getToken?.access_token) {
+        throw new Error(
+            `Error unauthorized\nError: ${getToken.error}\nError description: ${getToken.error_description}`,
+        );
+    }
+
+    return getToken;
+}
+
+export async function initiateTester(email, pass, env): Promise<Client> {
+    const token = await getToken(email, pass, env);
+    return createClient(token.access_token);
+}
+
+function createClient(authorization) {
+    if (!authorization) {
+        throw new Error('Error unauthorized');
+    }
+    const token = authorization.replace('Bearer ', '') || '';
+    const parsedToken = jwt_decode(token);
+    const [AddonUUID, sk] = getSecret();
+
+    return {
+        AddonUUID: AddonUUID,
+        AddonSecretKey: sk,
+        BaseURL: parsedToken['pepperi.baseurl'],
+        OAuthAccessToken: token,
+        AssetsBaseUrl: 'http://localhost:4400/publish/assets',
+        Retry: function () {
+            return;
+        },
+        ValidatePermission: async (policyName) => {
+            await this.validatePermission(policyName, token, parsedToken['pepperi.baseurl']);
+        },
+    } as Client;
+}
+
+function getSecret() {
+    const addonUUID = JSON.parse(fs.readFileSync('../addon.config.json', { encoding: 'utf8', flag: 'r' }))['AddonUUID'];
+    let sk;
+    try {
+        sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
+    } catch (error) {
+        console.log(`%cSK Not found: ${error}`, ConsoleColors.SystemInformation);
+        sk = '00000000-0000-0000-0000-000000000000';
+    }
+    return [addonUUID, sk];
 }
