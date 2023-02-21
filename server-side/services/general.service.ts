@@ -1306,19 +1306,19 @@ export default class GeneralService {
 
     convertNameToUUID(addonName: string) {
         switch (addonName) {
-            case 'ADAL':
-                return '00000000-0000-0000-0000-00000000ada1';
-            case 'DIMX':
-                return '44c97115-6d14-4626-91dc-83f176e9a0fc';
+            // case 'ADAL':
+            //     return '00000000-0000-0000-0000-00000000ada1';
+            // case 'DIMX':
+            //     return '44c97115-6d14-4626-91dc-83f176e9a0fc';
             case 'DATA INDEX':
             case 'DATA-INDEX':
                 return '00000000-0000-0000-0000-00000e1a571c';
-            case 'UDC':
-                return '122c0e9d-c240-4865-b446-f37ece866c22';
-            case 'NEBULA':
-                return '00000000-0000-0000-0000-000000006a91';
-            case 'OBJECT TYPES EDITOR':
-                return '04de9428-8658-4bf7-8171-b59f6327bbf1';
+            // case 'UDC':
+            //     return '122c0e9d-c240-4865-b446-f37ece866c22';
+            // case 'NEBULA':
+            //     return '00000000-0000-0000-0000-000000006a91';
+            // case 'OBJECT TYPES EDITOR':
+            //     return '04de9428-8658-4bf7-8171-b59f6327bbf1';
             default:
                 return 'none';
         }
