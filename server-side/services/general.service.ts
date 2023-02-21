@@ -1397,3 +1397,68 @@ function parseResponse(responseStr) {
     }
     return errorMessage;
 }
+
+async function getToken(email: any, pass: any, env) {
+    const urlencoded = new URLSearchParams();
+    urlencoded.append('username', email);
+    urlencoded.append('password', pass);
+    urlencoded.append('scope', 'pepperi.apint pepperi.wacd offline_access');
+    urlencoded.append('grant_type', 'password');
+    urlencoded.append('client_id', 'ios.com.wrnty.peppery');
+
+    const server = env;
+    const getToken = await fetch(`https://idp${server == 'stage' ? '.sandbox' : ''}.pepperi.com/connect/token`, {
+        method: 'POST',
+        body: urlencoded,
+    })
+        .then((res) => res.text())
+        .then((res) => (res ? JSON.parse(res) : ''));
+
+    if (!getToken?.access_token) {
+        throw new Error(
+            `Error unauthorized\nError: ${getToken.error}\nError description: ${getToken.error_description}`,
+        );
+    }
+
+    return getToken;
+}
+
+export async function initiateTester(email, pass, env): Promise<Client> {
+    const token = await getToken(email, pass, env);
+    return createClient(token.access_token);
+}
+
+function createClient(authorization) {
+    if (!authorization) {
+        throw new Error('Error unauthorized');
+    }
+    const token = authorization.replace('Bearer ', '') || '';
+    const parsedToken = jwt_decode(token);
+    const [AddonUUID, sk] = getSecret();
+
+    return {
+        AddonUUID: AddonUUID,
+        AddonSecretKey: sk,
+        BaseURL: parsedToken['pepperi.baseurl'],
+        OAuthAccessToken: token,
+        AssetsBaseUrl: 'http://localhost:4400/publish/assets',
+        Retry: function () {
+            return;
+        },
+        ValidatePermission: async (policyName) => {
+            await this.validatePermission(policyName, token, parsedToken['pepperi.baseurl']);
+        },
+    } as Client;
+}
+
+function getSecret() {
+    const addonUUID = JSON.parse(fs.readFileSync('../addon.config.json', { encoding: 'utf8', flag: 'r' }))['AddonUUID'];
+    let sk;
+    try {
+        sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
+    } catch (error) {
+        console.log(`%cSK Not found: ${error}`, ConsoleColors.SystemInformation);
+        sk = '00000000-0000-0000-0000-000000000000';
+    }
+    return [addonUUID, sk];
+}
