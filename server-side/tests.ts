@@ -1,5 +1,5 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
-import GeneralService, { TesterFunctions } from './services/general.service';
+import GeneralService, { initiateTester, TesterFunctions } from './services/general.service';
 import {
     TestDataTests,
     UpgradeDependenciesTests,
@@ -1240,16 +1240,18 @@ export async function security(client: Client, request: Request, testerFunctions
 
 //WIP - dev tests
 export async function handleDevTestInstallation(
-    client: Client,
+    userName: string,
     addonName: string,
     addonUUID: string,
     testerFunctions: TesterFunctions,
     varPass,
+    env,
 ) {
+    const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     //1. convert Name to UUID
-    testName = `Dev Test: ${addonName}, Tested Addon UUID: ${addonUUID}`;
+    testName = `Installing Dev Test Prerequisites On ${env} Env, User: ${userName}, Addon: ${addonName}, UUID: ${addonUUID}`;
     service.PrintMemoryUseToLog('Start', testName);
     //2. upgrade dependencys - basic: correct for all addons
     await service.baseAddonVersionsInstallation(varPass);
@@ -1273,7 +1275,7 @@ export async function handleDevTestInstallation(
     const latestVerPublishConfig = JSON.parse(latestVer.PublishConfig);
     const dependenciesFromPublishConfig = latestVerPublishConfig.Dependencies;
     let dependeciesUUIDs;
-    if (Object.entries(dependenciesFromPublishConfig).length !== 0) {
+    if (dependenciesFromPublishConfig !== undefined && Object.entries(dependenciesFromPublishConfig).length !== 0) {
         dependeciesUUIDs = await buildTheDependencyArray(service, dependenciesFromPublishConfig);
         //4. install on dist
         for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
