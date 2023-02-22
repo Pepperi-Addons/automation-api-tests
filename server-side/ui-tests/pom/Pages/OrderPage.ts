@@ -12,12 +12,29 @@ export class OrderPage extends WebAppList {
     public Search_Input: By = By.xpath('//input[@id="searchInput"]');
     public Search_Magnifier_Button: By = By.xpath('//search//pep-icon[@name="system_search"]');
     public Search_X_Button: By = By.xpath('//search//pep-icon[@name="system_close"]');
+
+    public ItemQuantity_NumberOfUnits_Readonly: By = By.xpath('//pep-quantity-selector//button[@id="UnitsQuantity"]');
+    public ItemQuantity_byUOM_InteractableNumber: By = By.xpath(
+        '//pep-quantity-selector//input[@id="TSAAOQMQuantity1"]',
+    );
+    public ItemQuantity_Minus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[3]/button');
+    public ItemQuantity_Plus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[5]/button');
+
+    public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
+    public TransactionUUID: By = By.id('UUID');
+
+    public UnitOfMeasure_Selector_Value: By = By.xpath('//span[@id="TSAAOQMUOM1"]');
+
     public PriceBaseUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceBaseUnitPriceAfter1"]');
     public PriceDiscountUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceDiscountUnitPriceAfter1"]');
     public PriceGroupDiscountUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceGroupDiscountUnitPriceAfter1"]');
     public PriceManualLineUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceManualLineUnitPriceAfter1"]');
     public PriceTaxUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceTaxUnitPriceAfter1"]');
     public NPMCalcMessage_Value: By = By.xpath('//span[@id="TSANPMCalcMessage"]');
+
+    public getSelectorOfUnitOfMeasureOptionByText(text: string) {
+        return By.xpath(`//div[@id="TSAAOQMUOM1-panel"][@role="listbox"]/mat-option[@title="${text}"]`);
+    }
 
     public getSelectorOfItemInOrderCenterByName(name: string) {
         return By.xpath(`//span[@id="ItemExternalID"][@title="${name}"]/ancestor::mat-grid-list`);
