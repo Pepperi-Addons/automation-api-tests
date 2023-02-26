@@ -76,6 +76,7 @@ export async function CreateDistributorTests(
                     distributorEmail = `${userName}@pepperitest.com`;
                     distributorCompany = 'QA';
                     distributorPassword = pass;
+                    console.log(`creating user with email: ${distributorEmail}`);
                     clientArr.push({ Email: distributorEmail, Password: distributorPassword });
                 } else {
                     const lorem = new LoremIpsum({});
@@ -365,10 +366,10 @@ export async function CreateDistributorTests(
                         IsAllAddons: true,
                         IsUUID: true,
                     });
-
-                    await LoginTests(clientArr[0].Email, clientArr[0].Password);
-
-                    if (!userName && !pass) {
+                    if (userName && pass) {
+                        await LoginTests(clientArr[0].Email, clientArr[0].Password, false);
+                    } else {
+                        await LoginTests(clientArr[0].Email, clientArr[0].Password);
                         await OrderTests(clientArr[0].Email, clientArr[0].Password, adminClient);
                     }
                 });
