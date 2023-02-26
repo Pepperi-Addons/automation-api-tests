@@ -93,6 +93,7 @@ export async function CreateDistributorTests(
 
                     clientArr.push({ Email: distributorEmail, Password: distributorPassword });
                 }
+                debugger;
                 const newDistributor = await distributorService.createDistributor({
                     FirstName: distributorFirstName,
                     LastName: distributorLastName,
