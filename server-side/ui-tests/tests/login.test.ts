@@ -20,10 +20,10 @@ export async function LoginTests(email: string, password: string, withImage?: bo
 
         it('Login', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            if (withImage != undefined && withImage) {
-                await webAppLoginPage.loginWithImage(email, password);
-            } else {
+            if (withImage != undefined && !withImage) {
                 await webAppLoginPage.login(email, password);
+            } else {
+                await webAppLoginPage.loginWithImage(email, password);
             }
         });
     });

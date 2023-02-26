@@ -368,8 +368,7 @@ export async function CreateDistributorTests(
                     });
                     if (userName && pass) {
                         await LoginTests(clientArr[0].Email, clientArr[0].Password, false);
-                    }
-                    if (!userName && !pass) {
+                    } else {
                         await LoginTests(clientArr[0].Email, clientArr[0].Password);
                         await OrderTests(clientArr[0].Email, clientArr[0].Password, adminClient);
                     }
