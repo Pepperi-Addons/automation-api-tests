@@ -93,7 +93,6 @@ export async function CreateDistributorTests(
 
                     clientArr.push({ Email: distributorEmail, Password: distributorPassword });
                 }
-                debugger;
                 const newDistributor = await distributorService.createDistributor({
                     FirstName: distributorFirstName,
                     LastName: distributorLastName,
@@ -369,7 +368,8 @@ export async function CreateDistributorTests(
 
                     await LoginTests(clientArr[0].Email, clientArr[0].Password);
 
-                    await OrderTests(clientArr[0].Email, clientArr[0].Password, adminClient);
+                    if (!userName && !pass) {await OrderTests(clientArr[0].Email, clientArr[0].Password, adminClient);}
+                    
                 });
             });
         });
