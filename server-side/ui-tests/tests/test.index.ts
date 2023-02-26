@@ -75,6 +75,8 @@ const varPass = process.env.npm_config_var_pass as string;
 const varPassEU = process.env.npm_config_var_pass_eu as string;
 const varPassSB = process.env.npm_config_var_pass_sb as string;
 const addon = process.env.npm_config_addon as string;
+const userNameCreate = process.env.npm_config_addon as string;
+const passCreate = process.env.npm_config_addon as string;
 
 (async function () {
     const tempGeneralService = new GeneralService({
@@ -253,8 +255,13 @@ const addon = process.env.npm_config_addon as string;
     }
 
     if (tests.includes('Create')) {
-        await CreateDistributorTests(generalService, varPass, varPassEU);
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        if (userNameCreate && passCreate) {
+            await CreateDistributorTests(generalService, varPass, varPassEU);
+            await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        } else {
+            await CreateDistributorTests(generalService, varPass, varPassEU);
+            await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        }
     }
 
     if (tests.includes('Uom')) {
