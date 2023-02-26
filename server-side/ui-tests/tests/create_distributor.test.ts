@@ -368,8 +368,9 @@ export async function CreateDistributorTests(
 
                     await LoginTests(clientArr[0].Email, clientArr[0].Password);
 
-                    if (!userName && !pass) {await OrderTests(clientArr[0].Email, clientArr[0].Password, adminClient);}
-                    
+                    if (!userName && !pass) {
+                        await OrderTests(clientArr[0].Email, clientArr[0].Password, adminClient);
+                    }
                 });
             });
         });
