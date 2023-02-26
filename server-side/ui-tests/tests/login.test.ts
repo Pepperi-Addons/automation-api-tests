@@ -2,7 +2,7 @@ import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, beforeEach } from 'mocha';
 import { WebAppLoginPage } from '../pom/index';
 
-export async function LoginTests(email: string, password: string) {
+export async function LoginTests(email: string, password: string, withImage?: boolean) {
     let driver: Browser;
 
     describe('Basic UI Tests Suit', async function () {
@@ -20,7 +20,11 @@ export async function LoginTests(email: string, password: string) {
 
         it('Login', async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
-            await webAppLoginPage.loginWithImage(email, password);
+            if (withImage != undefined && withImage) {
+                await webAppLoginPage.loginWithImage(email, password);
+            } else {
+                await webAppLoginPage.login(email, password);
+            }
         });
     });
 }
