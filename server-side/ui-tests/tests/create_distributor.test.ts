@@ -29,7 +29,13 @@ export interface ClientObject {
     Password: string;
 }
 
-export async function CreateDistributorTests(generalService: GeneralService, varPass: string, varPassEU?: string) {
+export async function CreateDistributorTests(
+    generalService: GeneralService,
+    varPass: string,
+    varPassEU?: string,
+    userName?,
+    pass?,
+) {
     let driver: Browser;
 
     describe('Create Distributor Test Suit', async function () {
@@ -59,22 +65,35 @@ export async function CreateDistributorTests(generalService: GeneralService, var
                     password = varPassEU;
                 }
                 const distributorService = new DistributorService(generalService, password);
+                let distributorFirstName;
+                let distributorLastName;
+                let distributorEmail;
+                let distributorCompany;
+                let distributorPassword;
+                if (userName && pass) {
+                    distributorFirstName = `QA_${userName}`;
+                    distributorLastName = userName;
+                    distributorEmail = `${userName}@pepperitest.com`;
+                    distributorCompany = 'QA';
+                    distributorPassword = pass;
+                    clientArr.push({ Email: distributorEmail, Password: distributorPassword });
+                } else {
+                    const lorem = new LoremIpsum({});
+                    distributorFirstName = lorem.generateWords(1);
+                    distributorLastName = lorem.generateWords(1);
+                    distributorEmail = `${
+                        distributorFirstName + (Math.random() * 10000000000).toString().substring(0, 4)
+                    }.${distributorLastName}@pepperitest.com`;
+                    distributorCompany = lorem.generateWords(3);
+                    const lettersGenerator = lorem.generateWords(1).substring(0, 2);
+                    distributorPassword =
+                        lettersGenerator[0].toUpperCase() +
+                        lettersGenerator[1] +
+                        (Math.random() * 10000000000).toString().substring(0, 6);
 
-                const lorem = new LoremIpsum({});
-                const distributorFirstName = lorem.generateWords(1);
-                const distributorLastName = lorem.generateWords(1);
-                const distributorEmail = `${
-                    distributorFirstName + (Math.random() * 10000000000).toString().substring(0, 4)
-                }.${distributorLastName}@pepperitest.com`;
-                const distributorCompany = lorem.generateWords(3);
-                const lettersGenerator = lorem.generateWords(1).substring(0, 2);
-                const distributorPassword =
-                    lettersGenerator[0].toUpperCase() +
-                    lettersGenerator[1] +
-                    (Math.random() * 10000000000).toString().substring(0, 6);
-
-                clientArr.push({ Email: distributorEmail, Password: distributorPassword });
-
+                    clientArr.push({ Email: distributorEmail, Password: distributorPassword });
+                }
+                debugger;
                 const newDistributor = await distributorService.createDistributor({
                     FirstName: distributorFirstName,
                     LastName: distributorLastName,
