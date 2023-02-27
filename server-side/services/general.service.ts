@@ -1317,8 +1317,8 @@ export default class GeneralService {
                 return '00000000-0000-0000-0000-00000e1a571c';
             // case 'UDC':
             //     return '122c0e9d-c240-4865-b446-f37ece866c22';
-            // case 'NEBULA':
-            //     return '00000000-0000-0000-0000-000000006a91';
+            case 'NEBULA':
+                return '00000000-0000-0000-0000-000000006a91';
             // case 'OBJECT TYPES EDITOR':
             //     return '04de9428-8658-4bf7-8171-b59f6327bbf1';
             default:
