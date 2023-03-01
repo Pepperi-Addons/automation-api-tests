@@ -1251,7 +1251,9 @@ export async function handleDevTestInstallation(
     const service = new GeneralService(client);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     //1. convert Name to UUID
-    testName = `Installing Dev Test Prerequisites On ${env} Env, User: ${userName}, Addon: ${addonName}, UUID: ${addonUUID}`;
+    testName = `Installing Dev Test Prerequisites On ${
+        userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
+    } Env, User: ${userName}, Addon: ${addonName}, UUID: ${addonUUID}`;
     service.PrintMemoryUseToLog('Start', testName);
     //2. upgrade dependencys - basic: correct for all addons
     await service.baseAddonVersionsInstallation(varPass);
@@ -1309,6 +1311,7 @@ export async function handleDevTestInstallation(
 //WIP - dev tests
 async function buildTheDependencyArray(service: GeneralService, dependenciesFromPublishConfig) {
     //map the dependency addons to thier real name in VAR
+    debugger;
     const allAddonDependencys = await service.fetchStatus('/configuration_fields?key=AddonsForDependencies');
     const allAddonDependencysAsObject = JSON.parse(allAddonDependencys.Body.Value);
     const arrayOfAllUUIDs = {};
