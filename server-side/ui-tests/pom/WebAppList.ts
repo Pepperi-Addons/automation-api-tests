@@ -65,6 +65,9 @@ export class WebAppList extends Page {
 
     // Activities List
     public NoActivitiesFound_Text: By = By.xpath('//pep-list//p[contains(text(),"No activities found")]');
+    public Activities_TopActivityInList_ID: By = By.xpath('//pep-form//span[@id="WrntyID"]');
+    public Activities_TopActivityInList_Type: By = By.xpath('//pep-form//span[@id="Type"]');
+    public Activities_TopActivityInList_Status: By = By.xpath('//pep-form//span[@id="Status"]');
 
     public getSelectorOfActionItemUnderPencilByText(text: string) {
         return By.xpath(
@@ -120,6 +123,11 @@ export class WebAppList extends Page {
     public async clickOnLinkFromListRowWebElement(position = 0, waitUntil = 15000): Promise<void> {
         await this.isSpinnerDone();
         return await this.browser.click(this.LinksInListArr, position, waitUntil);
+    }
+
+    public async clickOnLinkFromListRowWebElementByText(textOfElement: string, waitUntil = 15000): Promise<void> {
+        await this.isSpinnerDone();
+        return await this.browser.ClickByText(this.LinksInListArr, textOfElement, waitUntil);
     }
 
     public async checkAllListElements() {

@@ -21,7 +21,9 @@ export class OrderPage extends WebAppList {
     public ItemQuantity_Plus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[5]/button');
 
     public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
+    public Cart_Submit_Button: By = By.xpath('//button[@data-qa="Submit"]');
     public TransactionUUID: By = By.id('UUID');
+    public TransactionID: By = By.id('WrntyID');
 
     public UnitOfMeasure_Selector_Value: By = By.xpath('//span[@id="TSAAOQMUOM1"]');
 
@@ -32,16 +34,38 @@ export class OrderPage extends WebAppList {
     public PriceTaxUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceTaxUnitPriceAfter1"]');
     public NPMCalcMessage_Value: By = By.xpath('//span[@id="TSANPMCalcMessage"]');
 
+    public Cart_ContinueOrdering_Button: By = By.xpath('//button[@data-qa="Continue ordering"]');
+    public Cart_Headline_Results_Number: By = By.xpath('//pep-list-total//span[contains(@class,"bold number")]');
+    public OrderCenter_Headline_Results_Number: By = By.xpath('//list-total//span[contains(@class,"bold number")]');
+
     public getSelectorOfUnitOfMeasureOptionByText(text: string) {
         return By.xpath(`//div[@id="TSAAOQMUOM1-panel"][@role="listbox"]/mat-option[@title="${text}"]`);
     }
 
     public getSelectorOfItemInOrderCenterByName(name: string) {
-        return By.xpath(`//span[@id="ItemExternalID"][@title="${name}"]/ancestor::mat-grid-list`);
+        return By.xpath(`//span[@id="ItemExternalID"][contains(@title,"${name}")]/ancestor::mat-grid-list`);
     }
 
-    public getSelectorOfCustomFieldByItemName(fieldName: string, itemName: string) {
+    public getSelectorOfCustomFieldInOrderCenterByItemName(fieldName: string, itemName: string) {
         return By.xpath(`${this.getSelectorOfItemInOrderCenterByName(itemName).value}${this[fieldName].value}`);
+    }
+
+    public getSelectorOfItemInCartByName(name: string) {
+        return By.xpath(
+            `//pep-textbox[@data-qa="ItemExternalID"]/span[contains(@title,"${name}")]/ancestor::fieldset/ancestor::fieldset`,
+        );
+    }
+
+    public getSelectorOfFreeItemInCartByName(name: string) {
+        return By.xpath(`${this.getSelectorOfItemInCartByName(name).value}[@style]`);
+    }
+
+    public getSelectorOfCustomFieldInCartByItemName(fieldName: string, itemName: string) {
+        return By.xpath(`${this.getSelectorOfItemInCartByName(itemName).value}${this[fieldName].value}`);
+    }
+
+    public getSelectorOfCustomFieldInCartByFreeItemName(fieldName: string, itemName: string) {
+        return By.xpath(`${this.getSelectorOfFreeItemInCartByName(itemName).value}${this[fieldName].value}`);
     }
     // End of specific pricing selectors //
 

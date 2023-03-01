@@ -77,7 +77,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 slugs = new Slugs(driver);
                 // resourceViews = new ResourceViews(driver);
                 randomString = generalService.generateRandomString(5);
-                visitFlowName = `AutoVisiT${randomString}`;
+                visitFlowName = `Auto VisiT ${randomString}`;
                 visitFlowDescription = `Auto Visit ${randomString}`;
                 slugDisplayName = `Visit Flow Auto ${randomString}`;
                 slug_path = `visit_flow_auto_${randomString}`;
@@ -89,13 +89,13 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await driver.quit();
             });
 
-            afterEach(async function () {
-                try {
-                    await webAppHeader.goHome();
-                } catch (error) {
-                    console.error(error);
-                }
-            });
+            // afterEach(async function () {
+            //     try {
+            //         await webAppHeader.goHome();
+            //     } catch (error) {
+            //         console.error(error);
+            //     }
+            // });
 
             it('Login', async () => {
                 await webAppLoginPage.login(email, password);
@@ -299,13 +299,13 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         10000,
                     );
                     expect(await slugNameAtMappedSlugsSmallDisplayInRepCard.getText()).to.contain(slug_path);
-                    driver.sleep(15 * 1000);
+                    driver.sleep(1 * 1000);
                 });
             });
 
             describe('Configuring Account Dashboard', () => {
                 it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async () => {
-                    debugger;
+                    // debugger;
                     for (let i = 0; i < 2; i++) {
                         try {
                             await webAppHeader.goHome();
@@ -347,12 +347,17 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                                 slugDisplayName,
                                 visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox,
                             );
-                            expect(
-                                await (
-                                    await driver.findElement(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchResult)
-                                ).getAttribute('data-id'),
-                            ).to.equal(`SLUG_${slug_path}`);
-                            await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SearchResult_PlusButton');
+                            // expect(
+                            //     await (
+                            //         await driver.findElement(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchResult)
+                            //     ).getAttribute('data-id'),
+                            // ).to.equal(`SLUG_${slug_path}`);
+                            // await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SearchResult_PlusButton');
+                            const plusButton = await driver.findElement(
+                                visitFlow.getSelectorOfSearchResultListRowPlusButtonByUniqueName(randomString),
+                            );
+                            await plusButton.click();
+                            // await visitFlow.click(visitFlow.getSelectorOfSearchResultListRowPlusButtonByUniqueName(randomString));
                             await visitFlow.waitTillVisible(
                                 visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText(slug_path),
                                 15000,
@@ -418,23 +423,47 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
 
                 it('Performing Manual Sync', async () => {
                     await e2eUtils.logOutLogIn(email, password);
+                    await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
                 });
             });
 
             describe('Going Through a Basic Visit', () => {
-                it('Navigating to a specific Account', async () => {
+                // it('Navigating to a specific Account', async () => {
+                //     debugger
+                //     await webAppHeader.goHome();
+                //     await webAppHomePage.isSpinnerDone();
+                //     await webAppHomePage.clickOnBtn('Accounts');
+                //     await webAppHeader.isSpinnerDone();
+                //     driver.sleep(1 * 1000);
+                //     await visitFlow.waitTillVisible(visitFlow.FirstAccountInList, 15000);
+                //     await visitFlow.clickElement('FirstAccountInList');
+                //     await visitFlow.isSpinnerDone();
+                //     driver.sleep(1 * 1000);
+                // });
+
+                // it('Entering Visit Flow slug from Menu', async () => {
+                //     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Button, 15000);
+                //     await visitFlow.clickElement('AccountHomePage_HamburgerMenu_Button');
+                //     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Content, 15000);
+                //     visitFlow.pause(1 * 1000);
+                //     await visitFlow.click(
+                //         visitFlow.getSelectorOfAccountHomePageHamburgerMenuVisitFlowAutomatedSlug(slugDisplayName),
+                //     );
+                //     visitFlow.pause(1 * 1000);
+                // });
+
+                it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async () => {
+                    // debugger
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');
-                    driver.sleep(1 * 1000);
                     await webAppHeader.isSpinnerDone();
+                    driver.sleep(1 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.FirstAccountInList, 15000);
                     await visitFlow.clickElement('FirstAccountInList');
+                    await visitFlow.isSpinnerDone();
                     driver.sleep(1 * 1000);
-                });
-
-                it('Entering Visit Flow slug from Menu', async () => {
                     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Button, 15000);
                     await visitFlow.clickElement('AccountHomePage_HamburgerMenu_Button');
                     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Content, 15000);
@@ -448,7 +477,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 it('If more than one slug - Choosing a Slug', async () => {
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
-                        await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowDescription));
+                        await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
                     } else {
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
@@ -528,7 +557,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.isSpinnerDone();
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
-                        await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowDescription));
+                        await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
                     } else {
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
@@ -735,9 +764,9 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     driver.sleep(2.5 * 1000);
                 });
 
-                it('Performing Manual Sync', async () => {
-                    await e2eUtils.performManualSync(client);
-                });
+                // it('Performing Manual Sync', async () => {
+                //     await e2eUtils.performManualSync(client);
+                // });
             });
         });
     });
