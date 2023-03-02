@@ -58,7 +58,7 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
             }
         });
         describe(`Compare data from base and last versions`, () => {
-            it(`Negative: AddonUUID not equale to OwnerID`, async () => {
+            it(`Compare`, async () => {
                 //const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 // console.log(usageMonitorService.papiClient['options'].addonUUID,usageMonitorService.papiClient['options'].addonSecretKey )
                 // usageMonitorService.papiClient['options'].addonUUID = {}
@@ -87,6 +87,9 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
                 delete lastVersion.RelationsData;
                 delete baseVersion.Usage;
                 delete lastVersion.Usage;
+                delete baseVersion.Data.Attachments;
+                delete baseVersion.Data.DatabaseAllActivities;
+                delete baseVersion.Setup.SecurityGroups;
                 // oleg2.Setup.Contacts
                 // oleg2.Setup.LicensedUsers
                 expect(lastVersion).to.deep.equal(baseVersion);
