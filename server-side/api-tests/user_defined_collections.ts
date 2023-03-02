@@ -23,6 +23,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
     const testData = {
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
