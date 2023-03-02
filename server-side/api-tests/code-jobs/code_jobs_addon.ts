@@ -137,7 +137,7 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
             '/audit_logs/' + CallbackCash.executeAddonJob.Body.ExecutionUUID,
             { method: 'GET' },
         );
-        debugger;
+        //debugger;
         CallbackCash.parsedResultObject = JSON.parse(
             CallbackCash.getAuditLogAddonJobExecution.Body.AuditInfo.ResultObject,
         );
