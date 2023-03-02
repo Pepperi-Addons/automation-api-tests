@@ -1308,8 +1308,8 @@ export default class GeneralService {
 
     convertNameToUUID(addonName: string) {
         switch (addonName) {
-            // case 'ADAL':
-            //     return '00000000-0000-0000-0000-00000000ada1';
+            case 'ADAL':
+                return '00000000-0000-0000-0000-00000000ada1';
             // case 'DIMX':
             //     return '44c97115-6d14-4626-91dc-83f176e9a0fc';
             case 'DATA INDEX':

@@ -1311,7 +1311,6 @@ export async function handleDevTestInstallation(
 //WIP - dev tests
 async function buildTheDependencyArray(service: GeneralService, dependenciesFromPublishConfig) {
     //map the dependency addons to thier real name in VAR
-    debugger;
     const allAddonDependencys = await service.fetchStatus('/configuration_fields?key=AddonsForDependencies');
     const allAddonDependencysAsObject = JSON.parse(allAddonDependencys.Body.Value);
     const arrayOfAllUUIDs = {};
