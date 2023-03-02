@@ -355,14 +355,14 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const slideshowSlugDisplayName = 'slideshow_slug_kvhy';
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
-                const webAppHomePage =  new WebAppHomePage(driver);
+                const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.initiateSalesActivity(slideshowSlugDisplayName);
                 const slideShowPage = new SlideShowPage(driver);
                 await slideShowPage.enterSurveyPicker();
                 const surveyPicker = new SurveyPicker(driver);
                 const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
                 expect(isAccountSelectionOpen).to.equal(true);
-                const isTemplateOpen = await surveyPicker.selectAccount("Account for order scenarios");
+                const isTemplateOpen = await surveyPicker.selectAccount('Account for order scenarios');
                 expect(isTemplateOpen).to.equal(true);
                 debugger;
             });
