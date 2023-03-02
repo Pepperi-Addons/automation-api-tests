@@ -1251,9 +1251,8 @@ export async function handleDevTestInstallation(
     const service = new GeneralService(client);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     //1. convert Name to UUID
-    testName = `Installing Dev Test Prerequisites On ${
-        userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
-    } Env, User: ${userName}, Addon: ${addonName}, UUID: ${addonUUID}`;
+    testName = `Installing Dev Test Prerequisites On ${userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
+        } Env, User: ${userName}, Addon: ${addonName}, UUID: ${addonUUID}`;
     service.PrintMemoryUseToLog('Start', testName);
     //2. upgrade dependencys - basic: correct for all addons
     await service.baseAddonVersionsInstallation(varPass);
@@ -1290,7 +1289,7 @@ export async function handleDevTestInstallation(
         }
     }
     const addonToInstall = {};
-    addonToInstall[addonName] = [addonUUID, ''];
+    addonToInstall[addonName] = [addonUUID, addonName === "SYNC" ? "0.5.%" : ''];
     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
     if (installAddonResponse[0] != true) {
         throw new Error(`Error: can't install ${addonName} - ${addonUUID}, exception: ${installAddonResponse}`);

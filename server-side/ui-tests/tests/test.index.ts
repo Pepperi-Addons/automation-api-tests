@@ -1686,6 +1686,8 @@ function resolveUserPerTest(addonName): any[] {
             return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
         case 'ADAL':
             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
+        case 'SYNC':
+            return ['syncTestEU@pepperitest.com','syncTestProd@pepperitest.com','syncTestSB@pepperitest.com'];
         default:
             return [];
     }
