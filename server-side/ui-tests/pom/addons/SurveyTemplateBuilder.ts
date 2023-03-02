@@ -5,6 +5,7 @@ import { WebAppSettingsSidePanel } from '../Components/WebAppSettingsSidePanel';
 import { WebAppHeader } from '../WebAppHeader';
 import { AddonPage } from './base/AddonPage';
 import { v4 as uuidv4 } from 'uuid';
+import E2EUtils from '../../utilities/e2e_utils';
 
 // {
 //     "surveyTemplate": {
@@ -170,7 +171,9 @@ export class SurveyTemplateBuilder extends AddonPage {
         surveyName: string,
         surveyDescription: string,
         sections: SurveySection[],
-    ): Promise<void> {
+    ): Promise<string> {
+        const eseUtils = new E2EUtils(this.browser);
+        const surveyUUID = await eseUtils.getUUIDfromURL();
         await this.setSurveyName(surveyName);
         await this.setSurveyDescription(surveyDescription);
         for (let index = 0; index < sections.length; index++) {
@@ -189,6 +192,7 @@ export class SurveyTemplateBuilder extends AddonPage {
         await this.browser.click(this.PublishSurveyButton);
         this.browser.sleep(3000);
         await this.browser.click(this.GoBackButton);
+        return surveyUUID;
     }
 
     private async validateSettingsPageIsOpened(): Promise<boolean> {

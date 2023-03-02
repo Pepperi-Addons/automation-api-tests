@@ -1290,7 +1290,7 @@ export async function handleDevTestInstallation(
         }
     }
     const addonToInstall = {};
-    addonToInstall[addonName] = [addonUUID, ''];
+    addonToInstall[addonName] = [addonUUID, addonName === 'SYNC' ? '0.5.%' : ''];
     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
     if (installAddonResponse[0] != true) {
         throw new Error(`Error: can't install ${addonName} - ${addonUUID}, exception: ${installAddonResponse}`);
@@ -1311,7 +1311,6 @@ export async function handleDevTestInstallation(
 //WIP - dev tests
 async function buildTheDependencyArray(service: GeneralService, dependenciesFromPublishConfig) {
     //map the dependency addons to thier real name in VAR
-    debugger;
     const allAddonDependencys = await service.fetchStatus('/configuration_fields?key=AddonsForDependencies');
     const allAddonDependencysAsObject = JSON.parse(allAddonDependencys.Body.Value);
     const arrayOfAllUUIDs = {};

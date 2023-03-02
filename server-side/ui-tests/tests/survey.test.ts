@@ -23,6 +23,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ScriptEditor } from '../pom/addons/ScriptPicker';
 import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
+import { SlideShowPage } from '../pom/addons/SlideShowPage';
+import { SurveyPicker } from '../pom/addons/SurveyPicker';
 
 chai.use(promised);
 
@@ -35,6 +37,9 @@ export async function SurveyTests(email: string, password: string, client: Clien
     let surveyViewUUID;
     let accountViewUUID;
     let scriptUUID;
+    let slideshowSlugDisplayName;
+    let surveySlugDisplayName;
+    let surveyUUID;
 
     const surveyTemplateToCreate: SurveySection[] = [
         {
@@ -43,27 +48,67 @@ export async function SurveyTests(email: string, password: string, client: Clien
             Questions: [
                 {
                     Key: '',
-                    Title: 'what have i done1',
+                    Title: 'first question',
                     Type: 'Multiple Select',
-                    OptionalValues: [{ Value: 'T' }, { Value: 'F' }, { Value: 'C' }],
+                    OptionalValues: [{ Value: 'A' }, { Value: 'B' }, { Value: 'C' }],
                     isMandatory: true,
                 },
                 {
                     Key: '',
-                    Title: 'what have i done2',
+                    Title: 'second question',
                     Type: 'Radio Group',
                     OptionalValues: [{ Value: 'A' }, { Value: 'B' }],
                     isMandatory: false,
                     ShowIf: {
                         Operator: 'And',
-                        FilterData: { QuestionName: 'what have i done1', ValueToLookFor: ['T', 'C'] },
+                        FilterData: { QuestionName: 'first question', ValueToLookFor: ['A', 'C'] },
                     },
+                },
+                {
+                    Key: '',
+                    Title: 'third question',
+                    Type: 'Short Text',
+                    isMandatory: true,
+                    ShowIf: {
+                        Operator: 'And',
+                        FilterData: { QuestionName: 'second question', ValueToLookFor: ['B'] },
+                    },
+                },
+                {
+                    Key: '',
+                    Title: 'fourth question',
+                    Type: 'Checkbox',
+                    isMandatory: false,
+                    OptionalValues: [{ Value: '1' }, { Value: '2' }],
+                },
+                {
+                    Key: '',
+                    Title: 'fifth question',
+                    Type: 'Yes/No',
+                    isMandatory: false,
+                    OptionalValues: [{ Value: '1' }, { Value: '2' }],
+                    ShowIf: {
+                        Operator: 'Or',
+                        FilterData: { QuestionName: 'fourth question', ValueToLookFor: ['1', '2'] },
+                    },
+                },
+                {
+                    Key: '',
+                    Title: 'sixth question',
+                    Type: 'Decimal',
+                    isMandatory: true,
+                },
+                {
+                    Key: '',
+                    Title: 'seventh question',
+                    Type: 'Date',
+                    isMandatory: false,
                 },
             ],
         },
     ];
 
-    await generalService.baseAddonVersionsInstallation(varPass);
+    // await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade script dependencies
 
     const testData = {
@@ -146,7 +191,11 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(isSurveyBuilderSettingsShown).to.equal(true);
                 const isSurveyBuilderPageShown = await surveyService.enterSurveyBuilderActualBuilder();
                 expect(isSurveyBuilderPageShown).to.equal(true);
-                await surveyService.configureTheSurveyTemplate('surveyTemplate', 'template', surveyTemplateToCreate);
+                surveyUUID = await surveyService.configureTheSurveyTemplate(
+                    'surveyTemplate',
+                    'template',
+                    surveyTemplateToCreate,
+                );
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
@@ -178,7 +227,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await resourceListUtils.addView({
                     nameOfView: 'Surveys',
                     descriptionOfView: 'Sur',
-                    nameOfResource: 'survey_templates',
+                    nameOfResource: 'MySurveyTemplates',
                 });
                 // Configure View
                 surveyViewUUID = await resourceListUtils.getUUIDfromURL();
@@ -213,14 +262,14 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHeader.goHome();
             });
             it('4. Create Slug And Map It To Show The Page With Survey Block', async function () {
-                const slugDisplayName = 'survey_slug';
-                const slugPath = 'survey_slug';
+                surveySlugDisplayName = `survey_slug_${generalService.generateRandomString(4)}`;
+                const slugPath = surveySlugDisplayName;
                 await CreateSlug(
                     email,
                     password,
                     driver,
                     generalService,
-                    slugDisplayName,
+                    surveySlugDisplayName,
                     slugPath,
                     surveyBlockPageUUID,
                 );
@@ -234,11 +283,11 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 }
                 const script1 = script.replace('{surveyViewPlaceHolder}', surveyViewUUID);
                 const script2 = script1.replace('{accountViewPlaceHolder}', accountViewUUID);
-                const script3 = script2.replace('{surveySlugNamePlaceHolder}', 'survey_slug');
+                const script3 = script2.replace('{surveySlugNamePlaceHolder}', surveySlugDisplayName);
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
                 const scriptEditor = new ScriptEditor(driver);
-                scriptUUID = await scriptEditor.enterScriptsAndConfigureAScript(script3, generalService);
+                scriptUUID = await scriptEditor.configureScript(script3, generalService);
                 await webAppHeader.goHome();
             });
             it('6. Create Page With SlideShow Which Will Run The Script', async function () {
@@ -257,14 +306,14 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHeader.goHome();
             });
             it('7. create a slug for the slideshow page and set it to show on homepage', async function () {
-                const slugDisplayName = 'slideshow_slug';
-                const slugPath = 'slideshow_slug';
+                slideshowSlugDisplayName = `slideshow_slug_${generalService.generateRandomString(4)}`;
+                const slugPath = slideshowSlugDisplayName;
                 await CreateSlug(
                     email,
                     password,
                     driver,
                     generalService,
-                    slugDisplayName,
+                    slideshowSlugDisplayName,
                     slugPath,
                     slideshowBlockPageUUID,
                 );
@@ -273,12 +322,12 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHeader.openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
-                await brandedApp.addAdminHomePageButtons(slugDisplayName);
+                await brandedApp.addAdminHomePageButtons(slideshowSlugDisplayName);
                 const webAppHomePage = new WebAppHomePage(driver);
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }
-                await webAppHomePage.validateATDIsApearingOnHomeScreen(slugDisplayName);
+                await webAppHomePage.validateATDIsApearingOnHomeScreen(slideshowSlugDisplayName);
             });
             it('Data Cleansing', async function () {
                 //TODO
@@ -288,6 +337,37 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 //4. delete slugs
                 //5. delete from homescreen
                 // debugger;
+            });
+        });
+        describe('Test Configured Survey', () => {
+            this.retries(0);
+
+            before(async function () {
+                driver = await Browser.initiateChrome();
+            });
+
+            after(async function () {
+                await driver.quit();
+            });
+
+            afterEach(async function () {
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.collectEndTestData(this);
+            });
+            it('1. Fill First Survey And Validate All Is Working', async function () {
+                const slideshowSlugDisplayName = 'slideshow_slug_kvhy';
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.initiateSalesActivity(slideshowSlugDisplayName);
+                const slideShowPage = new SlideShowPage(driver);
+                await slideShowPage.enterSurveyPicker();
+                const surveyPicker = new SurveyPicker(driver);
+                const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
+                expect(isAccountSelectionOpen).to.equal(true);
+                const isTemplateOpen = await surveyPicker.selectAccount('Account for order scenarios');
+                expect(isTemplateOpen).to.equal(true);
+                debugger;
             });
         });
     });
