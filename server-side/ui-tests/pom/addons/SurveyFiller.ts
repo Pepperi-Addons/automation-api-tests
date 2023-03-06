@@ -5,6 +5,9 @@ import { SurveyQuestion } from './SurveyTemplateBuilder';
 
 export class SurveyFiller extends AddonPage {
     public MiltiSelectElement: By = By.xpath(`//mat-label[contains(text(),'{placeholder}')]//..//..//..//*[@type]`);
+    public SingleSelectElement: By = By.xpath(
+        `//mat-label[contains(text(),'{placeholder}')]//..//..//..//mat-form-field`,
+    );
     public selectOption: By = By.xpath(`//span[@class='mat-option-text' and contains(text(),'{placeholder}')]`);
     public RadioButonElement: By = By.xpath(
         `//mat-label[contains(text(),'{placeholder1}')]//..//..//..//div[contains(@title,'{placeholder2}')]`,
@@ -27,9 +30,8 @@ export class SurveyFiller extends AddonPage {
     public emptySpaceToClick: By = By.xpath("//div[@class='pep-top-bar-container inline']");
     public saveBtn: By = By.xpath(`//button[@data-qa]//span//span[contains(text(),'Save')]`);
 
-    //TODO: "Single Select" | "Number" | "Currency" | "Percentage"
-
     public async answerQuestion(type: SurveyQuestion['Type'], questionTitle, answer: any[]) {
+        debugger;
         switch (type) {
             case 'Short Text':
             case 'Long Text':
@@ -52,6 +54,17 @@ export class SurveyFiller extends AddonPage {
                         ['value'].replace('{placeholder}', certainAnswer);
                     await this.browser.click(By.xpath(xpathQueryForMultiSelectOption));
                 }
+                break;
+            case 'Single Select':
+                const xpathQueryForSingleSelect: string = this.SingleSelectElement.valueOf()['value'].replace(
+                    '{placeholder}',
+                    questionTitle,
+                );
+                await this.browser.click(By.xpath(xpathQueryForSingleSelect));
+                const xpathQueryForSingleSelectOption: string = this.selectOption
+                    .valueOf()
+                    ['value'].replace('{placeholder}', answer[0]);
+                await this.browser.click(By.xpath(xpathQueryForSingleSelectOption));
                 break;
             case 'Checkbox':
                 const xpathQueryForCheckBox: string = this.CheckBoxElement.valueOf()['value'].replace(
@@ -81,6 +94,9 @@ export class SurveyFiller extends AddonPage {
                 await this.browser.click(By.xpath(xpathQueryForYesNo));
                 break;
             case 'Decimal':
+            case 'Number':
+            case 'Currency':
+            case 'Percentage':
                 const xpathQueryForDecimal: string = this.DecimalElement.valueOf()['value'].replace(
                     '{placeholder}',
                     questionTitle,
