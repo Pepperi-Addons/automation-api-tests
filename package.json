@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile-tests": "cd ./server-side && npm run compile-tests && cd ..",
-    "build": "cd ./server-side && npm run build && cd .. && cd ./client-side && npm run build && cd ..",
-    "init": "npm install && cd ./server-side && npm install && cd .. && cd ./client-side && npm install && cd ..",
+    "build": "cd ./shared && npm run build && cd .. && cd ./cpi-side && npm run build && cd .. && cd ./server-side && npm run build && cd .. && cd ./client-side && npm run build && cd ..",
+    "init": "cd ./shared && npm install && cd .. cd ./cpi-side && npm install --force && cd .. && cd ./server-side && npm install --force && cd .. && cd ./client-side && npm install && cd ..",
     "publish-addon": "npm run build && publish-addon",
     "update": "npm install @pepperi-addons/scripts@latest && cd ./server-side && npm run update && cd .."
   },

@@ -23,6 +23,9 @@
         "PackageName": "tests-ui",
         "Description": "Tests UI"
       }
+    ],
+    "CPISide": [
+      "addon-cpi-simcha.ts"
     ]
   }
 }
