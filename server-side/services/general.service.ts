@@ -786,18 +786,40 @@ export default class GeneralService {
             if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
                 if (
                     !auditLogResponse.AuditInfo.ErrorMessage.includes('Addon already installed') &&
-                    !auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on version')
-                )
+                    !auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on version') &&
+                    !auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')
+                ) {
                     isInstalledArr.push(auditLogResponse.AuditInfo.ErrorMessage);
-                else isInstalledArr.push(true);
+                } else if (auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
+                    installResponse = await this.papiClient.addons.installedAddons
+                        .addonUUID(`${addonUUID}`)
+                        .downgrade(version);
+                    const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
+                    if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
+                        if (
+                            !auditLogResponse.AuditInfo.ErrorMessage.includes('Addon already installed') &&
+                            !auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on version')
+                        ) {
+                            isInstalledArr.push(auditLogResponse.AuditInfo.ErrorMessage);
+                        } else {
+                            isInstalledArr.push(true);
+                        }
+                    } else {
+                        isInstalledArr.push(true);
+                    }
+                } else {
+                    isInstalledArr.push(true);
+                }
             } else isInstalledArr.push(true);
         }
         return isInstalledArr;
     }
 
-    async getLatestAvailableVersion(addonUUID: string, credentials: string) {
+    async getLatestAvailableVersion(addonUUID: string, credentials: string, versionString?) {
         const responseProd = await this.fetchStatus(
-            `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+            `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 ${
+                versionString ? `AND Version Like '${versionString}' ` : ''
+            }&order_by=CreationDateTime DESC`,
             {
                 method: 'GET',
                 headers: {
@@ -1320,8 +1342,8 @@ export default class GeneralService {
             //     return '122c0e9d-c240-4865-b446-f37ece866c22';
             // case 'NEBULA':
             //     return '00000000-0000-0000-0000-000000006a91';
-            // case 'SYNC':
-            //     return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
+            case 'SYNC':
+                return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
             // case 'OBJECT TYPES EDITOR':
             //     return '04de9428-8658-4bf7-8171-b59f6327bbf1';
             default:

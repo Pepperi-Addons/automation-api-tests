@@ -1282,7 +1282,11 @@ export async function handleDevTestInstallation(
         //4. install on dist
         for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
             const addonToInstall = {};
-            addonToInstall[addonName] = uuid;
+            if (addonName === 'papi' && addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+                addonToInstall[addonName] = [(uuid as any[])[0], '9.6.%'];
+            } else {
+                addonToInstall[addonName] = uuid;
+            }
             const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
             if (!installAddonResponse[0]) {
                 throw new Error(`Error: can't install ${addonName} - ${uuid}`);
