@@ -417,9 +417,15 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const today = generalService.getDate().split('/');
                 const parsedTodayDate = `${today[2]}-${today[1]}-${today[0]}`; //year-month-day
                 const FIVE_MINS = 1000 * 60 * 5;
-                const latestSurvey = surveyResponse.Body.filter(elem => (elem.ModificationDateTime.includes(parsedTodayDate) && generalService.isLessThanGivenTimeAgo(Date.parse(elem.ModificationDateTime), FIVE_MINS)));
+                const latestSurvey = surveyResponse.Body.filter(
+                    (elem) =>
+                        elem.ModificationDateTime.includes(parsedTodayDate) &&
+                        generalService.isLessThanGivenTimeAgo(Date.parse(elem.ModificationDateTime), FIVE_MINS),
+                );
                 expect(latestSurvey).to.not.be.undefined;
-                const surveysSortedByModifDate = latestSurvey.sort((a, b) => Date.parse(a.ModificationDateTime) > Date.parse(b.ModificationDateTime));
+                const surveysSortedByModifDate = latestSurvey.sort(
+                    (a, b) => Date.parse(a.ModificationDateTime) > Date.parse(b.ModificationDateTime),
+                );
                 const surveyAnswers = surveysSortedByModifDate[0].Answers;
                 debugger;
                 for (let index = 0; index < surveyAnswers.length; index++) {
