@@ -14,8 +14,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@pepperi-addons/cpi-node": "*",
-    "rollup-plugin-typescript2": "^0.30.0"
+    "@pepperi-addons/cpi-node": "^1.2.1",
+    "lodash.clonedeep": "^4.5.0",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "shared-cpi-automation": "file:../shared"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^15.1.0",
