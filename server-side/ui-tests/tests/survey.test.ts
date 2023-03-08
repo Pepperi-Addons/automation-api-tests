@@ -357,6 +357,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
             it('1. Fill First Survey And Validate All Is Working', async function () {
+                // const surveyUUID = '211dd7e3-c7da-48f5-be54-2dcad584463d';
+                // const slideshowSlugDisplayName = 'slideshow_slug_alns';
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
@@ -401,6 +403,29 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     }
                 }
                 await surveyFiller.saveSurvey();
+                driver.sleep(7000);
+                await webAppHomePage.returnToHomePage();
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
+                const surveyResponse = await generalService.fetchStatus(
+                    `/resources/MySurveys?where=Template='${surveyUUID}'`,
+                    {
+                        method: 'GET',
+                    },
+                );
+                const today = generalService.getDate().split('/');
+                const parsedTodayDate = `${today[2]}-${today[1]}-${today[0]}`; //year-month-day
+                const FIVE_MINS = 1000 * 60 * 5;
+                const latestSurvey = surveyResponse.Body.filter(elem => (elem.ModificationDateTime.includes(parsedTodayDate) && generalService.isLessThanGivenTimeAgo(Date.parse(elem.ModificationDateTime), FIVE_MINS)));
+                expect(latestSurvey).to.not.be.undefined;
+                const surveysSortedByModifDate = latestSurvey.sort((a, b) => Date.parse(a.ModificationDateTime) > Date.parse(b.ModificationDateTime));
+                const surveyAnswers = surveysSortedByModifDate[0].Answers;
+                debugger;
+                for (let index = 0; index < surveyAnswers.length; index++) {
+                    const ans = surveyAnswers[index];
+                    expect(ans).to.equal(allQuestionPositiveAns[index]);
+                }
             });
         });
     });

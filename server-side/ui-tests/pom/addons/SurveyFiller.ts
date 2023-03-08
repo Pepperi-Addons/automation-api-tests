@@ -31,7 +31,6 @@ export class SurveyFiller extends AddonPage {
     public saveBtn: By = By.xpath(`//button[@data-qa]//span//span[contains(text(),'Save')]`);
 
     public async answerQuestion(type: SurveyQuestion['Type'], questionTitle, answer: any[]) {
-        debugger;
         switch (type) {
             case 'Short Text':
             case 'Long Text':
