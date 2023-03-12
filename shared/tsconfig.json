@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+	  "target": "es2017",
+	  "module": "commonjs",
+	  "strict": true,
+	  "outDir": "lib",
+	  "esModuleInterop": true,
+	  "declaration": true,
+	  "sourceMap": true,
+	  "noImplicitAny": false,
+	  "allowJs": true,
+	  "resolveJsonModule": true
+	},
+	"exclude": [
+	  "./build/**",
+	  "./dest/**",
+	  "./lib/**",
+	  "./tests/**"
+	]
+  }

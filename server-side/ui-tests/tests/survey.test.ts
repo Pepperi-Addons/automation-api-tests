@@ -8,6 +8,7 @@ import {
     SlideShowBlockColumn,
     SurveyBlock,
     SurveyBlockColumn,
+    SurveyQuestion,
     SurveySection,
     SurveyTemplateBuilder,
 } from '../pom/addons/SurveyTemplateBuilder';
@@ -25,6 +26,7 @@ import { ScriptEditor } from '../pom/addons/ScriptPicker';
 import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
 import { SlideShowPage } from '../pom/addons/SlideShowPage';
 import { SurveyPicker } from '../pom/addons/SurveyPicker';
+import { SurveyFiller } from '../pom/addons/SurveyFiller';
 
 chai.use(promised);
 
@@ -108,7 +110,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         },
     ];
 
-    // await generalService.baseAddonVersionsInstallation(varPass);
+    await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade script dependencies
 
     const testData = {
@@ -355,7 +357,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
             it('1. Fill First Survey And Validate All Is Working', async function () {
-                const slideshowSlugDisplayName = 'slideshow_slug_kvhy';
+                // const surveyUUID = '211dd7e3-c7da-48f5-be54-2dcad584463d';
+                // const slideshowSlugDisplayName = 'slideshow_slug_alns';
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
@@ -367,7 +370,68 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(isAccountSelectionOpen).to.equal(true);
                 const isTemplateOpen = await surveyPicker.selectAccount('Account for order scenarios');
                 expect(isTemplateOpen).to.equal(true);
+                const allQuestionNames = [
+                    'first question',
+                    'second question',
+                    'third question',
+                    'fourth question',
+                    'fifth question',
+                    'sixth question',
+                    'seventh question',
+                ];
+                const allQuestionTypes: SurveyQuestion['Type'][] = [
+                    'Multiple Select',
+                    'Radio Group',
+                    'Short Text',
+                    'Checkbox',
+                    'Yes/No',
+                    'Decimal',
+                    'Date',
+                ];
+                const allQuestionPositiveAns = ['A', 'B', 'short Text12', ['1'], 'Yes', '0.123', '01/01/2022'];
+                const surveyFiller = new SurveyFiller(driver);
+                for (let index = 0; index < allQuestionNames.length; index++) {
+                    const currentQuestionName = allQuestionNames[index];
+                    const currentQuestionType = allQuestionTypes[index];
+                    const currentQuestionAns = allQuestionPositiveAns[index];
+                    if (Array.isArray(currentQuestionAns)) {
+                        await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, currentQuestionAns);
+                    } else {
+                        await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, [
+                            currentQuestionAns,
+                        ]);
+                    }
+                }
+                await surveyFiller.saveSurvey();
+                driver.sleep(7000);
+                await webAppHomePage.returnToHomePage();
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
+                const surveyResponse = await generalService.fetchStatus(
+                    `/resources/MySurveys?where=Template='${surveyUUID}'`,
+                    {
+                        method: 'GET',
+                    },
+                );
+                const today = generalService.getDate().split('/');
+                const parsedTodayDate = `${today[2]}-${today[1]}-${today[0]}`; //year-month-day
+                const FIVE_MINS = 1000 * 60 * 5;
+                const latestSurvey = surveyResponse.Body.filter(
+                    (elem) =>
+                        elem.ModificationDateTime.includes(parsedTodayDate) &&
+                        generalService.isLessThanGivenTimeAgo(Date.parse(elem.ModificationDateTime), FIVE_MINS),
+                );
+                expect(latestSurvey).to.not.be.undefined;
+                const surveysSortedByModifDate = latestSurvey.sort(
+                    (a, b) => Date.parse(a.ModificationDateTime) > Date.parse(b.ModificationDateTime),
+                );
+                const surveyAnswers = surveysSortedByModifDate[0].Answers;
                 debugger;
+                for (let index = 0; index < surveyAnswers.length; index++) {
+                    const ans = surveyAnswers[index];
+                    expect(ans).to.equal(allQuestionPositiveAns[index]);
+                }
             });
         });
     });
