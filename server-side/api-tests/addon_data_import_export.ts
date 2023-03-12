@@ -119,7 +119,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
         describe(`Create Function For Relation, File: ${addonFunctionsFileName}, Function Name: ${addonExportFunctionName}`, () => {
             it(`Post Function`, async () => {
-                debugger;
                 const adoonVersionResponse = await generalService.papiClient.addons.versions.find({
                     where: `AddonUUID='${addonUUID}' AND Version='${version}'`,
                 });
@@ -2458,7 +2457,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
 
                         it(`Create Schema With Array, Object and Number Mixed With Delimieter: "${delimiterArr[i]}"`, async () => {
                             if (i === 1) {
-                                debugger;
                             }
                             const adalService = new ADALService(generalService.papiClient);
                             adalService.papiClient['options'].addonUUID = addonUUID;

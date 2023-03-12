@@ -165,6 +165,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Post + Get file in root folder`, async () => {
+                debugger;
                 const tempKey = 'RootFolderFile' + Math.floor(Math.random() * 1000000).toString() + '.txt';
                 const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
                 const postFileResponse = await pfsService.postFile(schemaName, {

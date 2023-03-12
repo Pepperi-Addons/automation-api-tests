@@ -1402,6 +1402,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         legacyAccountUsersManipulation[index].Key = legacyAccountUsers[index].UUID;
                         delete legacyAccountUsersManipulation[index].UUID;
                         delete legacyAccountUsersManipulation[index].ConnectedWithFullAccountAccess;
+                        delete legacyAccountUsersManipulation[index].FromERPIntegration;
                     }
                     expect(legacyKeyListAccountUsers.Objects.length).to.equal(legacyAccountUsersManipulation.length);
                     expect(legacyKeyListAccountUsers.Objects).to.deep.equal(legacyAccountUsersManipulation);
