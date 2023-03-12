@@ -1,5 +1,5 @@
 import { Client, Request } from '@pepperi-addons/debug-server';
-import GeneralService, { TesterFunctions } from './services/general.service';
+import GeneralService, { initiateTester, TesterFunctions } from './services/general.service';
 import {
     TestDataTests,
     UpgradeDependenciesTests,
@@ -87,6 +87,7 @@ import {
 } from './api-tests/index';
 import { SingleMaintenanceAndDependenciesAddonsTestsPart3 } from './api-tests/addons';
 import { DataIndexDor } from './api-tests/dor_data_index_tests';
+import SurveyBuilderTest from './cpi-tester/addonsTests/surveyBuilder';
 // import { PapiClient } from '@pepperi-addons/papi-sdk'; WIP - dev tests
 // import { checkVersionsTest } from './api-tests/check_versions';
 
@@ -1164,6 +1165,19 @@ export async function maintenance_job(client: Client, request: Request, testerFu
     return await testerFunctions.run();
 }
 
+export async function cpi_tester_POC(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'cpi POC';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const surveyBuilderTest = new SurveyBuilderTest(client);
+    debugger;
+    await surveyBuilderTest.SurveyBuilderTestCPI();
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
 export async function cpi_node(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'CPI_Node';
@@ -1239,96 +1253,76 @@ export async function security(client: Client, request: Request, testerFunctions
 }
 
 //WIP - dev tests
-// export async function handleDevTest(client: Client, request: Request, testerFunctions: TesterFunctions) {
-//     const service = new GeneralService(client);
-//     testerFunctions = service.initiateTesterFunctions(client, testName);
-//     let varKey;
-//     if (service.papiClient['options'].baseURL.includes('staging')) {
-//         varKey = request.body.varKeyStage;
-//     } else {
-//         varKey = request.body.varKeyPro;
-//     }
-//     //1. convert Name to UUID
-//     const addonName = request.body.requestedADDON;
-//     const addonUUID = convertNameToUUID(addonName);
-//     testName = `Dev Test: ${addonName}, Tested Addon UUID: ${addonUUID}`;
-//     service.PrintMemoryUseToLog('Start', testName);
-//     //2. upgrade dependencys - basic: correct for all addons
-//     // await UpgradeDependenciesTests(service, request, testerFunctions);
-//     //2.1 install template automation addon
-//     const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varKey, {
-//         automation_template_addon: ['02754342-e0b5-4300-b728-a94ea5e0e8f4', ''],
-//     });
-//     if (!templateAddonResponse[0]) {
-//         throw "Error: can't install automation_template_addon";
-//     }
-//     //3. get dependencys of tested addon
-//     const papiClient = service.papiClient;
-//     const latestVer = (
-//         await papiClient.addons.versions.find({
-//             where: `AddonUUID='${addonUUID} AND Available=1'`,
-//             order_by: 'CreationDateTime DESC',
-//         })
-//     )[0] as any;
-//     const latestVerPublishConfig = JSON.parse(latestVer.PublishConfig);
-//     const dependenciesFromPublishConfig = latestVerPublishConfig.Dependencies;
-//     let dependeciesUUIDs;
-//     if (Object.entries(dependenciesFromPublishConfig).length !== 0) {
-//         dependeciesUUIDs = await buildTheDependencyArray(service, dependenciesFromPublishConfig);
-//     }
-//     //4. install on dist
-//     for (const [name, uuid] of Object.entries(dependeciesUUIDs)) {
-//         //TODO
-//         const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varKey, {
-//             automation_template_addon: ['02754342-e0b5-4300-b728-a94ea5e0e8f4', ''],
-//         });
-//         debugger;
-//     }
-//     const response = await service.changeToAnyAvailableVersion(dependeciesUUIDs);
-//     debugger;
-//     const allInstalledAddons = await service.getVARInstalledAddons(varKey);
-//     debugger;
-//     //5. run test//TODO
-//     service.PrintMemoryUseToLog('End', testName);
-//     return await testerFunctions.run();
-// }
+export async function handleDevTestInstallation(
+    userName: string,
+    addonName: string,
+    addonUUID: string,
+    testerFunctions: TesterFunctions,
+    varPass,
+    env,
+) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    //1. convert Name to UUID
+    testName = `Installing Dev Test Prerequisites On ${
+        userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
+    } Env, User: ${userName}, Addon: ${addonName}, UUID: ${addonUUID}`;
+    service.PrintMemoryUseToLog('Start', testName);
+    //2. upgrade dependencys - basic: correct for all addons
+    await service.baseAddonVersionsInstallation(varPass);
+    //2.1 install template automation addon
+    const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, {
+        automation_template_addon: ['02754342-e0b5-4300-b728-a94ea5e0e8f4', ''],
+    });
+    if (templateAddonResponse[0] != true) {
+        throw new Error(
+            `Error: can't install automation_template_addon, got the exception: ${templateAddonResponse} from audit log`,
+        );
+    }
+    //3. get dependencys of tested addon
+    const papiClient = service.papiClient;
+    const latestVer = (
+        await papiClient.addons.versions.find({
+            where: `AddonUUID='${addonUUID} AND Available=1'`,
+            order_by: 'CreationDateTime DESC',
+        })
+    )[0] as any;
+    const latestVerPublishConfig = JSON.parse(latestVer.PublishConfig);
+    const dependenciesFromPublishConfig = latestVerPublishConfig.Dependencies;
+    let dependeciesUUIDs;
+    if (dependenciesFromPublishConfig !== undefined && Object.entries(dependenciesFromPublishConfig).length !== 0) {
+        dependeciesUUIDs = await buildTheDependencyArray(service, dependenciesFromPublishConfig);
+        //4. install on dist
+        for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
+            const addonToInstall = {};
+            addonToInstall[addonName] = uuid;
+            const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
+            if (!installAddonResponse[0]) {
+                throw new Error(`Error: can't install ${addonName} - ${uuid}`);
+            }
+        }
+    }
+    const addonToInstall = {};
+    addonToInstall[addonName] = [addonUUID, addonName === 'SYNC' ? '0.5.%' : ''];
+    const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
+    if (installAddonResponse[0] != true) {
+        throw new Error(`Error: can't install ${addonName} - ${addonUUID}, exception: ${installAddonResponse}`);
+    }
+    service.PrintMemoryUseToLog('End', testName);
+}
 
 //WIP - dev tests
-// function convertNameToUUID(addonName: string) {
-//     switch (addonName.toLocaleLowerCase()) {
-//         case 'data index':
-//             return '00000000-0000-0000-0000-00000e1a571c';
-//         case 'user defined collections':
-//             return '122c0e9d-c240-4865-b446-f37ece866c22';
-//     }
-// }
-
-// {
-// adal:'1.4.77'
-// cpas:'16.80.8'
-// cpi_node:'1.1.6'
-// dimx:'0.0.163'
-// generic_resource:'0.5.1'
-// pepperi_elastic_search:'1.0.40'
-// user_defined_events:'0.5.3'
-// }
-
-//WIP - dev tests
-// async function buildTheDependencyArray(service: GeneralService, dependenciesFromPublishConfig) {
-//     const allAddonDependencys = await service.fetchStatus('/configuration_fields?key=AddonsForDependencies');
-//     const allAddonDependencysAsObject = JSON.parse(allAddonDependencys.Body.Value);
-//     const arrayOfAllUUIDs = {};
-//     for (const dependecyAddon in dependenciesFromPublishConfig) {
-//         // const testData = {
-//         //     'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.4.13'],
-//         //     Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
-//         //     'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', ''],
-//         //     Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.0.100'],
-//         // };
-//         arrayOfAllUUIDs[dependecyAddon] = [allAddonDependencysAsObject[dependecyAddon], ''];
-//     }
-//     return arrayOfAllUUIDs;
-// }
+async function buildTheDependencyArray(service: GeneralService, dependenciesFromPublishConfig) {
+    //map the dependency addons to thier real name in VAR
+    const allAddonDependencys = await service.fetchStatus('/configuration_fields?key=AddonsForDependencies');
+    const allAddonDependencysAsObject = JSON.parse(allAddonDependencys.Body.Value);
+    const arrayOfAllUUIDs = {};
+    for (const dependecyAddon in dependenciesFromPublishConfig) {
+        arrayOfAllUUIDs[dependecyAddon] = [allAddonDependencysAsObject[dependecyAddon], ''];
+    }
+    return arrayOfAllUUIDs;
+}
 
 export async function async_addon_get_remove_codejobs(
     client: Client,
@@ -1343,88 +1337,3 @@ export async function async_addon_get_remove_codejobs(
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
 }
-
-//test fixtures by Addons (this is the future o:)
-// export async function ADAL_FIXTURE(client: Client, request: Request, testerFunctions: TesterFunctions) {
-//     const service = new GeneralService(client);
-//     testName = 'ADAL Fixture';
-//     service.PrintMemoryUseToLog('Start', testName);
-//     testerFunctions = service.initiateTesterFunctions(client, testName);
-//     //all ADAL relevant tests
-//     await DBSchemaTests(service, request, testerFunctions);
-//     await DBSchemaTestsPart2(service, request, testerFunctions);
-//     await SchemaTypeDataIndexedTests(service, request, testerFunctions),
-//         await BatchUpsertTests(service, request, testerFunctions);
-//     await DimxDataImportTests(service, request, testerFunctions);
-//     await DIMXrecursive(service, request, testerFunctions);
-//     await ADALTests(service, request, testerFunctions);
-//     await DataIndexTests(service, request, testerFunctions);
-//     await DataIndexADALTests(service, request, testerFunctions);
-//     service.PrintMemoryUseToLog('End', testName);
-//     return await testerFunctions.run();
-// }
-
-// export async function Remote_Jenkins_Handler(client: Client, request: Request, testerFunctions: TesterFunctions) {
-//     const service = new GeneralService(client);
-//     const addonName = request.body.addon;
-//     const addonVersion = request.body.addonVersion;
-//     console.log(`Asked To Run '${addonName}' Approvment Tests On Version: ${addonVersion}`);
-//     //1. realise which addon should run
-//     const jobResponse = 'FAILURE';
-//     // switch (addonName) {
-//     //     case "ADAL":
-//     //         jobResponse = await service.runJenkinsJobRemotely('JenkinsBuildUserCred',
-//     //             'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/build?token=ADALApprovmentTests',
-//     //             'Test - A1 Production - ADAL');
-//     //         break;
-//     // }
-//     debugger;
-//     const bodyToSend = {
-//         Name: `${addonName} Approvment Tests Status`,
-//         Description: `Approvment Tests On ${addonName} Status Is ${jobResponse}`,
-//         Status: jobResponse === 'FAILURE' ? 'ERROR' : 'SUCCESS',
-//         Message: 'evgeny :)',
-//         NotificationWebhook:
-//             'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/b5117c82e129495fabbe8291e0cb615e/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
-//         SendNotification: 'Always',
-//     };
-//     const addonsSK = service.getSecret()[1];
-//     const testingAddonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
-//     const response = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
-//         method: 'POST',
-//         headers: {
-//             'X-Pepperi-SecretKey': addonsSK,
-//             'X-Pepperi-OwnerID': testingAddonUUID,
-//         },
-//         body: JSON.stringify(bodyToSend),
-//     });
-//     debugger;
-
-// const service = new GeneralService(client);
-// testName = 'ADAL Fixture';
-// service.PrintMemoryUseToLog('Start', testName);
-// testerFunctions = service.initiateTesterFunctions(client, testName);
-// //all ADAL relevant tests
-// await DBSchemaTests(service, request, testerFunctions);
-// await DBSchemaTestsPart2(service, request, testerFunctions);
-// await SchemaTypeDataIndexedTests(service, request, testerFunctions),
-// await BatchUpsertTests(service, request, testerFunctions);
-// await DimxDataImportTests(service, request, testerFunctions);
-// await DIMXrecursive(service, request, testerFunctions);
-// await ADALTests(service, request, testerFunctions);
-// await DataIndexTests(service, request, testerFunctions);
-// await DataIndexADALTests(service, request, testerFunctions);
-// service.PrintMemoryUseToLog('End', testName);
-// return await testerFunctions.run();
-// }
-
-// testerFunctions = service.initiateTesterFunctions(client, testName);
-//     await UDTTests(service, testerFunctions);
-//     await UsersTests(service, testerFunctions);
-//     await AccountsTests(service, testerFunctions);
-//     await ContactsTests(service, testerFunctions);
-//     await GeneralActivitiesTests(service, testerFunctions);
-//     await TransactionTests(service, testerFunctions);
-//     await test_data(client, testerFunctions);
-//     service.PrintMemoryUseToLog('End', testName);
-//     return await testerFunctions.run();

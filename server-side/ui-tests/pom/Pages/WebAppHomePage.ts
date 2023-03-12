@@ -40,6 +40,7 @@ export class WebAppHomePage extends WebAppPage {
         console.log('Wait Before Loading Accounts');
         this.browser.sleep(2002);
         await this.clickOnBtn('Accounts');
+        this.browser.sleep(2002);
         await webAppList.validateListRowElements();
         this.browser.sleep(1500);
         await this.returnToHomePage();
@@ -167,7 +168,7 @@ export class WebAppHomePage extends WebAppPage {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
             ['value'].slice()
             .replace('|textToFill|', ATDname);
-        await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 5000);
+        await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 10000);
     }
 
     public async returnToHomePage(): Promise<void> {

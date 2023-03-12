@@ -1,6 +1,9 @@
 import { expect } from 'chai';
 import { By, Key } from 'selenium-webdriver';
+import { GeneralService } from '../../../services';
+import { WebAppSettingsSidePanel } from '../Components/WebAppSettingsSidePanel';
 import { WebAppDialog } from '../WebAppDialog';
+import { WebAppHeader } from '../WebAppHeader';
 import { WebAppList } from '../WebAppList';
 import { AddonPage } from './base/AddonPage';
 
@@ -70,6 +73,7 @@ export class ScriptEditor extends AddonPage {
     public DescInput: By = By.xpath(`(//div[@class='mat-dialog-content']//input)[2]`);
     public CodeTextArea: By = By.xpath(`//textarea`);
     public ModalCloseBtn: By = By.xpath(`//mat-dialog-container//button`);
+    public Modal: By = By.xpath(`//div[contains(text(),'New script was added successfully')]`);
 
     public async enterPickerModal(): Promise<void> {
         await this.browser.click(this.PencilMenuBtn);
@@ -228,5 +232,54 @@ export class ScriptEditor extends AddonPage {
     public async validateMainPageIsLoaded() {
         await expect(this.untilIsVisible(this.NameHeader, 90000)).eventually.to.be.true;
         await expect(this.untilIsVisible(this.PencilMenuBtn, 90000)).eventually.to.be.true;
+    }
+
+    public async configureScript(sciptText: string, generalService: GeneralService) {
+        const webAppHeader = new WebAppHeader(this.browser);
+        await webAppHeader.openSettings();
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Configuration');
+        await this.browser.click(webAppSettingsSidePanel.ScriptsEditor);
+        const scriptEditor = new ScriptEditor(this.browser);
+        await this.browser.click(scriptEditor.addScriptButton);
+        const isModalFound = await this.browser.isElementVisible(scriptEditor.addScriptModal);
+        const isMainTitleFound = await this.browser.isElementVisible(scriptEditor.addScriptMainTitle);
+        expect(isModalFound).to.equal(true);
+        expect(isMainTitleFound).to.equal(true);
+        //1. give name
+        await this.browser.sendKeys(scriptEditor.NameInput, 'SurveyScript');
+        //2. give desc
+        await this.browser.sendKeys(scriptEditor.DescInput, 'script for survey');
+        //3. push code of script instead of the code found in the UI
+        const selectAll = Key.chord(Key.CONTROL, 'a');
+        await this.browser.sendKeys(scriptEditor.CodeTextArea, selectAll);
+        await this.browser.sendKeys(scriptEditor.CodeTextArea, Key.DELETE);
+        await this.browser.sendKeys(scriptEditor.CodeTextArea, sciptText);
+        this.browser.sleep(4500);
+        //4. save
+        await this.browser.click(scriptEditor.SaveBtn);
+        this.browser.sleep(2000);
+        await this.browser.untilIsVisible(scriptEditor.ModalCloseBtn, 6000);
+        await this.browser.click(scriptEditor.ModalCloseBtn);
+        this.browser.sleep(1000);
+        //5. validate script is found in list
+        const webAppList = new WebAppList(this.browser);
+        const allListElemsText = await webAppList.getAllListElementsTextValue();
+        expect(allListElemsText.length).to.be.at.least(1);
+        const foundScript = allListElemsText.find((elem) => elem.includes('SurveyScript'));
+        expect(foundScript).to.not.be.undefined;
+        expect(foundScript).to.include('SurveyScript');
+        const allScripts = await generalService.fetchStatus(
+            'https://papi.pepperi.com/V1.0/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts',
+            {
+                method: 'GET',
+            },
+        );
+        let surveyScript;
+        for (let index = 0; index < allScripts.Body.length; index++) {
+            const script = allScripts.Body[index];
+            if (script.Name === 'SurveyScript') surveyScript = script;
+        }
+        return surveyScript.Key;
     }
 }

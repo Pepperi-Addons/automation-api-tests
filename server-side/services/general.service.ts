@@ -24,7 +24,9 @@ export const testData = {
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on TLS 2 version
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi locked on TLS 2 version
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.0.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.%'], //cpi-node (Cross Platform Engine)
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.86'], //cpi-node (Cross Platform Engine)
+    'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
+    'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.%'], //NG14 latest webapp
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.'],
@@ -40,6 +42,8 @@ export const testData = {
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
+    'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 2/2/23 - has to be upgraded
+    'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     // system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '0.0.77'], //needed to be able to report tests results -- notice were locked on a certin version
 };
 
@@ -117,9 +121,9 @@ process.on('unhandledRejection', async (error) => {
         console.debug(`%cSleep: ${10000} milliseconds`, ConsoleColors.Information);
         msSleep(10000);
     } else if (error instanceof Error && JSON.stringify(error.message).includes('Error')) {
-        console.log(`%cError unhandledRejection: ${error.message}`, ConsoleColors.Error);
+        console.log(`%Unhandled Rejection: ${error.message}`, ConsoleColors.Error);
         console.log(
-            `%cIn cases of unhandledRejection that include message of "Error" the process stopped`,
+            `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
             ConsoleColors.SystemInformation,
         );
         process.exit(1);
@@ -626,7 +630,7 @@ export default class GeneralService {
         return this.papiClient.get('/distributor');
     }
 
-    async getAuditLogResultObjectIfValid(uri: string, loopsAmount = 30): Promise<AuditLog> {
+    async getAuditLogResultObjectIfValid(uri: string, loopsAmount = 30, sleepTime?: number): Promise<AuditLog> {
         let auditLogResponse;
         do {
             auditLogResponse = await this.papiClient.get(uri);
@@ -644,7 +648,7 @@ export default class GeneralService {
             }
             //This case will only retry the get call again as many times as the "loopsAmount"
             else if (auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') {
-                this.sleep(2000);
+                this.sleep(sleepTime !== undefined && sleepTime > 0 ? sleepTime : 2000);
                 console.log(
                     `%c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${
                         auditLogResponse.Status.ID
@@ -728,14 +732,14 @@ export default class GeneralService {
                 //API Testing Framework AddonUUID
                 if (addonUUID == 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe') {
                     installResponse = await this.papiClient.addons.installedAddons
-                        .addonUUID(`${addonUUID} `)
+                        .addonUUID(`${addonUUID}`)
                         .install('0.0.235');
                 } else {
                     if (version.match(/\d+[\.]\d+[/.]\d+/)) {
                         const versionToInstall = version.match(/\d+[\.]\d+[/.]\d+/);
                         if (version?.length && typeof version[0] === 'string') {
                             installResponse = await this.papiClient.addons.installedAddons
-                                .addonUUID(`${addonUUID} `)
+                                .addonUUID(`${addonUUID}`)
                                 .install(String(versionToInstall));
                         } else {
                             installResponse = await this.papiClient.addons.installedAddons
@@ -744,19 +748,64 @@ export default class GeneralService {
                         }
                     } else {
                         installResponse = await this.papiClient.addons.installedAddons
-                            .addonUUID(`${addonUUID} `)
+                            .addonUUID(`${addonUUID}`)
                             .install();
                     }
                 }
                 const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
                 if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
-                    isInstalledArr.push(false);
+                    if (!auditLogResponse.AuditInfo.ErrorMessage.includes('Addon already installed'))
+                        isInstalledArr.push(false);
                     continue;
                 }
             }
             isInstalledArr.push(true);
         }
         return isInstalledArr;
+    }
+
+    async areAddonsInstalledEVGENY(testData: { [any: string]: string[] }): Promise<boolean[]> {
+        const isInstalledArr: boolean[] = [];
+        const installedAddonsArr = await this.getInstalledAddons({ page_size: -1 });
+        let installResponse;
+        for (const addonName in testData) {
+            const addonUUID = testData[addonName][0];
+            const version = testData[addonName][1];
+            const isInstalled = installedAddonsArr.find((addon) => addon.Addon.UUID == addonUUID) ? true : false;
+
+            if (!isInstalled) {
+                installResponse = await this.papiClient.addons.installedAddons
+                    .addonUUID(`${addonUUID}`)
+                    .install(version);
+            } else {
+                installResponse = await this.papiClient.addons.installedAddons
+                    .addonUUID(`${addonUUID}`)
+                    .upgrade(version);
+            }
+            const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
+            if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
+                if (
+                    !auditLogResponse.AuditInfo.ErrorMessage.includes('Addon already installed') &&
+                    !auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on version')
+                )
+                    isInstalledArr.push(auditLogResponse.AuditInfo.ErrorMessage);
+                else isInstalledArr.push(true);
+            } else isInstalledArr.push(true);
+        }
+        return isInstalledArr;
+    }
+
+    async getLatestAvailableVersion(addonUUID: string, credentials: string) {
+        const responseProd = await this.fetchStatus(
+            `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Basic ${credentials}`,
+                },
+            },
+        );
+        return responseProd.Body[0].Version;
     }
 
     async uninstallAddon(addonUuid: string): Promise<AddonAPIAsyncResult> {
@@ -775,12 +824,6 @@ export default class GeneralService {
         testData: { [any: string]: string[] },
         isPhased: boolean,
     ): Promise<{ [any: string]: string[] }> {
-        if (!testData['Export and Import Framework'] && !testData['Export and Import Framework (DIMX)']) {
-            const dimxName = this.papiClient['options'].baseURL.includes('staging')
-                ? 'Export and Import Framework'
-                : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
-            testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
-        }
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
@@ -864,7 +907,15 @@ export default class GeneralService {
                 varLatestValidVersion = auditLogResponse.AuditInfo.ToVersion;
             }
             if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
-                if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
+                if (
+                    auditLogResponse.AuditInfo.ErrorMessage.includes(
+                        `is already working on version ${varLatestValidVersion}`,
+                    )
+                ) {
+                    testData[addonName].push(changeType);
+                    testData[addonName].push('Success');
+                    testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
+                } else if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);
                     testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
@@ -889,6 +940,32 @@ export default class GeneralService {
     async installLatestAvalibaleVersionOfAddon(varKey: string, testData: { [any: string]: string[] }) {
         const addonName = Object.entries(testData)[0][0];
         const addonUUID = testData[addonName][0];
+        const addonVersion = testData[addonName][1];
+        const searchString = `AND Version Like '${addonVersion !== '' ? addonVersion : '%'}' AND Available Like 1`;
+        const fetchVarResponse = (
+            await this.fetchStatus(
+                `${this.client.BaseURL.replace(
+                    'papi-eu',
+                    'papi',
+                )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                    },
+                },
+            )
+        ).Body[0];
+        const latestVersion = fetchVarResponse.Version;
+        console.log(`Installing Version ${latestVersion} Of ${addonName} - ${addonUUID}`);
+        const installObj = {};
+        installObj[addonName] = [testData[addonName][0], latestVersion];
+        return await this.areAddonsInstalledEVGENY(installObj);
+    }
+
+    async getLatestAvalibaleVersionOfAddon(varKey: string, testData: { [any: string]: string[] }) {
+        const addonName = Object.entries(testData)[0][0];
+        const addonUUID = testData[addonName][0];
         const searchString = `AND Version Like '%' AND Available Like 1`;
         const fetchVarResponse = (
             await this.fetchStatus(
@@ -905,9 +982,7 @@ export default class GeneralService {
             )
         ).Body[0];
         const latestVersion = fetchVarResponse.Version;
-        const installObj = {};
-        installObj[addonName] = [testData[addonName][0], latestVersion];
-        return await this.areAddonsInstalled(installObj);
+        return latestVersion;
     }
 
     async changeToAnyAvailableVersion(testData: { [any: string]: string[] }): Promise<{ [any: string]: string[] }> {
@@ -1115,6 +1190,38 @@ export default class GeneralService {
     //     //except(monitoringResult.Error).to.equal({});
     // }
 
+    reportResults(testResultsObj, testedAddonObject) {
+        console.log('Total Failures: ' + testResultsObj.stats.failures);
+        console.log('Total Passes: ' + testResultsObj.stats.passes);
+        //1. run on all suites
+        for (let index1 = 0; index1 < testResultsObj.results[0].suites.length; index1++) {
+            const testSuite = testResultsObj.results[0].suites[index1];
+            for (let index2 = 0; index2 < testSuite.tests.length; index2++) {
+                const test = testSuite.tests[index2];
+                const testTitle = test.fullTitle.split(':').join(' - ');
+                if (
+                    testTitle.includes('TestDataStartTestServerTimeAndDate') ||
+                    testTitle.includes('TestDataTestedUser') ||
+                    testTitle.includes('Test Data Start Test Server Time And Date') ||
+                    testTitle.includes('Test Data Tested User')
+                ) {
+                    console.log(`*  ${testTitle}`);
+                } else if (
+                    testTitle.includes('Test Data Test Prerequisites') ||
+                    testTitle.includes('TestDataTestPrerequisites')
+                ) {
+                    for (let index3 = 0; index3 < testSuite.suites[0].tests.length; index3++) {
+                        const installResponse = testSuite.suites[0].tests[index3];
+                        console.log(`${index3 + 1}.  ${installResponse.fullTitle.split('Versions')[1]}`);
+                    }
+                    console.log(`Tested Addon: ${testedAddonObject.Addon.Name} Version: ${testedAddonObject.Version}`);
+                } else {
+                    console.log(`${test.pass ? '√' : '𝑥'}  ${testTitle}: ${test.pass ? 'Passed' : 'Failed'}`);
+                }
+            }
+        }
+    }
+
     extractSchema(schema, key: string, filterAttributes: FilterAttributes) {
         outerLoop: for (let j = 0; j < schema.length; j++) {
             const entery = schema[j];
@@ -1196,8 +1303,30 @@ export default class GeneralService {
     }
 
     async executeScriptFromTestData(scriptName: string): Promise<void> {
-        await execFileSync(`${__dirname.split('services')[0]}api-tests\\test-data\\${scriptName}`);
+        await execFileSync(`${__dirname.split('services')[0]}api - tests\\test - data\\${scriptName} `);
         return;
+    }
+
+    convertNameToUUID(addonName: string) {
+        switch (addonName) {
+            // case 'ADAL':
+            //     return '00000000-0000-0000-0000-00000000ada1';
+            // case 'DIMX':
+            //     return '44c97115-6d14-4626-91dc-83f176e9a0fc';
+            case 'DATA INDEX':
+            case 'DATA-INDEX':
+                return '00000000-0000-0000-0000-00000e1a571c';
+            // case 'UDC':
+            //     return '122c0e9d-c240-4865-b446-f37ece866c22';
+            // case 'NEBULA':
+            //     return '00000000-0000-0000-0000-000000006a91';
+            // case 'SYNC':
+            //     return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
+            // case 'OBJECT TYPES EDITOR':
+            //     return '04de9428-8658-4bf7-8171-b59f6327bbf1';
+            default:
+                return 'none';
+        }
     }
 
     /**
@@ -1265,11 +1394,76 @@ function parseResponse(responseStr) {
     const bodyStrTagsArr = bodyStrTagsMatched.split(/,|<\//);
     for (let index = 1; index < headerTagsArr.length; index += 2) {
         errorMessage.Header = {};
-        errorMessage.Header[`${headerTagsArr[index]}`] = headerTagsArr[index - 1];
+        errorMessage.Header[`${headerTagsArr[index]} `] = headerTagsArr[index - 1];
     }
     for (let index = 1; index < bodyStrTagsArr.length; index += 2) {
         errorMessage.Body = {};
-        errorMessage.Body[`${bodyStrTagsArr[index]}`] = bodyStrTagsArr[index - 1];
+        errorMessage.Body[`${bodyStrTagsArr[index]} `] = bodyStrTagsArr[index - 1];
     }
     return errorMessage;
+}
+
+async function getToken(email: any, pass: any, env) {
+    const urlencoded = new URLSearchParams();
+    urlencoded.append('username', email);
+    urlencoded.append('password', pass);
+    urlencoded.append('scope', 'pepperi.apint pepperi.wacd offline_access');
+    urlencoded.append('grant_type', 'password');
+    urlencoded.append('client_id', 'ios.com.wrnty.peppery');
+
+    const server = env;
+    const getToken = await fetch(`https://idp${server == 'stage' ? '.sandbox' : ''}.pepperi.com/connect/token`, {
+        method: 'POST',
+        body: urlencoded,
+    })
+        .then((res) => res.text())
+        .then((res) => (res ? JSON.parse(res) : ''));
+
+    if (!getToken?.access_token) {
+        throw new Error(
+            `Error unauthorized\nError: ${getToken.error}\nError description: ${getToken.error_description}`,
+        );
+    }
+
+    return getToken;
+}
+
+export async function initiateTester(email, pass, env): Promise<Client> {
+    const token = await getToken(email, pass, env);
+    return createClient(token.access_token);
+}
+
+function createClient(authorization) {
+    if (!authorization) {
+        throw new Error('Error unauthorized');
+    }
+    const token = authorization.replace('Bearer ', '') || '';
+    const parsedToken = jwt_decode(token);
+    const [AddonUUID, sk] = getSecret();
+
+    return {
+        AddonUUID: AddonUUID,
+        AddonSecretKey: sk,
+        BaseURL: parsedToken['pepperi.baseurl'],
+        OAuthAccessToken: token,
+        AssetsBaseUrl: 'http://localhost:4400/publish/assets',
+        Retry: function () {
+            return;
+        },
+        ValidatePermission: async (policyName) => {
+            await this.validatePermission(policyName, token, parsedToken['pepperi.baseurl']);
+        },
+    } as Client;
+}
+
+function getSecret() {
+    const addonUUID = JSON.parse(fs.readFileSync('../addon.config.json', { encoding: 'utf8', flag: 'r' }))['AddonUUID'];
+    let sk;
+    try {
+        sk = fs.readFileSync('../var_sk', { encoding: 'utf8', flag: 'r' });
+    } catch (error) {
+        console.log(`%cSK Not found: ${error}`, ConsoleColors.SystemInformation);
+        sk = '00000000-0000-0000-0000-000000000000';
+    }
+    return [addonUUID, sk];
 }

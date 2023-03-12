@@ -1909,7 +1909,8 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
         //debugger;
         logcash.totalTimeNotIndexed = logcash.endTimeNotIndexed - logcash.startTimeNotIndexed;
         if (logcash.getDataFromNotIndexedDataWhereClause.length == logcash.getDataFromIndexedDataWhereClause.length) {
-            if (logcash.totalTimeNotIndexed - logcash.totalTimeIndexed > 20) {
+            if (logcash.totalTimeNotIndexed - logcash.totalTimeIndexed > 10) {
+                //Oleg 16/02/23 changed from 20 to 10
                 logcash.getDataFromNotIndexedDataWhereClauseStatus = true;
             } else {
                 logcash.getDataFromNotIndexedDataWhereClauseStatus = false;

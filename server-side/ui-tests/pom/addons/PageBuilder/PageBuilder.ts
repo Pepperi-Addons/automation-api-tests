@@ -21,6 +21,10 @@ export class PageBuilder extends AddonPage {
     public PagesList_NumberOfItemsInList: By = By.xpath(
         '//div[contains(text(), "result")]/span[contains(@class, "bold number")]',
     );
+    public PagesList_SelectAll_Checkbox: By = By.xpath('//pep-list/div/fieldset/mat-checkbox');
+    public PagesList_SelectAllisChecked_Checkbox: By = By.xpath(
+        '//pep-list/div/fieldset/mat-checkbox[contains(@class,"mat-checkbox-checked")]',
+    );
     public PagesList_EmptyList_Paragraph: By = By.xpath('//pep-list//p');
     public PagesList_FirstCheckboxInList: By = By.xpath('//virtual-scroller/div[2]/div/fieldset/mat-checkbox');
     // public PagesList_PageSelectCheckbox_ByName: By = By.xpath(`${this.getSelectorOfRowInListByName('').value}/mat-checkbox/label/span`);
@@ -79,7 +83,7 @@ export class PageBuilder extends AddonPage {
         this.pause(1000);
     }
 
-    public async addBlankPage(pageName: string, pageDescription: string) {
+    public async addBlankPage(pageName: string, pageDescription: string, extraSection = false) {
         await this.clickElement('AddPage_Button');
         await this.waitTillVisible(this.SelectPage_Title, 5000);
         await this.waitTillVisible(this.BlankTemplatePage, 5000);
@@ -95,7 +99,9 @@ export class PageBuilder extends AddonPage {
         pageDescriptionElement.clear();
         pageDescriptionElement.sendKeys(pageDescription);
         this.pause(1500);
-        await this.clickElement('EditSideBar_AddSection_Button');
+        if (extraSection) {
+            await this.clickElement('EditSideBar_AddSection_Button');
+        }
         await this.waitTillVisible(this.Section_Frame, 5000);
         await this.clickElement('EditPage_EditMenu_Button_Publish');
         this.pause(1500);
@@ -173,30 +179,42 @@ export class PageBuilder extends AddonPage {
     }
 
     public async deleteAll() {
-        // needs to be fixed: can't choose checkbox from the second time on... Hagit, Jan 10th 2023
-        let numOfEditors: string;
-        do {
-            debugger;
-            numOfEditors = await (await this.browser.findElement(this.PagesList_NumberOfItemsInList)).getText();
-            try {
-                this.browser.sleep(500);
-                const availablePagesCheckboxs = await this.browser.findElements(this.PagesList_FirstCheckboxInList);
-                this.browser.sleep(500);
-                availablePagesCheckboxs[0].click();
-                this.browser.sleep(500);
-                await this.openPencilChooseDelete();
-                this.browser.sleep(500);
-                await this.confirmDeleteClickRedButton();
-                this.browser.sleep(500);
-                await this.browser.click(this.PagesList_NumberOfItemsInList);
-            } catch (error) {
-                const errorMessage: string = (error as any).message;
-                console.info(`MESSAGE thrown in deleteAllEditors: ${errorMessage}`);
-            }
-            debugger;
-        } while (Number(numOfEditors) > 0);
-        debugger;
-        numOfEditors = await (await this.browser.findElement(this.PagesList_NumberOfItemsInList)).getText();
+        // Alternavite solution - Hagit, Feb 5th 2023
+        await this.clickElement('PagesList_SelectAll_Checkbox');
+        await this.waitTillVisible(this.PagesList_SelectAllisChecked_Checkbox, 15000);
+        await this.openPencilChooseDelete();
+        this.browser.sleep(500);
+        await this.confirmDeleteClickRedButton();
+        this.browser.sleep(500);
+        const numOfEditors: string = await (
+            await this.browser.findElement(this.PagesList_NumberOfItemsInList)
+        ).getText();
+        this.browser.sleep(500);
+
+        // // needs to be fixed: can't choose checkbox from the second time on... Hagit, Jan 10th 2023
+        // let numOfEditors: string;
+        // do {
+        //     debugger;
+        //     numOfEditors = await (await this.browser.findElement(this.PagesList_NumberOfItemsInList)).getText();
+        //     try {
+        //         this.browser.sleep(500);
+        //         const availablePagesCheckboxs = await this.browser.findElements(this.PagesList_FirstCheckboxInList);
+        //         this.browser.sleep(500);
+        //         availablePagesCheckboxs[0].click();
+        //         this.browser.sleep(500);
+        //         await this.openPencilChooseDelete();
+        //         this.browser.sleep(500);
+        //         await this.confirmDeleteClickRedButton();
+        //         this.browser.sleep(500);
+        //         await this.browser.click(this.PagesList_NumberOfItemsInList);
+        //     } catch (error) {
+        //         const errorMessage: string = (error as any).message;
+        //         console.info(`MESSAGE thrown in deleteAllEditors: ${errorMessage}`);
+        //     }
+        //     debugger;
+        // } while (Number(numOfEditors) > 0);
+        // debugger;
+        // numOfEditors = await (await this.browser.findElement(this.PagesList_NumberOfItemsInList)).getText();
         expect(Number(numOfEditors)).to.equal(0);
     }
 

@@ -141,6 +141,24 @@ export async function CodeJobsAddonTests(generalService: GeneralService, tester:
         CallbackCash.parsedResultObject = JSON.parse(
             CallbackCash.getAuditLogAddonJobExecution.Body.AuditInfo.ResultObject,
         );
+        // if(CallbackCash.parsedResultObject.ExecutionUUID != ''){
+        //     let result = await generalService.getAuditLogResultObjectIfValid(CallbackCash.parsedResultObject.URI);
+        //         if(result.Status!.Name == 'Success' &&
+        //            result.AuditInfo.ResultObject != ''
+        //         ){
+        //             logcash.getAuditLogAddonJobExecution == true
+        //         }
+        //         else{
+        //             logcash.getAuditLogAddonJobExecution = false;
+        //             logcash.getAuditLogAddonJobExecutionError =
+        //                 'Not returend data from getAllTransaction API. ResultObject is empty.'
+        //         }
+        // }
+        // else{
+        //     logcash.getAuditLogAddonJobExecution = false;
+        //     logcash.getAuditLogAddonJobExecutionError = 'ExectionUUID not retrived'
+        // }
+        //Oleg 15/02/23 - if change
         if (
             CallbackCash.parsedResultObject.success == true &&
             CallbackCash.parsedResultObject.resultObject['length'] > 0
