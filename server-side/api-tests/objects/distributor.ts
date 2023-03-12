@@ -171,7 +171,7 @@ export async function DistributorTests(generalService: GeneralService, request, 
             describe('Verify Installed Details', async () => {
                 for (let j = 0; j < arrayOfAddonsDiff.length; j++) {
                     for (let i = j + 1; i < arrayOfAddonsDiff.length; i++) {
-                        if (arrayOfAddonsDiff[j]['Installed'].Name == arrayOfAddonsDiff[i]['Installed'].Name) {
+                        if (arrayOfAddonsDiff[j]['Installed'].Name !== undefined && arrayOfAddonsDiff[j]['Installed'].Name == arrayOfAddonsDiff[i]['Installed'].Name) {
                             it(`System Addon Is Installed Two Times ${arrayOfAddonsDiff[i]['Installed'].Name}`, async () => {
                                 expect.fail(`Addon.Name: ${JSON.stringify(arrayOfAddonsDiff[i]['Installed'].Name)}`);
                             });
