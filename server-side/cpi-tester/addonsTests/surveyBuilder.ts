@@ -10,7 +10,7 @@ export default class SurveyBuilderTest {
         const initialEventsService = new EventsService(this.client);
         const userEvents = ['OnSurveyDataLoad', 'OnSurveyViewLoad'];
 
-		debugger;
+        debugger;
         await initialEventsService.registerToUserEvents(userEvents);
 
         const initialEventBody: Event = {
