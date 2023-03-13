@@ -52,18 +52,25 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     Key: '',
                     Title: 'first question',
                     Type: 'Multiple Select',
-                    OptionalValues: [{ Value: 'A' }, { Value: 'B' }, { Value: 'C' }],
+                    OptionalValues: [
+                        { Value: 'A', Key: 'A' },
+                        { Value: 'B', Key: 'B' },
+                        { Value: 'C', Key: 'C' },
+                    ],
                     isMandatory: true,
                 },
                 {
                     Key: '',
                     Title: 'second question',
                     Type: 'Radio Group',
-                    OptionalValues: [{ Value: 'A' }, { Value: 'B' }],
+                    OptionalValues: [
+                        { Value: 'A', Key: 'A' },
+                        { Value: 'B', Key: 'B' },
+                    ],
                     isMandatory: false,
                     ShowIf: {
                         Operator: 'And',
-                        FilterData: { QuestionName: 'first question', ValueToLookFor: ['A', 'C'] },
+                        FilterData: [{ QuestionName: 'first question', ValueToLookFor: ['A', 'C'] }],
                     },
                 },
                 {
@@ -73,7 +80,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     isMandatory: true,
                     ShowIf: {
                         Operator: 'And',
-                        FilterData: { QuestionName: 'second question', ValueToLookFor: ['B'] },
+                        FilterData: [
+                            { QuestionName: 'second question', ValueToLookFor: ['B'] },
+                            { QuestionName: 'first question', ValueToLookFor: ['A', 'C'] },
+                        ],
                     },
                 },
                 {
@@ -81,7 +91,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     Title: 'fourth question',
                     Type: 'Checkbox',
                     isMandatory: false,
-                    OptionalValues: [{ Value: '1' }, { Value: '2' }],
+                    OptionalValues: [
+                        { Value: '1', Key: '1' },
+                        { Value: '2', Key: '2' },
+                    ],
                 },
                 {
                     Key: '',
@@ -91,7 +104,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     OptionalValues: [{ Value: '1' }, { Value: '2' }],
                     ShowIf: {
                         Operator: 'Or',
-                        FilterData: { QuestionName: 'fourth question', ValueToLookFor: ['1', '2'] },
+                        FilterData: [{ QuestionName: 'fourth question', ValueToLookFor: ['1', '2'] }],
                     },
                 },
                 {
@@ -357,8 +370,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
             it('1. Fill First Survey And Validate All Is Working', async function () {
-                // const surveyUUID = '211dd7e3-c7da-48f5-be54-2dcad584463d';
-                // const slideshowSlugDisplayName = 'slideshow_slug_alns';
+                const surveyUUID = '2da013fe-60ee-4456-94cf-7741dd39ed24';
+                const slideshowSlugDisplayName = 'slideshow_slug_knjk';
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
@@ -388,7 +401,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     'Decimal',
                     'Date',
                 ];
-                const allQuestionPositiveAns = ['A', 'B', 'short Text12', ['1'], 'Yes', '0.123', '01/01/2022'];
+                const allQuestionPositiveAns = [['A', 'C'], 'B', 'short Text12', ['1', '2'], 'Yes', '.123', '1/1/2022'];
                 const surveyFiller = new SurveyFiller(driver);
                 for (let index = 0; index < allQuestionNames.length; index++) {
                     const currentQuestionName = allQuestionNames[index];
@@ -427,10 +440,33 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     (a, b) => Date.parse(a.ModificationDateTime) > Date.parse(b.ModificationDateTime),
                 );
                 const surveyAnswers = surveysSortedByModifDate[0].Answers;
-                debugger;
                 for (let index = 0; index < surveyAnswers.length; index++) {
                     const ans = surveyAnswers[index];
-                    expect(ans).to.equal(allQuestionPositiveAns[index]);
+                    if (Array.isArray(allQuestionPositiveAns[index])) {
+                        const joinedArray = (allQuestionPositiveAns[index] as string[]).join(';');
+                        expect(ans.Answer).to.equal(joinedArray);
+                    } else {
+                        if (allQuestionPositiveAns[index] === 'Yes' || allQuestionPositiveAns[index] === 'No') {
+                            const convertedAns = allQuestionPositiveAns[index] === 'Yes' ? 'true' : 'false';
+                            expect(ans.Answer).to.equal(convertedAns);
+                        } else {
+                            if (allQuestionPositiveAns[index] === '.123') {
+                                const numb = '0' + allQuestionPositiveAns[index];
+                                expect(ans.Answer).to.equal(numb);
+                            } else if (allQuestionPositiveAns[index] === '1/1/2022') {
+                                const dateSplit = (allQuestionPositiveAns[index] as string).split('/');
+                                const date =
+                                    dateSplit[dateSplit.length - 1] +
+                                    '-' +
+                                    dateSplit[dateSplit.length - 2] +
+                                    '-' +
+                                    dateSplit[dateSplit.length - 3];
+                                expect(ans.Answer).to.equal(date);
+                            } else {
+                                expect(ans.Answer).to.equal(allQuestionPositiveAns[index]);
+                            }
+                        }
+                    }
                 }
             });
         });
