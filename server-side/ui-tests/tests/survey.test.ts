@@ -27,6 +27,7 @@ import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
 import { SlideShowPage } from '../pom/addons/SlideShowPage';
 import { SurveyPicker } from '../pom/addons/SurveyPicker';
 import { SurveyFiller } from '../pom/addons/SurveyFiller';
+import { UDCService } from '../../services/user-defined-collections.service';
 
 chai.use(promised);
 
@@ -42,10 +43,12 @@ export async function SurveyTests(email: string, password: string, client: Clien
     let slideshowSlugDisplayName;
     let surveySlugDisplayName;
     let surveyUUID;
+    let surveyTemplateName;
+    let surveyTemplateDesc;
 
     const surveyTemplateToCreate: SurveySection[] = [
         {
-            Title: 'boolean',
+            Title: 'my survey',
             Key: '',
             Questions: [
                 {
@@ -198,7 +201,27 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData(this);
             });
-            it('1. Create A Survey Template', async function () {
+            it(`1. Create A UDC Which Extends 'surveys' Scheme Before Creating A Survey`, async function () {
+                const udcService = new UDCService(generalService);
+                const newSurveyUDCName = 'NewSurveyCollection' + generalService.generateRandomString(4);
+                const response = await udcService.createUDCWithFields(
+                    newSurveyUDCName,
+                    [],
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    { AddonUUID: 'dd0a85ea-7ef0-4bc1-b14f-959e0372877a', Name: 'surveys' },
+                );
+                expect(response).to.haveOwnProperty('Account');
+                expect(response).to.haveOwnProperty('ActionDateTime');
+                expect(response).to.haveOwnProperty('Agent');
+                expect(response).to.haveOwnProperty('Creator');
+                expect(response).to.haveOwnProperty('ExternalID');
+                expect(response).to.haveOwnProperty('StatusName');
+                expect(response).to.haveOwnProperty('Template');
+            });
+            it('2. Create A Survey Template - Validate Via API All Data Is Sent Correctly', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const surveyService = new SurveyTemplateBuilder(driver);
@@ -206,15 +229,104 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(isSurveyBuilderSettingsShown).to.equal(true);
                 const isSurveyBuilderPageShown = await surveyService.enterSurveyBuilderActualBuilder();
                 expect(isSurveyBuilderPageShown).to.equal(true);
+                surveyTemplateName = 'surveyTemplate';
+                surveyTemplateDesc = 'template';
                 surveyUUID = await surveyService.configureTheSurveyTemplate(
-                    'surveyTemplate',
-                    'template',
+                    surveyTemplateName,
+                    surveyTemplateDesc,
                     surveyTemplateToCreate,
                 );
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
+                const webAppHomePage = new WebAppHomePage(driver);
+                //- sync
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
+                //- find the survey template using API
+                const surveyTemplateResponse = await generalService.fetchStatus(
+                    `/resources/MySurveyTemplates?order_by=CreationDateTime DESC`,
+                    {
+                        method: 'GET',
+                    },
+                );
+                const latestSurveyTemp = surveyTemplateResponse.Body[0];
+                expect(latestSurveyTemp.Active).to.equal(true);
+                expect(latestSurveyTemp.Hidden).to.equal(false);
+                expect(latestSurveyTemp).to.haveOwnProperty('Key');
+                // expect(latestSurveyTemp.CreationDateTime).to.include(false);
+                expect(latestSurveyTemp.Description).to.equal(surveyTemplateDesc);
+                expect(latestSurveyTemp.Name).to.equal(surveyTemplateName);
+                const surveyTempSections = surveyTemplateResponse.Body[0].Sections;
+                for (let index = 0; index < surveyTempSections.length; index++) {
+                    const sectionFromApi = surveyTempSections[index];
+                    const sectionFromCode = surveyTemplateToCreate[index];
+                    expect(sectionFromApi).to.haveOwnProperty('Key');
+                    expect(sectionFromApi.Title).to.equal(sectionFromCode.Title);
+                    const sectionQuestionsFromApi = sectionFromApi.Questions;
+                    const sectionQuestionsFromCode = sectionFromCode.Questions;
+                    for (let index1 = 0; index1 < sectionQuestionsFromApi.length; index1++) {
+                        const questionFromApi = sectionQuestionsFromApi[index1];
+                        const questionFromCode = sectionQuestionsFromCode[index1];
+                        expect(questionFromApi).to.haveOwnProperty('Key');
+                        expect(questionFromApi).to.haveOwnProperty('Name');
+                        expect(questionFromApi.Title).to.equal(questionFromCode.Title + '\n\n');
+                        const convertedApiType = convertApiType(questionFromApi.Type);
+                        expect(convertedApiType).to.equal(questionFromCode.Type);
+                        if (questionFromApi.hasOwnProperty('OptionalValues')) {
+                            const optionalValApi = questionFromApi.OptionalValues;
+                            const optionalValCode = questionFromCode.OptionalValues as any;
+                            for (let index2 = 0; index2 < optionalValApi.length; index2++) {
+                                const optValApi = optionalValApi[index2];
+                                const optValCode = optionalValCode[index2];
+                                expect(optValApi.value).to.equal(optValCode.Value + '\n');
+                                expect(optValApi.key).to.equal(optValCode.Key);
+                            }
+                        }
+                        if (questionFromApi.hasOwnProperty('ShowIf')) {
+                            const showIfApi = questionFromApi.ShowIf;
+                            const showIfCode = questionFromCode.ShowIf as any;
+                            if (showIfApi.hasOwnProperty('Operation') && showIfApi.Operation !== 'IsEqual') {
+                                expect(showIfApi.Operation).to.equal(showIfCode.Operator.toUpperCase());
+                            }
+                            if (showIfApi.hasOwnProperty('Values')) {
+                                expect(showIfApi.Values).to.deep.equal(showIfCode.FilterData[0].ValueToLookFor);
+                            } else {
+                                const firstNodeAPI = showIfApi.LeftNode.Values;
+                                expect(firstNodeAPI).to.deep.equal(showIfCode.FilterData[0].ValueToLookFor);
+                                const secNodeAPI = showIfApi.RightNode.Values;
+                                expect(secNodeAPI).to.deep.equal(showIfCode.FilterData[1].ValueToLookFor);
+                            }
+                        }
+                    }
+                }
+                await webAppLoginPage.logout();
             });
-            it('2. Configure Resource Views For Account + Survey', async function () {
+            it('2. Login Again - Edit The Survey And See API Respose Is Changed', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
+                const surveyService = new SurveyTemplateBuilder(driver);
+                const isSurveyBuilderSettingsShown = await surveyService.enterSurveyBuilderSettingsPage();
+                expect(isSurveyBuilderSettingsShown).to.equal(true);
+                await surveyService.enterSurveyTemplateEditMode(surveyTemplateName);
+                const newName = surveyTemplateName + generalService.generateRandomString(4);
+                await surveyService.editSurveyTemplateName(newName);
+                const webAppHomePage = new WebAppHomePage(driver);
+                webAppHomePage.returnToHomePage();
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
+                //- find the survey template using API
+                const surveyTemplateResponse = await generalService.fetchStatus(
+                    `/resources/MySurveyTemplates?where=Key='${surveyUUID}'`,
+                    {
+                        method: 'GET',
+                    },
+                );
+                expect(surveyTemplateResponse.Body[0].Name).to.equal(newName);
+                surveyTemplateName = newName;
+            });
+            it('3. Configure Resource Views For Account + Survey', async function () {
                 const resourceListUtils = new E2EUtils(driver);
                 const resourceViews = new ResourceViews(driver);
                 const generalService = new GeneralService(client);
@@ -261,7 +373,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            it('3. Create Page With Survey Block Inside It', async function () {
+            it('4. Create Page With Survey Block Inside It', async function () {
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveyBlockPage';
                 surveyBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
@@ -276,7 +388,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            it('4. Create Slug And Map It To Show The Page With Survey Block', async function () {
+            it('5. Create Slug And Map It To Show The Page With Survey Block', async function () {
                 surveySlugDisplayName = `survey_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = surveySlugDisplayName;
                 await CreateSlug(
@@ -289,7 +401,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     surveyBlockPageUUID,
                 );
             });
-            it('5. Create Script Based On Config File With New Resource Views Configured', async function () {
+            it('6. Create Script Based On Config File With New Resource Views Configured', async function () {
                 let script;
                 try {
                     script = fs.readFileSync(path.join(__dirname, 'surveyScriptFile.txt'), 'utf-8');
@@ -305,7 +417,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 scriptUUID = await scriptEditor.configureScript(script3, generalService);
                 await webAppHeader.goHome();
             });
-            it('6. Create Page With SlideShow Which Will Run The Script', async function () {
+            it('7. Create Page With SlideShow Which Will Run The Script', async function () {
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveySlideShow';
                 slideshowBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
@@ -320,7 +432,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            it('7. create a slug for the slideshow page and set it to show on homepage', async function () {
+            it('8. Create A Slug For The Slideshow Page And Set It To Show On Homepage', async function () {
                 slideshowSlugDisplayName = `slideshow_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = slideshowSlugDisplayName;
                 await CreateSlug(
@@ -370,8 +482,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
             it('1. Fill First Survey And Validate All Is Working', async function () {
-                const surveyUUID = '2da013fe-60ee-4456-94cf-7741dd39ed24';
-                const slideshowSlugDisplayName = 'slideshow_slug_knjk';
+                // const surveyUUID = '2da013fe-60ee-4456-94cf-7741dd39ed24';
+                // const slideshowSlugDisplayName = 'slideshow_slug_knjk';
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
@@ -422,7 +534,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     await webAppHomePage.manualResync(client);
                 }
                 const surveyResponse = await generalService.fetchStatus(
-                    `/resources/MySurveys?where=Template='${surveyUUID}'`,
+                    `/resources/MySurveys?where=Template='${surveyUUID}'?order_by=CreationDateTime DESC`,
                     {
                         method: 'GET',
                     },
@@ -520,4 +632,23 @@ async function CreateSlug(
     driver.sleep(15 * 1000);
     const webAppHeader = new WebAppHeader(driver);
     await webAppHeader.goHome();
+}
+
+function convertApiType(type: string) {
+    switch (type) {
+        case 'single-selection-radiobuttons':
+            return 'Radio Group';
+        case 'multiple-selection-dropdown':
+            return 'Multiple Select';
+        case 'short-text':
+            return 'Short Text';
+        case 'multiple-selection-checkboxes':
+            return 'Checkbox';
+        case 'boolean-toggle':
+            return 'Yes/No';
+        case 'decimal':
+            return 'Decimal';
+        case 'date':
+            return 'Date';
+    }
 }

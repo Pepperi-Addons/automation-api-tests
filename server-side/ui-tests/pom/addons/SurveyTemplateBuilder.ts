@@ -147,6 +147,10 @@ export class SurveyTemplateBuilder extends AddonPage {
     public ValueFromDropDownOfSearchingValues: By = By.xpath(`//mat-option//span[contains(text(),'{placeholder}')]`);
     public EmptySpaceToSaveValue: By = By.xpath(`//div[@class='cdk-overlay-container']`);
     public SaveFilterButton: By = By.xpath(`//mat-dialog-container//pep-button//button[@data-qa="Save"]`);
+
+    public surveyListSearch: By = By.xpath('//input[@data-placeholder]');
+    public surveyLink: By = By.xpath("//a[contains(text(),'{placeholder}')]");
+    public sectionRightSideEditor: By = By.xpath("//span[contains(text(),'Section')]");
     //-
     //-
     //
@@ -169,7 +173,7 @@ export class SurveyTemplateBuilder extends AddonPage {
     public async enterSurveyBuilderActualBuilder(): Promise<boolean> {
         await this.browser.click(this.AddASurveyButton);
         this.browser.sleep(2500);
-        return await this.validateBuilderPageIsOpened();
+        return await this.validateEmptyBuilderPageIsOpened();
     }
 
     public async configureTheSurveyTemplate(
@@ -200,6 +204,26 @@ export class SurveyTemplateBuilder extends AddonPage {
         return surveyUUID;
     }
 
+    public async enterSurveyTemplateEditMode(surveyName: string): Promise<boolean> {
+        await this.browser.click(this.surveyListSearch);
+        await this.browser.sendKeys(this.surveyListSearch, surveyName + Key.ENTER);
+        this.browser.sleep(3000);
+        const xpathQueryForSurveyLink: string = this.surveyLink.valueOf()['value'].replace('{placeholder}', surveyName);
+        await this.browser.click(By.xpath(xpathQueryForSurveyLink));
+        this.browser.sleep(2000);
+        return await this.validateBuilderPageIsOpened();
+    }
+
+    public async editSurveyTemplateName(surveyNewName) {
+        await this.setSurveyName(surveyNewName);
+        this.browser.sleep(3000);
+        await this.browser.click(this.SaveSurveyButton);
+        this.browser.sleep(3000);
+        await this.browser.click(this.PublishSurveyButton);
+        this.browser.sleep(3000);
+        await this.browser.click(this.GoBackButton);
+    }
+
     private async validateSettingsPageIsOpened(): Promise<boolean> {
         const isMainTitleShown = await this.browser.isElementVisible(this.SurveyBuilderMainTitle, 5000);
         const isGenericResourceTitleShown = await this.browser.isElementVisible(
@@ -209,11 +233,17 @@ export class SurveyTemplateBuilder extends AddonPage {
         return isMainTitleShown && isGenericResourceTitleShown;
     }
 
-    private async validateBuilderPageIsOpened(): Promise<boolean> {
+    private async validateEmptyBuilderPageIsOpened(): Promise<boolean> {
         const isLeftSideSettingsTitleShown = await this.browser.isElementVisible(this.LeftSideSurveyTitle, 2000);
         const isRightSideSectionShown = await this.browser.isElementVisible(this.RightSideSurveyTitle, 2000);
         const isDeafultSurveySectionShown = await this.browser.isElementVisible(this.DeafultSurveySection, 5000);
         return isDeafultSurveySectionShown && isLeftSideSettingsTitleShown && isRightSideSectionShown;
+    }
+
+    private async validateBuilderPageIsOpened(): Promise<boolean> {
+        const isLeftSideSettingsTitleShown = await this.browser.isElementVisible(this.LeftSideSurveyTitle, 2000);
+        const isRightSideEditorShown = await this.browser.isElementVisible(this.sectionRightSideEditor, 3000);
+        return isRightSideEditorShown && isLeftSideSettingsTitleShown;
     }
 
     private async setSurveyName(surveyName: string) {
