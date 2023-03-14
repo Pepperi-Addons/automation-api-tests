@@ -61,6 +61,7 @@
         "mochawesome": "^7.0.1",
         "node-fetch": "^2.6.7",
         "ts-mocha": "^8.0.0",
-        "uuid": "^8.3.2"
+        "uuid": "^8.3.2",
+        "shared-cpi-automation": "file:../shared/"
     }
 }

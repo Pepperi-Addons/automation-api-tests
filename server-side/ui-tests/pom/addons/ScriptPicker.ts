@@ -234,7 +234,7 @@ export class ScriptEditor extends AddonPage {
         await expect(this.untilIsVisible(this.PencilMenuBtn, 90000)).eventually.to.be.true;
     }
 
-    public async enterScriptsAndConfigureAScript(sciptText: string, generalService: GeneralService) {
+    public async configureScript(sciptText: string, generalService: GeneralService) {
         const webAppHeader = new WebAppHeader(this.browser);
         await webAppHeader.openSettings();
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);

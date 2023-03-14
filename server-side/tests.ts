@@ -87,6 +87,7 @@ import {
 } from './api-tests/index';
 import { SingleMaintenanceAndDependenciesAddonsTestsPart3 } from './api-tests/addons';
 import { DataIndexDor } from './api-tests/dor_data_index_tests';
+import SurveyBuilderTest from './cpi-tester/addonsTests/surveyBuilder';
 // import { PapiClient } from '@pepperi-addons/papi-sdk'; WIP - dev tests
 // import { checkVersionsTest } from './api-tests/check_versions';
 
@@ -1164,6 +1165,19 @@ export async function maintenance_job(client: Client, request: Request, testerFu
     return await testerFunctions.run();
 }
 
+export async function cpi_tester_POC(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'cpi POC';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    const surveyBuilderTest = new SurveyBuilderTest(client);
+    debugger;
+    await surveyBuilderTest.SurveyBuilderTestCPI();
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
 export async function cpi_node(client: Client, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'CPI_Node';
@@ -1290,7 +1304,7 @@ export async function handleDevTestInstallation(
         }
     }
     const addonToInstall = {};
-    addonToInstall[addonName] = [addonUUID, ''];
+    addonToInstall[addonName] = [addonUUID, addonName === 'SYNC' ? '0.5.%' : ''];
     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
     if (installAddonResponse[0] != true) {
         throw new Error(`Error: can't install ${addonName} - ${addonUUID}, exception: ${installAddonResponse}`);
@@ -1298,20 +1312,9 @@ export async function handleDevTestInstallation(
     service.PrintMemoryUseToLog('End', testName);
 }
 
-// {
-// adal:'1.4.77'
-// cpas:'16.80.8'
-// cpi_node:'1.1.6'
-// dimx:'0.0.163'
-// generic_resource:'0.5.1'
-// pepperi_elastic_search:'1.0.40'
-// user_defined_events:'0.5.3'
-// }
-
 //WIP - dev tests
 async function buildTheDependencyArray(service: GeneralService, dependenciesFromPublishConfig) {
     //map the dependency addons to thier real name in VAR
-    debugger;
     const allAddonDependencys = await service.fetchStatus('/configuration_fields?key=AddonsForDependencies');
     const allAddonDependencysAsObject = JSON.parse(allAddonDependencys.Body.Value);
     const arrayOfAllUUIDs = {};
@@ -1334,88 +1337,3 @@ export async function async_addon_get_remove_codejobs(
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
 }
-
-//test fixtures by Addons (this is the future o:)
-// export async function ADAL_FIXTURE(client: Client, request: Request, testerFunctions: TesterFunctions) {
-//     const service = new GeneralService(client);
-//     testName = 'ADAL Fixture';
-//     service.PrintMemoryUseToLog('Start', testName);
-//     testerFunctions = service.initiateTesterFunctions(client, testName);
-//     //all ADAL relevant tests
-//     await DBSchemaTests(service, request, testerFunctions);
-//     await DBSchemaTestsPart2(service, request, testerFunctions);
-//     await SchemaTypeDataIndexedTests(service, request, testerFunctions),
-//         await BatchUpsertTests(service, request, testerFunctions);
-//     await DimxDataImportTests(service, request, testerFunctions);
-//     await DIMXrecursive(service, request, testerFunctions);
-//     await ADALTests(service, request, testerFunctions);
-//     await DataIndexTests(service, request, testerFunctions);
-//     await DataIndexADALTests(service, request, testerFunctions);
-//     service.PrintMemoryUseToLog('End', testName);
-//     return await testerFunctions.run();
-// }
-
-// export async function Remote_Jenkins_Handler(client: Client, request: Request, testerFunctions: TesterFunctions) {
-//     const service = new GeneralService(client);
-//     const addonName = request.body.addon;
-//     const addonVersion = request.body.addonVersion;
-//     console.log(`Asked To Run '${addonName}' Approvment Tests On Version: ${addonVersion}`);
-//     //1. realise which addon should run
-//     const jobResponse = 'FAILURE';
-//     // switch (addonName) {
-//     //     case "ADAL":
-//     //         jobResponse = await service.runJenkinsJobRemotely('JenkinsBuildUserCred',
-//     //             'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/build?token=ADALApprovmentTests',
-//     //             'Test - A1 Production - ADAL');
-//     //         break;
-//     // }
-//     debugger;
-//     const bodyToSend = {
-//         Name: `${addonName} Approvment Tests Status`,
-//         Description: `Approvment Tests On ${addonName} Status Is ${jobResponse}`,
-//         Status: jobResponse === 'FAILURE' ? 'ERROR' : 'SUCCESS',
-//         Message: 'evgeny :)',
-//         NotificationWebhook:
-//             'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/b5117c82e129495fabbe8291e0cb615e/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
-//         SendNotification: 'Always',
-//     };
-//     const addonsSK = service.getSecret()[1];
-//     const testingAddonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
-//     const response = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
-//         method: 'POST',
-//         headers: {
-//             'X-Pepperi-SecretKey': addonsSK,
-//             'X-Pepperi-OwnerID': testingAddonUUID,
-//         },
-//         body: JSON.stringify(bodyToSend),
-//     });
-//     debugger;
-
-// const service = new GeneralService(client);
-// testName = 'ADAL Fixture';
-// service.PrintMemoryUseToLog('Start', testName);
-// testerFunctions = service.initiateTesterFunctions(client, testName);
-// //all ADAL relevant tests
-// await DBSchemaTests(service, request, testerFunctions);
-// await DBSchemaTestsPart2(service, request, testerFunctions);
-// await SchemaTypeDataIndexedTests(service, request, testerFunctions),
-// await BatchUpsertTests(service, request, testerFunctions);
-// await DimxDataImportTests(service, request, testerFunctions);
-// await DIMXrecursive(service, request, testerFunctions);
-// await ADALTests(service, request, testerFunctions);
-// await DataIndexTests(service, request, testerFunctions);
-// await DataIndexADALTests(service, request, testerFunctions);
-// service.PrintMemoryUseToLog('End', testName);
-// return await testerFunctions.run();
-// }
-
-// testerFunctions = service.initiateTesterFunctions(client, testName);
-//     await UDTTests(service, testerFunctions);
-//     await UsersTests(service, testerFunctions);
-//     await AccountsTests(service, testerFunctions);
-//     await ContactsTests(service, testerFunctions);
-//     await GeneralActivitiesTests(service, testerFunctions);
-//     await TransactionTests(service, testerFunctions);
-//     await test_data(client, testerFunctions);
-//     service.PrintMemoryUseToLog('End', testName);
-//     return await testerFunctions.run();
