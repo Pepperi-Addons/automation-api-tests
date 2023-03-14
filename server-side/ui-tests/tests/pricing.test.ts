@@ -49,6 +49,8 @@ export async function PricingTests(email: string, password: string, client: Clie
     let accountName: string;
     let Acc01TransactionByUUID;
     let transactionInternalID;
+    let initialPpmValues;
+    let updatedUDTRowPOST;
 
     const testAccounts = ['Acc01'];
     // const testAccounts = ['Acc01', 'OtherAcc'];
@@ -63,6 +65,30 @@ export async function PricingTests(email: string, password: string, client: Clie
         'PriceManualLineUnitPriceAfter1',
         'PriceTaxUnitPriceAfter1',
     ];
+    // const documentsIn_PPM_Values = {
+    //     'ZBASE@A002@Acc01@Frag005': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]',
+    //     'ZBASE@A002@Acc01@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",22,"P"]]]]',
+    //     'ZBASE@A001@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",50,"P"]]]]',
+    //     'ZBASE@A001@Frag012': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",20,"P"]]]]',
+    //     'ZBASE@A003@Acc01@Pharmacy': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",30,"P"]]]]',
+    //     'ZDS1@A001@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]',
+    //     'ZDS1@A001@MakeUp019':
+    //         '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",5,"%"],[5,"D",10,"%"],[20,"D",15,"%"]]]]',
+    //     'ZDS2@A002@Acc01@ToBr55':
+    //         '[[true,"1555891200000","2534022144999","1","","Free Goods",[[5,"D",100,"%","",1,"EA","ToBr10",0],[20,"D",100,"%","",1,"CS","ToBr55",0]],"EA"]]',
+    //     'ZDS3@A001@Drug0002':
+    //         '[[true,"1555891200000","2534022144999","1","","additionalItem",[[10,"D",100,"%","",2,"CS","Drug0002",0]],"CS"]]',
+    //     'ZDS3@A001@Drug0004':
+    //         '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"CS"]]',
+    //     'ZGD1@A002@Acc01@MakeUp003':
+    //         '[[true,"1555891200000","2534022144999","1","","ZGD1_A002",[[10,"D",20,"%"]],"EA"]]',
+    //     'ZGD1@A003@Acc01@Beauty Make Up':
+    //         '[[true,"1555891200000","2534022144999","1","","ZGD1_A003",[[3,"D",3,"%"],[30,"D",7,"%"]],"EA"]]',
+    //     'ZGD1@A002@Acc01@MakeUp018':
+    //         '[[true,"1555891200000","2534022144999","1","","additionalItem",[[10,"D",100,"%","",1,"EA","MakeUp018",0]],"EA"]]',
+    //     'MTAX@A002@Acc01@Frag005': '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
+    //     'MTAX@A002@Acc01@Frag012': '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
+    // };
     const testItemsData_PPM_Values = {
         'Lipstick no.1': {
             ItemPrice: 27.75,
@@ -608,7 +634,6 @@ export async function PricingTests(email: string, password: string, client: Clie
             },
         },
         Drug0001: {
-            // Pharmacy Category
             ItemPrice: 30.25,
             NPMCalcMessage: {
                 Acc01: {
@@ -684,7 +709,6 @@ export async function PricingTests(email: string, password: string, client: Clie
             },
         },
         Drug0003: {
-            // Pharmacy Category
             ItemPrice: 32.25,
             NPMCalcMessage: {
                 Acc01: {
@@ -779,87 +803,86 @@ export async function PricingTests(email: string, password: string, client: Clie
             },
             PriceBaseUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 29.25,
+                    '1unit': 29.25,
+                    '3units': 29.25,
+                    '1case(6units)': 29.25,
+                    '4cases(24units)': 29.25,
                 },
                 OtherAcc: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 29.25,
+                    '1unit': 29.25,
+                    '3units': 29.25,
+                    '1case(6units)': 29.25,
+                    '4cases(24units)': 29.25,
                 },
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 29.25,
+                    '1unit': 29.25,
+                    '3units': 29.25,
+                    '1case(6units)': 29.25,
+                    '4cases(24units)': 29.25,
                 },
                 OtherAcc: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 29.25,
+                    '1unit': 29.25,
+                    '3units': 29.25,
+                    '1case(6units)': 29.25,
+                    '4cases(24units)': 29.25,
                 },
             },
             PriceGroupDiscountUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 29.25,
+                    '1unit': 29.25,
+                    '3units': 29.25,
+                    '1case(6units)': 29.25,
+                    '4cases(24units)': 29.25,
                 },
                 OtherAcc: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 29.25,
+                    '1unit': 29.25,
+                    '3units': 29.25,
+                    '1case(6units)': 29.25,
+                    '4cases(24units)': 29.25,
                 },
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 29.25,
+                    '1unit': 29.25,
+                    '3units': 29.25,
+                    '1case(6units)': 29.25,
+                    '4cases(24units)': 29.25,
                 },
                 OtherAcc: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 29.25,
+                    '1unit': 29.25,
+                    '3units': 29.25,
+                    '1case(6units)': 29.25,
+                    '4cases(24units)': 29.25,
                 },
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 29.25,
+                    '1unit': 29.25,
+                    '3units': 29.25,
+                    '1case(6units)': 29.25,
+                    '4cases(24units)': 29.25,
                 },
                 OtherAcc: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 29.25,
+                    '1unit': 29.25,
+                    '3units': 29.25,
+                    '1case(6units)': 29.25,
+                    '4cases(24units)': 29.25,
                 },
             },
         },
         Drug0002: {
-            // Pharmacy Category
             ItemPrice: 31.25,
             NPMCalcMessage: {
                 Acc01: {
@@ -1053,8 +1076,8 @@ export async function PricingTests(email: string, password: string, client: Clie
 
             describe('Sales Order Transaction', () => {
                 it('Get UDT Values (PPM_Values)', async () => {
-                    const ppmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'" });
-                    console.info('PPM_Values: ', ppmValues);
+                    initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'" });
+                    console.info('PPM_Values: ', initialPpmValues);
                 });
                 // it('Data Prep (inserting rules to UDT PPM_Values)', async () => {
                 //     const dataToBatch = [
@@ -1333,7 +1356,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     }
                                     driver.sleep(1 * 1000);
                                 });
-                                it('verifying the specific items were added to the cart', async () => {
+                                it('verifying the specific item "Drug0002" was added to the cart', async () => {
                                     await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName('')); // check to be in cart
                                     const cartFreeItemElements = await driver.findElements(
                                         orderPage.getSelectorOfFreeItemInCartByName(''),
@@ -1351,12 +1374,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             throw new Error('The name of Account is incorrect');
                                             break;
                                     }
-                                    let item = 'Drug0002';
+                                    const item = 'Drug0002';
                                     const Drug0002_itemsList = await driver.findElements(
                                         orderPage.getSelectorOfItemInCartByName(item),
                                     );
                                     driver.sleep(0.1 * 1000);
-                                    // debugger
                                     expect(Drug0002_itemsList).to.be.an('array').with.lengthOf(2);
                                     const Drug0002_freeItem = await driver.findElement(
                                         orderPage.getSelectorOfFreeItemInCartByName(item),
@@ -1387,7 +1409,27 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             }
                                         });
                                     }
-                                    item = 'ToBr10';
+                                    driver.sleep(0.2 * 1000);
+                                });
+                                it('verify additional item "Drug0002" quantity is correct', async () => {
+                                    const item = 'Drug0002';
+                                    const numberOfUnits = await driver.findElements(
+                                        orderPage.getSelectorOfNumberOfUnitsInCartByItemName(item),
+                                    );
+                                    const Drug0002_freeItem_numberOfUnits = Number(
+                                        await numberOfUnits[1].getAttribute('title'),
+                                    );
+                                    expect(Drug0002_freeItem_numberOfUnits).equals(12);
+                                    const numberOfAOQM = await driver.findElements(
+                                        orderPage.getSelectorOfAoqmQuantityInCartByItemName(item),
+                                    );
+                                    const Drug0002_freeItem_numberOfAOQM = Number(
+                                        await numberOfAOQM[0].getAttribute('title'),
+                                    );
+                                    expect(Drug0002_freeItem_numberOfAOQM).equals(2);
+                                });
+                                it('verifying the specific item "ToBr10" was added to the cart on account "My Store" and NOT added on other account', async () => {
+                                    const item = 'ToBr10';
                                     switch (account) {
                                         case 'Acc01':
                                             const ToBr10_item = await driver.findElement(
@@ -1426,42 +1468,263 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     driver.sleep(2 * 1000);
                                 });
                                 if (account === 'Acc01') {
-                                    it('Increase quantity of item "ToBr55" over 20 units (Each) and see the additional item change to 1 case of "ToBr55"', async () => {
-                                        await changeSelectedQuantityOfSpecificItem('Each', 'ToBr55', 20, 'Cart');
-                                        driver.sleep(10 * 1000);
+                                    it('verify additional item "ToBr10" quantity is correct', async () => {
+                                        const item = 'ToBr10';
+                                        const numberOfUnits = await driver.findElements(
+                                            orderPage.getSelectorOfNumberOfUnitsInCartByItemName(item),
+                                        );
+                                        const ToBr10_freeItem_numberOfUnits = Number(
+                                            await numberOfUnits[0].getAttribute('title'),
+                                        );
+                                        expect(ToBr10_freeItem_numberOfUnits).equals(1);
+                                        const numberOfAOQM = await driver.findElements(
+                                            orderPage.getSelectorOfAoqmQuantityInCartByItemName(item),
+                                        );
+                                        const ToBr10_freeItem_numberOfAOQM = Number(
+                                            await numberOfAOQM[0].getAttribute('title'),
+                                        );
+                                        expect(ToBr10_freeItem_numberOfAOQM).equals(1);
+                                    });
+                                    it('increase quantity of item "ToBr55" over 20 units (Each) and see the additional item change to 1 case of "ToBr55"', async () => {
+                                        const item = 'ToBr55';
+                                        await changeSelectedQuantityOfSpecificItemInCart('Case', item, 4);
+                                        // driver.sleep(10 * 1000);
+                                    });
+                                    it('verify additional item type have changed', async () => {
+                                        let item = 'ToBr55';
+                                        const ToBr55_itemsList = await driver.findElements(
+                                            orderPage.getSelectorOfItemInCartByName(item),
+                                        );
+                                        driver.sleep(0.1 * 1000);
+                                        expect(ToBr55_itemsList).to.be.an('array').with.lengthOf(2);
+                                        driver.sleep(0.1 * 1000);
+                                        const ToBr55_freeItem = await driver.findElements(
+                                            orderPage.getSelectorOfFreeItemInCartByName(item),
+                                        );
+                                        driver.sleep(0.1 * 1000);
+                                        expect(ToBr55_freeItem).to.be.an('array').with.lengthOf(1);
+                                        driver.sleep(0.1 * 1000);
+                                        expect(await ToBr55_freeItem[0].getAttribute('style')).to.equal(
+                                            'background-color: rgb(165, 235, 255);',
+                                        );
+                                        const ToBr55_priceTSAsCart = await getItemTSAs('Cart', item, 'Free');
+                                        priceFields.forEach((priceField) => {
+                                            switch (priceField) {
+                                                case 'PriceBaseUnitPriceAfter1':
+                                                    expect(ToBr55_priceTSAsCart[priceField]).to.equal(
+                                                        testItemsData_PPM_Values[item].ItemPrice,
+                                                    );
+                                                    break;
+
+                                                default:
+                                                    expect(ToBr55_priceTSAsCart[priceField]).equals(0.0);
+                                                    break;
+                                            }
+                                        });
+
+                                        item = 'ToBr10';
+                                        try {
+                                            await driver.findElement(orderPage.getSelectorOfItemInCartByName(item));
+                                        } catch (error) {
+                                            const caughtError: any = error;
+                                            expect(caughtError.message).to.equal(
+                                                `After wait time of: 15000, for selector of '//pep-textbox[@data-qa="ItemExternalID"]/span[contains(@title,"ToBr10")]/ancestor::fieldset/ancestor::fieldset', The test must end, The element is: undefined`,
+                                            );
+                                        }
+                                        // driver.sleep(10 * 1000);
+                                    });
+                                    it('verify additional item "ToBr55" quantity have changed', async () => {
+                                        const item = 'ToBr55';
+                                        const numberOfUnits = await driver.findElements(
+                                            orderPage.getSelectorOfNumberOfUnitsInCartByItemName(item),
+                                        );
+                                        const ToBr55_freeItem_numberOfUnits = Number(
+                                            await numberOfUnits[1].getAttribute('title'),
+                                        );
+                                        expect(ToBr55_freeItem_numberOfUnits).equals(6);
+                                        const numberOfAOQM = await driver.findElements(
+                                            orderPage.getSelectorOfAoqmQuantityInCartByItemName(item),
+                                        );
+                                        const ToBr55_freeItem_numberOfAOQM = Number(
+                                            await numberOfAOQM[0].getAttribute('title'),
+                                        );
+                                        expect(ToBr55_freeItem_numberOfAOQM).equals(1);
                                     });
                                 }
+                                it('Click "Continue ordering" button', async () => {
+                                    await driver.click(orderPage.Cart_ContinueOrdering_Button);
+                                    await orderPage.isSpinnerDone();
+                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
+                                    driver.sleep(0.2 * 1000);
+                                });
                             });
                         });
                         describe('Group Rules Items', () => {
-                            it('Click "Continue ordering" button', async () => {
-                                await driver.click(orderPage.Cart_ContinueOrdering_Button);
-                                await orderPage.isSpinnerDone();
-                                await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
-                                driver.sleep(1 * 1000);
+                            describe('Order Center', () => {
+                                it('Adding Group Rules Items', async () => {
+                                    // TODO
+                                    driver.sleep(1 * 1000);
+                                });
                             });
-                            it('Adding Group Rules Items', async () => {
-                                // TODO
-                                driver.sleep(1 * 1000);
-                            });
-                            it('Entering Cart', async () => {
-                                await driver.click(orderPage.Cart_Button);
-                                await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName(''));
-                                driver.sleep(1 * 1000);
-                            });
-                            it('Checking Cart', async () => {
-                                // TODO
-                                driver.sleep(1 * 1000);
-                            });
-                            it('Click "Submit" button', async () => {
-                                await orderPage.isSpinnerDone();
-                                await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName(''));
-                                await driver.click(orderPage.Cart_Submit_Button);
-                                driver.sleep(1 * 1000);
+                            describe('Cart', () => {
+                                it('Entering Cart', async () => {
+                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
+                                    driver.sleep(0.1 * 1000);
+                                    await driver.click(orderPage.Cart_Button);
+                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName(''));
+                                    driver.sleep(0.1 * 1000);
+                                });
+                                it('Checking Cart', async () => {
+                                    // TODO
+                                    driver.sleep(1 * 1000);
+                                });
+                                it('Click "Submit" button', async () => {
+                                    await orderPage.isSpinnerDone();
+                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName(''));
+                                    await driver.click(orderPage.Cart_Submit_Button);
+                                    driver.sleep(0.1 * 1000);
+                                });
                             });
                         });
                         describe('Read Only State - entering the same transaction post submission', () => {
-                            // TODO
+                            it('checking the latest activity - type: Sales Order, status: Submitted', async () => {
+                                await webAppList.isSpinnerDone();
+                                await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
+                                const latestActivityID = await (
+                                    await driver.findElement(webAppList.Activities_TopActivityInList_ID)
+                                ).getAttribute('title');
+                                const latestActivityType = await (
+                                    await driver.findElement(webAppList.Activities_TopActivityInList_Type)
+                                ).getAttribute('title');
+                                const latestActivityStatus = await (
+                                    await driver.findElement(webAppList.Activities_TopActivityInList_Status)
+                                ).getAttribute('title');
+                                expect(latestActivityType).to.equal('Sales Order');
+                                expect(latestActivityStatus).to.equal('Submitted');
+                                expect(Number(latestActivityID)).to.equal(transactionInternalID);
+                            });
+                            it('changing values in "PPM_Values" UTD', async () => {
+                                const tableName = 'PPM_Values';
+                                // initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'" });
+
+                                updatedUDTRowPOST = await objectsService.postUDT({
+                                    MapDataExternalID: tableName,
+                                    MainKey: 'ZDS3@A001@Drug0004',
+                                    SecondaryKey: '',
+                                    Values: [
+                                        '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"EA"]]',
+                                    ],
+                                });
+                                expect(updatedUDTRowPOST).to.deep.include({
+                                    MapDataExternalID: tableName,
+                                    MainKey: 'ZDS3@A001@Drug0004',
+                                    SecondaryKey: null,
+                                    Values: [
+                                        '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"EA"]]',
+                                    ],
+                                });
+                                expect(updatedUDTRowPOST).to.have.property('CreationDateTime').that.contains('Z');
+                                expect(updatedUDTRowPOST)
+                                    .to.have.property('ModificationDateTime')
+                                    .that.contains(new Date().toISOString().split('T')[0]);
+                                expect(updatedUDTRowPOST).to.have.property('ModificationDateTime').that.contains('Z');
+                                expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
+                                expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
+                            });
+                            it('performing sync', async () => {
+                                await webAppHeader.goHome();
+                                driver.sleep(0.2 * 1000);
+                                await webAppHomePage.isSpinnerDone();
+                                await webAppHomePage.manualResync(client);
+                            });
+                            it('validating "PPM_Values" UTD values via API', async () => {
+                                const tableName = 'PPM_Values';
+                                const updatedUDT = await objectsService.getUDT({
+                                    where: "MapDataExternalID='" + tableName + "'",
+                                });
+                                console.info('updatedUDT: ', updatedUDT);
+                                expect(updatedUDT).to.be.an('array').with.lengthOf(initialPpmValues.length);
+                                // Add verification tests
+                            });
+                            it(`navigating to the account "${
+                                account == 'Acc01' ? 'My Store' : 'Account for order scenarios'
+                            }"`, async () => {
+                                await webAppHomePage.clickOnBtn('Accounts');
+                                await webAppHeader.isSpinnerDone();
+                                driver.sleep(0.1 * 1000);
+                                await webAppList.clickOnFromListRowWebElementByName(accountName);
+                                await webAppList.isSpinnerDone();
+                                await webAppList.clickOnLinkFromListRowWebElementByText(`${accountName}`);
+                                await webAppList.isSpinnerDone();
+                            });
+                            it('entering the same transaction through activity list', async () => {
+                                await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
+                                await webAppList.clickOnLinkFromListRowWebElement();
+                                await webAppList.isSpinnerDone();
+                                await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName(''));
+                                try {
+                                    await driver.findElement(orderPage.Cart_Submit_Button);
+                                } catch (error) {
+                                    const caughtError: any = error;
+                                    expect(caughtError.message).to.equal(
+                                        `After wait time of: 15000, for selector of '//button[@data-qa="Submit"]', The test must end, The element is: undefined`,
+                                    );
+                                }
+                                try {
+                                    await driver.findElement(orderPage.Cart_ContinueOrdering_Button);
+                                } catch (error) {
+                                    const caughtError: any = error;
+                                    expect(caughtError.message).to.equal(
+                                        `After wait time of: 15000, for selector of '//button[@data-qa="Continue ordering"]', The test must end, The element is: undefined`,
+                                    );
+                                }
+                                driver.sleep(0.1 * 1000);
+                            });
+                            it('reverting values in "PPM_Values" UTD to the original values', async () => {
+                                const tableName = 'PPM_Values';
+                                updatedUDTRowPOST = await objectsService.postUDT({
+                                    MapDataExternalID: tableName,
+                                    MainKey: 'ZDS3@A001@Drug0004',
+                                    SecondaryKey: '',
+                                    Values: [
+                                        '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"CS"]]',
+                                    ],
+                                });
+                                expect(updatedUDTRowPOST).to.deep.include({
+                                    MapDataExternalID: tableName,
+                                    MainKey: 'ZDS3@A001@Drug0004',
+                                    SecondaryKey: null,
+                                    Values: [
+                                        '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"CS"]]',
+                                    ],
+                                });
+                                expect(updatedUDTRowPOST).to.have.property('CreationDateTime').that.contains('Z');
+                                expect(updatedUDTRowPOST)
+                                    .to.have.property('ModificationDateTime')
+                                    .that.contains(new Date().toISOString().split('T')[0]);
+                                expect(updatedUDTRowPOST).to.have.property('ModificationDateTime').that.contains('Z');
+                                expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
+                                expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
+                            });
+                            it('performing sync', async () => {
+                                await webAppHeader.goHome();
+                                driver.sleep(0.2 * 1000);
+                                await webAppHomePage.isSpinnerDone();
+                                await webAppHomePage.manualResync(client);
+                            });
+                            it('validating "PPM_Values" UTD values via API', async () => {
+                                const ppmVluesEnd = await objectsService.getUDT({
+                                    where: "MapDataExternalID='PPM_Values'",
+                                });
+                                // expect(ppmVluesEnd).eql(initialPpmValues);
+                                expect(ppmVluesEnd.length).equals(initialPpmValues.length);
+                                ppmVluesEnd.forEach((tableRow) => {
+                                    const matchingInitialRow = initialPpmValues.find(
+                                        (initialRow) => initialRow['MainKey'] === tableRow['MainKey'],
+                                    );
+                                    expect(tableRow['Values']).eql(matchingInitialRow['Values']);
+                                });
+                            });
                         });
                     });
                 });
@@ -1473,35 +1736,35 @@ export async function PricingTests(email: string, password: string, client: Clie
                 });
             });
 
-            describe('Cleanup', () => {
-                it('Deleting all Activities', async () => {
-                    await webAppHeader.goHome();
-                    await webAppHomePage.isSpinnerDone();
-                    await webAppHomePage.clickOnBtn('Activities');
-                    await webAppHomePage.isSpinnerDone();
-                    driver.sleep(0.1 * 1000);
-                    try {
-                        await webAppList.checkAllListElements();
-                        driver.sleep(0.1 * 1000);
-                        await webAppList.clickOnPencilMenuButton();
-                        driver.sleep(0.1 * 1000);
-                        await webAppList.selectUnderPencilMenu('Delete');
-                        driver.sleep(0.1 * 1000);
-                        await driver.untilIsVisible(webAppDialog.ButtonArr);
-                        driver.sleep(0.1 * 1000);
-                        await webAppDialog.selectDialogBoxByText('Delete');
-                        await webAppDialog.isSpinnerDone();
-                        driver.sleep(0.1 * 1000);
-                        await webAppHeader.goHome();
-                        await webAppHomePage.isSpinnerDone();
-                    } catch (error) {
-                        console.error(error);
-                        if (await driver.untilIsVisible(webAppList.NoActivitiesFound_Text)) {
-                            console.info('List is EMPTY - no activities found');
-                        }
-                    }
-                });
-            });
+            // describe('Cleanup', () => {
+            //     it('Deleting all Activities', async () => {
+            //         await webAppHeader.goHome();
+            //         await webAppHomePage.isSpinnerDone();
+            //         await webAppHomePage.clickOnBtn('Activities');
+            //         await webAppHomePage.isSpinnerDone();
+            //         driver.sleep(0.1 * 1000);
+            //         try {
+            //             await webAppList.checkAllListElements();
+            //             driver.sleep(0.1 * 1000);
+            //             await webAppList.clickOnPencilMenuButton();
+            //             driver.sleep(0.1 * 1000);
+            //             await webAppList.selectUnderPencilMenu('Delete');
+            //             driver.sleep(0.1 * 1000);
+            //             await driver.untilIsVisible(webAppDialog.ButtonArr);
+            //             driver.sleep(0.1 * 1000);
+            //             await webAppDialog.selectDialogBoxByText('Delete');
+            //             await webAppDialog.isSpinnerDone();
+            //             driver.sleep(0.1 * 1000);
+            //             await webAppHeader.goHome();
+            //             await webAppHomePage.isSpinnerDone();
+            //         } catch (error) {
+            //             console.error(error);
+            //             if (await driver.untilIsVisible(webAppList.NoActivitiesFound_Text)) {
+            //                 console.info('List is EMPTY - no activities found');
+            //             }
+            //         }
+            //     });
+            // });
         });
     });
 
@@ -1612,15 +1875,8 @@ export async function PricingTests(email: string, password: string, client: Clie
         uomValue: 'Each' | 'Case',
         nameOfItem: string,
         quantityOfItem: number,
-        inCart?: 'Cart',
     ): Promise<void> {
-        const itemSelectorFunction = inCart
-            ? `getSelectorOfItemIn${inCart}ByName`
-            : 'getSelectorOfItemInOrderCenterByName';
-        const customFieldSelectorFunction = inCart
-            ? `getSelectorOfCustomFieldIn${inCart}ByItemName`
-            : 'getSelectorOfCustomFieldInOrderCenterByItemName';
-        const itemContainer = await driver.findElement(orderPage[itemSelectorFunction](nameOfItem));
+        const itemContainer = await driver.findElement(orderPage.getSelectorOfItemInOrderCenterByName(nameOfItem));
         driver.sleep(0.05 * 1000);
         let itemUomValue = await driver.findElement(orderPage.UnitOfMeasure_Selector_Value);
         if ((await itemUomValue.getText()) !== uomValue) {
@@ -1636,7 +1892,10 @@ export async function PricingTests(email: string, password: string, client: Clie
         await orderPage.isSpinnerDone();
         expect(await itemUomValue.getText()).equals(uomValue);
         const uomXnumber = await driver.findElement(
-            orderPage[customFieldSelectorFunction]('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
+            orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                'ItemQuantity_byUOM_InteractableNumber',
+                nameOfItem,
+            ),
         );
         await itemContainer.click();
         for (let i = 0; i < 6; i++) {
@@ -1671,6 +1930,67 @@ export async function PricingTests(email: string, password: string, client: Clie
         }
         driver.sleep(0.05 * 1000);
         await itemContainer.click();
+    }
+
+    async function changeSelectedQuantityOfSpecificItemInCart(
+        uomValue: 'Each' | 'Case',
+        nameOfItem: string,
+        quantityOfItem: number,
+    ): Promise<void> {
+        driver.sleep(0.05 * 1000);
+        let itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
+        if ((await itemUomValue.getText()) !== uomValue) {
+            await itemUomValue.click();
+            driver.sleep(0.05 * 1000);
+            await driver.click(orderPage.getSelectorOfUnitOfMeasureOptionByText(uomValue));
+            driver.sleep(0.1 * 1000);
+            await driver.click(orderPage.HtmlBody);
+            driver.sleep(0.1 * 1000);
+            itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
+        }
+        driver.sleep(0.05 * 1000);
+        await orderPage.isSpinnerDone();
+        expect(await itemUomValue.getText()).equals('Case');
+        let uomXnumber = await driver.findElement(
+            orderPage.getSelectorOfCustomFieldInCartByItemName('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
+        );
+        for (let i = 0; i < 6; i++) {
+            await uomXnumber.sendKeys(Key.BACK_SPACE);
+            driver.sleep(0.01 * 1000);
+        }
+        driver.sleep(0.05 * 1000);
+        await uomXnumber.sendKeys(4);
+        await orderPage.isSpinnerDone();
+        driver.sleep(0.05 * 1000);
+        await driver.click(orderPage.HtmlBody);
+        driver.sleep(1 * 1000);
+        uomXnumber = await driver.findElement(
+            orderPage.getSelectorOfCustomFieldInCartByItemName('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
+        );
+        driver.sleep(0.5 * 1000);
+        await orderPage.isSpinnerDone();
+        expect(Number(await uomXnumber.getAttribute('title'))).equals(quantityOfItem);
+        driver.sleep(2 * 1000);
+        const numberOfUnits = await driver.findElement(
+            orderPage.getSelectorOfNumberOfUnitsInCartByItemName(nameOfItem),
+        );
+        driver.sleep(1 * 1000);
+        switch (uomValue) {
+            case 'Each':
+                expect(Number(await numberOfUnits.getAttribute('title'))).equals(
+                    Number(await uomXnumber.getAttribute('title')),
+                );
+                break;
+            case 'Case':
+                expect(Number(await numberOfUnits.getAttribute('title'))).equals(
+                    Number(await uomXnumber.getAttribute('title')) * 6,
+                );
+                break;
+            default:
+                break;
+        }
+        await orderPage.isSpinnerDone();
+        driver.sleep(0.1 * 1000);
     }
 
     async function clearOrderCenterSearch(): Promise<void> {

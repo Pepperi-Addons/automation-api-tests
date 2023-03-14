@@ -17,6 +17,9 @@ export class OrderPage extends WebAppList {
     public ItemQuantity_byUOM_InteractableNumber: By = By.xpath(
         '//pep-quantity-selector//input[@id="TSAAOQMQuantity1"]',
     );
+    public ItemQuantity_byUOM_InteractableNumber_Cart: By = By.xpath(
+        '//pep-quantity-selector//button[@id="TSAAOQMQuantity1"]',
+    );
     public ItemQuantity_Minus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[3]/button');
     public ItemQuantity_Plus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[5]/button');
 
@@ -66,6 +69,22 @@ export class OrderPage extends WebAppList {
 
     public getSelectorOfCustomFieldInCartByFreeItemName(fieldName: string, itemName: string) {
         return By.xpath(`${this.getSelectorOfFreeItemInCartByName(itemName).value}${this[fieldName].value}`);
+    }
+
+    public getSelectorOfUomValueInCartByItemName(name: string) {
+        return By.xpath(`${this.getSelectorOfItemInCartByName(name).value}${this.UnitOfMeasure_Selector_Value.value}`);
+    }
+
+    public getSelectorOfNumberOfUnitsInCartByItemName(name: string) {
+        return By.xpath(
+            `${this.getSelectorOfItemInCartByName(name).value}${this.ItemQuantity_NumberOfUnits_Readonly.value}`,
+        );
+    }
+
+    public getSelectorOfAoqmQuantityInCartByItemName(name: string) {
+        return By.xpath(
+            `${this.getSelectorOfItemInCartByName(name).value}${this.ItemQuantity_byUOM_InteractableNumber_Cart.value}`,
+        );
     }
     // End of specific pricing selectors //
 
