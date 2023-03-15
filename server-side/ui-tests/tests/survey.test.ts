@@ -456,15 +456,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 }
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slideshowSlugDisplayName);
             });
-            it('Data Cleansing', async function () {
-                //TODO
-                //1. delete survey template
-                //2. delete resource views
-                //3. delete relevant pages
-                //4. delete slugs
-                //5. delete from homescreen
-                // debugger;
-            });
         });
         describe('Test Configured Survey', () => {
             this.retries(0);
@@ -580,6 +571,60 @@ export async function SurveyTests(email: string, password: string, client: Clien
                         }
                     }
                 }
+            });
+            it('Data Cleansing', async function () {
+                //TODO
+                //1. delete survey template
+                let body = { Key: surveyUUID, Hidden: true };
+                const surveyTemplateResponse = await generalService.fetchStatus(
+                    `/resources/MySurveyTemplates`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(body)
+                    },
+                );
+                //2. delete resource views
+                body = { Key: accountViewUUID, Hidden: true };
+                const Response = await generalService.fetchStatus(
+                    `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(body)
+                    },
+                );
+                body = { Key: surveyViewUUID, Hidden: true };
+                const Response2 = await generalService.fetchStatus(
+                    `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(body)
+                    },
+                );
+                //3. delete relevant pages
+                //-->
+                const Response3 = await generalService.fetchStatus(
+                    `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${surveyBlockPageUUID}`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(body)
+                    },
+                );
+                const Response4 = await generalService.fetchStatus(
+                    `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${slideshowBlockPageUUID}`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(body)
+                    },
+                );
+                //4. delete slugs
+                //- from UI
+                //5. delete from homescreen
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
+                const brandedApp = new BrandedApp(driver);
+                await brandedApp.removeAdminHomePageButtons(slideshowSlugDisplayName);
+                //- from UI
+                // debugger;
             });
         });
     });
