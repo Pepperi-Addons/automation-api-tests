@@ -504,32 +504,32 @@ const passCreate = process.env.npm_config_pass_create as string;
         } else {
             const [euUser, prodUser, sbUser] = resolveUserPerTest(addonName);
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
-            // await Promise.all([
-            // handleDevTestInstallation(
-            //     euUser,
-            //     addonName,
-            //     addonUUID,
-            //     { describe, expect, it } as TesterFunctions,
-            //     varPass,
-            //     'prod',
-            // ),
-            // handleDevTestInstallation(
-            //     prodUser,
-            //     addonName,
-            //     addonUUID,
-            //     { describe, expect, it } as TesterFunctions,
-            //     varPass,
-            //     'prod',
-            // ),
-            // handleDevTestInstallation(
-            //     sbUser,
-            //     addonName,
-            //     addonUUID,
-            //     { describe, expect, it } as TesterFunctions,
-            //     varPassSB,
-            //     'stage',
-            // ),
-            // ]);
+            await Promise.all([
+                handleDevTestInstallation(
+                    euUser,
+                    addonName,
+                    addonUUID,
+                    { describe, expect, it } as TesterFunctions,
+                    varPass,
+                    'prod',
+                ),
+                handleDevTestInstallation(
+                    prodUser,
+                    addonName,
+                    addonUUID,
+                    { describe, expect, it } as TesterFunctions,
+                    varPass,
+                    'prod',
+                ),
+                handleDevTestInstallation(
+                    sbUser,
+                    addonName,
+                    addonUUID,
+                    { describe, expect, it } as TesterFunctions,
+                    varPassSB,
+                    'stage',
+                ),
+            ]);
             debugger;
             //2. validate tested addon is installed on latest available version
             const latestVersionOfTestedAddon = await generalService.getLatestAvailableVersion(
@@ -542,7 +542,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                 validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddon, 'prod'),
                 validateLatestVersionOfAddonIsInstalled(sbUser, addonUUID, latestVersionOfTestedAddon, 'stage'),
             ]);
-            debugger;
             for (let index = 0; index < isInstalled.length; index++) {
                 const isTestedAddonInstalled = isInstalled[index];
                 if (isTestedAddonInstalled === false) {
@@ -597,7 +596,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                 devFailedEnvs.push('Stage');
             }
             //5. un - available this version if needed
-            debugger;
             if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
                 const addonToInstall = {};
                 addonToInstall[addonName] = [addonUUID, ''];
