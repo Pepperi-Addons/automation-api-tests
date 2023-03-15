@@ -201,6 +201,7 @@ export class SurveyTemplateBuilder extends AddonPage {
         await this.browser.click(this.PublishSurveyButton);
         this.browser.sleep(3000);
         await this.browser.click(this.GoBackButton);
+        this.browser.sleep(3000);
         return surveyUUID;
     }
 
