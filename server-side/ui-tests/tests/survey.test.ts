@@ -748,6 +748,108 @@ function convertApiType(type: string) {
     }
 }
 
+//this is sort of a "public api" to clean surveys without running a test - to integrate survey cleaning inside any test
+//starts from all things needed for survey on home-page and ending in everything deleted
+//*dosent delete the UDC as in the test as you dont need a UDC to use a survey
+export async function cleanSurvey(
+    generalService,
+    driver,
+    client,
+    surveyUUID,
+    accountViewUUID,
+    surveyViewUUID,
+    surveyBlockPageUUID,
+    slideshowBlockPageUUID,
+    scriptUUID,
+    slideshowSlugDisplayName,
+    surveySlugDisplayName,
+) {
+    //1. delete survey template
+    let body = { Key: surveyUUID, Hidden: true };
+    const deleteSurveyTemplateResponse = await generalService.fetchStatus(`/resources/MySurveyTemplates`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+    });
+    expect(deleteSurveyTemplateResponse.Ok).to.equal(true);
+    expect(deleteSurveyTemplateResponse.Status).to.equal(200);
+    expect(deleteSurveyTemplateResponse.Body.Key).to.equal(surveyUUID);
+    expect(deleteSurveyTemplateResponse.Body.Hidden).to.equal(true);
+    //2. delete resource views
+    body = { Key: accountViewUUID, Hidden: true };
+    const deleteAccountRLResponse = await generalService.fetchStatus(
+        `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
+        {
+            method: 'POST',
+            body: JSON.stringify(body),
+        },
+    );
+    expect(deleteAccountRLResponse.Ok).to.equal(true);
+    expect(deleteAccountRLResponse.Status).to.equal(200);
+    expect(deleteAccountRLResponse.Body.Name).to.equal('Accounts');
+    expect(deleteAccountRLResponse.Body.Hidden).to.equal(true);
+    body = { Key: surveyViewUUID, Hidden: true };
+    const deleteSurveyRLResponse = await generalService.fetchStatus(
+        `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
+        {
+            method: 'POST',
+            body: JSON.stringify(body),
+        },
+    );
+    expect(deleteSurveyRLResponse.Ok).to.equal(true);
+    expect(deleteSurveyRLResponse.Status).to.equal(200);
+    expect(deleteSurveyRLResponse.Body.Name).to.equal('Surveys');
+    expect(deleteSurveyRLResponse.Body.Hidden).to.equal(true);
+    //3. delete relevant pages
+    const deleteSurveyPageResponse = await generalService.fetchStatus(
+        `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${surveyBlockPageUUID}`,
+        {
+            method: 'POST',
+            body: JSON.stringify(body),
+        },
+    );
+    expect(deleteSurveyPageResponse.Ok).to.equal(true);
+    expect(deleteSurveyPageResponse.Status).to.equal(200);
+    expect(deleteSurveyPageResponse.Body).to.equal(true);
+    const deleteSlideShowPageResponse = await generalService.fetchStatus(
+        `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${slideshowBlockPageUUID}`,
+        {
+            method: 'POST',
+            body: JSON.stringify(body),
+        },
+    );
+    expect(deleteSlideShowPageResponse.Ok).to.equal(true);
+    expect(deleteSlideShowPageResponse.Status).to.equal(200);
+    expect(deleteSlideShowPageResponse.Body).to.equal(true);
+    //delete the script
+    const bodyForSctips = { Keys: [`${scriptUUID}`] };
+    const deleteScriptResponse = await generalService.fetchStatus(
+        `/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/delete_scripts`,
+        {
+            method: 'POST',
+            body: JSON.stringify(bodyForSctips),
+        },
+    );
+    expect(deleteScriptResponse.Ok).to.equal(true);
+    expect(deleteScriptResponse.Status).to.equal(200);
+    expect(deleteScriptResponse.Body[0].Key).to.equal(scriptUUID);
+    //4. delete slugs
+    const slugs: Slugs = new Slugs(driver);
+    const slideShowSlugsResponse = await slugs.deleteSlugByName(slideshowSlugDisplayName, client);
+    expect(slideShowSlugsResponse.Ok).to.equal(true);
+    expect(slideShowSlugsResponse.Status).to.equal(200);
+    expect(slideShowSlugsResponse.Body.success).to.equal(true);
+    const surveySlugResponse = await slugs.deleteSlugByName(surveySlugDisplayName, client);
+    expect(surveySlugResponse.Ok).to.equal(true);
+    expect(surveySlugResponse.Status).to.equal(200);
+    expect(surveySlugResponse.Body.success).to.equal(true);
+    //5. delete ATD from homescreen
+    const webAppHeader = new WebAppHeader(driver);
+    await webAppHeader.openSettings();
+    driver.sleep(6000);
+    const brandedApp = new BrandedApp(driver);
+    await brandedApp.removeAdminHomePageButtons(slideshowSlugDisplayName);
+}
+
 //this is sort of a "public api" to create surveys without running a test - to integrate survey creation inside any test
 //starts from "nothing" and ends with survey configured inside an ATD on home screen
 export async function createSurvey(
