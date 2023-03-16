@@ -172,7 +172,7 @@ export class SurveyTemplateBuilder extends AddonPage {
 
     public async enterSurveyBuilderActualBuilder(): Promise<boolean> {
         await this.browser.click(this.AddASurveyButton);
-        this.browser.sleep(2500);
+        this.browser.sleep(5500);
         return await this.validateEmptyBuilderPageIsOpened();
     }
 
