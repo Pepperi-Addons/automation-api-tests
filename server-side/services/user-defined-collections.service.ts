@@ -311,7 +311,6 @@ export class UDCService {
         const bodyToSendCollection = {
             Name: collecitonName,
             DocumentKey,
-            Extends,
             Fields,
             ListView: {
                 Type: 'Grid',
@@ -327,6 +326,9 @@ export class UDCService {
         };
         if (collectionType) {
             bodyToSendCollection['Type'] = collectionType;
+        }
+        if (Extends && Object.keys(Extends).length !== 0) {
+            bodyToSendCollection['Extends'] = Extends;
         }
         //1. create scheme with all required data
         const udcCreateResponse = await this.generalService.fetchStatus(
