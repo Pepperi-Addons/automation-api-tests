@@ -41,7 +41,7 @@ export async function PricingTests(email: string, password: string, client: Clie
     let webAppDialog: WebAppDialog;
     // let settingsSidePanel: WebAppSettingsSidePanel;
     let orderPage: OrderPage;
-    // let batchUDTresponse;
+    let batchUDTresponse;
     let transactionID: number;
     let transactionUUID: string;
     let transactionUUID_Acc01: string;
@@ -51,13 +51,38 @@ export async function PricingTests(email: string, password: string, client: Clie
     let transactionInternalID;
     let initialPpmValues;
     let updatedUDTRowPOST;
+    let item_forFreeGoods: string;
+    let item_forGroupRules: string;
+    let ToBr55priceTSAs_OC: PriceTsaFields;
+    let Drug0002priceTSAs_OC: PriceTsaFields;
+    let Drug0004priceTSAs_OC: PriceTsaFields;
 
-    const testAccounts = ['Acc01'];
-    // const testAccounts = ['Acc01', 'OtherAcc'];
-    const testStates = ['baseline', '3units', '4cases(24units)'];
-    // const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
-    const testItems = ['Lipstick no.1', 'MakeUp019', 'Frag005'];
-    // const testItems = ['Lipstick no.1', 'MakeUp019', 'Frag005', 'Frag012', 'ToBr56', 'Drug0001', 'Drug0003'];
+    // const testAccounts = ['Acc01'];
+    const testAccounts = ['Acc01', 'OtherAcc'];
+    // const testStates = ['baseline', '3units', '4cases(24units)'];
+    const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
+    // const testItems = ['Lipstick no.1', 'Spring Loaded Frizz-Fighting Conditioner', 'Frag005'];
+    const testItems = [
+        'Lipstick no.1',
+        'Spring Loaded Frizz-Fighting Conditioner',
+        'Frag005',
+        'Frag012',
+        'ToBr56',
+        'Drug0001',
+        'Drug0003',
+    ];
+    const itemsAddedToGetFreeGoods = ['ToBr55', 'Drug0002', 'Drug0004'];
+    const freeGoodsReceived = {
+        Acc01: [
+            { ToBr55_5units: { freeItem: 'ToBr10', amount: 1 }, ToBr55_20units: { freeItem: 'ToBr55', amount: 1 * 6 } },
+            { Drug0002_10cases: { freeItem: 'Drug0002', amount: 2 * 6 } },
+            { Drug0004_3cases: { freeItem: 'Drug0002', amount: 2 } },
+        ],
+        OtherAcc: [
+            { Drug0002_10cases: { freeItem: 'Drug0002', amount: 2 * 6 } },
+            { Drug0004_3cases: { freeItem: 'Drug0002', amount: 2 } },
+        ],
+    };
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
         'PriceDiscountUnitPriceAfter1',
@@ -65,30 +90,32 @@ export async function PricingTests(email: string, password: string, client: Clie
         'PriceManualLineUnitPriceAfter1',
         'PriceTaxUnitPriceAfter1',
     ];
-    // const documentsIn_PPM_Values = {
-    //     'ZBASE@A002@Acc01@Frag005': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]',
-    //     'ZBASE@A002@Acc01@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",22,"P"]]]]',
-    //     'ZBASE@A001@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",50,"P"]]]]',
-    //     'ZBASE@A001@Frag012': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",20,"P"]]]]',
-    //     'ZBASE@A003@Acc01@Pharmacy': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",30,"P"]]]]',
-    //     'ZDS1@A001@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]',
-    //     'ZDS1@A001@MakeUp019':
-    //         '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",5,"%"],[5,"D",10,"%"],[20,"D",15,"%"]]]]',
-    //     'ZDS2@A002@Acc01@ToBr55':
-    //         '[[true,"1555891200000","2534022144999","1","","Free Goods",[[5,"D",100,"%","",1,"EA","ToBr10",0],[20,"D",100,"%","",1,"CS","ToBr55",0]],"EA"]]',
-    //     'ZDS3@A001@Drug0002':
-    //         '[[true,"1555891200000","2534022144999","1","","additionalItem",[[10,"D",100,"%","",2,"CS","Drug0002",0]],"CS"]]',
-    //     'ZDS3@A001@Drug0004':
-    //         '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"CS"]]',
-    //     'ZGD1@A002@Acc01@MakeUp003':
-    //         '[[true,"1555891200000","2534022144999","1","","ZGD1_A002",[[10,"D",20,"%"]],"EA"]]',
-    //     'ZGD1@A003@Acc01@Beauty Make Up':
-    //         '[[true,"1555891200000","2534022144999","1","","ZGD1_A003",[[3,"D",3,"%"],[30,"D",7,"%"]],"EA"]]',
-    //     'ZGD1@A002@Acc01@MakeUp018':
-    //         '[[true,"1555891200000","2534022144999","1","","additionalItem",[[10,"D",100,"%","",1,"EA","MakeUp018",0]],"EA"]]',
-    //     'MTAX@A002@Acc01@Frag005': '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
-    //     'MTAX@A002@Acc01@Frag012': '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
-    // };
+    const documentsIn_PPM_Values = {
+        'ZBASE@A002@Acc01@Frag005': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]',
+        'ZBASE@A002@Acc01@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",22,"P"]]]]',
+        'ZBASE@A001@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",50,"P"]]]]',
+        'ZBASE@A001@Frag012': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",20,"P"]]]]',
+        'ZBASE@A003@Acc01@Pharmacy': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",30,"P"]]]]',
+        'ZDS1@A001@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]',
+        'ZDS1@A001@Spring Loaded Frizz-Fighting Conditioner':
+            '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",5,"%"],[5,"D",10,"%"],[20,"D",15,"%"]]]]',
+        'ZDS2@A002@Acc01@ToBr55':
+            '[[true,"1555891200000","2534022144999","1","","Free Goods",[[5,"D",100,"%","",1,"EA","ToBr10",0],[20,"D",100,"%","",1,"CS","ToBr55",0]],"EA"]]',
+        'ZDS3@A001@Drug0002':
+            '[[true,"1555891200000","2534022144999","1","","additionalItem",[[10,"D",100,"%","",2,"CS","Drug0002",0]],"CS"]]',
+        'ZDS3@A001@Drug0004':
+            '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"CS"]]',
+        'ZGD1@A002@Acc01@MakeUp003':
+            '[[true,"1555891200000","2534022144999","1","","ZGD1_A002",[[10,"D",20,"%"]],"EA"]]',
+        'ZGD1@A003@Acc01@Beauty Make Up':
+            '[[true,"1555891200000","2534022144999","1","","additionalItem",[[12,"D",100,"%","",1,"EA","MakeUp018",0]],"EA"]]',
+        'ZGD2@A002@Acc01@MakeUp018':
+            '[[true,"1555891200000","2534022144999","1","","additionalItem",[[2,"D",100,"%","",1,"EA","MakeUp018",0]],"EA"]]',
+        'ZGD2@A003@Acc01@Beauty Make Up':
+            '[[true,"1555891200000","2534022144999","1","","ZGD2_A003",[[3,"D",3,"%"],[7,"D",7,"%"]],"EA"]]',
+        'MTAX@A002@Acc01@Frag005': '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
+        'MTAX@A002@Acc01@Frag012': '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
+    };
     const testItemsData_PPM_Values = {
         'Lipstick no.1': {
             ItemPrice: 27.75,
@@ -189,15 +216,15 @@ export async function PricingTests(email: string, password: string, client: Clie
                 },
             },
         },
-        MakeUp019: {
-            ItemPrice: 15.95,
+        'Spring Loaded Frizz-Fighting Conditioner': {
+            ItemPrice: 27.0,
             NPMCalcMessage: {
                 Acc01: {
                     baseline: [],
                     '1unit': [],
                     '3units': [
                         {
-                            'ZDS1@A001@MakeUp019': [
+                            'ZDS1@A001@Spring Loaded Frizz-Fighting Conditioner': [
                                 [
                                     true,
                                     '1555891200000',
@@ -216,7 +243,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                     ],
                     '1case(6units)': [
                         {
-                            'ZDS1@A001@MakeUp019': [
+                            'ZDS1@A001@Spring Loaded Frizz-Fighting Conditioner': [
                                 [
                                     true,
                                     '1555891200000',
@@ -235,7 +262,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                     ],
                     '4cases(24units)': [
                         {
-                            'ZDS1@A001@MakeUp019': [
+                            'ZDS1@A001@Spring Loaded Frizz-Fighting Conditioner': [
                                 [
                                     true,
                                     '1555891200000',
@@ -258,7 +285,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                     '1unit': [],
                     '3units': [
                         {
-                            'ZDS1@A001@MakeUp019': [
+                            'ZDS1@A001@Spring Loaded Frizz-Fighting Conditioner': [
                                 [
                                     true,
                                     '1555891200000',
@@ -277,7 +304,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                     ],
                     '1case(6units)': [
                         {
-                            'ZDS1@A001@MakeUp019': [
+                            'ZDS1@A001@Spring Loaded Frizz-Fighting Conditioner': [
                                 [
                                     true,
                                     '1555891200000',
@@ -296,7 +323,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                     ],
                     '4cases(24units)': [
                         {
-                            'ZDS1@A001@MakeUp019': [
+                            'ZDS1@A001@Spring Loaded Frizz-Fighting Conditioner': [
                                 [
                                     true,
                                     '1555891200000',
@@ -317,82 +344,82 @@ export async function PricingTests(email: string, password: string, client: Clie
             },
             PriceBaseUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 15.95,
-                    '1unit': 15.95,
-                    '3units': 15.95,
-                    '1case(6units)': 15.95,
-                    '4cases(24units)': 15.95,
+                    baseline: 27.0,
+                    '1unit': 27.0,
+                    '3units': 27.0,
+                    '1case(6units)': 27.0,
+                    '4cases(24units)': 27.0,
                 },
                 OtherAcc: {
-                    baseline: 15.95,
-                    '1unit': 15.95,
-                    '3units': 15.95,
-                    '1case(6units)': 15.95,
-                    '4cases(24units)': 15.95,
+                    baseline: 27.0,
+                    '1unit': 27.0,
+                    '3units': 27.0,
+                    '1case(6units)': 27.0,
+                    '4cases(24units)': 27.0,
                 },
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 15.95,
-                    '1unit': 15.95,
-                    '3units': 15.15,
-                    '1case(6units)': 14.35,
-                    '4cases(24units)': 13.55,
+                    baseline: 27.0,
+                    '1unit': 27.0,
+                    '3units': 27 * 0.95,
+                    '1case(6units)': 27 * 0.9,
+                    '4cases(24units)': 27 * 0.85,
                 },
                 OtherAcc: {
-                    baseline: 15.95,
-                    '1unit': 15.95,
-                    '3units': 15.15,
-                    '1case(6units)': 14.35,
-                    '4cases(24units)': 13.55,
+                    baseline: 27.0,
+                    '1unit': 27.0,
+                    '3units': 27 * 0.95,
+                    '1case(6units)': 27 * 0.9,
+                    '4cases(24units)': 27 * 0.85,
                 },
             },
             PriceGroupDiscountUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 15.95,
-                    '1unit': 15.95,
-                    '3units': 15.95,
-                    '1case(6units)': 15.95,
-                    '4cases(24units)': 15.95,
+                    baseline: 27.0,
+                    '1unit': 27.0,
+                    '3units': 27.0,
+                    '1case(6units)': 27.0,
+                    '4cases(24units)': 27.0,
                 },
                 OtherAcc: {
-                    baseline: 15.95,
-                    '1unit': 15.95,
-                    '3units': 15.95,
-                    '1case(6units)': 15.95,
-                    '4cases(24units)': 15.95,
+                    baseline: 27.0,
+                    '1unit': 27.0,
+                    '3units': 27.0,
+                    '1case(6units)': 27.0,
+                    '4cases(24units)': 27.0,
                 },
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 15.95,
-                    '1unit': 15.95,
-                    '3units': 15.15,
-                    '1case(6units)': 14.35,
-                    '4cases(24units)': 13.55,
+                    baseline: 27.0,
+                    '1unit': 27.0,
+                    '3units': 27 * 0.95,
+                    '1case(6units)': 27 * 0.9,
+                    '4cases(24units)': 27 * 0.85,
                 },
                 OtherAcc: {
-                    baseline: 15.95,
-                    '1unit': 15.95,
-                    '3units': 15.15,
-                    '1case(6units)': 14.35,
-                    '4cases(24units)': 13.55,
+                    baseline: 27.0,
+                    '1unit': 27.0,
+                    '3units': 27 * 0.95,
+                    '1case(6units)': 27 * 0.9,
+                    '4cases(24units)': 27 * 0.85,
                 },
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 15.95,
-                    '1unit': 15.95,
-                    '3units': 15.15,
-                    '1case(6units)': 14.35,
-                    '4cases(24units)': 13.55,
+                    baseline: 27.0,
+                    '1unit': 27.0,
+                    '3units': 27 * 0.95,
+                    '1case(6units)': 27 * 0.9,
+                    '4cases(24units)': 27 * 0.85,
                 },
                 OtherAcc: {
-                    baseline: 15.95,
-                    '1unit': 15.95,
-                    '3units': 15.15,
-                    '1case(6units)': 14.35,
-                    '4cases(24units)': 13.55,
+                    baseline: 27.0,
+                    '1unit': 27.0,
+                    '3units': 27 * 0.95,
+                    '1case(6units)': 27 * 0.9,
+                    '4cases(24units)': 27 * 0.85,
                 },
             },
         },
@@ -784,178 +811,402 @@ export async function PricingTests(email: string, password: string, client: Clie
             },
         },
         ToBr55: {
+            // Additional items rule
             ItemPrice: 29.25,
             NPMCalcMessage: {
                 Acc01: {
                     baseline: [],
-                    '1unit': [],
-                    '3units': [],
-                    '1case(6units)': [],
-                    '4cases(24units)': [],
+                    '5units': [
+                        {
+                            'ZDS2@A002@Acc01@ToBr55': [
+                                [
+                                    true,
+                                    '1555891200000',
+                                    '2534022144999',
+                                    '1',
+                                    '',
+                                    'Free Goods',
+                                    [
+                                        [5, 'D', 100, '%', '', 1, 'EA', 'ToBr10', 0],
+                                        [20, 'D', 100, '%', '', 1, 'CS', 'ToBr55', 0],
+                                    ],
+                                    'EA',
+                                ],
+                            ],
+                        },
+                    ],
+                    '20units': [
+                        {
+                            'ZDS2@A002@Acc01@ToBr55': [
+                                [
+                                    true,
+                                    '1555891200000',
+                                    '2534022144999',
+                                    '1',
+                                    '',
+                                    'Free Goods',
+                                    [
+                                        [5, 'D', 100, '%', '', 1, 'EA', 'ToBr10', 0],
+                                        [20, 'D', 100, '%', '', 1, 'CS', 'ToBr55', 0],
+                                    ],
+                                    'EA',
+                                ],
+                            ],
+                        },
+                    ],
                 },
                 OtherAcc: {
                     baseline: [],
-                    '1unit': [],
-                    '3units': [],
-                    '1case(6units)': [],
-                    '4cases(24units)': [],
+                    '5units': [],
+                    '20units': [],
                 },
             },
             PriceBaseUnitPriceAfter1: {
-                Acc01: {
-                    baseline: 29.25,
-                    '1unit': 29.25,
-                    '3units': 29.25,
-                    '1case(6units)': 29.25,
-                    '4cases(24units)': 29.25,
-                },
-                OtherAcc: {
-                    baseline: 29.25,
-                    '1unit': 29.25,
-                    '3units': 29.25,
-                    '1case(6units)': 29.25,
-                    '4cases(24units)': 29.25,
-                },
+                Acc01: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 29.25 },
+                OtherAcc: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 29.25 },
             },
             PriceDiscountUnitPriceAfter1: {
-                Acc01: {
-                    baseline: 29.25,
-                    '1unit': 29.25,
-                    '3units': 29.25,
-                    '1case(6units)': 29.25,
-                    '4cases(24units)': 29.25,
-                },
-                OtherAcc: {
-                    baseline: 29.25,
-                    '1unit': 29.25,
-                    '3units': 29.25,
-                    '1case(6units)': 29.25,
-                    '4cases(24units)': 29.25,
-                },
+                Acc01: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
+                OtherAcc: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
             },
             PriceGroupDiscountUnitPriceAfter1: {
-                Acc01: {
-                    baseline: 29.25,
-                    '1unit': 29.25,
-                    '3units': 29.25,
-                    '1case(6units)': 29.25,
-                    '4cases(24units)': 29.25,
-                },
-                OtherAcc: {
-                    baseline: 29.25,
-                    '1unit': 29.25,
-                    '3units': 29.25,
-                    '1case(6units)': 29.25,
-                    '4cases(24units)': 29.25,
-                },
+                Acc01: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
+                OtherAcc: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
             },
             PriceManualLineUnitPriceAfter1: {
-                Acc01: {
-                    baseline: 29.25,
-                    '1unit': 29.25,
-                    '3units': 29.25,
-                    '1case(6units)': 29.25,
-                    '4cases(24units)': 29.25,
-                },
-                OtherAcc: {
-                    baseline: 29.25,
-                    '1unit': 29.25,
-                    '3units': 29.25,
-                    '1case(6units)': 29.25,
-                    '4cases(24units)': 29.25,
-                },
+                Acc01: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
+                OtherAcc: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
             },
             PriceTaxUnitPriceAfter1: {
-                Acc01: {
-                    baseline: 29.25,
-                    '1unit': 29.25,
-                    '3units': 29.25,
-                    '1case(6units)': 29.25,
-                    '4cases(24units)': 29.25,
-                },
-                OtherAcc: {
-                    baseline: 29.25,
-                    '1unit': 29.25,
-                    '3units': 29.25,
-                    '1case(6units)': 29.25,
-                    '4cases(24units)': 29.25,
-                },
+                Acc01: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
+                OtherAcc: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
             },
         },
         Drug0002: {
+            // Additional items rule
             ItemPrice: 31.25,
             NPMCalcMessage: {
                 Acc01: {
-                    baseline: [],
-                    '1unit': [],
-                    '3units': [],
-                    '1case(6units)': [],
-                    '4cases(24units)': [],
+                    baseline: [
+                        {
+                            'ZBASE@A003@Acc01@Pharmacy': [
+                                [true, '1555891200000', '2534022144999', '1', '1', 'ZBASE_A003', [[0, 'S', 30, 'P']]],
+                            ],
+                        },
+                    ],
+                    '9case(54units)': [],
+                    '10cases(60units)': [
+                        {
+                            'ZDS3@A001@Drug0002': [
+                                [
+                                    true,
+                                    '1555891200000',
+                                    '2534022144999',
+                                    '1',
+                                    '',
+                                    'additionalItem',
+                                    [[10, 'D', 100, '%', '', 2, 'CS', 'Drug0002', 0]],
+                                    'CS',
+                                ],
+                            ],
+                        },
+                    ],
                 },
                 OtherAcc: {
                     baseline: [],
-                    '1unit': [],
-                    '3units': [],
-                    '1case(6units)': [],
-                    '4cases(24units)': [],
+                    '9case(54units)': [],
+                    '10cases(60units)': [
+                        {
+                            'ZDS3@A001@Drug0002': [
+                                [
+                                    true,
+                                    '1555891200000',
+                                    '2534022144999',
+                                    '1',
+                                    '',
+                                    'additionalItem',
+                                    [[10, 'D', 100, '%', '', 2, 'CS', 'Drug0002', 0]],
+                                    'CS',
+                                ],
+                            ],
+                        },
+                    ],
                 },
             },
             PriceBaseUnitPriceAfter1: {
-                Acc01: { baseline: 30, '1unit': 30, '3units': 30, '1case(6units)': 30, '4cases(24units)': 30 },
-                OtherAcc: {
-                    baseline: 31.25,
-                    '1unit': 31.25,
-                    '3units': 31.25,
-                    '1case(6units)': 31.25,
-                    '4cases(24units)': 31.25,
-                },
+                Acc01: { baseline: 30, '9case(54units)': 30, '10cases(60units)': 30, additional: 30 },
+                OtherAcc: { baseline: 31.25, '9case(54units)': 31.25, '10cases(60units)': 31.25, additional: 31.25 },
             },
             PriceDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 30, '1unit': 30, '3units': 30, '1case(6units)': 30, '4cases(24units)': 30 },
-                OtherAcc: {
-                    baseline: 31.25,
-                    '1unit': 31.25,
-                    '3units': 31.25,
-                    '1case(6units)': 31.25,
-                    '4cases(24units)': 31.25,
-                },
+                Acc01: { baseline: 30, '9case(54units)': 30, '10cases(60units)': 30, additional: 0.0 },
+                OtherAcc: { baseline: 31.25, '9case(54units)': 31.25, '10cases(60units)': 31.25, additional: 0.0 },
             },
             PriceGroupDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 30, '1unit': 30, '3units': 30, '1case(6units)': 30, '4cases(24units)': 30 },
-                OtherAcc: {
-                    baseline: 31.25,
-                    '1unit': 31.25,
-                    '3units': 31.25,
-                    '1case(6units)': 31.25,
-                    '4cases(24units)': 31.25,
-                },
+                Acc01: { baseline: 30, '9case(54units)': 30, '10cases(60units)': 30, additional: 0.0 },
+                OtherAcc: { baseline: 31.25, '9case(54units)': 31.25, '10cases(60units)': 31.25, additional: 0.0 },
             },
             PriceManualLineUnitPriceAfter1: {
-                Acc01: { baseline: 30, '1unit': 30, '3units': 30, '1case(6units)': 30, '4cases(24units)': 30 },
-                OtherAcc: {
-                    baseline: 31.25,
-                    '1unit': 31.25,
-                    '3units': 31.25,
-                    '1case(6units)': 31.25,
-                    '4cases(24units)': 31.25,
-                },
+                Acc01: { baseline: 30, '9case(54units)': 30, '10cases(60units)': 30, additional: 0.0 },
+                OtherAcc: { baseline: 31.25, '9case(54units)': 31.25, '10cases(60units)': 31.25, additional: 0.0 },
             },
             PriceTaxUnitPriceAfter1: {
-                Acc01: { baseline: 30, '1unit': 30, '3units': 30, '1case(6units)': 30, '4cases(24units)': 30 },
-                OtherAcc: {
-                    baseline: 31.25,
-                    '1unit': 31.25,
-                    '3units': 31.25,
-                    '1case(6units)': 31.25,
-                    '4cases(24units)': 31.25,
+                Acc01: { baseline: 30, '9case(54units)': 30, '10cases(60units)': 30, additional: 0.0 },
+                OtherAcc: { baseline: 31.25, '9case(54units)': 31.25, '10cases(60units)': 31.25, additional: 0.0 },
+            },
+        },
+        Drug0004: {
+            // Additional items rule
+            ItemPrice: 33.25,
+            NPMCalcMessage: {
+                Acc01: {
+                    baseline: [
+                        {
+                            'ZBASE@A003@Acc01@Pharmacy': [
+                                [true, '1555891200000', '2534022144999', '1', '1', 'ZBASE_A003', [[0, 'S', 30, 'P']]],
+                            ],
+                        },
+                    ],
+                    '2case(12units)': [],
+                    '3cases(18units)': [
+                        {
+                            'ZDS3@A001@Drug0004': [
+                                [
+                                    true,
+                                    '1555891200000',
+                                    '2534022144999',
+                                    '1',
+                                    '',
+                                    'additionalItem',
+                                    [[3, 'D', 100, '%', '', 2, 'EA', 'Drug0002', 0]],
+                                    'CS',
+                                ],
+                            ],
+                        },
+                    ],
                 },
+                OtherAcc: {
+                    baseline: [],
+                    '2case(12units)': [],
+                    '3cases(18units)': [
+                        {
+                            'ZDS3@A001@Drug0004': [
+                                [
+                                    true,
+                                    '1555891200000',
+                                    '2534022144999',
+                                    '1',
+                                    '',
+                                    'additionalItem',
+                                    [[3, 'D', 100, '%', '', 2, 'EA', 'Drug0002', 0]],
+                                    'CS',
+                                ],
+                            ],
+                        },
+                    ],
+                },
+            },
+            PriceBaseUnitPriceAfter1: {
+                Acc01: { baseline: 30, '2case(12units)': 30, '3cases(18units)': 30 },
+                OtherAcc: { baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
+            },
+            PriceDiscountUnitPriceAfter1: {
+                Acc01: { baseline: 30, '2case(12units)': 30, '3cases(18units)': 30 },
+                OtherAcc: { baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
+            },
+            PriceGroupDiscountUnitPriceAfter1: {
+                Acc01: { baseline: 30, '2case(12units)': 30, '3cases(18units)': 30 },
+                OtherAcc: { baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
+            },
+            PriceManualLineUnitPriceAfter1: {
+                Acc01: { baseline: 30, '2case(12units)': 30, '3cases(18units)': 30 },
+                OtherAcc: { baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
+            },
+            PriceTaxUnitPriceAfter1: {
+                Acc01: { baseline: 30, '2case(12units)': 30, '3cases(18units)': 30 },
+                OtherAcc: { baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
             },
         },
         ToBr10: {
+            // Additional item
             ItemPrice: 28.5,
+            PriceBaseUnitPriceAfter1: {
+                Acc01: { additional: 28.5 },
+                OtherAcc: { additional: 28.5 },
+            },
+            PriceDiscountUnitPriceAfter1: {
+                Acc01: { additional: 0.0 },
+                OtherAcc: { additional: 0.0 },
+            },
+            PriceGroupDiscountUnitPriceAfter1: {
+                Acc01: { additional: 0.0 },
+                OtherAcc: { additional: 0.0 },
+            },
+            PriceManualLineUnitPriceAfter1: {
+                Acc01: { additional: 0.0 },
+                OtherAcc: { additional: 0.0 },
+            },
+            PriceTaxUnitPriceAfter1: {
+                Acc01: { additional: 0.0 },
+                OtherAcc: { additional: 0.0 },
+            },
+        },
+        BeautyMakeUp: {
+            // Group Rules
             NPMCalcMessage: {
                 Acc01: {
                     baseline: [],
+                    '2unit': [],
+                    '3units': [
+                        {
+                            Name: 'GroupDiscount',
+                            Base: 86.25,
+                            Conditions: [{ Name: 'ZGD2_A003', Type: '%', Value: -3, Amount: -2.5875 }],
+                            New: 83.6625,
+                            Amount: -2.5875000000000057,
+                        },
+                    ],
+                    '6units': [
+                        {
+                            Name: 'GroupDiscount',
+                            Base: 172.5,
+                            Conditions: [{ Name: 'ZGD2_A003', Type: '%', Value: -3, Amount: -5.175 }],
+                            New: 167.325,
+                            Amount: -5.175000000000011,
+                        },
+                    ],
+                    '7units': [
+                        {
+                            Name: 'GroupDiscount',
+                            Base: 201.25,
+                            Conditions: [{ Name: 'ZGD2_A003', Type: '%', Value: -7, Amount: -14.0875 }],
+                            New: 187.1625,
+                            Amount: -14.087500000000006,
+                        },
+                    ],
+                    '11units': [
+                        {
+                            Name: 'GroupDiscount',
+                            Base: 316.25,
+                            Conditions: [{ Name: 'ZGD2_A003', Type: '%', Value: -7, Amount: -22.1375 }],
+                            New: 294.1125,
+                            Amount: -22.13749999999999,
+                        },
+                    ],
+                    '12units': [
+                        {
+                            Name: 'GroupDiscount',
+                            Base: 345,
+                            Conditions: [{ Name: 'ZGD1_A003', Type: 'additionalItem', Value: 1, Amount: 1 }],
+                            New: 345,
+                            Amount: 0,
+                        },
+                    ],
+                },
+                OtherAcc: {
+                    baseline: [],
+                    '2unit': [],
+                    '3units': [],
+                    '6units': [],
+                    '7units': [],
+                    '11units': [],
+                    '12units': [],
+                },
+            },
+            PriceBaseUnitPriceAfter1: {
+                Acc01: {
+                    baseline: 28.75,
+                    '2unit': 28.75,
+                    '3units': 28.75,
+                    '6units': 28.75,
+                    '7units': 28.75,
+                    '11units': 28.75,
+                    '12units': 28.75,
+                },
+                OtherAcc: {
+                    baseline: 28.75,
+                    '1unit': 28.75,
+                    '3units': 28.75,
+                    '1case(6units)': 28.75,
+                    '4cases(24units)': 28.75,
+                },
+            },
+            PriceDiscountUnitPriceAfter1: {
+                Acc01: {
+                    baseline: 28.75,
+                    '1unit': 28.75,
+                    '3units': 28.75,
+                    '1case(6units)': 28.75,
+                    '4cases(24units)': 28.75,
+                },
+                OtherAcc: {
+                    baseline: 28.75,
+                    '1unit': 28.75,
+                    '3units': 28.75,
+                    '1case(6units)': 28.75,
+                    '4cases(24units)': 28.75,
+                },
+            },
+            PriceGroupDiscountUnitPriceAfter1: {
+                Acc01: {
+                    baseline: 28.75,
+                    '1unit': 28.75,
+                    '3units': 28.75,
+                    '1case(6units)': 28.75,
+                    '4cases(24units)': 28.75,
+                },
+                OtherAcc: {
+                    baseline: 28.75,
+                    '1unit': 28.75,
+                    '3units': 28.75,
+                    '1case(6units)': 28.75,
+                    '4cases(24units)': 28.75,
+                },
+            },
+            PriceManualLineUnitPriceAfter1: {
+                Acc01: {
+                    baseline: 28.75,
+                    '1unit': 28.75,
+                    '3units': 28.75,
+                    '1case(6units)': 28.75,
+                    '4cases(24units)': 28.75,
+                },
+                OtherAcc: {
+                    baseline: 28.75,
+                    '1unit': 28.75,
+                    '3units': 28.75,
+                    '1case(6units)': 28.75,
+                    '4cases(24units)': 28.75,
+                },
+            },
+            PriceTaxUnitPriceAfter1: {
+                Acc01: {
+                    baseline: 28.75,
+                    '1unit': 28.75,
+                    '3units': 28.75,
+                    '1case(6units)': 28.75,
+                    '4cases(24units)': 28.75,
+                },
+                OtherAcc: {
+                    baseline: 28.75,
+                    '1unit': 28.75,
+                    '3units': 28.75,
+                    '1case(6units)': 28.75,
+                    '4cases(24units)': 28.75,
+                },
+            },
+        },
+        MakeUp003: {
+            // Group Rules
+            ItemPrice: 30.75,
+            NPMCalcMessage: {
+                Acc01: {
+                    baseline: [
+                        {
+                            'ZBASE@A003@Acc01@Pharmacy': [
+                                [true, '1555891200000', '2534022144999', '1', '1', 'ZBASE_A003', [[0, 'S', 30, 'P']]],
+                            ],
+                        },
+                    ],
                     '1unit': [],
                     '3units': [],
                     '1case(6units)': [],
@@ -971,88 +1222,137 @@ export async function PricingTests(email: string, password: string, client: Clie
             },
             PriceBaseUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 30.75,
+                    '2unit': 30.75,
+                    '3units': 30.75,
+                    '6units': 30.75,
+                    '7units': 30.75,
+                    '9units': 30.75,
+                    '10units': 30.75,
+                    '11units': 30.75,
+                    '12units': 30.75,
                 },
                 OtherAcc: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 30.75,
+                    '2unit': 30.75,
+                    '3units': 30.75,
+                    '6units': 30.75,
+                    '7units': 30.75,
+                    '9units': 30.75,
+                    '10units': 30.75,
+                    '11units': 30.75,
+                    '12units': 30.75,
                 },
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 30.75,
+                    '1unit': 30.75,
+                    '3units': 30.75,
+                    '1case(6units)': 30.75,
+                    '4cases(24units)': 30.75,
                 },
                 OtherAcc: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 30.75,
+                    '1unit': 30.75,
+                    '3units': 30.75,
+                    '1case(6units)': 30.75,
+                    '4cases(24units)': 30.75,
                 },
             },
             PriceGroupDiscountUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 30.75,
+                    '1unit': 30.75,
+                    '3units': 30.75,
+                    '1case(6units)': 30.75,
+                    '4cases(24units)': 30.75,
                 },
                 OtherAcc: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 30.75,
+                    '1unit': 30.75,
+                    '3units': 30.75,
+                    '1case(6units)': 30.75,
+                    '4cases(24units)': 30.75,
                 },
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 30.75,
+                    '1unit': 30.75,
+                    '3units': 30.75,
+                    '1case(6units)': 30.75,
+                    '4cases(24units)': 30.75,
                 },
                 OtherAcc: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 30.75,
+                    '1unit': 30.75,
+                    '3units': 30.75,
+                    '1case(6units)': 30.75,
+                    '4cases(24units)': 30.75,
                 },
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 30.75,
+                    '1unit': 30.75,
+                    '3units': 30.75,
+                    '1case(6units)': 30.75,
+                    '4cases(24units)': 30.75,
                 },
                 OtherAcc: {
-                    baseline: 27.75,
-                    '1unit': 27.75,
-                    '3units': 27.75,
-                    '1case(6units)': 27.75,
-                    '4cases(24units)': 27.75,
+                    baseline: 30.75,
+                    '1unit': 30.75,
+                    '3units': 30.75,
+                    '1case(6units)': 30.75,
+                    '4cases(24units)': 30.75,
                 },
             },
         },
     };
 
     describe('Pricing Test Suite', async () => {
+        describe('Data Prep', () => {
+            it('inserting rules to the UDT "PPM_Values"', async () => {
+                const tableName = 'PPM_Values';
+                const dataToBatch: {
+                    MapDataExternalID: string;
+                    MainKey: string;
+                    SecondaryKey: string;
+                    Values: string[];
+                }[] = [];
+                Object.keys(documentsIn_PPM_Values).forEach((mainKey) => {
+                    dataToBatch.push({
+                        MapDataExternalID: tableName,
+                        MainKey: mainKey,
+                        SecondaryKey: '',
+                        Values: [documentsIn_PPM_Values[mainKey]],
+                    });
+                });
+                batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
+                expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
+                batchUDTresponse.map((row) => {
+                    expect(row).to.have.property('InternalID').that.is.above(0);
+                    expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+                    expect(row).to.have.property('Status').that.equals('Insert');
+                    expect(row).to.have.property('Message').that.equals('Row inserted.');
+                    expect(row)
+                        .to.have.property('URI')
+                        .that.equals('/user_defined_tables/' + row.InternalID);
+                });
+            });
+            it('get UDT Values (PPM_Values)', async () => {
+                initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'" });
+                console.info('PPM_Values: ', initialPpmValues);
+            });
+            it('validating "PPM_Values" via API', async () => {
+                expect(initialPpmValues.length).equals(Object.keys(documentsIn_PPM_Values).length);
+                initialPpmValues.forEach((tableRow) => {
+                    expect(tableRow['Values'][0]).equals(documentsIn_PPM_Values[tableRow.MainKey]);
+                });
+            });
+        });
+
         describe('Pricing UI tests', () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
@@ -1075,60 +1375,8 @@ export async function PricingTests(email: string, password: string, client: Clie
             });
 
             describe('Sales Order Transaction', () => {
-                it('Get UDT Values (PPM_Values)', async () => {
-                    initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'" });
-                    console.info('PPM_Values: ', initialPpmValues);
-                });
-                // it('Data Prep (inserting rules to UDT PPM_Values)', async () => {
-                //     const dataToBatch = [
-                //         {
-                //             MapDataExternalID: 'PPM_Values',
-                //             MainKey: 'MTAX@A002@Pharmacy',
-                //             SecondaryKey: '',
-                //             Values: ['[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]'],
-                //         },
-                //         // {
-                //         //     MapDataExternalID: 'PPM_Values',
-                //         //     MainKey: 'batch API Test row 2',
-                //         //     SecondaryKey: '',
-                //         //     Values: ['Api Test value 2'],
-                //         // },
-                //         // {
-                //         //     MapDataExternalID: 'PPM_Values',
-                //         //     MainKey: 'batch API Test row 3',
-                //         //     SecondaryKey: '',
-                //         //     Values: ['Api Test value 3'],
-                //         // },
-                //         // {
-                //         //     MapDataExternalID: 'PPM_Values',
-                //         //     MainKey: 'batch API Test row 4',
-                //         //     SecondaryKey: '',
-                //         //     Values: ['Api Test value 4'],
-                //         // },
-                //     ];
-                //     batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
-                //     expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
-                //     batchUDTresponse.map((row) => {
-                //         expect(row).to.have.property('InternalID').that.is.above(0);
-                //         expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
-                //         expect(row).to.have.property('Status').that.equals('Insert');
-                //         expect(row).to.have.property('Message').that.equals('Row inserted.');
-                //         expect(row)
-                //             .to.have.property('URI')
-                //             .that.equals('/user_defined_tables/' + row.InternalID);
-                //     });
-                //     await webAppHeader.goHome();
-                //     await webAppHomePage.isSpinnerDone();
-                //     await webAppHeader.openSettings();
-                //     await webAppHeader.isSpinnerDone();
-                //     driver.sleep(0.5 * 1000);
-                //     await settingsSidePanel.selectSettingsByID('Configuration');
-                //     await settingsSidePanel.clickSettingsSubCategory('user_defined_tables', 'Configuration');
-                //     await webAppHeader.isSpinnerDone();
-                //     driver.sleep(10 * 1000);
-                // });
                 testAccounts.forEach((account) => {
-                    describe(`Account "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, () => {
+                    describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, () => {
                         it('Creating new transaction', async () => {
                             switch (account) {
                                 case 'Acc01':
@@ -1146,8 +1394,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
                             }
                         });
+
                         testStates.forEach((state) => {
-                            describe(`Order Center "${state}"`, () => {
+                            describe(`ORDER CENTER "${state}"`, () => {
                                 testItems.forEach((item) => {
                                     it(`checking item "${item}"`, async () => {
                                         await searchInOrderCenter(item);
@@ -1155,16 +1404,32 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
                                         ) {
                                             case '1unit':
-                                                await changeSelectedQuantityOfSpecificItem('Each', item, 1);
+                                                await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                                    'Each',
+                                                    item,
+                                                    1,
+                                                );
                                                 break;
                                             case '3units':
-                                                await changeSelectedQuantityOfSpecificItem('Each', item, 3);
+                                                await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                                    'Each',
+                                                    item,
+                                                    3,
+                                                );
                                                 break;
                                             case '1case(6units)':
-                                                await changeSelectedQuantityOfSpecificItem('Case', item, 1);
+                                                await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                                    'Case',
+                                                    item,
+                                                    1,
+                                                );
                                                 break;
                                             case '4cases(24units)':
-                                                await changeSelectedQuantityOfSpecificItem('Case', item, 4);
+                                                await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                                    'Case',
+                                                    item,
+                                                    4,
+                                                );
                                                 break;
 
                                             default:
@@ -1216,18 +1481,18 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
 
                                 default:
-                                    describe(`Cart "${state}"`, () => {
+                                    describe(`CART "${state}"`, () => {
                                         it('enter cart', async () => {
                                             await driver.click(orderPage.Cart_Button);
                                             await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName(''));
                                             driver.sleep(1 * 1000);
                                         });
                                         it('verify that the sum total of items in the cart is correct', async () => {
-                                            const cartNumberOfItems = await (
+                                            const itemsInCart = await (
                                                 await driver.findElement(orderPage.Cart_Headline_Results_Number)
                                             ).getText();
                                             driver.sleep(0.2 * 1000);
-                                            expect(Number(cartNumberOfItems)).to.equal(testItems.length);
+                                            expect(Number(itemsInCart)).to.equal(testItems.length);
                                             driver.sleep(1 * 1000);
                                         });
                                         testItems.forEach(async (item) => {
@@ -1256,27 +1521,231 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
                             }
                         });
+
                         describe('Additional Items (Free Goods)', () => {
-                            describe('Order Center', () => {
-                                it('adding item "ToBr55" in quantity that gets 1 item of "ToBr10" for free (from 5 units "Each") (only on "My store")', async () => {
-                                    const item = 'ToBr55';
-                                    driver.sleep(1 * 1000);
-                                    await searchInOrderCenter(item);
-                                    await changeSelectedQuantityOfSpecificItem('Each', item, 5);
-                                    // const ToBr55priceTSAsOC = await getItemTSAs('OrderCenter', item);
-                                    // expects
-                                    await clearOrderCenterSearch();
-                                    driver.sleep(1 * 1000);
+                            describe('ORDER CENTER', () => {
+                                describe('item "ToBr55" - quantity that gets 1 item of "ToBr10" for free (from 5 units "Each") (only on "My store")', () => {
+                                    ['4 Each', '5 Each', '20 Each'].forEach((unitAmount, index) => {
+                                        it(`${unitAmount}`, async () => {
+                                            item_forFreeGoods = 'ToBr55';
+                                            const states = ['baseline', '5units', '20units'];
+                                            switch (unitAmount) {
+                                                case '4 Each':
+                                                    driver.sleep(1 * 1000);
+                                                    await searchInOrderCenter(item_forFreeGoods);
+                                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                                        'Each',
+                                                        item_forFreeGoods,
+                                                        4,
+                                                    );
+                                                    break;
+
+                                                case '5 Each':
+                                                    await driver.click(
+                                                        orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(
+                                                            item_forFreeGoods,
+                                                        ),
+                                                    );
+                                                    driver.sleep(0.5 * 1000);
+                                                    break;
+
+                                                case '20 Each':
+                                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                                        'Each',
+                                                        item_forFreeGoods,
+                                                        20,
+                                                    );
+                                                    break;
+
+                                                default:
+                                                    break;
+                                            }
+                                            ToBr55priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
+                                            console.info(`ToBr55priceTSAs_OC (${unitAmount}): `, ToBr55priceTSAs_OC);
+
+                                            expect(typeof ToBr55priceTSAs_OC).equals('object');
+                                            expect(Object.keys(ToBr55priceTSAs_OC)).to.eql([
+                                                'PriceBaseUnitPriceAfter1',
+                                                'PriceDiscountUnitPriceAfter1',
+                                                'PriceGroupDiscountUnitPriceAfter1',
+                                                'PriceManualLineUnitPriceAfter1',
+                                                'PriceTaxUnitPriceAfter1',
+                                                'NPMCalcMessage',
+                                            ]);
+                                            expect(ToBr55priceTSAs_OC.NPMCalcMessage.length).equals(
+                                                testItemsData_PPM_Values[item_forFreeGoods]['NPMCalcMessage'][account][
+                                                    'baseline'
+                                                ].length +
+                                                    testItemsData_PPM_Values[item_forFreeGoods]['NPMCalcMessage'][
+                                                        account
+                                                    ][states[index]].length,
+                                            );
+                                            priceFields.forEach((priceField) => {
+                                                expect(ToBr55priceTSAs_OC[priceField]).equals(
+                                                    testItemsData_PPM_Values[item_forFreeGoods][priceField][account][
+                                                        states[index]
+                                                    ],
+                                                );
+                                            });
+                                            driver.sleep(0.2 * 1000);
+                                        });
+                                    });
+
+                                    it('Back to 4 Each', async () => {
+                                        await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                            'Each',
+                                            item_forFreeGoods,
+                                            4,
+                                        );
+                                        driver.sleep(0.5 * 1000);
+                                        await clearOrderCenterSearch();
+                                        driver.sleep(0.5 * 1000);
+                                    });
                                 });
-                                it('adding item "Drug0002" in quantity that gets 2 items for free (from 10 in "Case")', async () => {
-                                    const item = 'Drug0002';
-                                    await searchInOrderCenter(item);
-                                    await changeSelectedQuantityOfSpecificItem('Case', item, 10);
-                                    // const Drug0002priceTSAsOC = await getItemTSAs('OrderCenter', item);
-                                    // expects
-                                    await clearOrderCenterSearch();
-                                    driver.sleep(1 * 1000);
+                                describe('item "Drug0002" - quantity that gets 2 "Cases" of items for free (from 10 in "Case")', () => {
+                                    ['9 Cases', '10 Cases'].forEach((unitAmount, index) => {
+                                        it(`${unitAmount}`, async () => {
+                                            item_forFreeGoods = 'Drug0002';
+                                            const states = ['9case(54units)', '10cases(60units)'];
+                                            switch (unitAmount) {
+                                                case '9 Cases':
+                                                    await searchInOrderCenter(item_forFreeGoods);
+                                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                                        'Case',
+                                                        item_forFreeGoods,
+                                                        9,
+                                                    );
+                                                    break;
+
+                                                case '10 Cases':
+                                                    await driver.click(
+                                                        orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(
+                                                            item_forFreeGoods,
+                                                        ),
+                                                    );
+                                                    driver.sleep(0.5 * 1000);
+                                                    break;
+
+                                                default:
+                                                    break;
+                                            }
+                                            Drug0002priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
+                                            console.info(
+                                                `Drug0002priceTSAs_OC (${unitAmount}): `,
+                                                Drug0002priceTSAs_OC,
+                                            );
+
+                                            expect(typeof Drug0002priceTSAs_OC).equals('object');
+                                            expect(Object.keys(Drug0002priceTSAs_OC)).to.eql([
+                                                'PriceBaseUnitPriceAfter1',
+                                                'PriceDiscountUnitPriceAfter1',
+                                                'PriceGroupDiscountUnitPriceAfter1',
+                                                'PriceManualLineUnitPriceAfter1',
+                                                'PriceTaxUnitPriceAfter1',
+                                                'NPMCalcMessage',
+                                            ]);
+                                            expect(Drug0002priceTSAs_OC['NPMCalcMessage'].length).equals(
+                                                testItemsData_PPM_Values[item_forFreeGoods]['NPMCalcMessage'][account][
+                                                    'baseline'
+                                                ].length +
+                                                    testItemsData_PPM_Values[item_forFreeGoods]['NPMCalcMessage'][
+                                                        account
+                                                    ][states[index]].length,
+                                            );
+                                            priceFields.forEach((priceField) => {
+                                                expect(Drug0002priceTSAs_OC[priceField]).equals(
+                                                    testItemsData_PPM_Values[item_forFreeGoods][priceField][account][
+                                                        states[index]
+                                                    ],
+                                                );
+                                            });
+                                            driver.sleep(0.2 * 1000);
+                                        });
+                                    });
+
+                                    it('Back to 9 Cases', async () => {
+                                        await driver.click(
+                                            orderPage.getSelectorOfItemQuantityMinusButtonInOrderCenterByName(
+                                                item_forFreeGoods,
+                                            ),
+                                        );
+                                        driver.sleep(0.5 * 1000);
+                                        await clearOrderCenterSearch();
+                                        driver.sleep(0.5 * 1000);
+                                    });
                                 });
+                                describe('item "Drug0004" - quantity that gets 2 items (in "Each") of "Drug0002" for free (from 3 in "Case")', () => {
+                                    ['2 Cases', '3 Cases'].forEach((unitAmount, index) => {
+                                        it(`${unitAmount}`, async () => {
+                                            item_forFreeGoods = 'Drug0004';
+                                            const states = ['2case(12units)', '3cases(18units)'];
+                                            switch (unitAmount) {
+                                                case '2 Cases':
+                                                    driver.sleep(1 * 1000);
+                                                    await searchInOrderCenter(item_forFreeGoods);
+                                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                                        'Case',
+                                                        item_forFreeGoods,
+                                                        2,
+                                                    );
+                                                    break;
+
+                                                case '3 Cases':
+                                                    await driver.click(
+                                                        orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(
+                                                            item_forFreeGoods,
+                                                        ),
+                                                    );
+                                                    driver.sleep(0.5 * 1000);
+                                                    break;
+
+                                                default:
+                                                    break;
+                                            }
+                                            Drug0004priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
+                                            console.info(`Drug0004priceTSAs_OC (2 cases): `, Drug0004priceTSAs_OC);
+
+                                            expect(typeof Drug0004priceTSAs_OC).equals('object');
+                                            expect(Object.keys(Drug0004priceTSAs_OC)).to.eql([
+                                                'PriceBaseUnitPriceAfter1',
+                                                'PriceDiscountUnitPriceAfter1',
+                                                'PriceGroupDiscountUnitPriceAfter1',
+                                                'PriceManualLineUnitPriceAfter1',
+                                                'PriceTaxUnitPriceAfter1',
+                                                'NPMCalcMessage',
+                                            ]);
+                                            expect(Drug0004priceTSAs_OC['NPMCalcMessage'].length).equals(
+                                                testItemsData_PPM_Values[item_forFreeGoods]['NPMCalcMessage'][account][
+                                                    'baseline'
+                                                ].length +
+                                                    testItemsData_PPM_Values[item_forFreeGoods]['NPMCalcMessage'][
+                                                        account
+                                                    ][states[index]].length,
+                                            );
+                                            priceFields.forEach((priceField) => {
+                                                expect(Drug0004priceTSAs_OC[priceField]).equals(
+                                                    testItemsData_PPM_Values[item_forFreeGoods][priceField][account][
+                                                        states[index]
+                                                    ],
+                                                );
+                                            });
+                                            driver.sleep(0.2 * 1000);
+                                        });
+                                    });
+
+                                    it('Back to 2 Cases', async () => {
+                                        await driver.click(
+                                            orderPage.getSelectorOfItemQuantityMinusButtonInOrderCenterByName(
+                                                item_forFreeGoods,
+                                            ),
+                                        );
+                                        driver.sleep(0.5 * 1000);
+                                        await clearOrderCenterSearch();
+                                        driver.sleep(0.5 * 1000);
+                                    });
+                                });
+                            });
+                            describe('Transaction ID', () => {
                                 it('getting the transaction ID through the UI', async () => {
                                     transactionID = Number(
                                         await (await driver.findElement(orderPage.TransactionID)).getAttribute('title'),
@@ -1331,75 +1800,83 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     expect(Number(latestActivityID)).to.equal(transactionInternalID);
                                 });
                                 it('entering the same transaction through activity list', async () => {
-                                    // await webAppList.clickOnLinkFromListRowWebElementByText(`${transactionInternalID}`);
                                     await webAppList.clickOnLinkFromListRowWebElement();
                                     await webAppList.isSpinnerDone();
                                     await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
                                     driver.sleep(0.1 * 1000);
                                 });
                             });
-                            describe('Cart', () => {
+                            describe('CART', () => {
                                 it('verifying that the sum total of items in the cart is correct', async () => {
                                     await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName('')); // check to be in cart
-                                    const cartNumberOfItems = await (
+                                    const itemsInCart = await (
                                         await driver.findElement(orderPage.Cart_Headline_Results_Number)
                                     ).getText();
                                     driver.sleep(0.2 * 1000);
-                                    switch (account) {
-                                        case 'Acc01':
-                                            expect(Number(cartNumberOfItems)).to.equal(testItems.length + 4);
-                                            break;
-
-                                        default:
-                                            expect(Number(cartNumberOfItems)).to.equal(testItems.length + 3);
-                                            break;
-                                    }
+                                    expect(Number(itemsInCart)).to.equal(
+                                        testItems.length + itemsAddedToGetFreeGoods.length,
+                                    );
+                                    driver.sleep(1 * 1000);
+                                });
+                                it('changing the amount of "ToBr55" to produce free goods', async () => {
+                                    const item = 'ToBr55';
+                                    await changeSelectedQuantityOfSpecificItemInCart('Each', item, 5);
+                                    driver.sleep(0.2 * 1000);
+                                });
+                                it('changing the amount of "Drug0002" to produce free goods', async () => {
+                                    const item = 'Drug0002';
+                                    await changeSelectedQuantityOfSpecificItemInCart('Case', item, 10);
+                                    driver.sleep(0.2 * 1000);
+                                });
+                                it('changing the amount of "Drug0004" to produce free goods', async () => {
+                                    const item = 'Drug0004';
+                                    await changeSelectedQuantityOfSpecificItemInCart('Case', item, 3);
+                                    driver.sleep(0.2 * 1000);
+                                });
+                                it('verifying that the sum total of items after the free goods were received is correct', async () => {
+                                    const itemsInCart = await (
+                                        await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                    ).getText();
+                                    driver.sleep(0.2 * 1000);
+                                    expect(Number(itemsInCart)).to.equal(
+                                        testItems.length +
+                                            itemsAddedToGetFreeGoods.length +
+                                            freeGoodsReceived[account].length,
+                                    );
                                     driver.sleep(1 * 1000);
                                 });
                                 it('verifying the specific item "Drug0002" was added to the cart', async () => {
-                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName('')); // check to be in cart
                                     const cartFreeItemElements = await driver.findElements(
                                         orderPage.getSelectorOfFreeItemInCartByName(''),
                                     );
-                                    driver.sleep(0.2 * 1000);
-                                    switch (account) {
-                                        case 'Acc01':
-                                            expect(cartFreeItemElements).to.be.an('array').with.lengthOf(2);
-                                            break;
-                                        case 'OtherAcc':
-                                            expect(cartFreeItemElements).to.be.an('array').with.lengthOf(1);
-                                            break;
-
-                                        default:
-                                            throw new Error('The name of Account is incorrect');
-                                            break;
-                                    }
+                                    driver.sleep(0.3 * 1000);
+                                    expect(cartFreeItemElements)
+                                        .to.be.an('array')
+                                        .with.lengthOf(freeGoodsReceived[account].length);
                                     const item = 'Drug0002';
                                     const Drug0002_itemsList = await driver.findElements(
                                         orderPage.getSelectorOfItemInCartByName(item),
                                     );
                                     driver.sleep(0.1 * 1000);
-                                    expect(Drug0002_itemsList).to.be.an('array').with.lengthOf(2);
-                                    const Drug0002_freeItem = await driver.findElement(
+                                    expect(Drug0002_itemsList).to.be.an('array').with.lengthOf(3);
+                                    const Drug0002_freeItems = await driver.findElements(
                                         orderPage.getSelectorOfFreeItemInCartByName(item),
                                     );
-                                    expect(Drug0002_freeItem).to.not.be.undefined;
-                                    if (Drug0002_freeItem) {
-                                        const Drug0002_basePrice =
-                                            account === 'Acc01'
-                                                ? testItemsData_PPM_Values[item]['PriceBaseUnitPriceAfter1'][account][
-                                                      'baseline'
-                                                  ]
-                                                : testItemsData_PPM_Values[item].ItemPrice;
+                                    expect(Drug0002_freeItems).to.be.an('array').with.lengthOf(2);
+
+                                    Drug0002_freeItems.forEach(async (Drug0002_freeItem, index) => {
                                         expect(await Drug0002_freeItem.getAttribute('style')).to.equal(
                                             'background-color: rgb(165, 235, 255);',
                                         );
-                                        const Drug0002_priceTSAsCart = await getItemTSAs('Cart', item, 'Free');
+
+                                        const Drug0002_priceTSAsCart = await getItemTSAs('Cart', item, 'Free', index);
                                         priceFields.forEach((priceField) => {
                                             switch (priceField) {
                                                 case 'PriceBaseUnitPriceAfter1':
                                                     expect(Drug0002_priceTSAsCart[priceField]).to.equal(
-                                                        Drug0002_basePrice,
+                                                        testItemsData_PPM_Values[item]['PriceBaseUnitPriceAfter1'][
+                                                            account
+                                                        ]['baseline'],
                                                     );
                                                     break;
 
@@ -1408,7 +1885,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                     break;
                                             }
                                         });
-                                    }
+                                    });
                                     driver.sleep(0.2 * 1000);
                                 });
                                 it('verify additional item "Drug0002" quantity is correct', async () => {
@@ -1416,12 +1893,18 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     const numberOfUnits = await driver.findElements(
                                         orderPage.getSelectorOfNumberOfUnitsInCartByItemName(item),
                                     );
-                                    const Drug0002_freeItem_numberOfUnits = Number(
-                                        await numberOfUnits[1].getAttribute('title'),
+                                    const Drug0002_freeItem_numberOfUnits_fromDrug0004 = Number(
+                                        await numberOfUnits[0].getAttribute('title'),
                                     );
-                                    expect(Drug0002_freeItem_numberOfUnits).equals(12);
+                                    expect(Drug0002_freeItem_numberOfUnits_fromDrug0004).equals(2);
+
+                                    const Drug0002_freeItem_numberOfUnits_fromDrug0002 = Number(
+                                        await numberOfUnits[2].getAttribute('title'),
+                                    );
+                                    expect(Drug0002_freeItem_numberOfUnits_fromDrug0002).equals(12);
+                                    // debugger
                                     const numberOfAOQM = await driver.findElements(
-                                        orderPage.getSelectorOfAoqmQuantityInCartByItemName(item),
+                                        orderPage.getSelectorOfReadOnlyAoqmQuantityInCartByAdditionalItemName(item),
                                     );
                                     const Drug0002_freeItem_numberOfAOQM = Number(
                                         await numberOfAOQM[0].getAttribute('title'),
@@ -1478,7 +1961,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         );
                                         expect(ToBr10_freeItem_numberOfUnits).equals(1);
                                         const numberOfAOQM = await driver.findElements(
-                                            orderPage.getSelectorOfAoqmQuantityInCartByItemName(item),
+                                            orderPage.getSelectorOfReadOnlyAoqmQuantityInCartByAdditionalItemName(item),
                                         );
                                         const ToBr10_freeItem_numberOfAOQM = Number(
                                             await numberOfAOQM[0].getAttribute('title'),
@@ -1488,7 +1971,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     it('increase quantity of item "ToBr55" over 20 units (Each) and see the additional item change to 1 case of "ToBr55"', async () => {
                                         const item = 'ToBr55';
                                         await changeSelectedQuantityOfSpecificItemInCart('Case', item, 4);
-                                        // driver.sleep(10 * 1000);
                                     });
                                     it('verify additional item type have changed', async () => {
                                         let item = 'ToBr55';
@@ -1531,7 +2013,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 `After wait time of: 15000, for selector of '//pep-textbox[@data-qa="ItemExternalID"]/span[contains(@title,"ToBr10")]/ancestor::fieldset/ancestor::fieldset', The test must end, The element is: undefined`,
                                             );
                                         }
-                                        // driver.sleep(10 * 1000);
                                     });
                                     it('verify additional item "ToBr55" quantity have changed', async () => {
                                         const item = 'ToBr55';
@@ -1543,8 +2024,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         );
                                         expect(ToBr55_freeItem_numberOfUnits).equals(6);
                                         const numberOfAOQM = await driver.findElements(
-                                            orderPage.getSelectorOfAoqmQuantityInCartByItemName(item),
+                                            orderPage.getSelectorOfReadOnlyAoqmQuantityInCartByAdditionalItemName(item),
                                         );
+                                        expect(numberOfAOQM).to.be.an('array').with.lengthOf(1);
                                         const ToBr55_freeItem_numberOfAOQM = Number(
                                             await numberOfAOQM[0].getAttribute('title'),
                                         );
@@ -1559,14 +2041,708 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 });
                             });
                         });
-                        describe('Group Rules Items', () => {
-                            describe('Order Center', () => {
+
+                        describe('Group Rules', () => {
+                            describe('ORDER CENTER', () => {
                                 it('Adding Group Rules Items', async () => {
-                                    // TODO
-                                    driver.sleep(1 * 1000);
+                                    await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
+                                    await driver.click(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
+                                    driver.sleep(0.1 * 1000);
+                                });
+
+                                ['MakeUp001', 'MakeUp002'].forEach((item) => {
+                                    it(`Checking ${item} at Baseline`, async () => {
+                                        const MakeUpItem_priceTSAsCart = await getItemTSAs('OrderCenter', item);
+                                        driver.sleep(0.1 * 1000);
+                                        expect(MakeUpItem_priceTSAsCart.NPMCalcMessage)
+                                            .to.be.an('array')
+                                            .with.lengthOf(0);
+                                        driver.sleep(0.1 * 1000);
+                                    });
+                                });
+
+                                ['MakeUp001', 'MakeUp002'].forEach((item) => {
+                                    it(`Adding ${item} at quantity of 1 Each and Checking at Order Center`, async () => {
+                                        driver.sleep(0.1 * 1000);
+                                        const itemContainer = await driver.findElement(
+                                            orderPage.getSelectorOfItemInOrderCenterByName(item),
+                                        );
+                                        let itemUomValue = await driver.findElement(
+                                            orderPage.UnitOfMeasure_Selector_Value,
+                                        );
+                                        await driver.click(orderPage.UnitOfMeasure_Selector_Value);
+                                        driver.sleep(0.2 * 1000);
+                                        await driver.click(orderPage.getSelectorOfUnitOfMeasureOptionByText('Each'));
+                                        driver.sleep(0.2 * 1000);
+                                        await itemContainer.click();
+                                        driver.sleep(0.1 * 1000);
+                                        itemUomValue = await driver.findElement(orderPage.UnitOfMeasure_Selector_Value);
+                                        driver.sleep(0.1 * 1000);
+                                        await orderPage.isSpinnerDone();
+                                        driver.sleep(0.2 * 1000);
+                                        expect(await itemUomValue.getText()).equals('Each');
+                                        await driver.click(
+                                            orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(item),
+                                        );
+                                        const uomXnumber = await driver.findElement(
+                                            orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                                                'ItemQuantity_byUOM_InteractableNumber',
+                                                item,
+                                            ),
+                                        );
+                                        await itemContainer.click();
+                                        await orderPage.isSpinnerDone();
+                                        driver.sleep(1 * 1000);
+                                        const numberByUOM = await uomXnumber.getAttribute('title');
+                                        driver.sleep(0.5 * 1000);
+                                        expect(Number(numberByUOM)).equals(1);
+                                        driver.sleep(0.1 * 1000);
+                                        const MakeUpItem_priceTSAsCart = await getItemTSAs('OrderCenter', item);
+                                        driver.sleep(0.1 * 1000);
+                                        expect(MakeUpItem_priceTSAsCart.NPMCalcMessage)
+                                            .to.be.an('array')
+                                            .with.lengthOf(0);
+                                        driver.sleep(0.1 * 1000);
+                                    });
+                                });
+
+                                it('Adding "MakeUp003" at quantity of 1 Each and Checking at Order Center (3 units in group)', async () => {
+                                    item_forGroupRules = 'MakeUp003';
+                                    await searchInOrderCenter(item_forGroupRules);
+                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                        'Each',
+                                        item_forGroupRules,
+                                        1,
+                                    );
+                                    const MakeUp003_priceTSAsCart = await getItemTSAs(
+                                        'OrderCenter',
+                                        item_forGroupRules,
+                                    );
+                                    driver.sleep(0.1 * 1000);
+                                    switch (account) {
+                                        case 'Acc01':
+                                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(1);
+                                            expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0])).eql([
+                                                'Name',
+                                                'Base',
+                                                'Conditions',
+                                                'New',
+                                                'Amount',
+                                            ]);
+                                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                                    .Name,
+                                            );
+                                            expect(
+                                                Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0]),
+                                            ).eql(['Name', 'Type', 'Value', 'Amount']);
+                                            expect(
+                                                MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                                    .Conditions[0].Name,
+                                            );
+                                            expect(
+                                                MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                                    .Conditions[0].Type,
+                                            );
+                                            break;
+
+                                        default:
+                                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(0);
+                                            expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage)).eql(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.OtherAcc,
+                                            );
+                                            break;
+                                    }
+                                    driver.sleep(0.1 * 1000);
+                                    await clearOrderCenterSearch();
+                                    driver.sleep(5 * 1000);
+                                });
+
+                                ['MakeUp001', 'MakeUp002'].forEach((item) => {
+                                    it(`Checking ${item} after amount of 3 in the group at Order Center`, async () => {
+                                        await searchInOrderCenter(item);
+                                        const MakeUpItem_priceTSAsCart = await getItemTSAs('OrderCenter', item);
+                                        driver.sleep(0.1 * 1000);
+                                        switch (account) {
+                                            case 'Acc01':
+                                                expect(MakeUpItem_priceTSAsCart.NPMCalcMessage)
+                                                    .to.be.an('array')
+                                                    .with.lengthOf(1);
+                                                expect(Object.keys(MakeUpItem_priceTSAsCart.NPMCalcMessage[0])).eql([
+                                                    'Name',
+                                                    'Base',
+                                                    'Conditions',
+                                                    'New',
+                                                    'Amount',
+                                                ]);
+                                                expect(MakeUpItem_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
+                                                    testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                                        '3units'
+                                                    ][0].Name,
+                                                );
+                                                expect(
+                                                    Object.keys(
+                                                        MakeUpItem_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0],
+                                                    ),
+                                                ).eql(['Name', 'Type', 'Value', 'Amount']);
+                                                expect(
+                                                    MakeUpItem_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name,
+                                                ).equals(
+                                                    testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                                        '3units'
+                                                    ][0].Conditions[0].Name,
+                                                );
+                                                expect(
+                                                    MakeUpItem_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type,
+                                                ).equals(
+                                                    testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                                        '3units'
+                                                    ][0].Conditions[0].Type,
+                                                );
+                                                break;
+
+                                            default:
+                                                expect(MakeUpItem_priceTSAsCart.NPMCalcMessage)
+                                                    .to.be.an('array')
+                                                    .with.lengthOf(0);
+                                                expect(Object.keys(MakeUpItem_priceTSAsCart.NPMCalcMessage)).eql(
+                                                    testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.OtherAcc,
+                                                );
+                                                break;
+                                        }
+                                        driver.sleep(0.1 * 1000);
+                                        await clearOrderCenterSearch();
+                                        driver.sleep(5 * 1000);
+                                    });
+                                });
+
+                                it('Adding "MakeUp018" at quantity of 1 Each and Checking at Order Center (4 units in group)', async () => {
+                                    item_forGroupRules = 'MakeUp018';
+                                    await searchInOrderCenter(item_forGroupRules);
+                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                        'Each',
+                                        item_forGroupRules,
+                                        1,
+                                    );
+                                    const MakeUp018_priceTSAsCart = await getItemTSAs(
+                                        'OrderCenter',
+                                        item_forGroupRules,
+                                    );
+                                    driver.sleep(0.1 * 1000);
+                                    switch (account) {
+                                        case 'Acc01':
+                                            expect(MakeUp018_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(1);
+                                            expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage[0])).eql([
+                                                'Name',
+                                                'Base',
+                                                'Conditions',
+                                                'New',
+                                                'Amount',
+                                            ]);
+                                            expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                                    .Name,
+                                            );
+                                            expect(
+                                                Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0]),
+                                            ).eql(['Name', 'Type', 'Value', 'Amount']);
+                                            expect(
+                                                MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                                    .Conditions[0].Name,
+                                            );
+                                            expect(
+                                                MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                                    .Conditions[0].Type,
+                                            );
+                                            break;
+
+                                        default:
+                                            expect(MakeUp018_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(0);
+                                            expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage)).eql(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.OtherAcc,
+                                            );
+                                            break;
+                                    }
+                                    driver.sleep(0.1 * 1000);
+                                    await clearOrderCenterSearch();
+                                    driver.sleep(5 * 1000);
+                                });
+
+                                it('Changing "MakeUp018" value to 2 Each and Checking at Order Center (5 units in group)', async () => {
+                                    item_forGroupRules = 'MakeUp018';
+                                    await searchInOrderCenter(item_forGroupRules);
+                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                        'Each',
+                                        item_forGroupRules,
+                                        2,
+                                    );
+                                    const MakeUp018_priceTSAsCart = await getItemTSAs(
+                                        'OrderCenter',
+                                        item_forGroupRules,
+                                    );
+                                    driver.sleep(0.1 * 1000);
+                                    switch (account) {
+                                        case 'Acc01':
+                                            expect(MakeUp018_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(1);
+                                            expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage[0])).eql([
+                                                'Name',
+                                                'Base',
+                                                'Conditions',
+                                                'New',
+                                                'Amount',
+                                            ]);
+                                            expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                                    .Name,
+                                            );
+                                            expect(
+                                                Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0]),
+                                            ).eql(['Name', 'Type', 'Value', 'Amount']);
+                                            expect(
+                                                MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                                    .Conditions[0].Name,
+                                            );
+                                            expect(
+                                                MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                                    .Conditions[0].Type,
+                                            );
+                                            break;
+
+                                        default:
+                                            expect(MakeUp018_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(0);
+                                            expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage)).eql(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.OtherAcc,
+                                            );
+                                            break;
+                                    }
+                                    driver.sleep(0.1 * 1000);
+                                    await clearOrderCenterSearch();
+                                    driver.sleep(5 * 1000);
+                                });
+
+                                it('Changing "MakeUp001" value to 2 Each and Checking at Order Center (6 units in group)', async () => {
+                                    item_forGroupRules = 'MakeUp001';
+                                    await searchInOrderCenter(item_forGroupRules);
+                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                        'Each',
+                                        item_forGroupRules,
+                                        2,
+                                    );
+                                    const MakeUp001_priceTSAsCart = await getItemTSAs(
+                                        'OrderCenter',
+                                        item_forGroupRules,
+                                    );
+                                    driver.sleep(0.1 * 1000);
+                                    switch (account) {
+                                        case 'Acc01':
+                                            expect(MakeUp001_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(1);
+                                            expect(Object.keys(MakeUp001_priceTSAsCart.NPMCalcMessage[0])).eql([
+                                                'Name',
+                                                'Base',
+                                                'Conditions',
+                                                'New',
+                                                'Amount',
+                                            ]);
+                                            expect(MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
+                                                    .Name,
+                                            );
+                                            expect(
+                                                Object.keys(MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0]),
+                                            ).eql(['Name', 'Type', 'Value', 'Amount']);
+                                            expect(
+                                                MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
+                                                    .Conditions[0].Name,
+                                            );
+                                            expect(
+                                                MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
+                                                    .Conditions[0].Type,
+                                            );
+                                            break;
+
+                                        default:
+                                            expect(MakeUp001_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(0);
+                                            expect(Object.keys(MakeUp001_priceTSAsCart.NPMCalcMessage)).eql(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.OtherAcc,
+                                            );
+                                            break;
+                                    }
+                                    driver.sleep(0.1 * 1000);
+                                    await clearOrderCenterSearch();
+                                    driver.sleep(5 * 1000);
+                                });
+
+                                it('Changing "MakeUp002" value to 2 Each and Checking at Order Center (7 units in group)', async () => {
+                                    item_forGroupRules = 'MakeUp002';
+                                    await searchInOrderCenter(item_forGroupRules);
+                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                        'Each',
+                                        item_forGroupRules,
+                                        2,
+                                    );
+                                    const MakeUp002_priceTSAsCart = await getItemTSAs(
+                                        'OrderCenter',
+                                        item_forGroupRules,
+                                    );
+                                    driver.sleep(0.1 * 1000);
+                                    switch (account) {
+                                        case 'Acc01':
+                                            expect(MakeUp002_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(1);
+                                            expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage[0])).eql([
+                                                'Name',
+                                                'Base',
+                                                'Conditions',
+                                                'New',
+                                                'Amount',
+                                            ]);
+                                            expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                    .Name,
+                                            );
+                                            expect(
+                                                Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0]),
+                                            ).eql(['Name', 'Type', 'Value', 'Amount']);
+                                            expect(
+                                                MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                    .Conditions[0].Name,
+                                            );
+                                            expect(
+                                                MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                    .Conditions[0].Type,
+                                            );
+                                            break;
+
+                                        default:
+                                            expect(MakeUp002_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(0);
+                                            expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage)).eql(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.OtherAcc,
+                                            );
+                                            break;
+                                    }
+                                    driver.sleep(0.1 * 1000);
+                                    await clearOrderCenterSearch();
+                                    driver.sleep(5 * 1000);
+                                });
+
+                                it('Changing "MakeUp003" value to 5 Each and Checking at Order Center (11 units in group)', async () => {
+                                    item_forGroupRules = 'MakeUp003';
+                                    await searchInOrderCenter(item_forGroupRules);
+                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                        'Each',
+                                        item_forGroupRules,
+                                        5,
+                                    );
+                                    const MakeUp003_priceTSAsCart = await getItemTSAs(
+                                        'OrderCenter',
+                                        item_forGroupRules,
+                                    );
+                                    driver.sleep(0.1 * 1000);
+                                    switch (account) {
+                                        case 'Acc01':
+                                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(1);
+                                            expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0])).eql([
+                                                'Name',
+                                                'Base',
+                                                'Conditions',
+                                                'New',
+                                                'Amount',
+                                            ]);
+                                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                    .Name,
+                                            );
+                                            expect(
+                                                Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0]),
+                                            ).eql(['Name', 'Type', 'Value', 'Amount']);
+                                            expect(
+                                                MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                    .Conditions[0].Name,
+                                            );
+                                            expect(
+                                                MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                    .Conditions[0].Type,
+                                            );
+                                            break;
+
+                                        default:
+                                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(0);
+                                            expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage)).eql(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.OtherAcc,
+                                            );
+                                            break;
+                                    }
+                                    driver.sleep(0.1 * 1000);
+                                    await clearOrderCenterSearch();
+                                    driver.sleep(5 * 1000);
+                                });
+
+                                it('Adding "MakeUp006" at quantity of 1 Each and Checking at Order Center (12 units in group)', async () => {
+                                    item_forGroupRules = 'MakeUp006';
+                                    await searchInOrderCenter(item_forGroupRules);
+                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                        'Each',
+                                        item_forGroupRules,
+                                        1,
+                                    );
+                                    const MakeUp006_priceTSAsCart = await getItemTSAs(
+                                        'OrderCenter',
+                                        item_forGroupRules,
+                                    );
+                                    driver.sleep(0.1 * 1000);
+                                    switch (account) {
+                                        case 'Acc01':
+                                            expect(MakeUp006_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(1);
+                                            expect(Object.keys(MakeUp006_priceTSAsCart.NPMCalcMessage[0])).eql([
+                                                'Name',
+                                                'Base',
+                                                'Conditions',
+                                                'New',
+                                                'Amount',
+                                            ]);
+                                            expect(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                                    .Name,
+                                            );
+                                            expect(
+                                                Object.keys(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0]),
+                                            ).eql(['Name', 'Type', 'Value', 'Amount']);
+                                            expect(
+                                                MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                                    .Conditions[0].Name,
+                                            );
+                                            expect(
+                                                MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                                    .Conditions[0].Type,
+                                            );
+                                            break;
+
+                                        default:
+                                            expect(MakeUp006_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(0);
+                                            expect(Object.keys(MakeUp006_priceTSAsCart.NPMCalcMessage)).eql(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.OtherAcc,
+                                            );
+                                            break;
+                                    }
+                                    driver.sleep(0.1 * 1000);
+                                    await clearOrderCenterSearch();
+                                    driver.sleep(5 * 1000);
+                                });
+
+                                it('Changing "MakeUp003" value to 10 Each and Checking at Order Center (additional item from singular rule)', async () => {
+                                    item_forGroupRules = 'MakeUp003';
+                                    await searchInOrderCenter(item_forGroupRules);
+                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                        'Each',
+                                        item_forGroupRules,
+                                        10,
+                                    );
+                                    const MakeUp003_priceTSAsCart = await getItemTSAs(
+                                        'OrderCenter',
+                                        item_forGroupRules,
+                                    );
+                                    driver.sleep(0.1 * 1000);
+                                    switch (account) {
+                                        case 'Acc01':
+                                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(1);
+                                            // expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0])).eql(['Name', 'Base', 'Conditions', 'New', 'Amount']);
+                                            // expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Name'])
+                                            //     .equals(testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0].Name);
+                                            // expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(['Name', 'Type', 'Value', 'Amount']);
+                                            // expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name)
+                                            //     .equals(testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0].Conditions[0].Name);
+                                            // expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type)
+                                            //     .equals(testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0].Conditions[0].Type);
+                                            break;
+
+                                        default:
+                                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(0);
+                                            expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage)).eql(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.OtherAcc,
+                                            );
+                                            break;
+                                    }
+                                    driver.sleep(0.1 * 1000);
+                                    await clearOrderCenterSearch();
+                                    driver.sleep(5 * 1000);
+                                });
+
+                                it('Checking "MakeUp002" at Order Center (7 units in group)', async () => {
+                                    item_forGroupRules = 'MakeUp002';
+                                    await searchInOrderCenter(item_forGroupRules);
+                                    const MakeUp002_priceTSAsCart = await getItemTSAs(
+                                        'OrderCenter',
+                                        item_forGroupRules,
+                                    );
+                                    driver.sleep(0.1 * 1000);
+                                    switch (account) {
+                                        case 'Acc01':
+                                            expect(MakeUp002_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(1);
+                                            expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage[0])).eql([
+                                                'Name',
+                                                'Base',
+                                                'Conditions',
+                                                'New',
+                                                'Amount',
+                                            ]);
+                                            expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                    .Name,
+                                            );
+                                            expect(
+                                                Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0]),
+                                            ).eql(['Name', 'Type', 'Value', 'Amount']);
+                                            expect(
+                                                MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                    .Conditions[0].Name,
+                                            );
+                                            expect(
+                                                MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                    .Conditions[0].Type,
+                                            );
+                                            break;
+
+                                        default:
+                                            expect(MakeUp002_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(0);
+                                            expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage)).eql(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.OtherAcc,
+                                            );
+                                            break;
+                                    }
+                                    driver.sleep(0.1 * 1000);
+                                    await clearOrderCenterSearch();
+                                    driver.sleep(5 * 1000);
+                                });
+
+                                it('Adding "MakeUp019" at quantity of 5 Each and Checking at Order Center (12 units in group)', async () => {
+                                    item_forGroupRules = 'MakeUp019';
+                                    await searchInOrderCenter(item_forGroupRules);
+                                    await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                        'Each',
+                                        item_forGroupRules,
+                                        5,
+                                    );
+                                    const MakeUp019_priceTSAsCart = await getItemTSAs(
+                                        'OrderCenter',
+                                        item_forGroupRules,
+                                    );
+                                    driver.sleep(0.1 * 1000);
+                                    switch (account) {
+                                        case 'Acc01':
+                                            expect(MakeUp019_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(1);
+                                            expect(Object.keys(MakeUp019_priceTSAsCart.NPMCalcMessage[0])).eql([
+                                                'Name',
+                                                'Base',
+                                                'Conditions',
+                                                'New',
+                                                'Amount',
+                                            ]);
+                                            expect(MakeUp019_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                                    .Name,
+                                            );
+                                            expect(
+                                                Object.keys(MakeUp019_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0]),
+                                            ).eql(['Name', 'Type', 'Value', 'Amount']);
+                                            expect(
+                                                MakeUp019_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                                    .Conditions[0].Name,
+                                            );
+                                            expect(
+                                                MakeUp019_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                                    .Conditions[0].Type,
+                                            );
+                                            break;
+
+                                        default:
+                                            expect(MakeUp019_priceTSAsCart.NPMCalcMessage)
+                                                .to.be.an('array')
+                                                .with.lengthOf(0);
+                                            expect(Object.keys(MakeUp019_priceTSAsCart.NPMCalcMessage)).eql(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.OtherAcc,
+                                            );
+                                            break;
+                                    }
+                                    driver.sleep(0.1 * 1000);
+                                    await clearOrderCenterSearch();
+                                    driver.sleep(5 * 1000);
                                 });
                             });
-                            describe('Cart', () => {
+
+                            describe('CART', () => {
                                 it('Entering Cart', async () => {
                                     await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
                                     driver.sleep(0.1 * 1000);
@@ -1586,8 +2762,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 });
                             });
                         });
-                        describe('Read Only State - entering the same transaction post submission', () => {
-                            it('checking the latest activity - type: Sales Order, status: Submitted', async () => {
+
+                        describe('Read Only', () => {
+                            it('entering the same transaction post submission, checking the latest activity - type: Sales Order, status: Submitted', async () => {
                                 await webAppList.isSpinnerDone();
                                 await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
                                 const latestActivityID = await (
@@ -1603,9 +2780,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 expect(latestActivityStatus).to.equal('Submitted');
                                 expect(Number(latestActivityID)).to.equal(transactionInternalID);
                             });
-                            it('changing values in "PPM_Values" UTD', async () => {
+                            it('changing values in "PPM_Values" UDT', async () => {
                                 const tableName = 'PPM_Values';
-                                // initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'" });
 
                                 updatedUDTRowPOST = await objectsService.postUDT({
                                     MapDataExternalID: tableName,
@@ -1637,7 +2813,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 await webAppHomePage.isSpinnerDone();
                                 await webAppHomePage.manualResync(client);
                             });
-                            it('validating "PPM_Values" UTD values via API', async () => {
+                            it('validating "PPM_Values" UDT values via API', async () => {
                                 const tableName = 'PPM_Values';
                                 const updatedUDT = await objectsService.getUDT({
                                     where: "MapDataExternalID='" + tableName + "'",
@@ -1680,7 +2856,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 }
                                 driver.sleep(0.1 * 1000);
                             });
-                            it('reverting values in "PPM_Values" UTD to the original values', async () => {
+                            it('reverting values in "PPM_Values" UDT to the original values', async () => {
                                 const tableName = 'PPM_Values';
                                 updatedUDTRowPOST = await objectsService.postUDT({
                                     MapDataExternalID: tableName,
@@ -1712,11 +2888,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 await webAppHomePage.isSpinnerDone();
                                 await webAppHomePage.manualResync(client);
                             });
-                            it('validating "PPM_Values" UTD values via API', async () => {
+                            it('validating "PPM_Values" UDT values via API', async () => {
                                 const ppmVluesEnd = await objectsService.getUDT({
                                     where: "MapDataExternalID='PPM_Values'",
                                 });
-                                // expect(ppmVluesEnd).eql(initialPpmValues);
+
                                 expect(ppmVluesEnd.length).equals(initialPpmValues.length);
                                 ppmVluesEnd.forEach((tableRow) => {
                                     const matchingInitialRow = initialPpmValues.find(
@@ -1736,35 +2912,35 @@ export async function PricingTests(email: string, password: string, client: Clie
                 });
             });
 
-            // describe('Cleanup', () => {
-            //     it('Deleting all Activities', async () => {
-            //         await webAppHeader.goHome();
-            //         await webAppHomePage.isSpinnerDone();
-            //         await webAppHomePage.clickOnBtn('Activities');
-            //         await webAppHomePage.isSpinnerDone();
-            //         driver.sleep(0.1 * 1000);
-            //         try {
-            //             await webAppList.checkAllListElements();
-            //             driver.sleep(0.1 * 1000);
-            //             await webAppList.clickOnPencilMenuButton();
-            //             driver.sleep(0.1 * 1000);
-            //             await webAppList.selectUnderPencilMenu('Delete');
-            //             driver.sleep(0.1 * 1000);
-            //             await driver.untilIsVisible(webAppDialog.ButtonArr);
-            //             driver.sleep(0.1 * 1000);
-            //             await webAppDialog.selectDialogBoxByText('Delete');
-            //             await webAppDialog.isSpinnerDone();
-            //             driver.sleep(0.1 * 1000);
-            //             await webAppHeader.goHome();
-            //             await webAppHomePage.isSpinnerDone();
-            //         } catch (error) {
-            //             console.error(error);
-            //             if (await driver.untilIsVisible(webAppList.NoActivitiesFound_Text)) {
-            //                 console.info('List is EMPTY - no activities found');
-            //             }
-            //         }
-            //     });
-            // });
+            describe('Cleanup', () => {
+                it('Deleting all Activities', async () => {
+                    await webAppHeader.goHome();
+                    await webAppHomePage.isSpinnerDone();
+                    await webAppHomePage.clickOnBtn('Activities');
+                    await webAppHomePage.isSpinnerDone();
+                    driver.sleep(0.1 * 1000);
+                    try {
+                        await webAppList.checkAllListElements();
+                        driver.sleep(0.1 * 1000);
+                        await webAppList.clickOnPencilMenuButton();
+                        driver.sleep(0.1 * 1000);
+                        await webAppList.selectUnderPencilMenu('Delete');
+                        driver.sleep(0.1 * 1000);
+                        await driver.untilIsVisible(webAppDialog.ButtonArr);
+                        driver.sleep(0.1 * 1000);
+                        await webAppDialog.selectDialogBoxByText('Delete');
+                        await webAppDialog.isSpinnerDone();
+                        driver.sleep(0.1 * 1000);
+                        await webAppHeader.goHome();
+                        await webAppHomePage.isSpinnerDone();
+                    } catch (error) {
+                        console.error(error);
+                        if (await driver.untilIsVisible(webAppList.NoActivitiesFound_Text)) {
+                            console.info('List is EMPTY - no activities found');
+                        }
+                    }
+                });
+            });
         });
     });
 
@@ -1795,6 +2971,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
         freeItem?: 'Free',
+        locationInElementsArray?: number,
     ): Promise<PriceTsaFields> {
         const findSelectorOfItem = `getSelectorOfCustomFieldIn${at}By${freeItem ? freeItem : ''}ItemName`;
         let NPMCalcMessage_Value;
@@ -1802,45 +2979,59 @@ export async function PricingTests(email: string, password: string, client: Clie
             'PriceBaseUnitPriceAfter1_Value',
             nameOfItem,
         );
-        const PriceBaseUnitPriceAfter1_Value = await (
-            await driver.findElement(PriceBaseUnitPriceAfter1_Selector)
-        ).getText();
+        const PriceBaseUnitPriceAfter1_Values = await driver.findElements(PriceBaseUnitPriceAfter1_Selector);
+        const PriceBaseUnitPriceAfter1_Value = locationInElementsArray
+            ? await PriceBaseUnitPriceAfter1_Values[locationInElementsArray].getText()
+            : await PriceBaseUnitPriceAfter1_Values[0].getText();
         console.info(`${nameOfItem} PriceBaseUnitPriceAfter1_Value: `, PriceBaseUnitPriceAfter1_Value);
+
         const PriceDiscountUnitPriceAfter1_Selector = orderPage[findSelectorOfItem](
             'PriceDiscountUnitPriceAfter1_Value',
             nameOfItem,
         );
-        const PriceDiscountUnitPriceAfter1_Value = await (
-            await driver.findElement(PriceDiscountUnitPriceAfter1_Selector)
-        ).getText();
+        const PriceDiscountUnitPriceAfter1_Values = await driver.findElements(PriceDiscountUnitPriceAfter1_Selector);
+        const PriceDiscountUnitPriceAfter1_Value = locationInElementsArray
+            ? await PriceDiscountUnitPriceAfter1_Values[locationInElementsArray].getText()
+            : await PriceDiscountUnitPriceAfter1_Values[0].getText();
         console.info(`${nameOfItem} PriceDiscountUnitPriceAfter1_Value: `, PriceDiscountUnitPriceAfter1_Value);
+
         const PriceGroupDiscountUnitPriceAfter1_Selector = orderPage[findSelectorOfItem](
             'PriceGroupDiscountUnitPriceAfter1_Value',
             nameOfItem,
         );
-        const PriceGroupDiscountUnitPriceAfter1_Value = await (
-            await driver.findElement(PriceGroupDiscountUnitPriceAfter1_Selector)
-        ).getText();
+        const PriceGroupDiscountUnitPriceAfter1_Values = await driver.findElements(
+            PriceGroupDiscountUnitPriceAfter1_Selector,
+        );
+        const PriceGroupDiscountUnitPriceAfter1_Value = locationInElementsArray
+            ? await PriceGroupDiscountUnitPriceAfter1_Values[locationInElementsArray].getText()
+            : await PriceGroupDiscountUnitPriceAfter1_Values[0].getText();
         console.info(
             `${nameOfItem} PriceGroupDiscountUnitPriceAfter1_Value: `,
             PriceGroupDiscountUnitPriceAfter1_Value,
         );
+
         const PriceManualLineUnitPriceAfter1_Selector = orderPage[findSelectorOfItem](
             'PriceManualLineUnitPriceAfter1_Value',
             nameOfItem,
         );
-        const PriceManualLineUnitPriceAfter1_Value = await (
-            await driver.findElement(PriceManualLineUnitPriceAfter1_Selector)
-        ).getText();
+        const PriceManualLineUnitPriceAfter1_Values = await driver.findElements(
+            PriceManualLineUnitPriceAfter1_Selector,
+        );
+        const PriceManualLineUnitPriceAfter1_Value = locationInElementsArray
+            ? await PriceManualLineUnitPriceAfter1_Values[locationInElementsArray].getText()
+            : await PriceManualLineUnitPriceAfter1_Values[0].getText();
         console.info(`${nameOfItem} PriceManualLineUnitPriceAfter1_Value: `, PriceManualLineUnitPriceAfter1_Value);
+
         const PriceTaxUnitPriceAfter1_Selector = orderPage[findSelectorOfItem](
             'PriceTaxUnitPriceAfter1_Value',
             nameOfItem,
         );
-        const PriceTaxUnitPriceAfter1_Value = await (
-            await driver.findElement(PriceTaxUnitPriceAfter1_Selector)
-        ).getText();
+        const PriceTaxUnitPriceAfter1_Values = await driver.findElements(PriceTaxUnitPriceAfter1_Selector);
+        const PriceTaxUnitPriceAfter1_Value = locationInElementsArray
+            ? await PriceTaxUnitPriceAfter1_Values[locationInElementsArray].getText()
+            : await PriceTaxUnitPriceAfter1_Values[0].getText();
         console.info(`${nameOfItem} PriceTaxUnitPriceAfter1_Value: `, PriceTaxUnitPriceAfter1_Value);
+
         if (at === 'OrderCenter') {
             const NPMCalcMessage_Selector = orderPage[findSelectorOfItem]('NPMCalcMessage_Value', nameOfItem);
             NPMCalcMessage_Value = await (await driver.findElement(NPMCalcMessage_Selector)).getText();
@@ -1871,7 +3062,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(nameOfItem));
     }
 
-    async function changeSelectedQuantityOfSpecificItem(
+    async function changeSelectedQuantityOfSpecificItemInOrderCenter(
         uomValue: 'Each' | 'Case',
         nameOfItem: string,
         quantityOfItem: number,
@@ -1938,6 +3129,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         quantityOfItem: number,
     ): Promise<void> {
         driver.sleep(0.05 * 1000);
+        // debugger
         let itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
         if ((await itemUomValue.getText()) !== uomValue) {
             await itemUomValue.click();
@@ -1950,7 +3142,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         }
         driver.sleep(0.05 * 1000);
         await orderPage.isSpinnerDone();
-        expect(await itemUomValue.getText()).equals('Case');
+        expect(await itemUomValue.getText()).equals(uomValue);
         let uomXnumber = await driver.findElement(
             orderPage.getSelectorOfCustomFieldInCartByItemName('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
         );
@@ -1959,7 +3151,7 @@ export async function PricingTests(email: string, password: string, client: Clie
             driver.sleep(0.01 * 1000);
         }
         driver.sleep(0.05 * 1000);
-        await uomXnumber.sendKeys(4);
+        await uomXnumber.sendKeys(quantityOfItem);
         await orderPage.isSpinnerDone();
         driver.sleep(0.05 * 1000);
         await driver.click(orderPage.HtmlBody);
@@ -1967,10 +3159,10 @@ export async function PricingTests(email: string, password: string, client: Clie
         uomXnumber = await driver.findElement(
             orderPage.getSelectorOfCustomFieldInCartByItemName('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
         );
-        driver.sleep(0.5 * 1000);
+        driver.sleep(1 * 1000);
         await orderPage.isSpinnerDone();
         expect(Number(await uomXnumber.getAttribute('title'))).equals(quantityOfItem);
-        driver.sleep(2 * 1000);
+        driver.sleep(0.2 * 1000);
         const numberOfUnits = await driver.findElement(
             orderPage.getSelectorOfNumberOfUnitsInCartByItemName(nameOfItem),
         );
