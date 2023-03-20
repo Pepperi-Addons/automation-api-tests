@@ -96,8 +96,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             const today = generalService.getDate().split('/');
             const parsedTodayDate = `${today[2]}-${today[1]}-${today[0]}`; //year-month-day
             it(`Positive Test: testing DI-22319: mark 'scheme only' schemes with 'sync=true'`, async () => {
-                const allUdcs = (await udcService.getSchemes()).filter((collection) => collection.Type === 'contained');
-                const isError = allUdcs.filter((collection) => collection.SyncData?.Sync !== true);
+                const allUdcs = await udcService.getSchemes({ page_size: -1 });
+                const filteredUdcs = allUdcs.filter((collection) => collection.Type === 'contained');
+                const isError = filteredUdcs.filter((collection) => collection.SyncData?.Sync !== true);
                 expect(isError.length).to.equal(0);
             });
             it('Negative Test: trying to create a collection with forbidden names:"smallLetter","NotSupported###%^"', async () => {

@@ -52,6 +52,7 @@ export class SurveyFiller extends AddonPage {
                         .valueOf()
                         ['value'].replace('{placeholder}', certainAnswer);
                     await this.browser.click(By.xpath(xpathQueryForMultiSelectOption));
+                    this.browser.sleep(1100);
                 }
                 break;
             case 'Single Select':
@@ -74,6 +75,7 @@ export class SurveyFiller extends AddonPage {
                     const certainAnswer = answer[index];
                     const xpathQueryForCheckBox2 = xpathQueryForCheckBox.replace('{placeholder2}', certainAnswer);
                     await this.browser.click(By.xpath(xpathQueryForCheckBox2));
+                    this.browser.sleep(4000);
                 }
                 break;
             case 'Radio Group':
@@ -114,7 +116,7 @@ export class SurveyFiller extends AddonPage {
         }
         const elem = await this.browser.switchToActiveElement();
         await elem.sendKeys(Key.ESCAPE);
-        this.browser.sleep(2000);
+        this.browser.sleep(5000);
     }
 
     public async saveSurvey() {
