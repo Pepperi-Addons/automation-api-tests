@@ -14,6 +14,7 @@ import { VisitFlow } from '../pom/addons/VisitFlow';
 import { v4 as newUuid } from 'uuid';
 import { UDCService } from '../../services/user-defined-collections.service';
 import { ObjectsService } from '../../services';
+import { OrderPage } from '../pom/Pages/OrderPage';
 
 chai.use(promised);
 
@@ -28,6 +29,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
     let settingsSidePanel: WebAppSettingsSidePanel;
+    let orderPage: OrderPage;
     let visitFlow: VisitFlow;
     let pageBuilder: PageBuilder;
     let slugs: Slugs;
@@ -72,6 +74,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 webAppHeader = new WebAppHeader(driver);
                 settingsSidePanel = new WebAppSettingsSidePanel(driver);
                 e2eUtils = new E2EUtils(driver);
+                orderPage = new OrderPage(driver);
                 visitFlow = new VisitFlow(driver);
                 pageBuilder = new PageBuilder(driver);
                 slugs = new Slugs(driver);
@@ -88,14 +91,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             after(async function () {
                 await driver.quit();
             });
-
-            // afterEach(async function () {
-            //     try {
-            //         await webAppHeader.goHome();
-            //     } catch (error) {
-            //         console.error(error);
-            //     }
-            // });
 
             it('Login', async () => {
                 await webAppLoginPage.login(email, password);
@@ -121,7 +116,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             // });
 
             describe('Inserting Data to the UDC VisitFlowGroups', () => {
-                it('Configuring Groups', async () => {
+                it('Configuring UDC: Visit Flow Groups', async () => {
                     const collectionName = 'VisitFlowGroups';
                     const groupsDocumentsToUpsert = [
                         { Title: `Start Auto ${randomString}`, SortIndex: 0 },
@@ -175,11 +170,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await e2eUtils.navigateTo('Page Builder');
                     await pageBuilder.searchForPageByName(pageName);
                     pageBuilder.pause(2 * 1000);
-                    // expect(await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)).to.throw();
                 });
             });
 
-            describe('Inserting Data to the UDC VisitFlows', () => {
+            describe('Inserting Data to the UDC: VisitFlows', () => {
                 it('Configuring Flows', async () => {
                     driver.sleep(5 * 1000);
                     const collectionName = 'VisitFlows';
@@ -274,7 +268,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         [{ slug_path: slug_path, pageUUID: pageUUID }],
                         client,
                     );
-                    // existingMappedSlugs = mappedSlugsUpsertResponse.previouslyExistingMappedSlugs;
                     console.info(
                         `existingMappedSlugs: ${JSON.stringify(
                             mappedSlugsUpsertResponse.previouslyExistingMappedSlugs,
@@ -347,17 +340,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                                 slugDisplayName,
                                 visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox,
                             );
-                            // expect(
-                            //     await (
-                            //         await driver.findElement(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchResult)
-                            //     ).getAttribute('data-id'),
-                            // ).to.equal(`SLUG_${slug_path}`);
-                            // await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SearchResult_PlusButton');
                             const plusButton = await driver.findElement(
                                 visitFlow.getSelectorOfSearchResultListRowPlusButtonByUniqueName(randomString),
                             );
                             await plusButton.click();
-                            // await visitFlow.click(visitFlow.getSelectorOfSearchResultListRowPlusButtonByUniqueName(randomString));
                             await visitFlow.waitTillVisible(
                                 visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText(slug_path),
                                 15000,
@@ -384,43 +370,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     }
                 });
 
-                // it('Adding the Visit Flow Slug by the Search input, clicking the (+) button and Save', async () => {
-                //     debugger
-                //     try {
-                //         await driver.switchTo(visitFlow.AddonContainerIframe);
-                //         await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox, 15000);
-                //         await visitFlow.insertTextToInputElement(
-                //             slugDisplayName,
-                //             visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox,
-                //         );
-                //         // await visitFlow.insertTextToInputElement('Visit Flow Auto', visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox);
-                //         expect(
-                //             await (
-                //                 await driver.findElement(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchResult)
-                //             ).getAttribute('data-id'),
-                //         ).to.equal(`SLUG_${slug_path}`);
-                //         // expect(await (await driver.findElement(visitFlow.AccountDashboardLayout_Menu_RepCard_SearchResult)).getAttribute('data-id')).to.contain('SLUG_visit_flow_auto');
-                //         await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SearchResult_PlusButton');
-                //         await visitFlow.waitTillVisible(
-                //             visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText(slug_path),
-                //             15000,
-                //         );
-                //         // await visitFlow.waitTillVisible(visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText('visit_flow_auto'), 15000);
-                //         await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SaveButton');
-                //         // is there a function to wait for round loader to finish?
-                //         driver.sleep(5 * 1000);
-                //         await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
-                //         await visitFlow.clickElement('AccountDashboardLayout_Menu_CancelButton');
-                //         await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
-                //         driver.sleep(2 * 1000);
-                //         await driver.switchToDefaultContent();
-                //         driver.sleep(2 * 1000);
-                //         await webAppHeader.goHome();
-                //     } catch (error) {
-
-                //     }
-                // });
-
                 it('Performing Manual Sync', async () => {
                     await e2eUtils.logOutLogIn(email, password);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
@@ -429,30 +378,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             });
 
             describe('Going Through a Basic Visit', () => {
-                // it('Navigating to a specific Account', async () => {
-                //     debugger
-                //     await webAppHeader.goHome();
-                //     await webAppHomePage.isSpinnerDone();
-                //     await webAppHomePage.clickOnBtn('Accounts');
-                //     await webAppHeader.isSpinnerDone();
-                //     driver.sleep(1 * 1000);
-                //     await visitFlow.waitTillVisible(visitFlow.FirstAccountInList, 15000);
-                //     await visitFlow.clickElement('FirstAccountInList');
-                //     await visitFlow.isSpinnerDone();
-                //     driver.sleep(1 * 1000);
-                // });
-
-                // it('Entering Visit Flow slug from Menu', async () => {
-                //     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Button, 15000);
-                //     await visitFlow.clickElement('AccountHomePage_HamburgerMenu_Button');
-                //     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Content, 15000);
-                //     visitFlow.pause(1 * 1000);
-                //     await visitFlow.click(
-                //         visitFlow.getSelectorOfAccountHomePageHamburgerMenuVisitFlowAutomatedSlug(slugDisplayName),
-                //     );
-                //     visitFlow.pause(1 * 1000);
-                // });
-
                 it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async () => {
                     // debugger
                     await webAppHeader.goHome();
@@ -474,7 +399,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlow.pause(1 * 1000);
                 });
 
-                it('If more than one slug - Choosing a Slug', async () => {
+                it('If more than one visit - Choosing a Visit Flow', async () => {
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
                         await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
@@ -527,8 +452,12 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     );
                     await visitFlow.clickElement('VisitFlow_OrdersChooseCatalogDialog_DoneButton');
                     await visitFlow.isSpinnerDone();
-                    await visitFlow.waitTillVisible(visitFlow.VisitFlow_DefaultCatalog_OrderButton, 15000);
-                    await visitFlow.clickElement('VisitFlow_DefaultCatalog_OrderButton');
+                    // Choosing an item in Order Center:
+                    await driver.click(
+                        orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName('MaNa15'),
+                    );
+                    // await visitFlow.waitTillVisible(visitFlow.VisitFlow_DefaultCatalog_OrderButton, 15000);
+                    // await visitFlow.clickElement('VisitFlow_DefaultCatalog_OrderButton');
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_DefaultCatalog_CartButton, 15000);
                     await visitFlow.clickElement('VisitFlow_DefaultCatalog_CartButton');
