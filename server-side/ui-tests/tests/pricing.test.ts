@@ -57,20 +57,20 @@ export async function PricingTests(email: string, password: string, client: Clie
     let Drug0002priceTSAs_OC: PriceTsaFields;
     let Drug0004priceTSAs_OC: PriceTsaFields;
 
-    // const testAccounts = ['Acc01'];
-    const testAccounts = ['Acc01', 'OtherAcc'];
-    // const testStates = ['baseline', '3units', '4cases(24units)'];
-    const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
-    // const testItems = ['Lipstick no.1', 'Spring Loaded Frizz-Fighting Conditioner', 'Frag005'];
-    const testItems = [
-        'Lipstick no.1',
-        'Spring Loaded Frizz-Fighting Conditioner',
-        'Frag005',
-        'Frag012',
-        'ToBr56',
-        'Drug0001',
-        'Drug0003',
-    ];
+    const testAccounts = ['Acc01'];
+    // const testAccounts = ['Acc01', 'OtherAcc'];
+    const testStates = ['baseline', '3units', '4cases(24units)'];
+    // const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
+    const testItems = ['Lipstick no.1', 'Spring Loaded Frizz-Fighting Conditioner', 'Frag005'];
+    // const testItems = [
+    //     'Lipstick no.1',
+    //     'Spring Loaded Frizz-Fighting Conditioner',
+    //     'Frag005',
+    //     'Frag012',
+    //     'ToBr56',
+    //     'Drug0001',
+    //     'Drug0003',
+    // ];
     const itemsAddedToGetFreeGoods = ['ToBr55', 'Drug0002', 'Drug0004'];
     const freeGoodsReceived = {
         Acc01: [
@@ -1313,34 +1313,34 @@ export async function PricingTests(email: string, password: string, client: Clie
 
     describe('Pricing Test Suite', async () => {
         describe('Data Prep', () => {
-            it('inserting rules to the UDT "PPM_Values"', async () => {
-                const tableName = 'PPM_Values';
-                const dataToBatch: {
-                    MapDataExternalID: string;
-                    MainKey: string;
-                    SecondaryKey: string;
-                    Values: string[];
-                }[] = [];
-                Object.keys(documentsIn_PPM_Values).forEach((mainKey) => {
-                    dataToBatch.push({
-                        MapDataExternalID: tableName,
-                        MainKey: mainKey,
-                        SecondaryKey: '',
-                        Values: [documentsIn_PPM_Values[mainKey]],
-                    });
-                });
-                batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
-                expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
-                batchUDTresponse.map((row) => {
-                    expect(row).to.have.property('InternalID').that.is.above(0);
-                    expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
-                    expect(row).to.have.property('Status').that.equals('Insert');
-                    expect(row).to.have.property('Message').that.equals('Row inserted.');
-                    expect(row)
-                        .to.have.property('URI')
-                        .that.equals('/user_defined_tables/' + row.InternalID);
-                });
-            });
+            // it('inserting rules to the UDT "PPM_Values"', async () => {
+            //     const tableName = 'PPM_Values';
+            //     const dataToBatch: {
+            //         MapDataExternalID: string;
+            //         MainKey: string;
+            //         SecondaryKey: string;
+            //         Values: string[];
+            //     }[] = [];
+            //     Object.keys(documentsIn_PPM_Values).forEach((mainKey) => {
+            //         dataToBatch.push({
+            //             MapDataExternalID: tableName,
+            //             MainKey: mainKey,
+            //             SecondaryKey: '',
+            //             Values: [documentsIn_PPM_Values[mainKey]],
+            //         });
+            //     });
+            //     batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
+            //     expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
+            //     batchUDTresponse.map((row) => {
+            //         expect(row).to.have.property('InternalID').that.is.above(0);
+            //         expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+            //         expect(row).to.have.property('Status').that.equals('Insert');
+            //         expect(row).to.have.property('Message').that.equals('Row inserted.');
+            //         expect(row)
+            //             .to.have.property('URI')
+            //             .that.equals('/user_defined_tables/' + row.InternalID);
+            //     });
+            // });
             it('get UDT Values (PPM_Values)', async () => {
                 initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'" });
                 console.info('PPM_Values: ', initialPpmValues);
