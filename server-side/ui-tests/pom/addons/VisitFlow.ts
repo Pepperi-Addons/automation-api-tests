@@ -37,8 +37,11 @@ export class VisitFlow extends AddonPage {
     public AccountDashboardLayout_Menu_RepCard_SearchResult: By = By.xpath(
         '//div[text()="Available Fields"]/parent::div//ul/div[4]/ul/li[contains(@class,"filter-selected")]',
     );
+    public AccountDashboardLayout_Menu_RepCard_SearchResult_DisabledPlusButton: By = By.xpath(
+        '//div[text()="Available Fields"]/parent::div//ul/div[4]/ul/li[contains(@class,"filter-selected")]/div/div[contains(@class,"plusIcon")]',
+    );
     public AccountDashboardLayout_Menu_RepCard_SearchResult_PlusButton: By = By.xpath(
-        '//div[text()="Available Fields"]/parent::div//ul/div[4]/ul/li[contains(@class,"filter-selected")]//div[contains(@class,"plusIcon")]',
+        '//div[text()="Available Fields"]/parent::div//ul/div[4]/ul/li[contains(@class,"filter-selected")]/div/div',
     );
     public AccountDashboardLayout_Menu_RepCard_SaveButton: By = By.xpath(
         '//div[contains(@class,"footer-buttons")]/div[contains(@class,"save")]',
@@ -102,6 +105,10 @@ export class VisitFlow extends AddonPage {
     );
     public VisitFlow_DefaultCatalog_CartButton: By = By.xpath('//button[@data-qa="cartButton"]');
     public VisitFlow_DefaultCatalog_SubmitButton: By = By.xpath('//button[@data-qa="Submit"]');
+
+    public getSelectorOfSearchResultListRowPlusButtonByUniqueName(uniqueName: string) {
+        return By.xpath(`//li[@data-id="SLUG_visit_flow_auto_${uniqueName}"]/div/div`);
+    }
 
     public getSelectorOfVisitFlowButtonByName(name: string) {
         return By.xpath(`//div[contains(@class,"visit-selection")]//button[@data-qa="${name}"]`);
