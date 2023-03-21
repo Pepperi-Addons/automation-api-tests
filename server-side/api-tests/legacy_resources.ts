@@ -573,10 +573,13 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     const dimxResult = await service.getDimxResult(exportAudit.URI);
                     dimxResult.forEach((object) => {
                         delete object['Key'];
-                        delete object['CreationDateTime'];
+                        delete object['TSADateTime'];
+                        delete object['TSAContactBirthday'];
                         delete object['ModificationDateTime'];
                     });
                     accountsForComparison.forEach((object) => {
+                        object['CreationDateTime'] = object['CreationDateTime'].replace('Z', '.000Z');
+                        delete object['ModificationDateTime'];
                         delete object['UUID'];
                         delete object['Catalogs'];
                         delete object['Debts30'];
@@ -595,8 +598,8 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         delete object['SpecialPriceList'];
                         delete object['Users'];
                         delete object['Mobile'];
-                        delete object['CreationDateTime'];
-                        delete object['ModificationDateTime'];
+                        delete object['TSADateTime'];
+                        delete object['TSAContactBirthday'];
                     });
                     accountsForComparison.sort((a, b) => {
                         return (a as any).InternalID - (b as any).InternalID;
