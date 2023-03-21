@@ -57,20 +57,20 @@ export async function PricingTests(email: string, password: string, client: Clie
     let Drug0002priceTSAs_OC: PriceTsaFields;
     let Drug0004priceTSAs_OC: PriceTsaFields;
 
-    const testAccounts = ['Acc01'];
-    // const testAccounts = ['Acc01', 'OtherAcc'];
-    const testStates = ['baseline', '3units', '4cases(24units)'];
-    // const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
-    const testItems = ['Lipstick no.1', 'Spring Loaded Frizz-Fighting Conditioner', 'Frag005'];
-    // const testItems = [
-    //     'Lipstick no.1',
-    //     'Spring Loaded Frizz-Fighting Conditioner',
-    //     'Frag005',
-    //     'Frag012',
-    //     'ToBr56',
-    //     'Drug0001',
-    //     'Drug0003',
-    // ];
+    // const testAccounts = ['Acc01'];
+    const testAccounts = ['Acc01', 'OtherAcc'];
+    // const testStates = ['baseline', '3units', '4cases(24units)'];
+    const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
+    // const testItems = ['Lipstick no.1', 'Spring Loaded Frizz-Fighting Conditioner', 'Frag005'];
+    const testItems = [
+        'Lipstick no.1',
+        'Spring Loaded Frizz-Fighting Conditioner',
+        'Frag005',
+        'Frag012',
+        'ToBr56',
+        'Drug0001',
+        'Drug0003',
+    ];
     const itemsAddedToGetFreeGoods = ['ToBr55', 'Drug0002', 'Drug0004'];
     const freeGoodsReceived = {
         Acc01: [

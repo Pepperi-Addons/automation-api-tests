@@ -453,9 +453,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.clickElement('VisitFlow_OrdersChooseCatalogDialog_DoneButton');
                     await visitFlow.isSpinnerDone();
                     // Choosing an item in Order Center:
-                    await driver.click(
-                        orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName('MaNa15'),
-                    );
+                    await driver.click(orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName('MaNa15'));
                     // await visitFlow.waitTillVisible(visitFlow.VisitFlow_DefaultCatalog_OrderButton, 15000);
                     // await visitFlow.clickElement('VisitFlow_DefaultCatalog_OrderButton');
                     await visitFlow.isSpinnerDone();
