@@ -535,13 +535,13 @@ const passCreate = process.env.npm_config_pass_create as string;
             const latestVersionOfTestedAddon = await generalService.getLatestAvailableVersion(
                 addonUUID,
                 Buffer.from(varPass).toString('base64'),
+                addonName === 'SYNC' ? '0.5.%' : null,
             );
             const isInstalled = await Promise.all([
                 validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddon, 'prod'),
                 validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddon, 'prod'),
                 validateLatestVersionOfAddonIsInstalled(sbUser, addonUUID, latestVersionOfTestedAddon, 'stage'),
             ]);
-            debugger;
             for (let index = 0; index < isInstalled.length; index++) {
                 const isTestedAddonInstalled = isInstalled[index];
                 if (isTestedAddonInstalled === false) {
@@ -596,7 +596,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                 devFailedEnvs.push('Stage');
             }
             //5. un - available this version if needed
-            debugger;
             if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
                 const addonToInstall = {};
                 addonToInstall[addonName] = [addonUUID, ''];
