@@ -19,6 +19,7 @@ export class WebAppList extends Page {
 
     public List: By = By.css('pep-list .scrollable-content');
     public Headers: By = By.css('pep-list .table-header-fieldset fieldset .header-label');
+    public PencilMenu: By = By.xpath('//list-actions//button[@aria-haspopup="menu"]');
     public RadioButtons: By = By.css('pep-list .table-row-fieldset .mat-radio-button');
     public Cells: By = By.css('pep-list .table-row-fieldset .pep-report-fields');
     public ListRowElements: By = By.css('pep-list .table-row-fieldset');
@@ -61,6 +62,18 @@ export class WebAppList extends Page {
     //Addon List Search
     public AddonList_SearchInput: By = By.xpath('//input[@id="mat-input-1"]');
     public AddonList_SearchIconWrappingDiv: By = By.xpath('//input[@id="mat-input-1"]/parent::div/following::div');
+
+    // Activities List
+    public NoActivitiesFound_Text: By = By.xpath('//pep-list//p[contains(text(),"No activities found")]');
+    public Activities_TopActivityInList_ID: By = By.xpath('//pep-form//span[@id="WrntyID"]');
+    public Activities_TopActivityInList_Type: By = By.xpath('//pep-form//span[@id="Type"]');
+    public Activities_TopActivityInList_Status: By = By.xpath('//pep-form//span[@id="Status"]');
+
+    public getSelectorOfActionItemUnderPencilByText(text: string) {
+        return By.xpath(
+            `//div[@role="menu"][contains(@id,"mat-menu-panel-")]//span[contains(text(),"${text}")]/parent::button`,
+        );
+    }
 
     public async validateListRowElements(ms?: number): Promise<void> {
         await this.isSpinnerDone();
@@ -112,6 +125,11 @@ export class WebAppList extends Page {
         return await this.browser.click(this.LinksInListArr, position, waitUntil);
     }
 
+    public async clickOnLinkFromListRowWebElementByText(textOfElement: string, waitUntil = 15000): Promise<void> {
+        await this.isSpinnerDone();
+        return await this.browser.ClickByText(this.LinksInListArr, textOfElement, waitUntil);
+    }
+
     public async checkAllListElements() {
         await this.isSpinnerDone();
         const generalCheckbox = await this.browser.findElement(this.GeneralCheckBoxValue);
@@ -120,12 +138,30 @@ export class WebAppList extends Page {
             await this.browser.click(this.GeneralCheckBoxClickable);
         }
     }
+
     public async uncheckAllListElements() {
         await this.isSpinnerDone();
         const generalCheckbox = await this.browser.findElement(this.GeneralCheckBoxValue);
         const isChecked: boolean = (await generalCheckbox.getAttribute('aria-checked')) === 'true' ? true : false;
         if (isChecked) {
             await this.browser.click(this.GeneralCheckBoxClickable);
+        }
+    }
+
+    public async clickOnPencilMenuButton(position = 0, waitUntil = 15000): Promise<void> {
+        await this.isSpinnerDone();
+        return await this.browser.click(this.PencilMenu, position, waitUntil);
+    }
+
+    public async selectUnderPencilMenu(textOfActionUnderPencil: string) {
+        const selector_of_action_under_pencil = this.getSelectorOfActionItemUnderPencilByText(textOfActionUnderPencil);
+        try {
+            await this.browser.untilIsVisible(selector_of_action_under_pencil, 500);
+            await this.browser.click(selector_of_action_under_pencil);
+            await this.browser.sleep(500);
+        } catch (error) {
+            console.info(`UNABLE TO SELECT: ${textOfActionUnderPencil}`);
+            console.error(error);
         }
     }
 
