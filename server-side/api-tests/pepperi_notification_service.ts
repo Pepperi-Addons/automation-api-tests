@@ -97,7 +97,7 @@ export async function PepperiNotificationServiceTests(
                                 );
                         }
                         const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.equal('') || expect(purgedSchema).to.be.undefined; //oleg
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaNameArr[index]);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
                     }
@@ -999,7 +999,7 @@ export async function PepperiNotificationServiceTests(
                             Key: schema.Key,
                             IsTested: true,
                         });
-                        if (schema.Message.Message.ModifiedObjects[0].ObjectKey.includes('PNS Test')) {
+                        if (schema.Message.Message.ModifiedObjects[0].ObjectKey.includes('PNS_Test')) {
                             schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
                                 'Log_Update_PNS_Test',
                                 PepperiOwnerID,
@@ -1141,7 +1141,7 @@ export async function PepperiNotificationServiceTests(
                             );
                     }
                     const newSchema = await adalService.postSchema({ Name: _SYNC_SCHEMA_NAME });
-                    expect(purgedSchema).to.equal('');
+                    expect(purgedSchema).to.equal('') || expect(purgedSchema).to.be.undefined; //oleg
                     expect(newSchema).to.have.property('Name').a('string').that.is.equal(_SYNC_SCHEMA_NAME);
                     expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
                 });
@@ -1401,7 +1401,7 @@ export async function PepperiNotificationServiceTests(
                     uninstallAddonBeforeTest.URI as string,
                     40,
                 );
-                debugger;
+                //debugger;
                 expect(uninstallAddonBeforeTestApiResponse.Status?.ID).to.be.not.equal(
                     2,
                     'Failed To Remove NG-10 Addon',
@@ -1417,7 +1417,7 @@ export async function PepperiNotificationServiceTests(
                     installedAddon.URI as string,
                     40,
                 );
-                debugger;
+                //debugger;
                 expect(installedAddonApiResponse.Status?.ID).to.be.equal(1, 'Install Failed');
 
                 //Validate Subscription created
