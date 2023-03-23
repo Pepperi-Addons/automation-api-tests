@@ -7,7 +7,6 @@ interface Resource {
     count: number;
 }
 
-//await data.send(division);
 export class DataCreation {
     constructor(private client: Client) {}
     userSavedData: string[] = [];
@@ -108,9 +107,6 @@ class ResourceCreation {
         // get fields and create csv header
         const fields = this.getFields();
         const schemeFieldsAsCsvHeader = fields.join(',');
-        if (this.resource.scheme.Name === 'ListItems') {
-            debugger;
-        }
         // loop generate lines
         let csvLines;
         try {
