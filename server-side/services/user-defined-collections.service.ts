@@ -245,6 +245,7 @@ export class UDCService {
         collectionType?,
         isOnlineOnly?: boolean,
         documentKeys?: UdcField[],
+        inheritFieldsFrom?: { AddonUUID: string; Name: string },
     ) {
         const Fields = {};
         for (let index = 0; index < udcFields.length; index++) {
@@ -302,6 +303,11 @@ export class UDCService {
             DocumentKey['Delimiter'] = '@';
             DocumentKey['Type'] = 'AutoGenerate';
         }
+        const Extends = {};
+        if (inheritFieldsFrom) {
+            Extends['AddonUUID'] = inheritFieldsFrom.AddonUUID;
+            Extends['Name'] = inheritFieldsFrom.Name;
+        }
         const bodyToSendCollection = {
             Name: collecitonName,
             DocumentKey,
@@ -320,6 +326,9 @@ export class UDCService {
         };
         if (collectionType) {
             bodyToSendCollection['Type'] = collectionType;
+        }
+        if (Extends && Object.keys(Extends).length !== 0) {
+            bodyToSendCollection['Extends'] = Extends;
         }
         //1. create scheme with all required data
         const udcCreateResponse = await this.generalService.fetchStatus(

@@ -530,10 +530,12 @@ const passCreate = process.env.npm_config_pass_create as string;
                     'stage',
                 ),
             ]);
+            debugger;
             //2. validate tested addon is installed on latest available version
             const latestVersionOfTestedAddon = await generalService.getLatestAvailableVersion(
                 addonUUID,
                 Buffer.from(varPass).toString('base64'),
+                addonName === 'SYNC' ? '0.5.%' : null,
             );
             const isInstalled = await Promise.all([
                 validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddon, 'prod'),
@@ -553,7 +555,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                 isLocal: false,
             };
             //3. run the test on latest version of the template addon
-            //current prod test user - evgenyTestProdQA@pepperitest.com : Evg123456
             const latestVersionOfAutomationTemplateAddon = await generalService.getLatestAvailableVersion(
                 '02754342-e0b5-4300-b728-a94ea5e0e8f4',
                 Buffer.from(varPass).toString('base64'),
@@ -1147,8 +1148,15 @@ const passCreate = process.env.npm_config_pass_create as string;
 
         //4. run again on prev version to make tests green again
         if (failingEnvs.includes('Production') || failingEnvs.includes('EU') || failingEnvs.includes('Stage')) {
+            const response = await getLatestAvailableVersionAndValidateAllEnvsAreSimilar(
+                addonUUID,
+                service,
+                base64VARCredentialsProd,
+                base64VARCredentialsEU,
+                base64VARCredentialsSB,
+            );
             console.log(
-                `Runnig: '${addonName}' (${addonUUID}), AGAIN AS IT FAILED ON VERSION: ${addonVersionProd} , THIS TIME On Version:`,
+                `Runnig: '${addonName}' (${addonUUID}), AGAIN AS IT FAILED ON VERSION: ${addonVersionProd} , THIS TIME On Version: ${response[0]}`,
             );
             const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
             const addonJenkToken = convertAddonNameToToken(addonName);
@@ -1675,6 +1683,10 @@ function resolveUserPerTest(addonName): any[] {
             return ['DataIndexEU@pepperitest.com', 'DataIndexProd@pepperitest.com', 'DataIndexSB@pepperitest.com'];
         case 'NEBULA':
             return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
+        case 'ADAL':
+            return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
+        case 'SYNC':
+            return ['syncTestEU@pepperitest.com', 'syncTestProd@pepperitest.com', 'syncTestSB@pepperitest.com'];
         default:
             return [];
     }
@@ -1749,5 +1761,57 @@ function convertAddonNameToToken(addonName) {
         case 'DATA-INDEX':
             return 'DATAINDEX';
     }
+}
+
+async function getLatestAvailableVersionAndValidateAllEnvsAreSimilar(
+    addonUUID,
+    service,
+    base64VARCredentialsProd,
+    base64VARCredentialsEU,
+    base64VARCredentialsSB,
+) {
+    const responseProd = await service.fetchStatus(
+        `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+        {
+            method: 'GET',
+            headers: {
+                Authorization: `Basic ${base64VARCredentialsProd}`,
+            },
+        },
+    );
+    const addonVersionProd = responseProd.Body[0].Version;
+    const addonEntryUUIDProd = responseProd.Body[0].UUID;
+    const responseEu = await service.fetchStatus(
+        `https://papi-eu.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+        {
+            method: 'GET',
+            headers: {
+                Authorization: `Basic ${base64VARCredentialsEU}`,
+            },
+        },
+    );
+    const addonVersionEU = responseEu.Body[0].Version;
+    const addonEntryUUIDEu = responseEu.Body[0].UUID;
+    const responseSb = await service.fetchStatus(
+        `https://papi.staging.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+        {
+            method: 'GET',
+            headers: {
+                Authorization: `Basic ${base64VARCredentialsSB}`,
+            },
+        },
+    );
+    const addonVersionSb = responseSb.Body[0].Version;
+    const addonEntryUUIDSb = responseSb.Body[0].UUID;
+    if (
+        addonVersionSb !== addonVersionEU ||
+        addonVersionProd !== addonVersionEU ||
+        addonVersionProd !== addonVersionSb
+    ) {
+        throw new Error(
+            `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
+        );
+    }
+    return [addonVersionProd, addonEntryUUIDProd, addonVersionEU, addonEntryUUIDEu, addonVersionSb, addonEntryUUIDSb];
 }
 //#endregion Replacing UI Functions

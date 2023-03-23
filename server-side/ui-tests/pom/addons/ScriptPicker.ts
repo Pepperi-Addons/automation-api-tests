@@ -234,7 +234,7 @@ export class ScriptEditor extends AddonPage {
         await expect(this.untilIsVisible(this.PencilMenuBtn, 90000)).eventually.to.be.true;
     }
 
-    public async enterScriptsAndConfigureAScript(sciptText: string, generalService: GeneralService) {
+    public async configureScript(sciptText: string, generalService: GeneralService) {
         const webAppHeader = new WebAppHeader(this.browser);
         await webAppHeader.openSettings();
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
@@ -258,7 +258,7 @@ export class ScriptEditor extends AddonPage {
         this.browser.sleep(4500);
         //4. save
         await this.browser.click(scriptEditor.SaveBtn);
-        this.browser.sleep(2000);
+        this.browser.sleep(5000);
         await this.browser.untilIsVisible(scriptEditor.ModalCloseBtn, 6000);
         await this.browser.click(scriptEditor.ModalCloseBtn);
         this.browser.sleep(1000);

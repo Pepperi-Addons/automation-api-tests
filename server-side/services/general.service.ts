@@ -24,7 +24,7 @@ export const testData = {
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on TLS 2 version
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi locked on TLS 2 version
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.0.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.86'], //cpi-node (Cross Platform Engine)
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.%'], //cpi-node (Cross Platform Engine)
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.%'], //NG14 latest webapp
@@ -786,18 +786,40 @@ export default class GeneralService {
             if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
                 if (
                     !auditLogResponse.AuditInfo.ErrorMessage.includes('Addon already installed') &&
-                    !auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on version')
-                )
+                    !auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on version') &&
+                    !auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')
+                ) {
                     isInstalledArr.push(auditLogResponse.AuditInfo.ErrorMessage);
-                else isInstalledArr.push(true);
+                } else if (auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
+                    installResponse = await this.papiClient.addons.installedAddons
+                        .addonUUID(`${addonUUID}`)
+                        .downgrade(version);
+                    const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
+                    if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
+                        if (
+                            !auditLogResponse.AuditInfo.ErrorMessage.includes('Addon already installed') &&
+                            !auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on version')
+                        ) {
+                            isInstalledArr.push(auditLogResponse.AuditInfo.ErrorMessage);
+                        } else {
+                            isInstalledArr.push(true);
+                        }
+                    } else {
+                        isInstalledArr.push(true);
+                    }
+                } else {
+                    isInstalledArr.push(true);
+                }
             } else isInstalledArr.push(true);
         }
         return isInstalledArr;
     }
 
-    async getLatestAvailableVersion(addonUUID: string, credentials: string) {
+    async getLatestAvailableVersion(addonUUID: string, credentials: string, versionString?) {
         const responseProd = await this.fetchStatus(
-            `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+            `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 ${
+                versionString ? `AND Version Like '${versionString}' ` : ''
+            }&order_by=CreationDateTime DESC`,
             {
                 method: 'GET',
                 headers: {
@@ -940,7 +962,8 @@ export default class GeneralService {
     async installLatestAvalibaleVersionOfAddon(varKey: string, testData: { [any: string]: string[] }) {
         const addonName = Object.entries(testData)[0][0];
         const addonUUID = testData[addonName][0];
-        const searchString = `AND Version Like '%' AND Available Like 1`;
+        const addonVersion = testData[addonName][1];
+        const searchString = `AND Version Like '${addonVersion !== '' ? addonVersion : '%'}' AND Available Like 1`;
         const fetchVarResponse = (
             await this.fetchStatus(
                 `${this.client.BaseURL.replace(
@@ -1317,8 +1340,10 @@ export default class GeneralService {
                 return '00000000-0000-0000-0000-00000e1a571c';
             // case 'UDC':
             //     return '122c0e9d-c240-4865-b446-f37ece866c22';
-            case 'NEBULA':
-                return '00000000-0000-0000-0000-000000006a91';
+            // case 'NEBULA':
+            //     return '00000000-0000-0000-0000-000000006a91';
+            // case 'SYNC':
+            //     return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
             // case 'OBJECT TYPES EDITOR':
             //     return '04de9428-8658-4bf7-8171-b59f6327bbf1';
             default:

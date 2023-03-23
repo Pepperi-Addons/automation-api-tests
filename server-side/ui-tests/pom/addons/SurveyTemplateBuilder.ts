@@ -5,6 +5,7 @@ import { WebAppSettingsSidePanel } from '../Components/WebAppSettingsSidePanel';
 import { WebAppHeader } from '../WebAppHeader';
 import { AddonPage } from './base/AddonPage';
 import { v4 as uuidv4 } from 'uuid';
+import E2EUtils from '../../utilities/e2e_utils';
 
 // {
 //     "surveyTemplate": {
@@ -67,12 +68,13 @@ export interface SurveyQuestion {
 
 export interface SelectValues {
     Value: string;
+    Key?: string;
     WhichBoolVal?: boolean;
 }
 
 export interface ShowIf {
     Operator: 'And' | 'Or';
-    FilterData: FilterData;
+    FilterData: FilterData[];
     FilterGroup?: FilterData;
 }
 
@@ -122,6 +124,8 @@ export class SurveyTemplateBuilder extends AddonPage {
     public ShowIfCheckBox: By = By.xpath(`//mat-checkbox[contains(@title,'Show If')]//span//input`);
     public AddLogicButton: By = By.css(`[data-qa="Add Logic"]`);
 
+    //key text box inside selection
+    public SelectionKey: By = By.xpath(`//mat-label[contains(text(),'Add Key')]/../../..//input`);
     //selection component
     public SelectOptionValueTextBox: By = By.xpath(`//textarea[@id="question"]`);
     public AddAnotherOptionButton: By = By.css(`[data-qa="Add item to Selection"]`);
@@ -135,12 +139,18 @@ export class SurveyTemplateBuilder extends AddonPage {
     public OrOperatorSelector: By = By.xpath(`//span[@title="Or"]`);
     public AddFilterButton: By = By.css(`[data-qa="Add Filter"]`);
     public AddFilterGroupButton: By = By.css(`[data-qa="Add Filter Group"]`);
-    public SelectQuestionButton: By = By.xpath(`//pep-query-builder-item//pep-select`);
+    public SelectQuestionButton: By = By.xpath(
+        `//pep-query-builder-item//pep-select[@class="pep-field pep-field-no-spacing"]//mat-form-field//mat-select`,
+    );
     public SelectQuestionDropDown: By = By.xpath(`//mat-option[contains(@title,'{placeholder}')]`);
     public QuestionToFilterByDropDownValue: By = By.xpath(`//pep-multi-select-filter`);
     public ValueFromDropDownOfSearchingValues: By = By.xpath(`//mat-option//span[contains(text(),'{placeholder}')]`);
     public EmptySpaceToSaveValue: By = By.xpath(`//div[@class='cdk-overlay-container']`);
     public SaveFilterButton: By = By.xpath(`//mat-dialog-container//pep-button//button[@data-qa="Save"]`);
+
+    public surveyListSearch: By = By.xpath('//input[@data-placeholder]');
+    public surveyLink: By = By.xpath("//a[contains(text(),'{placeholder}')]");
+    public sectionRightSideEditor: By = By.xpath("//span[contains(text(),'Section')]");
     //-
     //-
     //
@@ -162,15 +172,17 @@ export class SurveyTemplateBuilder extends AddonPage {
 
     public async enterSurveyBuilderActualBuilder(): Promise<boolean> {
         await this.browser.click(this.AddASurveyButton);
-        this.browser.sleep(2500);
-        return await this.validateBuilderPageIsOpened();
+        this.browser.sleep(5500);
+        return await this.validateEmptyBuilderPageIsOpened();
     }
 
     public async configureTheSurveyTemplate(
         surveyName: string,
         surveyDescription: string,
         sections: SurveySection[],
-    ): Promise<void> {
+    ): Promise<string> {
+        const eseUtils = new E2EUtils(this.browser);
+        const surveyUUID = await eseUtils.getUUIDfromURL();
         await this.setSurveyName(surveyName);
         await this.setSurveyDescription(surveyDescription);
         for (let index = 0; index < sections.length; index++) {
@@ -189,6 +201,28 @@ export class SurveyTemplateBuilder extends AddonPage {
         await this.browser.click(this.PublishSurveyButton);
         this.browser.sleep(3000);
         await this.browser.click(this.GoBackButton);
+        this.browser.sleep(3000);
+        return surveyUUID;
+    }
+
+    public async enterSurveyTemplateEditMode(surveyName: string): Promise<boolean> {
+        await this.browser.click(this.surveyListSearch);
+        await this.browser.sendKeys(this.surveyListSearch, surveyName + Key.ENTER);
+        this.browser.sleep(3000);
+        const xpathQueryForSurveyLink: string = this.surveyLink.valueOf()['value'].replace('{placeholder}', surveyName);
+        await this.browser.click(By.xpath(xpathQueryForSurveyLink));
+        this.browser.sleep(2000);
+        return await this.validateBuilderPageIsOpened();
+    }
+
+    public async editSurveyTemplateName(surveyNewName) {
+        await this.setSurveyName(surveyNewName);
+        this.browser.sleep(3000);
+        await this.browser.click(this.SaveSurveyButton);
+        this.browser.sleep(3000);
+        await this.browser.click(this.PublishSurveyButton);
+        this.browser.sleep(3000);
+        await this.browser.click(this.GoBackButton);
     }
 
     private async validateSettingsPageIsOpened(): Promise<boolean> {
@@ -200,11 +234,17 @@ export class SurveyTemplateBuilder extends AddonPage {
         return isMainTitleShown && isGenericResourceTitleShown;
     }
 
-    private async validateBuilderPageIsOpened(): Promise<boolean> {
+    private async validateEmptyBuilderPageIsOpened(): Promise<boolean> {
         const isLeftSideSettingsTitleShown = await this.browser.isElementVisible(this.LeftSideSurveyTitle, 2000);
         const isRightSideSectionShown = await this.browser.isElementVisible(this.RightSideSurveyTitle, 2000);
         const isDeafultSurveySectionShown = await this.browser.isElementVisible(this.DeafultSurveySection, 5000);
         return isDeafultSurveySectionShown && isLeftSideSettingsTitleShown && isRightSideSectionShown;
+    }
+
+    private async validateBuilderPageIsOpened(): Promise<boolean> {
+        const isLeftSideSettingsTitleShown = await this.browser.isElementVisible(this.LeftSideSurveyTitle, 2000);
+        const isRightSideEditorShown = await this.browser.isElementVisible(this.sectionRightSideEditor, 3000);
+        return isRightSideEditorShown && isLeftSideSettingsTitleShown;
     }
 
     private async setSurveyName(surveyName: string) {
@@ -248,11 +288,18 @@ export class SurveyTemplateBuilder extends AddonPage {
                 await this.setQuestionTitle(question.Title + Key.ENTER);
                 if (question.OptionalValues)
                     for (let index = 0; index < question.OptionalValues.length; index++) {
+                        const selectAll = Key.chord(Key.CONTROL, 'a');
                         const optionSelect = question.OptionalValues[index];
                         await this.browser.click(this.ArrowDownButtonOnSelection);
                         this.browser.sleep(3000);
+                        //click on the key element and set it with value
+                        if (optionSelect.Key) {
+                            await this.browser.click(this.SelectionKey, index);
+                            await this.browser.sendKeys(this.SelectionKey, selectAll, index);
+                            await this.browser.click(By.xpath(`//pep-dialog//button//span[contains(text(),'Close')]`));
+                            await this.browser.sendKeys(this.SelectionKey, optionSelect.Key + Key.ENTER, index);
+                        }
                         await this.browser.click(this.SelectOptionValueTextBox, index);
-                        const selectAll = Key.chord(Key.CONTROL, 'a');
                         await this.browser.sendKeys(this.SelectOptionValueTextBox, selectAll, index);
                         await this.browser.sendKeys(
                             this.SelectOptionValueTextBox,
@@ -309,25 +356,30 @@ export class SurveyTemplateBuilder extends AddonPage {
                 await this.browser.click(this.AddFilterButton);
             }
             //5. select question name
-            await this.browser.click(this.SelectQuestionButton);
-            const xpathQueryForQuestionFromDropDown: string = this.SelectQuestionDropDown.valueOf()['value'].replace(
-                '{placeholder}',
-                question.ShowIf.FilterData.QuestionName,
-            );
-            await this.browser.click(By.xpath(xpathQueryForQuestionFromDropDown));
-            //6. select value to look for from Drop Down
-            for (let index = 0; index < question.ShowIf.FilterData.ValueToLookFor.length; index++) {
-                const value = question.ShowIf.FilterData.ValueToLookFor[index];
-                await this.browser.click(this.QuestionToFilterByDropDownValue);
-                const xpathQueryForValueFromDropDown: string = this.ValueFromDropDownOfSearchingValues.valueOf()[
+            for (let index = 0; index < question.ShowIf.FilterData.length; index++) {
+                const filter = question.ShowIf.FilterData[index];
+                await this.browser.click(this.SelectQuestionButton, index);
+                const xpathQueryForQuestionFromDropDown: string = this.SelectQuestionDropDown.valueOf()[
                     'value'
-                ].replace('{placeholder}', value);
-                await this.browser.click(By.xpath(xpathQueryForValueFromDropDown));
+                ].replace('{placeholder}', filter.QuestionName);
+                await this.browser.click(By.xpath(xpathQueryForQuestionFromDropDown));
+                //6. select value to look for from Drop Down
+                for (let index1 = 0; index1 < filter.ValueToLookFor.length; index1++) {
+                    const value = filter.ValueToLookFor[index1];
+                    await this.browser.click(this.QuestionToFilterByDropDownValue, index);
+                    const xpathQueryForValueFromDropDown: string = this.ValueFromDropDownOfSearchingValues.valueOf()[
+                        'value'
+                    ].replace('{placeholder}', value);
+                    await this.browser.click(By.xpath(xpathQueryForValueFromDropDown));
+                }
+                this.browser.sleep(1500);
+                await this.browser.click(this.EmptySpaceToSaveValue);
+                this.browser.sleep(1500);
+                if (index < question.ShowIf.FilterData.length - 1) {
+                    await this.browser.click(this.AddFilterButton);
+                }
             }
             this.browser.sleep(1500);
-            await this.browser.click(this.EmptySpaceToSaveValue);
-            this.browser.sleep(1500);
-            await this.browser.click(this.SaveFilterButton);
             await this.browser.click(this.SaveFilterButton);
         }
     }

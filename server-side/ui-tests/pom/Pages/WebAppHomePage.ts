@@ -40,6 +40,7 @@ export class WebAppHomePage extends WebAppPage {
         console.log('Wait Before Loading Accounts');
         this.browser.sleep(2002);
         await this.clickOnBtn('Accounts');
+        this.browser.sleep(2002);
         await webAppList.validateListRowElements();
         this.browser.sleep(1500);
         await this.returnToHomePage();

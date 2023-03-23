@@ -55,6 +55,7 @@ export async function MaintenanceJobTests(generalService: GeneralService, reques
 
         describe('Maintenance Job', () => {
             it('Validate Maintenance Job Works On Phased Version', async () => {
+                debugger;
                 const maintenanceJobResponse = await generalService.papiClient.post(
                     '/addons/api/async/00000000-0000-0000-0000-000000000a91/installation/maintenanceJob',
                 );

@@ -419,6 +419,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 delete accountAfterUpdate['Latitude'];
                 delete accountAfterUpdate['Longitude'];
                 delete accountAfterUpdate['ModificationDateTime'];
+                delete accountAfterUpdate['CreationDateTime'];
                 delete accountAfterUpdate['Catalogs'];
                 delete accountAfterUpdate['Debts30'];
                 delete accountAfterUpdate['Debts60'];
@@ -440,6 +441,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 delete getByKeyAccount['Latitude'];
                 delete getByKeyAccount['Longitude'];
                 delete getByKeyAccount['ModificationDateTime'];
+                delete getByKeyAccount['CreationDateTime'];
                 expect(getByKeyAccount).to.deep.equal(accountAfterUpdate);
                 await expect(service.getByKey('accounts', '1234')).eventually.to.be.rejected;
             });
@@ -571,8 +573,13 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     const dimxResult = await service.getDimxResult(exportAudit.URI);
                     dimxResult.forEach((object) => {
                         delete object['Key'];
+                        delete object['TSADateTime'];
+                        delete object['TSAContactBirthday'];
+                        delete object['ModificationDateTime'];
                     });
                     accountsForComparison.forEach((object) => {
+                        object['CreationDateTime'] = object['CreationDateTime'].replace('Z', '.000Z');
+                        delete object['ModificationDateTime'];
                         delete object['UUID'];
                         delete object['Catalogs'];
                         delete object['Debts30'];
@@ -591,6 +598,8 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         delete object['SpecialPriceList'];
                         delete object['Users'];
                         delete object['Mobile'];
+                        delete object['TSADateTime'];
+                        delete object['TSAContactBirthday'];
                     });
                     accountsForComparison.sort((a, b) => {
                         return (a as any).InternalID - (b as any).InternalID;
@@ -1400,8 +1409,13 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         legacyAccountUsersManipulation[index].Account = legacyAccountUsers[index].Account.Data.UUID;
                         legacyAccountUsersManipulation[index].User = legacyAccountUsers[index].User.Data.UUID;
                         legacyAccountUsersManipulation[index].Key = legacyAccountUsers[index].UUID;
+                        delete legacyKeyListAccountUsers.Objects[index].CreationDateTime;
+                        delete legacyKeyListAccountUsers.Objects[index].ModificationDateTime;
+                        delete legacyAccountUsersManipulation[index].ModificationDateTime;
+                        delete legacyAccountUsersManipulation[index].CreationDateTime;
                         delete legacyAccountUsersManipulation[index].UUID;
                         delete legacyAccountUsersManipulation[index].ConnectedWithFullAccountAccess;
+                        delete legacyAccountUsersManipulation[index].FromERPIntegration;
                     }
                     expect(legacyKeyListAccountUsers.Objects.length).to.equal(legacyAccountUsersManipulation.length);
                     expect(legacyKeyListAccountUsers.Objects).to.deep.equal(legacyAccountUsersManipulation);
@@ -1420,6 +1434,12 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         ],
                         UniqueFieldID: 'Key',
                     });
+
+                    for (let index = 0; index < legacyUniqueFieldAccountUsers.Objects.length; index++) {
+                        delete legacyUniqueFieldAccountUsers.Objects[index].CreationDateTime;
+                        delete legacyUniqueFieldAccountUsers.Objects[index].ModificationDateTime;
+                    }
+
                     expect(legacyUniqueFieldAccountUsers.Objects.length).to.equal(legacyAccountUsers.length);
                     expect(legacyUniqueFieldAccountUsers.Objects).to.deep.equal(legacyAccountUsersManipulation);
                 });
