@@ -30,7 +30,7 @@ export async function NeltSyncTest(generalService: GeneralService, request, test
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.2.%'],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
@@ -89,8 +89,9 @@ export async function NeltSyncTest(generalService: GeneralService, request, test
             it('create and upload the data to deafult resources', async () => {
                 //generate the data
                 await dataCreator.createData();
-                //run on all deafult resources and get text
+                //run on all deafult resources and get text data
                 const usersURL = (dataCreator.resourceList.find((resource) => resource.scheme.Name.toLocaleLowerCase() === 'users') as Resource).urlToResource;
+                const dataToUpsert = await (await fetch(usersURL!)).text();
                 //create PFS scheme
                 const adalService = new ADALService(generalService.papiClient);
                 const schemaName = "pfsForNelt";
@@ -99,18 +100,51 @@ export async function NeltSyncTest(generalService: GeneralService, request, test
                     Type: 'pfs',
                     SyncData: { Sync: true },
                 } as any);
+                //post empty call to create presignedURL
                 const papiClient: PapiClient = generalService.papiClient;
-                debugger;
+                let pfsSchemeResponse;
                 try {
-                    const x = await papiClient.addons.pfs.uuid("eb26afcd-3cf2-482e-9ab1-b53c41a6adbe").schema(schemaName).post({ Key: "currentData.csv", TemporaryFileURLs: [usersURL], MIME: "application/vnd.ms-excel" });
+                    pfsSchemeResponse = await papiClient.addons.pfs.uuid("eb26afcd-3cf2-482e-9ab1-b53c41a6adbe").schema(schemaName).post({ Key: "currentData.csv", MIME: "application/vnd.ms-excel", Cache: false });
                 } catch (error) {
                     debugger;
                 }
+                //put the data to the PresignedURL of PFS scheme
+                const presignedURL = pfsSchemeResponse.PresignedURL;
+                const urlToImport = pfsSchemeResponse.URL;
+                const buffer = Buffer.from(dataToUpsert, 'utf-8');
+                const requestOptions: RequestInit = {
+                    method: 'PUT',
+                    body: buffer,
+                    headers: {
+                        "Content-Length": buffer.length.toString(),
+                        "Content-Type": "application/vnd.ms-excel"
+                    }
+                };
+                let putResponse;
+                try {
+                    putResponse = await fetch(presignedURL, requestOptions);
+                } catch (error) {
+                    debugger;
+                }
+                //import the data from PFS scheme to the resource
+                const body = {
+                    'URI': urlToImport,
+                    'OverwriteObject': true,
+                    'Delimiter': ',',
+                    "TableOverwrite": true
+                };
+                const importToUsers = await generalService.fetchStatus('/addons/data/import/file/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/users', {
+                    method: "POST",
+                    body: JSON.stringify(body)
+                });
+                const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(
+                    importToUsers.Body.URI,
+                    90,
+                );
                 debugger;
-                //x.URL
-                //DIMX FILE IMPORT - URI
             });
             it('create the data and set UDCs', async () => {
+                debugger;
                 const divisionFields: UdcField[] = [{ Name: "Code", Mandatory: true, Type: "String" }];
                 const divisionResponse = await createUDC(udcService, "DivisionsUDC", "Automation Division UDC", divisionFields, divisionFields);
                 const companiesFields: UdcField[] = [{ Name: "Code", Mandatory: true, Type: "String" }];

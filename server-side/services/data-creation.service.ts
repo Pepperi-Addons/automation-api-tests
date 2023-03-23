@@ -22,7 +22,7 @@ export class DataCreation {
     generalService = new GeneralService(this.client);
 
     resourceList: Resource[] = [
-        { scheme: { Name: 'users', Fields: { ExternalID: { Type: 'String' }, Email: { Type: 'String' } } }, count: 5, urlToResource: "" },
+        { scheme: { Name: 'users', Fields: { ExternalID: { Type: 'String' }, Email: { Type: 'String' }, Key: { Type: 'String' } } }, count: 5, urlToResource: "" },
         { scheme: { Name: 'accounts', Fields: { ExternalID: { Type: 'String' } } }, count: 30000, urlToResource: "" },
         {
             scheme: { Name: 'items', Fields: { MainCategoryID: { Type: 'String' }, ExternalID: { Type: 'String' } } },
@@ -179,9 +179,9 @@ class ResourceCreation {
                 const isRef = Object.entries(schemeFields)[index1][1].Type === 'Resource';
                 if (isRef) {
                     // debugger;
-                    csvLines.push(this.generateRefField(index, index1) + ',');
+                    csvLines.push(this.generateRefField(index, index1) + `${index1 < fields.length - 1 ? "," : ""}`);
                 } else {
-                    csvLines.push(this.generateField(resourceName, index) + `,`);
+                    csvLines.push(this.generateField(resourceName, index) + `${index1 < fields.length - 1 ? "," : ""}`);
                 }
             }
             if (csvLines.length - 1 >= 0) csvLines[csvLines.length - 1] += '\n';
