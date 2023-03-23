@@ -1401,6 +1401,7 @@ export async function PepperiNotificationServiceTests(
                     uninstallAddonBeforeTest.URI as string,
                     40,
                 );
+                debugger;
                 expect(uninstallAddonBeforeTestApiResponse.Status?.ID).to.be.not.equal(
                     2,
                     'Failed To Remove NG-10 Addon',
@@ -1416,6 +1417,7 @@ export async function PepperiNotificationServiceTests(
                     installedAddon.URI as string,
                     40,
                 );
+                debugger;
                 expect(installedAddonApiResponse.Status?.ID).to.be.equal(1, 'Install Failed');
 
                 //Validate Subscription created
@@ -1578,7 +1580,7 @@ export async function PepperiNotificationServiceTests(
                 downgradeAddon = await generalService.papiClient.addons.installedAddons
                     .addonUUID(testData['ADAL'][0])
                     //.downgrade('1.0.260');Oleg
-                    .downgrade('1.4.96');
+                    .downgrade('1.4.120');
                 //debugger;
                 expect(downgradeAddon).to.have.property('URI');
 
