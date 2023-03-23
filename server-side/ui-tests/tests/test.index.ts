@@ -53,6 +53,7 @@ import { UDCTestser } from '../../api-tests/user_defined_collections';
 import { maintenance3APITestser } from '../../api-tests/addons';
 import { handleDevTestInstallation } from '../../tests';
 import { DataCreation } from '../../services/data-creation.service';
+import { NeltSyncestser } from '../../api-tests/nelt_sync_test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -232,7 +233,21 @@ const passCreate = process.env.npm_config_pass_create as string;
 
     if (tests.includes('evgeny')) {
         const d = new DataCreation(client);
-        d.createData();
+        await d.createData();
+    }
+
+    if (tests.includes('NeltSync')) {
+        await NeltSyncestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
     }
 
     if (tests.includes('Workflow')) {

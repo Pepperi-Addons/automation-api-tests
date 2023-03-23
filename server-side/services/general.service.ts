@@ -1155,6 +1155,94 @@ export default class GeneralService {
             });
     }
 
+    fetchStatusNoAuth(uri: string, requestInit?: any): Promise<FetchStatusResponse> {
+        const start = performance.now();
+        let responseStr: string;
+        let parsed: any = {};
+        let errorMessage: any = {};
+        let OptionalHeaders = {
+            ...requestInit?.headers,
+        };
+        // if (requestInit?.headers?.Authorization === null) {
+        //     OptionalHeaders = undefined as any;
+        // }
+        return fetch(`${uri.startsWith('/') ? this['client'].BaseURL + uri : uri}`, {
+            method: `${requestInit?.method ? requestInit?.method : 'GET'}`,
+            body: requestInit?.body,
+            headers: OptionalHeaders,
+            // timeout: requestInit?.timeout,
+            // size: requestInit?.size,
+        })
+            .then(async (response) => {
+                const end = performance.now();
+                const isSucsess = response.status > 199 && response.status < 400 ? true : false;
+                console[isSucsess ? 'log' : 'debug'](
+                    `%cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
+                        uri.startsWith('/') ? this['client'].BaseURL + uri : uri
+                    } took ${(end - start).toFixed(2)} milliseconds`,
+                    `${isSucsess ? ConsoleColors.FetchStatus : ConsoleColors.Information} `,
+                );
+                try {
+                    if (response.headers.get('content-type')?.startsWith('image')) {
+                        responseStr = await response.buffer().then((r) => r.toString('base64'));
+                        parsed = {
+                            Type: 'image/base64',
+                            Text: responseStr,
+                        };
+                    } else {
+                        responseStr = await response.text();
+                        parsed = responseStr ? JSON.parse(responseStr) : '';
+                    }
+                } catch (error) {
+                    if (responseStr && responseStr.substring(20).includes('xml')) {
+                        parsed = {
+                            Type: 'xml',
+                            Text: responseStr,
+                        };
+                        errorMessage = parseResponse(responseStr);
+                    } else if (responseStr && responseStr.substring(20).includes('html')) {
+                        parsed = {
+                            Type: 'html',
+                            Text: responseStr,
+                        };
+                        errorMessage = parseResponse(responseStr);
+                    } else {
+                        parsed = {
+                            Type: 'Error',
+                            Text: responseStr,
+                        };
+                        errorMessage = error;
+                    }
+                }
+
+                const headersArr: any = {};
+                response.headers.forEach((value, key) => {
+                    headersArr[key] = value;
+                });
+
+                return {
+                    Ok: response.ok,
+                    Status: response.status,
+                    Headers: headersArr,
+                    Body: parsed,
+                    Error: errorMessage,
+                };
+            })
+            .catch((error) => {
+                console.error(`Error type: ${error.type}, ${error} `);
+                return {
+                    Ok: undefined as any,
+                    Status: undefined as any,
+                    Headers: undefined as any,
+                    Body: {
+                        Type: error.type,
+                        Name: error.name,
+                    },
+                    Error: error.message,
+                };
+            });
+    }
+
     async getLatestSchemaByKeyAndFilterAttributes(
         key: string,
         addonUUID: string,
