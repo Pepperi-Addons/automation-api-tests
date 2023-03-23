@@ -97,7 +97,7 @@ export async function PepperiNotificationServiceTests(
                                 );
                         }
                         const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
-                        expect(purgedSchema).to.equal('') || expect(purgedSchema).to.be.undefined; //oleg
+                        expect(purgedSchema).to.equal('') || expect(purgedSchema).to.be.undefined; //oleg1
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaNameArr[index]);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
                     }
