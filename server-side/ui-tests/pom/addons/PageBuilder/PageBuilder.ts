@@ -252,6 +252,7 @@ export class PageBuilder extends AddonPage {
 
     public async searchForPageByName(name: string) {
         await this.insertTextToInputElement(name, this.PageBuilder_Search_Input);
+        this.browser.sleep(0.5 * 1000);
         await (await this.browser.findElement(this.PageBuilder_Search_Submit)).click();
     }
 

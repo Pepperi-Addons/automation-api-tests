@@ -64,6 +64,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let getCreatedVisitFlowMainActivity;
     let getCreatedSalesOrderTransaction;
     // let resourceViews: ResourceViews;
+    let salesOrderItemName: string;
 
     describe('Visit Flow Test Suite', async () => {
         describe('Visit Flow UI tests', () => {
@@ -86,6 +87,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 slug_path = `visit_flow_auto_${randomString}`;
                 upsertedListingsToVisitFlowGroups = [];
                 upsertedListingsToVisitFlows = [];
+                salesOrderItemName = 'MaNa15';
             });
 
             after(async function () {
@@ -453,7 +455,9 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.clickElement('VisitFlow_OrdersChooseCatalogDialog_DoneButton');
                     await visitFlow.isSpinnerDone();
                     // Choosing an item in Order Center:
-                    await driver.click(orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName('MaNa15'));
+                    await driver.click(
+                        orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(salesOrderItemName),
+                    );
                     // await visitFlow.waitTillVisible(visitFlow.VisitFlow_DefaultCatalog_OrderButton, 15000);
                     // await visitFlow.clickElement('VisitFlow_DefaultCatalog_OrderButton');
                     await visitFlow.isSpinnerDone();
@@ -489,38 +493,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
                     visitFlow.pause(5 * 1000);
-                });
-
-                it('Verifying VF_VisitFlowMainActivity activity was formed (via API)', async () => {
-                    await webAppLoginPage.login(email, password);
-                    getCreatedVisitFlowMainActivity = await objectsService.getActivity({
-                        where: `TSASubject="Automated test (${randomString}) of Visit Flow started"`,
-                    });
-                    console.info(
-                        `getCreatedVisitFlowMainActivity: ${JSON.stringify(getCreatedVisitFlowMainActivity, null, 4)}`,
-                    );
-                    expect(getCreatedVisitFlowMainActivity).to.haveOwnProperty('TSAFlowID');
-                    expect(getCreatedVisitFlowMainActivity).to.haveOwnProperty('TSAStartVisitDateTime');
-                    expect(getCreatedVisitFlowMainActivity).to.haveOwnProperty('TSAEndVisitDateTime');
-                    expect(getCreatedVisitFlowMainActivity.TSASubject).to.equal(
-                        `Automated test (${randomString}) of Visit Flow started`,
-                    );
-                });
-
-                it('Verifying Sales Order transaction was formed (via API)', async () => {
-                    await webAppLoginPage.login(email, password);
-                    getCreatedSalesOrderTransaction = await objectsService.getTransaction({
-                        order_by: 'CreationDateTime DESC',
-                    })[0];
-                    console.info(
-                        `getCreatedSalesOrderTransaction: ${JSON.stringify(getCreatedSalesOrderTransaction, null, 4)}`,
-                    );
-                    expect(getCreatedSalesOrderTransaction.Type).to.equal('Sales Order');
-                    expect(getCreatedSalesOrderTransaction).to.haveOwnProperty('TSAStartVisitDateTime');
-                    expect(getCreatedSalesOrderTransaction).to.haveOwnProperty('TSAEndVisitDateTime');
-                    expect(getCreatedSalesOrderTransaction.TSASubject).to.equal(
-                        `Automated test (${randomString}) of Visit Flow started`,
-                    );
                 });
             });
 
@@ -576,6 +548,18 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     driver.sleep(7 * 1000);
                 });
 
+                it('Getting VF_VisitFlowMainActivity activity (via API)', async () => {
+                    getCreatedVisitFlowMainActivity = await objectsService.getActivity({
+                        where: `'TSASubject="Automated test (${randomString}) of Visit Flow started"'`,
+                    });
+                });
+
+                it('Getting Sales Order transaction (via API)', async () => {
+                    getCreatedSalesOrderTransaction = await objectsService.getTransaction({
+                        order_by: `CreationDateTime DESC`,
+                    });
+                });
+
                 it('Deleting Slug via API', async () => {
                     const res = await slugs.deleteSlugByName(slug_path, client);
                     expect(res.Ok).to.be.true;
@@ -584,33 +568,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     expect(res.Body.success).to.be.true;
                     expect(await (await slugs.getSlugs(client)).Body.find((item) => item.Slug === slug_path)).to.be
                         .undefined;
+
+                    // to be removed when DI-22793 is resolved:
+                    const clearMappedSlugsUpsertResponse = await e2eUtils.runOverMappedSlugs([], client);
+                    console.info(`existingMappedSlugs: ${JSON.stringify(clearMappedSlugsUpsertResponse, null, 4)}`);
                 });
-
-                // it('Deleting Slug from Mapped Slugs via API', async () => {
-                //     console.info(`existingMappedSlugs: ${JSON.stringify(existingMappedSlugs, null, 4)}`);
-                //     const res = await e2eUtils.runOverMappedSlugs(existingMappedSlugs, client);
-                //     console.info(`RESPONSE: ${JSON.stringify(res, null, 4)}`);
-
-                //     // const slugsFields: MenuDataViewField[] = e2eUtils.prepareDataForDragAndDropAtSlugs([], existingMappedSlugs);
-                //     // console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`);
-                //     // const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
-                //     // console.info(
-                //     //     `slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`,
-                //     // );
-                //     // const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
-                //     // console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
-                // });
-
-                // it('Deleting Slug from Mapped Slugs via UI', async () => {
-                //     await e2eUtils.navigateTo('Slugs');
-                //     await slugs.clickTab('Mapping_Tab');
-                //     await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
-                //     await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
-                //     await slugs.isSpinnerDone();
-                //     await slugs.waitTillVisible(slugs.MappedSlugs, 5000);
-                //     await slugs.click(slugs.getSelectorOfMappedSlugDeleteButtonByName(slug_path));
-                //     await slugs.clickElement('PageMapping_ProfileEditButton_Save');
-                // });
 
                 it('Deleting Page via UI', async () => {
                     await e2eUtils.navigateTo('Page Builder');
@@ -627,10 +589,35 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     pageBuilder.pause(1 * 1000);
                 });
 
-                // it('Deleting Page via API', async () => { // doesn't work!
-                //     const deletePageResponse = await pageBuilder.removePageByKey(pageUUID, client);
-                //     console.info(`RESPONSE: ${JSON.stringify(deletePageResponse, null, 4)}`);
-                // });
+                it('Verifying VF_VisitFlowMainActivity activity was formed', async () => {
+                    console.info(
+                        `getCreatedVisitFlowMainActivity: ${JSON.stringify(getCreatedVisitFlowMainActivity, null, 4)}`,
+                    );
+                    expect(getCreatedVisitFlowMainActivity).to.be.an('array').with.lengthOf(1);
+                    expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('Type');
+                    expect(getCreatedVisitFlowMainActivity[0].Type).to.equal('VF_VisitFlowMainActivity');
+                    expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('TSAFlowID');
+                    expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('TSASubject');
+                    expect(getCreatedVisitFlowMainActivity[0].TSASubject).to.equal(
+                        `Automated test (${randomString}) of Visit Flow started`,
+                    );
+                });
+
+                it('Verifying Sales Order transaction was formed', async () => {
+                    console.info(
+                        `getCreatedSalesOrderTransaction: ${JSON.stringify(getCreatedSalesOrderTransaction, null, 4)}`,
+                    );
+                    expect(getCreatedSalesOrderTransaction).to.be.an('array').with.lengthOf(1);
+                    expect(getCreatedSalesOrderTransaction[0].Type).to.equal('Sales Order');
+                    expect(getCreatedSalesOrderTransaction[0]).to.haveOwnProperty('StatusName');
+                    expect(getCreatedSalesOrderTransaction[0].StatusName).to.equal('Submitted');
+                    expect(getCreatedSalesOrderTransaction[0]).to.haveOwnProperty('ItemsCount');
+                    expect(getCreatedSalesOrderTransaction[0].ItemsCount).to.equal(1);
+                    expect(getCreatedSalesOrderTransaction[0]).to.haveOwnProperty('Account');
+                    expect(getCreatedSalesOrderTransaction[0]).to.haveOwnProperty('Catalog');
+                    expect(getCreatedSalesOrderTransaction[0].Catalog.Data.ExternalID).to.equal('Default Catalog');
+                    expect(getCreatedSalesOrderTransaction[0]).to.haveOwnProperty('TransactionLines');
+                });
 
                 it('Deleting UDCs listings', async () => {
                     // deleting created VisitFlowGroups documents
@@ -658,6 +645,36 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         expect(deleteResponse.Body.Key).to.equal(documentBody.Key);
                         expect(deleteResponse.Body.Title).to.equal(documentBody.Title);
                     });
+
+                    // deleting any leftovers from unsuccessful previous tests
+                    // debugger
+                    let visitFlowGroupsDocuments = await udcService.getDocuments('VisitFlowGroups', {
+                        where: 'Title like "%Auto%"',
+                    });
+                    console.info('visitFlowGroupsDocuments: ', visitFlowGroupsDocuments);
+                    visitFlowGroupsDocuments.forEach(async (visitFlowGroupsDocument) => {
+                        // visitFlowGroupsDocument.Hidden = true;
+                        await udcService.hideObjectInACollection('VisitFlowGroups', visitFlowGroupsDocument.Key);
+                    });
+                    driver.sleep(2.5 * 1000);
+                    visitFlowGroupsDocuments = await udcService.getDocuments('VisitFlowGroups', {
+                        where: 'Title like "%Auto%"',
+                    });
+                    expect(visitFlowGroupsDocuments).to.be.an('array').with.lengthOf(0);
+
+                    let visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
+                        where: 'Name like "Auto%"',
+                    });
+                    console.info('visitFlowsDocuments: ', visitFlowsDocuments);
+                    visitFlowsDocuments.forEach(async (visitFlowsDocument) => {
+                        // visitFlowsDocument.Hidden = true;
+                        await udcService.hideObjectInACollection('VisitFlows', visitFlowsDocument.Key);
+                    });
+                    driver.sleep(2.5 * 1000);
+                    visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
+                        where: 'Name like "Auto%"',
+                    });
+                    expect(visitFlowsDocuments).to.be.an('array').with.lengthOf(0);
                 });
 
                 // it('Deleting Catalogs View', async () => {

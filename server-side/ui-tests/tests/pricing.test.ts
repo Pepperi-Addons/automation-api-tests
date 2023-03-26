@@ -1200,24 +1200,40 @@ export async function PricingTests(email: string, password: string, client: Clie
             ItemPrice: 30.75,
             NPMCalcMessage: {
                 Acc01: {
-                    baseline: [
+                    baseline: [],
+                    '3unit': [
                         {
-                            'ZBASE@A003@Acc01@Pharmacy': [
-                                [true, '1555891200000', '2534022144999', '1', '1', 'ZBASE_A003', [[0, 'S', 30, 'P']]],
-                            ],
+                            Name: 'GroupDiscount',
+                            Base: 92.25,
+                            Conditions: [{ Name: 'ZGD2_A003', Type: '%', Value: -3, Amount: -2.7675 }],
+                            New: 89.4825,
+                            Amount: -2.7674999999999983,
                         },
                     ],
-                    '1unit': [],
-                    '3units': [],
-                    '1case(6units)': [],
-                    '4cases(24units)': [],
+                    '7units': [
+                        {
+                            Name: 'GroupDiscount',
+                            Base: 215.25,
+                            Conditions: [{ Name: 'ZGD2_A003', Type: '%', Value: -7, Amount: -15.0675 }],
+                            New: 200.1825,
+                            Amount: -15.067499999999995,
+                        },
+                    ],
+                    '10units': [
+                        {
+                            Name: 'GroupDiscount',
+                            Base: 307.5,
+                            Conditions: [{ Name: 'ZGD1_A002', Type: '%', Value: -20, Amount: -61.5 }],
+                            New: 246,
+                            Amount: -61.5,
+                        },
+                    ],
                 },
                 OtherAcc: {
                     baseline: [],
-                    '1unit': [],
                     '3units': [],
-                    '1case(6units)': [],
-                    '4cases(24units)': [],
+                    '7units': [],
+                    '10units': [],
                 },
             },
             PriceBaseUnitPriceAfter1: {
@@ -2098,7 +2114,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         expect(Number(numberByUOM)).equals(1);
                                         driver.sleep(0.1 * 1000);
                                         const MakeUpItem_priceTSAsCart = await getItemTSAs('OrderCenter', item);
-                                        driver.sleep(0.1 * 1000);
+                                        driver.sleep(0.2 * 1000);
                                         expect(MakeUpItem_priceTSAsCart.NPMCalcMessage)
                                             .to.be.an('array')
                                             .with.lengthOf(0);
@@ -2149,6 +2165,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             ).equals(
                                                 testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                                     .Conditions[0].Type,
+                                            );
+                                            expect(
+                                                MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                                    .Conditions[0].Value,
                                             );
                                             break;
 
@@ -2270,6 +2292,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                                     .Conditions[0].Type,
                                             );
+                                            expect(
+                                                MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                                    .Conditions[0].Value,
+                                            );
                                             break;
 
                                         default:
@@ -2329,6 +2357,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             ).equals(
                                                 testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                                     .Conditions[0].Type,
+                                            );
+                                            expect(
+                                                MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                                    .Conditions[0].Value,
                                             );
                                             break;
 
@@ -2390,6 +2424,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
                                                     .Conditions[0].Type,
                                             );
+                                            expect(
+                                                MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
+                                                    .Conditions[0].Value,
+                                            );
                                             break;
 
                                         default:
@@ -2450,6 +2490,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                                     .Conditions[0].Type,
                                             );
+                                            expect(
+                                                MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                    .Conditions[0].Value,
+                                            );
                                             break;
 
                                         default:
@@ -2492,7 +2538,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 'Amount',
                                             ]);
                                             expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['11units'][0]
                                                     .Name,
                                             );
                                             expect(
@@ -2501,14 +2547,20 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             expect(
                                                 MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name,
                                             ).equals(
-                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['11units'][0]
                                                     .Conditions[0].Name,
                                             );
                                             expect(
                                                 MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type,
                                             ).equals(
-                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['11units'][0]
                                                     .Conditions[0].Type,
+                                            );
+                                            expect(
+                                                MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['11units'][0]
+                                                    .Conditions[0].Value,
                                             );
                                             break;
 
@@ -2572,6 +2624,18 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
                                                     .Conditions[0].Type,
                                             );
+                                            expect(
+                                                MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                                    .Conditions[0].Value,
+                                            );
+                                            expect(
+                                                MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Amount,
+                                            ).equals(
+                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                                    .Conditions[0].Amount,
+                                            );
                                             break;
 
                                         default:
@@ -2608,14 +2672,42 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             expect(MakeUp003_priceTSAsCart.NPMCalcMessage)
                                                 .to.be.an('array')
                                                 .with.lengthOf(1);
-                                            // expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0])).eql(['Name', 'Base', 'Conditions', 'New', 'Amount']);
-                                            // expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Name'])
-                                            //     .equals(testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0].Name);
-                                            // expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(['Name', 'Type', 'Value', 'Amount']);
-                                            // expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name)
-                                            //     .equals(testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0].Conditions[0].Name);
-                                            // expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type)
-                                            //     .equals(testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0].Conditions[0].Type);
+                                            expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0])).eql(
+                                                Object.keys(
+                                                    testItemsData_PPM_Values[item_forGroupRules].NPMCalcMessage[
+                                                        account
+                                                    ]['10units'][0],
+                                                ),
+                                            );
+                                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Name).eql(
+                                                testItemsData_PPM_Values[item_forGroupRules].NPMCalcMessage[account][
+                                                    '10units'
+                                                ][0].Name,
+                                            );
+                                            expect(
+                                                Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0]),
+                                            ).eql(
+                                                Object.keys(
+                                                    testItemsData_PPM_Values[item_forGroupRules].NPMCalcMessage[
+                                                        account
+                                                    ]['10units'][0].Conditions[0],
+                                                ),
+                                            );
+                                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0].Name).eql(
+                                                testItemsData_PPM_Values[item_forGroupRules].NPMCalcMessage[account][
+                                                    '10units'
+                                                ][0].Conditions[0].Name,
+                                            );
+                                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0].Type).eql(
+                                                testItemsData_PPM_Values[item_forGroupRules].NPMCalcMessage[account][
+                                                    '10units'
+                                                ][0].Conditions[0].Type,
+                                            );
+                                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0].Value).eql(
+                                                testItemsData_PPM_Values[item_forGroupRules].NPMCalcMessage[account][
+                                                    '10units'
+                                                ][0].Conditions[0].Value,
+                                            );
                                             break;
 
                                         default:
@@ -2623,7 +2715,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 .to.be.an('array')
                                                 .with.lengthOf(0);
                                             expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage)).eql(
-                                                testItemsData_PPM_Values.BeautyMakeUp.NPMCalcMessage.OtherAcc.baseline,
+                                                testItemsData_PPM_Values[item_forGroupRules].NPMCalcMessage[account]
+                                                    .baseline,
                                             );
                                             break;
                                     }
