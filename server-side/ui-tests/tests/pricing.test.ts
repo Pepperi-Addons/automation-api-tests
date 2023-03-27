@@ -1498,9 +1498,9 @@ export async function PricingTests(email: string, password: string, client: Clie
 
                                 default:
                                     describe(`CART "${state}"`, () => {
-                                        it('enter cart', async () => {
+                                        it('entering and verifying being in cart', async () => {
                                             await driver.click(orderPage.Cart_Button);
-                                            await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName(''));
+                                            await driver.untilIsVisible(orderPage.Cart_Total_Header);
                                             driver.sleep(1 * 1000);
                                         });
                                         it('verify that the sum total of items in the cart is correct', async () => {
@@ -1824,7 +1824,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                             describe('CART', () => {
                                 it('verifying that the sum total of items in the cart is correct', async () => {
-                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName('')); // check to be in cart
+                                    await driver.untilIsVisible(orderPage.Cart_Total_Header); // check to be in cart
                                     const itemsInCart = await (
                                         await driver.findElement(orderPage.Cart_Headline_Results_Number)
                                     ).getText();
@@ -2844,11 +2844,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
 
                             describe('CART', () => {
-                                it('Entering Cart', async () => {
+                                it('Entering and verifying being in Cart', async () => {
                                     await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
                                     driver.sleep(0.1 * 1000);
                                     await driver.click(orderPage.Cart_Button);
-                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName(''));
+                                    await driver.untilIsVisible(orderPage.Cart_Total_Header);
                                     driver.sleep(0.1 * 1000);
                                 });
                                 it('Checking Cart', async () => {
@@ -2857,7 +2857,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 });
                                 it('Click "Submit" button', async () => {
                                     await orderPage.isSpinnerDone();
-                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName(''));
+                                    await driver.untilIsVisible(orderPage.Cart_Total_Header);
                                     await driver.click(orderPage.Cart_Submit_Button);
                                     driver.sleep(0.1 * 1000);
                                 });
