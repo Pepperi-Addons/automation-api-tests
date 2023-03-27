@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { describe, it, afterEach, beforeEach } from 'mocha';
+import { describe, it, before, afterEach, beforeEach } from 'mocha';
 import { AddonPage, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService, { FetchStatusResponse } from '../../services/general.service';
@@ -18,7 +18,15 @@ chai.use(promised);
 export async function UomTests(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
+
     let driver: Browser;
+    // let uom: Uom;
+    // let addonPage: AddonPage;
+    // let brandedApp: BrandedApp;
+    // let webAppHeader: WebAppHeader;
+    // let webAppHomePage: WebAppHomePage;
+    // let webAppLoginPage: WebAppLoginPage;
+    // let objectTypeEditor: ObjectTypeEditor;
 
     const _TEST_DATA_ATD_NAME = `UOM_${generalService.generateRandomString(15)}`;
     const _TEST_DATA_ATD_DESCRIPTION = 'ATD for uom automation testing';
@@ -52,50 +60,59 @@ export async function UomTests(email: string, password: string, varPass: string,
         new UomOrderExpectedValues('1231', 48, 48, 16, 'SIN'),
     ];
 
-    await generalService.baseAddonVersionsInstallation(varPass);
-    //#region Upgrade cpi-node & UOM
-    const testData = {
-        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.12'], //has to be hardcoded because upgrade dependencies cant handle this
-        'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.7'],
-        uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''], //latest
-    };
+    // await generalService.baseAddonVersionsInstallation(varPass);
+    // //#region Upgrade cpi-node & UOM
+    // const testData = {
+    //     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.12'], //has to be hardcoded because upgrade dependencies cant handle this
+    //     'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.7'],
+    //     uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''], //latest
+    // };
 
-    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
     //#endregion Upgrade cpi-node & UOM
 
-    describe('UOM Tests Suit', async function () {
-        describe('Prerequisites Addons for UOM Tests', () => {
-            //Test Data
-            //UOM
-            isInstalledArr.forEach((isInstalled, index) => {
-                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-                    expect(isInstalled).to.be.true;
-                });
-            });
-            for (const addonName in testData) {
-                const addonUUID = testData[addonName][0];
-                const version = testData[addonName][1];
-                const varLatestVersion = chnageVersionResponseArr[addonName][2];
-                const changeType = chnageVersionResponseArr[addonName][3];
-                describe(`Test Data: ${addonName}`, () => {
-                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-                        } else {
-                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-                        }
-                    });
-                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                            .eventually.to.have.property('Version')
-                            .a('string')
-                            .that.is.equal(varLatestVersion);
-                    });
-                });
-            }
+    describe('UOM Tests Suite', async function () {
+        before(async function () {
+            // uom = new Uom(driver);
+            // addonPage = new AddonPage(driver);
+            // brandedApp = new BrandedApp(driver);
+            // webAppHeader = new WebAppHeader(driver);
+            // webAppHomePage = new WebAppHomePage(driver);
+            // webAppLoginPage = new WebAppLoginPage(driver);
+            // objectTypeEditor = new ObjectTypeEditor(driver);
         });
+        // describe('Prerequisites Addons for UOM Tests', () => {
+        //     //Test Data
+        //     //UOM
+        //     isInstalledArr.forEach((isInstalled, index) => {
+        //         it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+        //             expect(isInstalled).to.be.true;
+        //         });
+        //     });
+        //     for (const addonName in testData) {
+        //         const addonUUID = testData[addonName][0];
+        //         const version = testData[addonName][1];
+        //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
+        //         const changeType = chnageVersionResponseArr[addonName][3];
+        //         describe(`Test Data: ${addonName}`, () => {
+        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+        //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+        //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+        //                 } else {
+        //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+        //                 }
+        //             });
+        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+        //                     .eventually.to.have.property('Version')
+        //                     .a('string')
+        //                     .that.is.equal(varLatestVersion);
+        //             });
+        //         });
+        //     }
+        // });
 
         describe('Data Preparation For Test Using Endpoints', () => {
             it('Post items for uom', async function () {
@@ -186,6 +203,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                 //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
                 //3.2. add fields to UI control of ATD
                 const uom = new Uom(driver);
+                debugger;
                 await uom.configUomATD();
                 let webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.returnToHomePage();
@@ -221,8 +239,8 @@ export async function UomTests(email: string, password: string, varPass: string,
                             `/transactions?where=Type='${_TEST_DATA_ATD_NAME}'&order_by=CreationDateTime DESC`,
                         )
                     ).Body[0].InternalID;
-                    const service = new ObjectsService(generalService);
-                    const orderResponse: TransactionLines[] = await service.getTransactionLines({
+                    // const service = new ObjectsService(generalService);
+                    const orderResponse: TransactionLines[] = await objectsService.getTransactionLines({
                         where: `TransactionInternalID=${orderId}`,
                     });
                     expect(orderResponse).to.be.an('array').with.lengthOf(4);
@@ -250,8 +268,8 @@ export async function UomTests(email: string, password: string, varPass: string,
                             `/transactions?where=Type='${_TEST_DATA_ATD_NAME}'&order_by=CreationDateTime DESC`,
                         )
                     ).Body[0].InternalID;
-                    const service = new ObjectsService(generalService);
-                    const orderResponse = await service.getTransactionLines({
+                    // const service = new ObjectsService(generalService);
+                    const orderResponse = await objectsService.getTransactionLines({
                         where: `TransactionInternalID=${orderId}`,
                     });
                     expect(orderResponse).to.be.an('array').with.lengthOf(3);

@@ -199,7 +199,8 @@ export class AddonPage extends Page {
         await this.browser.click(webAppHeader.Settings);
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Catalogs');
-        await this.browser.click(webAppSettingsSidePanel.CatalogsSection);
+        // await this.browser.click(webAppSettingsSidePanel.CatalogsSection);
+        await webAppSettingsSidePanel.clickSettingsSubCategory('catalogs_manage', 'Catalogs');
         await this.isSpinnerDone();
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Content);
