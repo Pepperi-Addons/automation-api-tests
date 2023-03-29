@@ -4,15 +4,7 @@ import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { Browser } from '../utilities/browser';
-import {
-    WebAppDialog,
-    WebAppHeader,
-    WebAppHomePage,
-    WebAppList,
-    WebAppLoginPage,
-    // WebAppSettingsSidePanel,
-    WebAppTopBar,
-} from '../pom';
+import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../pom';
 import { ObjectsService } from '../../services';
 import { OrderPage } from '../pom/Pages/OrderPage';
 import { Key } from 'selenium-webdriver';
@@ -39,7 +31,6 @@ export async function PricingTests(email: string, password: string, client: Clie
     let webAppList: WebAppList;
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
-    // let settingsSidePanel: WebAppSettingsSidePanel;
     let orderPage: OrderPage;
     let batchUDTresponse;
     let transactionID: number;
@@ -1378,7 +1369,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                 webAppList = new WebAppList(driver);
                 webAppTopBar = new WebAppTopBar(driver);
                 webAppDialog = new WebAppDialog(driver);
-                // settingsSidePanel = new WebAppSettingsSidePanel(driver);
                 orderPage = new OrderPage(driver);
             });
 
