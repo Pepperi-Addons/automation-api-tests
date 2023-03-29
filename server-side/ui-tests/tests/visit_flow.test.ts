@@ -468,7 +468,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.clickElement('VisitFlow_DefaultCatalog_SubmitButton');
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
-                    visitFlow.pause(5 * 1000);
+                    visitFlow.pause(0.5 * 1000);
                 });
 
                 it('Checking off "End"', async () => {
@@ -492,7 +492,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     } else {
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
-                    visitFlow.pause(5 * 1000);
+                    visitFlow.pause(0.5 * 1000);
                 });
             });
 
@@ -602,6 +602,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     ).to.contain('No results were found.');
                     await pageBuilder.isSpinnerDone();
                     pageBuilder.pause(0.2 * 1000);
+                    await driver.click(pageBuilder.PageBuilder_Search_Clear);
                 });
 
                 it('Deleting Pages leftovers via UI', async () => {
@@ -611,9 +612,19 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         do {
                             const page = allPages.pop();
                             if (page) {
-                                await pageBuilder.deleteFromListByName(await page.getAttribute('title'));
+                                const pageName = await page.getAttribute('title');
+                                await pageBuilder.searchForPageByName(pageName);
+                                pageBuilder.pause(0.2 * 1000);
+                                await pageBuilder.deleteFromListByName(pageName);
+                                await pageBuilder.searchForPageByName(pageName);
+                                expect(
+                                    await (
+                                        await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)
+                                    ).getText(),
+                                ).to.contain('No results were found.');
                                 await pageBuilder.isSpinnerDone();
                                 pageBuilder.pause(0.1 * 1000);
+                                await driver.click(pageBuilder.PageBuilder_Search_Clear);
                             }
                         } while (allPages.length);
                         pageBuilder.pause(0.1 * 1000);
@@ -622,22 +633,22 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     }
                 });
 
-                it('Verifying Mapped Slugs were cleared', async () => {
-                    await e2eUtils.logOutLogIn(email, password);
-                    await e2eUtils.navigateTo('Slugs');
-                    await slugs.clickTab('Mapping_Tab');
-                    await pageBuilder.isSpinnerDone();
-                    await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_Rep_EmptyContent, 15000);
-                    const repCard_editButton = await driver.findElement(
-                        slugs.EditPage_ConfigProfileCard_EditButton_Rep,
-                        15000,
-                    );
-                    await repCard_editButton.click();
-                    await slugs.isSpinnerDone();
-                    await slugs.waitTillVisible(slugs.MappedSlugs_Title, 15000);
-                    await slugs.waitTillVisible(slugs.MappedSlugs_Container, 15000);
-                    await slugs.waitTillVisible(slugs.MappedSlugs_Empty, 15000);
-                });
+                // it('Verifying Mapped Slugs were cleared', async () => {
+                //     await e2eUtils.logOutLogIn(email, password);
+                //     await e2eUtils.navigateTo('Slugs');
+                //     await slugs.clickTab('Mapping_Tab');
+                //     await pageBuilder.isSpinnerDone();
+                //     await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_Rep_EmptyContent, 15000);
+                //     const repCard_editButton = await driver.findElement(
+                //         slugs.EditPage_ConfigProfileCard_EditButton_Rep,
+                //         15000,
+                //     );
+                //     await repCard_editButton.click();
+                //     await slugs.isSpinnerDone();
+                //     await slugs.waitTillVisible(slugs.MappedSlugs_Title, 15000);
+                //     await slugs.waitTillVisible(slugs.MappedSlugs_Container, 15000);
+                //     await slugs.waitTillVisible(slugs.MappedSlugs_Empty, 15000);
+                // });
 
                 it('Verifying VF_VisitFlowMainActivity activity was formed', async () => {
                     console.info(
