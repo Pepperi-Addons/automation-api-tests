@@ -171,13 +171,13 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 it('Verifying Page was created successfully', async () => {
                     await e2eUtils.navigateTo('Page Builder');
                     await pageBuilder.searchForPageByName(pageName);
-                    pageBuilder.pause(2 * 1000);
+                    pageBuilder.pause(0.2 * 1000);
                 });
             });
 
             describe('Inserting Data to the UDC: VisitFlows', () => {
                 it('Configuring Flows', async () => {
-                    driver.sleep(5 * 1000);
+                    driver.sleep(0.5 * 1000);
                     const collectionName = 'VisitFlows';
                     const group_Start = upsertedListingsToVisitFlowGroups.length
                         ? upsertedListingsToVisitFlowGroups.find((group) => {
@@ -282,7 +282,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
                     await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
                     await slugs.isSpinnerDone();
-                    await slugs.waitTillVisible(slugs.MappedSlugs, 5000);
+                    await slugs.waitTillVisible(slugs.MappedSlugs_Title, 15000);
                     driver.sleep(2 * 1000);
                     await e2eUtils.logOutLogIn(email, password);
                     await webAppHomePage.isSpinnerDone();
@@ -379,7 +379,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
             });
 
-            describe('Going Through a Basic Visit', () => {
+            describe('Going Through a Basic Visit Flow', () => {
                 it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async () => {
                     // debugger
                     await webAppHeader.goHome();
@@ -537,9 +537,22 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuDELETEbuttonByText(slug_path),
                     );
                     // await visitFlow.click(visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuDELETEbuttonByText('visit_flow_auto'));
+                    if (
+                        await driver.isElementVisible(
+                            visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuDELETEbuttonByText('_auto_'),
+                        )
+                    ) {
+                        const configuredSlugsLeftovers = await driver.findElements(
+                            visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuDELETEbuttonByText('_auto_'),
+                        );
+                        configuredSlugsLeftovers.forEach(async (leftoverSlugDeleteButton) => {
+                            await leftoverSlugDeleteButton.click();
+                        });
+                        driver.sleep(2 * 1000);
+                    }
                     await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SaveButton');
                     // is there a function to wait for round loader to finish?
-                    driver.sleep(5 * 1000);
+                    driver.sleep(3 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
                     await visitFlow.clickElement('AccountDashboardLayout_Menu_CancelButton');
                     await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
@@ -570,23 +583,60 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         .undefined;
 
                     // to be removed when DI-22793 is resolved:
-                    const clearMappedSlugsUpsertResponse = await e2eUtils.runOverMappedSlugs([], client);
-                    console.info(`existingMappedSlugs: ${JSON.stringify(clearMappedSlugsUpsertResponse, null, 4)}`);
+                    // const clearMappedSlugsUpsertResponse = await e2eUtils.runOverMappedSlugs([], client);
+                    // console.info(`existingMappedSlugs: ${JSON.stringify(clearMappedSlugsUpsertResponse, null, 4)}`);
                 });
 
                 it('Deleting Page via UI', async () => {
                     await e2eUtils.navigateTo('Page Builder');
+                    await pageBuilder.isSpinnerDone();
                     await pageBuilder.waitTillVisible(pageBuilder.PagesList_Title, 15000);
                     await pageBuilder.waitTillVisible(pageBuilder.PagesList_NumberOfItemsInList, 15000);
                     await pageBuilder.searchForPageByName(pageName);
-                    pageBuilder.pause(2 * 1000);
+                    pageBuilder.pause(0.2 * 1000);
                     await pageBuilder.deleteFromListByName(pageName);
-                    pageBuilder.pause(5 * 1000);
+                    pageBuilder.pause(3 * 1000);
                     await pageBuilder.searchForPageByName(pageName);
                     expect(
                         await (await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)).getText(),
                     ).to.contain('No results were found.');
-                    pageBuilder.pause(1 * 1000);
+                    await pageBuilder.isSpinnerDone();
+                    pageBuilder.pause(0.2 * 1000);
+                });
+
+                it('Deleting Pages leftovers via UI', async () => {
+                    pageBuilder.pause(0.1 * 1000);
+                    try {
+                        const allPages = await driver.findElements(pageBuilder.Page_Listing_aLink);
+                        do {
+                            const page = allPages.pop();
+                            if (page) {
+                                await pageBuilder.deleteFromListByName(await page.getAttribute('title'));
+                                await pageBuilder.isSpinnerDone();
+                                pageBuilder.pause(0.1 * 1000);
+                            }
+                        } while (allPages.length);
+                        pageBuilder.pause(0.1 * 1000);
+                    } catch (error) {
+                        console.error(error);
+                    }
+                });
+
+                it('Verifying Mapped Slugs were cleared', async () => {
+                    await e2eUtils.logOutLogIn(email, password);
+                    await e2eUtils.navigateTo('Slugs');
+                    await slugs.clickTab('Mapping_Tab');
+                    await pageBuilder.isSpinnerDone();
+                    await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_Rep_EmptyContent, 15000);
+                    const repCard_editButton = await driver.findElement(
+                        slugs.EditPage_ConfigProfileCard_EditButton_Rep,
+                        15000,
+                    );
+                    await repCard_editButton.click();
+                    await slugs.isSpinnerDone();
+                    await slugs.waitTillVisible(slugs.MappedSlugs_Title, 15000);
+                    await slugs.waitTillVisible(slugs.MappedSlugs_Container, 15000);
+                    await slugs.waitTillVisible(slugs.MappedSlugs_Empty, 15000);
                 });
 
                 it('Verifying VF_VisitFlowMainActivity activity was formed', async () => {
@@ -673,6 +723,20 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     driver.sleep(2.5 * 1000);
                     visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
                         where: 'Name like "Auto%"',
+                    });
+                    expect(visitFlowsDocuments).to.be.an('array').with.lengthOf(0);
+
+                    visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
+                        where: 'Name="MockVisit"',
+                    });
+                    console.info('visitFlowsDocuments: ', visitFlowsDocuments);
+                    visitFlowsDocuments.forEach(async (visitFlowsDocument) => {
+                        // visitFlowsDocument.Hidden = true;
+                        await udcService.hideObjectInACollection('VisitFlows', visitFlowsDocument.Key);
+                    });
+                    driver.sleep(2.5 * 1000);
+                    visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
+                        where: 'Name="MockVisit"',
                     });
                     expect(visitFlowsDocuments).to.be.an('array').with.lengthOf(0);
                 });
