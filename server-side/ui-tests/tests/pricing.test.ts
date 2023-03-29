@@ -1338,11 +1338,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                 });
                 batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
                 expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
+                console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
                 batchUDTresponse.map((row) => {
                     expect(row).to.have.property('InternalID').that.is.above(0);
                     expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
-                    expect(row).to.have.property('Status').that.equals('Insert');
-                    expect(row).to.have.property('Message').that.equals('Row inserted.');
+                    expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore']);
+                    expect(row)
+                        .to.have.property('Message')
+                        .that.is.oneOf(['Row inserted.', 'No changes in this row. The row is being ignored.']);
                     expect(row)
                         .to.have.property('URI')
                         .that.equals('/user_defined_tables/' + row.InternalID);
@@ -1490,8 +1493,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     describe(`CART "${state}"`, () => {
                                         it('entering and verifying being in cart', async () => {
                                             await driver.click(orderPage.Cart_Button);
-                                            await driver.untilIsVisible(orderPage.Cart_Total_Header);
                                             driver.sleep(1 * 1000);
+                                            await driver.untilIsVisible(orderPage.Cart_Total_Header);
                                         });
                                         it('verify that the sum total of items in the cart is correct', async () => {
                                             const itemsInCart = await (

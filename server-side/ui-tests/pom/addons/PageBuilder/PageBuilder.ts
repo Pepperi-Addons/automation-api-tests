@@ -11,6 +11,7 @@ export class PageBuilder extends AddonPage {
     public PageBuilder_Search_Submit: By = By.xpath(
         '//input[@placeholder="Search..."]/parent::div/following-sibling::div //mat-icon[2]',
     );
+    public PageBuilder_Search_Clear: By = By.xpath('//pep-search//pep-icon[@name="system_close"]');
     // Add a new Page
     public SelectPage_Title: By = By.xpath('//span[@title="Select a Page"]');
     public BlankTemplatePage: By = By.xpath('//*[text()="Blank"]/parent::div[contains(@class,"page-cube-inner")]');
