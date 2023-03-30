@@ -94,14 +94,36 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await driver.quit();
             });
 
+            it('Making sure UDCs custom (manually inserted) fields are NOT removed upon version upgrade', async () => {
+                // custom field "manuallyAddedField" was added to "VisitFlows" collection, and needs to be there after version upgrade
+                const visitFlowsSchemes = await udcService.getSchemes({
+                    where: 'Name="VisitFlows"',
+                });
+                expect(visitFlowsSchemes).to.be.an('array').with.lengthOf(1);
+                expect(visitFlowsSchemes[0]).to.haveOwnProperty('Fields');
+                expect(visitFlowsSchemes[0].Fields).to.haveOwnProperty('manuallyAddedField');
+                console.info('visitFlowsSchemes: ', visitFlowsSchemes[0].Fields);
+                // custom field "manuallyAddedStepField" was added to "VisitFlowSteps" collection, and needs to be there after version upgrade
+                const visitFlowStepsSchemes = await udcService.getSchemes({
+                    where: 'Name="VisitFlowSteps"',
+                });
+                expect(visitFlowStepsSchemes).to.be.an('array').with.lengthOf(1);
+                expect(visitFlowStepsSchemes[0]).to.haveOwnProperty('Fields');
+                expect(visitFlowStepsSchemes[0].Fields).to.haveOwnProperty('manuallyAddedStepField');
+                console.info('visitFlowStepsSchemes: ', visitFlowStepsSchemes[0].Fields);
+                // custom field "manuallyAddedGroupField" was added to "VisitFlowSteps" collection, and needs to be there after version upgrade
+                const visitFlowGroupsSchemes = await udcService.getSchemes({
+                    where: 'Name="VisitFlowGroups"',
+                });
+                expect(visitFlowGroupsSchemes).to.be.an('array').with.lengthOf(1);
+                expect(visitFlowGroupsSchemes[0]).to.haveOwnProperty('Fields');
+                expect(visitFlowGroupsSchemes[0].Fields).to.haveOwnProperty('manuallyAddedGroupField');
+                console.info('visitFlowGroupsSchemes: ', visitFlowGroupsSchemes[0].Fields);
+            });
+
             it('Login', async () => {
                 await webAppLoginPage.login(email, password);
             });
-
-            // it('Pre-clean: deleting all Pages', async () => {
-            //     await e2eUtils.deleteAllPagesViaUI();
-            //     await webAppHeader.goHome();
-            // });
 
             // describe("Verifying Addon's installation generated required data", () => {
             //     it('Three UDC collections were created (VisitFlows, VisitFlowGroups, VisitFlowSteps)', async () => {
