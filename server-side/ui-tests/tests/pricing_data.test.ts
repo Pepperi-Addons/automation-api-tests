@@ -6,14 +6,14 @@ import promised from 'chai-as-promised';
 
 chai.use(promised);
 
-export async function VFdataPrep(varPass: string, client: Client) {
+export async function PricingDataPrep(varPass: string, client: Client) {
     const generalService = new GeneralService(client);
 
     await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade script dependencies
 
     const testData = {
-        VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
+        pricing: ['adb3c829-110c-4706-9168-40fba9c0eb52', ''],
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.117'], // current phased version 17.15.117 | dependency > 17.15.106
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.4'], // CPAS current phased version 17.10.4 | dependency > 17.0.8
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.92'], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
