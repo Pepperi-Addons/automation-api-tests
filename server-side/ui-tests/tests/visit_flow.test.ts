@@ -300,7 +300,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
 
             describe('Configuring Account Dashboard', () => {
                 it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async () => {
-                    // debugger;
                     for (let i = 0; i < 2; i++) {
                         try {
                             await webAppHeader.goHome();
@@ -381,7 +380,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
 
             describe('Going Through a Basic Visit Flow', () => {
                 it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async () => {
-                    // debugger
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');
@@ -458,8 +456,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await driver.click(
                         orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(salesOrderItemName),
                     );
-                    // await visitFlow.waitTillVisible(visitFlow.VisitFlow_DefaultCatalog_OrderButton, 15000);
-                    // await visitFlow.clickElement('VisitFlow_DefaultCatalog_OrderButton');
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_DefaultCatalog_CartButton, 15000);
                     await visitFlow.clickElement('VisitFlow_DefaultCatalog_CartButton');
@@ -532,11 +528,9 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText(slug_path),
                         15000,
                     );
-                    // await visitFlow.waitTillVisible(visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText('visit_flow_auto'), 15000);
                     await visitFlow.click(
                         visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuDELETEbuttonByText(slug_path),
                     );
-                    // await visitFlow.click(visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuDELETEbuttonByText('visit_flow_auto'));
                     if (
                         await driver.isElementVisible(
                             visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuDELETEbuttonByText('_auto_'),
@@ -551,7 +545,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         driver.sleep(2 * 1000);
                     }
                     await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SaveButton');
-                    // is there a function to wait for round loader to finish?
                     driver.sleep(3 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
                     await visitFlow.clickElement('AccountDashboardLayout_Menu_CancelButton');
@@ -708,13 +701,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
 
                     // deleting any leftovers from unsuccessful previous tests
-                    // debugger
                     let visitFlowGroupsDocuments = await udcService.getDocuments('VisitFlowGroups', {
                         where: 'Title like "%Auto%"',
                     });
                     console.info('visitFlowGroupsDocuments: ', visitFlowGroupsDocuments);
                     visitFlowGroupsDocuments.forEach(async (visitFlowGroupsDocument) => {
-                        // visitFlowGroupsDocument.Hidden = true;
                         await udcService.hideObjectInACollection('VisitFlowGroups', visitFlowGroupsDocument.Key);
                     });
                     driver.sleep(2.5 * 1000);
@@ -728,7 +719,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
                     console.info('visitFlowsDocuments: ', visitFlowsDocuments);
                     visitFlowsDocuments.forEach(async (visitFlowsDocument) => {
-                        // visitFlowsDocument.Hidden = true;
                         await udcService.hideObjectInACollection('VisitFlows', visitFlowsDocument.Key);
                     });
                     driver.sleep(2.5 * 1000);
@@ -742,7 +732,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
                     console.info('visitFlowsDocuments: ', visitFlowsDocuments);
                     visitFlowsDocuments.forEach(async (visitFlowsDocument) => {
-                        // visitFlowsDocument.Hidden = true;
                         await udcService.hideObjectInACollection('VisitFlows', visitFlowsDocument.Key);
                     });
                     driver.sleep(2.5 * 1000);
@@ -751,9 +740,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
                     expect(visitFlowsDocuments).to.be.an('array').with.lengthOf(0);
                 });
-
-                // it('Deleting Catalogs View', async () => {
-                // });
 
                 it('Deleting Activities', async () => {
                     await webAppHeader.goHome();
@@ -782,10 +768,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_EmptyList_Message, 15000);
                     driver.sleep(2.5 * 1000);
                 });
-
-                // it('Performing Manual Sync', async () => {
-                //     await e2eUtils.performManualSync(client);
-                // });
             });
         });
     });
