@@ -274,7 +274,7 @@ export class PageBuilder extends AddonPage {
     public async upsertPage(path: 'publish_page' | 'save_draft_page', pageObj, client: Client) {
         const generalService = new GeneralService(client);
         return await generalService.fetchStatus(
-            `https://papi.pepperi.com/V1.0/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/${path}`,
+            `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/${path}`,
             {
                 method: 'POST',
                 body: JSON.stringify(pageObj),
