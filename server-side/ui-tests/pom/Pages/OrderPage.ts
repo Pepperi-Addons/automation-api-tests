@@ -24,6 +24,7 @@ export class OrderPage extends WebAppList {
     public ItemQuantity_Plus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[5]/button');
 
     public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
+    public Cart_Total_Header: By = By.xpath('//pep-textbox[@data-qa="PSAGrandTotalHeader"]');
     public Cart_Submit_Button: By = By.xpath('//button[@data-qa="Submit"]');
     public TransactionUUID: By = By.id('UUID');
     public TransactionID: By = By.id('WrntyID');

@@ -294,17 +294,19 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
 
     if (tests.includes('VisitFlow')) {
-        // await VFdataPrep(varPass, client);
+        await VFdataPrep(varPass, client);
         await VisitFlowTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Pricing')) {
         await PricingTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('MockTest')) {
         await MockTest(client);
-        await ResourceListTests(email, pass, varPass, client);
+        // await ResourceListTests(email, pass, varPass, client);
     }
 
     if (tests.includes('Distributor')) {
