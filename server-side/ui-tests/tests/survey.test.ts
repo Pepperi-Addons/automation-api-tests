@@ -313,6 +313,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await surveyService.editSurveyTemplateName(newName);
                 const webAppHomePage = new WebAppHomePage(driver);
                 webAppHomePage.returnToHomePage();
+                driver.sleep(3000);
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }
