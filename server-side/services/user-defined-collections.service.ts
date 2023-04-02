@@ -18,7 +18,7 @@ export interface UdcField {
     Resource?: string;
     AdddonUID?: string;
     isArray?: boolean;
-    ApplySystemFilter?:boolean
+    ApplySystemFilter?: boolean
 }
 
 const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
@@ -270,6 +270,7 @@ export class UDCService {
                 Resource: field.Resource ? field.Resource : '',
                 AddonUUID: field.AdddonUID ? field.AdddonUID : '',
                 Indexed: field.Indexed ? field.Indexed : false,
+                ApplySystemFilter: field.ApplySystemFilter !== undefined ? field.ApplySystemFilter : false,
             };
             // debugger;
         }
@@ -320,7 +321,7 @@ export class UDCService {
             },
             SyncData: {
                 Sync: isOnlineOnly === true ? false : true,
-                SyncFieldLevel: false,
+                SyncFieldLevel: isOnlineOnly === true ? false : true,
             },
             GenericResource: true,
             Description: desc ? desc : '', //not mandatory
@@ -397,8 +398,7 @@ export class UDCService {
                 }
                 if (udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name] !== field.Value) {
                     console.log(
-                        `UDC Returned Wrong Value: ${
-                            udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
+                        `UDC Returned Wrong Value: ${udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
                         } instaed of: ${field.Value}`,
                     );
                     udcUpsertItemResponse[udcUpsertItemResponse.length - 1]['Fail'] =
@@ -464,15 +464,15 @@ export class UDCService {
         descriptionOfCollection?: string;
         syncDefinitionOfCollection?: { Sync: boolean; SyncFieldLevel?: boolean };
         typeOfCollection?:
-            | 'data'
-            | 'meta_data'
-            | 'indexed_data'
-            | 'index'
-            | 'shared_index'
-            | 'pfs'
-            | 'contained'
-            | 'papi'
-            | 'abstract';
+        | 'data'
+        | 'meta_data'
+        | 'indexed_data'
+        | 'index'
+        | 'shared_index'
+        | 'pfs'
+        | 'contained'
+        | 'papi'
+        | 'abstract';
     }) {
         const collectionFields = {};
         const udcListViewFields = collectionData.fieldsOfCollection.map((schemeField) => {

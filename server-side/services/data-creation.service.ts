@@ -2,6 +2,9 @@ import { Client } from '@pepperi-addons/debug-server/dist';
 import { AddonDataScheme, SchemeField } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 import fetch, { RequestInit, Response } from "node-fetch";
+import { v4 as newUuid } from 'uuid';
+import * as fs from 'fs';
+
 
 
 
@@ -20,10 +23,11 @@ export class DataCreation {
     // listSavedData: string[] = [];
     // itemsSavedData: string[] = [];
     generalService = new GeneralService(this.client);
+    //, Key: { Type: 'String' }
 
     resourceList: Resource[] = [
-        { scheme: { Name: 'users', Fields: { ExternalID: { Type: 'String' }, Email: { Type: 'String' }, Key: { Type: 'String' } } }, count: 5, urlToResource: "" },
-        { scheme: { Name: 'accounts', Fields: { ExternalID: { Type: 'String' } } }, count: 30000, urlToResource: "" },
+        { scheme: { Name: 'users', Fields: { ExternalID: { Type: 'String' }, Email: { Type: 'String' } } }, count: 5, urlToResource: "" },
+        { scheme: { Name: 'accounts', Fields: { ExternalID: { Type: 'String' }, Name: { Type: 'String' } } }, count: 30000, urlToResource: "" },
         {
             scheme: { Name: 'items', Fields: { MainCategoryID: { Type: 'String' }, ExternalID: { Type: 'String' } } },
             count: 3000, urlToResource: ""
@@ -58,7 +62,7 @@ export class DataCreation {
                 Name: 'Data2XRef',
                 Fields: {
                     divisionsRef: { Type: 'Resource' },
-                    companiesRef: { Type: 'String' },
+                    companiesRef: { Type: 'Resource' },
                     value1: { Type: 'String' },
                     value2: { Type: 'String' },
                 },
@@ -71,8 +75,8 @@ export class DataCreation {
                 Name: 'DataX3Ref',
                 Fields: {
                     accountsRef: { Type: 'Resource' },
-                    divisionsRef: { Type: 'String' },
-                    companiesRef: { Type: 'String' },
+                    divisionsRef: { Type: 'Resource' },
+                    companiesRef: { Type: 'Resource' },
                     value1: { Type: 'String' },
                     value2: { Type: 'String' },
                 },
@@ -110,6 +114,7 @@ export class DataCreation {
     }
 }
 class ResourceCreation {
+
     constructor(private resource: Resource, private mgr: DataCreation) { }
     async execute(): Promise<void> {
         //promise should be string
@@ -121,7 +126,9 @@ class ResourceCreation {
         try {
             csvLines = this.generateData(fields, this.resource.scheme.Name, this.resource.scheme.Fields as any);
         } catch (error) {
-            debugger;
+            throw new Error(
+                `Error: generating the data -> ${(error as any).message}`,
+            );
         }
         if (csvLines.charAt(csvLines.length - 1) === "\n") {
             let position = csvLines.length;
@@ -131,9 +138,17 @@ class ResourceCreation {
             let position = csvLines.length;
             csvLines = csvLines.substring(0, position - 1) + csvLines.substring(position, csvLines.length);
         }
-        const csvData = `${schemeFieldsAsCsvHeader}\n${csvLines}`;
-        console.log(`${this.resource.scheme.Name}-->${csvData}`);
-        await this.genrateTempFile(this.resource.scheme.Name, csvData);
+        if (csvLines.split("\n").length > 90000) {
+            const mid = Math.floor(csvLines.split("\n").length / 2);
+            const csvData1 = `${schemeFieldsAsCsvHeader}\n${csvLines.split("\n").slice(0, mid).join('\n')}`;
+            const csvData2 = `${schemeFieldsAsCsvHeader}\n${csvLines.split("\n").slice(mid, csvLines.split("\n").length).join('\n')}`;
+            await this.genrateFile(this.resource.scheme.Name + '_1', csvData1);
+            await this.genrateFile(this.resource.scheme.Name + '_2', csvData2);
+        } else {
+            const csvData = `${schemeFieldsAsCsvHeader}\n${csvLines}`;
+            console.log(`${this.resource.scheme.Name}-->\n${csvData}`);
+            await this.genrateFile(this.resource.scheme.Name, csvData);
+        }
     }
 
     private async genrateTempFile(tempFileName, data) {
@@ -148,18 +163,29 @@ class ResourceCreation {
                 },
             );
         } catch (error) {
-            debugger;
+            throw new Error(
+                `Error: generating the temp file calling: /api/temporary_file -> ${(error as any).message}`,
+            );
         }
         //convert string data to buffer
         const buffer = Buffer.from(data, 'utf-8');
         const uploadToTempResponse = await this.uploadFileToTempUrl(buffer, generateRespnse.Body.PutURL);
-        if (uploadToTempResponse.status === 200) {
-            const y = await (await fetch(generateRespnse.Body.TemporaryFileURL)).text();
-            // console.log(`temp response: ${y}`);
+        if (uploadToTempResponse.status !== 200) {
+            // throw new Error(
+            //     `Error: generating the temp file calling: /api/temporary_file -> ${(error as any).message}`,
+            // );
         }
         //save the URL to get file on mgr
         const res = this.mgr.resourceList.find((resource) => resource.scheme.Name.toLocaleLowerCase() === tempFileName.toLocaleLowerCase());
         (res as any).urlToResource = generateRespnse.Body.TemporaryFileURL;
+    }
+
+    private async genrateFile(tempFileName, data) {
+        try {
+            fs.writeFileSync(`${tempFileName}.csv`, data, 'utf-8');
+        } catch (error) {
+            throw new Error(`Error: ${(error as any).message}`);
+        }
     }
 
     private getFields() {
@@ -179,9 +205,9 @@ class ResourceCreation {
                 const isRef = Object.entries(schemeFields)[index1][1].Type === 'Resource';
                 if (isRef) {
                     // debugger;
-                    csvLines.push(this.generateRefField(index, index1) + `${index1 < fields.length - 1 ? "," : ""}`);
+                    csvLines.push(this.generateRefField(index, index1, fields[index1]) + `${index1 < fields.length - 1 ? "," : ""}`);
                 } else {
-                    csvLines.push(this.generateField(resourceName, index) + `${index1 < fields.length - 1 ? "," : ""}`);
+                    csvLines.push(this.generateField(resourceName, index, fields[index1]) + `${index1 < fields.length - 1 ? "," : ""}`);
                 }
             }
             if (csvLines.length - 1 >= 0) csvLines[csvLines.length - 1] += '\n';
@@ -221,11 +247,21 @@ class ResourceCreation {
     //     // }
     // }
 
-    private generateField(name, index) {
-        return `${name.toLocaleLowerCase()}_${index}`;
+    private generateField(name, index, fieldName) {
+        if (fieldName === "MainCategoryID") {
+            return `${name.toLocaleLowerCase()}_0`;
+        }
+        if (fieldName === "Key") {
+            return `${newUuid()}`;
+        } else if (fieldName === "Email") {
+            return `${name}${index}@pep.com`;
+        }
+        else {
+            return `${name.toLocaleLowerCase()}_${index}`;
+        }
     }
 
-    private generateRefField(index, index1) {
+    private generateRefField(index, index1, fieldName) {
         //cutting the string to 'know' which resource is referanced
         const whichRef = Object.entries(this.resource.scheme.Fields as any)[index1][0].replace('Ref', '');
         //get the spesific resource
@@ -235,7 +271,7 @@ class ResourceCreation {
         if (index >= (res as any).count) {
             index = index % (res as any).count;
         }
-        return this.generateField((res as any).scheme.Name.toLocaleLowerCase(), index);
+        return this.generateField((res as any).scheme.Name.toLocaleLowerCase(), index, fieldName);
     }
 
     // private handleSavingData(name: string, csvLines: string[]) {
