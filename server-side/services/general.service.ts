@@ -1160,7 +1160,7 @@ export default class GeneralService {
         let responseStr: string;
         let parsed: any = {};
         let errorMessage: any = {};
-        let OptionalHeaders = {
+        const OptionalHeaders = {
             ...requestInit?.headers,
         };
         // if (requestInit?.headers?.Authorization === null) {

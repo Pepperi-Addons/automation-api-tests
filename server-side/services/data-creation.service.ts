@@ -1,12 +1,9 @@
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { AddonDataScheme, SchemeField } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
-import fetch, { RequestInit, Response } from "node-fetch";
+import fetch, { RequestInit, Response } from 'node-fetch';
 import { v4 as newUuid } from 'uuid';
 import * as fs from 'fs';
-
-
-
 
 export interface Resource {
     scheme: AddonDataScheme;
@@ -15,7 +12,7 @@ export interface Resource {
 }
 
 export class DataCreation {
-    constructor(private client: Client) { }
+    constructor(private client: Client) {}
     // userSavedData: string[] = [];
     // accountsSavedData: string[] = [];
     // companySavedData: string[] = [];
@@ -26,14 +23,23 @@ export class DataCreation {
     //, Key: { Type: 'String' }
 
     resourceList: Resource[] = [
-        { scheme: { Name: 'users', Fields: { ExternalID: { Type: 'String' }, Email: { Type: 'String' } } }, count: 5, urlToResource: "" },
-        { scheme: { Name: 'accounts', Fields: { ExternalID: { Type: 'String' }, Name: { Type: 'String' } } }, count: 30000, urlToResource: "" },
+        {
+            scheme: { Name: 'users', Fields: { ExternalID: { Type: 'String' }, Email: { Type: 'String' } } },
+            count: 5,
+            urlToResource: '',
+        },
+        {
+            scheme: { Name: 'accounts', Fields: { ExternalID: { Type: 'String' }, Name: { Type: 'String' } } },
+            count: 30000,
+            urlToResource: '',
+        },
         {
             scheme: { Name: 'items', Fields: { MainCategoryID: { Type: 'String' }, ExternalID: { Type: 'String' } } },
-            count: 3000, urlToResource: ""
+            count: 3000,
+            urlToResource: '',
         },
-        { scheme: { Name: 'Divisions', Fields: { code: { Type: 'String' } } }, count: 2, urlToResource: "" },
-        { scheme: { Name: 'Companies', Fields: { code: { Type: 'String' } } }, count: 2, urlToResource: "" },
+        { scheme: { Name: 'Divisions', Fields: { code: { Type: 'String' } } }, count: 2, urlToResource: '' },
+        { scheme: { Name: 'Companies', Fields: { code: { Type: 'String' } } }, count: 2, urlToResource: '' },
         {
             scheme: {
                 Name: 'UserInfo',
@@ -43,11 +49,13 @@ export class DataCreation {
                     companiesRef: { Type: 'Resource' },
                 },
             },
-            count: 5, urlToResource: ""
+            count: 5,
+            urlToResource: '',
         },
         {
             scheme: { Name: 'AccountData1', Fields: { accountsRef: { Type: 'Resource' }, value1: { Type: 'String' } } },
-            count: 30000, urlToResource: ""
+            count: 30000,
+            urlToResource: '',
         },
         {
             scheme: {
@@ -55,7 +63,7 @@ export class DataCreation {
                 Fields: { divisionsRef: { Type: 'Resource' }, value1: { Type: 'String' } },
             },
             count: 2,
-            urlToResource: ""
+            urlToResource: '',
         },
         {
             scheme: {
@@ -68,7 +76,7 @@ export class DataCreation {
                 },
             },
             count: 4,
-            urlToResource: ""
+            urlToResource: '',
         },
         {
             scheme: {
@@ -82,13 +90,13 @@ export class DataCreation {
                 },
             },
             count: 120000,
-            urlToResource: ""
+            urlToResource: '',
         },
         { scheme: { Name: 'Lists', Fields: { Code: { Type: 'String' } } }, count: 6000 },
         {
             scheme: { Name: 'ListItems', Fields: { listsRef: { Type: 'Resource' }, itemsRef: { Type: 'Resource' } } },
             count: 100000,
-            urlToResource: ""
+            urlToResource: '',
         },
         {
             scheme: {
@@ -101,7 +109,7 @@ export class DataCreation {
                 },
             },
             count: 120000,
-            urlToResource: ""
+            urlToResource: '',
         },
     ];
 
@@ -114,8 +122,7 @@ export class DataCreation {
     }
 }
 class ResourceCreation {
-
-    constructor(private resource: Resource, private mgr: DataCreation) { }
+    constructor(private resource: Resource, private mgr: DataCreation) {}
     async execute(): Promise<void> {
         //promise should be string
         // get fields and create csv header
@@ -126,22 +133,23 @@ class ResourceCreation {
         try {
             csvLines = this.generateData(fields, this.resource.scheme.Name, this.resource.scheme.Fields as any);
         } catch (error) {
-            throw new Error(
-                `Error: generating the data -> ${(error as any).message}`,
-            );
+            throw new Error(`Error: generating the data -> ${(error as any).message}`);
         }
-        if (csvLines.charAt(csvLines.length - 1) === "\n") {
-            let position = csvLines.length;
+        if (csvLines.charAt(csvLines.length - 1) === '\n') {
+            const position = csvLines.length;
             csvLines = csvLines.substring(0, position - 1) + csvLines.substring(position, csvLines.length);
         }
-        if (csvLines.charAt(csvLines.length - 1) === ",") {
-            let position = csvLines.length;
+        if (csvLines.charAt(csvLines.length - 1) === ',') {
+            const position = csvLines.length;
             csvLines = csvLines.substring(0, position - 1) + csvLines.substring(position, csvLines.length);
         }
-        if (csvLines.split("\n").length > 90000) {
-            const mid = Math.floor(csvLines.split("\n").length / 2);
-            const csvData1 = `${schemeFieldsAsCsvHeader}\n${csvLines.split("\n").slice(0, mid).join('\n')}`;
-            const csvData2 = `${schemeFieldsAsCsvHeader}\n${csvLines.split("\n").slice(mid, csvLines.split("\n").length).join('\n')}`;
+        if (csvLines.split('\n').length > 90000) {
+            const mid = Math.floor(csvLines.split('\n').length / 2);
+            const csvData1 = `${schemeFieldsAsCsvHeader}\n${csvLines.split('\n').slice(0, mid).join('\n')}`;
+            const csvData2 = `${schemeFieldsAsCsvHeader}\n${csvLines
+                .split('\n')
+                .slice(mid, csvLines.split('\n').length)
+                .join('\n')}`;
             await this.genrateFile(this.resource.scheme.Name + '_1', csvData1);
             await this.genrateFile(this.resource.scheme.Name + '_2', csvData2);
         } else {
@@ -176,7 +184,9 @@ class ResourceCreation {
             // );
         }
         //save the URL to get file on mgr
-        const res = this.mgr.resourceList.find((resource) => resource.scheme.Name.toLocaleLowerCase() === tempFileName.toLocaleLowerCase());
+        const res = this.mgr.resourceList.find(
+            (resource) => resource.scheme.Name.toLocaleLowerCase() === tempFileName.toLocaleLowerCase(),
+        );
         (res as any).urlToResource = generateRespnse.Body.TemporaryFileURL;
     }
 
@@ -205,9 +215,15 @@ class ResourceCreation {
                 const isRef = Object.entries(schemeFields)[index1][1].Type === 'Resource';
                 if (isRef) {
                     // debugger;
-                    csvLines.push(this.generateRefField(index, index1, fields[index1]) + `${index1 < fields.length - 1 ? "," : ""}`);
+                    csvLines.push(
+                        this.generateRefField(index, index1, fields[index1]) +
+                            `${index1 < fields.length - 1 ? ',' : ''}`,
+                    );
                 } else {
-                    csvLines.push(this.generateField(resourceName, index, fields[index1]) + `${index1 < fields.length - 1 ? "," : ""}`);
+                    csvLines.push(
+                        this.generateField(resourceName, index, fields[index1]) +
+                            `${index1 < fields.length - 1 ? ',' : ''}`,
+                    );
                 }
             }
             if (csvLines.length - 1 >= 0) csvLines[csvLines.length - 1] += '\n';
@@ -221,8 +237,8 @@ class ResourceCreation {
             method: 'PUT',
             body: buffer,
             headers: {
-                "Content-Length": buffer.length.toString()
-            }
+                'Content-Length': buffer.length.toString(),
+            },
         };
         return await fetch(putURL, requestOptions);
     }
@@ -248,15 +264,14 @@ class ResourceCreation {
     // }
 
     private generateField(name, index, fieldName) {
-        if (fieldName === "MainCategoryID") {
+        if (fieldName === 'MainCategoryID') {
             return `${name.toLocaleLowerCase()}_0`;
         }
-        if (fieldName === "Key") {
+        if (fieldName === 'Key') {
             return `${newUuid()}`;
-        } else if (fieldName === "Email") {
+        } else if (fieldName === 'Email') {
             return `${name}${index}@pep.com`;
-        }
-        else {
+        } else {
             return `${name.toLocaleLowerCase()}_${index}`;
         }
     }

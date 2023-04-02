@@ -1,10 +1,9 @@
 import { DataCreation, Resource } from '../services/data-creation.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { UdcField, UDCService } from '../services/user-defined-collections.service';
-import fetch, { RequestInit, Response } from "node-fetch";
+import fetch, { RequestInit, Response } from 'node-fetch';
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { ADALService } from '../services/adal.service';
-
 
 export async function NeltSyncestser(generalService: GeneralService, request, tester: TesterFunctions) {
     await NeltSyncTest(generalService, request, tester);
@@ -12,7 +11,7 @@ export async function NeltSyncestser(generalService: GeneralService, request, te
 export async function NeltSyncTest(generalService: GeneralService, request, tester: TesterFunctions) {
     const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
     const udcService = new UDCService(generalService);
-    const dataCreator = new DataCreation(generalService["client"]);
+    const dataCreator = new DataCreation(generalService['client']);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -123,18 +122,12 @@ export async function NeltSyncTest(generalService: GeneralService, request, test
                 // debugger;
                 // //upload data to the dist using papi
                 // const currentResource = (dataCreator.resourceList.find((resource) => resource.scheme.Name.toLocaleLowerCase() === 'users') as Resource);
-
-
-
-
                 // debugger;
                 // // const dataToUpsert = await (await fetch(usersURL!)).text();
                 // // //run on the data and push using papi
                 // // for (let index = 0; index < array.length; index++) {
                 // //     const element = array[index];
-
                 // // }
-
                 // // debugger;
             });
             // it('create the data and set UDCs', async () => {
@@ -357,31 +350,24 @@ export async function NeltSyncTest(generalService: GeneralService, request, test
 }
 
 async function createUDC(udcService, name, desc, fields: UdcField[], keys: UdcField[]) {
-    const response = await udcService.createUDCWithFields(
-        name,
-        fields,
-        desc,
-        undefined,
-        undefined,
-        keys
-    );
+    const response = await udcService.createUDCWithFields(name, fields, desc, undefined, undefined, keys);
     return response;
 }
 
 function resolveEndPointByResource(resourceName: string) {
     switch (resourceName) {
-        case "users":
-            return "/createUser";
-        case "accounts":
-            return "/accounts";
-        case "items":
-            return "/items";
+        case 'users':
+            return '/createUser';
+        case 'accounts':
+            return '/accounts';
+        case 'items':
+            return '/items';
     }
 }
 
 async function todo(generalService, dataToUpsert) {
     const adalService = new ADALService(generalService.papiClient);
-    const schemaName = "pfsForNelt";
+    const schemaName = 'pfsForNelt';
     const newSchema = await adalService.postSchema({
         Name: schemaName,
         Type: 'pfs',
@@ -391,7 +377,10 @@ async function todo(generalService, dataToUpsert) {
     const papiClient: PapiClient = generalService.papiClient;
     let pfsSchemeResponse;
     try {
-        pfsSchemeResponse = await papiClient.addons.pfs.uuid("eb26afcd-3cf2-482e-9ab1-b53c41a6adbe").schema(schemaName).post({ Key: "currentData44.csv", MIME: "text/csv", Cache: false });
+        pfsSchemeResponse = await papiClient.addons.pfs
+            .uuid('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe')
+            .schema(schemaName)
+            .post({ Key: 'currentData44.csv', MIME: 'text/csv', Cache: false });
     } catch (error) {
         debugger;
     }
@@ -403,9 +392,9 @@ async function todo(generalService, dataToUpsert) {
         method: 'PUT',
         body: buffer,
         headers: {
-            "Content-Length": buffer.length.toString(),
-            "Content-Type": "text/csv"
-        }
+            'Content-Length': buffer.length.toString(),
+            'Content-Type': 'text/csv',
+        },
     };
     let putResponse;
     try {
@@ -415,17 +404,17 @@ async function todo(generalService, dataToUpsert) {
     }
     //import the data from PFS scheme to the resource
     const body = {
-        'URI': urlToImport,
+        URI: urlToImport,
         // 'OverwriteObject': true,
-        'Delimiter': ',',
+        Delimiter: ',',
         // "TableOverwrite": true
     };
-    const importToUsers = await generalService.fetchStatus('/addons/data/import/file/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/accounts', {
-        method: "POST",
-        body: JSON.stringify(body)
-    });
-    const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(
-        importToUsers.Body.URI,
-        90,
+    const importToUsers = await generalService.fetchStatus(
+        '/addons/data/import/file/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/accounts',
+        {
+            method: 'POST',
+            body: JSON.stringify(body),
+        },
     );
+    const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(importToUsers.Body.URI, 90);
 }
