@@ -28,6 +28,7 @@ import { SlideShowPage } from '../pom/addons/SlideShowPage';
 import { SurveyPicker } from '../pom/addons/SurveyPicker';
 import { SurveyFiller } from '../pom/addons/SurveyFiller';
 import { UDCService } from '../../services/user-defined-collections.service';
+import { ObjectsService } from '../../services/objects.service';
 
 chai.use(promised);
 
@@ -127,7 +128,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
     ];
 
     await generalService.baseAddonVersionsInstallation(varPass);
-    //#region Upgrade script dependencies
+    // #region Upgrade survey dependencies
 
     const testData = {
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x to
@@ -152,12 +153,11 @@ export async function SurveyTests(email: string, password: string, client: Clien
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
-    // #endregion Upgrade script dependencies
+    // #endregion Upgrade survey dependencies
 
     describe('Survey Builder Tests Suit', async function () {
         describe('Prerequisites Addons for Survey Builder Tests', () => {
             //Test Data
-            //Scripts
             isInstalledArr.forEach((isInstalled, index) => {
                 it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
@@ -479,13 +479,19 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.reSyncApp();
                 await webAppHomePage.initiateSalesActivity(slideshowSlugDisplayName);
                 const slideShowPage = new SlideShowPage(driver);
                 await slideShowPage.enterSurveyPicker();
                 const surveyPicker = new SurveyPicker(driver);
                 const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
                 expect(isAccountSelectionOpen).to.equal(true);
-                const isTemplateOpen = await surveyPicker.selectAccount('Account for order scenarios');
+                const objectsService = new ObjectsService(generalService);
+                const accounts = await objectsService.getAccounts();
+                expect(accounts.length).to.be.above(0);
+                const accName = accounts[0].Name;
+                const accUUID = accounts[0].UUID;
+                const isTemplateOpen = await surveyPicker.selectAccount(accName);
                 expect(isTemplateOpen).to.equal(true);
                 const allQuestionNames = [
                     'first question',
@@ -536,7 +542,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(latestSurvey.Template).to.equal(surveyUUID);
                 expect(latestSurvey.StatusName).to.equal('Submitted');
                 expect(latestSurvey.ResourceName).to.equal('MySurveys');
-                expect(latestSurvey.Account).to.equal('08270b74-4a94-4386-afa1-2562145026ce');
+                expect(latestSurvey.Account).to.equal(accUUID);
                 const surveyAnswers = latestSurvey.Answers;
                 for (let index = 0; index < surveyAnswers.length; index++) {
                     const ans = surveyAnswers[index];
