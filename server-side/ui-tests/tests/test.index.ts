@@ -30,7 +30,6 @@ import {
     UDCTests,
     CloseCatalogTest,
     LoginPerfTests,
-    ScriptPickerTests,
     LoginPerfSqlitefTests,
     ResourceListTests,
     RLdataPrep,
@@ -1653,7 +1652,7 @@ async function reportToTeams(
         Description: message,
         Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
         Message: message2,
-        UserWebhook: handleTeamsURL(addonName)
+        UserWebhook: handleTeamsURL(addonName),
     };
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
