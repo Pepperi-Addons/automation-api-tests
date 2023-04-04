@@ -484,7 +484,9 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const slideShowPage = new SlideShowPage(driver);
                 await slideShowPage.enterSurveyPicker();
                 const surveyPicker = new SurveyPicker(driver);
+                driver.sleep(2500);
                 const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
+                driver.sleep(2500);
                 expect(isAccountSelectionOpen).to.equal(true);
                 const objectsService = new ObjectsService(generalService);
                 const accounts = await objectsService.getAccounts();
@@ -492,6 +494,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const accName = accounts[0].Name;
                 const accUUID = accounts[0].UUID;
                 const isTemplateOpen = await surveyPicker.selectAccount(accName);
+                driver.sleep(2500);
                 expect(isTemplateOpen).to.equal(true);
                 const allQuestionNames = [
                     'first question',
