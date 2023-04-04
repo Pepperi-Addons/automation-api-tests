@@ -202,14 +202,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
             it(`1. Create A UDC Which Extends 'surveys' Scheme Before Creating A Survey`, async function () {
-                debugger;
-                const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
-                const webAppHomePage = new WebAppHomePage(driver);
-                for (let index = 0; index < 2; index++) {
-                    await webAppHomePage.manualResync(client);
-                }
-                debugger;
                 const udcService = new UDCService(generalService);
                 const newSurveyUDCName = 'NewSurveyCollection' + generalService.generateRandomString(4);
                 const response = await udcService.createUDCWithFields(
