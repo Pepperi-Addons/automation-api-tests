@@ -484,7 +484,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const slideShowPage = new SlideShowPage(driver);
                 await slideShowPage.enterSurveyPicker();
                 const surveyPicker = new SurveyPicker(driver);
-                driver.sleep(2500);
+                driver.sleep(4500);
                 const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
                 driver.sleep(2500);
                 expect(isAccountSelectionOpen).to.equal(true);
