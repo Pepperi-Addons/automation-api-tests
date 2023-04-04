@@ -458,10 +458,6 @@ const passCreate = process.env.npm_config_pass_create as string;
         await LoginPerfTests(email, pass, varPass, client, varPassEU);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
-    if (tests.includes('script_picker')) {
-        await ScriptPickerTests(email, pass, varPass, client);
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
     if (tests.includes('login_perf_sqlite')) {
         await LoginPerfSqlitefTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
@@ -1657,7 +1653,7 @@ async function reportToTeams(
         Description: message,
         Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
         Message: message2,
-        UserWebhook: handleTeamsURL(addonName),
+        UserWebhook: handleTeamsURL(addonName)
     };
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
