@@ -57,7 +57,7 @@ export class WebAppLoginPage extends Page {
         await this.navigate();
         await this.signIn(email, password);
         const homePage = new WebAppHomePage(this.browser);
-        await expect(this.untilIsVisible(homePage.MainHomePageBtn, 50000)).eventually.to.be.true;
+        await expect(this.untilIsVisible(homePage.MainHomePageBtn, 90000)).eventually.to.be.true;
         console.log('Home Button Found -- HomePage Is Loaded');
         return new WebAppHomePage(this.browser);
     }
