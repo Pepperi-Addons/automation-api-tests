@@ -359,9 +359,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
                 expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
             });
-            it('Negative Test: trying to create a collection with exsisting name', async () => {
+            it('Negative Test: trying to create a collection with exsisting name - using same endpoint used by the UI', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
-                const response = await udcService.createUDCWithFields(
+                const response = await udcService.createUDCWithFieldsAsInUI(
                     basicCollectionName,
                     [],
                     'automation testing UDC',
@@ -429,7 +429,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(document.Hidden).to.equal(false);
                 expect(document).to.haveOwnProperty('Key');
             });
-            // it('Negative Test: trying to upsert unmatching data to UDC which field is a containd resource of basic field', async () => {
+            // TODO:it('Negative Test: trying to upsert unmatching data to UDC which field is a containd resource of basic field', async () => {
             //     const field = {};
             //     field["containedRes"] = {
             //         "abc": 200,
