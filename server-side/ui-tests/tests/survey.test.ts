@@ -576,9 +576,9 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     }
                 }
             });
-            it('Data Cleansing', async function () {
+            it('Data Cleansing: 1. survey template', async function () {
                 //1. delete survey template
-                let body = { Key: surveyUUID, Hidden: true };
+                const body = { Key: surveyUUID, Hidden: true };
                 const deleteSurveyTemplateResponse = await generalService.fetchStatus(`/resources/MySurveyTemplates`, {
                     method: 'POST',
                     body: JSON.stringify(body),
@@ -587,37 +587,41 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(deleteSurveyTemplateResponse.Status).to.equal(200);
                 expect(deleteSurveyTemplateResponse.Body.Key).to.equal(surveyUUID);
                 expect(deleteSurveyTemplateResponse.Body.Hidden).to.equal(true);
+            });
+            it('Data Cleansing: 2. resource views', async function () {
                 //2. delete resource views
-                body = { Key: accountViewUUID, Hidden: true };
+                const accBody = { Key: accountViewUUID, Hidden: true };
                 const deleteAccountRLResponse = await generalService.fetchStatus(
                     `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
                     {
                         method: 'POST',
-                        body: JSON.stringify(body),
+                        body: JSON.stringify(accBody),
                     },
                 );
                 expect(deleteAccountRLResponse.Ok).to.equal(true);
                 expect(deleteAccountRLResponse.Status).to.equal(200);
                 expect(deleteAccountRLResponse.Body.Name).to.equal('Accounts');
                 expect(deleteAccountRLResponse.Body.Hidden).to.equal(true);
-                body = { Key: surveyViewUUID, Hidden: true };
+                const surveyBody = { Key: surveyViewUUID, Hidden: true };
                 const deleteSurveyRLResponse = await generalService.fetchStatus(
                     `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
                     {
                         method: 'POST',
-                        body: JSON.stringify(body),
+                        body: JSON.stringify(surveyBody),
                     },
                 );
                 expect(deleteSurveyRLResponse.Ok).to.equal(true);
                 expect(deleteSurveyRLResponse.Status).to.equal(200);
                 expect(deleteSurveyRLResponse.Body.Name).to.equal('Surveys');
                 expect(deleteSurveyRLResponse.Body.Hidden).to.equal(true);
+            });
+            it('Data Cleansing: 3. pages', async function () {
                 //3. delete relevant pages
                 const deleteSurveyPageResponse = await generalService.fetchStatus(
                     `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${surveyBlockPageUUID}`,
                     {
                         method: 'POST',
-                        body: JSON.stringify(body),
+                        body: JSON.stringify({}),
                     },
                 );
                 expect(deleteSurveyPageResponse.Ok).to.equal(true);
@@ -627,12 +631,14 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${slideshowBlockPageUUID}`,
                     {
                         method: 'POST',
-                        body: JSON.stringify(body),
+                        body: JSON.stringify({}),
                     },
                 );
                 expect(deleteSlideShowPageResponse.Ok).to.equal(true);
                 expect(deleteSlideShowPageResponse.Status).to.equal(200);
                 expect(deleteSlideShowPageResponse.Body).to.equal(true);
+            });
+            it('Data Cleansing: 4. script', async function () {
                 //delete the script
                 const bodyForSctips = { Keys: [`${scriptUUID}`] };
                 const deleteScriptResponse = await generalService.fetchStatus(
@@ -645,6 +651,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(deleteScriptResponse.Ok).to.equal(true);
                 expect(deleteScriptResponse.Status).to.equal(200);
                 expect(deleteScriptResponse.Body[0].Key).to.equal(scriptUUID);
+            });
+            it('Data Cleansing: 5. UDC', async function () {
                 //delete UDC
                 const udcService = new UDCService(generalService);
                 const documents = await udcService.getSchemes();
@@ -669,6 +677,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     expect(hideResponse.Body.Name).to.equal(collectionToHide.Name);
                     expect(hideResponse.Body.Hidden).to.equal(true);
                 }
+            });
+            it('Data Cleansing: 6. slugs', async function () {
                 //4. delete slugs
                 const slugs: Slugs = new Slugs(driver);
                 const slideShowSlugsResponse = await slugs.deleteSlugByName(slideshowSlugDisplayName, client);
@@ -679,6 +689,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(surveySlugResponse.Ok).to.equal(true);
                 expect(surveySlugResponse.Status).to.equal(200);
                 expect(surveySlugResponse.Body.success).to.equal(true);
+            });
+            it('Data Cleansing: 7. ATD from home screen', async function () {
                 //5. delete ATD from homescreen
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.openSettings();
