@@ -28,6 +28,7 @@ import { SlideShowPage } from '../pom/addons/SlideShowPage';
 import { SurveyPicker } from '../pom/addons/SurveyPicker';
 import { SurveyFiller } from '../pom/addons/SurveyFiller';
 import { UDCService } from '../../services/user-defined-collections.service';
+import { ObjectsService } from '../../services/objects.service';
 
 chai.use(promised);
 
@@ -127,14 +128,14 @@ export async function SurveyTests(email: string, password: string, client: Clien
     ];
 
     await generalService.baseAddonVersionsInstallation(varPass);
-    //#region Upgrade script dependencies
+    // #region Upgrade survey dependencies
 
     const testData = {
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x to
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.32'], //has to remain untouched
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.8'], //has to remain untouched
+        Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.43'], //has to remain untouched
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.11'], //has to remain untouched
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
@@ -152,12 +153,11 @@ export async function SurveyTests(email: string, password: string, client: Clien
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
-    // #endregion Upgrade script dependencies
+    // #endregion Upgrade survey dependencies
 
     describe('Survey Builder Tests Suit', async function () {
         describe('Prerequisites Addons for Survey Builder Tests', () => {
             //Test Data
-            //Scripts
             isInstalledArr.forEach((isInstalled, index) => {
                 it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
@@ -313,6 +313,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await surveyService.editSurveyTemplateName(newName);
                 const webAppHomePage = new WebAppHomePage(driver);
                 webAppHomePage.returnToHomePage();
+                driver.sleep(3000);
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }
@@ -478,13 +479,22 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.reSyncApp();
                 await webAppHomePage.initiateSalesActivity(slideshowSlugDisplayName);
                 const slideShowPage = new SlideShowPage(driver);
                 await slideShowPage.enterSurveyPicker();
                 const surveyPicker = new SurveyPicker(driver);
+                driver.sleep(4500);
                 const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
+                driver.sleep(2500);
                 expect(isAccountSelectionOpen).to.equal(true);
-                const isTemplateOpen = await surveyPicker.selectAccount('Account for order scenarios');
+                const objectsService = new ObjectsService(generalService);
+                const accounts = await objectsService.getAccounts();
+                expect(accounts.length).to.be.above(0);
+                const accName = accounts[0].Name;
+                const accUUID = accounts[0].UUID;
+                const isTemplateOpen = await surveyPicker.selectAccount(accName);
+                driver.sleep(2500);
                 expect(isTemplateOpen).to.equal(true);
                 const allQuestionNames = [
                     'first question',
@@ -535,7 +545,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(latestSurvey.Template).to.equal(surveyUUID);
                 expect(latestSurvey.StatusName).to.equal('Submitted');
                 expect(latestSurvey.ResourceName).to.equal('MySurveys');
-                expect(latestSurvey.Account).to.equal('08270b74-4a94-4386-afa1-2562145026ce');
+                expect(latestSurvey.Account).to.equal(accUUID);
                 const surveyAnswers = latestSurvey.Answers;
                 for (let index = 0; index < surveyAnswers.length; index++) {
                     const ans = surveyAnswers[index];

@@ -51,6 +51,16 @@ export class WebAppHomePage extends WebAppPage {
         return;
     }
 
+    public async reSyncApp() {
+        const urlWithSupportMenu = (await this.browser.getCurrentUrl()) + '/supportmenu';
+        await this.browser.navigate(urlWithSupportMenu);
+        await this.browser.untilIsVisible(this.SupportMenuPopup_Refresh);
+        await this.browser.click(this.SupportMenuPopup_Refresh);
+        await this.browser.untilIsVisible(this.SupportMenuPopup_RefreshData);
+        await this.browser.click(this.SupportMenuPopup_RefreshData);
+        await this.isSpinnerDone();
+    }
+
     /**
      * Example on how to write test over a known bug - let the test pass but add information to the report
      * @param that Should be the "this" of the mocha test, this will help connect data from this function to test reports

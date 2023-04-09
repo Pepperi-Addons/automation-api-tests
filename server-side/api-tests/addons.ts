@@ -1017,7 +1017,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -1165,7 +1165,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -1304,7 +1304,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -1327,7 +1327,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -1524,7 +1524,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -1546,7 +1546,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -1748,7 +1748,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -1768,7 +1768,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -1995,7 +1995,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -2015,7 +2015,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -2224,7 +2224,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -2245,7 +2245,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -2454,7 +2454,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -2475,7 +2475,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -2685,7 +2685,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -2706,7 +2706,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -2922,7 +2922,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 //Make all version that are not installed not available
                 if (index > 0) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -2943,7 +2943,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index > 0) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -3148,7 +3148,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 //Make all version that are not installed not phased
                 if (index > 0) {
@@ -3174,7 +3174,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -3384,7 +3384,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -3405,7 +3405,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -3613,7 +3613,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -3634,7 +3634,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -3857,7 +3857,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -3878,7 +3878,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -4087,7 +4087,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2 || index == 0) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -4108,7 +4108,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -4318,7 +4318,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -4339,7 +4339,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -4547,7 +4547,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -4568,7 +4568,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -4776,7 +4776,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -4797,7 +4797,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -4985,7 +4985,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -5006,7 +5006,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -5225,7 +5225,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -5246,7 +5246,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -5452,7 +5452,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -5473,7 +5473,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -5692,7 +5692,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -5713,7 +5713,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -5937,7 +5937,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -6002,7 +6002,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -6256,7 +6256,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -6344,7 +6344,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -6614,7 +6614,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -6678,7 +6678,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }
@@ -6944,7 +6944,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
             for (let index = 0; index < versionsArr.length; index++) {
                 versionTestDataBody = testDataNewAddonVersion(createApiResponse.Body.UUID, index + 1);
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 }
                 versionTestDataBody.Phased = true;
                 versionTestDataBody.StartPhasedDateTime = new Date().toJSON();
@@ -7008,7 +7008,7 @@ export async function ExecuteAddonsTests(generalService: GeneralService, request
                     Version: '0.0.' + (index + 1), //Name here can't be changed or it will send messages VIA teams
                 };
                 if (index == 2) {
-                    versionTestDataBody.Available = false;
+                    //versionTestDataBody.Available = false;
                 } else {
                     versionTestDataBody.Available = true;
                 }

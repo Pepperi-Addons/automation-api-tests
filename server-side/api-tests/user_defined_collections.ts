@@ -550,6 +550,19 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     expect(match.length).to.equal(1);
                 }
             });
+            it('Positive Test: getting indexed data from UDC - using search with KeyList (DI-23402)', async () => {
+                const document = (await udcService.getDocuments(indexedCollectionName))[0];
+                const documentsKey = document.Key;
+                const bodyToSend = {};
+                bodyToSend['KeyList'] = [documentsKey];
+                const response = await generalService.fetchStatus(
+                    `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${indexedCollectionName}`,
+                    { method: 'POST', body: JSON.stringify(bodyToSend) },
+                );
+                expect(response.Ok).to.equal(true);
+                expect(response.Status).to.equal(200);
+                expect(response.Body.Objects[0]).to.deep.equal(document);
+            });
             it('Positive Test: getting indexed data from UDC - using paganation + count field', async () => {
                 const allObjects50page1 = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 50);
                 expect(allObjects50page1.objects.length).to.equal(50);
