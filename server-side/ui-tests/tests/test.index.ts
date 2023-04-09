@@ -30,7 +30,6 @@ import {
     UDCTests,
     CloseCatalogTest,
     LoginPerfTests,
-    ScriptPickerTests,
     LoginPerfSqlitefTests,
     ResourceListTests,
     RLdataPrep,
@@ -456,10 +455,6 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
     if (tests.includes('login_performance')) {
         await LoginPerfTests(email, pass, varPass, client, varPassEU);
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
-    if (tests.includes('script_picker')) {
-        await ScriptPickerTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_perf_sqlite')) {

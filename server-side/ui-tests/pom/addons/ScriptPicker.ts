@@ -240,6 +240,7 @@ export class ScriptEditor extends AddonPage {
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Configuration');
         await this.browser.click(webAppSettingsSidePanel.ScriptsEditor);
+        this.browser.sleep(5000);
         const scriptEditor = new ScriptEditor(this.browser);
         await this.browser.click(scriptEditor.addScriptButton);
         const isModalFound = await this.browser.isElementVisible(scriptEditor.addScriptModal);
