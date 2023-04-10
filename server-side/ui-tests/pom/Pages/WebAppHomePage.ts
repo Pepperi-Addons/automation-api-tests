@@ -181,6 +181,14 @@ export class WebAppHomePage extends WebAppPage {
         await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 10000);
     }
 
+    public async validateATDIsNOTApearingOnHomeScreen(ATDname: string): Promise<boolean> {
+        const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
+            ['value'].slice()
+            .replace('|textToFill|', ATDname);
+        const isFound = await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 10000);
+        return !isFound;
+    }
+
     public async returnToHomePage(): Promise<void> {
         //Go To HomePage
         await this.browser.switchToDefaultContent();
