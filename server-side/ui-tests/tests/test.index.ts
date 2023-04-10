@@ -625,18 +625,19 @@ const passCreate = process.env.npm_config_pass_create as string;
                         addonUUID,
                         base64VARCredentialsSB,
                     ),
+                    //6. report to Teams
+                    await reportToTeams(
+                        addonName,
+                        addonUUID,
+                        service,
+                        latestVersionOfTestedAddon,
+                        devPassingEnvs,
+                        devFailedEnvs,
+                        true,
+                    ),
                 ]);
             }
-            //6. report to Teams
-            await reportToTeams(
-                addonName,
-                addonUUID,
-                service,
-                latestVersionOfTestedAddon,
-                devPassingEnvs,
-                devFailedEnvs,
-                true,
-            );
+
             if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
                 console.log('Dev Test Didnt Pass - No Point In Running Approvment');
                 return;
