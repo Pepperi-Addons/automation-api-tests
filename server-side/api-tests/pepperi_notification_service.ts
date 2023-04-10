@@ -342,6 +342,7 @@ export async function PepperiNotificationServiceTests(
             });
 
             describe(`Addons`, () => {
+                // for (let index = 0; index < 20; index++) {//LOOP
                 let createdAddon;
                 let installedAddon;
                 const testAddon: Addon = {
@@ -913,7 +914,8 @@ export async function PepperiNotificationServiceTests(
                     );
                     expect(getSubscribeResponse).to.deep.equal([]);
                 });
-            });
+                // loop}
+            }); //x
 
             describe(`ADAL`, () => {
                 it(`Reset Schema`, async () => {
