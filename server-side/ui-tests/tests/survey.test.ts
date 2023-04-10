@@ -697,6 +697,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.removeAdminHomePageButtons(slideshowSlugDisplayName);
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.manualResync(client);
+                const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slideshowSlugDisplayName);
+                expect(isNotFound).to.equal(true);
             });
         });
     });
