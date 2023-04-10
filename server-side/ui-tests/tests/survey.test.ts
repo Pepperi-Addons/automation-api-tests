@@ -213,13 +213,25 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     undefined,
                     { AddonUUID: 'dd0a85ea-7ef0-4bc1-b14f-959e0372877a', Name: 'surveys' },
                 );
-                expect(response).to.haveOwnProperty('Account');
-                expect(response).to.haveOwnProperty('ActionDateTime');
-                expect(response).to.haveOwnProperty('Agent');
-                expect(response).to.haveOwnProperty('Creator');
-                expect(response).to.haveOwnProperty('ExternalID');
-                expect(response).to.haveOwnProperty('StatusName');
-                expect(response).to.haveOwnProperty('Template');
+                if (
+                    generalService.papiClient['options'].baseURL.includes('staging') &&
+                    response.hasOwnProperty('Fail') &&
+                    response.Fail.include('Table schema must exist, for table = AddonFiles')
+                ) {
+                    console.log('STAGING Table schema must exist, for table = AddonFiles ERROR!!! BUG: DI-23504');
+                    expect(response.Fail).to.equal(
+                        undefined,
+                        'STAGING Table schema must exist, for table = AddonFiles ERROR!!! BUG: DI-23504',
+                    );
+                } else {
+                    expect(response).to.haveOwnProperty('Account');
+                    expect(response).to.haveOwnProperty('ActionDateTime');
+                    expect(response).to.haveOwnProperty('Agent');
+                    expect(response).to.haveOwnProperty('Creator');
+                    expect(response).to.haveOwnProperty('ExternalID');
+                    expect(response).to.haveOwnProperty('StatusName');
+                    expect(response).to.haveOwnProperty('Template');
+                }
             });
             it('2. Create A Survey Template - Validate Via API All Data Is Sent Correctly', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
