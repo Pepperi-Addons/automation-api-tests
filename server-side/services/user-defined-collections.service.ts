@@ -182,7 +182,7 @@ export class UDCService {
     async getAllObjectFromCollection(collectionName, page?, maxPageSize?) {
         const body = { Page: page ? page : 1, MaxPageSize: maxPageSize ? maxPageSize : 100, IncludeCount: true };
         const response = await this.generalService.fetchStatus(
-            `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/search?resource_name=${collectionName}`,
+            `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${collectionName}`,
             {
                 method: 'POST',
                 body: JSON.stringify(body),
@@ -193,13 +193,10 @@ export class UDCService {
 
     async hideObjectInACollection(collectionName, key) {
         const body = { Key: key, Hidden: true };
-        const response = await this.generalService.fetchStatus(
-            `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=${collectionName}`,
-            {
-                method: 'POST',
-                body: JSON.stringify(body),
-            },
-        );
+        const response = await this.generalService.fetchStatus(`/user_defined_collections/${collectionName}`, {
+            method: 'POST',
+            body: JSON.stringify(body),
+        });
         return response;
     }
 

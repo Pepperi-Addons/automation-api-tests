@@ -216,7 +216,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 if (
                     generalService.papiClient['options'].baseURL.includes('staging') &&
                     response.hasOwnProperty('Fail') &&
-                    response.Fail.include('Table schema must exist, for table = AddonFiles')
+                    response.Fail.includes('Table schema must exist, for table = AddonFiles')
                 ) {
                     console.log('STAGING Table schema must exist, for table = AddonFiles ERROR!!! BUG: DI-23504');
                     expect(response.Fail).to.equal(
