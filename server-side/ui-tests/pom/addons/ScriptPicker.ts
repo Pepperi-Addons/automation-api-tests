@@ -240,6 +240,7 @@ export class ScriptEditor extends AddonPage {
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Configuration');
         await this.browser.click(webAppSettingsSidePanel.ScriptsEditor);
+        this.browser.sleep(5000);
         const scriptEditor = new ScriptEditor(this.browser);
         await this.browser.click(scriptEditor.addScriptButton);
         const isModalFound = await this.browser.isElementVisible(scriptEditor.addScriptModal);
@@ -270,7 +271,7 @@ export class ScriptEditor extends AddonPage {
         expect(foundScript).to.not.be.undefined;
         expect(foundScript).to.include('SurveyScript');
         const allScripts = await generalService.fetchStatus(
-            'https://papi.pepperi.com/V1.0/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts',
+            '/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts',
             {
                 method: 'GET',
             },

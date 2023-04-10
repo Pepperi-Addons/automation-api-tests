@@ -127,17 +127,17 @@ export default class E2EUtils extends BasePomObject {
         await resourceViews.deleteAll();
     }
 
-    public async deleteAllPagesViaUI() {
-        const pageBuilder: PageBuilder = new PageBuilder(this.browser);
-        await this.navigateTo('Page Builder');
-        await pageBuilder.validatePageBuilderIsLoaded();
-        // await pageBuilder.clickElement('PagesList_SelectAll_Checkbox');
-        // await pageBuilder.openPencilChooseDelete();
-        // this.browser.sleep(500);
-        // await pageBuilder.confirmDeleteClickRedButton();
-        // this.browser.sleep(500);
-        await pageBuilder.deleteAll();
-    }
+    // public async deleteAllPagesViaUI() {
+    //     const pageBuilder: PageBuilder = new PageBuilder(this.browser);
+    //     await this.navigateTo('Page Builder');
+    //     await pageBuilder.validatePageBuilderIsLoaded();
+    //     // await pageBuilder.clickElement('PagesList_SelectAll_Checkbox');
+    //     // await pageBuilder.openPencilChooseDelete();
+    //     // this.browser.sleep(500);
+    //     // await pageBuilder.confirmDeleteClickRedButton();
+    //     // this.browser.sleep(500);
+    //     await pageBuilder.deleteAll();
+    // }
 
     public async gotoEditPageOfSelectedEditorByName(editorName: string) {
         const resourceEditors: ResourceEditors = new ResourceEditors(this.browser);

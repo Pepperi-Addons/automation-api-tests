@@ -31,6 +31,9 @@ export class Slugs extends AddonPage {
     // Mapped Slugs
     public SlugMappingScreenTitle: By = By.xpath(`//div[@title='Rep (Default profile)']`);
     public MappedSlugs: By = By.id('mappedSlugs');
+    public MappedSlugs_Title: By = By.xpath('//span[contains(text(),"Mapped slugs")]');
+    public MappedSlugs_Container: By = By.xpath('//div[contains(@class,"slugs-area-")]');
+    public MappedSlugs_Empty: By = By.xpath('//div[@id="emptyDropArea"]');
     public MappedSlugs_SlugsPaths: By = By.xpath('//div[@id="mappedSlugs"]//input');
     public MappedSlugs_MappedPages: By = By.xpath('//div[@id="mappedSlugs"]//mat-select');
     public MappedSlugsEVGENY: By = By.xpath(`//span[contains(text(),'Mapped slugs')]`);

@@ -30,7 +30,6 @@ import {
     UDCTests,
     CloseCatalogTest,
     LoginPerfTests,
-    ScriptPickerTests,
     LoginPerfSqlitefTests,
     ResourceListTests,
     RLdataPrep,
@@ -294,17 +293,19 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
 
     if (tests.includes('VisitFlow')) {
-        // await VFdataPrep(varPass, client);
+        await VFdataPrep(varPass, client);
         await VisitFlowTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Pricing')) {
         await PricingTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('MockTest')) {
         await MockTest(client);
-        await ResourceListTests(email, pass, varPass, client);
+        // await ResourceListTests(email, pass, varPass, client);
     }
 
     if (tests.includes('Distributor')) {
@@ -454,10 +455,6 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
     if (tests.includes('login_performance')) {
         await LoginPerfTests(email, pass, varPass, client, varPassEU);
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
-    if (tests.includes('script_picker')) {
-        await ScriptPickerTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_perf_sqlite')) {

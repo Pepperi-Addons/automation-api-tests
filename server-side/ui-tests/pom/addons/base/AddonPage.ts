@@ -105,6 +105,9 @@ export class AddonPage extends Page {
     public EditPage_AddProfile_Button: By = By.xpath('//button[@data-qa="Add profile"]');
     public EditPage_ProfileCard_Menu: By = By.xpath('//button[@data-qa="Add profile"]');
     public EditPage_ConfigProfileCard_EditButton_Rep: By = this.getSelectorOfProfileCardEditButtonByName('Rep');
+    public EditPage_ConfigProfileCard_Rep_EmptyContent: By = By.xpath(
+        '//span[contains(text(),"No fields were assigned")]',
+    );
 
     private getSelectorOfConfigProfileCardByName(name: string) {
         return By.xpath(`//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card`);
@@ -199,7 +202,8 @@ export class AddonPage extends Page {
         await this.browser.click(webAppHeader.Settings);
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Catalogs');
-        await this.browser.click(webAppSettingsSidePanel.CatalogsSection);
+        // await this.browser.click(webAppSettingsSidePanel.CatalogsSection);
+        await webAppSettingsSidePanel.clickSettingsSubCategory('catalogs_manage', 'Catalogs');
         await this.isSpinnerDone();
         await this.browser.switchTo(this.AddonContainerIframe);
         await this.isAddonFullyLoaded(AddonLoadCondition.Content);
