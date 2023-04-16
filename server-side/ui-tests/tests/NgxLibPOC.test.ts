@@ -2,23 +2,22 @@ import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { BrandedApp, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
-import GeneralService from '../../services/general.service';
-import { Client } from '@pepperi-addons/debug-server/dist';
+import { WebAppHomePage } from '../pom';
+// import GeneralService from '../../services/general.service';
+// import { Client } from '@pepperi-addons/debug-server/dist';
 import { StoryBookPage } from '../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { ColorPicker } from '../pom/Pages/Components/ColorPicker';
 
 chai.use(promised);
 
-export async function NgxLibPOC(client: Client) {
-    const generalService = new GeneralService(client);
+export async function NgxLibPOC() {
+    // const generalService = new GeneralService(client);
     let driver: Browser;
 
     // #endregion Upgrade survey dependencies
 
     describe('NGX_LIB POC Tests Suit', async function () {
-
         describe('Configuring Survey', () => {
             this.retries(0);
 
@@ -38,7 +37,7 @@ export async function NgxLibPOC(client: Client) {
                 const storyBookPage = new StoryBookPage(driver);
                 //1. navigate to story book webstite
                 await storyBookPage.navigate();
-                //2. choose the latest build 
+                //2. choose the latest build
                 await storyBookPage.chooseLatestBuild();
                 //2.1. document on which build were running
                 const base64ImageBuild = await driver.saveScreenshots();
@@ -47,7 +46,7 @@ export async function NgxLibPOC(client: Client) {
                     value: 'data:image/png;base64,' + base64ImageBuild,
                 });
                 //3. choose a component by name
-                await storyBookPage.chooseComponent("color-picker");
+                await storyBookPage.chooseComponent('color-picker');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
@@ -75,4 +74,3 @@ export async function NgxLibPOC(client: Client) {
         });
     });
 }
-

@@ -1,16 +1,12 @@
 import { Browser } from '../../utilities/browser';
-import { By, WebElement } from 'selenium-webdriver';
-// import addContext from 'mochawesome/addContext';
-// import fs from 'fs';
-// import path from 'path';
-import { ConsoleColors } from '../../../services/general.service';
-import { BasePomObject } from '../base/BasePomObject';
+import { By } from 'selenium-webdriver';
 import { Page } from './base/Page';
 
 export class StoryBookPage extends Page {
-
     public ChooseBuildDropDown: By = By.xpath(`//span[@role='button' and @trigger='click']`);
-    public LatestBuildDropDownOption: By = By.xpath(`(//span[@role='presentation']//span[contains(text(),'Build')])[1]`);
+    public LatestBuildDropDownOption: By = By.xpath(
+        `(//span[@role='presentation']//span[contains(text(),'Build')])[1]`,
+    );
     public ViewStoryBookButton: By = By.xpath(`//span[contains(text(),'View Storybook')]`);
     public GenericComponentButton: By = By.xpath(`//button[contains(@data-item-id,"{placeholder}")]`);
 

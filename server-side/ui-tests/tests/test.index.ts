@@ -455,7 +455,7 @@ const passCreate = process.env.npm_config_pass_create as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('NGX_POC')) {
-        await NgxLibPOC(client); // all is needed is the client for general service as were not using an actual pepperi user
+        await NgxLibPOC(); // all is needed is the client for general service as were not using an actual pepperi user
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_performance')) {

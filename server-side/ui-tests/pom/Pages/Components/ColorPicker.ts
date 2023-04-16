@@ -1,14 +1,8 @@
-import { Browser } from '../../../utilities/browser';
-import { By, WebElement } from 'selenium-webdriver';
-// import addContext from 'mochawesome/addContext';
-// import fs from 'fs';
-// import path from 'path';
-import { ConsoleColors } from '../../../../services/general.service';
-import { BasePomObject } from '../../base/BasePomObject';
-import { Page } from '../base/Page';
+import { By } from 'selenium-webdriver';
 import { AddonPage } from '../..';
 
-export class ColorPicker extends AddonPage {//should this extend 'page'? maybe create Component base class
+export class ColorPicker extends AddonPage {
+    //should this extend 'page'? maybe create Component base class
 
     public Component: By = By.xpath(`//div[contains(@id,'color-picker')]//div[contains(@id,'color-picker')]`);
     public IframeElement: By = By.xpath(`//iframe`);
@@ -29,7 +23,10 @@ export class ColorPicker extends AddonPage {//should this extend 'page'? maybe c
 
     public async isComponentFound(): Promise<boolean> {
         await this.browser.switchTo(this.IframeElement);
-        return (await this.browser.isElementLocated(this.Component)) && (await this.browser.isElementVisible(this.Component));
+        return (
+            (await this.browser.isElementLocated(this.Component)) &&
+            (await this.browser.isElementVisible(this.Component))
+        );
     }
 
     public async openComonentModal(): Promise<void> {
@@ -55,7 +52,19 @@ export class ColorPicker extends AddonPage {//should this extend 'page'? maybe c
         const isACompTileBoxShown = await this.browser.untilIsVisible(this.AACompilantBox);
         //color box
         const isCurrentColorBoxShown = await this.browser.untilIsVisible(this.CurrentColorBox);
-        return isHueTitleShown && isHueSliderShown && isSaturationTitleShown && isSaturationSliderShown && isLightnessTitleShown && isLightnessSliderShown && isOrAddTitleShown && isOrAddBoxShown && isAACompTilehown && isACompTileBoxShown && isCurrentColorBoxShown;
+        return (
+            isHueTitleShown &&
+            isHueSliderShown &&
+            isSaturationTitleShown &&
+            isSaturationSliderShown &&
+            isLightnessTitleShown &&
+            isLightnessSliderShown &&
+            isOrAddTitleShown &&
+            isOrAddBoxShown &&
+            isAACompTilehown &&
+            isACompTileBoxShown &&
+            isCurrentColorBoxShown
+        );
     }
 
     public async okModal(): Promise<void> {

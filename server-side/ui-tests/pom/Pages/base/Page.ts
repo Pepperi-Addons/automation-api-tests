@@ -20,10 +20,10 @@ export abstract class Page extends BasePomObject {
         this.url = url;
     }
 
-    public async navigate(url?:string): Promise<void> {
-        if(url){
-            return await this.browser.navigate(url);    
-        }else{
+    public async navigate(url?: string): Promise<void> {
+        if (url) {
+            return await this.browser.navigate(url);
+        } else {
             return await this.browser.navigate(this.url);
         }
     }
