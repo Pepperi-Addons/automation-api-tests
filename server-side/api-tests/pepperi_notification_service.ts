@@ -342,6 +342,7 @@ export async function PepperiNotificationServiceTests(
             });
 
             describe(`Addons`, () => {
+                // for (let index = 0; index < 20; index++) {//LOOP
                 let createdAddon;
                 let installedAddon;
                 const testAddon: Addon = {
@@ -913,7 +914,8 @@ export async function PepperiNotificationServiceTests(
                     );
                     expect(getSubscribeResponse).to.deep.equal([]);
                 });
-            });
+                // loop}
+            }); //x
 
             describe(`ADAL`, () => {
                 it(`Reset Schema`, async () => {
@@ -1141,7 +1143,7 @@ export async function PepperiNotificationServiceTests(
                             );
                     }
                     const newSchema = await adalService.postSchema({ Name: _SYNC_SCHEMA_NAME });
-                    expect(purgedSchema).to.equal('') || expect(purgedSchema).to.be.undefined; //oleg
+                    expect(purgedSchema).to.equal('') || expect(purgedSchema).to.be.undefined; //oleg1
                     expect(newSchema).to.have.property('Name').a('string').that.is.equal(_SYNC_SCHEMA_NAME);
                     expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
                 });

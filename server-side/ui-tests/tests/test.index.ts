@@ -51,6 +51,7 @@ import { LoginPerfTestsReload } from './login_performance_reload.test';
 import { UDCTestser } from '../../api-tests/user_defined_collections';
 import { maintenance3APITestser } from '../../api-tests/addons';
 import { handleDevTestInstallation } from '../../tests';
+import { NgxLibPOC } from './NgxLibPOC.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -453,6 +454,10 @@ const passCreate = process.env.npm_config_pass_create as string;
         await SurveyTests(email, pass, client, varPass); //, varPass, client
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
+    if (tests.includes('NGX_POC')) {
+        await NgxLibPOC(); // all is needed is the client for general service as were not using an actual pepperi user
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
     if (tests.includes('login_performance')) {
         await LoginPerfTests(email, pass, varPass, client, varPassEU);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
@@ -527,7 +532,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     'stage',
                 ),
             ]);
-            debugger;
+            // debugger;
             //2. validate tested addon is installed on latest available version
             const latestVersionOfTestedAddon = await generalService.getLatestAvailableVersion(
                 addonUUID,
@@ -626,17 +631,18 @@ const passCreate = process.env.npm_config_pass_create as string;
                         base64VARCredentialsSB,
                     ),
                 ]);
+                //6. report to Teams
+                await reportToTeams(
+                    addonName,
+                    addonUUID,
+                    service,
+                    latestVersionOfTestedAddon,
+                    devPassingEnvs,
+                    devFailedEnvs,
+                    true,
+                );
             }
-            //6. report to Teams
-            await reportToTeams(
-                addonName,
-                addonUUID,
-                service,
-                latestVersionOfTestedAddon,
-                devPassingEnvs,
-                devFailedEnvs,
-                true,
-            );
+
             if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
                 console.log('Dev Test Didnt Pass - No Point In Running Approvment');
                 return;
@@ -1640,7 +1646,7 @@ async function reportToTeams(
         message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
             passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
         } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
-        message2 = `EVGENY DEV TEST TESTING`;
+        message2 = `DEV TEST RESULT`;
     } else {
         message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
             passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
@@ -1648,7 +1654,7 @@ async function reportToTeams(
         message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
     }
     const bodyToSend = {
-        Name: isDev ? `${addonName} Dev Test Status` : `${addonName} Approvment Tests Status`,
+        Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
         Description: message,
         Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
         Message: message2,
