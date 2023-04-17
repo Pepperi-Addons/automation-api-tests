@@ -51,6 +51,7 @@ import { LoginPerfTestsReload } from './login_performance_reload.test';
 import { UDCTestser } from '../../api-tests/user_defined_collections';
 import { maintenance3APITestser } from '../../api-tests/addons';
 import { handleDevTestInstallation } from '../../tests';
+import { NgxLibPOC } from './NgxLibPOC.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -451,6 +452,10 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
     if (tests.includes('Survey')) {
         await SurveyTests(email, pass, client, varPass); //, varPass, client
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+    if (tests.includes('NGX_POC')) {
+        await NgxLibPOC(); // all is needed is the client for general service as were not using an actual pepperi user
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('login_performance')) {

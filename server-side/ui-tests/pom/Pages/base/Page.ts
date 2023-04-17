@@ -7,7 +7,7 @@ import { ConsoleColors } from '../../../../services/general.service';
 import { BasePomObject } from '../../base/BasePomObject';
 
 export abstract class Page extends BasePomObject {
-    private url: string;
+    protected url: string;
     public constructor(protected browser: Browser, url: string) {
         super(browser);
         this.url = url;
@@ -20,8 +20,12 @@ export abstract class Page extends BasePomObject {
         this.url = url;
     }
 
-    public async navigate(): Promise<void> {
-        return await this.browser.navigate(this.url);
+    public async navigate(url?: string): Promise<void> {
+        if (url) {
+            return await this.browser.navigate(url);
+        } else {
+            return await this.browser.navigate(this.url);
+        }
     }
 
     public async click(selector: By, index = 0, waitUntil = 15000): Promise<void> {
