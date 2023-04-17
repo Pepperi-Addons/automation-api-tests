@@ -33,8 +33,8 @@ export class StoryBookPage extends Page {
     public async chooseComponent(componentName: string): Promise<void> {
         //1. enter storybook
         await this.browser.click(this.ViewStoryBookButton);
-        this.browser.sleep(6000);
         await this.browser.switchToOtherTab(1);
+        this.browser.sleep(10000);
         //2. choose component by name
         const xpathQueryForComponent: string = this.GenericComponentButton.valueOf()['value'].replace(
             '{placeholder}',
