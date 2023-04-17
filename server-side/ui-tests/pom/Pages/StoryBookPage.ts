@@ -1,8 +1,10 @@
 import { Browser } from '../../utilities/browser';
 import { By } from 'selenium-webdriver';
 import { Page } from './base/Page';
+import { StoryBookInpus } from './StoryBookInputs';
 
 export class StoryBookPage extends Page {
+    public inputs: StoryBookInpus;
     public ChooseBuildDropDown: By = By.xpath(`//span[@role='button' and @trigger='click']`);
     public LatestBuildDropDownOption: By = By.xpath(
         `(//span[@role='presentation']//span[contains(text(),'Build')])[1]`,
@@ -12,6 +14,7 @@ export class StoryBookPage extends Page {
 
     constructor(browser: Browser) {
         super(browser, 'https://www.chromatic.com/library?appId=60ae3e9eff8e4c003b2f90d4&branch=master');
+        this.inputs = new StoryBookInpus(browser);
     }
 
     public async navigateToStoryBook(): Promise<void> {
@@ -19,6 +22,7 @@ export class StoryBookPage extends Page {
     }
 
     public async chooseLatestBuild(): Promise<void> {
+        //should change the branch too?
         //1. open drop down component
         await this.browser.click(this.ChooseBuildDropDown);
         //2. choose latest build

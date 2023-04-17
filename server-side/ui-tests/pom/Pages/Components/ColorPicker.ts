@@ -5,7 +5,11 @@ export class ColorPicker extends AddonPage {
     //should this extend 'page'? maybe create Component base class
 
     public Component: By = By.xpath(`//div[contains(@id,'color-picker')]//div[contains(@id,'color-picker')]`);
+    public ComponentLabel: By = By.xpath(`(//div[contains(@id,'color-picker')]//pep-field-title//mat-label)[1]`);
+    public ComponentLabelTxtAlign: By = By.xpath(`//div[contains(@id,'color-picker')]//pep-field-title//div`);
     public IframeElement: By = By.xpath(`//iframe`);
+    public PenIcon: By = By.xpath(`//mat-icon//pep-icon[contains(@name,'system_edit')]`);
+    public ComponentColor: By = By.xpath(`//div[contains(@class,'pep-color pep-input one-row')]`);
     //color picker modal
     public ChangeHueTitle: By = By.xpath(`//mat-label[@title="Change hue"]`);
     public HueSilder: By = By.xpath(`(//mat-slider)[1]`);
@@ -69,5 +73,42 @@ export class ColorPicker extends AddonPage {
 
     public async okModal(): Promise<void> {
         await this.browser.click(this.ModalOKBtn);
+    }
+
+    public async getLabel(): Promise<string> {
+        const label = await this.browser.findElement(this.ComponentLabel);
+        return await label.getText();
+    }
+
+    public async isPenIconFound(): Promise<boolean> {
+        const penIcon = await this.browser.findElement(this.PenIcon);
+        const penIconStyle = await penIcon.getAttribute('style');
+        return penIconStyle.includes('transparent');
+    }
+
+    public async testComponentModal() {
+        await this.openComonentModal();
+        const isComponentModalFullyShown = await this.isModalFullyShown();
+        await this.okModal();
+        return isComponentModalFullyShown;
+    }
+
+    public async getComponentColor() {
+        const colorElement = await this.browser.findElement(this.ComponentColor);
+        const componentStyle = await colorElement.getAttribute('style');
+        const indexOfP1 = componentStyle.indexOf('(');
+        const indexOfP2 = componentStyle.indexOf(')');
+        return componentStyle.substring(indexOfP1, indexOfP2 + 1);
+    }
+
+    public async getComponentTxtAlignment() {
+        const txtAlignComp = await this.browser.findElement(this.ComponentLabelTxtAlign);
+        const txtAlignVal = (await txtAlignComp.getAttribute('style')).split(':')[1];
+        return txtAlignVal;
+    }
+
+    public async getAllStories() {
+        const allStories = await this.browser.findElements(this.Component);
+        return allStories.slice(1);
     }
 }
