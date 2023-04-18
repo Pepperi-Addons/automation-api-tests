@@ -1344,8 +1344,8 @@ export default class GeneralService {
                 return '00000000-0000-0000-0000-00000e1a571c';
             // case 'UDC':
             //     return '122c0e9d-c240-4865-b446-f37ece866c22';
-            // case 'NEBULA':
-            //     return '00000000-0000-0000-0000-000000006a91';
+            case 'NEBULA':
+                return '00000000-0000-0000-0000-000000006a91';
             // case 'SYNC':
             //     return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
             // case 'OBJECT TYPES EDITOR':

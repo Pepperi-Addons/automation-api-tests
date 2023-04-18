@@ -43,7 +43,7 @@ import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
 // import { testData } from './../../services/general.service';
-import {} from './script_picker.test';
+import { } from './script_picker.test';
 import { PFSTestser } from '../../api-tests/pepperi_file_service';
 import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
 import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
@@ -570,6 +570,12 @@ const passCreate = process.env.npm_config_pass_create as string;
                 validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddonProd, 'prod'),
                 validateLatestVersionOfAddonIsInstalled(sbUser, addonUUID, latestVersionOfTestedAddonSb, 'stage'),
             ]);
+            //3. run the test on latest version of the template addon
+            const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
+                '02754342-e0b5-4300-b728-a94ea5e0e8f4',
+                varPass,
+            );
+            console.log(entryUUID);
             for (let index = 0; index < isInstalled.length; index++) {
                 const isTestedAddonInstalled = isInstalled[index];
                 if (isTestedAddonInstalled === false) {
@@ -578,89 +584,94 @@ const passCreate = process.env.npm_config_pass_create as string;
                     );
                 }
             }
-            const body = {
-                AddonUUID: addonUUID,
-                isLocal: false,
-            };
-            //3. run the test on latest version of the template addon
-            const [latestVersionOfAutomationTemplateAddon] = await generalService.getLatestAvailableVersion(
-                '02754342-e0b5-4300-b728-a94ea5e0e8f4',
-                varPass,
-            );
-            const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
-                runDevTestOnCertainEnv(euUser, 'prod', latestVersionOfAutomationTemplateAddon, body),
-                runDevTestOnCertainEnv(prodUser, 'prod', latestVersionOfAutomationTemplateAddon, body),
-                runDevTestOnCertainEnv(sbUser, 'stage', latestVersionOfAutomationTemplateAddon, body),
-            ]);
-            const [devTestResutsEu, devTestResultsProd, devTestResultsSb] = await Promise.all([
-                getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI),
-                getTestResponseFromAuditLog(prodUser, 'prod', devTestResponseProd.Body.URI),
-                getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI),
-            ]);
-            const testResultArrayEu = JSON.parse(devTestResutsEu.AuditInfo.ResultObject);
-            const testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
-            const testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
+            // get list of all tests
+            const testsArray = await getAllTestNamesToRun(prodUser, 'prod', addonUUID, latestVersionOfAutomationTemplateAddon);
             const devPassingEnvs: any[] = [];
             const devFailedEnvs: any[] = [];
-            //4. print the results
-            const [euResults, prodResults, sbResults] = await Promise.all([
-                printResultsTestObject(testResultArrayEu, euUser, 'prod', addonUUID, latestVersionOfTestedAddonProd),
-                printResultsTestObject(
-                    testResultArrayProd,
-                    prodUser,
-                    'prod',
-                    addonUUID,
-                    latestVersionOfTestedAddonProd,
-                ),
-                printResultsTestObject(testResultArraySB, sbUser, 'stage', addonUUID, latestVersionOfTestedAddonProd),
-            ]);
-            if (euResults.didSucceed) {
-                devPassingEnvs.push('Eu');
-            } else {
-                devFailedEnvs.push('Eu');
-            }
-            if (prodResults.didSucceed) {
-                devPassingEnvs.push('Production');
-            } else {
-                devFailedEnvs.push('Production');
-            }
-            if (sbResults.didSucceed) {
-                devPassingEnvs.push('Stage');
-            } else {
-                devFailedEnvs.push('Stage');
+            debugger;
+            for (let index = 0; index < testsArray.length; index++) {
+                const testName = testsArray[index];
+                console.log(`trying to run ${testName}, ${addonName} test`);
+                const body = {
+                    AddonUUID: addonUUID,
+                    TestName: testName,
+                    isLocal: false,
+                };
+                const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
+                    runDevTestOnCertainEnv(euUser, 'prod', latestVersionOfAutomationTemplateAddon, body),
+                    runDevTestOnCertainEnv(prodUser, 'prod', latestVersionOfAutomationTemplateAddon, body),
+                    runDevTestOnCertainEnv(sbUser, 'stage', latestVersionOfAutomationTemplateAddon, body),
+                ]);
+                const [devTestResutsEu, devTestResultsProd, devTestResultsSb] = await Promise.all([
+                    getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI),
+                    getTestResponseFromAuditLog(prodUser, 'prod', devTestResponseProd.Body.URI),
+                    getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI),
+                ]);
+                const testResultArrayEu = JSON.parse(devTestResutsEu.AuditInfo.ResultObject);
+                const testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
+                const testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
+                //4. print the results
+                const [euResults, prodResults, sbResults] = await Promise.all([
+                    printResultsTestObject(testResultArrayEu, euUser, 'prod', addonUUID, latestVersionOfTestedAddonProd),
+                    printResultsTestObject(
+                        testResultArrayProd,
+                        prodUser,
+                        'prod',
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                    ),
+                    printResultsTestObject(testResultArraySB, sbUser, 'stage', addonUUID, latestVersionOfTestedAddonProd),
+                ]);
+                if (euResults.didSucceed) {
+                    devPassingEnvs.push('Eu');
+                } else {
+                    devFailedEnvs.push('Eu');
+                }
+                if (prodResults.didSucceed) {
+                    devPassingEnvs.push('Production');
+                } else {
+                    devFailedEnvs.push('Production');
+                }
+                if (sbResults.didSucceed) {
+                    devPassingEnvs.push('Stage');
+                } else {
+                    devFailedEnvs.push('Stage');
+                }
+                if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
+                    console.log(`${testName}, ${addonName} test FAILED`);
+                    const addonToInstall = {};
+                    addonToInstall[addonName] = [addonUUID, ''];
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEU,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                }
             }
             debugger;
             //5. un - available this version if needed
-            if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
-                const addonToInstall = {};
-                addonToInstall[addonName] = [addonUUID, ''];
-                debugger;
-                await Promise.all([
-                    unavailableAddonVersion(
-                        'prod',
-                        addonName,
-                        addonEntryUUIDEU,
-                        latestVersionOfTestedAddonProd,
-                        addonUUID,
-                        varPassEU,
-                    ),
-                    unavailableAddonVersion(
-                        'prod',
-                        addonName,
-                        addonEntryUUIDProd,
-                        latestVersionOfTestedAddonProd,
-                        addonUUID,
-                        varPass,
-                    ),
-                    unavailableAddonVersion(
-                        'stage',
-                        addonName,
-                        addonEntryUUIDSb,
-                        latestVersionOfTestedAddonProd,
-                        addonUUID,
-                        varPassSB,
-                    ),
-                ]);
+            if (devFailedEnvs.length > 0) {
                 //6. report to Teams
                 await reportToTeams(
                     addonName,
@@ -673,7 +684,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 );
             }
 
-            if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
+            if (devFailedEnvs.length > 0) {
                 console.log('Dev Test Didnt Pass - No Point In Running Approvment');
                 return;
             }
@@ -1339,8 +1350,7 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
-                                    maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));
@@ -1665,14 +1675,12 @@ async function reportToTeams(
     let message;
     let message2;
     if (isDev) {
-        message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
-            passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
+        message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+            } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
         message2 = `DEV TEST RESULT`;
     } else {
-        message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
-            passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
+        message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+            } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
         message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
     }
     const bodyToSend = {
@@ -1706,8 +1714,8 @@ function resolveUserPerTest(addonName): any[] {
         case 'DATA INDEX':
         case 'DATA-INDEX':
             return ['DataIndexEU@pepperitest.com', 'DataIndexProd@pepperitest.com', 'DataIndexSB@pepperitest.com'];
-        // case 'NEBULA':
-        //     return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
+        case 'NEBULA':
+            return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
         case 'ADAL':
             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
         case 'SYNC':
@@ -1752,12 +1760,29 @@ async function getTestResponseFromAuditLog(userName, env, URI: string) {
     return auditLogDevTestResponse;
 }
 
+async function getAllTestNamesToRun(userName, env, addonUUID, version) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const bodyToGetTests = {
+        AddonUUID: addonUUID
+    };
+    const testsResponse = await service.fetchStatus(
+        `/addons/api/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${version}/tests/which_tests_for_addonUUID`,
+        {
+            body: JSON.stringify(bodyToGetTests),
+            method: 'POST',
+        },
+    );
+    return testsResponse.Body;
+}
+
 async function printResultsTestObject(testResultArray, userName, env, addonUUID, latestVersionOfTestedAddon) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
     const installedAddonsArr = await service.getInstalledAddons({ page_size: -1 });
     let didSucceed = true;
     console.log(`######${userName.includes('eu') ? 'EU' : env} Dev Test Results For Addon ${addonUUID} ######`);
+    debugger;
     for (let index = 0; index < testResultArray.length; index++) {
         const testResult = testResultArray[index];
         if (testResult.stats.failures > 0) {
