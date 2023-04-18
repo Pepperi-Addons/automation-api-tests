@@ -583,10 +583,11 @@ const passCreate = process.env.npm_config_pass_create as string;
                 isLocal: false,
             };
             //3. run the test on latest version of the template addon
-            const [latestVersionOfAutomationTemplateAddon] = await generalService.getLatestAvailableVersion(
+            const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
                 '02754342-e0b5-4300-b728-a94ea5e0e8f4',
                 varPass,
             );
+            console.log(entryUUID);
             const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
                 runDevTestOnCertainEnv(euUser, 'prod', latestVersionOfAutomationTemplateAddon, body),
                 runDevTestOnCertainEnv(prodUser, 'prod', latestVersionOfAutomationTemplateAddon, body),
