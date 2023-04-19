@@ -131,7 +131,7 @@ class ResourceCreation {
         this.createDataX3Ref1(this.accounts * this.divisions * this.companies);
         this.createLists(this.lists);
         this.createListItems(this.lists * this.items);
-        // this.createAccountLists(this.divisions * this.companies * this.accounts * this.lists); -- must ask Ido
+        this.createAccountLists(this.divisions * this.companies * this.accounts * this.lists);
     }
 
     // private async genrateTempFile(tempFileName, data) {
@@ -167,7 +167,7 @@ class ResourceCreation {
 
     private async genrateFile(tempFileName, data) {
         try {
-            fs.writeFileSync(`./nelt_csv/${tempFileName}.csv`, data, 'utf-8');
+            fs.writeFileSync(`./nelt_csv_data/${tempFileName}.csv`, data, 'utf-8');
         } catch (error) {
             throw new Error(`Error: ${(error as any).message}`);
         }
@@ -175,8 +175,8 @@ class ResourceCreation {
 
     private createUsers(howManyDataRows: number) {
         const headers = "ExternalID,Email";
-        const runningDataExID = "user_index";
-        const runningDataEmail = "user_index@user.com";
+        const runningDataExID = "users_index";
+        const runningDataEmail = "usersindex@pep.com";
         let strData = "";
         strData += headers + "\n";
         for (let index = 0; index < howManyDataRows; index++) {
@@ -188,8 +188,8 @@ class ResourceCreation {
 
     private createAccounts(howManyDataRows: number) {
         const headers = "ExternalID,Name";
-        const runningDataExID = "account_index";
-        const runningDataName = "account_index";
+        const runningDataExID = "accounts_index";
+        const runningDataName = "accounts_index";
         let strData = "";
         strData += headers + "\n";
         for (let index = 0; index < howManyDataRows; index++) {
@@ -202,7 +202,7 @@ class ResourceCreation {
     private createItems(howManyDataRows: number) {
         const headers = "MainCategoryID,ExternalID";
         const runningDataMainCat = "items_0";
-        const runningDataExID = "item_index";
+        const runningDataExID = "items_index";
         let strData = "";
         strData += headers + "\n";
         for (let index = 0; index < howManyDataRows; index++) {
@@ -236,7 +236,7 @@ class ResourceCreation {
 
     private createUserInfo(howManyDataRows: number) {
         const headers = "userRef#ExternalID,divisonRef,CompanyRef";
-        const runningDataUsers = "user_index";
+        const runningDataUsers = "users_index";
         const runningDataDivision = "division_index";
         const runningDataCompany = "company_index";
         let strData = "";
@@ -259,7 +259,7 @@ class ResourceCreation {
 
     private createAccountData1(howManyDataRows: number) {
         const headers = "accountRef#ExternalID,value1";
-        const runningDataAccount = "account_index";
+        const runningDataAccount = "accounts_index";
         const runningDataBasicValue = "value_index";
         let strData = "";
         strData += headers + "\n";
@@ -317,7 +317,7 @@ class ResourceCreation {
     private createDataX3Ref1(howManyDataRows: number) {
         console.log(howManyDataRows);
         const headers = "accountRef#ExternalID,divisionRef,companyRef,value1,value2";
-        const runningDataAccount = "account_index";
+        const runningDataAccount = "accounts_index";
         const runningDataDivision = "division_index";
         const runningDataCompany = "company_index";
         const runningDataBasicValue1 = "value1_index";
@@ -357,7 +357,7 @@ class ResourceCreation {
         console.log(howManyDataRows);
         const headers = "listRef,ItemsRef";
         const runningDatalist = "list_index";
-        const runningDataItems = "item_index";
+        const runningDataItems = "items_index";
         let latestItemIndex = 0;
         let strData = "";
         strData += headers + "\n";
@@ -378,34 +378,33 @@ class ResourceCreation {
     private createAccountLists(howManyDataRows: number) {
         console.log(howManyDataRows);
         const headers = "divisionRef,companyRef,accountRef#ExternalID,listRef";
-        const runningDataAccount = "account_index";
+        const runningDataAccount = "accounts_index";
         const runningDataDivision = "division_index";
         const runningDataCompany = "company_index";
-        const runningDataBasicList = "list_index";
+        const runningDataList = "list_index";
+        let latestItemIndex = 0;
         let strData = "";
-        let runningFileIndex = 1;
-        let howMuchData = 0;
         strData += headers + "\n";
-        for (let index1 = 0; index1 < this.lists; index1++) {
-            const list = runningDataBasicList.replace('index', index1.toString());
-            for (let index2 = 0; index2 < this.divisions; index2++) {
-                const div = runningDataDivision.replace('index', index2.toString());
-                for (let index3 = 0; index3 < this.companies; index3++) {
-                    const comp = runningDataCompany.replace('index', index3.toString());
-                    for (let index4 = 0; index4 < this.accounts; index4++) {
-                        const acc = runningDataAccount.replace('index', index4.toString());
+        //1. division
+        for (let index1 = 0; index1 < this.divisions; index1++) {
+            const div = runningDataDivision.replace("index", index1.toString());
+            //2. company
+            for (let index2 = 0; index2 < this.companies; index2++) {
+                const comp = runningDataCompany.replace("index", index2.toString());
+                //3. account
+                for (let index3 = 0; index3 < this.accounts; index3++) {
+                    const acc = runningDataAccount.replace("index", index3.toString());
+                    //4. lists split to 15
+                    for (let index4 = 0; index4 < 15; index4++) {
+                        const list = runningDataList.replace("index", latestItemIndex.toString());
+                        latestItemIndex++;
+                        if (latestItemIndex === this.items) {
+                            latestItemIndex = 0;
+                        }
                         strData += `${div},${comp},${acc},${list}\n`;
-                        debugger;
-                        howMuchData++;
                     }
                 }
             }
-            // if (howMuchData > 0 && howMuchData % 120000 === 0) {
-            //     this.genrateFile(`AccountLists${runningFileIndex}`, strData);
-            //     runningFileIndex++;
-            //     strData = headers + "\n";
-            //     howMuchData = 0;
-            // }
         }
         this.genrateFile("AccountLists", strData);
     }
