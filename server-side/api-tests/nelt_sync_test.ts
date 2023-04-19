@@ -4,6 +4,7 @@ import { UdcField, UDCService } from '../services/user-defined-collections.servi
 import fetch, { RequestInit, Response } from 'node-fetch';
 import { PapiClient } from '@pepperi-addons/papi-sdk';
 import { ADALService } from '../services/adal.service';
+import { DataCreation2 } from '../services/data-creation2.service';
 
 export async function NeltSyncestser(generalService: GeneralService, request, tester: TesterFunctions) {
     await NeltSyncTest(generalService, request, tester);
@@ -11,7 +12,7 @@ export async function NeltSyncestser(generalService: GeneralService, request, te
 export async function NeltSyncTest(generalService: GeneralService, request, tester: TesterFunctions) {
     const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
     const udcService = new UDCService(generalService);
-    const dataCreator = new DataCreation(generalService['client']);
+    const dataCreator = new DataCreation2(generalService['client']);
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;

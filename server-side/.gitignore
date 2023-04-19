@@ -2,4 +2,3 @@ node_modules/**
 build/**
 publish/*.js
 mochawesome-report/*
-*.csv
