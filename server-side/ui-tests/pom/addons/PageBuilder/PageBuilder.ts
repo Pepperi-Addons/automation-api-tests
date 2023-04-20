@@ -11,6 +11,7 @@ export class PageBuilder extends AddonPage {
     public PageBuilder_Search_Submit: By = By.xpath(
         '//input[@placeholder="Search..."]/parent::div/following-sibling::div //mat-icon[2]',
     );
+    public PageBuilder_Search_Clear: By = By.xpath('//pep-search//pep-icon[@name="system_close"]');
     // Add a new Page
     public SelectPage_Title: By = By.xpath('//span[@title="Select a Page"]');
     public BlankTemplatePage: By = By.xpath('//*[text()="Blank"]/parent::div[contains(@class,"page-cube-inner")]');
@@ -27,6 +28,7 @@ export class PageBuilder extends AddonPage {
     );
     public PagesList_EmptyList_Paragraph: By = By.xpath('//pep-list//p');
     public PagesList_FirstCheckboxInList: By = By.xpath('//virtual-scroller/div[2]/div/fieldset/mat-checkbox');
+    public Page_Listing_aLink: By = By.xpath('//a[@id="Name"]');
     // public PagesList_PageSelectCheckbox_ByName: By = By.xpath(`${this.getSelectorOfRowInListByName('').value}/mat-checkbox/label/span`);
     // Single Selection
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu/div/button');
@@ -178,45 +180,50 @@ export class PageBuilder extends AddonPage {
         }
     }
 
-    public async deleteAll() {
-        // Alternavite solution - Hagit, Feb 5th 2023
-        await this.clickElement('PagesList_SelectAll_Checkbox');
-        await this.waitTillVisible(this.PagesList_SelectAllisChecked_Checkbox, 15000);
-        await this.openPencilChooseDelete();
-        this.browser.sleep(500);
-        await this.confirmDeleteClickRedButton();
-        this.browser.sleep(500);
-        const numOfEditors: string = await (
-            await this.browser.findElement(this.PagesList_NumberOfItemsInList)
-        ).getText();
-        this.browser.sleep(500);
+    // public async deleteAll() {
+    //     const allPages = await this.browser.findElements(this.Page_Listing_aLink);
+    //     allPages.forEach(async page => {
+    //         const pageName = await page.getAttribute('title');
+    //         this.deleteFromListByName(pageName);
+    //     });
+    //     // // Alternavite solution - Hagit, Feb 5th 2023
+    //     // await this.clickElement('PagesList_SelectAll_Checkbox');
+    //     // await this.waitTillVisible(this.PagesList_SelectAllisChecked_Checkbox, 15000);
+    //     // await this.openPencilChooseDelete();
+    //     // this.browser.sleep(500);
+    //     // await this.confirmDeleteClickRedButton();
+    //     this.browser.sleep(500);
+    //     const numOfEditors: string = await (
+    //         await this.browser.findElement(this.PagesList_NumberOfItemsInList)
+    //     ).getText();
+    //     this.browser.sleep(500);
 
-        // // needs to be fixed: can't choose checkbox from the second time on... Hagit, Jan 10th 2023
-        // let numOfEditors: string;
-        // do {
-        //     debugger;
-        //     numOfEditors = await (await this.browser.findElement(this.PagesList_NumberOfItemsInList)).getText();
-        //     try {
-        //         this.browser.sleep(500);
-        //         const availablePagesCheckboxs = await this.browser.findElements(this.PagesList_FirstCheckboxInList);
-        //         this.browser.sleep(500);
-        //         availablePagesCheckboxs[0].click();
-        //         this.browser.sleep(500);
-        //         await this.openPencilChooseDelete();
-        //         this.browser.sleep(500);
-        //         await this.confirmDeleteClickRedButton();
-        //         this.browser.sleep(500);
-        //         await this.browser.click(this.PagesList_NumberOfItemsInList);
-        //     } catch (error) {
-        //         const errorMessage: string = (error as any).message;
-        //         console.info(`MESSAGE thrown in deleteAllEditors: ${errorMessage}`);
-        //     }
-        //     debugger;
-        // } while (Number(numOfEditors) > 0);
-        // debugger;
-        // numOfEditors = await (await this.browser.findElement(this.PagesList_NumberOfItemsInList)).getText();
-        expect(Number(numOfEditors)).to.equal(0);
-    }
+    //     // // needs to be fixed: can't choose checkbox from the second time on... Hagit, Jan 10th 2023
+    //     // let numOfEditors: string;
+    //     // do {
+    //     //     debugger;
+    //     //     numOfEditors = await (await this.browser.findElement(this.PagesList_NumberOfItemsInList)).getText();
+    //     //     try {
+    //     //         this.browser.sleep(500);
+    //     //         const availablePagesCheckboxs = await this.browser.findElements(this.PagesList_FirstCheckboxInList);
+    //     //         this.browser.sleep(500);
+    //     //         availablePagesCheckboxs[0].click();
+    //     //         this.browser.sleep(500);
+    //     //         await this.openPencilChooseDelete();
+    //     //         this.browser.sleep(500);
+    //     //         await this.confirmDeleteClickRedButton();
+    //     //         this.browser.sleep(500);
+    //     //         await this.browser.click(this.PagesList_NumberOfItemsInList);
+    //     //     } catch (error) {
+    //     //         const errorMessage: string = (error as any).message;
+    //     //         console.info(`MESSAGE thrown in deleteAllEditors: ${errorMessage}`);
+    //     //     }
+    //     //     debugger;
+    //     // } while (Number(numOfEditors) > 0);
+    //     // debugger;
+    //     // numOfEditors = await (await this.browser.findElement(this.PagesList_NumberOfItemsInList)).getText();
+    //     expect(Number(numOfEditors)).to.equal(0);
+    // }
 
     // public async selectFromList(selector: By, name?: string) {
     //     try {
@@ -252,6 +259,7 @@ export class PageBuilder extends AddonPage {
 
     public async searchForPageByName(name: string) {
         await this.insertTextToInputElement(name, this.PageBuilder_Search_Input);
+        this.browser.sleep(0.5 * 1000);
         await (await this.browser.findElement(this.PageBuilder_Search_Submit)).click();
     }
 
@@ -266,7 +274,7 @@ export class PageBuilder extends AddonPage {
     public async upsertPage(path: 'publish_page' | 'save_draft_page', pageObj, client: Client) {
         const generalService = new GeneralService(client);
         return await generalService.fetchStatus(
-            `https://papi.pepperi.com/V1.0/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/${path}`,
+            `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/${path}`,
             {
                 method: 'POST',
                 body: JSON.stringify(pageObj),

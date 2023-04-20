@@ -28,6 +28,7 @@ import { SlideShowPage } from '../pom/addons/SlideShowPage';
 import { SurveyPicker } from '../pom/addons/SurveyPicker';
 import { SurveyFiller } from '../pom/addons/SurveyFiller';
 import { UDCService } from '../../services/user-defined-collections.service';
+import { ObjectsService } from '../../services/objects.service';
 
 chai.use(promised);
 
@@ -127,14 +128,14 @@ export async function SurveyTests(email: string, password: string, client: Clien
     ];
 
     await generalService.baseAddonVersionsInstallation(varPass);
-    //#region Upgrade script dependencies
+    // #region Upgrade survey dependencies
 
     const testData = {
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x to
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.32'], //has to remain untouched
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.8'], //has to remain untouched
+        Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.43'], //has to remain untouched
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.11'], //has to remain untouched
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
@@ -152,12 +153,11 @@ export async function SurveyTests(email: string, password: string, client: Clien
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
-    // #endregion Upgrade script dependencies
+    // #endregion Upgrade survey dependencies
 
     describe('Survey Builder Tests Suit', async function () {
         describe('Prerequisites Addons for Survey Builder Tests', () => {
             //Test Data
-            //Scripts
             isInstalledArr.forEach((isInstalled, index) => {
                 it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                     expect(isInstalled).to.be.true;
@@ -213,13 +213,25 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     undefined,
                     { AddonUUID: 'dd0a85ea-7ef0-4bc1-b14f-959e0372877a', Name: 'surveys' },
                 );
-                expect(response).to.haveOwnProperty('Account');
-                expect(response).to.haveOwnProperty('ActionDateTime');
-                expect(response).to.haveOwnProperty('Agent');
-                expect(response).to.haveOwnProperty('Creator');
-                expect(response).to.haveOwnProperty('ExternalID');
-                expect(response).to.haveOwnProperty('StatusName');
-                expect(response).to.haveOwnProperty('Template');
+                if (
+                    generalService.papiClient['options'].baseURL.includes('staging') &&
+                    response.hasOwnProperty('Fail') &&
+                    response.Fail.includes('Table schema must exist, for table = AddonFiles')
+                ) {
+                    console.log('STAGING Table schema must exist, for table = AddonFiles ERROR!!! BUG: DI-23504');
+                    expect(response.Fail).to.equal(
+                        undefined,
+                        'STAGING Table schema must exist, for table = AddonFiles ERROR!!! BUG: DI-23504',
+                    );
+                } else {
+                    expect(response).to.haveOwnProperty('Account');
+                    expect(response).to.haveOwnProperty('ActionDateTime');
+                    expect(response).to.haveOwnProperty('Agent');
+                    expect(response).to.haveOwnProperty('Creator');
+                    expect(response).to.haveOwnProperty('ExternalID');
+                    expect(response).to.haveOwnProperty('StatusName');
+                    expect(response).to.haveOwnProperty('Template');
+                }
             });
             it('2. Create A Survey Template - Validate Via API All Data Is Sent Correctly', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
@@ -313,6 +325,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await surveyService.editSurveyTemplateName(newName);
                 const webAppHomePage = new WebAppHomePage(driver);
                 webAppHomePage.returnToHomePage();
+                driver.sleep(3000);
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }
@@ -478,13 +491,22 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.reSyncApp();
                 await webAppHomePage.initiateSalesActivity(slideshowSlugDisplayName);
                 const slideShowPage = new SlideShowPage(driver);
                 await slideShowPage.enterSurveyPicker();
                 const surveyPicker = new SurveyPicker(driver);
+                driver.sleep(4500);
                 const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
+                driver.sleep(2500);
                 expect(isAccountSelectionOpen).to.equal(true);
-                const isTemplateOpen = await surveyPicker.selectAccount('Account for order scenarios');
+                const objectsService = new ObjectsService(generalService);
+                const accounts = await objectsService.getAccounts();
+                expect(accounts.length).to.be.above(0);
+                const accName = accounts[0].Name;
+                const accUUID = accounts[0].UUID;
+                const isTemplateOpen = await surveyPicker.selectAccount(accName);
+                driver.sleep(2500);
                 expect(isTemplateOpen).to.equal(true);
                 const allQuestionNames = [
                     'first question',
@@ -535,7 +557,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(latestSurvey.Template).to.equal(surveyUUID);
                 expect(latestSurvey.StatusName).to.equal('Submitted');
                 expect(latestSurvey.ResourceName).to.equal('MySurveys');
-                expect(latestSurvey.Account).to.equal('08270b74-4a94-4386-afa1-2562145026ce');
+                expect(latestSurvey.Account).to.equal(accUUID);
                 const surveyAnswers = latestSurvey.Answers;
                 for (let index = 0; index < surveyAnswers.length; index++) {
                     const ans = surveyAnswers[index];
@@ -566,9 +588,9 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     }
                 }
             });
-            it('Data Cleansing', async function () {
+            it('Data Cleansing: 1. survey template', async function () {
                 //1. delete survey template
-                let body = { Key: surveyUUID, Hidden: true };
+                const body = { Key: surveyUUID, Hidden: true };
                 const deleteSurveyTemplateResponse = await generalService.fetchStatus(`/resources/MySurveyTemplates`, {
                     method: 'POST',
                     body: JSON.stringify(body),
@@ -577,37 +599,41 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(deleteSurveyTemplateResponse.Status).to.equal(200);
                 expect(deleteSurveyTemplateResponse.Body.Key).to.equal(surveyUUID);
                 expect(deleteSurveyTemplateResponse.Body.Hidden).to.equal(true);
+            });
+            it('Data Cleansing: 2. resource views', async function () {
                 //2. delete resource views
-                body = { Key: accountViewUUID, Hidden: true };
+                const accBody = { Key: accountViewUUID, Hidden: true };
                 const deleteAccountRLResponse = await generalService.fetchStatus(
                     `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
                     {
                         method: 'POST',
-                        body: JSON.stringify(body),
+                        body: JSON.stringify(accBody),
                     },
                 );
                 expect(deleteAccountRLResponse.Ok).to.equal(true);
                 expect(deleteAccountRLResponse.Status).to.equal(200);
                 expect(deleteAccountRLResponse.Body.Name).to.equal('Accounts');
                 expect(deleteAccountRLResponse.Body.Hidden).to.equal(true);
-                body = { Key: surveyViewUUID, Hidden: true };
+                const surveyBody = { Key: surveyViewUUID, Hidden: true };
                 const deleteSurveyRLResponse = await generalService.fetchStatus(
                     `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
                     {
                         method: 'POST',
-                        body: JSON.stringify(body),
+                        body: JSON.stringify(surveyBody),
                     },
                 );
                 expect(deleteSurveyRLResponse.Ok).to.equal(true);
                 expect(deleteSurveyRLResponse.Status).to.equal(200);
                 expect(deleteSurveyRLResponse.Body.Name).to.equal('Surveys');
                 expect(deleteSurveyRLResponse.Body.Hidden).to.equal(true);
+            });
+            it('Data Cleansing: 3. pages', async function () {
                 //3. delete relevant pages
                 const deleteSurveyPageResponse = await generalService.fetchStatus(
                     `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${surveyBlockPageUUID}`,
                     {
                         method: 'POST',
-                        body: JSON.stringify(body),
+                        body: JSON.stringify({}),
                     },
                 );
                 expect(deleteSurveyPageResponse.Ok).to.equal(true);
@@ -617,12 +643,14 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${slideshowBlockPageUUID}`,
                     {
                         method: 'POST',
-                        body: JSON.stringify(body),
+                        body: JSON.stringify({}),
                     },
                 );
                 expect(deleteSlideShowPageResponse.Ok).to.equal(true);
                 expect(deleteSlideShowPageResponse.Status).to.equal(200);
                 expect(deleteSlideShowPageResponse.Body).to.equal(true);
+            });
+            it('Data Cleansing: 4. script', async function () {
                 //delete the script
                 const bodyForSctips = { Keys: [`${scriptUUID}`] };
                 const deleteScriptResponse = await generalService.fetchStatus(
@@ -635,6 +663,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(deleteScriptResponse.Ok).to.equal(true);
                 expect(deleteScriptResponse.Status).to.equal(200);
                 expect(deleteScriptResponse.Body[0].Key).to.equal(scriptUUID);
+            });
+            it('Data Cleansing: 5. UDC', async function () {
                 //delete UDC
                 const udcService = new UDCService(generalService);
                 const documents = await udcService.getSchemes();
@@ -659,6 +689,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     expect(hideResponse.Body.Name).to.equal(collectionToHide.Name);
                     expect(hideResponse.Body.Hidden).to.equal(true);
                 }
+            });
+            it('Data Cleansing: 6. slugs', async function () {
                 //4. delete slugs
                 const slugs: Slugs = new Slugs(driver);
                 const slideShowSlugsResponse = await slugs.deleteSlugByName(slideshowSlugDisplayName, client);
@@ -669,12 +701,18 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(surveySlugResponse.Ok).to.equal(true);
                 expect(surveySlugResponse.Status).to.equal(200);
                 expect(surveySlugResponse.Body.success).to.equal(true);
+            });
+            it('Data Cleansing: 7. ATD from home screen', async function () {
                 //5. delete ATD from homescreen
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.removeAdminHomePageButtons(slideshowSlugDisplayName);
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.manualResync(client);
+                const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slideshowSlugDisplayName);
+                expect(isNotFound).to.equal(true);
             });
         });
     });
