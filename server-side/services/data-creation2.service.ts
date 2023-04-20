@@ -218,7 +218,7 @@ class ResourceCreation {
         let strData = "";
         strData += headers + "\n";
         for (let index = 0; index < howManyDataRows; index++) {
-            strData += `${runningDataCode.replace('index', index.toString())}${index < howManyDataRows - 1 ? ',' : ''}\n`;
+            strData += `${runningDataCode.replace('index', index.toString())}\n`;
         }
         this.genrateFile("Divisons", strData);
     }
@@ -229,13 +229,13 @@ class ResourceCreation {
         let strData = "";
         strData += headers + "\n";
         for (let index = 0; index < howManyDataRows; index++) {
-            strData += `${runningDataCode.replace('index', index.toString())}${index < howManyDataRows - 1 ? ',' : ''}\n`;
+            strData += `${runningDataCode.replace('index', index.toString())}\n`;
         }
         this.genrateFile("Companies", strData);
     }
 
     private createUserInfo(howManyDataRows: number) {
-        const headers = "userRef#ExternalID,divisonRef,CompanyRef";
+        const headers = "userRef#ExternalID,divisionRef,companyRef";
         const runningDataUsers = "users_index";
         const runningDataDivision = "division_index";
         const runningDataCompany = "company_index";
@@ -348,14 +348,14 @@ class ResourceCreation {
         let strData = "";
         strData += headers + "\n";
         for (let index = 0; index < howManyDataRows; index++) {
-            strData += `${runningDataCode.replace('index', index.toString())}${index < howManyDataRows - 1 ? ',' : ''}\n`;
+            strData += `${runningDataCode.replace('index', index.toString())}\n`;
         }
         this.genrateFile("Lists", strData);
     }
 
     private createListItems(howManyDataRows: number) {
         console.log(howManyDataRows);
-        const headers = "listRef,ItemsRef";
+        const headers = "listRef,ItemRef";
         const runningDatalist = "list_index";
         const runningDataItems = "items_index";
         let latestItemIndex = 0;
