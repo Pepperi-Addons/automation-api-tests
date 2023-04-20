@@ -51,12 +51,11 @@ import { LoginPerfTestsReload } from './login_performance_reload.test';
 import { UDCTestser } from '../../api-tests/user_defined_collections';
 import { maintenance3APITestser } from '../../api-tests/addons';
 import { handleDevTestInstallation } from '../../tests';
-<<<<<<< HEAD
+
 import { DataCreation } from '../../services/data-creation.service';
 import { NeltSyncestser } from '../../api-tests/nelt_sync_test';
-=======
 import { NgxLibPOC } from './NgxLibPOC.test';
->>>>>>> 73109faa92fef25fee9261e8b03845b528a472f0
+
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
