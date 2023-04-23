@@ -19,6 +19,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.92'], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.6.48'], // current phased version 0.6.48 | dependency > 0.6.41
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.41'], // current phased version 0.6.41 | dependency > 0.6.35
+        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.18'], // Do Not change!
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.14'], // CPI_Node_data current phased version 0.6.14 | dependency > 0.6.11
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', '0.8.29'], // UDC current phased version 0.8.29 | dependency > 0.8.11
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', '0.7.112'], // current phased version 0.7.112 | dependency > 0.7.104
