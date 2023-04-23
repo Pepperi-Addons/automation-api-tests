@@ -501,6 +501,9 @@ const passCreate = process.env.npm_config_pass_create as string;
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         const service = new GeneralService(client);
         const addonName = addon.toUpperCase();
+        let addonEntryUUIDProd = '';
+        let addonEntryUUIDEu = '';
+        let addonEntryUUIDSb = '';
         let addonUUID;
         addonUUID = generalService.convertNameToUUID(addonName);
         if (addonUUID === 'none') {
@@ -536,21 +539,44 @@ const passCreate = process.env.npm_config_pass_create as string;
             ]);
             // debugger;
             //2. validate tested addon is installed on latest available version
-            const latestVersionOfTestedAddon = await generalService.getLatestAvailableVersion(
+            const version = addonName === 'SYNC' || addonName === 'NEBULA' ? '0.5.%' : null;
+            const [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
                 addonUUID,
-                Buffer.from(varPass).toString('base64'),
-                addonName === 'SYNC' ? '0.5.%' : null,
+                varPass,
+                version,
+                'prod',
             );
+            const [latestVersionOfTestedAddonEu, addonEntryUUIDEU] = await generalService.getLatestAvailableVersion(
+                addonUUID,
+                varPassEU,
+                version,
+                'prod',
+            );
+            const [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await generalService.getLatestAvailableVersion(
+                addonUUID,
+                varPassSB,
+                version,
+                'stage',
+            );
+            if (
+                latestVersionOfTestedAddonSb !== latestVersionOfTestedAddonEu ||
+                latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonEu ||
+                latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonSb
+            ) {
+                throw new Error(
+                    `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`,
+                );
+            }
             const isInstalled = await Promise.all([
-                validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddon, 'prod'),
-                validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddon, 'prod'),
-                validateLatestVersionOfAddonIsInstalled(sbUser, addonUUID, latestVersionOfTestedAddon, 'stage'),
+                validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddonEu, 'prod'),
+                validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddonProd, 'prod'),
+                validateLatestVersionOfAddonIsInstalled(sbUser, addonUUID, latestVersionOfTestedAddonSb, 'stage'),
             ]);
             for (let index = 0; index < isInstalled.length; index++) {
                 const isTestedAddonInstalled = isInstalled[index];
                 if (isTestedAddonInstalled === false) {
                     throw new Error(
-                        `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddon}`,
+                        `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddonProd}`,
                     );
                 }
             }
@@ -559,10 +585,11 @@ const passCreate = process.env.npm_config_pass_create as string;
                 isLocal: false,
             };
             //3. run the test on latest version of the template addon
-            const latestVersionOfAutomationTemplateAddon = await generalService.getLatestAvailableVersion(
+            const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
                 '02754342-e0b5-4300-b728-a94ea5e0e8f4',
-                Buffer.from(varPass).toString('base64'),
+                varPass,
             );
+            console.log(entryUUID);
             const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
                 runDevTestOnCertainEnv(euUser, 'prod', latestVersionOfAutomationTemplateAddon, body),
                 runDevTestOnCertainEnv(prodUser, 'prod', latestVersionOfAutomationTemplateAddon, body),
@@ -578,59 +605,63 @@ const passCreate = process.env.npm_config_pass_create as string;
             const testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
             const devPassingEnvs: any[] = [];
             const devFailedEnvs: any[] = [];
-            //4. print the results + report to teams
+            //4. print the results
             const [euResults, prodResults, sbResults] = await Promise.all([
-                printResultsTestObject(testResultArrayEu, euUser, 'prod', addonUUID, latestVersionOfTestedAddon),
-                printResultsTestObject(testResultArrayProd, prodUser, 'prod', addonUUID, latestVersionOfTestedAddon),
-                printResultsTestObject(testResultArraySB, sbUser, 'stage', addonUUID, latestVersionOfTestedAddon),
+                printResultsTestObject(testResultArrayEu, euUser, 'prod', addonUUID, latestVersionOfTestedAddonProd),
+                printResultsTestObject(
+                    testResultArrayProd,
+                    prodUser,
+                    'prod',
+                    addonUUID,
+                    latestVersionOfTestedAddonProd,
+                ),
+                printResultsTestObject(testResultArraySB, sbUser, 'stage', addonUUID, latestVersionOfTestedAddonProd),
             ]);
-            if (euResults) {
+            if (euResults.didSucceed) {
                 devPassingEnvs.push('Eu');
             } else {
                 devFailedEnvs.push('Eu');
             }
-            if (prodResults) {
+            if (prodResults.didSucceed) {
                 devPassingEnvs.push('Production');
             } else {
                 devFailedEnvs.push('Production');
             }
-            if (sbResults) {
+            if (sbResults.didSucceed) {
                 devPassingEnvs.push('Stage');
             } else {
                 devFailedEnvs.push('Stage');
             }
+            debugger;
             //5. un - available this version if needed
             if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
                 const addonToInstall = {};
                 addonToInstall[addonName] = [addonUUID, ''];
-                const addon = await generalService.getLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
+                debugger;
                 await Promise.all([
                     unavailableAddonVersion(
-                        euUser,
                         'prod',
                         addonName,
-                        addon.UUID,
-                        latestVersionOfTestedAddon,
+                        addonEntryUUIDEU,
+                        latestVersionOfTestedAddonProd,
                         addonUUID,
-                        base64VARCredentialsEU,
+                        varPassEU,
                     ),
                     unavailableAddonVersion(
-                        prodUser,
                         'prod',
                         addonName,
-                        addon.UUID,
-                        latestVersionOfTestedAddon,
+                        addonEntryUUIDProd,
+                        latestVersionOfTestedAddonProd,
                         addonUUID,
-                        base64VARCredentialsProd,
+                        varPass,
                     ),
                     unavailableAddonVersion(
-                        sbUser,
                         'stage',
                         addonName,
-                        addon.UUID,
-                        latestVersionOfTestedAddon,
+                        addonEntryUUIDSb,
+                        latestVersionOfTestedAddonProd,
                         addonUUID,
-                        base64VARCredentialsSB,
+                        varPassSB,
                     ),
                 ]);
                 //6. report to Teams
@@ -638,7 +669,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonName,
                     addonUUID,
                     service,
-                    latestVersionOfTestedAddon,
+                    latestVersionOfTestedAddonProd,
                     devPassingEnvs,
                     devFailedEnvs,
                     true,
@@ -657,9 +688,7 @@ const passCreate = process.env.npm_config_pass_create as string;
         let addonVersionProd = '';
         let addonVersionEU = '';
         let addonVersionSb = '';
-        let addonEntryUUIDProd = '';
-        let addonEntryUUIDEu = '';
-        let addonEntryUUIDSb = '';
+
         let latestRunProd = '';
         let latestRunEU = '';
         let latestRunSB = '';
@@ -1571,16 +1600,9 @@ async function setOrderCenterClosedFooter(generalService: GeneralService, OrderC
     }
 }
 
-async function unavailableAddonVersion(
-    userName,
-    env,
-    addonName,
-    addonEntryUUID,
-    addonVersion,
-    addonUUID,
-    base64VARCredentials,
-) {
-    const client = await initiateTester(userName, 'Aa123456', env);
+async function unavailableAddonVersion(env, addonName, addonEntryUUID, addonVersion, addonUUID, varCredentials) {
+    const [varUserName, varPassword] = varCredentials.split(':');
+    const client = await initiateTester(varUserName, varPassword, env);
     const service = new GeneralService(client);
     const bodyToSendVARProd = {
         UUID: addonEntryUUID,
@@ -1588,13 +1610,14 @@ async function unavailableAddonVersion(
         Available: false,
         AddonUUID: addonUUID,
     };
-    const baseURL = env === 'prod' ? 'papi' : userName.includes('eu') ? 'papi-eu' : 'papi.staging';
+    const varCredBase64 = Buffer.from(varCredentials).toString('base64');
+    // const baseURL = env === 'prod' ? 'papi' : userName.includes('eu') ? 'papi-eu' : 'papi.staging';
     const varResponseProd = await service.fetchStatus(
-        `https://${baseURL}.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersion}' AND Available=1`,
+        `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersion}' AND Available=1`,
         {
             method: 'POST',
             headers: {
-                Authorization: `Basic ${base64VARCredentials}`,
+                Authorization: `Basic ${varCredBase64}`,
             },
             body: JSON.stringify(bodyToSendVARProd),
         },
@@ -1686,8 +1709,8 @@ function resolveUserPerTest(addonName): any[] {
         case 'DATA INDEX':
         case 'DATA-INDEX':
             return ['DataIndexEU@pepperitest.com', 'DataIndexProd@pepperitest.com', 'DataIndexSB@pepperitest.com'];
-        case 'NEBULA':
-            return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
+        // case 'NEBULA':
+        //     return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
         case 'ADAL':
             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
         case 'SYNC':

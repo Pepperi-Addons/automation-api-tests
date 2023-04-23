@@ -815,19 +815,23 @@ export default class GeneralService {
         return isInstalledArr;
     }
 
-    async getLatestAvailableVersion(addonUUID: string, credentials: string, versionString?) {
-        const responseProd = await this.fetchStatus(
-            `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 ${
+    async getLatestAvailableVersion(addonUUID: string, varCredentials: string, versionString?, env?) {
+        const [varUserName, varPassword] = varCredentials.split(':');
+        const client = await initiateTester(varUserName, varPassword, env);
+        const service = new GeneralService(client);
+        const varCredBase64 = Buffer.from(varCredentials).toString('base64');
+        const responseProd = await service.fetchStatus(
+            `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 ${
                 versionString ? `AND Version Like '${versionString}' ` : ''
             }&order_by=CreationDateTime DESC`,
             {
                 method: 'GET',
                 headers: {
-                    Authorization: `Basic ${credentials}`,
+                    Authorization: `Basic ${varCredBase64}`,
                 },
             },
         );
-        return responseProd.Body[0].Version;
+        return [responseProd.Body[0].Version, responseProd.Body[0].UUID];
     }
 
     async uninstallAddon(addonUuid: string): Promise<AddonAPIAsyncResult> {
