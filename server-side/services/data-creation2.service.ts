@@ -325,6 +325,8 @@ class ResourceCreation {
         let strData = "";
         strData += headers + "\n";
         let runningCounter = 0;
+        let howMuchEnteries = 0;
+        let flag = false;
         for (let index1 = 0; index1 < this.accounts; index1++) {
             const acc = runningDataAccount.replace('index', index1.toString());
             for (let index2 = 0; index2 < this.divisions; index2++) {
@@ -335,10 +337,17 @@ class ResourceCreation {
                     const value2 = runningDataBasicValue2.replace('index', runningCounter.toString());
                     runningCounter++;
                     strData += `${acc},${div},${comp},${value1},${value2}\n`;
+                    howMuchEnteries++;
+                    if (howMuchEnteries >= howManyDataRows / 2 && !flag) {
+                        this.genrateFile("DataX3Ref1_1", strData);
+                        strData = "";
+                        strData += headers + "\n";
+                        flag = true;
+                    }
                 }
             }
         }
-        this.genrateFile("DataX3Ref1", strData);
+        this.genrateFile("DataX3Ref1_2", strData);
     }
 
     private createLists(howManyDataRows: number) {
@@ -357,7 +366,7 @@ class ResourceCreation {
         console.log(howManyDataRows);
         const headers = "listRef,ItemRef";
         const runningDatalist = "list_index";
-        const runningDataItems = "items_index";
+        const runningDataItems = "items_index#ExternalID";
         let latestItemIndex = 0;
         let strData = "";
         strData += headers + "\n";
