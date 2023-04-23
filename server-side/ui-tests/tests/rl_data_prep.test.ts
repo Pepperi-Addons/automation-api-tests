@@ -15,17 +15,19 @@ export async function RLdataPrep(varPass: string, client: Client) {
     await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade script dependencies
     const testData = {
-        'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', '0.7.69'],
-        'Generic Resources': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '0.5.6'],
-        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.5.1'],
-        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', '0.7.24'],
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.105'],
-        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.10'],
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.31'],
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.5.5'],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.2.36'],
-        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.9.18'],
-        'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', '0.5.3'],
+        'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
+        'Generic Resources': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '0.6.2'],
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.41'],
+        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', '0.8.32'],
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.117'],
+        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.18'],
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.92'],
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.14'],
+        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.11'],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.43'],
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.9.38'],
+        'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', '0.5.10'],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
