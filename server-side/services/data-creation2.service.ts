@@ -131,7 +131,7 @@ class ResourceCreation {
         this.createDataX3Ref1(this.accounts * this.divisions * this.companies);
         this.createLists(this.lists);
         this.createListItems(this.lists * this.items);
-        this.createAccountLists(this.divisions * this.companies * this.accounts * this.lists);
+        this.createAccountLists(this.divisions * this.companies * this.accounts * 15);
     }
 
     // private async genrateTempFile(tempFileName, data) {
@@ -394,6 +394,8 @@ class ResourceCreation {
         let latestItemIndex = 0;
         let strData = "";
         strData += headers + "\n";
+        let howMuchEnteries = 0;
+        let index12 = 0;
         //1. division
         for (let index1 = 0; index1 < this.divisions; index1++) {
             const div = runningDataDivision.replace("index", index1.toString());
@@ -411,10 +413,18 @@ class ResourceCreation {
                             latestItemIndex = 0;
                         }
                         strData += `${div},${comp},${acc},${list}\n`;
+                        howMuchEnteries++;
+                        if (howMuchEnteries >= 100000) {
+                            this.genrateFile(`AccountLists_${index12}`, strData);
+                            index12++;
+                            strData = "";
+                            strData += headers + "\n";
+                            howMuchEnteries = 0;
+                        }
                     }
                 }
             }
         }
-        this.genrateFile("AccountLists", strData);
+        // this.genrateFile("AccountLists_2", strData);
     }
 }
