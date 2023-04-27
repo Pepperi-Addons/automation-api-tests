@@ -21,7 +21,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.41'], // current phased version 0.6.41 | dependency > 0.6.35
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.18'], // Do Not change!
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.14'], // CPI_Node_data current phased version 0.6.14 | dependency > 0.6.11
-        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', '0.8.29'], // UDC current phased version 0.8.29 | dependency > 0.8.11
+        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', '0.8.32'], // UDC current phased version 0.8.29 | dependency > 0.8.11
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', '0.7.112'], // current phased version 0.7.112 | dependency > 0.7.104
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '0.6.2'], // current phased version 0.6.2 | dependency > 0.6.2
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.9.38'], // current phased version 0.9.38 | dependency > 0.9.31
