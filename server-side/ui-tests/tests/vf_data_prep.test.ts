@@ -16,7 +16,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
         VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.117'], // current phased version 17.15.117 | dependency > 17.15.106
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.4'], // CPAS current phased version 17.10.4 | dependency > 17.0.8
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.92'], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.12'], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.6.48'], // current phased version 0.6.48 | dependency > 0.6.41
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.41'], // current phased version 0.6.41 | dependency > 0.6.35
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.18'], // Do Not change!
