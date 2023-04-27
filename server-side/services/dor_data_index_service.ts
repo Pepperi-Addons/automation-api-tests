@@ -1,5 +1,5 @@
 //00000000-0000-0000-0000-00000e1a571c
-import { FindOptions, PapiClient, AddonDataScheme, ElasticSearchDocument } from '@pepperi-addons/papi-sdk';
+import { FindOptions, PapiClient, AddonDataScheme, ElasticSearchDocument, SearchData } from '@pepperi-addons/papi-sdk';
 import GeneralService from './general.service';
 import { v4 as uuid } from 'uuid';
 
@@ -11,9 +11,11 @@ export interface Connector {
     batchUpsertDocuments(documents: any[]): any;
     purgeSchema: () => any;
     getDocuments: (params: FindOptions) => Promise<ElasticSearchDocument[]>;
+    search: (requestBody: any) => Promise<ElasticSearchDocument[] | SearchData<ElasticSearchDocument>>;
     postDocument(arg0: unknown): unknown;
     searchByDSL: (dslQuery: any) => Promise<ElasticSearchDocument[]>;
     getDocumentsFromAbstract: (params: FindOptions) => Promise<ElasticSearchDocument[]>;
+    isShared: () => boolean;
 }
 
 export class DataIndexService {
@@ -96,6 +98,9 @@ export class DataIndexService {
             postDocument: (body: ElasticSearchDocument): Promise<ElasticSearchDocument[]> => {
                 return api.uuid(this.addonUUID).resource(baseSchema.Name).create(body);
             },
+            search: (requestBody: any): Promise<any> => {
+                return api.search(requestBody).uuid(this.addonUUID).resource(baseSchema.Name);
+            },
             searchByDSL: (dslQuery: any): Promise<any> => {
                 return api.search(dslQuery).uuid(this.addonUUID).resource(baseSchema.Name);
             },
@@ -104,6 +109,9 @@ export class DataIndexService {
             },
             purgeSchema: () => {
                 return this.papiClient.post(`/addons/data/schemes/${baseSchema.Name}/purge`);
+            },
+            isShared: () => {
+                return type === 'shared';
             },
         };
     };

@@ -1308,7 +1308,8 @@ export async function handleDevTestInstallation(
         }
     }
     const addonToInstall = {};
-    addonToInstall[addonName] = [addonUUID, addonName === 'SYNC' ? '0.5.%' : ''];
+    const version = addonName === 'SYNC' || addonName === 'NEBULA' ? '0.5.%' : '';
+    addonToInstall[addonName] = [addonUUID, version];
     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
     if (installAddonResponse[0] != true) {
         throw new Error(`Error: can't install ${addonName} - ${addonUUID}, exception: ${installAddonResponse}`);

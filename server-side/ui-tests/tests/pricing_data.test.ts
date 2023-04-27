@@ -16,7 +16,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
         pricing: ['adb3c829-110c-4706-9168-40fba9c0eb52', ''],
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.117'], // current phased version 17.15.117 | dependency > 17.15.106
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.4'], // CPAS current phased version 17.10.4 | dependency > 17.0.8
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.1.92'], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.12'], // CPI_Node current phased version 1.2.12 | dependency > 1.1.85
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.6.48'], // current phased version 0.6.48 | dependency > 0.6.41
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.41'], // current phased version 0.6.41 | dependency > 0.6.35
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.14'], // CPI_Node_data current phased version 0.6.14 | dependency > 0.6.11
@@ -27,8 +27,8 @@ export async function PricingDataPrep(varPass: string, client: Client) {
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', '1.2.11'], // current phased version 1.0.23 | dependency > 1.0.23
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', '0.5.10'], // current phased version 0.5.10 | dependency > 0.5.7
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.6.26'], // current phased version 0.6.26 | dependency > 0.6.3
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.11'], // dependency > 0.2.58
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x , current phased version 9.5.533
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.11'], // dependency > 0.2.58
         Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.43'],
     };
 

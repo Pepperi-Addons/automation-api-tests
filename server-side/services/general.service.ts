@@ -22,7 +22,7 @@ import tester from '../tester';
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on TLS 2 version
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi locked on TLS 2 version
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.18'], //cpapi locked on TLS 2 version, EVGENY: .18 is the version for nebula 0.5
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.%'], //CPAS
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.%'], //cpi-node (Cross Platform Engine)
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
@@ -815,19 +815,23 @@ export default class GeneralService {
         return isInstalledArr;
     }
 
-    async getLatestAvailableVersion(addonUUID: string, credentials: string, versionString?) {
-        const responseProd = await this.fetchStatus(
-            `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 ${
+    async getLatestAvailableVersion(addonUUID: string, varCredentials: string, versionString?, env?) {
+        const [varUserName, varPassword] = varCredentials.split(':');
+        const client = await initiateTester(varUserName, varPassword, env);
+        const service = new GeneralService(client);
+        const varCredBase64 = Buffer.from(varCredentials).toString('base64');
+        const responseProd = await service.fetchStatus(
+            `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 ${
                 versionString ? `AND Version Like '${versionString}' ` : ''
             }&order_by=CreationDateTime DESC`,
             {
                 method: 'GET',
                 headers: {
-                    Authorization: `Basic ${credentials}`,
+                    Authorization: `Basic ${varCredBase64}`,
                 },
             },
         );
-        return responseProd.Body[0].Version;
+        return [responseProd.Body[0].Version, responseProd.Body[0].UUID];
     }
 
     async uninstallAddon(addonUuid: string): Promise<AddonAPIAsyncResult> {
