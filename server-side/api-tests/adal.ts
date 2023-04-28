@@ -74,7 +74,8 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                     expect(createSchemaResponse.Type).to.equal('meta_data');
                     //console.log({ createSchemaResponse: createSchemaResponse });
                     const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
-                    expect(deleteSchemaResponse).to.equal('');
+                    //expect(deleteSchemaResponse).to.equal('');Oleg 27-04-23
+                    expect(deleteSchemaResponse).to.deep.equal({ Done: true, RemovedCounter: 0 });
                     //console.log({deleteSchemaResponse:deleteSchemaResponse})
                 });
 
@@ -108,7 +109,8 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                     expect(createSchemaResponse.Fields?.TestMultipleStringValues.Type).to.equal('MultipleStringValues');
                     //console.log({ createSchemaResponse: createSchemaResponse });
                     const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
-                    expect(deleteSchemaResponse).to.equal('');
+                    //expect(deleteSchemaResponse).to.equal('');Oleg 27-04-23
+                    expect(deleteSchemaResponse).to.deep.equal({ Done: true, RemovedCounter: 0 });
                     //console.log({deleteSchemaResponse:deleteSchemaResponse})
                 });
 
@@ -138,7 +140,8 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                     expect(updateSchemaResponse.Key).to.equal('testKey1');
                     //console.log({ createSchemaResponse: createSchemaResponse });
                     const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
-                    expect(deleteSchemaResponse).to.equal('');
+                    //expect(deleteSchemaResponse).to.equal('');Oleg 27-04-23
+                    expect(deleteSchemaResponse).to.deep.equal({ Done: true, RemovedCounter: 1 });
                     //console.log({deleteSchemaResponse:deleteSchemaResponse})
                 });
             });
