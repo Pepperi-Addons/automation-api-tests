@@ -17,9 +17,10 @@ export async function PricingDataPrep(varPass: string, client: Client) {
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], // current phased version 17.15.117 | dependency > 17.15.106
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''], // CPAS current phased version 17.10.4 | dependency > 17.0.8
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], // CPI_Node current phased version 1.2.12 | dependency > 1.1.85
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''], // CPI_Node_data current phased version 0.6.14 | dependency > 0.6.11
+        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.18'], // Do Not change!
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.7.9'], // current phased version 0.6.48 | dependency > 0.6.41
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.7.36'], // current phased version 0.6.41 | dependency > 0.6.35
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''], // CPI_Node_data current phased version 0.6.14 | dependency > 0.6.11
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], // UDC current phased version 0.8.29 | dependency > 0.8.11
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', '0.7.%'], // current phased version 0.7.112 | dependency > 0.7.104
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''], // current phased version 0.6.2 | dependency > 0.6.2
