@@ -97,7 +97,8 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
         //             );
         //         }
         //         const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
-        //         expect(purgedSchema).to.equal('');
+        //         expect(purgedSchema).to.have.property('Done').that.is.true;
+        //         expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
         //         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaNameArr[index]);
         //         expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
         //     }
