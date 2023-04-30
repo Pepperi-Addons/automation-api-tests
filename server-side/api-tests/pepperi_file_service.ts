@@ -116,7 +116,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const pfsSchema = (await pfsService.getPFSSchema(pfsSchemaNAme)) as any;
                 expect(pfsSchema.Body).to.have.property('Name').a('string').that.is.equal(pfsSchemaNAme);
                 expect(pfsSchema.Body).to.have.property('Type').a('string').that.is.equal('data');
-                expect(pfsSchema.Body).to.have.property('SyncData').that.deep.equals({ Sync: true, PushLocalChanges: false });
+                expect(pfsSchema.Body)
+                    .to.have.property('SyncData')
+                    .that.deep.equals({ Sync: true, PushLocalChanges: false });
                 expect(pfsSchema.Body.Fields).to.have.property('Description');
                 expect(pfsSchema.Body.Fields).to.have.property('MIME');
                 expect(pfsSchema.Body.Fields).to.have.property('Sync');
@@ -234,7 +236,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const mime = 'file/plain';
                 const tempFileResponse = await pfsService.postTempFile({
                     FileName: fileName,
-                    MIME: mime
+                    MIME: mime,
                 });
                 expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
                 expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
@@ -243,18 +245,13 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const sliceStart = 0 - (fileName.length + 37);
                 const sliceEnd = 0 - fileName.length;
                 const manipulatedURL = URL.slice(sliceStart, sliceEnd);
-                const finalURL = URL.replace(manipulatedURL, "");
-                expect(finalURL).to.include(
-                '.pepperi.com/temp/' +
-                distributor.UUID +
-                '/' +
-                fileName);
+                const finalURL = URL.replace(manipulatedURL, '');
+                expect(finalURL).to.include('.pepperi.com/temp/' + distributor.UUID + '/' + fileName);
             });
 
             it(`Multipart upload`, async () => {
                 const fileName = 'MultiPartFile' + Math.floor(Math.random() * 1000000).toString() + '.csv';
-                const tempFile1 = await pfsService.postTempFile({
-                });
+                const tempFile1 = await pfsService.postTempFile({});
                 expect(tempFile1).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
                 expect(tempFile1).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
                 expect(tempFile1.TemporaryFileURL).to.include('pfs.');
@@ -264,9 +261,8 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const putResponsePart1 = await pfsService.putPresignedURL(tempFile1.PutURL, putPart1);
                 expect(putResponsePart1.ok).to.equal(true);
                 expect(putResponsePart1.status).to.equal(200);
-                
-                const tempFile2 = await pfsService.postTempFile({
-                });
+
+                const tempFile2 = await pfsService.postTempFile({});
                 expect(tempFile2).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
                 expect(tempFile2).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
                 expect(tempFile2.TemporaryFileURL).to.include('pfs.');
@@ -276,9 +272,8 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const putResponsePart2 = await pfsService.putPresignedURL(tempFile2.PutURL, putPart2);
                 expect(putResponsePart2.ok).to.equal(true);
                 expect(putResponsePart2.status).to.equal(200);
-                
-                const tempFile3 = await pfsService.postTempFile({
-                });
+
+                const tempFile3 = await pfsService.postTempFile({});
                 expect(tempFile3).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
                 expect(tempFile3).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
                 expect(tempFile3.TemporaryFileURL).to.include('pfs.');
@@ -292,16 +287,24 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const postMultiPartFile1Response = await pfsService.postFile(schemaName, {
                     Key: fileName,
                     MIME: 'application/vnd.ms-excel',
-                    TemporaryFileURLs: [tempFile1.TemporaryFileURL, tempFile2.TemporaryFileURL, tempFile3.TemporaryFileURL]
+                    TemporaryFileURLs: [
+                        tempFile1.TemporaryFileURL,
+                        tempFile2.TemporaryFileURL,
+                        tempFile3.TemporaryFileURL,
+                    ],
                 });
                 expect(postMultiPartFile1Response.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(postMultiPartFile1Response.CreationDateTime).to.include('Z');
-                expect(postMultiPartFile1Response.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(postMultiPartFile1Response.ModificationDateTime).to.include(
+                    new Date().toISOString().split('T')[0],
+                );
                 expect(postMultiPartFile1Response.ModificationDateTime).to.include('Z');
                 expect(postMultiPartFile1Response.Folder).to.equal('/');
                 expect(postMultiPartFile1Response.Key).to.equal(fileName);
                 const MultiPartfile = await pfsService.getFileFromURL(postMultiPartFile1Response.URL);
-                const Completefile = await pfsService.getFileFromURL('https://pfs.staging.pepperi.com/testsData/organizations-100000.csv');
+                const Completefile = await pfsService.getFileFromURL(
+                    'https://pfs.staging.pepperi.com/testsData/organizations-100000.csv',
+                );
                 expect(Completefile).to.deep.equal(MultiPartfile);
                 const deletedFileResponse = await pfsService.deleteFile(schemaName, fileName);
                 expect(deletedFileResponse.Key).to.equal(fileName);
@@ -310,7 +313,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
             it(`Post file with space in name`, async () => {
                 const tempKey = 'Name with spaces' + Math.floor(Math.random() * 1000000).toString() + '.txt';
-                const tempKeyNoSpaces = tempKey.replace(/ /g,'%20');
+                const tempKeyNoSpaces = tempKey.replace(/ /g, '%20');
                 const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
                 const postFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
@@ -1016,7 +1019,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             // });
 
             it(`Validate indexed fields - MIME`, async () => {
-                const mimeIndexResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', { order_by: 'MIME' });
+                const mimeIndexResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
+                    order_by: 'MIME',
+                });
                 expect(mimeIndexResponse).to.be.an('array').with.length.above(0);
             });
 
@@ -1195,7 +1200,11 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                         tempKey,
                 );
                 expect(postFileResponse).to.have.property('PresignedURL').that.is.a('string').and.is.not.empty;
-                const putResponse = await pfsService.putPresignedURL(postFileResponse.PresignedURL, putImage, 'image/jpeg');
+                const putResponse = await pfsService.putPresignedURL(
+                    postFileResponse.PresignedURL,
+                    putImage,
+                    'image/jpeg',
+                );
                 expect(putResponse.ok).to.equal(true);
                 expect(putResponse.status).to.equal(200);
                 const presignedPutFile = await pfsService.getFileFromURL(postFileResponse.URL);

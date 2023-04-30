@@ -16,7 +16,7 @@ interface QueryOptions {
     is_distinct?: boolean;
 }
 
-const indexingHeader = { 'x-pepperi-await-indexing': true};
+const indexingHeader = { 'x-pepperi-await-indexing': true };
 
 export class PFSService {
     papiClient: PapiClient;
@@ -28,11 +28,19 @@ export class PFSService {
     }
 
     postFile(schemaName, file: any) {
-        return this.papiClient.post('/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName, file, indexingHeader);
+        return this.papiClient.post(
+            '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName,
+            file,
+            indexingHeader,
+        );
     }
 
-    postTempFile(body){
-        return this.papiClient.post('/addons/api/00000000-0000-0000-0000-0000000f11e5/api/temporary_file', body, indexingHeader)
+    postTempFile(body) {
+        return this.papiClient.post(
+            '/addons/api/00000000-0000-0000-0000-0000000f11e5/api/temporary_file',
+            body,
+            indexingHeader,
+        );
     }
 
     invalidate(schemaName, key) {
@@ -50,11 +58,14 @@ export class PFSService {
     }
 
     deleteFile(schemaName, key: any) {
-        return this.papiClient.post('/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName, {
-            Key: key,
-            Hidden: 'true',
-        },
-        indexingHeader);
+        return this.papiClient.post(
+            '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName,
+            {
+                Key: key,
+                Hidden: 'true',
+            },
+            indexingHeader,
+        );
     }
 
     getFile(schemaName, path: string) {
@@ -105,9 +116,11 @@ export class PFSService {
     async putPresignedURL(url, body, ContentType?) {
         return await fetch(url, {
             method: 'PUT',
-            ...(ContentType && {headers: {
-                'Content-Type': ContentType,
-            },}),
+            ...(ContentType && {
+                headers: {
+                    'Content-Type': ContentType,
+                },
+            }),
             body: body,
         });
     }
@@ -171,7 +184,7 @@ export class PFSService {
             headers: {
                 'X-Pepperi-OwnerID': '00000000-0000-0000-0000-0000000f11e5',
                 'X-Pepperi-SecretKey': key,
-                'x-pepperi-await-indexing': 'true'
+                'x-pepperi-await-indexing': 'true',
             },
         });
     }
@@ -180,7 +193,7 @@ export class PFSService {
         return this.papiClient.post(
             '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testing_transaction=stop_after_lock',
             file,
-            indexingHeader
+            indexingHeader,
         );
     }
 
@@ -188,7 +201,7 @@ export class PFSService {
         return this.papiClient.post(
             '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testing_transaction=stop_after_S3',
             file,
-            indexingHeader
+            indexingHeader,
         );
     }
 
@@ -196,7 +209,7 @@ export class PFSService {
         return this.papiClient.post(
             '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testing_transaction=stop_after_ADAL',
             file,
-            indexingHeader
+            indexingHeader,
         );
     }
 
@@ -204,7 +217,7 @@ export class PFSService {
         return this.papiClient.post(
             '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testRollback=true',
             file,
-            indexingHeader
+            indexingHeader,
         );
     }
 }
