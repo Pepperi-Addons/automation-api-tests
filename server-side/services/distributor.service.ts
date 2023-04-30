@@ -29,7 +29,6 @@ export class DistributorService {
     }
 
     async createDistributor(Distributor: DistributorObject) {
-        debugger;
         let newDistributor;
         let maxLoopsCounter = 16;
         console.log("NOTICE: 'var/distributors/create' API call started - Expected up to 8 minutes wait time");

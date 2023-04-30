@@ -16,6 +16,8 @@ interface QueryOptions {
     is_distinct?: boolean;
 }
 
+const indexingHeader = { 'x-pepperi-await-indexing': true};
+
 export class PFSService {
     papiClient: PapiClient;
     generalService: GeneralService;
@@ -26,7 +28,11 @@ export class PFSService {
     }
 
     postFile(schemaName, file: any) {
-        return this.papiClient.post('/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName, file);
+        return this.papiClient.post('/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName, file, indexingHeader);
+    }
+
+    postTempFile(body){
+        return this.papiClient.post('/addons/api/00000000-0000-0000-0000-0000000f11e5/api/temporary_file', body, indexingHeader)
     }
 
     invalidate(schemaName, key) {
@@ -40,24 +46,22 @@ export class PFSService {
     }
 
     postFileNegative(file: any) {
-        return this.papiClient.post('/addons/pfs/', file);
+        return this.papiClient.post('/addons/pfs/', file, indexingHeader);
     }
 
     deleteFile(schemaName, key: any) {
-        this.generalService.sleep(5000);
         return this.papiClient.post('/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName, {
             Key: key,
             Hidden: 'true',
-        });
+        },
+        indexingHeader);
     }
 
     getFile(schemaName, path: string) {
-        this.generalService.sleep(5000);
         return this.papiClient.get(`/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${schemaName}/${path}`);
     }
 
     getFileSDK(schemaName, path: string) {
-        this.generalService.sleep(5000);
         return this.papiClient.addons.pfs
             .uuid('eb26afcd-3cf2-482e-9ab1-b53c41a6adbe')
             .schema(schemaName)
@@ -66,7 +70,6 @@ export class PFSService {
     }
 
     getFilesList(schemaName, path: string, options?: QueryOptions) {
-        this.generalService.sleep(5000);
         let url = `/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${schemaName}?folder=${path}`;
         if (options) {
             url = this.addQueryAndOptions(url, options);
@@ -88,7 +91,6 @@ export class PFSService {
     }
 
     async getFileFromURL(url) {
-        this.generalService.sleep(5000);
         const response = await fetch(url, { method: `GET` });
         const arrayData = await response.arrayBuffer();
         const buf = Buffer.from(arrayData);
@@ -96,23 +98,21 @@ export class PFSService {
     }
 
     async getFileFromURLNoBuffer(url) {
-        this.generalService.sleep(5000);
         const response = await this.generalService.fetchStatus(url, { method: `GET` });
         return response;
     }
 
-    async putPresignedURL(url, body) {
+    async putPresignedURL(url, body, ContentType?) {
         return await fetch(url, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'image/jpeg',
-            },
+            ...(ContentType && {headers: {
+                'Content-Type': ContentType,
+            },}),
             body: body,
         });
     }
 
     async getFileAfterDelete(url) {
-        this.generalService.sleep(5000);
         return await this.generalService
             .fetchStatus(url, {
                 method: 'GET',
@@ -171,6 +171,7 @@ export class PFSService {
             headers: {
                 'X-Pepperi-OwnerID': '00000000-0000-0000-0000-0000000f11e5',
                 'X-Pepperi-SecretKey': key,
+                'x-pepperi-await-indexing': 'true'
             },
         });
     }
@@ -179,6 +180,7 @@ export class PFSService {
         return this.papiClient.post(
             '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testing_transaction=stop_after_lock',
             file,
+            indexingHeader
         );
     }
 
@@ -186,6 +188,7 @@ export class PFSService {
         return this.papiClient.post(
             '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testing_transaction=stop_after_S3',
             file,
+            indexingHeader
         );
     }
 
@@ -193,6 +196,7 @@ export class PFSService {
         return this.papiClient.post(
             '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testing_transaction=stop_after_ADAL',
             file,
+            indexingHeader
         );
     }
 
@@ -200,6 +204,7 @@ export class PFSService {
         return this.papiClient.post(
             '/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' + schemaName + '?testRollback=true',
             file,
+            indexingHeader
         );
     }
 }

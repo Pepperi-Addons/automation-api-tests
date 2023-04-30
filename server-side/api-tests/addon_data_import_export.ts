@@ -352,7 +352,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 } as any,
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -406,8 +407,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                             ? 'pfs.staging.pepperi'
                             : generalService['client'].BaseURL.includes('papi-eu')
-                            ? 'eupfs.pepperi'
-                            : 'pfs.pepperi';
+                                ? 'eupfs.pepperi'
+                                : 'pfs.pepperi';
                         expect(
                             dimxExportDefult.AuditInfo.ResultObject,
                             JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
@@ -510,8 +511,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                             ? 'cdn.staging.pepperi'
                             : generalService['client'].BaseURL.includes('papi-eu')
-                            ? 'eucdn.pepperi'
-                            : 'cdn.pepperi';
+                                ? 'eucdn.pepperi'
+                                : 'cdn.pepperi';
                         expect(
                             dimxExportDefult.AuditInfo.ResultObject,
                             JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
@@ -552,8 +553,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                             ? 'cdn.staging.pepperi'
                             : generalService['client'].BaseURL.includes('papi-eu')
-                            ? 'eucdn.pepperi'
-                            : 'cdn.pepperi';
+                                ? 'eucdn.pepperi'
+                                : 'cdn.pepperi';
                         expect(
                             dimxExportDefult.AuditInfo.ResultObject,
                             JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
@@ -641,8 +642,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                             ? 'cdn.staging.pepperi'
                             : generalService['client'].BaseURL.includes('papi-eu')
-                            ? 'eucdn.pepperi'
-                            : 'cdn.pepperi';
+                                ? 'eucdn.pepperi'
+                                : 'cdn.pepperi';
                         expect(
                             dimxExportDefult.AuditInfo.ResultObject,
                             JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
@@ -760,7 +761,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 } as any,
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -813,8 +815,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                             ? 'pfs.staging.pepperi'
                             : generalService['client'].BaseURL.includes('papi-eu')
-                            ? 'eupfs.pepperi'
-                            : 'pfs.pepperi';
+                                ? 'eupfs.pepperi'
+                                : 'pfs.pepperi';
                         expect(
                             dimxExportCsv.AuditInfo.ResultObject,
                             JSON.stringify(dimxExportCsv.AuditInfo.ResultObject),
@@ -831,9 +833,9 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             JSON.stringify(dimxExportCsv.AuditInfo.ResultObject),
                         ).to.equal(
                             'Description;Column1;Name;Key\n' +
-                                `DIMX_Test 1;['Value1','Value2','Value3'];DIMX_Test;testKeyDIMX1\n` +
-                                `DIMX_Test 2;['Value1','Value2','Value3'];DIMX_Test;testKeyDIMX2\n` +
-                                `DIMX_Test 3;['Value1','Value2','Value3'];DIMX_Test;testKeyDIMX3`,
+                            `DIMX_Test 1;['Value1','Value2','Value3'];DIMX_Test;testKeyDIMX1\n` +
+                            `DIMX_Test 2;['Value1','Value2','Value3'];DIMX_Test;testKeyDIMX2\n` +
+                            `DIMX_Test 3;['Value1','Value2','Value3'];DIMX_Test;testKeyDIMX3`,
                         );
                     });
 
@@ -866,12 +868,12 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             // Changed to not use local files, but always the same content
                             base64File = Buffer.from(
                                 'object.Array.0,object.Array.1,object.Array.2,object.Object.Value3,object.Object.Value1,object.Object.Value2,object.String,Description,Column1.0,Column1.1,Column1.2,Name,Key\n' +
-                                    'Value1,Value2,Value3,3,1,2,DIMX_Test 0,DIMX_Test 0,Value1,Value2,Value3,DIMX_Test,testKeyDIMX0\n' +
-                                    'Value1,Value2,Value3,3,1,2,DIMX_Test 1,DIMX_Test 1,Value1,Value2,Value3,DIMX_Test,testKeyDIMX1\n' +
-                                    'Value1,Value2,Value3,3,1,2,DIMX_Test 2,DIMX_Test 2,Value1,Value2,Value3,DIMX_Test,testKeyDIMX2\n' +
-                                    'Value1,Value2,Value3,3,1,2,DIMX_Test 3,DIMX_Test 3,Value1,Value2,Value3,DIMX_Test,testKeyDIMX3\n' +
-                                    'Value1,Value2,Value3,3,1,2,DIMX_Test 4,DIMX_Test 4,Value1,Value2,Value3,DIMX_Test,testKeyDIMX4\n' +
-                                    'Value1,Value2,Value3,3,1,2,DIMX_Test 5,DIMX_Test 5,Value1,Value2,Value3,DIMX_Test,testKeyDIMX5',
+                                'Value1,Value2,Value3,3,1,2,DIMX_Test 0,DIMX_Test 0,Value1,Value2,Value3,DIMX_Test,testKeyDIMX0\n' +
+                                'Value1,Value2,Value3,3,1,2,DIMX_Test 1,DIMX_Test 1,Value1,Value2,Value3,DIMX_Test,testKeyDIMX1\n' +
+                                'Value1,Value2,Value3,3,1,2,DIMX_Test 2,DIMX_Test 2,Value1,Value2,Value3,DIMX_Test,testKeyDIMX2\n' +
+                                'Value1,Value2,Value3,3,1,2,DIMX_Test 3,DIMX_Test 3,Value1,Value2,Value3,DIMX_Test,testKeyDIMX3\n' +
+                                'Value1,Value2,Value3,3,1,2,DIMX_Test 4,DIMX_Test 4,Value1,Value2,Value3,DIMX_Test,testKeyDIMX4\n' +
+                                'Value1,Value2,Value3,3,1,2,DIMX_Test 5,DIMX_Test 5,Value1,Value2,Value3,DIMX_Test,testKeyDIMX5',
                             ).toString('base64');
                         }
 
@@ -913,8 +915,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                             ? 'cdn.staging.pepperi'
                             : generalService['client'].BaseURL.includes('papi-eu')
-                            ? 'eucdn.pepperi'
-                            : 'cdn.pepperi';
+                                ? 'eucdn.pepperi'
+                                : 'cdn.pepperi';
                         expect(
                             dimxExportCsv.AuditInfo.ResultObject,
                             JSON.stringify(dimxExportCsv.AuditInfo.ResultObject),
@@ -952,8 +954,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                             ? 'cdn.staging.pepperi'
                             : generalService['client'].BaseURL.includes('papi-eu')
-                            ? 'eucdn.pepperi'
-                            : 'cdn.pepperi';
+                                ? 'eucdn.pepperi'
+                                : 'cdn.pepperi';
                         expect(
                             dimxExportCsv.AuditInfo.ResultObject,
                             JSON.stringify(dimxExportCsv.AuditInfo.ResultObject),
@@ -1094,7 +1096,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 } as any,
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -1112,8 +1115,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                             ? 'pfs.staging.pepperi'
                             : generalService['client'].BaseURL.includes('papi-eu')
-                            ? 'eupfs.pepperi'
-                            : 'pfs.pepperi';
+                                ? 'eupfs.pepperi'
+                                : 'pfs.pepperi';
                         expect(
                             dimxExportDefult.AuditInfo.ResultObject,
                             JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
@@ -1206,7 +1209,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 } as any,
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -1224,8 +1228,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                             ? 'pfs.staging.pepperi'
                             : generalService['client'].BaseURL.includes('papi-eu')
-                            ? 'eupfs.pepperi'
-                            : 'pfs.pepperi';
+                                ? 'eupfs.pepperi'
+                                : 'pfs.pepperi';
                         expect(
                             dimxExportDefult.AuditInfo.ResultObject,
                             JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
@@ -1292,8 +1296,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                         ? 'pfs.staging.pepperi'
                                         : generalService['client'].BaseURL.includes('papi-eu')
-                                        ? 'eupfs.pepperi'
-                                        : 'pfs.pepperi';
+                                            ? 'eupfs.pepperi'
+                                            : 'pfs.pepperi';
                                     expect(
                                         dimxExportDefult.AuditInfo.ResultObject,
                                         JSON.stringify(dimxExportDefult.AuditInfo.ResultObject),
@@ -1417,7 +1421,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         } as any,
                                     },
                                 });
-                                expect(purgedSchema).to.equal('');
+                                expect(purgedSchema).to.have.property('Done').that.is.true;
+                                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                             });
@@ -1474,8 +1479,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                     ? 'pfs.staging.pepperi'
                                     : generalService['client'].BaseURL.includes('papi-eu')
-                                    ? 'eupfs.pepperi'
-                                    : 'pfs.pepperi';
+                                        ? 'eupfs.pepperi'
+                                        : 'pfs.pepperi';
                                 expect(
                                     dimxExport.AuditInfo.ResultObject,
                                     JSON.stringify(dimxExport.AuditInfo.ResultObject),
@@ -1621,8 +1626,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                     ? 'pfs.staging.pepperi'
                                     : generalService['client'].BaseURL.includes('papi-eu')
-                                    ? 'eupfs.pepperi'
-                                    : 'pfs.pepperi';
+                                        ? 'eupfs.pepperi'
+                                        : 'pfs.pepperi';
                                 expect(
                                     dimxExportAfterChange.AuditInfo.ResultObject,
                                     JSON.stringify(dimxExportAfterChange.AuditInfo.ResultObject),
@@ -1743,8 +1748,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                     ? 'cdn.staging.pepperi'
                                     : generalService['client'].BaseURL.includes('papi-eu')
-                                    ? 'eucdn.pepperi'
-                                    : 'cdn.pepperi';
+                                        ? 'eucdn.pepperi'
+                                        : 'cdn.pepperi';
                                 expect(
                                     dimxImport.AuditInfo.ResultObject,
                                     JSON.stringify(dimxImport.AuditInfo.ResultObject),
@@ -1789,8 +1794,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                     ? 'pfs.staging.pepperi'
                                     : generalService['client'].BaseURL.includes('papi-eu')
-                                    ? 'eupfs.pepperi'
-                                    : 'pfs.pepperi';
+                                        ? 'eupfs.pepperi'
+                                        : 'pfs.pepperi';
                                 expect(
                                     dimxExportAfterRestore.AuditInfo.ResultObject,
                                     JSON.stringify(dimxExportAfterRestore.AuditInfo.ResultObject),
@@ -1950,7 +1955,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         } as any,
                                     },
                                 });
-                                expect(purgedSchema).to.equal('');
+                                expect(purgedSchema).to.have.property('Done').that.is.true;
+                                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                             });
@@ -1973,8 +1979,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                     ? 'cdn.staging.pepperi'
                                     : generalService['client'].BaseURL.includes('papi-eu')
-                                    ? 'eucdn.pepperi'
-                                    : 'cdn.pepperi';
+                                        ? 'eucdn.pepperi'
+                                        : 'cdn.pepperi';
                                 expect(
                                     dimxImportInsert.AuditInfo.ResultObject,
                                     JSON.stringify(dimxImportInsert.AuditInfo.ResultObject),
@@ -2019,8 +2025,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                     ? 'pfs.staging.pepperi'
                                     : generalService['client'].BaseURL.includes('papi-eu')
-                                    ? 'eupfs.pepperi'
-                                    : 'pfs.pepperi';
+                                        ? 'eupfs.pepperi'
+                                        : 'pfs.pepperi';
                                 expect(
                                     dimxExportAfterInsert.AuditInfo.ResultObject,
                                     JSON.stringify(dimxExportAfterInsert.AuditInfo.ResultObject),
@@ -2199,7 +2205,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 } as any,
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -2277,8 +2284,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                 ? 'pfs.staging.pepperi'
                                 : generalService['client'].BaseURL.includes('papi-eu')
-                                ? 'eupfs.pepperi'
-                                : 'pfs.pepperi';
+                                    ? 'eupfs.pepperi'
+                                    : 'pfs.pepperi';
                             expect(
                                 dimxExport.AuditInfo.ResultObject,
                                 JSON.stringify(dimxExport.AuditInfo.ResultObject),
@@ -2450,7 +2457,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     } as any,
                                 },
                             });
-                            expect(purgedSchema).to.equal('');
+                            expect(purgedSchema).to.have.property('Done').that.is.true;
+                            expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                         });
@@ -2538,8 +2546,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                 ? 'pfs.staging.pepperi'
                                 : generalService['client'].BaseURL.includes('papi-eu')
-                                ? 'eupfs.pepperi'
-                                : 'pfs.pepperi';
+                                    ? 'eupfs.pepperi'
+                                    : 'pfs.pepperi';
                             expect(
                                 dimxExport.AuditInfo.ResultObject,
                                 JSON.stringify(dimxExport.AuditInfo.ResultObject),
@@ -2584,8 +2592,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                 ? 'cdn.staging.pepperi'
                                 : generalService['client'].BaseURL.includes('papi-eu')
-                                ? 'eucdn.pepperi'
-                                : 'cdn.pepperi';
+                                    ? 'eucdn.pepperi'
+                                    : 'cdn.pepperi';
                             expect(
                                 dimxImportAfterNoChange.AuditInfo.ResultObject,
                                 JSON.stringify(dimxImportAfterNoChange.AuditInfo.ResultObject),
@@ -2711,8 +2719,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                     ? 'cdn.staging.pepperi'
                                     : generalService['client'].BaseURL.includes('papi-eu')
-                                    ? 'eucdn.pepperi'
-                                    : 'cdn.pepperi';
+                                        ? 'eucdn.pepperi'
+                                        : 'cdn.pepperi';
                                 expect(
                                     dimxImportAfterChange.AuditInfo.ResultObject,
                                     JSON.stringify(dimxImportAfterChange.AuditInfo.ResultObject),
@@ -2789,7 +2797,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Key: { Type: 'String' },
                                 },
                             });
-                            expect(purgedSchema).to.equal('');
+                            expect(purgedSchema).to.have.property('Done').that.is.true;
+                            expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                         });
@@ -3090,7 +3099,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         } as any,
                                     },
                                 });
-                                expect(purgedSchema).to.equal('');
+                                expect(purgedSchema).to.have.property('Done').that.is.true;
+                                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                             });
@@ -3178,8 +3188,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                     ? 'pfs.staging.pepperi'
                                     : generalService['client'].BaseURL.includes('papi-eu')
-                                    ? 'eupfs.pepperi'
-                                    : 'pfs.pepperi';
+                                        ? 'eupfs.pepperi'
+                                        : 'pfs.pepperi';
                                 expect(
                                     dimxExportBefore.AuditInfo.ResultObject,
                                     JSON.stringify(dimxExportBefore.AuditInfo.ResultObject),
@@ -3224,8 +3234,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                     ? 'cdn.staging.pepperi'
                                     : generalService['client'].BaseURL.includes('papi-eu')
-                                    ? 'eucdn.pepperi'
-                                    : 'cdn.pepperi';
+                                        ? 'eucdn.pepperi'
+                                        : 'cdn.pepperi';
                                 expect(
                                     dimxImportAfterNoChange.AuditInfo.ResultObject,
                                     JSON.stringify(dimxImportAfterNoChange.AuditInfo.ResultObject),
@@ -3278,8 +3288,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                     ? 'pfs.staging.pepperi'
                                     : generalService['client'].BaseURL.includes('papi-eu')
-                                    ? 'eupfs.pepperi'
-                                    : 'pfs.pepperi';
+                                        ? 'eupfs.pepperi'
+                                        : 'pfs.pepperi';
                                 expect(
                                     dimxExportAfterChange.AuditInfo.ResultObject,
                                     JSON.stringify(dimxExportAfterChange.AuditInfo.ResultObject),
@@ -3426,7 +3436,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 //                 } as any,
                 //             },
                 //         });
-                //         expect(purgedSchema).to.equal('');
+                //         expect(purgedSchema).to.have.property('Done').that.is.true;
+                //         expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                 //         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                 //         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                 //     });
@@ -3690,7 +3701,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 },
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -3779,7 +3791,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Key: { Type: 'String' },
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -3816,8 +3829,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                             ? 'pfs.staging.pepperi'
                             : generalService['client'].BaseURL.includes('papi-eu')
-                            ? 'eupfs.pepperi'
-                            : 'pfs.pepperi';
+                                ? 'eupfs.pepperi'
+                                : 'pfs.pepperi';
 
                         const recursiveExportResponse = JSON.parse(dimxExportDefult.AuditInfo.ResultObject);
                         recursiveExportURI = recursiveExportResponse.URI;
@@ -4340,7 +4353,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //                     },
             //                 },
             //             });
-            //             expect(purgedSchema).to.equal('');
+            //             expect(purgedSchema).to.have.property('Done').that.is.true;
+            //             expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
             //             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
             //             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
             //         });
@@ -4429,7 +4443,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //                     Key: { Type: 'String' },
             //                 },
             //             });
-            //             expect(purgedSchema).to.equal('');
+            //             expect(purgedSchema).to.have.property('Done').that.is.true;
+            //             expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
             //             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
             //             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
             //         });
@@ -4839,6 +4854,10 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     { SchemaSize: 2000, Sufix: 'csv', Name: '2000CSV' },
                     { SchemaSize: 8000, Sufix: 'json', Name: '8000JSON' },
                     { SchemaSize: 8000, Sufix: 'csv', Name: '8000CSV' },
+                    { SchemaSize: 32768, Sufix: 'json', Name: '32768JSON' },
+                    { SchemaSize: 32769, Sufix: 'json', Name: '32769JSON' },
+                    { SchemaSize: 32768, Sufix: 'csv', Name: '32768CSV' },
+                    { SchemaSize: 50000, Sufix: 'csv', Name: '50000CSV' },
                     // { SchemaSize: 9500, Sufix: 'json', Name: '9500JSON' },
                     // { SchemaSize: 9500, Sufix: 'csv', Name: '9500CSV' },
                     // { SchemaSize: 9501, Sufix: 'json', Name: '9501JSON' },
@@ -4859,6 +4878,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         let dimxImportAfterChange;
                         let dimxExportAfterChange;
                         it(`Reset Schema`, async () => {
+                            debugger;
                             const adalService = new ADALService(generalService.papiClient);
                             adalService.papiClient['options'].addonUUID = addonUUID;
                             adalService.papiClient['options'].addonSecretKey = secretKey;
@@ -4906,7 +4926,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     } as any,
                                 },
                             });
-                            expect(purgedSchema).to.equal('');
+                            expect(purgedSchema).to.have.property('Done').that.is.true;
+                            expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                         });
@@ -4951,7 +4972,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const start = performance.now();
                             dimxExportOriginal = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
-                                90,
+                                200,
                             );
                             const end = performance.now();
                             dimxExportExportChangeImportExportAfterResultArr[i] = {
@@ -4965,8 +4986,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                 ? 'pfs.staging.pepperi'
                                 : generalService['client'].BaseURL.includes('papi-eu')
-                                ? 'eupfs.pepperi'
-                                : 'pfs.pepperi';
+                                    ? 'eupfs.pepperi'
+                                    : 'pfs.pepperi';
                             expect(
                                 dimxExportOriginal.AuditInfo.ResultObject,
                                 JSON.stringify(dimxExportOriginal.AuditInfo.ResultObject),
@@ -5057,7 +5078,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const start = performance.now();
                             dimxExportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
-                                90,
+                                200,
                             );
                             const end = performance.now();
                             dimxExportExportChangeImportExportAfterResultArr[i] = {
@@ -5071,8 +5092,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                 ? 'pfs.staging.pepperi'
                                 : generalService['client'].BaseURL.includes('papi-eu')
-                                ? 'eupfs.pepperi'
-                                : 'pfs.pepperi';
+                                    ? 'eupfs.pepperi'
+                                    : 'pfs.pepperi';
 
                             expect(
                                 dimxExportAfterChange.AuditInfo.ResultObject,
@@ -5139,7 +5160,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const start = performance.now();
                             dimxImportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
-                                90,
+                                200,
                             );
                             const end = performance.now();
                             dimxExportExportChangeImportExportAfterResultArr[i] = {
@@ -5154,8 +5175,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                 ? 'cdn.staging.pepperi'
                                 : generalService['client'].BaseURL.includes('papi-eu')
-                                ? 'eucdn.pepperi'
-                                : 'cdn.pepperi';
+                                    ? 'eucdn.pepperi'
+                                    : 'cdn.pepperi';
                             expect(
                                 dimxImportAfterChange.AuditInfo.ResultObject,
                                 JSON.stringify(dimxImportAfterChange.AuditInfo.ResultObject),
@@ -5192,7 +5213,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const start = performance.now();
                             dimxExportOriginal = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
-                                90,
+                                200,
                             );
                             const end = performance.now();
                             dimxExportExportChangeImportExportAfterResultArr[i] = {
@@ -5208,8 +5229,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const testResponseEnvironment = generalService['client'].BaseURL.includes('staging')
                                 ? 'pfs.staging.pepperi'
                                 : generalService['client'].BaseURL.includes('papi-eu')
-                                ? 'eupfs.pepperi'
-                                : 'pfs.pepperi';
+                                    ? 'eupfs.pepperi'
+                                    : 'pfs.pepperi';
                             expect(
                                 dimxExportOriginal.AuditInfo.ResultObject,
                                 JSON.stringify(dimxExportOriginal.AuditInfo.ResultObject),
@@ -5284,8 +5305,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Number(dimxExportExportChangeImportExportAfterResultArr[0].Export) * diffFromBase,
                             );
                             console.log(
-                                `ExportChange ${
-                                    dimxExportExportChangeImportExportAfterResultArr[i].ExportChange
+                                `ExportChange ${dimxExportExportChangeImportExportAfterResultArr[i].ExportChange
                                 } below ${(
                                     Number(dimxExportExportChangeImportExportAfterResultArr[0].ExportChange) *
                                     diffFromBase
@@ -5309,8 +5329,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Number(dimxExportExportChangeImportExportAfterResultArr[0].Import) * diffFromBase,
                             );
                             console.log(
-                                `ExportAfter ${
-                                    dimxExportExportChangeImportExportAfterResultArr[i].ExportAfter
+                                `ExportAfter ${dimxExportExportChangeImportExportAfterResultArr[i].ExportAfter
                                 } below ${(
                                     Number(dimxExportExportChangeImportExportAfterResultArr[0].ExportAfter) *
                                     diffFromBase
