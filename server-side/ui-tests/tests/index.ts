@@ -20,6 +20,7 @@ import { VisitFlowTests } from './visit_flow.test';
 import { VFdataPrep } from './vf_data_prep.test';
 import { SurveyTests } from './survey.test';
 import { PricingTests } from './pricing.test';
+import { PricingDataPrep } from './pricing_data.test';
 
 export {
     LoginTests,
@@ -44,4 +45,5 @@ export {
     MockTest,
     SurveyTests,
     PricingTests,
+    PricingDataPrep,
 };

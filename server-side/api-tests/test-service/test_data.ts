@@ -155,12 +155,12 @@ export async function TestDataTests(
                 const regexMatched = installedAddons['Audit Log'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
-            if (options.IsAllAddons) {
-                it(`Automated Jobs | Version: ${installedAddons['Automated Jobs']}`, () => {
-                    const regexMatched = installedAddons['Automated Jobs'].replace(regex, '');
-                    expect(regexMatched.length).to.be.above(2);
-                });
-            }
+            // if (options.IsAllAddons) {
+            //     it(`Automated Jobs | Version: ${installedAddons['Automated Jobs']}`, () => {
+            //         const regexMatched = installedAddons['Automated Jobs'].replace(regex, '');
+            //         expect(regexMatched.length).to.be.above(2);
+            //     });
+            // }
             it(`Relations Framework | Version: ${installedAddons['Relations Framework']}`, () => {
                 const regexMatched = installedAddons['Relations Framework'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);

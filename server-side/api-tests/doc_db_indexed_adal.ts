@@ -158,6 +158,9 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             });
         });
         describe('Search by KeyList(on elastic) and SuperTypes verification', () => {
+            it('DI-23434 verification - upsert schema without fields and verify by GET the created fields on previos POST not removed', () => {
+                assert(logcash.upsertSchema1Status, logcash.upsertSchema1ErrorMessage);
+            });
             it('Get dedicated schema - SuperTypes verification', () => {
                 assert(logcash.getFromDedicatedStatus, logcash.getFromDedicatedError);
             });
@@ -210,7 +213,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             throw new Error(`Fail To Get Addon Secret Key ${error}`);
         }
         //Oren added this to skip insatll after I talked with Oleg, the installADallAddon, upgradADallAddon and getAuditLogInstallStatus functions are suspended for now
-        //await  createFirstSchema();
+        //await  createAbstractSchemaPositive();
         await getPapiSchema();
     }
 
@@ -1109,6 +1112,53 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
         } else {
             logcash.createSchema1Status = false;
             logcash.createSchema1ErrorMessage = 'Schema1 creation failed';
+        }
+        await upsertSchema1();
+    }
+    // DI-23434 verification - upsert schema without fields and verify by GET the created fields on previos POST not removed
+    async function upsertSchema1() {
+        logcash.upsertSchema1 = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': whaitOwnerUUID,
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    Name: logcash.createSchema1.Name,
+                    Type: 'data',
+                    // DataSourceData: {
+                    //     IndexName: 'my_index_' + generalService.generateRandomString(3),
+                    //     //NumberOfShards: 3
+                    // },
+                    StringIndexName: 'my_index',
+                    // Fields: {
+                    //     Name1: { Type: 'String' },
+                    //     Name2: { Type: 'String', Indexed: true },
+                    //     Num1: { Type: 'Integer', Indexed: true },
+                    // },
+                    // Extends: {
+                    //     AddonUUID: whaitOwnerUUID,
+                    //     Name: logcash.createAbstractSchemaPositive.Name,
+                    // },
+                }),
+            })
+            .then((res) => res.Body);
+
+        //debugger;
+        if (
+            logcash.upsertSchema1.Name == logcash.createSchema1.Name &&
+            logcash.upsertSchema1.Hidden == false &&
+            logcash.upsertSchema1.Type == 'data' &&
+            logcash.upsertSchema1.Fields.Name1.Type == 'String' &&
+            logcash.upsertSchema1.Fields.testString1.Type == 'String'
+            // logcash.createMainSchema.DataSourceData.IndexName.includes('my_index')
+        ) {
+            logcash.upsertSchema1Status = true;
+        } else {
+            logcash.upsertSchema1Status = false;
+            logcash.upsertSchema1ErrorMessage = 'Schema1 creation failed';
         }
         await insertDataToSchema1();
     }

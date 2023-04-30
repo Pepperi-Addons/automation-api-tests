@@ -26,9 +26,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.7.8'], //advanced version 0.7.9 contains a bug (DI-23581)
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
-        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.7.36'], //advanced version 0.7.37 contains a bug (DI-23581)
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
         'User Defined Collections': [UserDefinedCollectionsUUID, ''],
@@ -359,9 +359,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
                 expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
             });
-            it('Negative Test: trying to create a collection with exsisting name', async () => {
+            it('Negative Test: trying to create a collection with exsisting name - using same endpoint used by the UI', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
-                const response = await udcService.createUDCWithFields(
+                const response = await udcService.createUDCWithFieldsAsInUI(
                     basicCollectionName,
                     [],
                     'automation testing UDC',
@@ -429,24 +429,24 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(document.Hidden).to.equal(false);
                 expect(document).to.haveOwnProperty('Key');
             });
-            // it('Negative Test: trying to upsert unmatching data to UDC which field is a containd resource of basic field', async () => {
-            //     const field = {};
-            //     field["containedRes"] = {
-            //         "abc": 200,
-            //     }
-            //     const response = await udcService.sendDataToField(containedCollectionName, field);
-            //     debugger;
-            //     expect(response.Ok).to.equal(true);
-            //     expect(response.Status).to.equal(200);
-            //     expect(response.Body.bool).to.equal(boolVal);
-            //     expect(response.Body.dou).to.equal(douVal);
-            //     expect(response.Body.int).to.equal(intVal);
-            //     expect(response.Body.str).to.equal(strVal);
-            //     expect(response.Body.Hidden).to.equal(false);
-            //     expect(response.Body).to.haveOwnProperty("Key");
-            //     expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
-            //     expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
-            // });
+            // TODO:it('Negative Test: trying to upsert unmatching data to UDC which field is a containd resource of basic field', async () => {
+            // //     const field = {};
+            // //     field["containedRes"] = {
+            // //         "abc": 200,
+            // //     }
+            // //     const response = await udcService.sendDataToField(containedCollectionName, field);
+            // //     debugger;
+            // //     expect(response.Ok).to.equal(true);
+            // //     expect(response.Status).to.equal(200);
+            // //     expect(response.Body.bool).to.equal(boolVal);
+            // //     expect(response.Body.dou).to.equal(douVal);
+            // //     expect(response.Body.int).to.equal(intVal);
+            // //     expect(response.Body.str).to.equal(strVal);
+            // //     expect(response.Body.Hidden).to.equal(false);
+            // //     expect(response.Body).to.haveOwnProperty("Key");
+            // //     expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
+            // //     expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
+            // // });
             it('Positive Test: creating a UDC with indexed fields', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 indexedCollectionName = 'IndexedTesting' + generalService.generateRandomString(15);
@@ -549,6 +549,19 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     );
                     expect(match.length).to.equal(1);
                 }
+            });
+            it('Positive Test: getting indexed data from UDC - using search with KeyList (DI-23402)', async () => {
+                const document = (await udcService.getDocuments(indexedCollectionName))[0];
+                const documentsKey = document.Key;
+                const bodyToSend = {};
+                bodyToSend['KeyList'] = [documentsKey];
+                const response = await generalService.fetchStatus(
+                    `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${indexedCollectionName}`,
+                    { method: 'POST', body: JSON.stringify(bodyToSend) },
+                );
+                expect(response.Ok).to.equal(true);
+                expect(response.Status).to.equal(200);
+                expect(response.Body.Objects[0]).to.deep.equal(document);
             });
             it('Positive Test: getting indexed data from UDC - using paganation + count field', async () => {
                 const allObjects50page1 = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 50);
