@@ -352,7 +352,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 } as any,
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -760,7 +761,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 } as any,
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -1094,7 +1096,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 } as any,
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -1206,7 +1209,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 } as any,
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -1417,7 +1421,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         } as any,
                                     },
                                 });
-                                expect(purgedSchema).to.equal('');
+                                expect(purgedSchema).to.have.property('Done').that.is.true;
+                                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                             });
@@ -1950,7 +1955,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         } as any,
                                     },
                                 });
-                                expect(purgedSchema).to.equal('');
+                                expect(purgedSchema).to.have.property('Done').that.is.true;
+                                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                             });
@@ -2199,7 +2205,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 } as any,
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -2450,7 +2457,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     } as any,
                                 },
                             });
-                            expect(purgedSchema).to.equal('');
+                            expect(purgedSchema).to.have.property('Done').that.is.true;
+                            expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                         });
@@ -2789,7 +2797,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Key: { Type: 'String' },
                                 },
                             });
-                            expect(purgedSchema).to.equal('');
+                            expect(purgedSchema).to.have.property('Done').that.is.true;
+                            expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                         });
@@ -3090,7 +3099,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                         } as any,
                                     },
                                 });
-                                expect(purgedSchema).to.equal('');
+                                expect(purgedSchema).to.have.property('Done').that.is.true;
+                                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                             });
@@ -3426,7 +3436,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 //                 } as any,
                 //             },
                 //         });
-                //         expect(purgedSchema).to.equal('');
+                //         expect(purgedSchema).to.have.property('Done').that.is.true;
+                //         expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                 //         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                 //         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                 //     });
@@ -3690,7 +3701,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 },
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -3779,7 +3791,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Key: { Type: 'String' },
                             },
                         });
-                        expect(purgedSchema).to.equal('');
+                        expect(purgedSchema).to.have.property('Done').that.is.true;
+                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -4340,7 +4353,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //                     },
             //                 },
             //             });
-            //             expect(purgedSchema).to.equal('');
+            //             expect(purgedSchema).to.have.property('Done').that.is.true;
+            //             expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
             //             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
             //             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
             //         });
@@ -4429,7 +4443,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //                     Key: { Type: 'String' },
             //                 },
             //             });
-            //             expect(purgedSchema).to.equal('');
+            //             expect(purgedSchema).to.have.property('Done').that.is.true;
+            //             expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
             //             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
             //             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
             //         });
@@ -4839,6 +4854,10 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     { SchemaSize: 2000, Sufix: 'csv', Name: '2000CSV' },
                     { SchemaSize: 8000, Sufix: 'json', Name: '8000JSON' },
                     { SchemaSize: 8000, Sufix: 'csv', Name: '8000CSV' },
+                    { SchemaSize: 32768, Sufix: 'json', Name: '32768JSON' },
+                    { SchemaSize: 32769, Sufix: 'json', Name: '32769JSON' },
+                    { SchemaSize: 32768, Sufix: 'csv', Name: '32768CSV' },
+                    { SchemaSize: 50000, Sufix: 'csv', Name: '50000CSV' },
                     // { SchemaSize: 9500, Sufix: 'json', Name: '9500JSON' },
                     // { SchemaSize: 9500, Sufix: 'csv', Name: '9500CSV' },
                     // { SchemaSize: 9501, Sufix: 'json', Name: '9501JSON' },
@@ -4859,6 +4878,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         let dimxImportAfterChange;
                         let dimxExportAfterChange;
                         it(`Reset Schema`, async () => {
+                            debugger;
                             const adalService = new ADALService(generalService.papiClient);
                             adalService.papiClient['options'].addonUUID = addonUUID;
                             adalService.papiClient['options'].addonSecretKey = secretKey;
@@ -4906,7 +4926,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     } as any,
                                 },
                             });
-                            expect(purgedSchema).to.equal('');
+                            expect(purgedSchema).to.have.property('Done').that.is.true;
+                            expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                         });
@@ -4951,7 +4972,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const start = performance.now();
                             dimxExportOriginal = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
-                                90,
+                                200,
                             );
                             const end = performance.now();
                             dimxExportExportChangeImportExportAfterResultArr[i] = {
@@ -5057,7 +5078,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const start = performance.now();
                             dimxExportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
-                                90,
+                                200,
                             );
                             const end = performance.now();
                             dimxExportExportChangeImportExportAfterResultArr[i] = {
@@ -5139,7 +5160,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const start = performance.now();
                             dimxImportAfterChange = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
-                                90,
+                                200,
                             );
                             const end = performance.now();
                             dimxExportExportChangeImportExportAfterResultArr[i] = {
@@ -5192,7 +5213,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             const start = performance.now();
                             dimxExportOriginal = await generalService.getAuditLogResultObjectIfValid(
                                 relationResponse.URI,
-                                90,
+                                200,
                             );
                             const end = performance.now();
                             dimxExportExportChangeImportExportAfterResultArr[i] = {
