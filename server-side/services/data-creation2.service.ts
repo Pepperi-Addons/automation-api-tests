@@ -119,19 +119,20 @@ class ResourceCreation {
     lists = 6000;
     constructor() { }
     async execute(): Promise<void> {
-        this.createUsers(this.users);
-        this.createAccounts(this.accounts);
-        this.createItems(this.items);
-        this.createDivisons(this.divisions);
-        this.createCompanies(this.companies);
-        this.createUserInfo(this.userInfo);
-        this.createAccountData1(this.accounts);
-        this.createDivisionData1(this.divisions);
-        this.createData2XRef1(this.divisions * this.companies);
-        this.createDataX3Ref1(this.accounts * this.divisions * this.companies);
-        this.createLists(this.lists);
-        this.createListItems(this.lists * this.items);
-        this.createAccountLists(this.divisions * this.companies * this.accounts * 15);
+        // this.createUsers(this.users);
+        // this.createAccounts(this.accounts);
+        // this.createItems(this.items);
+        // this.createDivisons(this.divisions);
+        // this.createCompanies(this.companies);
+        // this.createUserInfo(this.userInfo);
+        // this.createAccountData1(this.accounts);
+        // this.createDivisionData1(this.divisions);
+        // this.createData2XRef1(this.divisions * this.companies);
+        // this.createDataX3Ref1(this.accounts * this.divisions * this.companies);
+        // this.createLists(this.lists);
+        // this.createListItems(this.lists * this.items);
+        // this.createAccountLists(this.divisions * this.companies * this.accounts * 15);
+        this.createListsValue(this.lists, "first");
     }
 
     // private async genrateTempFile(tempFileName, data) {
@@ -360,6 +361,20 @@ class ResourceCreation {
             strData += `${runningDataCode.replace('index', index.toString())}\n`;
         }
         this.genrateFile("Lists", strData);
+    }
+
+    private createListsValue(howManyDataRows: number, value: string) {
+        console.log(howManyDataRows);
+        const headers = "code,value1";
+        const runningDataCode = "list_index";
+        const runningDataBasicValue1 = `${value}_index`;
+        let strData = "";
+        strData += headers + "\n";
+        for (let index = 0; index < howManyDataRows; index++) {
+            strData += `${runningDataCode.replace('index', index.toString())},`;
+            strData += `${runningDataBasicValue1.replace('index', index.toString())}\n`;
+        }
+        this.genrateFile("Lists_Val", strData);
     }
 
     private createListItems(howManyDataRows: number) {
