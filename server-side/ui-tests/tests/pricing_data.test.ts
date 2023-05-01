@@ -3,11 +3,17 @@ import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
+import { ObjectsService } from '../../services';
+import { PricingData } from '../pom/addons/Pricing';
 
 chai.use(promised);
 
 export async function PricingDataPrep(varPass: string, client: Client) {
     const generalService = new GeneralService(client);
+    const objectsService = new ObjectsService(generalService);
+    const pricingData = new PricingData();
+    let batchUDTresponse;
+    let initialPpmValues;
 
     await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade script dependencies
@@ -37,7 +43,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
 
     // #endregion Upgrade script dependencies
 
-    describe('Prerequisites Addons for Visit Flow Tests', async () => {
+    describe('Prerequisites Addons for Pricing Tests', async () => {
         isInstalledArr.forEach((isInstalled, index) => {
             it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                 expect(isInstalled).to.be.true;
@@ -64,5 +70,49 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                 });
             });
         }
+    });
+
+    describe('Data Prep', () => {
+        it('inserting rules to the UDT "PPM_Values"', async () => {
+            const tableName = 'PPM_Values';
+            const dataToBatch: {
+                MapDataExternalID: string;
+                MainKey: string;
+                SecondaryKey: string;
+                Values: string[];
+            }[] = [];
+            Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+                dataToBatch.push({
+                    MapDataExternalID: tableName,
+                    MainKey: mainKey,
+                    SecondaryKey: '',
+                    Values: [pricingData.documentsIn_PPM_Values[mainKey]],
+                });
+            });
+            batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
+            expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
+            console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
+            batchUDTresponse.map((row) => {
+                expect(row).to.have.property('InternalID').that.is.above(0);
+                expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+                expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore']);
+                expect(row)
+                    .to.have.property('Message')
+                    .that.is.oneOf(['Row inserted.', 'No changes in this row. The row is being ignored.']);
+                expect(row)
+                    .to.have.property('URI')
+                    .that.equals('/user_defined_tables/' + row.InternalID);
+            });
+        });
+        it('get UDT Values (PPM_Values)', async () => {
+            initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'" });
+            console.info('PPM_Values: ', initialPpmValues);
+        });
+        it('validating "PPM_Values" via API', async () => {
+            expect(initialPpmValues.length).equals(Object.keys(pricingData.documentsIn_PPM_Values).length);
+            initialPpmValues.forEach((tableRow) => {
+                expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
+            });
+        });
     });
 }

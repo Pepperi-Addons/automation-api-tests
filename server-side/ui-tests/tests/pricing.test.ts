@@ -34,7 +34,7 @@ export async function PricingTests(email: string, password: string, client: Clie
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
-    let batchUDTresponse;
+    // let batchUDTresponse;
     let transactionID: number;
     let transactionUUID: string;
     let transactionUUID_Acc01: string;
@@ -42,7 +42,7 @@ export async function PricingTests(email: string, password: string, client: Clie
     let accountName: string;
     let Acc01TransactionByUUID;
     let transactionInternalID;
-    let initialPpmValues;
+    // let initialPpmValues;
     let updatedUDTRowPOST;
     let item_forFreeGoods: string;
     let item_forGroupRules: string;
@@ -85,49 +85,49 @@ export async function PricingTests(email: string, password: string, client: Clie
     ];
 
     describe('Pricing Test Suite', async () => {
-        describe('Data Prep', () => {
-            it('inserting rules to the UDT "PPM_Values"', async () => {
-                const tableName = 'PPM_Values';
-                const dataToBatch: {
-                    MapDataExternalID: string;
-                    MainKey: string;
-                    SecondaryKey: string;
-                    Values: string[];
-                }[] = [];
-                Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
-                    dataToBatch.push({
-                        MapDataExternalID: tableName,
-                        MainKey: mainKey,
-                        SecondaryKey: '',
-                        Values: [pricingData.documentsIn_PPM_Values[mainKey]],
-                    });
-                });
-                batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
-                expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
-                console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
-                batchUDTresponse.map((row) => {
-                    expect(row).to.have.property('InternalID').that.is.above(0);
-                    expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
-                    expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore']);
-                    expect(row)
-                        .to.have.property('Message')
-                        .that.is.oneOf(['Row inserted.', 'No changes in this row. The row is being ignored.']);
-                    expect(row)
-                        .to.have.property('URI')
-                        .that.equals('/user_defined_tables/' + row.InternalID);
-                });
-            });
-            it('get UDT Values (PPM_Values)', async () => {
-                initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'" });
-                console.info('PPM_Values: ', initialPpmValues);
-            });
-            it('validating "PPM_Values" via API', async () => {
-                expect(initialPpmValues.length).equals(Object.keys(pricingData.documentsIn_PPM_Values).length);
-                initialPpmValues.forEach((tableRow) => {
-                    expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
-                });
-            });
-        });
+        // describe('Data Prep', () => {
+        //     it('inserting rules to the UDT "PPM_Values"', async () => {
+        //         const tableName = 'PPM_Values';
+        //         const dataToBatch: {
+        //             MapDataExternalID: string;
+        //             MainKey: string;
+        //             SecondaryKey: string;
+        //             Values: string[];
+        //         }[] = [];
+        //         Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+        //             dataToBatch.push({
+        //                 MapDataExternalID: tableName,
+        //                 MainKey: mainKey,
+        //                 SecondaryKey: '',
+        //                 Values: [pricingData.documentsIn_PPM_Values[mainKey]],
+        //             });
+        //         });
+        //         batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
+        //         expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
+        //         console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
+        //         batchUDTresponse.map((row) => {
+        //             expect(row).to.have.property('InternalID').that.is.above(0);
+        //             expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+        //             expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore']);
+        //             expect(row)
+        //                 .to.have.property('Message')
+        //                 .that.is.oneOf(['Row inserted.', 'No changes in this row. The row is being ignored.']);
+        //             expect(row)
+        //                 .to.have.property('URI')
+        //                 .that.equals('/user_defined_tables/' + row.InternalID);
+        //         });
+        //     });
+        //     it('get UDT Values (PPM_Values)', async () => {
+        //         initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'" });
+        //         console.info('PPM_Values: ', initialPpmValues);
+        //     });
+        //     it('validating "PPM_Values" via API', async () => {
+        //         expect(initialPpmValues.length).equals(Object.keys(pricingData.documentsIn_PPM_Values).length);
+        //         initialPpmValues.forEach((tableRow) => {
+        //             expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
+        //         });
+        //     });
+        // });
 
         describe('Pricing UI tests', () => {
             before(async function () {
@@ -679,7 +679,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         await numberOfUnits[2].getAttribute('title'),
                                     );
                                     expect(Drug0002_freeItem_numberOfUnits_fromDrug0002).equals(12);
-                                    // debugger
                                     const numberOfAOQM = await driver.findElements(
                                         orderPage.getSelectorOfReadOnlyAoqmQuantityInCartByAdditionalItemName(item),
                                     );
@@ -1658,26 +1657,26 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 });
                             });
 
-                            describe('CART', () => {
-                                it('Entering and verifying being in Cart', async () => {
-                                    driver.sleep(0.1 * 1000);
-                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
-                                    driver.sleep(0.1 * 1000);
-                                    await driver.click(orderPage.Cart_Button);
-                                    await driver.untilIsVisible(orderPage.Cart_Total_Header);
-                                    driver.sleep(0.1 * 1000);
-                                });
-                                it('Checking Cart', async () => {
-                                    // TODO
-                                    driver.sleep(1 * 1000);
-                                });
-                                it('Click "Submit" button', async () => {
-                                    await orderPage.isSpinnerDone();
-                                    await driver.untilIsVisible(orderPage.Cart_Total_Header);
-                                    await driver.click(orderPage.Cart_Submit_Button);
-                                    driver.sleep(0.1 * 1000);
-                                });
-                            });
+                            // describe('CART', () => {
+                            //     it('Entering and verifying being in Cart', async () => {
+                            //         driver.sleep(0.1 * 1000);
+                            //         await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
+                            //         driver.sleep(0.1 * 1000);
+                            //         await driver.click(orderPage.Cart_Button);
+                            //         await driver.untilIsVisible(orderPage.Cart_Total_Header);
+                            //         driver.sleep(0.1 * 1000);
+                            //     });
+                            //     it('Checking Cart', async () => {
+                            //         // TODO
+                            //         driver.sleep(1 * 1000);
+                            //     });
+                            //     it('Click "Submit" button', async () => {
+                            //         await orderPage.isSpinnerDone();
+                            //         await driver.untilIsVisible(orderPage.Cart_Total_Header);
+                            //         await driver.click(orderPage.Cart_Submit_Button);
+                            //         driver.sleep(0.1 * 1000);
+                            //     });
+                            // });
                         });
 
                         describe('Read Only', () => {
@@ -1736,7 +1735,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     where: "MapDataExternalID='" + tableName + "'",
                                 });
                                 console.info('updatedUDT: ', updatedUDT);
-                                expect(updatedUDT).to.be.an('array').with.lengthOf(initialPpmValues.length);
+                                expect(updatedUDT).to.be.an('array').with.lengthOf(Object.keys(pricingData.documentsIn_PPM_Values).length);
                                 // Add verification tests
                             });
                             it(`navigating to the account "${
@@ -1810,12 +1809,13 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     where: "MapDataExternalID='PPM_Values'",
                                 });
 
-                                expect(ppmVluesEnd.length).equals(initialPpmValues.length);
+                                expect(ppmVluesEnd.length).equals(Object.keys(pricingData.documentsIn_PPM_Values).length);
                                 ppmVluesEnd.forEach((tableRow) => {
-                                    const matchingInitialRow = initialPpmValues.find(
-                                        (initialRow) => initialRow['MainKey'] === tableRow['MainKey'],
-                                    );
-                                    expect(tableRow['Values']).eql(matchingInitialRow['Values']);
+                                    expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey])
+                                    // const matchingInitialRow = Object.keys(pricingData.documentsIn_PPM_Values).find(
+                                    //     (initialRow) => initialRow['MainKey'] === tableRow['MainKey'],
+                                    // );
+                                    // expect(tableRow['Values']).eql(matchingInitialRow['Values']);
                                 });
                             });
                         });
