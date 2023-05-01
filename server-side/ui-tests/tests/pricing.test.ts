@@ -1735,7 +1735,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     where: "MapDataExternalID='" + tableName + "'",
                                 });
                                 console.info('updatedUDT: ', updatedUDT);
-                                expect(updatedUDT).to.be.an('array').with.lengthOf(Object.keys(pricingData.documentsIn_PPM_Values).length);
+                                expect(updatedUDT)
+                                    .to.be.an('array')
+                                    .with.lengthOf(Object.keys(pricingData.documentsIn_PPM_Values).length);
                                 // Add verification tests
                             });
                             it(`navigating to the account "${
@@ -1809,9 +1811,13 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     where: "MapDataExternalID='PPM_Values'",
                                 });
 
-                                expect(ppmVluesEnd.length).equals(Object.keys(pricingData.documentsIn_PPM_Values).length);
+                                expect(ppmVluesEnd.length).equals(
+                                    Object.keys(pricingData.documentsIn_PPM_Values).length,
+                                );
                                 ppmVluesEnd.forEach((tableRow) => {
-                                    expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey])
+                                    expect(tableRow['Values'][0]).equals(
+                                        pricingData.documentsIn_PPM_Values[tableRow.MainKey],
+                                    );
                                     // const matchingInitialRow = Object.keys(pricingData.documentsIn_PPM_Values).find(
                                     //     (initialRow) => initialRow['MainKey'] === tableRow['MainKey'],
                                     // );
