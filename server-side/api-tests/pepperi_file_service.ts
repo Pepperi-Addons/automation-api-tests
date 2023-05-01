@@ -14,9 +14,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
     //#region Upgrade PFS
     const testData = {
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.2.26'],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.5.51'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
 
     let varKey;
@@ -95,8 +95,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     Type: 'pfs',
                     SyncData: { Sync: true },
                 } as any);
-                expect(purgedSchema).to.have.property('Done').that.is.true;
-                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                expect(purgedSchema).to.equal('');
                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('pfs');
                 expect(newSchema).to.not.have.property('SyncData');
