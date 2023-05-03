@@ -105,7 +105,7 @@ export class DataCreation2 {
     // ];
 
     async createData() {
-        const resourceCreator = new ResourceCreation();
+        const resourceCreator = new ResourceCreation(this);
         await resourceCreator.execute();
     }
 }
@@ -117,7 +117,10 @@ class ResourceCreation {
     companies = 2;
     userInfo = 5;
     lists = 6000;
-    constructor() { }
+    mgr;
+    constructor(mgr) { 
+        this.mgr = mgr;
+    }
     async execute(): Promise<void> {
         // this.createUsers(this.users);
         // this.createAccounts(this.accounts);
@@ -132,7 +135,7 @@ class ResourceCreation {
         // this.createLists(this.lists);
         // this.createListItems(this.lists * this.items);
         // this.createAccountLists(this.divisions * this.companies * this.accounts * 15);
-        this.createListsValue(this.lists, "first");
+        this.createListsValueNum(100, 30000);
     }
 
     // private async genrateTempFile(tempFileName, data) {
@@ -367,6 +370,21 @@ class ResourceCreation {
         console.log(howManyDataRows);
         const headers = "code,value1";
         const runningDataCode = "list_index";
+        const runningDataBasicValue1 = `${value}_index`;
+        let strData = "";
+        strData += headers + "\n";
+        for (let index = 0; index < howManyDataRows; index++) {
+            strData += `${runningDataCode.replace('index', index.toString())},`;
+            strData += `${runningDataBasicValue1.replace('index', index.toString())}\n`;
+        }
+        this.genrateFile("Lists_Val", strData);
+    }
+
+    private createListsValueNum(howManyDataRows: number, howManyChars: number) {
+        console.log(howManyDataRows);
+        const headers = "code,value";
+        const runningDataCode = "list_index";
+        const value = this.mgr.generalService.generateRandomString(howManyChars);
         const runningDataBasicValue1 = `${value}_index`;
         let strData = "";
         strData += headers + "\n";
