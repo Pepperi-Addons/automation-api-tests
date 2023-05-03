@@ -34,7 +34,6 @@ export async function PricingTests(email: string, password: string, client: Clie
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
-    // let batchUDTresponse;
     let transactionID: number;
     let transactionUUID: string;
     let transactionUUID_Acc01: string;
@@ -42,7 +41,6 @@ export async function PricingTests(email: string, password: string, client: Clie
     let accountName: string;
     let Acc01TransactionByUUID;
     let transactionInternalID;
-    // let initialPpmValues;
     let updatedUDTRowPOST;
     let item_forFreeGoods: string;
     let item_forGroupRules: string;
@@ -1659,10 +1657,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 expect(tableRow['Values'][0]).equals(
                                     pricingData.documentsIn_PPM_Values[tableRow.MainKey],
                                 );
-                                // const matchingInitialRow = Object.keys(pricingData.documentsIn_PPM_Values).find(
-                                //     (initialRow) => initialRow['MainKey'] === tableRow['MainKey'],
-                                // );
-                                // expect(tableRow['Values']).eql(matchingInitialRow['Values']);
                             });
                         });
                     });
