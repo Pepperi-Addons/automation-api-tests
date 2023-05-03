@@ -390,10 +390,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         expect(ToBr55priceTSAs_OC.NPMCalcMessage.length).equals(
                                             pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
                                                 'baseline'
-                                            ].length +
-                                                pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
-                                                    account
-                                                ]['baseline'].length,
+                                            ].length,
                                         );
                                         priceFields.forEach((priceField) => {
                                             expect(ToBr55priceTSAs_OC[priceField]).equals(
@@ -473,7 +470,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 item_forFreeGoods,
                                             ),
                                         );
-                                        driver.sleep(0.5 * 1000);
+                                        driver.sleep(0.75 * 1000);
                                         Drug0002priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
                                         console.info('Drug0002priceTSAs_OC (9 Cases): ', Drug0002priceTSAs_OC);
 
@@ -489,10 +486,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         expect(Drug0002priceTSAs_OC['NPMCalcMessage'].length).equals(
                                             pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
                                                 'baseline'
-                                            ].length +
-                                                pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
-                                                    account
-                                                ]['baseline'].length,
+                                            ].length,
                                         );
                                         priceFields.forEach((priceField) => {
                                             expect(Drug0002priceTSAs_OC[priceField]).equals(
@@ -589,10 +583,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         expect(Drug0004priceTSAs_OC['NPMCalcMessage'].length).equals(
                                             pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
                                                 'baseline'
-                                            ].length +
-                                                pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
-                                                    account
-                                                ]['baseline'].length,
+                                            ].length,
                                         );
                                         priceFields.forEach((priceField) => {
                                             expect(Drug0004priceTSAs_OC[priceField]).equals(
@@ -1744,46 +1735,53 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 });
                             });
 
-                            // describe('CART', () => {
-                            //     it('Entering and verifying being in Cart', async () => {
-                            //         driver.sleep(0.1 * 1000);
-                            //         await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
-                            //         driver.sleep(0.1 * 1000);
-                            //         await driver.click(orderPage.Cart_Button);
-                            //         await driver.untilIsVisible(orderPage.Cart_Total_Header);
-                            //         driver.sleep(0.1 * 1000);
-                            //     });
-                            //     it('Checking Cart', async () => {
-                            //         // TODO
-                            //         driver.sleep(1 * 1000);
-                            //     });
-                            //     it('Click "Submit" button', async () => {
-                            //         await orderPage.isSpinnerDone();
-                            //         await driver.untilIsVisible(orderPage.Cart_Total_Header);
-                            //         await driver.click(orderPage.Cart_Submit_Button);
-                            //         driver.sleep(0.1 * 1000);
-                            //     });
-                            // });
+                            describe('CART', () => {
+                                it('Entering and verifying being in Cart', async () => {
+                                    driver.sleep(0.1 * 1000);
+                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
+                                    driver.sleep(0.1 * 1000);
+                                    await driver.click(orderPage.Cart_Button);
+                                    await driver.untilIsVisible(orderPage.Cart_Total_Header);
+                                    driver.sleep(0.1 * 1000);
+                                });
+                                it('Checking Cart', async () => {
+                                    // TODO
+                                    driver.sleep(1 * 1000);
+                                });
+                                it('Click "Submit" button', async () => {
+                                    await orderPage.isSpinnerDone();
+                                    await driver.untilIsVisible(orderPage.Cart_Total_Header);
+                                    await driver.click(orderPage.Cart_Submit_Button);
+                                    driver.sleep(0.1 * 1000);
+                                });
+                            });
                         });
 
                         describe('Read Only', () => {
-                            it('entering the same transaction post submission, checking the latest activity - type: Sales Order, status: Submitted', async () => {
+                            it('entering the same transaction post submission, checking the latest activity - ID', async () => {
                                 await webAppList.isSpinnerDone();
                                 await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
                                 const latestActivityID = await (
                                     await driver.findElement(webAppList.Activities_TopActivityInList_ID)
                                 ).getAttribute('title');
                                 await driver.click(webAppList.HtmlBody);
+                                expect(Number(latestActivityID)).to.equal(transactionInternalID);
+                            });
+                            it('checking the latest activity - type: Sales Order', async () => {
+                                await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Type);
                                 const latestActivityType = await (
                                     await driver.findElement(webAppList.Activities_TopActivityInList_Type)
                                 ).getAttribute('title');
                                 await driver.click(webAppList.HtmlBody);
+                                expect(latestActivityType).to.equal('Sales Order');
+                            });
+                            it('checking the latest activity - status: Submitted', async () => {
+                                await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Status);
                                 const latestActivityStatus = await (
                                     await driver.findElement(webAppList.Activities_TopActivityInList_Status)
                                 ).getAttribute('title');
-                                expect(latestActivityType).to.equal('Sales Order');
+                                await driver.click(webAppList.HtmlBody);
                                 expect(latestActivityStatus).to.equal('Submitted');
-                                expect(Number(latestActivityID)).to.equal(transactionInternalID);
                             });
                             it('changing values in "PPM_Values" UDT', async () => {
                                 const tableName = 'PPM_Values';
