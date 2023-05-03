@@ -12,6 +12,13 @@ export async function PricingDataPrep(varPass: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const pricingData = new PricingData();
+    const tableName = 'PPM_Values';
+    // const dataToBatch: {
+    //     MapDataExternalID: string;
+    //     MainKey: string;
+    //     SecondaryKey: string;
+    //     Values: string[];
+    // }[] = [];
     let batchUDTresponse;
     let initialPpmValues;
 
@@ -73,8 +80,8 @@ export async function PricingDataPrep(varPass: string, client: Client) {
     });
 
     describe('Data Prep', () => {
-        it('inserting rules to the UDT "PPM_Values"', async () => {
-            const tableName = 'PPM_Values';
+        it('inserting valid rules to the UDT "PPM_Values"', async () => {
+            // const tableName = 'PPM_Values';
             const dataToBatch: {
                 MapDataExternalID: string;
                 MainKey: string;
@@ -104,6 +111,36 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                     .that.equals('/user_defined_tables/' + row.InternalID);
             });
         });
+        // it('inserting 20,000 dummy rules to the UDT "PPM_Values"', async () => {
+        //     const dummyDataToBatch: {
+        //         MapDataExternalID: string;
+        //         MainKey: string;
+        //         SecondaryKey: string;
+        //         Values: string[];
+        //     }[] = [];
+        //     for (let index = 0; index < 20000; index++) {
+        //         dummyDataToBatch.push({
+        //             MapDataExternalID: tableName,
+        //             MainKey: `ZDS1@A001@Dummy${index}`,
+        //             SecondaryKey: '',
+        //             Values: ['[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]'],
+        //         });
+        //     }
+        //     batchUDTresponse = await objectsService.postBatchUDT(dummyDataToBatch);
+        //     expect(batchUDTresponse).to.be.an('array').with.lengthOf(dummyDataToBatch.length);
+        //     console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
+        //     batchUDTresponse.map((row) => {
+        //         expect(row).to.have.property('InternalID').that.is.above(0);
+        //         expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+        //         expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore']);
+        //         expect(row)
+        //             .to.have.property('Message')
+        //             .that.is.oneOf(['Row inserted.', 'No changes in this row. The row is being ignored.']);
+        //         expect(row)
+        //             .to.have.property('URI')
+        //             .that.equals('/user_defined_tables/' + row.InternalID);
+        //     });
+        // });
         it('get UDT Values (PPM_Values)', async () => {
             initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'" });
             console.info('PPM_Values: ', initialPpmValues);
