@@ -375,6 +375,33 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             4,
                                         );
                                         driver.sleep(0.5 * 1000);
+                                        ToBr55priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
+                                        console.info('ToBr55priceTSAs_OC (4 Each): ', ToBr55priceTSAs_OC);
+
+                                        expect(typeof ToBr55priceTSAs_OC).equals('object');
+                                        expect(Object.keys(ToBr55priceTSAs_OC)).to.eql([
+                                            'PriceBaseUnitPriceAfter1',
+                                            'PriceDiscountUnitPriceAfter1',
+                                            'PriceGroupDiscountUnitPriceAfter1',
+                                            'PriceManualLineUnitPriceAfter1',
+                                            'PriceTaxUnitPriceAfter1',
+                                            'NPMCalcMessage',
+                                        ]);
+                                        expect(ToBr55priceTSAs_OC.NPMCalcMessage.length).equals(
+                                            pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
+                                                'baseline'
+                                            ].length +
+                                                pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
+                                                    account
+                                                ]['baseline'].length,
+                                        );
+                                        priceFields.forEach((priceField) => {
+                                            expect(ToBr55priceTSAs_OC[priceField]).equals(
+                                                pricingData.testItemsValues[item_forFreeGoods][priceField][account][
+                                                    'baseline'
+                                                ],
+                                            );
+                                        });
                                         await clearOrderCenterSearch();
                                         driver.sleep(0.5 * 1000);
                                     });
@@ -447,6 +474,33 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             ),
                                         );
                                         driver.sleep(0.5 * 1000);
+                                        Drug0002priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
+                                        console.info('Drug0002priceTSAs_OC (9 Cases): ', Drug0002priceTSAs_OC);
+
+                                        expect(typeof Drug0002priceTSAs_OC).equals('object');
+                                        expect(Object.keys(Drug0002priceTSAs_OC)).to.eql([
+                                            'PriceBaseUnitPriceAfter1',
+                                            'PriceDiscountUnitPriceAfter1',
+                                            'PriceGroupDiscountUnitPriceAfter1',
+                                            'PriceManualLineUnitPriceAfter1',
+                                            'PriceTaxUnitPriceAfter1',
+                                            'NPMCalcMessage',
+                                        ]);
+                                        expect(Drug0002priceTSAs_OC['NPMCalcMessage'].length).equals(
+                                            pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
+                                                'baseline'
+                                            ].length +
+                                                pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
+                                                    account
+                                                ]['baseline'].length,
+                                        );
+                                        priceFields.forEach((priceField) => {
+                                            expect(Drug0002priceTSAs_OC[priceField]).equals(
+                                                pricingData.testItemsValues[item_forFreeGoods][priceField][account][
+                                                    'baseline'
+                                                ],
+                                            );
+                                        });
                                         await clearOrderCenterSearch();
                                         driver.sleep(0.5 * 1000);
                                     });
@@ -480,7 +534,10 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                     break;
                                             }
                                             Drug0004priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
-                                            console.info(`Drug0004priceTSAs_OC (2 cases): `, Drug0004priceTSAs_OC);
+                                            console.info(
+                                                `Drug0004priceTSAs_OC (${unitAmount}): `,
+                                                Drug0004priceTSAs_OC,
+                                            );
 
                                             expect(typeof Drug0004priceTSAs_OC).equals('object');
                                             expect(Object.keys(Drug0004priceTSAs_OC)).to.eql([
@@ -517,6 +574,33 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             ),
                                         );
                                         driver.sleep(0.5 * 1000);
+                                        Drug0004priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
+                                        console.info(`Drug0004priceTSAs_OC (2 cases): `, Drug0004priceTSAs_OC);
+
+                                        expect(typeof Drug0004priceTSAs_OC).equals('object');
+                                        expect(Object.keys(Drug0004priceTSAs_OC)).to.eql([
+                                            'PriceBaseUnitPriceAfter1',
+                                            'PriceDiscountUnitPriceAfter1',
+                                            'PriceGroupDiscountUnitPriceAfter1',
+                                            'PriceManualLineUnitPriceAfter1',
+                                            'PriceTaxUnitPriceAfter1',
+                                            'NPMCalcMessage',
+                                        ]);
+                                        expect(Drug0004priceTSAs_OC['NPMCalcMessage'].length).equals(
+                                            pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
+                                                'baseline'
+                                            ].length +
+                                                pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
+                                                    account
+                                                ]['baseline'].length,
+                                        );
+                                        priceFields.forEach((priceField) => {
+                                            expect(Drug0004priceTSAs_OC[priceField]).equals(
+                                                pricingData.testItemsValues[item_forFreeGoods][priceField][account][
+                                                    'baseline'
+                                                ],
+                                            );
+                                        });
                                         await clearOrderCenterSearch();
                                         driver.sleep(0.5 * 1000);
                                     });
