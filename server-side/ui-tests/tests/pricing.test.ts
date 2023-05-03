@@ -524,6 +524,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                             describe('Transaction ID', () => {
                                 it('getting the transaction ID through the UI', async () => {
+                                    driver.sleep(1 * 1000);
                                     transactionID = Number(
                                         await (await driver.findElement(orderPage.TransactionID)).getAttribute('title'),
                                     );
@@ -563,6 +564,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     await webAppList.isSpinnerDone();
                                 });
                                 it('checking the latest activity - type: Sales Order, status: In Creation', async () => {
+                                    driver.sleep(0.1 * 1000);
                                     const latestActivityID = await (
                                         await driver.findElement(webAppList.Activities_TopActivityInList_ID)
                                     ).getAttribute('title');
@@ -1686,9 +1688,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 const latestActivityID = await (
                                     await driver.findElement(webAppList.Activities_TopActivityInList_ID)
                                 ).getAttribute('title');
+                                await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Type);
                                 const latestActivityType = await (
                                     await driver.findElement(webAppList.Activities_TopActivityInList_Type)
                                 ).getAttribute('title');
+                                await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Status);
                                 const latestActivityStatus = await (
                                     await driver.findElement(webAppList.Activities_TopActivityInList_Status)
                                 ).getAttribute('title');
