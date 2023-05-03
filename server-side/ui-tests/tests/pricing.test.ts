@@ -176,7 +176,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     it(`checking item "${item}"`, async () => {
                                         await searchInOrderCenter(item);
                                         switch (
-                                        state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
+                                            state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
                                         ) {
                                             case '1unit':
                                                 await changeSelectedQuantityOfSpecificItemInOrderCenter(
@@ -235,9 +235,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                     pricingData.testItemsValues[item]['NPMCalcMessage'][account][
                                                         'baseline'
                                                     ].length +
-                                                    pricingData.testItemsValues[item]['NPMCalcMessage'][account][
-                                                        state
-                                                    ].length,
+                                                        pricingData.testItemsValues[item]['NPMCalcMessage'][account][
+                                                            state
+                                                        ].length,
                                                 );
                                                 break;
                                         }
@@ -353,14 +353,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
                                                     account
                                                 ]['baseline'].length +
-                                                pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
-                                                    account
-                                                ][states[index]].length,
+                                                    pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
+                                                        account
+                                                    ][states[index]].length,
                                             );
                                             priceFields.forEach((priceField) => {
                                                 expect(ToBr55priceTSAs_OC[priceField]).equals(
                                                     pricingData.testItemsValues[item_forFreeGoods][priceField][account][
-                                                    states[index]
+                                                        states[index]
                                                     ],
                                                 );
                                             });
@@ -425,14 +425,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
                                                     account
                                                 ]['baseline'].length +
-                                                pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
-                                                    account
-                                                ][states[index]].length,
+                                                    pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
+                                                        account
+                                                    ][states[index]].length,
                                             );
                                             priceFields.forEach((priceField) => {
                                                 expect(Drug0002priceTSAs_OC[priceField]).equals(
                                                     pricingData.testItemsValues[item_forFreeGoods][priceField][account][
-                                                    states[index]
+                                                        states[index]
                                                     ],
                                                 );
                                             });
@@ -495,14 +495,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
                                                     account
                                                 ]['baseline'].length +
-                                                pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
-                                                    account
-                                                ][states[index]].length,
+                                                    pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][
+                                                        account
+                                                    ][states[index]].length,
                                             );
                                             priceFields.forEach((priceField) => {
                                                 expect(Drug0004priceTSAs_OC[priceField]).equals(
                                                     pricingData.testItemsValues[item_forFreeGoods][priceField][account][
-                                                    states[index]
+                                                        states[index]
                                                     ],
                                                 );
                                             });
@@ -552,16 +552,17 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     expect(transactionInternalID).to.be.a('number');
                                     expect(transactionInternalID).equals(transactionID);
                                 });
-                                it(`navigating to the account "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'
-                                    }"`, async () => {
-                                        await webAppHomePage.clickOnBtn('Accounts');
-                                        await webAppHeader.isSpinnerDone();
-                                        driver.sleep(0.1 * 1000);
-                                        await webAppList.clickOnFromListRowWebElementByName(accountName);
-                                        await webAppList.isSpinnerDone();
-                                        await webAppList.clickOnLinkFromListRowWebElementByText(`${accountName}`);
-                                        await webAppList.isSpinnerDone();
-                                    });
+                                it(`navigating to the account "${
+                                    account == 'Acc01' ? 'My Store' : 'Account for order scenarios'
+                                }"`, async () => {
+                                    await webAppHomePage.clickOnBtn('Accounts');
+                                    await webAppHeader.isSpinnerDone();
+                                    driver.sleep(0.1 * 1000);
+                                    await webAppList.clickOnFromListRowWebElementByName(accountName);
+                                    await webAppList.isSpinnerDone();
+                                    await webAppList.clickOnLinkFromListRowWebElementByText(`${accountName}`);
+                                    await webAppList.isSpinnerDone();
+                                });
                                 it('checking the latest activity - type: Sales Order, status: In Creation', async () => {
                                     driver.sleep(0.1 * 1000);
                                     const latestActivityID = await (
@@ -618,8 +619,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     driver.sleep(0.2 * 1000);
                                     expect(Number(itemsInCart)).to.equal(
                                         testItems.length +
-                                        itemsAddedToGetFreeGoods.length +
-                                        freeGoodsReceived[account].length,
+                                            itemsAddedToGetFreeGoods.length +
+                                            freeGoodsReceived[account].length,
                                     );
                                     driver.sleep(1 * 1000);
                                 });
@@ -653,7 +654,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 case 'PriceBaseUnitPriceAfter1':
                                                     expect(Drug0002_priceTSAsCart[priceField]).to.equal(
                                                         pricingData.testItemsValues[item]['PriceBaseUnitPriceAfter1'][
-                                                        account
+                                                            account
                                                         ]['baseline'],
                                                     );
                                                     break;
@@ -952,7 +953,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 .with.lengthOf(0);
                                             expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage)).eql(
                                                 pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                                '3units'
+                                                    '3units'
                                                 ],
                                             );
                                             break;
@@ -1011,7 +1012,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                     .with.lengthOf(0);
                                                 expect(Object.keys(MakeUpItem_priceTSAsCart.NPMCalcMessage)).eql(
                                                     pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                                    '3units'
+                                                        '3units'
                                                     ],
                                                 );
                                                 break;
@@ -1084,7 +1085,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 .with.lengthOf(0);
                                             expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage)).eql(
                                                 pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                                '3units'
+                                                    '3units'
                                                 ],
                                             );
                                             break;
@@ -1156,7 +1157,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 .with.lengthOf(0);
                                             expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage)).eql(
                                                 pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                                '3units'
+                                                    '3units'
                                                 ],
                                             );
                                             break;
@@ -1228,7 +1229,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 .with.lengthOf(0);
                                             expect(Object.keys(MakeUp001_priceTSAsCart.NPMCalcMessage)).eql(
                                                 pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                                '6units'
+                                                    '6units'
                                                 ],
                                             );
                                             break;
@@ -1300,7 +1301,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 .with.lengthOf(0);
                                             expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage)).eql(
                                                 pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                                '7units'
+                                                    '7units'
                                                 ],
                                             );
                                             break;
@@ -1372,7 +1373,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 .with.lengthOf(0);
                                             expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage)).eql(
                                                 pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                                '11units'
+                                                    '11units'
                                                 ],
                                             );
                                             break;
@@ -1451,7 +1452,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 .with.lengthOf(0);
                                             expect(Object.keys(MakeUp006_priceTSAsCart.NPMCalcMessage)).eql(
                                                 pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                                '12units'
+                                                    '12units'
                                                 ],
                                             );
                                             break;
@@ -1482,7 +1483,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0])).eql(
                                                 Object.keys(
                                                     pricingData.testItemsValues[item_forGroupRules].NPMCalcMessage[
-                                                    account
+                                                        account
                                                     ]['10units'][0],
                                                 ),
                                             );
@@ -1582,7 +1583,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 .with.lengthOf(0);
                                             expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage)).eql(
                                                 pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                                '7units'
+                                                    '7units'
                                                 ],
                                             );
                                             break;
@@ -1647,7 +1648,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 .with.lengthOf(0);
                                             expect(Object.keys(MakeUp019_priceTSAsCart.NPMCalcMessage)).eql(
                                                 pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                                '12units'
+                                                    '12units'
                                                 ],
                                             );
                                             break;
@@ -1743,16 +1744,17 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     .with.lengthOf(Object.keys(pricingData.documentsIn_PPM_Values).length);
                                 // Add verification tests
                             });
-                            it(`navigating to the account "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'
-                                }"`, async () => {
-                                    await webAppHomePage.clickOnBtn('Accounts');
-                                    await webAppHeader.isSpinnerDone();
-                                    driver.sleep(0.1 * 1000);
-                                    await webAppList.clickOnFromListRowWebElementByName(accountName);
-                                    await webAppList.isSpinnerDone();
-                                    await webAppList.clickOnLinkFromListRowWebElementByText(`${accountName}`);
-                                    await webAppList.isSpinnerDone();
-                                });
+                            it(`navigating to the account "${
+                                account == 'Acc01' ? 'My Store' : 'Account for order scenarios'
+                            }"`, async () => {
+                                await webAppHomePage.clickOnBtn('Accounts');
+                                await webAppHeader.isSpinnerDone();
+                                driver.sleep(0.1 * 1000);
+                                await webAppList.clickOnFromListRowWebElementByName(accountName);
+                                await webAppList.isSpinnerDone();
+                                await webAppList.clickOnLinkFromListRowWebElementByText(`${accountName}`);
+                                await webAppList.isSpinnerDone();
+                            });
                             it('entering the same transaction through activity list', async () => {
                                 await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
                                 await webAppList.clickOnLinkFromListRowWebElement();
