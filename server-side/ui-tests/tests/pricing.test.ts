@@ -524,7 +524,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                             describe('Transaction ID', () => {
                                 it('getting the transaction ID through the UI', async () => {
-                                    driver.sleep(1 * 1000);
+                                    await driver.refresh();
+                                    await orderPage.isSpinnerDone();
                                     transactionID = Number(
                                         await (await driver.findElement(orderPage.TransactionID)).getAttribute('title'),
                                     );
@@ -1688,11 +1689,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 const latestActivityID = await (
                                     await driver.findElement(webAppList.Activities_TopActivityInList_ID)
                                 ).getAttribute('title');
-                                await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Type);
+                                await driver.click(webAppList.HtmlBody);
                                 const latestActivityType = await (
                                     await driver.findElement(webAppList.Activities_TopActivityInList_Type)
                                 ).getAttribute('title');
-                                await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Status);
+                                await driver.click(webAppList.HtmlBody);
                                 const latestActivityStatus = await (
                                     await driver.findElement(webAppList.Activities_TopActivityInList_Status)
                                 ).getAttribute('title');
