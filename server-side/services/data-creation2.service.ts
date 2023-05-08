@@ -118,7 +118,7 @@ class ResourceCreation {
     userInfo = 5;
     lists = 6000;
     mgr;
-    constructor(mgr) { 
+    constructor(mgr) {
         this.mgr = mgr;
     }
     async execute(): Promise<void> {
@@ -135,7 +135,8 @@ class ResourceCreation {
         // this.createLists(this.lists);
         // this.createListItems(this.lists * this.items);
         // this.createAccountLists(this.divisions * this.companies * this.accounts * 15);
-        this.createListsValueNum(100, 30000);
+        // this.createListsValueNum(100, 30000);
+        this.createAccountDataNEW(500000);
     }
 
     // private async genrateTempFile(tempFileName, data) {
@@ -276,6 +277,38 @@ class ResourceCreation {
             strData += `${runningDataBasicValue.replace('index', index.toString())}\n`;
         }
         this.genrateFile("AccountData1", strData);
+    }
+
+    private createAccountDataNEW(howManyDataRows: number) {
+        const headers = "accountRef#ExternalID,value1";
+        const runningDataAccount = "accounts_index";
+        const runningDataBasicValue = "value_index";
+        let strData = "";
+        let tenIndex = 0;
+        // let flag = false;
+        let counter = 1;
+        let index2 = 1;
+        strData += headers + "\n";
+        for (let index = 0; index < howManyDataRows; index++) {
+            if (tenIndex < 10) {
+                strData += `${runningDataAccount.replace('index', tenIndex.toString())},`;
+                tenIndex++;
+            } else {
+                tenIndex = 0;
+                strData += `${runningDataAccount.replace('index', tenIndex.toString())},`;
+                tenIndex++;
+            }
+            strData += `${runningDataBasicValue.replace('index', index.toString())}\n`;
+            if(counter>=50000){
+                this.genrateFile(`AccountData_NEW_SPLIT_${index2}`, strData);
+                index2++;
+                strData = "accountRef#ExternalID,value1"+ "\n";        
+                counter = 1;
+            }else{
+                counter++;
+            }
+        }
+        this.genrateFile(`AccountData_NEW_SPLIT_${index2}`, strData);
     }
 
     private createDivisionData1(howManyDataRows: number) {
