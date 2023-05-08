@@ -1,4 +1,4 @@
-import { PapiClient, FindOptions, SchemeFieldType, DataViewFieldType } from '@pepperi-addons/papi-sdk';
+import { PapiClient, FindOptions, DataViewFieldType, CollectionField } from '@pepperi-addons/papi-sdk';
 import { DataViewBaseField, UpsertUdcGridDataView } from '../ui-tests/blueprints/DataViewBlueprints';
 import {
     ArrayOfPrimitiveTypeUdcField,
@@ -625,10 +625,14 @@ export class UDCService {
         fieldsOfCollection: {
             classType: 'Primitive' | 'Array' | 'Contained' | 'Resource';
             fieldName: string;
-            fieldType?: SchemeFieldType;
-            indexed?: boolean;
-            mandatory?: boolean;
-            fieldDescription?: string;
+            field: CollectionField;
+            // {Type: SchemeFieldType, Mandatory: boolean, Description: string, OptionalValues?: string[], Indexed?: boolean, Items?: SchemeField, Resource?: string,
+            // AddonUUID?: string, IndexedFields?:{[key: string]: SchemeField}, Fields?: {[key: string]: SchemeField}, Sync?: boolean,
+            // Unique?: boolean, ExtendedField?: boolean, Keyword?: boolean, ApplySystemFilter?: boolean }
+            // fieldType?: SchemeFieldType;
+            // indexed?: boolean;
+            // mandatory?: boolean;
+            // fieldDescription?: string;
             dataViewType?: DataViewFieldType;
             readonly?: boolean;
         }[];
@@ -646,40 +650,44 @@ export class UDCService {
             | 'abstract';
     }) {
         const collectionFields = {};
-        const udcListViewFields = collectionData.fieldsOfCollection.map((schemeField) => {
-            switch (schemeField.classType) {
+        const udcListViewFields = collectionData.fieldsOfCollection.map((scheme) => {
+            switch (scheme.classType) {
                 case 'Primitive':
-                    collectionFields[schemeField.fieldName] = new PrimitiveTypeUdcField(
-                        schemeField.fieldDescription ? schemeField.fieldDescription : '',
-                        schemeField.hasOwnProperty('mandatory') ? schemeField.mandatory : false,
-                        schemeField.fieldType ? schemeField.fieldType : 'String',
-                        schemeField.hasOwnProperty('indexed') ? schemeField.indexed : false,
+                    collectionFields[scheme.fieldName] = new PrimitiveTypeUdcField(
+                        scheme.field.Description ? scheme.field.Description : '',
+                        scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
+                        scheme.field.Type ? scheme.field.Type : 'String',
+                        scheme.field.hasOwnProperty('Indexed') ? scheme.field.Indexed : false,
                     );
                     break;
                 case 'Array':
-                    collectionFields[schemeField.fieldName] = new ArrayOfPrimitiveTypeUdcField(
-                        schemeField.fieldDescription ? schemeField.fieldDescription : '',
-                        schemeField.hasOwnProperty('mandatory') ? schemeField.mandatory : false,
-                        schemeField.fieldType
-                            ? schemeField.fieldType !== 'String'
-                                ? schemeField.fieldType !== 'Integer'
-                                    ? schemeField.fieldType !== 'Double'
+                    collectionFields[scheme.fieldName] = new ArrayOfPrimitiveTypeUdcField(
+                        scheme.field.Description ? scheme.field.Description : '',
+                        scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
+                        scheme.field.Type
+                            ? scheme.field.Type !== 'String'
+                                ? scheme.field.Type !== 'Integer'
+                                    ? scheme.field.Type !== 'Double'
                                         ? undefined
-                                        : schemeField.fieldType
-                                    : schemeField.fieldType
-                                : schemeField.fieldType
+                                        : scheme.field.Type
+                                    : scheme.field.Type
+                                : scheme.field.Type
                             : undefined,
                     );
+                    break;
+                case 'Contained':
+                    break;
+                case 'Resource':
                     break;
 
                 default:
                     break;
             }
             return new DataViewBaseField(
-                schemeField.fieldName,
-                schemeField.dataViewType ? schemeField.dataViewType : 'TextBox',
-                schemeField.hasOwnProperty('mandatory') ? schemeField.mandatory : false,
-                schemeField.hasOwnProperty('readonly') ? schemeField.readonly : true,
+                scheme.fieldName,
+                scheme.dataViewType ? scheme.dataViewType : 'TextBox',
+                scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
+                scheme.hasOwnProperty('readonly') ? scheme.readonly : true,
             );
         });
         const udcListView = new UpsertUdcGridDataView(udcListViewFields);
