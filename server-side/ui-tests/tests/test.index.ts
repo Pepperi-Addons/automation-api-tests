@@ -510,6 +510,7 @@ const passCreate = process.env.npm_config_pass_create as string;
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
         } else {
             const [euUser, prodUser, sbUser] = resolveUserPerTest(addonName);
+            console.log(`####################### Running For: ${addonName}(${addonUUID}) #######################`);
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
             await Promise.all([
                 handleDevTestInstallation(
@@ -539,7 +540,7 @@ const passCreate = process.env.npm_config_pass_create as string;
             ]);
             // debugger;
             //2. validate tested addon is installed on latest available version
-            const version = addonName === 'SYNC' || addonName === 'NEBULA' ? '0.5.%' : null;
+            const version = addonName === 'SYNC' || addonName === 'NEBULA' ? '0.6.%' : null;
             const [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
                 addonUUID,
                 varPass,
@@ -567,6 +568,9 @@ const passCreate = process.env.npm_config_pass_create as string;
                     `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`,
                 );
             }
+            console.log(
+                `####################### ${addonName} Version: ${latestVersionOfTestedAddonSb} #######################`,
+            );
             const isInstalled = await Promise.all([
                 validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddonEu, 'prod'),
                 validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddonProd, 'prod'),
@@ -632,7 +636,7 @@ const passCreate = process.env.npm_config_pass_create as string;
             } else {
                 devFailedEnvs.push('Stage');
             }
-            debugger;
+            // debugger;
             //5. un - available this version if needed
             if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
                 const addonToInstall = {};
@@ -695,6 +699,7 @@ const passCreate = process.env.npm_config_pass_create as string;
         let jobPathEU = '';
         let jobPathPROD = '';
         let jobPathSB = '';
+        console.log(`####################### Running For: ${addonName}(${addonUUID}) #######################`);
         // 1. parse which addon should run and on which version, run the test on Jenkins
         switch (addonName) {
             //add another 'case' here when adding new addons to this mehcanisem
