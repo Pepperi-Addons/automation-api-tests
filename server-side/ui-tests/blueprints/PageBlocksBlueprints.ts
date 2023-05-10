@@ -143,17 +143,19 @@ export class ResourceListBasicViewerEditorBlocksStructurePage {
         this.Key = pageKey;
         blockList.forEach((block) => {
             if (block.selectedEditor) {
-                this.Blocks.push(new ResourceListBlock(block.blockKey, block.blockResource, block.selectedEditor));
+                this.Blocks.push(
+                    new ResourceViewEditorBlock(block.blockKey, block.blockResource, block.selectedEditor),
+                );
             }
             if (block.selectedViews) {
                 this.Blocks.push(
-                    new ResourceListBlock(block.blockKey, block.blockResource, undefined, block.selectedViews),
+                    new ResourceViewEditorBlock(block.blockKey, block.blockResource, undefined, block.selectedViews),
                 );
             }
         });
         this.Layout = new ResourceListLayout(sectionDataList);
     }
-    public Blocks: ResourceListBlock[] = [];
+    public Blocks: ResourceViewEditorBlock[] = [];
     public Layout: ResourceListLayout;
     public Hidden = false;
     public Key: string;
@@ -161,7 +163,7 @@ export class ResourceListBasicViewerEditorBlocksStructurePage {
     public Description?: string;
 }
 
-export class ResourceListBlock {
+export class ResourceViewEditorBlock {
     constructor(
         blockKey: string,
         blockResource: string,
@@ -251,6 +253,7 @@ export class ResourceListBlockConfigurationDataView {
             collectionID: string;
             selectedViewUUID: string;
             selectedViewName: string;
+            selectedViewTitle?: string;
         }[],
     ) {
         selectedViews.forEach((selectedView) => {
@@ -260,6 +263,7 @@ export class ResourceListBlockConfigurationDataView {
                     selectedView.collectionID,
                     selectedView.selectedViewUUID,
                     selectedView.selectedViewName,
+                    selectedView.selectedViewTitle,
                 ),
             );
         });
@@ -268,10 +272,16 @@ export class ResourceListBlockConfigurationDataView {
 }
 
 export class ResourceListBlockConfigurationDataViewInViewsList {
-    constructor(collectionName: string, collectionID: string, selectedViewUUID: string, selectedViewName: string) {
+    constructor(
+        collectionName: string,
+        collectionID: string,
+        selectedViewUUID: string,
+        selectedViewName: string,
+        selectedViewTitle?: string,
+    ) {
         this.selectedResource = collectionName;
         this.id = collectionID;
-        this.title = 'Grid';
+        this.title = selectedViewTitle || 'Grid';
         this.views = [];
         this.showContent = true;
         this.selectedView = new ViewID(selectedViewUUID, selectedViewName);
@@ -354,6 +364,7 @@ export class ViewerBlock extends AddonBlockModule {
             collectionID: string;
             selectedViewUUID: string;
             selectedViewName: string;
+            selectedViewTitle?: string;
         }[],
     ) {
         const resource = 'DataViewerBlock';

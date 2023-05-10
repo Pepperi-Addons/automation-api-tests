@@ -9,6 +9,7 @@ import {
     DataFieldForEditorView,
     SlugField,
     UpsertFieldsToMappedSlugs,
+    ViewMenuTypeField,
 } from '../blueprints/DataViewBlueprints';
 import {
     BaseFormDataViewField,
@@ -265,6 +266,7 @@ export default class E2EUtils extends BasePomObject {
                 field = new DataViewBaseField(
                     fieldFromArray.fieldName,
                     fieldFromArray.dataViewType ? fieldFromArray.dataViewType : 'TextBox',
+                    fieldFromArray.fieldName,
                     fieldFromArray.hasOwnProperty('mandatory') ? fieldFromArray.mandatory : false,
                     fieldFromArray.hasOwnProperty('readonly') ? fieldFromArray.readonly : true,
                 );
@@ -290,6 +292,7 @@ export default class E2EUtils extends BasePomObject {
                 field = new DataFieldForEditorView(
                     fieldDefinitionArray.fieldName,
                     fieldDefinitionArray.dataViewType,
+                    fieldDefinitionArray.fieldName,
                     fieldDefinitionArray.mandatory,
                     fieldDefinitionArray.readonly,
                     index,
@@ -298,6 +301,16 @@ export default class E2EUtils extends BasePomObject {
                 index++;
             },
         );
+        return fields;
+    }
+
+    public prepareDataToConfigFieldsInViewTabs(arrayOfFields: { fieldName: string }[]) {
+        const fields: MenuDataViewField[] = [];
+        let field: MenuDataViewField;
+        arrayOfFields.forEach((listing: { fieldName: string }) => {
+            field = new ViewMenuTypeField(listing.fieldName);
+            fields.push(field);
+        });
         return fields;
     }
 

@@ -101,6 +101,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
                     {
                         classType: 'Primitive',
                         fieldName: 'string_field',
+                        fieldTitle: 'string_field',
                         field: {
                             Type: 'String',
                             Mandatory: false,
@@ -111,6 +112,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
                     {
                         classType: 'Primitive',
                         fieldName: 'boolean_field',
+                        fieldTitle: 'boolean_field',
                         field: {
                             Type: 'Bool',
                             Mandatory: false,
@@ -121,6 +123,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
                     {
                         classType: 'Primitive',
                         fieldName: 'integer_field',
+                        fieldTitle: 'integer_field',
                         field: {
                             Type: 'Integer',
                             Mandatory: false,
@@ -131,6 +134,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
                     {
                         classType: 'Primitive',
                         fieldName: 'double_field',
+                        fieldTitle: 'double_field',
                         field: {
                             Type: 'Double',
                             Mandatory: false,
@@ -141,6 +145,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
                     {
                         classType: 'Primitive',
                         fieldName: 'datetime_field',
+                        fieldTitle: 'datetime_field',
                         field: {
                             Type: 'DateTime',
                             Mandatory: false,
@@ -192,6 +197,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
                     {
                         classType: 'Array',
                         fieldName: 'numbers',
+                        fieldTitle: 'numbers',
                         field: {
                             Type: 'String',
                             Mandatory: false,
@@ -201,6 +207,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
                     {
                         classType: 'Array',
                         fieldName: 'names',
+                        fieldTitle: 'names',
                         field: {
                             Type: 'Integer',
                             Mandatory: false,
@@ -210,6 +217,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
                     {
                         classType: 'Array',
                         fieldName: 'reals',
+                        fieldTitle: 'reals',
                         field: {
                             Type: 'Double',
                             Mandatory: false,
@@ -277,6 +285,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
                     {
                         classType: 'Array',
                         fieldName: 'string_arr',
+                        fieldTitle: 'string_arr',
                         field: {
                             Type: 'String',
                             Mandatory: false,
@@ -286,6 +295,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
                     {
                         classType: 'Primitive',
                         fieldName: 'string_field',
+                        fieldTitle: 'string_field',
                         field: {
                             Type: 'String',
                             Mandatory: false,

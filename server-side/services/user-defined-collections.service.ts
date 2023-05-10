@@ -626,6 +626,7 @@ export class UDCService {
         fieldsOfCollection: {
             classType: 'Primitive' | 'Array' | 'Contained' | 'Resource';
             fieldName: string;
+            fieldTitle: string;
             field: CollectionField;
             dataViewType?: DataViewFieldType;
             readonly?: boolean;
@@ -695,6 +696,7 @@ export class UDCService {
             return new DataViewBaseField(
                 scheme.fieldName,
                 scheme.dataViewType ? scheme.dataViewType : 'TextBox',
+                scheme.fieldTitle,
                 scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
                 scheme.hasOwnProperty('readonly') ? scheme.readonly : true,
             );
