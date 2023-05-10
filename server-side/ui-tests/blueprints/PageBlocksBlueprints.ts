@@ -1,3 +1,4 @@
+import { v4 as newUuid } from 'uuid';
 export class BasePage {
     constructor(pageKey: string) {
         this.Blocks = [];
@@ -48,7 +49,7 @@ export class BasePageLayoutSection {
 
 export class BasePageLayoutSectionColumn {
     constructor(blockKey?: string) {
-        blockKey ? (this.BlockContainer = new BlockID(blockKey)) : null;
+        this.BlockContainer = new BlockID(blockKey || newUuid());
     }
     public BlockContainer?: BlockID;
 }
@@ -344,6 +345,23 @@ export class ResourceListLayoutSection {
     public Hide = [];
     public Columns: BasePageLayoutSectionColumn[] = [];
     public Key: string;
+}
+
+export class ViewerBlock extends AddonBlockModule {
+    constructor(
+        selectedViews?: {
+            collectionName: string;
+            collectionID: string;
+            selectedViewUUID: string;
+            selectedViewName: string;
+        }[],
+    ) {
+        const resource = 'DataViewerBlock';
+        const addonID = '0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3';
+        super(newUuid(), resource, addonID);
+        this.Configuration = new BaseBlockConfiguration(resource, addonID);
+        this.Configuration.Data = new ResourceListBlockConfigurationDataView(selectedViews || []);
+    }
 }
 
 export class VisitFlowBlock extends AddonBlockModule {

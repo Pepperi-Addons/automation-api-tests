@@ -307,7 +307,7 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
 
     if (tests.includes('MockTest')) {
-        await MockTest(client);
+        await MockTest(email, pass, client);
         // await ResourceListTests(email, pass, varPass, client);
     }
 

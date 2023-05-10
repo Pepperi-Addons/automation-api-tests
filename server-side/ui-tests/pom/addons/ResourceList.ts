@@ -3,6 +3,8 @@ import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
 import { UpsertResourceFieldsToEditor, UpsertResourceFieldsToView } from '../../blueprints/DataViewBlueprints';
 import { AddonPage } from './base/AddonPage';
+import { Client } from '@pepperi-addons/debug-server/dist';
+import { GeneralService } from '../../../services';
 
 export class ResourceList extends AddonPage {
     // *general selectors for Resource Views*
@@ -378,6 +380,18 @@ export class ResourceViews extends ResourceList {
         this.pause(0.5 * 1000);
         await this.click(this.EditPage_ProfileEditButton_Back);
         this.pause(5 * 1000);
+    }
+
+    public async deleteViewViaApiByUUID(viewKey: string, client: Client) {
+        const generalService = new GeneralService(client);
+        const deleteViewResponse = await generalService.fetchStatus(
+            `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
+            {
+                method: 'POST',
+                body: JSON.stringify({ Key: viewKey, Hidden: true }),
+            },
+        );
+        return deleteViewResponse;
     }
 }
 

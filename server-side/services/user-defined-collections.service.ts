@@ -4,6 +4,7 @@ import {
     ArrayOfPrimitiveTypeUdcField,
     BodyToUpsertUdcWithFields,
     PrimitiveTypeUdcField,
+    ResourceUdcField,
 } from '../ui-tests/blueprints/UdcBlueprints';
 import GeneralService from './general.service';
 
@@ -626,13 +627,6 @@ export class UDCService {
             classType: 'Primitive' | 'Array' | 'Contained' | 'Resource';
             fieldName: string;
             field: CollectionField;
-            // {Type: SchemeFieldType, Mandatory: boolean, Description: string, OptionalValues?: string[], Indexed?: boolean, Items?: SchemeField, Resource?: string,
-            // AddonUUID?: string, IndexedFields?:{[key: string]: SchemeField}, Fields?: {[key: string]: SchemeField}, Sync?: boolean,
-            // Unique?: boolean, ExtendedField?: boolean, Keyword?: boolean, ApplySystemFilter?: boolean }
-            // fieldType?: SchemeFieldType;
-            // indexed?: boolean;
-            // mandatory?: boolean;
-            // fieldDescription?: string;
             dataViewType?: DataViewFieldType;
             readonly?: boolean;
         }[];
@@ -678,6 +672,21 @@ export class UDCService {
                 case 'Contained':
                     break;
                 case 'Resource':
+                    collectionFields[scheme.fieldName] = new ResourceUdcField(
+                        scheme.field.Resource ? scheme.field.Resource : '',
+                        scheme.field.Description ? scheme.field.Description : undefined,
+                        scheme.field.Mandatory ? scheme.field.Mandatory : undefined,
+                        scheme.field.Type ? scheme.field.Type : 'Resource',
+                        scheme.field.OptionalValues ? scheme.field.OptionalValues : undefined,
+                        scheme.field.Items ? scheme.field.Items : undefined,
+                        scheme.field.AddonUUID ? scheme.field.AddonUUID : undefined,
+                        scheme.field.Indexed ? scheme.field.Indexed : undefined,
+                        scheme.field.IndexedFields ? scheme.field.IndexedFields : undefined,
+                        scheme.field.Keyword ? scheme.field.Keyword : undefined,
+                        scheme.field.Sync ? scheme.field.Sync : undefined,
+                        scheme.field.Unique ? scheme.field.Unique : undefined,
+                        scheme.field.Fields ? scheme.field.Fields : undefined,
+                    );
                     break;
 
                 default:

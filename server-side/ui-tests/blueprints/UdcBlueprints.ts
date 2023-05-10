@@ -149,3 +149,38 @@ export class ArrayOfPrimitiveTypeUdcField extends BaseUdcField {
         this.Items = new PrimitiveTypeUdcField('', false, type);
     }
 }
+
+export class ResourceUdcField extends BaseUdcField {
+    constructor(
+        resource: string,
+        description = '',
+        mandatory = false,
+        type: SchemeFieldType = 'Resource',
+        optionalValues?: string[],
+        items?: CollectionField,
+        addonUUID?: string,
+        indexed?: boolean,
+        indexedFields?: { [key: string]: SchemeField },
+        keyword?: boolean,
+        sync?: boolean,
+        unique?: boolean,
+        fields?: { [key: string]: CollectionField },
+    ) {
+        super(
+            description,
+            mandatory,
+            type,
+            optionalValues ? optionalValues : undefined,
+            items ? items : undefined,
+            resource,
+            addonUUID ? addonUUID : undefined,
+            indexed ? indexed : undefined,
+            indexedFields ? indexedFields : undefined,
+            keyword ? keyword : undefined,
+            sync ? sync : undefined,
+            unique ? unique : undefined,
+            fields ? fields : undefined,
+        );
+        this.Type = 'Resource';
+    }
+}
