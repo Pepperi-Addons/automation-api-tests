@@ -1765,7 +1765,7 @@ async function printResultsTestObject(testResultArray, userName, env, addonUUID,
     const service = new GeneralService(client);
     const installedAddonsArr = await service.getInstalledAddons({ page_size: -1 });
     let didSucceed = true;
-    console.log(`######${userName.includes('eu') ? 'EU' : env} Dev Test Results For Addon ${addonUUID} ######`);
+    console.log(`####################### ${userName.includes('eu') ? 'EU' : env} Dev Test Results For Addon ${addonUUID} #######################`);
     for (let index = 0; index < testResultArray.length; index++) {
         const testResult = testResultArray[index];
         if (testResult.stats.failures > 0) {
