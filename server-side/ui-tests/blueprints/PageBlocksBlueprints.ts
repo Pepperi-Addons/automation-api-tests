@@ -1,3 +1,4 @@
+import { v4 as newUuid } from 'uuid';
 export class BasePage {
     constructor(pageKey: string) {
         this.Blocks = [];
@@ -48,7 +49,7 @@ export class BasePageLayoutSection {
 
 export class BasePageLayoutSectionColumn {
     constructor(blockKey?: string) {
-        blockKey ? (this.BlockContainer = new BlockID(blockKey)) : null;
+        this.BlockContainer = new BlockID(blockKey || newUuid());
     }
     public BlockContainer?: BlockID;
 }
@@ -142,17 +143,19 @@ export class ResourceListBasicViewerEditorBlocksStructurePage {
         this.Key = pageKey;
         blockList.forEach((block) => {
             if (block.selectedEditor) {
-                this.Blocks.push(new ResourceListBlock(block.blockKey, block.blockResource, block.selectedEditor));
+                this.Blocks.push(
+                    new ResourceViewEditorBlock(block.blockKey, block.blockResource, block.selectedEditor),
+                );
             }
             if (block.selectedViews) {
                 this.Blocks.push(
-                    new ResourceListBlock(block.blockKey, block.blockResource, undefined, block.selectedViews),
+                    new ResourceViewEditorBlock(block.blockKey, block.blockResource, undefined, block.selectedViews),
                 );
             }
         });
         this.Layout = new ResourceListLayout(sectionDataList);
     }
-    public Blocks: ResourceListBlock[] = [];
+    public Blocks: ResourceViewEditorBlock[] = [];
     public Layout: ResourceListLayout;
     public Hidden = false;
     public Key: string;
@@ -160,7 +163,7 @@ export class ResourceListBasicViewerEditorBlocksStructurePage {
     public Description?: string;
 }
 
-export class ResourceListBlock {
+export class ResourceViewEditorBlock {
     constructor(
         blockKey: string,
         blockResource: string,
@@ -250,6 +253,7 @@ export class ResourceListBlockConfigurationDataView {
             collectionID: string;
             selectedViewUUID: string;
             selectedViewName: string;
+            selectedViewTitle?: string;
         }[],
     ) {
         selectedViews.forEach((selectedView) => {
@@ -259,6 +263,7 @@ export class ResourceListBlockConfigurationDataView {
                     selectedView.collectionID,
                     selectedView.selectedViewUUID,
                     selectedView.selectedViewName,
+                    selectedView.selectedViewTitle,
                 ),
             );
         });
@@ -267,10 +272,16 @@ export class ResourceListBlockConfigurationDataView {
 }
 
 export class ResourceListBlockConfigurationDataViewInViewsList {
-    constructor(collectionName: string, collectionID: string, selectedViewUUID: string, selectedViewName: string) {
+    constructor(
+        collectionName: string,
+        collectionID: string,
+        selectedViewUUID: string,
+        selectedViewName: string,
+        selectedViewTitle?: string,
+    ) {
         this.selectedResource = collectionName;
         this.id = collectionID;
-        this.title = 'Grid';
+        this.title = selectedViewTitle || 'Grid';
         this.views = [];
         this.showContent = true;
         this.selectedView = new ViewID(selectedViewUUID, selectedViewName);
@@ -344,6 +355,24 @@ export class ResourceListLayoutSection {
     public Hide = [];
     public Columns: BasePageLayoutSectionColumn[] = [];
     public Key: string;
+}
+
+export class ViewerBlock extends AddonBlockModule {
+    constructor(
+        selectedViews?: {
+            collectionName: string;
+            collectionID: string;
+            selectedViewUUID: string;
+            selectedViewName: string;
+            selectedViewTitle?: string;
+        }[],
+    ) {
+        const resource = 'DataViewerBlock';
+        const addonID = '0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3';
+        super(newUuid(), resource, addonID);
+        this.Configuration = new BaseBlockConfiguration(resource, addonID);
+        this.Configuration.Data = new ResourceListBlockConfigurationDataView(selectedViews || []);
+    }
 }
 
 export class VisitFlowBlock extends AddonBlockModule {
