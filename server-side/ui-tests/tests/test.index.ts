@@ -513,32 +513,32 @@ const passCreate = process.env.npm_config_pass_create as string;
             const [euUser, prodUser, sbUser] = resolveUserPerTest(addonName);
             console.log(`####################### Running For: ${addonName}(${addonUUID}) #######################`);
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
-            // await Promise.all([
-            //     handleDevTestInstallation(
-            //         euUser,
-            //         addonName,
-            //         addonUUID,
-            //         { describe, expect, it } as TesterFunctions,
-            //         varPass,
-            //         'prod',
-            //     ),
-            //     handleDevTestInstallation(
-            //         prodUser,
-            //         addonName,
-            //         addonUUID,
-            //         { describe, expect, it } as TesterFunctions,
-            //         varPass,
-            //         'prod',
-            //     ),
-            //     handleDevTestInstallation(
-            //         sbUser,
-            //         addonName,
-            //         addonUUID,
-            //         { describe, expect, it } as TesterFunctions,
-            //         varPassSB,
-            //         'stage',
-            //     ),
-            // ]);
+            await Promise.all([
+                handleDevTestInstallation(
+                    euUser,
+                    addonName,
+                    addonUUID,
+                    { describe, expect, it } as TesterFunctions,
+                    varPass,
+                    'prod',
+                ),
+                handleDevTestInstallation(
+                    prodUser,
+                    addonName,
+                    addonUUID,
+                    { describe, expect, it } as TesterFunctions,
+                    varPass,
+                    'prod',
+                ),
+                handleDevTestInstallation(
+                    sbUser,
+                    addonName,
+                    addonUUID,
+                    { describe, expect, it } as TesterFunctions,
+                    varPassSB,
+                    'stage',
+                ),
+            ]);
             // debugger;
             //2. validate tested addon is installed on latest available version
             const version = addonName === 'SYNC' || addonName === 'NEBULA' ? '0.6.%' : null;
@@ -607,7 +607,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                 console.log(
                     `####################### Running: ${currentTestName}, number: ${index+1} out of: ${testsList.length}  #######################`,
                 );
-                debugger;
                 //4.1. call current test async
                 const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
                     runDevTestOnCertainEnv(euUser, 'prod', latestVersionOfAutomationTemplateAddon, body),
@@ -628,7 +627,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                 const devPassingEnvs: any[] = [];
                 const devFailedEnvs: any[] = [];
                 //4.5. print the results
-                debugger;
                 const [euResults, prodResults, sbResults] = await Promise.all([
                     printResultsTestObject(testResultArrayEu.results[0].suites, euUser, 'prod', addonUUID, latestVersionOfTestedAddonProd),
                     printResultsTestObject(
@@ -691,15 +689,15 @@ const passCreate = process.env.npm_config_pass_create as string;
                     // ]);
                     //6. report to Teams
                     debugger;
-                    await reportToTeams(
-                        addonName,
-                        addonUUID,
-                        service,
-                        latestVersionOfTestedAddonProd,
-                        devPassingEnvs,
-                        devFailedEnvs,
-                        true,
-                    );
+                    // await reportToTeams(
+                    //     addonName,
+                    //     addonUUID,
+                    //     service,
+                    //     latestVersionOfTestedAddonProd,
+                    //     devPassingEnvs,
+                    //     devFailedEnvs,
+                    //     true,
+                    // );
                 }else{
                     passedTestsAndEnv.push(currentTestName);
                 }
@@ -1249,6 +1247,8 @@ function handleTeamsURL(addonName) {
     switch (addonName) {
         case 'ADAL':
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/b5117c82e129495fabbe8291e0cb615e/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+        case 'NEBULA':
+            return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/e20f96ddfa3d48768922c8489eb5e604/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
         case 'DIMX':
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/a5c62481e39743cb9d6651fa88284deb/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
         case 'DATA INDEX':
@@ -1792,7 +1792,7 @@ async function printResultsTestObject(testResultArray, userName, env, addonUUID,
     );
     for (let index = 0; index < testResultArray.length; index++) {
         const testResult = testResultArray[index];
-        if (testResult.failures > 0) {
+        if (testResult.failures.length > 0) {
             didSucceed = false;
         }
         service.reportResults2(

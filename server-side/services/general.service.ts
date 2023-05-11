@@ -1250,14 +1250,17 @@ export default class GeneralService {
     }
 
     reportResults2(testResultsObj, testedAddonObject) {
-        debugger;
+        console.log(`Tested Addon: ${testedAddonObject.Addon.Name} Version: ${testedAddonObject.Version}`);
+        console.log(`Test Suite: ${testResultsObj.title}`);
         console.log('Total Failures: ' + testResultsObj.failures.length);
         console.log('Total Passes: ' + testResultsObj.passes.length);
-        //1. run on all suites
         for (let index = 0; index < testResultsObj.tests.length; index++) {
             const test = testResultsObj.tests[index];
-            debugger;
-            
+            if(test.pass){
+                console.log(`√ ${test.fullTitle}: passed\n`);
+            }else{
+                console.log(`𝑥 ${test.fullTitle}: failed, on: ${test.err.message}\n`);
+            }
         }
         // for (let index1 = 0; index1 < testResultsObj.results[0].suites.length; index1++) {
         //     const testSuite = testResultsObj.results[0].suites[index1];
