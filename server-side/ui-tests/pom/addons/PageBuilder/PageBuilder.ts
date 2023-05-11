@@ -307,11 +307,22 @@ export class PageBuilder extends AddonPage {
     }
 
     public async removePageByKey(pageKey: string, client: Client) {
-        // GET https://papi.pepperi.com/V1.0/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=0c03353e-bb17-4b37-8220-56cf9a8a4523
+        // POST https://papi.pepperi.com/V1.0/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=0c03353e-bb17-4b37-8220-56cf9a8a4523
         const generalService = new GeneralService(client);
         const deleteResponse = await generalService.fetchStatus(
-            `addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page??key=${pageKey}`,
+            `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${pageKey}`,
+            {
+                method: 'POST',
+                body: JSON.stringify({}),
+            },
         );
+        // const deleteResponse = await generalService.fetchStatus(
+        //     `addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${pageKey}`,
+        //     {
+        //         method: 'POST',
+        //         body: JSON.stringify({}),
+        //     },
+        // );
         return deleteResponse;
     }
 }
