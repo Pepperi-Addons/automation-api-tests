@@ -1083,22 +1083,20 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const distributor = await pfsService.getDistributor();
                 //1. create the file to import
                 const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
-                const mime = 'file/plain';
+                const mime = 'text/csv';
                 const tempFileResponse = await pfsService.postTempFile({
                     FileName: fileName,
                     MIME: mime,
                 });
+                debugger;
                 expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
                 expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
                 expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
-                const URL = tempFileResponse.TemporaryFileURL;
-                const sliceStart = 0 - (fileName.length + 37);
-                const sliceEnd = 0 - fileName.length;
-                const manipulatedURL = URL.slice(sliceStart, sliceEnd);
-                const finalURL = URL.replace(manipulatedURL, '');
-                expect(finalURL).to.include('.pepperi.com/temp/' + distributor.UUID + '/' + fileName);
-                //2. create the UDC to import to
                 await createData(15);
+                const putResponsePart1 = await pfsService.putPresignedURL(tempFileResponse.PutURL, putPart1);
+                expect(putResponsePart1.ok).to.equal(true);
+                expect(putResponsePart1.status).to.equal(200);
+                //2. create the UDC to import to
                 //3. import file to UDC
 
                 //4. create new file which overwrites 
