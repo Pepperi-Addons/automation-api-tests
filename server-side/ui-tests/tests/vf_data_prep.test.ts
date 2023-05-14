@@ -14,13 +14,15 @@ export async function VFdataPrep(varPass: string, client: Client) {
 
     const testData = {
         VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
+        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x , current phased version 9.5.533
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''], // CPI_Node_data current phased version 0.6.14 | dependency > 0.6.11
+        Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.43'],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.11'], // dependency > 0.2.58
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], // current phased version 17.15.117 | dependency > 17.15.106
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''], // CPAS current phased version 17.10.4 | dependency > 17.0.8
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
-        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.7.9'], // current phased version 0.6.48 | dependency > 0.6.41
-        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.7.36'], // current phased version 0.6.41 | dependency > 0.6.35
-        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.18'], // Do Not change!
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''], // CPI_Node_data current phased version 0.6.14 | dependency > 0.6.11
+        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''], // current phased version 0.6.48 | dependency > 0.6.41
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''], // current phased version 0.6.41 | dependency > 0.6.35
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], // UDC current phased version 0.8.29 | dependency > 0.8.11
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', '0.7.%'], // current phased version 0.7.112 | dependency > 0.7.104
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''], // current phased version 0.6.2 | dependency > 0.6.2
@@ -28,9 +30,10 @@ export async function VFdataPrep(varPass: string, client: Client) {
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''], // current phased version 1.0.23 | dependency > 1.0.23
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // current phased version 0.5.10 | dependency > 0.5.7
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''], // current phased version 0.6.26 | dependency > 0.6.3
-        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x , current phased version 9.5.533
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.11'], // dependency > 0.2.58
-        Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.43'],
+        'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', ''],
+        survey: ['dd0a85ea-7ef0-4bc1-b14f-959e0372877a', ''],
+        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''],
+        Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);

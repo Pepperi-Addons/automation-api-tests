@@ -9,6 +9,7 @@ import {
     DataFieldForEditorView,
     SlugField,
     UpsertFieldsToMappedSlugs,
+    ViewMenuTypeField,
 } from '../blueprints/DataViewBlueprints';
 import {
     BaseFormDataViewField,
@@ -20,6 +21,7 @@ import { BasePomObject } from '../pom/base/BasePomObject';
 import { DataViewsService } from '../../services/data-views.service';
 import { GeneralService } from '../../services';
 import { Client } from '@pepperi-addons/debug-server/dist';
+import { expect } from 'chai';
 
 export default class E2EUtils extends BasePomObject {
     public constructor(protected browser: Browser) {
@@ -198,6 +200,52 @@ export default class E2EUtils extends BasePomObject {
         await slugs.mapPageToSlugEVGENY(slugPath, pageName);
     }
 
+    public async createSlug(
+        email: string,
+        password: string,
+        slugDisplayName: string,
+        slug_path: string,
+        pageToMap_Key: string,
+        client: Client,
+    ) {
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        const webAppHeader = new WebAppHeader(this.browser);
+        const slugs: Slugs = new Slugs(this.browser);
+        await this.navigateTo('Slugs');
+        await slugs.createSlug(slugDisplayName, slug_path, 'slug for Automation');
+        slugs.pause(3 * 1000);
+        const slugUUID = await slugs.getSlugUUIDbySlugName(slug_path, client);
+        console.info('slugUUID: ', slugUUID);
+        await webAppHeader.goHome();
+        expect(slugUUID).to.not.be.undefined;
+        const mappedSlugsUpsertResponse = await this.addToMappedSlugs(
+            [{ slug_path: slug_path, pageUUID: pageToMap_Key }],
+            client,
+        );
+        console.info(
+            `existingMappedSlugs: ${JSON.stringify(mappedSlugsUpsertResponse.previouslyExistingMappedSlugs, null, 4)}`,
+        );
+        // await this.navigateTo('Slugs');
+        // await slugs.clickTab('Mapping_Tab');
+        // await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
+        // await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
+        // await slugs.isSpinnerDone();
+        // await slugs.waitTillVisible(slugs.MappedSlugs_Title, 15000);
+        // this.browser.sleep(2 * 1000);
+        await this.logOutLogIn(email, password);
+        await webAppHomePage.isSpinnerDone();
+        await this.navigateTo('Slugs');
+        await slugs.clickTab('Mapping_Tab');
+        await slugs.waitTillVisible(slugs.MappingTab_RepCard_InnerListOfMappedSlugs, 15000);
+        const slugNameAtMappedSlugsSmallDisplayInRepCard = await this.browser.findElement(
+            slugs.getSelectorOfMappedSlugInRepCardSmallDisplayByText(slug_path),
+            10000,
+        );
+        expect(await slugNameAtMappedSlugsSmallDisplayInRepCard.getText()).to.contain(slug_path);
+        this.browser.sleep(1 * 1000);
+        return slugUUID;
+    }
+
     public prepareListOfBaseFields(
         arrayOfFields: {
             fieldName: string;
@@ -218,6 +266,7 @@ export default class E2EUtils extends BasePomObject {
                 field = new DataViewBaseField(
                     fieldFromArray.fieldName,
                     fieldFromArray.dataViewType ? fieldFromArray.dataViewType : 'TextBox',
+                    fieldFromArray.fieldName,
                     fieldFromArray.hasOwnProperty('mandatory') ? fieldFromArray.mandatory : false,
                     fieldFromArray.hasOwnProperty('readonly') ? fieldFromArray.readonly : true,
                 );
@@ -243,6 +292,7 @@ export default class E2EUtils extends BasePomObject {
                 field = new DataFieldForEditorView(
                     fieldDefinitionArray.fieldName,
                     fieldDefinitionArray.dataViewType,
+                    fieldDefinitionArray.fieldName,
                     fieldDefinitionArray.mandatory,
                     fieldDefinitionArray.readonly,
                     index,
@@ -251,6 +301,16 @@ export default class E2EUtils extends BasePomObject {
                 index++;
             },
         );
+        return fields;
+    }
+
+    public prepareDataToConfigFieldsInViewTabs(arrayOfFields: { fieldName: string }[]) {
+        const fields: MenuDataViewField[] = [];
+        let field: MenuDataViewField;
+        arrayOfFields.forEach((listing: { fieldName: string }) => {
+            field = new ViewMenuTypeField(listing.fieldName);
+            fields.push(field);
+        });
         return fields;
     }
 

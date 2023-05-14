@@ -1,8 +1,17 @@
-import { BaseFormDataViewField, GridDataViewField } from '@pepperi-addons/papi-sdk';
+import { BaseFormDataViewField, GridDataViewField, MenuDataViewField } from '@pepperi-addons/papi-sdk';
 import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
-import { UpsertResourceFieldsToEditor, UpsertResourceFieldsToView } from '../../blueprints/DataViewBlueprints';
+import {
+    UpsertResourceFieldsToEditor,
+    UpsertResourceFieldsToView,
+    UpsertResourceFieldsToViewLineMenu,
+    UpsertResourceFieldsToViewMenu,
+    UpsertResourceFieldsToViewSearch,
+    UpsertResourceFieldsToViewSmartSearch,
+} from '../../blueprints/DataViewBlueprints';
 import { AddonPage } from './base/AddonPage';
+import { Client } from '@pepperi-addons/debug-server/dist';
+import { GeneralService } from '../../../services';
 
 export class ResourceList extends AddonPage {
     // *general selectors for Resource Views*
@@ -16,6 +25,10 @@ export class ResourceList extends AddonPage {
     public Editors_Tab: By = this.getSelectorOfResourceListSettingsTab('Editors');
     public General_Tab: By = this.getSelectorOfResourceListSettingsTab('General');
     public Form_Tab: By = this.getSelectorOfResourceListSettingsTab('Form');
+    public Menu_Tab: By = this.getSelectorOfResourceListSettingsTab('Menu');
+    public LineMenu_Tab: By = this.getSelectorOfResourceListSettingsTab('Line Menu');
+    public SmartSearch_Tab: By = this.getSelectorOfResourceListSettingsTab('Smart Search');
+    public Search_Tab: By = this.getSelectorOfResourceListSettingsTab('Search');
     // List
     public GenericList_Content: By = By.xpath('//pep-generic-list/pep-page-layout/div[@class="pep-page-main-layout"]');
     public Add_Button: By = By.xpath('//span[@title="Add"]/ancestor::button');
@@ -352,6 +365,10 @@ export class ResourceViews extends ResourceList {
     public async customViewConfig(
         dataViewsService,
         viewData: { matchingEditorName: string; viewKey: string; fieldsToConfigureInView: GridDataViewField[] },
+        menu?: { fieldsToConfigureInViewMenu: MenuDataViewField[] },
+        lineMenu?: { fieldsToConfigureInViewLineMenu: MenuDataViewField[] },
+        smartSearch?: { fieldsToConfigureInViewSmartSearch: MenuDataViewField[] },
+        search?: { fieldsToConfigureInViewSearch: MenuDataViewField[] },
     ) {
         const resourceFieldsToAddToViewObj = new UpsertResourceFieldsToView(
             viewData.viewKey,
@@ -378,6 +395,109 @@ export class ResourceViews extends ResourceList {
         this.pause(0.5 * 1000);
         await this.click(this.EditPage_ProfileEditButton_Back);
         this.pause(5 * 1000);
+        if (menu) {
+            this.customViewTabConfig('Menu', dataViewsService, {
+                viewKey: viewData.viewKey,
+                fields: menu.fieldsToConfigureInViewMenu,
+            });
+        }
+        if (lineMenu) {
+            this.customViewTabConfig('LineMenu', dataViewsService, {
+                viewKey: viewData.viewKey,
+                fields: lineMenu.fieldsToConfigureInViewLineMenu,
+            });
+        }
+        if (smartSearch) {
+            this.customViewTabConfig('SmartSearch', dataViewsService, {
+                viewKey: viewData.viewKey,
+                fields: smartSearch.fieldsToConfigureInViewSmartSearch,
+            });
+        }
+        if (search) {
+            this.customViewTabConfig('Search', dataViewsService, {
+                viewKey: viewData.viewKey,
+                fields: search.fieldsToConfigureInViewSearch,
+            });
+        }
+    }
+
+    // public async customViewSmartSearchConfig(
+    //     dataViewsService,
+    //     smartSearch: { viewKey: string; fieldsToConfigureInViewSmartSearch: MenuDataViewField[] },
+    // ) {
+    //     const resourceFieldsToAddToViewSmartSearchObj = new UpsertResourceFieldsToViewSmartSearch(
+    //         smartSearch.viewKey,
+    //         smartSearch.fieldsToConfigureInViewSmartSearch,
+    //     );
+    //     // POST https://papi.pepperi.com/V1.0/meta_data/data_views
+    //     const upsertFieldsToViewSmartSearch = await dataViewsService.postDataView(resourceFieldsToAddToViewSmartSearchObj);
+    //     console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToViewSmartSearch, null, 2)}`);
+    //     this.pause(0.5 * 1000);
+    //     await this.click(this.SmartSearch_Tab);
+    //     await this.waitTillVisible(this.EditPage_ConfigProfileCard_Rep, 15000);
+    //     await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
+    //     this.pause(0.5 * 1000);
+    //     await this.click(this.EditPage_ProfileEditButton_Back);
+    //     this.pause(5 * 1000);
+    // }
+
+    public async customViewTabConfig(
+        tabContext: 'Menu' | 'LineMenu' | 'SmartSearch' | 'Search',
+        dataViewsService,
+        configData: { viewKey: string; fields: MenuDataViewField[] },
+    ) {
+        let resourceFieldsToAddToViewTabObj;
+        switch (tabContext) {
+            case 'Menu':
+                resourceFieldsToAddToViewTabObj = new UpsertResourceFieldsToViewMenu(
+                    configData.viewKey,
+                    configData.fields,
+                );
+                break;
+            case 'LineMenu':
+                resourceFieldsToAddToViewTabObj = new UpsertResourceFieldsToViewLineMenu(
+                    configData.viewKey,
+                    configData.fields,
+                );
+                break;
+            case 'SmartSearch':
+                resourceFieldsToAddToViewTabObj = new UpsertResourceFieldsToViewSmartSearch(
+                    configData.viewKey,
+                    configData.fields,
+                );
+                break;
+            case 'Search':
+                resourceFieldsToAddToViewTabObj = new UpsertResourceFieldsToViewSearch(
+                    configData.viewKey,
+                    configData.fields,
+                );
+                break;
+
+            default:
+                break;
+        }
+        // POST https://papi.pepperi.com/V1.0/meta_data/data_views
+        const upsertFieldsToViewTab = await dataViewsService.postDataView(resourceFieldsToAddToViewTabObj);
+        console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToViewTab, null, 2)}`);
+        this.pause(0.5 * 1000);
+        await this.click(this.Search_Tab);
+        await this.waitTillVisible(this.EditPage_ConfigProfileCard_Rep, 15000);
+        await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
+        this.pause(0.5 * 1000);
+        await this.click(this.EditPage_ProfileEditButton_Back);
+        this.pause(5 * 1000);
+    }
+
+    public async deleteViewViaApiByUUID(viewKey: string, client: Client) {
+        const generalService = new GeneralService(client);
+        const deleteViewResponse = await generalService.fetchStatus(
+            `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
+            {
+                method: 'POST',
+                body: JSON.stringify({ Key: viewKey, Hidden: true }),
+            },
+        );
+        return deleteViewResponse;
     }
 }
 
