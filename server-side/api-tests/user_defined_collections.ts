@@ -1144,3 +1144,14 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         });
     });
 }
+
+function createData(howManyDataRows: number) {
+    const headers = "code";
+    const runningDataCode = "data_index";
+    let strData = "";
+    strData += headers + "\n";
+    for (let index = 0; index < howManyDataRows; index++) {
+        strData += `${runningDataCode.replace('index', index.toString())}\n`;
+    }
+    genrateFile("Data", strData);
+}
