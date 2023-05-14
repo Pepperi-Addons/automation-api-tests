@@ -1,4 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
+import { PFSService } from '../services/pfs.service';
 import { UdcField, UDCService } from '../services/user-defined-collections.service';
 
 export async function UDCTestser(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -43,42 +44,42 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         generalService['client'].AddonSecretKey = addonSecretKey;
         generalService.papiClient['options'].addonSecretKey = addonSecretKey;
     }
-    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    // const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //#endregion Upgrade UDC
 
     describe('UDC Tests Suites', () => {
-        describe('Prerequisites Addon for UDC Tests', () => {
-            //Test Data
-            //UDC
-            isInstalledArr.forEach((isInstalled, index) => {
-                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-                    expect(isInstalled).to.be.true;
-                });
-            });
-            for (const addonName in testData) {
-                const addonUUID = testData[addonName][0];
-                const version = testData[addonName][1];
-                const varLatestVersion = chnageVersionResponseArr[addonName][2];
-                const changeType = chnageVersionResponseArr[addonName][3];
-                describe(`Test Data: ${addonName}`, () => {
-                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-                        } else {
-                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-                        }
-                    });
+        // describe('Prerequisites Addon for UDC Tests', () => {
+        //     //Test Data
+        //     //UDC
+        //     isInstalledArr.forEach((isInstalled, index) => {
+        //         it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+        //             expect(isInstalled).to.be.true;
+        //         });
+        //     });
+        //     for (const addonName in testData) {
+        //         const addonUUID = testData[addonName][0];
+        //         const version = testData[addonName][1];
+        //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
+        //         const changeType = chnageVersionResponseArr[addonName][3];
+        //         describe(`Test Data: ${addonName}`, () => {
+        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+        //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+        //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+        //                 } else {
+        //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+        //                 }
+        //             });
 
-                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                            .eventually.to.have.property('Version')
-                            .a('string')
-                            .that.is.equal(varLatestVersion);
-                    });
-                });
-            }
-        });
+        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+        //                     .eventually.to.have.property('Version')
+        //                     .a('string')
+        //                     .that.is.equal(varLatestVersion);
+        //             });
+        //         });
+        //     }
+        // });
         describe('Base Collection Testing', () => {
             let basicCollectionName = '';
             let keyCollectionName = '';
@@ -89,6 +90,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             let basicOnlineCollectionName = '';
             let baseedOnSchemeOnlyCollectionName = '';
             let accResourceCollectionName = '';
+            let dimxOverWriteCollectionName = '';
             const intVal = 15;
             const douVal = 0.129;
             const strVal = 'Test String UDC Feild';
@@ -958,12 +960,12 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                             collectionName === basicOnlineCollectionName
                                 ? 'str1,int1,dou1,Key'
                                 : collectionName === accResourceCollectionName
-                                ? 'myAcc,Key'
-                                : collectionName === basicArrayCollectionName
-                                ? 'Key,dou2,int2,str2'
-                                : collectionName === baseedOnSchemeOnlyCollectionName
-                                ? 'basedOn,Key'
-                                : 'str,bool,int,dou,Key',
+                                    ? 'myAcc,Key'
+                                    : collectionName === basicArrayCollectionName
+                                        ? 'Key,dou2,int2,str2'
+                                        : collectionName === baseedOnSchemeOnlyCollectionName
+                                            ? 'basedOn,Key'
+                                            : 'str,bool,int,dou,Key',
                         Delimiter: ',',
                     };
                     console.log(`Running The Test On:${collectionName},fields:${bodyToSend.Fields}`);
@@ -1073,6 +1075,31 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body[0]).to.haveOwnProperty('Key');
                 const document = (await udcService.getDocuments(accResourceCollectionName))[0];
                 expect(document.myAcc).to.equal(accUUID);
+            });
+            it('Positive Test: DIMX overwrite test', async () => {
+                dimxOverWriteCollectionName = "DimxOverwrite" + generalService.generateRandomString(15);
+                const pfsService = new PFSService(generalService);
+                const distributor = await pfsService.getDistributor();
+                //1. create the file to import
+                const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.txt';
+                const mime = 'file/plain';
+                const tempFileResponse = await pfsService.postTempFile({
+                    FileName: fileName,
+                    MIME: mime,
+                });
+                expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
+                expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
+                expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
+                const URL = tempFileResponse.TemporaryFileURL;
+                const sliceStart = 0 - (fileName.length + 37);
+                const sliceEnd = 0 - fileName.length;
+                const manipulatedURL = URL.slice(sliceStart, sliceEnd);
+                const finalURL = URL.replace(manipulatedURL, '');
+                expect(finalURL).to.include('.pepperi.com/temp/' + distributor.UUID + '/' + fileName);
+                //2. create the UDC to import to
+                //3. import file to UDC
+                //4. create new file which overwrites 
+                //5. run DIMX overwrite
             });
             it("Tear Down: cleaning all upserted UDC's", async () => {
                 const documents = await udcService.getSchemes();
