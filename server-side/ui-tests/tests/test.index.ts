@@ -731,9 +731,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     passedTests.push(currentTestName);
                 }
             }
-            debugger;
             if (!doWeHaveSuchAppTest(addonName) || passedTests.length != testsList.length) {
-                debugger;
                 const devPassingEnvs: string[] = [];
                 if (passedTestsEnv.filter((v) => v === 'eu').length === testsList.length) {
                     devPassingEnvs.push('EU');
