@@ -245,8 +245,8 @@ export default class GeneralService {
         const testEnvironment = client.BaseURL.includes('staging')
             ? 'Sandbox'
             : client.BaseURL.includes('papi-eu')
-                ? 'Production-EU'
-                : 'Production';
+            ? 'Production-EU'
+            : 'Production';
         const { describe, expect, assert, it, run, setNewTestHeadline, addTestResultUnderHeadline, printTestResults } =
             tester(client, testName, testEnvironment);
         return {
@@ -468,9 +468,10 @@ export default class GeneralService {
             );
             gottenResultFromJenkins = jenkinsJobResponsePolling.Body.result;
             console.log(
-                `${jobName}: received result is ${gottenResultFromJenkins} ${gottenResultFromJenkins === null
-                    ? '(still running)'
-                    : typeof gottenResultFromJenkins === 'undefined'
+                `${jobName}: received result is ${gottenResultFromJenkins} ${
+                    gottenResultFromJenkins === null
+                        ? '(still running)'
+                        : typeof gottenResultFromJenkins === 'undefined'
                         ? '(networking error should be resolved)'
                         : '(finished)'
                 } `,
@@ -563,8 +564,8 @@ export default class GeneralService {
         return this.client.BaseURL.includes('staging')
             ? 'Sandbox'
             : this.client.BaseURL.includes('papi-eu')
-                ? 'Production-EU'
-                : 'Production';
+            ? 'Production-EU'
+            : 'Production';
     }
 
     getClientData(data: ClientData): string {
@@ -637,8 +638,8 @@ export default class GeneralService {
                 auditLogResponse === null
                     ? auditLogResponse
                     : auditLogResponse[0] === undefined
-                        ? auditLogResponse
-                        : auditLogResponse[0];
+                    ? auditLogResponse
+                    : auditLogResponse[0];
             //This case is used when AuditLog was not created at all (This can happen and it is valid)
             if (auditLogResponse === null) {
                 this.sleep(4000);
@@ -649,7 +650,8 @@ export default class GeneralService {
             else if (auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') {
                 this.sleep(sleepTime !== undefined && sleepTime > 0 ? sleepTime : 2000);
                 console.log(
-                    `%c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${auditLogResponse.Status.ID
+                    `%c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${
+                        auditLogResponse.Status.ID
                     }, Retry ${loopsAmount} Times.`,
                     ConsoleColors.Information,
                 );
@@ -819,7 +821,8 @@ export default class GeneralService {
         const service = new GeneralService(client);
         const varCredBase64 = Buffer.from(varCredentials).toString('base64');
         const responseProd = await service.fetchStatus(
-            `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 ${versionString ? `AND Version Like '${versionString}' ` : ''
+            `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 ${
+                versionString ? `AND Version Like '${versionString}' ` : ''
             }&order_by=CreationDateTime DESC`,
             {
                 method: 'GET',
@@ -896,7 +899,8 @@ export default class GeneralService {
                     varLatestVersion = fetchVarResponse.Body[0].Version;
                 } catch (error) {
                     throw new Error(
-                        `Get latest addon version failed: ${version}, Status: ${varLatestVersion.Status
+                        `Get latest addon version failed: ${version}, Status: ${
+                            varLatestVersion.Status
                         }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `,
                     );
                 }
@@ -906,7 +910,8 @@ export default class GeneralService {
                 );
             } else if (fetchVarResponse.Body.length > 0) {
                 throw new Error(
-                    `Get latest addon version failed: ${version}, Status: ${fetchVarResponse.Status
+                    `Get latest addon version failed: ${version}, Status: ${
+                        fetchVarResponse.Status
                     }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `,
                 );
             }
@@ -1024,13 +1029,15 @@ export default class GeneralService {
                     LatestVersion = fetchResponse.Body[0].Version;
                 } catch (error) {
                     throw new Error(
-                        `Get latest addon version failed: ${version}, Status: ${LatestVersion.Status
+                        `Get latest addon version failed: ${version}, Status: ${
+                            LatestVersion.Status
                         }, Error Message: ${JSON.stringify(fetchResponse.Error)} `,
                     );
                 }
             } else {
                 throw new Error(
-                    `Get latest addon version failed: ${version}, Status: ${fetchResponse.Status
+                    `Get latest addon version failed: ${version}, Status: ${
+                        fetchResponse.Status
                     }, Error Message: ${JSON.stringify(fetchResponse.Error)} `,
                 );
             }
@@ -1086,7 +1093,8 @@ export default class GeneralService {
                 const end = performance.now();
                 const isSucsess = response.status > 199 && response.status < 400 ? true : false;
                 console[isSucsess ? 'log' : 'debug'](
-                    `%cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${uri.startsWith('/') ? this['client'].BaseURL + uri : uri
+                    `%cFetch ${isSucsess ? '' : 'Error '}${requestInit?.method ? requestInit?.method : 'GET'}: ${
+                        uri.startsWith('/') ? this['client'].BaseURL + uri : uri
                     } took ${(end - start).toFixed(2)} milliseconds`,
                     `${isSucsess ? ConsoleColors.FetchStatus : ConsoleColors.Information} `,
                 );
@@ -1261,7 +1269,7 @@ export default class GeneralService {
                 if (test.pass) {
                     console.log(`√ ${test.fullTitle}: passed\n`);
                 } else {
-                    console.log(`𝑥 ${test.fullTitle}: failed, on: ${test.err === undefined ? "" : test.err.message}\n`);
+                    console.log(`𝑥 ${test.fullTitle}: failed, on: ${test.err === undefined ? '' : test.err.message}\n`);
                 }
             }
         }
@@ -1336,11 +1344,11 @@ export default class GeneralService {
         //taken from https://tutorial.eyehunts.com/js/url-validation-regex-javascript-example-code/
         const pattern = new RegExp(
             '^(https?:\\/\\/)?' + // protocol
-            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-            '(\\#[-a-z\\d_]*)?$', // fragment locator
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                '(\\#[-a-z\\d_]*)?$', // fragment locator
             'i', // makes the regex case insensitive
         );
         return !!pattern.test(s.replace(' ', '%20'));

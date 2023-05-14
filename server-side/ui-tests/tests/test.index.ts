@@ -44,7 +44,7 @@ import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
 // import { testData } from './../../services/general.service';
-import { } from './script_picker.test';
+import {} from './script_picker.test';
 import { PFSTestser } from '../../api-tests/pepperi_file_service';
 import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
 import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
@@ -594,10 +594,15 @@ const passCreate = process.env.npm_config_pass_create as string;
             );
             console.log(entryUUID);
             //3.1 call /tests/which_tests_for_addonUUID to get the list of all needed tests for this addon
-            testsList = (await generalService.fetchStatus(`/addons/api/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/which_tests_for_addonUUID`, {
-                method: "POST",
-                body: JSON.stringify({ AddonUUID: addonUUID }),
-            })).Body;
+            testsList = (
+                await generalService.fetchStatus(
+                    `/addons/api/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/which_tests_for_addonUUID`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify({ AddonUUID: addonUUID }),
+                    },
+                )
+            ).Body;
             //4. iterate on all test names and call each
             for (let index = 0; index < testsList.length; index++) {
                 const currentTestName = testsList[index];
@@ -607,7 +612,9 @@ const passCreate = process.env.npm_config_pass_create as string;
                     isLocal: false,
                 };
                 console.log(
-                    `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${testsList.length}  #######################`,
+                    `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
+                        testsList.length
+                    }  #######################`,
                 );
                 //4.1. call current test async
                 const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
@@ -639,12 +646,19 @@ const passCreate = process.env.npm_config_pass_create as string;
                     objectToPrintEu = testResultArrayEu.results[0].suites[0].suites;
                     objectToPrintProd = testResultArrayProd.results[0].suites[0].suites;
                     objectToPrintSB = testResultArraySB.results[0].suites[0].suites;
-                } else {//add an if to catch the other result config also
+                } else {
+                    //add an if to catch the other result config also
                     objectToPrintEu = testResultArrayEu.results[0].suites;
                     objectToPrintProd = testResultArrayProd.results[0].suites;
                     objectToPrintSB = testResultArraySB.results[0].suites;
                 }
-                const euResults = await printResultsTestObject(objectToPrintEu, euUser, 'prod', addonUUID, latestVersionOfTestedAddonProd);
+                const euResults = await printResultsTestObject(
+                    objectToPrintEu,
+                    euUser,
+                    'prod',
+                    addonUUID,
+                    latestVersionOfTestedAddonProd,
+                );
                 const prodResults = await printResultsTestObject(
                     objectToPrintProd,
                     prodUser,
@@ -652,7 +666,13 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonUUID,
                     latestVersionOfTestedAddonProd,
                 );
-                const sbResults = await printResultsTestObject(objectToPrintSB, sbUser, 'stage', addonUUID, latestVersionOfTestedAddonProd);
+                const sbResults = await printResultsTestObject(
+                    objectToPrintSB,
+                    sbUser,
+                    'stage',
+                    addonUUID,
+                    latestVersionOfTestedAddonProd,
+                );
                 if (shouldAlsoPrintVer) {
                     objectToPrintEu = testResultArrayEu.results[0].suites[1].suites;
                     objectToPrintProd = testResultArrayProd.results[0].suites[1].suites;
@@ -686,51 +706,26 @@ const passCreate = process.env.npm_config_pass_create as string;
                 // debugger;
                 //5. un - available this version if needed
                 if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
-                    if (!euResults.didSucceed && !failingTestsEnv.includes("eu")) {
-                        failingTestsEnv.push("eu");
+                    if (!euResults.didSucceed && !failingTestsEnv.includes('eu')) {
+                        failingTestsEnv.push('eu');
                     } else if (euResults.didSucceed) {
-                        passedTestsEnv.push("eu");
+                        passedTestsEnv.push('eu');
                     }
-                    if (!prodResults.didSucceed && !failingTestsEnv.includes("prod")) {
-                        failingTestsEnv.push("prod");
+                    if (!prodResults.didSucceed && !failingTestsEnv.includes('prod')) {
+                        failingTestsEnv.push('prod');
                     } else if (prodResults.didSucceed) {
-                        passedTestsEnv.push("prod");
+                        passedTestsEnv.push('prod');
                     }
-                    if (!sbResults.didSucceed && !failingTestsEnv.includes("sb")) {
-                        failingTestsEnv.push("sb");
+                    if (!sbResults.didSucceed && !failingTestsEnv.includes('sb')) {
+                        failingTestsEnv.push('sb');
                     } else if (sbResults.didSucceed) {
-                        passedTestsEnv.push("sb");
+                        passedTestsEnv.push('sb');
                     }
                     // debugger;
                     // const addonToInstall = {};
                     // addonToInstall[addonName] = [addonUUID, ''];
                     // debugger;
-                    // await Promise.all([
-                    //     unavailableAddonVersion(
-                    //         'prod',
-                    //         addonName,
-                    //         addonEntryUUIDEU,
-                    //         latestVersionOfTestedAddonProd,
-                    //         addonUUID,
-                    //         varPassEU,
-                    //     ),
-                    //     unavailableAddonVersion(
-                    //         'prod',
-                    //         addonName,
-                    //         addonEntryUUIDProd,
-                    //         latestVersionOfTestedAddonProd,
-                    //         addonUUID,
-                    //         varPass,
-                    //     ),
-                    //     unavailableAddonVersion(
-                    //         'stage',
-                    //         addonName,
-                    //         addonEntryUUIDSb,
-                    //         latestVersionOfTestedAddonProd,
-                    //         addonUUID,
-                    //         varPassSB,
-                    //     ),
-                    // ]);
+
                     //6. report to Teams
                 } else {
                     passedTests.push(currentTestName);
@@ -739,15 +734,43 @@ const passCreate = process.env.npm_config_pass_create as string;
             debugger;
             if (!doWeHaveSuchAppTest(addonName) || passedTests.length != testsList.length) {
                 debugger;
-                let devPassingEnvs: string[] = [];
-                if (passedTestsEnv.filter((v) => (v === 'eu')).length === testsList.length) {
-                    devPassingEnvs.push("EU");
+                const devPassingEnvs: string[] = [];
+                if (passedTestsEnv.filter((v) => v === 'eu').length === testsList.length) {
+                    devPassingEnvs.push('EU');
                 }
-                if (passedTestsEnv.filter((v) => (v === 'prod')).length === testsList.length) {
-                    devPassingEnvs.push("PROD");
+                if (passedTestsEnv.filter((v) => v === 'prod').length === testsList.length) {
+                    devPassingEnvs.push('PROD');
                 }
-                if (passedTestsEnv.filter((v) => (v === 'sb')).length === testsList.length) {
-                    devPassingEnvs.push("STAGING");
+                if (passedTestsEnv.filter((v) => v === 'sb').length === testsList.length) {
+                    devPassingEnvs.push('STAGING');
+                }
+                if (failingTestsEnv.length != 0) {
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEU,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
                 }
                 await reportToTeams(
                     addonName,
@@ -758,6 +781,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     failingTestsEnv,
                     true,
                 );
+
                 console.log('Dev Test Didnt Pass - No Point In Running Approvment');
                 return;
             }
@@ -1426,7 +1450,8 @@ export async function replaceItemsTests(generalService: GeneralService) {
                         } catch (error) {
                             console.log(`POST item faild for item: ${JSON.stringify(filteredArray[j])}`);
                             console.log(
-                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${maxLoopsCounter - 1
+                                `Wait ${6 * (6 - maxLoopsCounter)} seconds, and retry ${
+                                    maxLoopsCounter - 1
                                 } more times`,
                             );
                             generalService.sleep(6000 * (6 - maxLoopsCounter));
@@ -1751,12 +1776,14 @@ async function reportToTeams(
     let message;
     let message2;
     if (isDev) {
-        message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
+        message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
+            passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
         message2 = `DEV TEST RESULT`;
     } else {
-        message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
+        message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
+            passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
+        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
         message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
     }
     const bodyToSend = {
@@ -1843,17 +1870,17 @@ async function printResultsTestObject(testResultArray, userName, env, addonUUID,
     let didSucceed = true;
     // debugger;
     console.log(
-        `####################### ${userName.includes('EU') ? 'EU' : env
+        `####################### ${
+            userName.includes('EU') ? 'EU' : env
         } Dev Test Results For Addon ${addonUUID} #######################`,
     );
     for (let index = 0; index < testResultArray.length; index++) {
         const testResult = testResultArray[index];
-        if (testResult.title.includes("Test Data")) {
+        if (testResult.title.includes('Test Data')) {
             if (testResult.failures.length > 1) {
                 didSucceed = false;
             }
-        }
-        else if (testResult.failures.length > 0) {
+        } else if (testResult.failures.length > 0) {
             didSucceed = false;
         }
         service.reportResults2(

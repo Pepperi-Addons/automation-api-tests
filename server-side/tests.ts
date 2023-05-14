@@ -1294,8 +1294,8 @@ export async function handleDevTestInstallation(
     if (dependenciesFromPublishConfig !== undefined && Object.entries(dependenciesFromPublishConfig).length !== 0) {
         dependeciesUUIDs = await buildTheDependencyArray(service, dependenciesFromPublishConfig);
         //4. install on dist
-        if(addonUUID==='00000000-0000-0000-0000-000000006a91'){
-            dependeciesUUIDs["Core Resources"] = ["fc5a5974-3b30-4430-8feb-7d5b9699bc9f", '%'];
+        if (addonUUID === '00000000-0000-0000-0000-000000006a91') {
+            dependeciesUUIDs['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '%'];
         }
         for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
             const addonToInstall = {};
