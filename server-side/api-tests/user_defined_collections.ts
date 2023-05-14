@@ -1,6 +1,7 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { PFSService } from '../services/pfs.service';
 import { UdcField, UDCService } from '../services/user-defined-collections.service';
+import fs from 'fs';
 
 export async function UDCTestser(generalService: GeneralService, request, tester: TesterFunctions) {
     await UDCTests(generalService, request, tester);
@@ -1081,7 +1082,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const pfsService = new PFSService(generalService);
                 const distributor = await pfsService.getDistributor();
                 //1. create the file to import
-                const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.txt';
+                const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
                 const mime = 'file/plain';
                 const tempFileResponse = await pfsService.postTempFile({
                     FileName: fileName,
@@ -1097,7 +1098,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const finalURL = URL.replace(manipulatedURL, '');
                 expect(finalURL).to.include('.pepperi.com/temp/' + distributor.UUID + '/' + fileName);
                 //2. create the UDC to import to
+                await createData(15);
                 //3. import file to UDC
+
                 //4. create new file which overwrites 
                 //5. run DIMX overwrite
             });
@@ -1145,7 +1148,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
     });
 }
 
-function createData(howManyDataRows: number) {
+async function createData(howManyDataRows: number) {
     const headers = "code";
     const runningDataCode = "data_index";
     let strData = "";
@@ -1153,5 +1156,14 @@ function createData(howManyDataRows: number) {
     for (let index = 0; index < howManyDataRows; index++) {
         strData += `${runningDataCode.replace('index', index.toString())}\n`;
     }
-    genrateFile("Data", strData);
+    await genrateFile("Data", strData);
 }
+
+async function genrateFile(tempFileName, data) {
+    try {
+        fs.writeFileSync(`./csv_data/${tempFileName}.csv`, data, 'utf-8');
+    } catch (error) {
+        throw new Error(`Error: ${(error as any).message}`);
+    }
+}
+
