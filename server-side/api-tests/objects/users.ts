@@ -179,7 +179,7 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
             expect(createdUser.Profile.Data, 'Profile data').to.deep.equal({
                 InternalID: repProfile.InternalID,
                 Name: 'Rep',
-                UUID: repProfile.UUID
+                UUID: repProfile.UUID,
             });
             expect(createdUser.Profile.URI, 'Profile data').to.equal('/profiles/' + repProfile.InternalID);
             expect(createdUser, 'Role').to.have.property('Role');
@@ -269,7 +269,7 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
                 Data: {
                     InternalID: repProfile.InternalID,
                     Name: 'Rep',
-                    UUID: repProfile.UUID
+                    UUID: repProfile.UUID,
                 },
                 URI: '/profiles/' + repProfile.InternalID,
             });
