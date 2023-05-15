@@ -15,6 +15,7 @@ import { v4 as newUuid } from 'uuid';
 import { UDCService } from '../../services/user-defined-collections.service';
 import { ObjectsService } from '../../services';
 import { OrderPage } from '../pom/Pages/OrderPage';
+import { SurveyTemplateBuilder } from '../pom/addons/SurveyTemplateBuilder';
 
 chai.use(promised);
 
@@ -33,6 +34,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let visitFlow: VisitFlow;
     let pageBuilder: PageBuilder;
     let slugs: Slugs;
+    let surveyService: SurveyTemplateBuilder;
     let randomString: string;
     let upsertedListingsToVisitFlowGroups: {
         Title: string;
@@ -56,6 +58,9 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     }[];
     let pageUUID: string;
     let pageName: string;
+    let surveyTemplateName: string;
+    let surveyTemplateDesc: string;
+    let surveyUUID: string;
     let visitFlowName: string;
     let visitFlowDescription: string;
     let slugDisplayName: string;
@@ -74,6 +79,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
                 settingsSidePanel = new WebAppSettingsSidePanel(driver);
+                surveyService = new SurveyTemplateBuilder(driver);
                 e2eUtils = new E2EUtils(driver);
                 orderPage = new OrderPage(driver);
                 visitFlow = new VisitFlow(driver);
@@ -81,6 +87,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 slugs = new Slugs(driver);
                 // resourceViews = new ResourceViews(driver);
                 randomString = generalService.generateRandomString(5);
+                surveyTemplateName = ``;
+                surveyTemplateDesc = ``;
                 visitFlowName = `Auto VisiT ${randomString}`;
                 visitFlowDescription = `Auto Visit ${randomString}`;
                 slugDisplayName = `Visit Flow Auto ${randomString}`;
@@ -511,6 +519,21 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
                     visitFlow.pause(0.5 * 1000);
+                });
+            });
+
+            describe('Survey Prep', () => {
+                it('Configuring Survey', async () => {
+                    await surveyService.enterSurveyBuilderSettingsPage();
+                    await surveyService.enterSurveyBuilderActualBuilder();
+                    surveyUUID = await surveyService.configureTheSurveyTemplate(
+                        surveyTemplateName,
+                        surveyTemplateDesc,
+                        surveyService.surveyTemplateToCreate,
+                    );
+                    console.info('surveyUUID: ', surveyUUID);
+                    await webAppHeader.goHome();
+                    await webAppHomePage.isSpinnerDone();
                 });
             });
 

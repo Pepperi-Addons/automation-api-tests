@@ -1,4 +1,13 @@
 import { v4 as newUuid } from 'uuid';
+
+export interface SelectedView {
+    collectionName: string;
+    collectionID: string;
+    selectedViewUUID: string;
+    selectedViewName: string;
+    selectedViewTitle?: string;
+}
+
 export class BasePage {
     constructor(pageKey: string) {
         this.Blocks = [];
@@ -247,15 +256,7 @@ export class ResourceListBlockConfigurationDataEditor {
 }
 
 export class ResourceListBlockConfigurationDataView {
-    constructor(
-        selectedViews: {
-            collectionName: string;
-            collectionID: string;
-            selectedViewUUID: string;
-            selectedViewName: string;
-            selectedViewTitle?: string;
-        }[],
-    ) {
+    constructor(selectedViews: SelectedView[]) {
         selectedViews.forEach((selectedView) => {
             this.viewsList.push(
                 new ResourceListBlockConfigurationDataViewInViewsList(

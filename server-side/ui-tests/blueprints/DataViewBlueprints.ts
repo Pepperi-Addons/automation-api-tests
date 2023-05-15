@@ -81,11 +81,11 @@ export class UpsertResourceFieldsToMenuDataView extends UpsertResourceFields imp
         this.Type = 'Menu';
         if (fields) {
             this.Fields = fields;
-            this.Columns = [];
-            for (const field of fields) {
-                this.Columns.push({ Width: 10 });
-                console.info(`field: ${field}`);
-            }
+            // this.Columns = [];
+            // for (const field of fields) {
+            //     this.Columns.push({ Width: 10 });
+            //     console.info(`field: ${field}`);
+            // }
         }
     }
     public Type: 'Menu';
@@ -123,7 +123,7 @@ export class UpsertUdcGridDataView implements GridDataView {
     constructor(listOfFields: GridDataViewField[]) {
         this.Type = 'Grid';
         this.Context = {
-            ScreenSize: 'Tablet',
+            ScreenSize: 'Landscape',
             Profile: {},
             Name: '',
         };
