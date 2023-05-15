@@ -1217,8 +1217,9 @@ export default class GeneralService {
     // }
 
     reportResults(testResultsObj, testedAddonObject) {
-        console.log('Total Failures: ' + testResultsObj.stats.failures);
-        console.log('Total Passes: ' + testResultsObj.stats.passes);
+        debugger;
+        console.log('Total Failures: ' + testResultsObj.failures.length);
+        console.log('Total Passes: ' + testResultsObj.passes.length);
         //1. run on all suites
         for (let index1 = 0; index1 < testResultsObj.results[0].suites.length; index1++) {
             const testSuite = testResultsObj.results[0].suites[index1];
@@ -1246,6 +1247,58 @@ export default class GeneralService {
                 }
             }
         }
+    }
+
+    reportResults2(testResultsObj, testedAddonObject) {
+        if (!testResultsObj.title.includes('Test Data')) {
+            console.log(`Tested Addon: ${testedAddonObject.Addon.Name} Version: ${testedAddonObject.Version}`);
+            console.log(`Test Suite: ${testResultsObj.title}`);
+            console.log('Total Failures: ' + testResultsObj.failures.length);
+            console.log('Total Passes: ' + testResultsObj.passes.length);
+        }
+        for (let index = 0; index < testResultsObj.tests.length; index++) {
+            const test = testResultsObj.tests[index];
+            if (
+                test.fullTitle.includes('TestDataStartTestServerTimeAndDate') ||
+                test.fullTitle.includes('TestDataTestedUser') ||
+                test.fullTitle.includes('Test Data Start Test Server Time And Date') ||
+                test.fullTitle.includes('Test Data Tested User')
+            ) {
+                console.log(`*  ${test.fullTitle}`);
+            } else {
+                if (test.pass) {
+                    console.log(`√ ${test.fullTitle}: passed\n`);
+                } else {
+                    console.log(`𝑥 ${test.fullTitle}: failed, on: ${test.err === undefined ? '' : test.err.message}\n`);
+                }
+            }
+        }
+        // for (let index1 = 0; index1 < testResultsObj.results[0].suites.length; index1++) {
+        //     const testSuite = testResultsObj.results[0].suites[index1];
+        //     for (let index2 = 0; index2 < testSuite.tests.length; index2++) {
+        //         const test = testSuite.tests[index2];
+        //         const testTitle = test.fullTitle.split(':').join(' - ');
+        //         if (
+        //             testTitle.includes('TestDataStartTestServerTimeAndDate') ||
+        //             testTitle.includes('TestDataTestedUser') ||
+        //             testTitle.includes('Test Data Start Test Server Time And Date') ||
+        //             testTitle.includes('Test Data Tested User')
+        //         ) {
+        //             console.log(`*  ${testTitle}`);
+        //         } else if (
+        //             testTitle.includes('Test Data Test Prerequisites') ||
+        //             testTitle.includes('TestDataTestPrerequisites')
+        //         ) {
+        //             for (let index3 = 0; index3 < testSuite.suites[0].tests.length; index3++) {
+        //                 const installResponse = testSuite.suites[0].tests[index3];
+        //                 console.log(`${index3 + 1}.  ${installResponse.fullTitle.split('Versions')[1]}`);
+        //             }
+        //             console.log(`Tested Addon: ${testedAddonObject.Addon.Name} Version: ${testedAddonObject.Version}`);
+        //         } else {
+        //             console.log(`${test.pass ? '√' : '𝑥'}  ${testTitle}: ${test.pass ? 'Passed' : 'Failed'}`);
+        //         }
+        //     }
+        // }
     }
 
     extractSchema(schema, key: string, filterAttributes: FilterAttributes) {
@@ -1344,8 +1397,8 @@ export default class GeneralService {
                 return '00000000-0000-0000-0000-00000e1a571c';
             // case 'UDC':
             //     return '122c0e9d-c240-4865-b446-f37ece866c22';
-            // case 'NEBULA':
-            //     return '00000000-0000-0000-0000-000000006a91';
+            case 'NEBULA':
+                return '00000000-0000-0000-0000-000000006a91';
             // case 'SYNC':
             //     return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
             // case 'OBJECT TYPES EDITOR':
