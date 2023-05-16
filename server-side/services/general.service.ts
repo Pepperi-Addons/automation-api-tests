@@ -647,18 +647,134 @@ export default class GeneralService {
                 loopsAmount--;
             }
             //This case will only retry the get call again as many times as the "loopsAmount"
-            else if (auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') {
+            else if (
+                auditLogResponse.Status.ID == '2' ||
+                auditLogResponse.Status.ID == '5' ||
+                auditLogResponse.Status.ID == '4'
+            ) {
                 this.sleep(sleepTime !== undefined && sleepTime > 0 ? sleepTime : 2000);
                 console.log(
-                    `%c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${
-                        auditLogResponse.Status.ID
-                    }, Retry ${loopsAmount} Times.`,
+                    `%c${
+                        auditLogResponse.Status.ID === 2
+                            ? 'In_Progres'
+                            : auditLogResponse.Status.ID === 5
+                            ? 'Started'
+                            : 'InRetry'
+                    }: Status ID is ${auditLogResponse.Status.ID}, Retry ${loopsAmount} Times.`,
                     ConsoleColors.Information,
                 );
                 loopsAmount--;
             }
-        } while (
-            (auditLogResponse === null || auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') &&
+        } while ( //2-> in progress, 5->pending, 4-> in retry
+            (auditLogResponse === null ||
+                auditLogResponse.Status.ID == '2' ||
+                auditLogResponse.Status.ID == '5' ||
+                auditLogResponse.Status.ID == '4') && //15/5: evgeny - new status "in retry"
+            loopsAmount > 0
+        );
+
+        //Check UUID
+        try {
+            // debugger;
+            if (
+                auditLogResponse.DistributorUUID == auditLogResponse.UUID ||
+                auditLogResponse.DistributorUUID == auditLogResponse.Event.User.UUID ||
+                auditLogResponse.UUID == auditLogResponse.Event.User.UUID ||
+                auditLogResponse.Event.User.UUID != this.getClientData('UserUUID')
+            ) {
+                throw new Error('Error in UUID in Audit Log API Response');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                error.stack = 'UUID in Audit Log API Response:\n' + error.stack;
+            }
+            throw error;
+        }
+
+        //Check Date and Time
+        try {
+            // debugger;
+            if (
+                !auditLogResponse.CreationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z') ||
+                !auditLogResponse.ModificationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z')
+            ) {
+                throw new Error('Error in Date and Time in Audit Log API Response');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                error.stack = 'Date and Time in Audit Log API Response:\n' + error.stack;
+            }
+            throw error;
+        }
+        //Check Type and Event
+        try {
+            // debugger;
+            if (
+                (auditLogResponse.AuditType != 'action' && auditLogResponse.AuditType != 'data') ||
+                (auditLogResponse.Event.Type != 'code_job_execution' &&
+                    auditLogResponse.Event.Type != 'addon_job_execution' &&
+                    auditLogResponse.Event.Type != 'scheduler' &&
+                    auditLogResponse.Event.Type != 'sync' &&
+                    auditLogResponse.Event.Type != 'deployment') ||
+                auditLogResponse.Event.User.Email != this.getClientData('UserEmail')
+            ) {
+                throw new Error('Error in Type and Event in Audit Log API Response');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                error.stack = 'Type and Event in Audit Log API Response:\n' + error.stack;
+            }
+            throw error;
+        }
+        return auditLogResponse;
+    }
+
+    async getAuditLogResultObjectIfValidV2(uri: string, loopsAmount = 30, sleepTime?: number): Promise<AuditLog> {
+        let auditLogResponse;
+        do {
+            auditLogResponse = await this.papiClient.get(uri);
+            auditLogResponse =
+                auditLogResponse === null
+                    ? auditLogResponse
+                    : auditLogResponse[0] === undefined
+                    ? auditLogResponse
+                    : auditLogResponse[0];
+            //This case is used when AuditLog was not created at all (This can happen and it is valid)
+            if (auditLogResponse === null) {
+                this.sleep(4000);
+                console.log('%cAudit Log was not found, waiting...', ConsoleColors.Information);
+                loopsAmount--;
+            }
+            //This case will only retry the get call again as many times as the "loopsAmount"
+            else if (
+                auditLogResponse.Status.ID == '2' ||
+                auditLogResponse.Status.ID == '5' ||
+                auditLogResponse.Status.ID == '4'
+            ) {
+                this.sleep(sleepTime !== undefined && sleepTime > 0 ? sleepTime : 2000);
+                console.log(
+                    `%c${
+                        auditLogResponse.Status.ID === 2
+                            ? 'In_Progres'
+                            : auditLogResponse.Status.ID === 5
+                            ? 'Started'
+                            : 'InRetry'
+                    }: Status ID is ${auditLogResponse.Status.ID}, Retry ${loopsAmount} Times.`,
+                    ConsoleColors.Information,
+                );
+                if (auditLogResponse.Status.ID == '4') {
+                    console.log(
+                        `%cIn Retry: Result Object: ${auditLogResponse.AuditInfo.ResultObject}`,
+                        ConsoleColors.Information,
+                    );
+                }
+                loopsAmount--;
+            }
+        } while ( //2-> in progress, 5->pending, 4-> in retry
+            (auditLogResponse === null ||
+                auditLogResponse.Status.ID == '2' ||
+                auditLogResponse.Status.ID == '5' ||
+                auditLogResponse.Status.ID == '4') && //15/5: evgeny - new status "in retry"
             loopsAmount > 0
         );
 
