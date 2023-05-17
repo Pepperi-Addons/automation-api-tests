@@ -9,7 +9,7 @@ import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import E2EUtils from '../utilities/e2e_utils';
-import { BaseFormDataViewField, GridDataViewField, MenuDataViewField } from '@pepperi-addons/papi-sdk';
+import { BaseFormDataViewField, DataViewFieldType, MenuDataViewField } from '@pepperi-addons/papi-sdk';
 
 import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
 
@@ -302,12 +302,17 @@ export async function ResourceListTests(email: string, password: string, varPass
                 // Configure View
                 await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
                 viewKey = await resourceListUtils.getUUIDfromURL();
-                const viewFields: GridDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
+                const viewFields: {
+                    fieldName: string;
+                    dataViewType: DataViewFieldType;
+                    mandatory: boolean;
+                    readonly: boolean;
+                }[] = [
                     { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
                     { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: false },
                     { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                ]);
-                await resourceViews.customViewConfig(dataViewsService, {
+                ];
+                await resourceViews.customViewConfig(client, {
                     matchingEditorName: editorName,
                     viewKey: viewKey,
                     fieldsToConfigureInView: viewFields,

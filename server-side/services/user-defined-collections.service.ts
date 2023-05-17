@@ -21,6 +21,30 @@ export interface UdcField {
     isArray?: boolean;
 }
 
+export interface CollectionDefinition {
+    nameOfCollection: string;
+    fieldsOfCollection: {
+        classType: 'Primitive' | 'Array' | 'Contained' | 'Resource';
+        fieldName: string;
+        fieldTitle: string;
+        field: CollectionField;
+        dataViewType?: DataViewFieldType;
+        readonly?: boolean;
+    }[];
+    descriptionOfCollection?: string;
+    syncDefinitionOfCollection?: { Sync: boolean; SyncFieldLevel?: boolean };
+    typeOfCollection?:
+        | 'data'
+        | 'meta_data'
+        | 'indexed_data'
+        | 'index'
+        | 'shared_index'
+        | 'pfs'
+        | 'contained'
+        | 'papi'
+        | 'abstract';
+}
+
 const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
 
 export class UDCService {
@@ -224,6 +248,9 @@ export class UDCService {
                 return 'NumberReal';
             case 'DateTime':
                 return 'DateAndTime';
+            default:
+                'None';
+                break;
         }
     }
 
@@ -611,7 +638,7 @@ export class UDCService {
         });
     }
 
-    async upsertValuesToCollection(valuesObj, collectionName) {
+    async upsertValuesToCollection(valuesObj: { [fieldName: string]: any }, collectionName: string) {
         return await this.generalService.fetchStatus(
             `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=${collectionName}`,
             {
@@ -621,29 +648,7 @@ export class UDCService {
         );
     }
 
-    prepareDataForUdcCreation(collectionData: {
-        nameOfCollection: string;
-        fieldsOfCollection: {
-            classType: 'Primitive' | 'Array' | 'Contained' | 'Resource';
-            fieldName: string;
-            fieldTitle: string;
-            field: CollectionField;
-            dataViewType?: DataViewFieldType;
-            readonly?: boolean;
-        }[];
-        descriptionOfCollection?: string;
-        syncDefinitionOfCollection?: { Sync: boolean; SyncFieldLevel?: boolean };
-        typeOfCollection?:
-            | 'data'
-            | 'meta_data'
-            | 'indexed_data'
-            | 'index'
-            | 'shared_index'
-            | 'pfs'
-            | 'contained'
-            | 'papi'
-            | 'abstract';
-    }) {
+    prepareDataForUdcCreation(collectionData: CollectionDefinition) {
         const collectionFields = {};
         const udcListViewFields = collectionData.fieldsOfCollection.map((scheme) => {
             switch (scheme.classType) {
