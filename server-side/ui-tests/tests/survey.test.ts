@@ -142,7 +142,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', ''],
         survey: ['dd0a85ea-7ef0-4bc1-b14f-959e0372877a', ''],
-        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', '1.2.13'],//1.2.14 is dependent on app header - there is opened bug
+        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', '1.2.13'], //1.2.14 is dependent on app header - there is opened bug
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
