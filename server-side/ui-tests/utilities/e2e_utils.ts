@@ -413,7 +413,7 @@ export default class E2EUtils extends BasePomObject {
         resourceData: {
             collection?: {
                 createUDC?: CollectionDefinition;
-                addValuesToCollection?: { [fieldName: string]: any }[];
+                addValuesToCollection?: { collectionName: string; values: { [fieldName: string]: any }[] };
             };
             editor?: {
                 editorDetails: { nameOfEditor: string; descriptionOfEditor: string; nameOfResource: string };
@@ -425,7 +425,7 @@ export default class E2EUtils extends BasePomObject {
             };
             page?: {
                 pageDetails: { nameOfPage: string; descriptionOfPage: string; extraSection: boolean };
-                pageBlocks: { blockType: 'Viewer' | 'Configuration'; selectedViews: SelectedView[] }[];
+                pageBlocks: { blockType: 'Viewer' | 'Configuration' | 'Addon'; selectedViews: SelectedView[] }[];
             };
             slug?: {
                 slugDisplayName: string;
@@ -457,10 +457,11 @@ export default class E2EUtils extends BasePomObject {
                 console.info(`UDC upsert Response: ${JSON.stringify(upsertResponse, null, 2)}`);
             }
             if (resourceData.collection.addValuesToCollection) {
-                resourceData.collection.addValuesToCollection.forEach(async (listing) => {
+                this.browser.sleep(5 * 1000);
+                resourceData.collection.addValuesToCollection.values.forEach(async (listing) => {
                     const upsertingValues_Response = await udcService.upsertValuesToCollection(
                         listing,
-                        'ReferenceAccountAuto',
+                        resourceData.collection?.addValuesToCollection?.collectionName || '',
                     );
                     console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
                     expect(upsertingValues_Response.Ok).to.be.true;
@@ -509,7 +510,20 @@ export default class E2EUtils extends BasePomObject {
             resourceData.page.pageBlocks.forEach((block) => {
                 switch (block.blockType) {
                     case 'Viewer':
-                        blockInstance = new ViewerBlock(block.selectedViews);
+                        blockInstance = new ViewerBlock(
+                            block.selectedViews || [
+                                {
+                                    collectionName: resourceData.collection?.createUDC?.nameOfCollection || '',
+                                    collectionID: '',
+                                    selectedViewUUID: viewUUID,
+                                    selectedViewName: resourceData.view?.viewDetails.nameOfView || '',
+                                    selectedViewTitle:
+                                        resourceData.collection?.createUDC?.nameOfCollection
+                                            .split(/(?=[A-Z])/)
+                                            .join(' ') || '',
+                                },
+                            ],
+                        );
                         break;
                     case 'Configuration':
                         break;
@@ -518,6 +532,9 @@ export default class E2EUtils extends BasePomObject {
                         break;
                 }
                 createdPage.Blocks.push(blockInstance);
+                if (resourceData.page && !resourceData.page.pageDetails.extraSection) {
+                    createdPage.Layout.Sections[0]['FillHeight'] = true;
+                }
                 createdPage.Layout.Sections[0].Columns[0] = new BasePageLayoutSectionColumn(blockInstance.Key);
             });
             createdPage.Name = resourceData.page.pageDetails.nameOfPage;
