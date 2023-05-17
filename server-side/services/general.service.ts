@@ -22,7 +22,7 @@ import tester from '../tester';
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on TLS 2 version
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.18'], //cpapi locked on TLS 2 version, EVGENY: .18 is the version for nebula 0.5
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'],
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.%'], //CPAS
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.%'], //cpi-node (Cross Platform Engine)
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
@@ -647,18 +647,134 @@ export default class GeneralService {
                 loopsAmount--;
             }
             //This case will only retry the get call again as many times as the "loopsAmount"
-            else if (auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') {
+            else if (
+                auditLogResponse.Status.ID == '2' ||
+                auditLogResponse.Status.ID == '5' ||
+                auditLogResponse.Status.ID == '4'
+            ) {
                 this.sleep(sleepTime !== undefined && sleepTime > 0 ? sleepTime : 2000);
                 console.log(
-                    `%c${auditLogResponse.Status.ID === 2 ? 'In_Progres' : 'Started'}: Status ID is ${
-                        auditLogResponse.Status.ID
-                    }, Retry ${loopsAmount} Times.`,
+                    `%c${
+                        auditLogResponse.Status.ID === 2
+                            ? 'In_Progres'
+                            : auditLogResponse.Status.ID === 5
+                            ? 'Started'
+                            : 'InRetry'
+                    }: Status ID is ${auditLogResponse.Status.ID}, Retry ${loopsAmount} Times.`,
                     ConsoleColors.Information,
                 );
                 loopsAmount--;
             }
-        } while (
-            (auditLogResponse === null || auditLogResponse.Status.ID == '2' || auditLogResponse.Status.ID == '5') &&
+        } while ( //2-> in progress, 5->pending, 4-> in retry
+            (auditLogResponse === null ||
+                auditLogResponse.Status.ID == '2' ||
+                auditLogResponse.Status.ID == '5' ||
+                auditLogResponse.Status.ID == '4') && //15/5: evgeny - new status "in retry"
+            loopsAmount > 0
+        );
+
+        //Check UUID
+        try {
+            // debugger;
+            if (
+                auditLogResponse.DistributorUUID == auditLogResponse.UUID ||
+                auditLogResponse.DistributorUUID == auditLogResponse.Event.User.UUID ||
+                auditLogResponse.UUID == auditLogResponse.Event.User.UUID ||
+                auditLogResponse.Event.User.UUID != this.getClientData('UserUUID')
+            ) {
+                throw new Error('Error in UUID in Audit Log API Response');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                error.stack = 'UUID in Audit Log API Response:\n' + error.stack;
+            }
+            throw error;
+        }
+
+        //Check Date and Time
+        try {
+            // debugger;
+            if (
+                !auditLogResponse.CreationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z') ||
+                !auditLogResponse.ModificationDateTime.includes(new Date().toISOString().split('T')[0] && 'Z')
+            ) {
+                throw new Error('Error in Date and Time in Audit Log API Response');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                error.stack = 'Date and Time in Audit Log API Response:\n' + error.stack;
+            }
+            throw error;
+        }
+        //Check Type and Event
+        try {
+            // debugger;
+            if (
+                (auditLogResponse.AuditType != 'action' && auditLogResponse.AuditType != 'data') ||
+                (auditLogResponse.Event.Type != 'code_job_execution' &&
+                    auditLogResponse.Event.Type != 'addon_job_execution' &&
+                    auditLogResponse.Event.Type != 'scheduler' &&
+                    auditLogResponse.Event.Type != 'sync' &&
+                    auditLogResponse.Event.Type != 'deployment') ||
+                auditLogResponse.Event.User.Email != this.getClientData('UserEmail')
+            ) {
+                throw new Error('Error in Type and Event in Audit Log API Response');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                error.stack = 'Type and Event in Audit Log API Response:\n' + error.stack;
+            }
+            throw error;
+        }
+        return auditLogResponse;
+    }
+
+    async getAuditLogResultObjectIfValidV2(uri: string, loopsAmount = 30, sleepTime?: number): Promise<AuditLog> {
+        let auditLogResponse;
+        do {
+            auditLogResponse = await this.papiClient.get(uri);
+            auditLogResponse =
+                auditLogResponse === null
+                    ? auditLogResponse
+                    : auditLogResponse[0] === undefined
+                    ? auditLogResponse
+                    : auditLogResponse[0];
+            //This case is used when AuditLog was not created at all (This can happen and it is valid)
+            if (auditLogResponse === null) {
+                this.sleep(4000);
+                console.log('%cAudit Log was not found, waiting...', ConsoleColors.Information);
+                loopsAmount--;
+            }
+            //This case will only retry the get call again as many times as the "loopsAmount"
+            else if (
+                auditLogResponse.Status.ID == '2' ||
+                auditLogResponse.Status.ID == '5' ||
+                auditLogResponse.Status.ID == '4'
+            ) {
+                this.sleep(sleepTime !== undefined && sleepTime > 0 ? sleepTime : 2000);
+                console.log(
+                    `%c${
+                        auditLogResponse.Status.ID === 2
+                            ? 'In_Progres'
+                            : auditLogResponse.Status.ID === 5
+                            ? 'Started'
+                            : 'InRetry'
+                    }: Status ID is ${auditLogResponse.Status.ID}, Retry ${loopsAmount} Times.`,
+                    ConsoleColors.Information,
+                );
+                if (auditLogResponse.Status.ID == '4') {
+                    console.log(
+                        `%cIn Retry: Result Object: ${auditLogResponse.AuditInfo.ResultObject}`,
+                        ConsoleColors.Information,
+                    );
+                }
+                loopsAmount--;
+            }
+        } while ( //2-> in progress, 5->pending, 4-> in retry
+            (auditLogResponse === null ||
+                auditLogResponse.Status.ID == '2' ||
+                auditLogResponse.Status.ID == '5' ||
+                auditLogResponse.Status.ID == '4') && //15/5: evgeny - new status "in retry"
             loopsAmount > 0
         );
 
@@ -854,7 +970,9 @@ export default class GeneralService {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
             let changeType = 'Upgrade';
-            let searchString = `AND Version Like'${version}%' AND Available Like 1 AND Phased Like 1`;
+            let searchString = `AND Version Like '${
+                version === '' ? '%' : version
+            }' AND Available Like 1 AND Phased Like 1`;
             if (
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
@@ -874,7 +992,7 @@ export default class GeneralService {
                 addonName == 'Export and Import Framework (DIMX)' || // evgeny 15/1/23: to get newest DIMX
                 !isPhased
             ) {
-                searchString = `AND Version Like '${version}%' AND Available Like 1`;
+                searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
             }
             // if (addonName == 'File Service Framework') {
             //     //because 1.0.2 works but 1.0.29 isnt - 1.0.2% = 1.0.29 (evgeny - 6/11)
