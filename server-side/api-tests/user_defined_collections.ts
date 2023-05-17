@@ -29,9 +29,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', '1.2.16'],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.6.48'],
+        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''], //0.6.48
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
-        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.41'],
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''], //0.6.41
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
         'User Defined Collections': [UserDefinedCollectionsUUID, ''],
@@ -939,7 +939,6 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body).to.haveOwnProperty('Key');
                 expect(response.Body.CreationDateTime).to.include(parsedTodayDate);
                 expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
-                debugger;
             });
             it("Positive Test: exporting all created UDC's", async () => {
                 const allCollectionNames = [
