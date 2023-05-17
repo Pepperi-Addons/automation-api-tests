@@ -22,7 +22,7 @@ import tester from '../tester';
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on TLS 2 version
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.18'], //cpapi locked on TLS 2 version, EVGENY: .18 is the version for nebula 0.5
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'],
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.%'], //CPAS
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.%'], //cpi-node (Cross Platform Engine)
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
@@ -970,7 +970,9 @@ export default class GeneralService {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
             let changeType = 'Upgrade';
-            let searchString = `AND Version Like'${version}%' AND Available Like 1 AND Phased Like 1`;
+            let searchString = `AND Version Like '${
+                version === '' ? '%' : version
+            }' AND Available Like 1 AND Phased Like 1`;
             if (
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
@@ -990,7 +992,7 @@ export default class GeneralService {
                 addonName == 'Export and Import Framework (DIMX)' || // evgeny 15/1/23: to get newest DIMX
                 !isPhased
             ) {
-                searchString = `AND Version Like '${version}%' AND Available Like 1`;
+                searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
             }
             // if (addonName == 'File Service Framework') {
             //     //because 1.0.2 works but 1.0.29 isnt - 1.0.2% = 1.0.29 (evgeny - 6/11)
