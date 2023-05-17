@@ -24,7 +24,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], // UDC current phased version 0.8.29 | dependency > 0.8.11
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''], // current phased version 0.7.112 | dependency > 0.7.104
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], // current phased version 0.9.38 | dependency > 0.9.31
-        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', '1.2.11'], // current phased version 1.0.23 | dependency > 1.0.23
+        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', '1.2.13'], // current phased version 1.0.23 | dependency > 1.0.23
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // current phased version 0.5.10 | dependency > 0.5.7
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''], // current phased version 0.6.26 | dependency > 0.6.3
         'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', ''],
