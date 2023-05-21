@@ -192,7 +192,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         blockKey,
                         sectionKey,
                         pageName,
-                        'pageDescription',
+                        'VF Auto Test',
                     );
                     // console.info('visitFlowPage: ', JSON.stringify(visitFlowPage, null, 2));
                     const responseOfPublishPage = await pageBuilder.publishPage(visitFlowPage, client);
@@ -301,8 +301,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         client,
                     );
                     console.info(
-                        `existingMappedSlugs: ${JSON.stringify(
-                            mappedSlugsUpsertResponse.previouslyExistingMappedSlugs,
+                        `mappedSlugsUpsertResponse: ${JSON.stringify(
+                            mappedSlugsUpsertResponse,
                             null,
                             4,
                         )}`,
@@ -314,10 +314,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await slugs.isSpinnerDone();
                     await slugs.waitTillVisible(slugs.MappedSlugs_Title, 15000);
                     driver.sleep(2 * 1000);
-                    await e2eUtils.logOutLogIn(email, password);
+                    await e2eUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.isSpinnerDone();
                     await e2eUtils.navigateTo('Slugs');
                     await slugs.clickTab('Mapping_Tab');
+                    await webAppHomePage.isSpinnerDone();
                     await slugs.waitTillVisible(slugs.MappingTab_RepCard_InnerListOfMappedSlugs, 15000);
                     const slugNameAtMappedSlugsSmallDisplayInRepCard = await driver.findElement(
                         slugs.getSelectorOfMappedSlugInRepCardSmallDisplayByText(slug_path),
@@ -402,7 +403,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
 
                 it('Performing Manual Sync', async () => {
-                    await e2eUtils.logOutLogIn(email, password);
+                    await e2eUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
                 });
@@ -821,33 +822,33 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await driver.click(pageBuilder.PageBuilder_Search_Clear);
                 });
 
-                it('Deleting Pages leftovers via UI', async () => {
-                    pageBuilder.pause(0.1 * 1000);
-                    try {
-                        const allPages = await driver.findElements(pageBuilder.Page_Listing_aLink);
-                        do {
-                            const page = allPages.pop();
-                            if (page) {
-                                const pageName = await page.getAttribute('title');
-                                await pageBuilder.searchForPageByName(pageName);
-                                pageBuilder.pause(0.2 * 1000);
-                                await pageBuilder.deleteFromListByName(pageName);
-                                await pageBuilder.searchForPageByName(pageName);
-                                expect(
-                                    await (
-                                        await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)
-                                    ).getText(),
-                                ).to.contain('No results were found.');
-                                await pageBuilder.isSpinnerDone();
-                                pageBuilder.pause(0.1 * 1000);
-                                await driver.click(pageBuilder.PageBuilder_Search_Clear);
-                            }
-                        } while (allPages.length);
-                        pageBuilder.pause(0.1 * 1000);
-                    } catch (error) {
-                        console.error(error);
-                    }
-                });
+                // it('Deleting Pages leftovers via UI', async () => {
+                //     pageBuilder.pause(0.1 * 1000);
+                //     try {
+                //         const allPages = await driver.findElements(pageBuilder.Page_Listing_aLink);
+                //         do {
+                //             const page = allPages.pop();
+                //             if (page) {
+                //                 const pageName = await page.getAttribute('title');
+                //                 await pageBuilder.searchForPageByName(pageName);
+                //                 pageBuilder.pause(0.2 * 1000);
+                //                 await pageBuilder.deleteFromListByName(pageName);
+                //                 await pageBuilder.searchForPageByName(pageName);
+                //                 expect(
+                //                     await (
+                //                         await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)
+                //                     ).getText(),
+                //                 ).to.contain('No results were found.');
+                //                 await pageBuilder.isSpinnerDone();
+                //                 pageBuilder.pause(0.1 * 1000);
+                //                 await driver.click(pageBuilder.PageBuilder_Search_Clear);
+                //             }
+                //         } while (allPages.length);
+                //         pageBuilder.pause(0.1 * 1000);
+                //     } catch (error) {
+                //         console.error(error);
+                //     }
+                // });
 
                 // it('Verifying Mapped Slugs were cleared', async () => {
                 //     await e2eUtils.logOutLogIn(email, password);

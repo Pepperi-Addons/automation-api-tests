@@ -227,7 +227,7 @@ export default class E2EUtils extends BasePomObject {
         console.info(
             `existingMappedSlugs: ${JSON.stringify(mappedSlugsUpsertResponse.previouslyExistingMappedSlugs, null, 4)}`,
         );
-        await this.logOutLogIn(email, password);
+        await this.logOutLogIn(email, password, client);
         await webAppHomePage.isSpinnerDone();
         await this.navigateTo('Slugs');
         await slugs.clickTab('Mapping_Tab');
@@ -365,12 +365,13 @@ export default class E2EUtils extends BasePomObject {
         await webAppHeader.goHome();
     }
 
-    public async logOutLogIn(email: string, password: string) {
+    public async logOutLogIn(email: string, password: string, client: Client) {
         const webAppHeader: WebAppHeader = new WebAppHeader(this.browser);
         const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(this.browser);
         this.browser.sleep(1000);
+        // await this.performManualSync(client);
         await webAppHeader.signOut();
-        this.browser.sleep(2000);
+        this.browser.sleep(5 * 1000);
         await webAppLoginPage.login(email, password);
         this.browser.sleep(1000);
     }
