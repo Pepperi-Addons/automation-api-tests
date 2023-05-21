@@ -370,7 +370,7 @@ export default class E2EUtils extends BasePomObject {
         const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(this.browser);
         this.browser.sleep(1000);
         await webAppHeader.signOut();
-        this.browser.sleep(2000);
+        this.browser.sleep(5 * 1000);
         await webAppLoginPage.login(email, password);
         this.browser.sleep(1000);
     }
