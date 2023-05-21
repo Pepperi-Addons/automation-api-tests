@@ -1371,26 +1371,39 @@ export default class GeneralService {
         if (!testResultsObj.title.includes('Test Data')) {
             console.log(`Tested Addon: ${testedAddonObject.Addon.Name} Version: ${testedAddonObject.Version}`);
             console.log(`Test Suite: ${testResultsObj.title}`);
-            console.log('Total Failures: ' + testResultsObj.failures.length);
-            console.log('Total Passes: ' + testResultsObj.passes.length);
-        }
-        for (let index = 0; index < testResultsObj.tests.length; index++) {
-            const test = testResultsObj.tests[index];
-            if (
-                test.fullTitle.includes('TestDataStartTestServerTimeAndDate') ||
-                test.fullTitle.includes('TestDataTestedUser') ||
-                test.fullTitle.includes('Test Data Start Test Server Time And Date') ||
-                test.fullTitle.includes('Test Data Tested User')
-            ) {
-                console.log(`*  ${test.fullTitle}`);
+            if (testResultsObj.failures) {
+                console.log('Total Failures: ' + testResultsObj.failures.length);
             } else {
-                if (test.pass) {
-                    console.log(`√ ${test.fullTitle}: passed\n`);
-                } else {
-                    console.log(`𝑥 ${test.fullTitle}: failed, on: ${test.err === undefined ? '' : test.err.message}\n`);
-                }
+                if (testResultsObj.passed) console.log('Total Failures: ' + 0);
+                else console.log('Total Failures: ' + 1);
+            }
+            if (testResultsObj.passes) {
+                console.log('Total Passes: ' + testResultsObj.passes.length);
+            } else {
+                if (testResultsObj.passed) console.log('Total Passes: ' + 1);
+                else console.log('Total Passes: ' + 0);
             }
         }
+        if (testResultsObj.tests)
+            for (let index = 0; index < testResultsObj.tests.length; index++) {
+                const test = testResultsObj.tests[index];
+                if (
+                    test.fullTitle.includes('TestDataStartTestServerTimeAndDate') ||
+                    test.fullTitle.includes('TestDataTestedUser') ||
+                    test.fullTitle.includes('Test Data Start Test Server Time And Date') ||
+                    test.fullTitle.includes('Test Data Tested User')
+                ) {
+                    console.log(`*  ${test.fullTitle}`);
+                } else {
+                    if (test.pass) {
+                        console.log(`√ ${test.fullTitle}: passed\n`);
+                    } else {
+                        console.log(
+                            `𝑥 ${test.fullTitle}: failed, on: ${test.err === undefined ? '' : test.err.message}\n`,
+                        );
+                    }
+                }
+            }
         // for (let index1 = 0; index1 < testResultsObj.results[0].suites.length; index1++) {
         //     const testSuite = testResultsObj.results[0].suites[index1];
         //     for (let index2 = 0; index2 < testSuite.tests.length; index2++) {

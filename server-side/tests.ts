@@ -1310,9 +1310,11 @@ export async function handleDevTestInstallation(
             }
         }
     }
+    //5. validate actual tested addon is installed
     const addonToInstall = {};
-    const version = addonName === 'SYNC' || addonName === 'NEBULA' ? '0.6.%' : '';
-    addonToInstall[addonName] = [addonUUID, version];
+    // this can be used to install NOT latest avalivale versions
+    // const version = addonName === 'SYNC' || addonName === 'NEBULA' ? '0.7.82' : '';
+    addonToInstall[addonName] = [addonUUID, '%'];
     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
     if (installAddonResponse[0] != true) {
         throw new Error(`Error: can't install ${addonName} - ${addonUUID}, exception: ${installAddonResponse}`);
