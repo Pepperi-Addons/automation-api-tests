@@ -187,13 +187,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     // console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
                     const sectionKey = createdPage.Layout.Sections[0].Key;
                     const blockKey = newUuid();
-                    const visitFlowPage = new VisitFlowPage(
-                        pageUUID,
-                        blockKey,
-                        sectionKey,
-                        pageName,
-                        'VF Auto Test',
-                    );
+                    const visitFlowPage = new VisitFlowPage(pageUUID, blockKey, sectionKey, pageName, 'VF Auto Test');
                     // console.info('visitFlowPage: ', JSON.stringify(visitFlowPage, null, 2));
                     const responseOfPublishPage = await pageBuilder.publishPage(visitFlowPage, client);
                     console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 4));
@@ -300,13 +294,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         [{ slug_path: slug_path, pageUUID: pageUUID }],
                         client,
                     );
-                    console.info(
-                        `mappedSlugsUpsertResponse: ${JSON.stringify(
-                            mappedSlugsUpsertResponse,
-                            null,
-                            4,
-                        )}`,
-                    );
+                    console.info(`mappedSlugsUpsertResponse: ${JSON.stringify(mappedSlugsUpsertResponse, null, 4)}`);
                     await e2eUtils.navigateTo('Slugs');
                     await slugs.clickTab('Mapping_Tab');
                     await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
@@ -314,7 +302,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await slugs.isSpinnerDone();
                     await slugs.waitTillVisible(slugs.MappedSlugs_Title, 15000);
                     driver.sleep(2 * 1000);
-                    await e2eUtils.logOutLogIn(email, password, client);
+                    await e2eUtils.logOutLogIn(email, password);
                     await webAppHomePage.isSpinnerDone();
                     await e2eUtils.navigateTo('Slugs');
                     await slugs.clickTab('Mapping_Tab');
@@ -403,7 +391,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
 
                 it('Performing Manual Sync', async () => {
-                    await e2eUtils.logOutLogIn(email, password, client);
+                    await e2eUtils.logOutLogIn(email, password);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
                 });
