@@ -1724,11 +1724,11 @@ function resolveUserPerTest(addonName): any[] {
         // case 'NEBULA'://0.6.x
         //     return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
         case 'NEBULA': //0.7.x
-            return ['Neo4JSyncProd@pepperitest.com', 'Neo4JSyncSB@pepperitest.com']; //'neo4JSyncEU@pepperitest.com',
+            return ['neo4JSyncEU@pepperitest.com', 'Neo4JSyncProd@pepperitest.com', 'Neo4JSyncSB@pepperitest.com']; //
         case 'ADAL':
             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
         case 'SYNC':
-            return ['syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com ']; //'syncTestEU@pepperitest.com',
+            return ['syncTestEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com ']; //
         default:
             return [];
     }
