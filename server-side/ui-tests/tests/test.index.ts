@@ -513,7 +513,7 @@ const passCreate = process.env.npm_config_pass_create as string;
         if (addonUUID === 'none') {
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
         } else {
-            const [euUser, prodUser, sbUser] = resolveUserPerTest(addonName);
+            const [euUser, prodUser, sbUser] = resolveUserPerTest(addonName); //,
             console.log(`####################### Running For: ${addonName}(${addonUUID}) #######################`);
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
             await Promise.all([
@@ -543,23 +543,23 @@ const passCreate = process.env.npm_config_pass_create as string;
                 ),
             ]);
             //2. validate tested addon is installed on latest available version
-            const version = addonName === 'SYNC' || addonName === 'NEBULA' ? '0.6.%' : null;
+            // const version = addonName === 'SYNC' ? '0.7.30' : null;
             const [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
                 addonUUID,
                 varPass,
-                version,
+                null,
                 'prod',
             );
             const [latestVersionOfTestedAddonEu, addonEntryUUIDEU] = await generalService.getLatestAvailableVersion(
                 addonUUID,
                 varPassEU,
-                version,
+                null,
                 'prod',
             );
             const [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await generalService.getLatestAvailableVersion(
                 addonUUID,
                 varPassSB,
-                version,
+                null,
                 'stage',
             );
             if (
@@ -567,8 +567,8 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonEu ||
                 latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonSb
             ) {
-                throw new Error(
-                    `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`,
+                throw new Error( //
+                    `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}}, eu - ${latestVersionOfTestedAddonEu}`,
                 );
             }
             console.log(
@@ -593,36 +593,30 @@ const passCreate = process.env.npm_config_pass_create as string;
                 varPass,
             );
             console.log(entryUUID);
-            //3.1 call /tests/which_tests_for_addonUUID to get the list of all needed tests for this addon
-            testsList = (
-                await generalService.fetchStatus(
-                    `/addons/api/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/which_tests_for_addonUUID`,
-                    {
-                        method: 'POST',
-                        body: JSON.stringify({ AddonUUID: addonUUID }),
-                    },
-                )
-            ).Body;
+            //3.1 get test names
+            testsList = await getTestNames(
+                addonName,
+                prodUser,
+                'prod',
+                latestVersionOfAutomationTemplateAddon,
+                addonUUID,
+            );
             //4. iterate on all test names and call each
             for (let index = 0; index < testsList.length; index++) {
                 const currentTestName = testsList[index];
-                const body = {
-                    AddonUUID: addonUUID,
-                    TestName: currentTestName,
-                    isLocal: false,
-                };
+                const body = prepareTestBody(addonName, currentTestName, addonUUID);
                 console.log(
                     `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
                         testsList.length
                     }  #######################`,
                 );
-                //4.1. call current test async
+                //4.1. call current test async->
                 const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
-                    runDevTestOnCertainEnv(euUser, 'prod', latestVersionOfAutomationTemplateAddon, body),
-                    runDevTestOnCertainEnv(prodUser, 'prod', latestVersionOfAutomationTemplateAddon, body),
-                    runDevTestOnCertainEnv(sbUser, 'stage', latestVersionOfAutomationTemplateAddon, body),
+                    runDevTestOnCertainEnv(euUser, 'prod', latestVersionOfAutomationTemplateAddon, body, addonName),
+                    runDevTestOnCertainEnv(prodUser, 'prod', latestVersionOfAutomationTemplateAddon, body, addonName),
+                    runDevTestOnCertainEnv(sbUser, 'stage', latestVersionOfAutomationTemplateAddon, body, addonName),
                 ]);
-                //4.2. poll audit log response for each env
+                //4.2. poll audit log response for each env->
                 const [devTestResutsEu, devTestResultsProd, devTestResultsSb] = await Promise.all([
                     getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI),
                     getTestResponseFromAuditLog(prodUser, 'prod', devTestResponseProd.Body.URI),
@@ -632,6 +626,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 const testResultArrayEu = JSON.parse(devTestResutsEu.AuditInfo.ResultObject);
                 const testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
                 const testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
+                debugger;
                 //4.4. print results to log
                 const devPassingEnvs: any[] = [];
                 const devFailedEnvs: any[] = [];
@@ -640,17 +635,23 @@ const passCreate = process.env.npm_config_pass_create as string;
                 let objectToPrintProd;
                 let objectToPrintSB;
                 let shouldAlsoPrintVer = false;
-                // debugger;
-                if (testResultArrayEu.results[0].suites[0].suites.length > 0) {
+                if (
+                    testResultArrayProd.results &&
+                    testResultArrayProd.results[0].suites[0].suites &&
+                    testResultArrayProd.results[0].suites[0].suites.length > 0
+                ) {
                     shouldAlsoPrintVer = true;
                     objectToPrintEu = testResultArrayEu.results[0].suites[0].suites;
                     objectToPrintProd = testResultArrayProd.results[0].suites[0].suites;
                     objectToPrintSB = testResultArraySB.results[0].suites[0].suites;
-                } else {
+                } else if (testResultArrayProd.results) {
                     //add an if to catch the other result config also
                     objectToPrintEu = testResultArrayEu.results[0].suites;
                     objectToPrintProd = testResultArrayProd.results[0].suites;
                     objectToPrintSB = testResultArraySB.results[0].suites;
+                } else {
+                    objectToPrintProd = testResultArrayProd.tests;
+                    objectToPrintSB = testResultArrayProd.tests;
                 }
                 const euResults = await printResultsTestObject(
                     objectToPrintEu,
@@ -677,16 +678,29 @@ const passCreate = process.env.npm_config_pass_create as string;
                     objectToPrintEu = testResultArrayEu.results[0].suites[1].suites;
                     objectToPrintProd = testResultArrayProd.results[0].suites[1].suites;
                     objectToPrintSB = testResultArraySB.results[0].suites[1].suites;
-                    printResultsTestObject(objectToPrintEu, euUser, 'prod', addonUUID, latestVersionOfTestedAddonProd);
-                    printResultsTestObject(
+                    await printResultsTestObject(
+                        objectToPrintEu,
+                        euUser,
+                        'prod',
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                    );
+                    await printResultsTestObject(
                         objectToPrintProd,
                         prodUser,
                         'prod',
                         addonUUID,
                         latestVersionOfTestedAddonProd,
                     );
-                    printResultsTestObject(objectToPrintSB, sbUser, 'stage', addonUUID, latestVersionOfTestedAddonProd);
+                    await printResultsTestObject(
+                        objectToPrintSB,
+                        sbUser,
+                        'stage',
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                    );
                 }
+                // debugger;
                 //4.6. create the array of passing / failing tests
                 if (euResults.didSucceed) {
                     devPassingEnvs.push('Eu');
@@ -705,6 +719,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 }
                 // debugger;
                 //5. un - available this version if needed
+                //
                 if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
                     if (!euResults.didSucceed && !failingTestsEnv.includes('eu')) {
                         failingTestsEnv.push('eu');
@@ -729,19 +744,28 @@ const passCreate = process.env.npm_config_pass_create as string;
                     //6. report to Teams
                 } else {
                     passedTests.push(currentTestName);
+                    if (euResults.didSucceed && !failingTestsEnv.includes('eu')) {
+                        passedTestsEnv.push('eu');
+                    }
+                    if (prodResults.didSucceed && !failingTestsEnv.includes('prod')) {
+                        passedTestsEnv.push('prod');
+                    }
+                    if (sbResults.didSucceed && !failingTestsEnv.includes('sb')) {
+                        passedTestsEnv.push('sb');
+                    }
                 }
             }
-            if (!doWeHaveSuchAppTest(addonName) || passedTests.length != testsList.length) {
-                const devPassingEnvs: string[] = [];
-                if (passedTestsEnv.filter((v) => v === 'eu').length === testsList.length) {
-                    devPassingEnvs.push('EU');
-                }
-                if (passedTestsEnv.filter((v) => v === 'prod').length === testsList.length) {
-                    devPassingEnvs.push('PROD');
-                }
-                if (passedTestsEnv.filter((v) => v === 'sb').length === testsList.length) {
-                    devPassingEnvs.push('STAGING');
-                }
+            const devPassingEnvs: string[] = [];
+            if (passedTestsEnv.filter((v) => v === 'eu').length === testsList.length) {
+                devPassingEnvs.push('EU');
+            }
+            if (passedTestsEnv.filter((v) => v === 'prod').length === testsList.length) {
+                devPassingEnvs.push('PROD');
+            }
+            if (passedTestsEnv.filter((v) => v === 'sb').length === testsList.length) {
+                devPassingEnvs.push('STAGING');
+            }
+            if (passedTests.length != testsList.length) {
                 if (failingTestsEnv.length != 0) {
                     await Promise.all([
                         unavailableAddonVersion(
@@ -779,9 +803,18 @@ const passCreate = process.env.npm_config_pass_create as string;
                     failingTestsEnv,
                     true,
                 );
-
                 console.log('Dev Test Didnt Pass - No Point In Running Approvment');
                 return;
+            } else if (!doWeHaveSuchAppTest(addonName)) {
+                await reportToTeams(
+                    addonName,
+                    addonUUID,
+                    service,
+                    latestVersionOfTestedAddonProd,
+                    devPassingEnvs,
+                    failingTestsEnv,
+                    true,
+                );
             }
         }
         ///////////////////////APPROVMENT TESTS///////////////////////////////////
@@ -1027,7 +1060,6 @@ const passCreate = process.env.npm_config_pass_create as string;
             }
             case 'PEPPERI-FILE-STORAGE':
             case 'PFS': {
-                debugger;
                 addonUUID = '00000000-0000-0000-0000-0000000f11e5';
                 const responseProd = await service.fetchStatus(
                     `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
@@ -1108,155 +1140,29 @@ const passCreate = process.env.npm_config_pass_create as string;
         // 2. parse which envs failed
         const passingEnvs: string[] = [];
         const failingEnvs: string[] = [];
+        debugger;
         for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
             const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
             if (resultAndEnv[0] === 'FAILURE') {
-                switch (resultAndEnv[1]) {
-                    case 'EU':
-                        const bodyToSendVAREU = {
-                            UUID: addonEntryUUIDEu,
-                            Version: addonVersionEU,
-                            Available: false,
-                            AddonUUID: addonUUID,
-                        };
-                        const varResponseEU = await service.fetchStatus(
-                            `https://papi-eu.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersionEU}' AND Available=1`,
-                            {
-                                method: 'POST',
-                                headers: {
-                                    Authorization: `Basic ${base64VARCredentialsEU}`,
-                                },
-                                body: JSON.stringify(bodyToSendVAREU),
-                            },
-                        );
-                        if (varResponseEU.Ok !== true) {
-                            throw new Error(
-                                `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseEU.Ok}`,
-                            );
-                        }
-                        if (varResponseEU.Status !== 200) {
-                            throw new Error(
-                                `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseEU.Status}`,
-                            );
-                        }
-                        if (varResponseEU.Body.AddonUUID !== addonUUID) {
-                            throw new Error(
-                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseEU.Body.AddonUUID} instead of ${addonUUID}`,
-                            );
-                        }
-                        if (varResponseEU.Body.Version !== addonVersionEU) {
-                            throw new Error(
-                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseEU.Body.Version} instead of ${addonVersionEU}`,
-                            );
-                        }
-                        if (varResponseEU.Body.Available !== false) {
-                            throw new Error(
-                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseEU.Body.Available} instead of false`,
-                            );
-                        }
-                        console.log(
-                            `${addonName}, version: ${addonVersionEU}  on EU became unavailable: Approvment tests didnt pass`,
-                        );
-                        failingEnvs.push(resultAndEnv[1]);
-                        break;
-                    case 'Production':
-                        const bodyToSendVARProd = {
-                            UUID: addonEntryUUIDProd,
-                            Version: addonVersionProd,
-                            Available: false,
-                            AddonUUID: addonUUID,
-                        };
-                        const varResponseProd = await service.fetchStatus(
-                            `https://papi.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersionEU}' AND Available=1`,
-                            {
-                                method: 'POST',
-                                headers: {
-                                    Authorization: `Basic ${base64VARCredentialsProd}`,
-                                },
-                                body: JSON.stringify(bodyToSendVARProd),
-                            },
-                        );
-                        if (varResponseProd.Ok !== true) {
-                            throw new Error(
-                                `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseProd.Ok}`,
-                            );
-                        }
-                        if (varResponseProd.Status !== 200) {
-                            throw new Error(
-                                `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseProd.Status}`,
-                            );
-                        }
-                        if (varResponseProd.Body.AddonUUID !== addonUUID) {
-                            throw new Error(
-                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseProd.Body.AddonUUID} instead of ${addonUUID}`,
-                            );
-                        }
-                        if (varResponseProd.Body.Version !== addonVersionProd) {
-                            throw new Error(
-                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseProd.Body.Version} instead of ${addonVersionProd}`,
-                            );
-                        }
-                        if (varResponseProd.Body.Available !== false) {
-                            throw new Error(
-                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseProd.Body.Available} instead of false`,
-                            );
-                        }
-                        console.log(
-                            `${addonName}, version: ${addonVersionProd}  on Production became unavailable: Approvment tests didnt pass`,
-                        );
-                        failingEnvs.push(resultAndEnv[1]);
-                        break;
-                    case 'Stage':
-                        const bodyToSendVARSb = {
-                            UUID: addonEntryUUIDSb,
-                            Version: addonVersionSb,
-                            Available: false,
-                            AddonUUID: addonUUID,
-                        };
-                        const varResponseSb = await service.fetchStatus(
-                            `https://papi.staging.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersionEU}' AND Available=1`,
-                            {
-                                method: 'POST',
-                                headers: {
-                                    Authorization: `Basic ${base64VARCredentialsSB}`,
-                                },
-                                body: JSON.stringify(bodyToSendVARSb),
-                            },
-                        );
-                        if (varResponseSb.Ok !== true) {
-                            throw new Error(
-                                `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseSb.Ok}`,
-                            );
-                        }
-                        if (varResponseSb.Status !== 200) {
-                            throw new Error(
-                                `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseSb.Status}`,
-                            );
-                        }
-                        if (varResponseSb.Body.AddonUUID !== addonUUID) {
-                            throw new Error(
-                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseSb.Body.AddonUUID} instead of ${addonUUID}`,
-                            );
-                        }
-                        if (varResponseSb.Body.Version !== addonVersionSb) {
-                            throw new Error(
-                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseSb.Body.Version} instead of ${addonVersionSb}`,
-                            );
-                        }
-                        if (varResponseSb.Body.Available !== false) {
-                            throw new Error(
-                                `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseSb.Body.Available} instead of false`,
-                            );
-                        }
-                        console.log(
-                            `${addonName}, version: ${addonVersionSb} on Staging became unavailable: Approvment tests didnt pass`,
-                        );
-                        failingEnvs.push(resultAndEnv[1]);
-                        break;
-                }
+                await unavailableVersionAfterAppTestFail(
+                    addonEntryUUIDEu,
+                    addonEntryUUIDProd,
+                    addonEntryUUIDSb,
+                    addonVersionEU,
+                    addonVersionProd,
+                    addonVersionSb,
+                    addonUUID,
+                    service,
+                    base64VARCredentialsEU,
+                    base64VARCredentialsProd,
+                    base64VARCredentialsSB,
+                    addonName,
+                    failingEnvs,
+                    resultAndEnv,
+                );
             }
         }
-
+        debugger;
         if (!failingEnvs.includes('EU')) {
             passingEnvs.push('EU');
         }
@@ -1787,7 +1693,7 @@ async function reportToTeams(
     const bodyToSend = {
         Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
         Description: message,
-        Status: passingEnvs.length !== 3 ? 'ERROR' : 'SUCCESS',
+        Status: passingEnvs.length !== 2 ? 'ERROR' : 'SUCCESS', //eu currently disabled
         Message: message2,
         UserWebhook: handleTeamsURL(addonName),
     };
@@ -1815,12 +1721,14 @@ function resolveUserPerTest(addonName): any[] {
         case 'DATA INDEX':
         case 'DATA-INDEX':
             return ['DataIndexEU@pepperitest.com', 'DataIndexProd@pepperitest.com', 'DataIndexSB@pepperitest.com'];
-        case 'NEBULA':
-            return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
+        // case 'NEBULA'://0.6.x
+        //     return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
+        case 'NEBULA': //0.7.x
+            return ['neo4JSyncEU@pepperitest.com', 'Neo4JSyncProd@pepperitest.com', 'Neo4JSyncSB@pepperitest.com']; //
         case 'ADAL':
             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
         case 'SYNC':
-            return ['syncTestEU@pepperitest.com', 'syncTestProd@pepperitest.com', 'syncTestSB@pepperitest.com'];
+            return ['syncTestEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com ']; //
         default:
             return [];
     }
@@ -1838,19 +1746,35 @@ async function validateLatestVersionOfAddonIsInstalled(userName, addonUUID, late
     return isInstalled;
 }
 
-async function runDevTestOnCertainEnv(userName, env, latestVersionOfAutomationTemplateAddon, bodyToSend) {
+async function getNebulaTests(userName, env) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
-    const testResponse = await service.fetchStatus(
-        `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`,
-        {
-            body: JSON.stringify(bodyToSend),
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
-            },
+    const response = (
+        await service.fetchStatus(`/addons/api/00000000-0000-0000-0000-000000006a91/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
+async function runDevTestOnCertainEnv(userName, env, latestVersionOfAutomationTemplateAddon, bodyToSend, addonName) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    let urlToCall;
+    if (addonName === 'NEBULA') {
+        urlToCall = '/addons/api/async/00000000-0000-0000-0000-000000006a91/tests/tests';
+    } else {
+        urlToCall = `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`;
+    }
+    const testResponse = await service.fetchStatus(urlToCall, {
+        body: JSON.stringify(bodyToSend),
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
         },
-    );
+    });
     return testResponse;
 }
 
@@ -1859,6 +1783,41 @@ async function getTestResponseFromAuditLog(userName, env, URI: string) {
     const service = new GeneralService(client);
     const auditLogDevTestResponse = await service.getAuditLogResultObjectIfValid(URI as string, 120, 7000);
     return auditLogDevTestResponse;
+}
+
+async function getTestNames(addonName, user, env, latestVersionOfAutomationTemplateAddon, addonUUID) {
+    if (addonName === 'NEBULA') {
+        // testsList
+        return getNebulaTests(user, 'prod');
+    } else {
+        const client = await initiateTester(user, 'Aa123456', env);
+        const service = new GeneralService(client);
+        return (
+            await service.fetchStatus(
+                `/addons/api/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/which_tests_for_addonUUID`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({ AddonUUID: addonUUID }),
+                },
+            )
+        ).Body;
+    }
+}
+
+function prepareTestBody(addonName, currentTestName, addonUUID) {
+    let body;
+    if (addonName === 'NEBULA') {
+        body = {
+            Name: currentTestName,
+        };
+    } else {
+        body = {
+            AddonUUID: addonUUID,
+            TestName: currentTestName,
+            isLocal: false,
+        };
+    }
+    return body;
 }
 
 async function printResultsTestObject(testResultArray, userName, env, addonUUID, latestVersionOfTestedAddon) {
@@ -1878,16 +1837,36 @@ async function printResultsTestObject(testResultArray, userName, env, addonUUID,
             if (testResult.failures.length > 1) {
                 didSucceed = false;
             }
-        } else if (testResult.failures.length > 0) {
-            didSucceed = false;
+        } else if (testResult.failures) {
+            if (testResult.failures.length > 0) didSucceed = false;
+        } else {
+            for (let index = 0; index < testResultArray.length; index++) {
+                const test = testResultArray[index];
+                if (!test.passed) {
+                    didSucceed = false;
+                }
+            }
         }
-        service.reportResults2(
-            testResult,
-            installedAddonsArr.find(
-                (addon) => addon.Addon.UUID == addonUUID && addon.Version == latestVersionOfTestedAddon,
-            ),
-        );
+        if (testResultArray.length > 1) {
+            for (let index = 0; index < testResultArray.length; index++) {
+                const test = testResultArray[index];
+                service.reportResults2(
+                    test,
+                    installedAddonsArr.find(
+                        (addon) => addon.Addon.UUID == addonUUID && addon.Version == latestVersionOfTestedAddon,
+                    ),
+                );
+            }
+        } else {
+            service.reportResults2(
+                testResult,
+                installedAddonsArr.find(
+                    (addon) => addon.Addon.UUID == addonUUID && addon.Version == latestVersionOfTestedAddon,
+                ),
+            );
+        }
     }
+    console.log(`##############################################`);
     return { didSucceed };
 }
 
@@ -1979,4 +1958,147 @@ function doWeHaveSuchAppTest(addonName: string) {
         default:
             return false;
     }
+}
+
+async function unavailableVersionAfterAppTestFail(
+    addonEntryUUIDEu,
+    addonEntryUUIDProd,
+    addonEntryUUIDSb,
+    addonVersionEU,
+    addonVersionProd,
+    addonVersionSb,
+    addonUUID,
+    service,
+    base64VARCredentialsEU,
+    base64VARCredentialsProd,
+    base64VARCredentialsSB,
+    addonName,
+    failingEnvs,
+    resultAndEnv,
+) {
+    const bodyToSendVAREU = {
+        UUID: addonEntryUUIDEu,
+        Version: addonVersionEU,
+        Available: false,
+        AddonUUID: addonUUID,
+    };
+    const varResponseEU = await service.fetchStatus(
+        `https://papi-eu.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersionEU}' AND Available=1`,
+        {
+            method: 'POST',
+            headers: {
+                Authorization: `Basic ${base64VARCredentialsEU}`,
+            },
+            body: JSON.stringify(bodyToSendVAREU),
+        },
+    );
+    const bodyToSendVARProd = {
+        UUID: addonEntryUUIDProd,
+        Version: addonVersionProd,
+        Available: false,
+        AddonUUID: addonUUID,
+    };
+    const varResponseProd = await service.fetchStatus(
+        `https://papi.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersionEU}' AND Available=1`,
+        {
+            method: 'POST',
+            headers: {
+                Authorization: `Basic ${base64VARCredentialsProd}`,
+            },
+            body: JSON.stringify(bodyToSendVARProd),
+        },
+    );
+    const bodyToSendVARSb = {
+        UUID: addonEntryUUIDSb,
+        Version: addonVersionSb,
+        Available: false,
+        AddonUUID: addonUUID,
+    };
+    const varResponseSb = await service.fetchStatus(
+        `https://papi.staging.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersionEU}' AND Available=1`,
+        {
+            method: 'POST',
+            headers: {
+                Authorization: `Basic ${base64VARCredentialsSB}`,
+            },
+            body: JSON.stringify(bodyToSendVARSb),
+        },
+    );
+    if (varResponseEU.Ok !== true) {
+        throw new Error(`Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseEU.Ok}`);
+    }
+    if (varResponseEU.Status !== 200) {
+        throw new Error(
+            `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseEU.Status}`,
+        );
+    }
+    if (varResponseEU.Body.AddonUUID !== addonUUID) {
+        throw new Error(
+            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseEU.Body.AddonUUID} instead of ${addonUUID}`,
+        );
+    }
+    if (varResponseEU.Body.Version !== addonVersionEU) {
+        throw new Error(
+            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseEU.Body.Version} instead of ${addonVersionEU}`,
+        );
+    }
+    if (varResponseEU.Body.Available !== false) {
+        throw new Error(
+            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseEU.Body.Available} instead of false`,
+        );
+    }
+    console.log(`${addonName}, version: ${addonVersionEU}  on EU became unavailable: Approvment tests didnt pass`);
+    failingEnvs.push(resultAndEnv[1]);
+    if (varResponseProd.Ok !== true) {
+        throw new Error(`Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseProd.Ok}`);
+    }
+    if (varResponseProd.Status !== 200) {
+        throw new Error(
+            `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseProd.Status}`,
+        );
+    }
+    if (varResponseProd.Body.AddonUUID !== addonUUID) {
+        throw new Error(
+            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseProd.Body.AddonUUID} instead of ${addonUUID}`,
+        );
+    }
+    if (varResponseProd.Body.Version !== addonVersionProd) {
+        throw new Error(
+            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseProd.Body.Version} instead of ${addonVersionProd}`,
+        );
+    }
+    if (varResponseProd.Body.Available !== false) {
+        throw new Error(
+            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseProd.Body.Available} instead of false`,
+        );
+    }
+    console.log(
+        `${addonName}, version: ${addonVersionProd}  on Production became unavailable: Approvment tests didnt pass`,
+    );
+    failingEnvs.push(resultAndEnv[1]);
+    if (varResponseSb.Ok !== true) {
+        throw new Error(`Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseSb.Ok}`);
+    }
+    if (varResponseSb.Status !== 200) {
+        throw new Error(
+            `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseSb.Status}`,
+        );
+    }
+    if (varResponseSb.Body.AddonUUID !== addonUUID) {
+        throw new Error(
+            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseSb.Body.AddonUUID} instead of ${addonUUID}`,
+        );
+    }
+    if (varResponseSb.Body.Version !== addonVersionSb) {
+        throw new Error(
+            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseSb.Body.Version} instead of ${addonVersionSb}`,
+        );
+    }
+    if (varResponseSb.Body.Available !== false) {
+        throw new Error(
+            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseSb.Body.Available} instead of false`,
+        );
+    }
+    console.log(`${addonName}, version: ${addonVersionSb} on Staging became unavailable: Approvment tests didnt pass`);
+    failingEnvs.push(resultAndEnv[1]);
 }

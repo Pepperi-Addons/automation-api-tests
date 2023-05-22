@@ -29,8 +29,8 @@ export const testData = {
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.%'], //NG14 latest webapp
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
-    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.'],
-    'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
+    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
+    'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
@@ -937,9 +937,12 @@ export default class GeneralService {
         const service = new GeneralService(client);
         const varCredBase64 = Buffer.from(varCredentials).toString('base64');
         const responseProd = await service.fetchStatus(
-            `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 ${
-                versionString ? `AND Version Like '${versionString}' ` : ''
-            }&order_by=CreationDateTime DESC`,
+            `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version Like ${
+                versionString && versionString !== '' && versionString !== undefined
+                    ? `'` + versionString + `'`
+                    : `'%' AND Available Like 1`
+            }
+            &order_by=CreationDateTime DESC`,
             {
                 method: 'GET',
                 headers: {
@@ -1085,7 +1088,9 @@ export default class GeneralService {
         const addonName = Object.entries(testData)[0][0];
         const addonUUID = testData[addonName][0];
         const addonVersion = testData[addonName][1];
-        const searchString = `AND Version Like '${addonVersion !== '' ? addonVersion : '%'}' AND Available Like 1`;
+        const searchString = `AND Version Like ${
+            addonVersion !== '' ? `'` + addonVersion + `'` : `'%' AND Available Like 1`
+        }`;
         const fetchVarResponse = (
             await this.fetchStatus(
                 `${this.client.BaseURL.replace(
@@ -1371,26 +1376,39 @@ export default class GeneralService {
         if (!testResultsObj.title.includes('Test Data')) {
             console.log(`Tested Addon: ${testedAddonObject.Addon.Name} Version: ${testedAddonObject.Version}`);
             console.log(`Test Suite: ${testResultsObj.title}`);
-            console.log('Total Failures: ' + testResultsObj.failures.length);
-            console.log('Total Passes: ' + testResultsObj.passes.length);
-        }
-        for (let index = 0; index < testResultsObj.tests.length; index++) {
-            const test = testResultsObj.tests[index];
-            if (
-                test.fullTitle.includes('TestDataStartTestServerTimeAndDate') ||
-                test.fullTitle.includes('TestDataTestedUser') ||
-                test.fullTitle.includes('Test Data Start Test Server Time And Date') ||
-                test.fullTitle.includes('Test Data Tested User')
-            ) {
-                console.log(`*  ${test.fullTitle}`);
+            if (testResultsObj.failures) {
+                console.log('Total Failures: ' + testResultsObj.failures.length);
             } else {
-                if (test.pass) {
-                    console.log(`√ ${test.fullTitle}: passed\n`);
-                } else {
-                    console.log(`𝑥 ${test.fullTitle}: failed, on: ${test.err === undefined ? '' : test.err.message}\n`);
-                }
+                if (testResultsObj.passed) console.log('Total Failures: ' + 0);
+                else console.log('Total Failures: ' + 1);
+            }
+            if (testResultsObj.passes) {
+                console.log('Total Passes: ' + testResultsObj.passes.length);
+            } else {
+                if (testResultsObj.passed) console.log('Total Passes: ' + 1);
+                else console.log('Total Passes: ' + 0);
             }
         }
+        if (testResultsObj.tests)
+            for (let index = 0; index < testResultsObj.tests.length; index++) {
+                const test = testResultsObj.tests[index];
+                if (
+                    test.fullTitle.includes('TestDataStartTestServerTimeAndDate') ||
+                    test.fullTitle.includes('TestDataTestedUser') ||
+                    test.fullTitle.includes('Test Data Start Test Server Time And Date') ||
+                    test.fullTitle.includes('Test Data Tested User')
+                ) {
+                    console.log(`*  ${test.fullTitle}`);
+                } else {
+                    if (test.pass) {
+                        console.log(`√ ${test.fullTitle}: passed\n`);
+                    } else {
+                        console.log(
+                            `𝑥 ${test.fullTitle}: failed, on: ${test.err === undefined ? '' : test.err.message}\n`,
+                        );
+                    }
+                }
+            }
         // for (let index1 = 0; index1 < testResultsObj.results[0].suites.length; index1++) {
         //     const testSuite = testResultsObj.results[0].suites[index1];
         //     for (let index2 = 0; index2 < testSuite.tests.length; index2++) {
@@ -1517,8 +1535,8 @@ export default class GeneralService {
             //     return '122c0e9d-c240-4865-b446-f37ece866c22';
             case 'NEBULA':
                 return '00000000-0000-0000-0000-000000006a91';
-            // case 'SYNC':
-            //     return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
+            case 'SYNC':
+                return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
             // case 'OBJECT TYPES EDITOR':
             //     return '04de9428-8658-4bf7-8171-b59f6327bbf1';
             default:
