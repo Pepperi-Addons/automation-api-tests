@@ -937,9 +937,12 @@ export default class GeneralService {
         const service = new GeneralService(client);
         const varCredBase64 = Buffer.from(varCredentials).toString('base64');
         const responseProd = await service.fetchStatus(
-            `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 ${
-                versionString ? `AND Version Like '${versionString}' ` : ''
-            }&order_by=CreationDateTime DESC`,
+            `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version Like ${
+                versionString && versionString !== '' && versionString !== undefined
+                    ? `'` + versionString + `'`
+                    : `'%' AND Available Like 1`
+            }
+            &order_by=CreationDateTime DESC`,
             {
                 method: 'GET',
                 headers: {
@@ -1085,7 +1088,9 @@ export default class GeneralService {
         const addonName = Object.entries(testData)[0][0];
         const addonUUID = testData[addonName][0];
         const addonVersion = testData[addonName][1];
-        const searchString = `AND Version Like '${addonVersion !== '' ? addonVersion : '%'}' AND Available Like 1`;
+        const searchString = `AND Version Like ${
+            addonVersion !== '' ? `'` + addonVersion + `'` : `'%' AND Available Like 1`
+        }`;
         const fetchVarResponse = (
             await this.fetchStatus(
                 `${this.client.BaseURL.replace(
@@ -1530,8 +1535,8 @@ export default class GeneralService {
             //     return '122c0e9d-c240-4865-b446-f37ece866c22';
             case 'NEBULA':
                 return '00000000-0000-0000-0000-000000006a91';
-            // case 'SYNC':
-            //     return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
+            case 'SYNC':
+                return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
             // case 'OBJECT TYPES EDITOR':
             //     return '04de9428-8658-4bf7-8171-b59f6327bbf1';
             default:
