@@ -543,7 +543,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                 ),
             ]);
             //2. validate tested addon is installed on latest available version
-            // const version = addonName === 'SYNC' ? '0.7.30' : null;
             const [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
                 addonUUID,
                 varPass,
@@ -579,6 +578,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddonProd, 'prod'),
                 validateLatestVersionOfAddonIsInstalled(sbUser, addonUUID, latestVersionOfTestedAddonSb, 'stage'),
             ]);
+            debugger;
             for (let index = 0; index < isInstalled.length; index++) {
                 const isTestedAddonInstalled = isInstalled[index];
                 if (isTestedAddonInstalled === false) {
