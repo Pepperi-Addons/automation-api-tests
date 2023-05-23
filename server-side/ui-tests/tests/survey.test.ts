@@ -131,6 +131,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
     // #region Upgrade survey dependencies
 
     const testData = {
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.5.51'],
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
