@@ -1265,8 +1265,9 @@ export async function handleDevTestInstallation(
     const service = new GeneralService(client);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     //1. convert Name to UUID
-    testName = `Installing Dev Test Prerequisites On ${userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
-        } Env, User: ${userName}, Addon: ${addonName}, UUID: ${addonUUID}`;
+    testName = `Installing Dev Test Prerequisites On ${
+        userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
+    } Env, User: ${userName}, Addon: ${addonName}, UUID: ${addonUUID}`;
     service.PrintMemoryUseToLog('Start', testName);
     //2. upgrade dependencys - basic: correct for all addons
     await service.baseAddonVersionsInstallation(varPass);
@@ -1283,15 +1284,18 @@ export async function handleDevTestInstallation(
     const addonDep = await getDependenciesOfAddon(service, addonUUID, varPass);
     //4. install on dist
     if (addonDep !== undefined && addonDep.length !== 0) {
-        if (addonUUID === '00000000-0000-0000-0000-000000006a91' || addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+        if (
+            addonUUID === '00000000-0000-0000-0000-000000006a91' ||
+            addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a'
+        ) {
             const depObj = {};
             depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.7.%'];
             addonDep.push(depObj);
         }
         for (let index = 0; index < addonDep.length; index++) {
             const addonToInstall = addonDep[index];
-            let addonName = (Object.entries(addonToInstall))[0][0];
-            let uuid = ((Object.entries(addonToInstall))[0][1] as any)[0];
+            const addonName = Object.entries(addonToInstall)[0][0];
+            const uuid = (Object.entries(addonToInstall)[0][1] as any)[0];
             if (addonName === 'papi' && addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
                 addonToInstall[addonName][1] = '9.6.%';
             }
@@ -1300,9 +1304,16 @@ export async function handleDevTestInstallation(
                 const NebulaDep = await getDependenciesOfAddon(service, uuid, varPass);
                 for (let index = 0; index < NebulaDep.length; index++) {
                     const nebulaDepAddon = NebulaDep[index];
-                    const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, nebulaDepAddon) as any;
+                    const installAddonResponse = (await service.installLatestAvalibaleVersionOfAddon(
+                        varPass,
+                        nebulaDepAddon,
+                    )) as any;
                     if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
-                        throw new Error(`Error: can't install one of Nebulas dependency's: ${(Object.entries(nebulaDepAddon))[0][0]} - ${((Object.entries(nebulaDepAddon))[0][1] as any)[0]}, error:${installAddonResponse[0]}`);
+                        throw new Error(
+                            `Error: can't install one of Nebulas dependency's: ${
+                                Object.entries(nebulaDepAddon)[0][0]
+                            } - ${(Object.entries(nebulaDepAddon)[0][1] as any)[0]}, error:${installAddonResponse[0]}`,
+                        );
                     }
                 }
             }
@@ -1364,23 +1375,21 @@ export async function async_addon_get_remove_codejobs(
     return await testerFunctions.run();
 }
 
-async function getDependenciesOfAddon(
-    service: GeneralService,
-    addonUUID,
-    varPass,
-) {
-    const latestVer = (await service.fetchStatus(
-        `${service['client'].BaseURL.replace(
-            'papi-eu',
-            'papi',
-        )}/var/addons/versions?where=AddonUUID='${addonUUID}'AND Available=1&order_by=CreationDateTime DESC`,
-        {
-            method: `GET`,
-            headers: {
-                Authorization: `Basic ${Buffer.from(varPass).toString('base64')}`,
+async function getDependenciesOfAddon(service: GeneralService, addonUUID, varPass) {
+    const latestVer = (
+        await service.fetchStatus(
+            `${service['client'].BaseURL.replace(
+                'papi-eu',
+                'papi',
+            )}/var/addons/versions?where=AddonUUID='${addonUUID}'AND Available=1&order_by=CreationDateTime DESC`,
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: `Basic ${Buffer.from(varPass).toString('base64')}`,
+                },
             },
-        },
-    )).Body[0];
+        )
+    ).Body[0];
     const latestVerPublishConfig = JSON.parse(latestVer.PublishConfig);
     const dependenciesFromPublishConfig = latestVerPublishConfig.Dependencies;
     let dependeciesUUIDs: any[] = [];

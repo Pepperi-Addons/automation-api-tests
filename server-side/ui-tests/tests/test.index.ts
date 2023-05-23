@@ -513,7 +513,7 @@ const passCreate = process.env.npm_config_pass_create as string;
         if (addonUUID === 'none') {
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
         } else {
-            const [euUser,prodUser, sbUser] = resolveUserPerTest(addonName); //
+            const [euUser, prodUser, sbUser] = resolveUserPerTest(addonName); //
             console.log(`####################### Running For: ${addonName}(${addonUUID}) #######################`);
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
             await Promise.all([
@@ -611,13 +611,15 @@ const passCreate = process.env.npm_config_pass_create as string;
                     }  #######################`,
                 );
                 //4.1. call current test async->
-                const [ devTestResponseEu,devTestResponseProd, devTestResponseSb] = await Promise.all([//devTestResponseEu,
+                const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
+                    //devTestResponseEu,
                     runDevTestOnCertainEnv(euUser, 'prod', latestVersionOfAutomationTemplateAddon, body, addonName),
                     runDevTestOnCertainEnv(prodUser, 'prod', latestVersionOfAutomationTemplateAddon, body, addonName),
                     runDevTestOnCertainEnv(sbUser, 'stage', latestVersionOfAutomationTemplateAddon, body, addonName),
                 ]);
                 //4.2. poll audit log response for each env->
-                const [ devTestResutsEu,devTestResultsProd, devTestResultsSb] = await Promise.all([//devTestResutsEu,
+                const [devTestResutsEu, devTestResultsProd, devTestResultsSb] = await Promise.all([
+                    //devTestResutsEu,
                     getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI),
                     getTestResponseFromAuditLog(prodUser, 'prod', devTestResponseProd.Body.URI),
                     getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI),
@@ -720,7 +722,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 // debugger;
                 //5. un - available this version if needed
                 //!euResults.didSucceed ||
-                if ( !euResults.didSucceed ||!prodResults.didSucceed || !sbResults.didSucceed) {
+                if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
                     if (!euResults.didSucceed && !failingTestsEnv.includes('eu')) {
                         failingTestsEnv.push('eu');
                     } else if (euResults.didSucceed) {
@@ -1678,9 +1680,10 @@ async function reportToTeams(
     let message;
     let message2;
     if (isDev) {
+        const uniqFailingEnvs = [...new Set(failingEnvs)];
         message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
             passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
+        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : uniqFailingEnvs.join(', ')}`;
         message2 = `DEV TEST RESULT`;
     } else {
         message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
@@ -1691,7 +1694,7 @@ async function reportToTeams(
     const bodyToSend = {
         Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
         Description: message,
-        Status: passingEnvs.length < 3 ? 'ERROR' : 'SUCCESS', 
+        Status: passingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
         Message: message2,
         UserWebhook: handleTeamsURL(addonName),
     };
@@ -1726,7 +1729,7 @@ function resolveUserPerTest(addonName): any[] {
         case 'ADAL':
             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
         case 'SYNC':
-            return [ 'syncTestEU@pepperitest.com','syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com ']; //'syncTestEU@pepperitest.com',
+            return ['syncTestEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com ']; //'syncTestEU@pepperitest.com',
         default:
             return [];
     }
