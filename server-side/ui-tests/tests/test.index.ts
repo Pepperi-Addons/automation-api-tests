@@ -513,7 +513,7 @@ const passCreate = process.env.npm_config_pass_create as string;
         if (addonUUID === 'none') {
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
         } else {
-            const [euUser, prodUser, sbUser] = resolveUserPerTest(addonName); //,
+            const [euUser, prodUser, sbUser] = resolveUserPerTest(addonName); //
             console.log(`####################### Running For: ${addonName}(${addonUUID}) #######################`);
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
             await Promise.all([
@@ -543,7 +543,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                 ),
             ]);
             //2. validate tested addon is installed on latest available version
-            // const version = addonName === 'SYNC' ? '0.7.30' : null;
             const [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
                 addonUUID,
                 varPass,
@@ -567,8 +566,8 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonEu ||
                 latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonSb
             ) {
-                throw new Error( //
-                    `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}}, eu - ${latestVersionOfTestedAddonEu}`,
+                throw new Error( //eu - ${latestVersionOfTestedAddonEu}
+                    `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`,
                 );
             }
             console.log(
@@ -587,6 +586,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     );
                 }
             }
+            // debugger;
             //3. run the test on latest version of the template addon
             const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
                 '02754342-e0b5-4300-b728-a94ea5e0e8f4',
@@ -612,12 +612,14 @@ const passCreate = process.env.npm_config_pass_create as string;
                 );
                 //4.1. call current test async->
                 const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
+                    //devTestResponseEu,
                     runDevTestOnCertainEnv(euUser, 'prod', latestVersionOfAutomationTemplateAddon, body, addonName),
                     runDevTestOnCertainEnv(prodUser, 'prod', latestVersionOfAutomationTemplateAddon, body, addonName),
                     runDevTestOnCertainEnv(sbUser, 'stage', latestVersionOfAutomationTemplateAddon, body, addonName),
                 ]);
                 //4.2. poll audit log response for each env->
                 const [devTestResutsEu, devTestResultsProd, devTestResultsSb] = await Promise.all([
+                    //devTestResutsEu,
                     getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI),
                     getTestResponseFromAuditLog(prodUser, 'prod', devTestResponseProd.Body.URI),
                     getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI),
@@ -626,7 +628,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 const testResultArrayEu = JSON.parse(devTestResutsEu.AuditInfo.ResultObject);
                 const testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
                 const testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
-                debugger;
+                // debugger;
                 //4.4. print results to log
                 const devPassingEnvs: any[] = [];
                 const devFailedEnvs: any[] = [];
@@ -641,7 +643,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     testResultArrayProd.results[0].suites[0].suites.length > 0
                 ) {
                     shouldAlsoPrintVer = true;
-                    objectToPrintEu = testResultArrayEu.results[0].suites[0].suites;
+                    // objectToPrintEu = testResultArrayEu.results[0].suites[0].suites;
                     objectToPrintProd = testResultArrayProd.results[0].suites[0].suites;
                     objectToPrintSB = testResultArraySB.results[0].suites[0].suites;
                 } else if (testResultArrayProd.results) {
@@ -719,7 +721,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 }
                 // debugger;
                 //5. un - available this version if needed
-                //
+                //!euResults.didSucceed ||
                 if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
                     if (!euResults.didSucceed && !failingTestsEnv.includes('eu')) {
                         failingTestsEnv.push('eu');
@@ -740,8 +742,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                     // const addonToInstall = {};
                     // addonToInstall[addonName] = [addonUUID, ''];
                     // debugger;
-
-                    //6. report to Teams
                 } else {
                     passedTests.push(currentTestName);
                     if (euResults.didSucceed && !failingTestsEnv.includes('eu')) {
@@ -1140,7 +1140,7 @@ const passCreate = process.env.npm_config_pass_create as string;
         // 2. parse which envs failed
         const passingEnvs: string[] = [];
         const failingEnvs: string[] = [];
-        debugger;
+        // debugger;
         for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
             const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
             if (resultAndEnv[0] === 'FAILURE') {
@@ -1162,7 +1162,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 );
             }
         }
-        debugger;
+        // debugger;
         if (!failingEnvs.includes('EU')) {
             passingEnvs.push('EU');
         }
@@ -1680,9 +1680,10 @@ async function reportToTeams(
     let message;
     let message2;
     if (isDev) {
+        const uniqFailingEnvs = [...new Set(failingEnvs)];
         message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
             passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
+        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : uniqFailingEnvs.join(', ')}`;
         message2 = `DEV TEST RESULT`;
     } else {
         message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
@@ -1693,7 +1694,7 @@ async function reportToTeams(
     const bodyToSend = {
         Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
         Description: message,
-        Status: passingEnvs.length !== 2 ? 'ERROR' : 'SUCCESS', //eu currently disabled
+        Status: passingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
         Message: message2,
         UserWebhook: handleTeamsURL(addonName),
     };
@@ -1728,7 +1729,7 @@ function resolveUserPerTest(addonName): any[] {
         case 'ADAL':
             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
         case 'SYNC':
-            return ['syncTestEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com ']; //
+            return ['syncTestEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com ']; //'syncTestEU@pepperitest.com',
         default:
             return [];
     }
