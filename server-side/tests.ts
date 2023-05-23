@@ -1269,7 +1269,7 @@ export async function handleDevTestInstallation(
         } Env, User: ${userName}, Addon: ${addonName}, UUID: ${addonUUID}`;
     service.PrintMemoryUseToLog('Start', testName);
     //2. upgrade dependencys - basic: correct for all addons
-    // await service.baseAddonVersionsInstallation(varPass);
+    await service.baseAddonVersionsInstallation(varPass);
     //2.1 install template automation addon
     const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, {
         automation_template_addon: ['02754342-e0b5-4300-b728-a94ea5e0e8f4', ''],
