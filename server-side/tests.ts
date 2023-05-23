@@ -1302,13 +1302,13 @@ export async function handleDevTestInstallation(
                     const nebulaDepAddon = NebulaDep[index];
                     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, nebulaDepAddon) as any;
                     if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
-                        throw new Error(`Error: can't install one of Nebulas dependency's: ${(Object.entries(nebulaDepAddon))[0][0]} - ${((Object.entries(nebulaDepAddon))[0][1] as any)[0]}`);
+                        throw new Error(`Error: can't install one of Nebulas dependency's: ${(Object.entries(nebulaDepAddon))[0][0]} - ${((Object.entries(nebulaDepAddon))[0][1] as any)[0]}, error:${installAddonResponse[0]}`);
                     }
                 }
             }
             const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
             if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
-                throw new Error(`Error: can't install ${addonName} - ${uuid}`);
+                throw new Error(`Error: can't install ${addonName} - ${uuid}, error:${installAddonResponse[0]}`);
             }
         }
         // for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
