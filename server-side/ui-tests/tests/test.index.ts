@@ -632,8 +632,18 @@ const passCreate = process.env.npm_config_pass_create as string;
                     testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
                     testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
                 } catch (error) {
-                    debugger;
-                    throw new Error(`Error: got exception trying to parse returned result object: `);
+                    let errorString;
+                    if (!devTestResutsEu.AuditInfo.ResultObject) {
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage}`;
+                    }
+                    if (!devTestResultsProd.AuditInfo.ResultObject) {
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage}`;
+                    }
+                    if (!devTestResultsSb.AuditInfo.ResultObject) {
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage}`;
+                    }
+
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
 
                 debugger;
@@ -1739,7 +1749,7 @@ function resolveUserPerTest(addonName): any[] {
         case 'ADAL':
             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
         case 'SYNC':
-            return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com ']; //'syncTestEU@pepperitest.com',
+            return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com']; //'syncTestEU@pepperitest.com',
         default:
             return [];
     }
