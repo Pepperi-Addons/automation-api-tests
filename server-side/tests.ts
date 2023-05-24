@@ -1294,13 +1294,16 @@ export async function handleDevTestInstallation(
         }
         for (let index = 0; index < addonDep.length; index++) {
             const addonToInstall = addonDep[index];
-            const addonName = Object.entries(addonToInstall)[0][0];
+            const currentAddonName = Object.entries(addonToInstall)[0][0];
             const uuid = (Object.entries(addonToInstall)[0][1] as any)[0];
-            if (addonName === 'papi' && addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
-                addonToInstall[addonName][1] = '9.6.%';
+            if (currentAddonName === 'papi' && addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+                addonToInstall[currentAddonName][1] = '9.6.%';
             }
-            if (addonName === 'nebula' && uuid === '00000000-0000-0000-0000-000000006a91') {
-                //install febula
+            if (
+                addonName !== 'nebula' &&
+                currentAddonName === 'nebula' &&
+                uuid === '00000000-0000-0000-0000-000000006a91'
+            ) {
                 const NebulaDep = await getDependenciesOfAddon(service, uuid, varPass);
                 for (let index = 0; index < NebulaDep.length; index++) {
                     const nebulaDepAddon = NebulaDep[index];

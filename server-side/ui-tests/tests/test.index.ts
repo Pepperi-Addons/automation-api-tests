@@ -571,7 +571,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 );
             }
             console.log(
-                `####################### ${addonName} Version: ${latestVersionOfTestedAddonSb} #######################`,
+                `####################### ${addonName} Version: ${latestVersionOfTestedAddonEu} #######################`,
             );
             const isInstalled = await Promise.all([
                 validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddonEu, 'prod'),
@@ -582,11 +582,10 @@ const passCreate = process.env.npm_config_pass_create as string;
                 const isTestedAddonInstalled = isInstalled[index];
                 if (isTestedAddonInstalled === false) {
                     throw new Error(
-                        `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddonProd}`,
+                        `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddonEu}`,
                     );
                 }
             }
-            // debugger;
             //3. run the test on latest version of the template addon
             const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
                 '02754342-e0b5-4300-b728-a94ea5e0e8f4',
@@ -625,9 +624,19 @@ const passCreate = process.env.npm_config_pass_create as string;
                     getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI),
                 ]);
                 //4.3. parse the response
-                const testResultArrayEu = JSON.parse(devTestResutsEu.AuditInfo.ResultObject);
-                const testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
-                const testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
+                let testResultArrayEu;
+                let testResultArrayProd;
+                let testResultArraySB;
+                try {
+                    testResultArrayEu = JSON.parse(devTestResutsEu.AuditInfo.ResultObject);
+                    testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
+                    testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
+                } catch (error) {
+                    debugger;
+                    throw new Error(`Error: got exception trying to parse returned result object: `);
+                }
+
+                debugger;
                 // debugger;
                 //4.4. print results to log
                 const devPassingEnvs: any[] = [];
@@ -652,6 +661,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     objectToPrintProd = testResultArrayProd.results[0].suites;
                     objectToPrintSB = testResultArraySB.results[0].suites;
                 } else {
+                    objectToPrintEu = testResultArrayEu.tests;
                     objectToPrintProd = testResultArrayProd.tests;
                     objectToPrintSB = testResultArrayProd.tests;
                 }
@@ -1729,7 +1739,7 @@ function resolveUserPerTest(addonName): any[] {
         case 'ADAL':
             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
         case 'SYNC':
-            return ['syncTestEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com ']; //'syncTestEU@pepperitest.com',
+            return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com ']; //'syncTestEU@pepperitest.com',
         default:
             return [];
     }
