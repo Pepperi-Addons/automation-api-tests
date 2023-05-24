@@ -567,11 +567,11 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonSb
             ) {
                 throw new Error( //eu - ${latestVersionOfTestedAddonEu}
-                    `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`,
+                    `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}`,
                 );
             }
             console.log(
-                `####################### ${addonName} Version: ${latestVersionOfTestedAddonEu} #######################`,
+                `####################### ${addonName} Version: ${latestVersionOfTestedAddonProd} #######################`,
             );
             const isInstalled = await Promise.all([
                 validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddonEu, 'prod'),
@@ -582,10 +582,11 @@ const passCreate = process.env.npm_config_pass_create as string;
                 const isTestedAddonInstalled = isInstalled[index];
                 if (isTestedAddonInstalled === false) {
                     throw new Error(
-                        `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddonEu}`,
+                        `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddonProd}`,
                     );
                 }
             }
+            debugger;
             //3. run the test on latest version of the template addon
             const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
                 '02754342-e0b5-4300-b728-a94ea5e0e8f4',
@@ -616,7 +617,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     runDevTestOnCertainEnv(prodUser, 'prod', latestVersionOfAutomationTemplateAddon, body, addonName),
                     runDevTestOnCertainEnv(sbUser, 'stage', latestVersionOfAutomationTemplateAddon, body, addonName),
                 ]);
-                //4.2. poll audit log response for each env->
+                //4.2. poll audit log response for each env->devTestResutsEu,
                 const [devTestResutsEu, devTestResultsProd, devTestResultsSb] = await Promise.all([
                     //devTestResutsEu,
                     getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI),
@@ -632,20 +633,20 @@ const passCreate = process.env.npm_config_pass_create as string;
                     testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
                     testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
                 } catch (error) {
-                    let errorString;
+                    let errorString = '';
                     if (!devTestResutsEu.AuditInfo.ResultObject) {
-                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage}`;
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage},\n`;
                     }
                     if (!devTestResultsProd.AuditInfo.ResultObject) {
-                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage}`;
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage},\n`;
                     }
                     if (!devTestResultsSb.AuditInfo.ResultObject) {
-                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage}`;
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage},\n`;
                     }
                     await reportToTeamsMessage(
                         addonName,
                         addonUUID,
-                        latestVersionOfTestedAddonEu,
+                        latestVersionOfTestedAddonProd,
                         errorString,
                         service,
                     );
