@@ -41,7 +41,7 @@ export class BasePageLayout {
 }
 
 export class BasePageLayoutSection {
-    constructor(sectionKey: string, addonsBlocksKeys?: string[]) {
+    constructor(sectionKey: string, addonsBlocksKeys?: string[], fillHeight?: 'fillHeight') {
         this.Key = sectionKey;
         this.Columns = [];
         if (addonsBlocksKeys) {
@@ -51,9 +51,13 @@ export class BasePageLayoutSection {
         } else {
             this.Columns.push({});
         }
+        if (fillHeight === 'fillHeight') {
+            this.FillHeight = true;
+        }
     }
     public Key: string;
     public Columns: BasePageLayoutSectionColumn[];
+    public FillHeight?: boolean;
 }
 
 export class BasePageLayoutSectionColumn {
@@ -393,7 +397,7 @@ export class VisitFlowPage extends BasePage {
         // const blockUUID = '26755fdd-c5f0-10e6-8612-ab83dc94af0c';
         super(pageKey);
         this.Blocks = [new VisitFlowBlock(blockKey)];
-        this.Layout.Sections = [new BasePageLayoutSection(sectionKey, [blockKey])];
+        this.Layout.Sections = [new BasePageLayoutSection(sectionKey, [blockKey], 'fillHeight')];
         pageName ? (this.Name = pageName) : null;
         pageDescription ? (this.Description = pageDescription) : null;
     }

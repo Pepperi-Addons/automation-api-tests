@@ -3,6 +3,8 @@ import { Page } from './Pages/base/Page';
 import config from '../../config';
 import { By } from 'selenium-webdriver';
 import { ConsoleColors } from '../../services/general.service';
+import { expect } from 'chai';
+import addContext from 'mochawesome/addContext';
 
 export class WebAppDialog extends Page {
     constructor(protected browser: Browser) {
@@ -73,5 +75,39 @@ export class WebAppDialog extends Page {
                 return `Element ${this.ButtonArr.toString()} not found`;
             },
         );
+    }
+
+    public async getDialogBoxTitle(): Promise<string> {
+        return await this.browser.findElement(this.Title, 4000).then(
+            async (res) => {
+                return await res.getText();
+            },
+            () => {
+                console.log(`%cElement ${this.ButtonArr.toString()} not found`, ConsoleColors.Error);
+                return `Element ${this.ButtonArr.toString()} not found`;
+            },
+        );
+    }
+
+    public async isErrorDialogShown(that): Promise<void> {
+        try {
+            const dialogTitle = await this.getDialogBoxTitle();
+            if (dialogTitle.includes('Error')) {
+                const base64Image = await this.browser.saveScreenshots();
+                addContext(that, {
+                    title: `Maybe a Bug, don't stop the test here, but add this as image`,
+                    value: 'data:image/png;base64,' + base64Image,
+                });
+                await this.selectDialogBox('Ok');
+            }
+        } catch (error) {
+            const thisError = error as Error;
+            console.error(thisError);
+            expect(thisError).to.haveOwnProperty('message');
+            expect(thisError.message).contains(
+                `After wait time of: 5000, for selector of 'pep-dialog .dialog-title', The test must end`,
+            );
+        }
+        return;
     }
 }
