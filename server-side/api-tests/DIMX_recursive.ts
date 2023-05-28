@@ -467,7 +467,8 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                         },
                     },
                 } as any);
-                expect(purgedSchema).to.equal('');
+                expect(purgedSchema).to.have.property('Done').that.is.true;
+                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(hostSchemaName);
                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
             });
@@ -495,7 +496,8 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                         ContainedInnerIntegerData: { Type: 'Integer' },
                     },
                 } as any);
-                expect(purgedSchema).to.equal('');
+                expect(purgedSchema).to.have.property('Done').that.is.true;
+                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(referenceSchemaName);
                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
             });
@@ -522,7 +524,8 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                         ContainedProp1: { Type: 'String' },
                     },
                 } as any);
-                expect(purgedSchema).to.equal('');
+                expect(purgedSchema).to.have.property('Done').that.is.true;
+                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(containedSchemaName);
                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
             });

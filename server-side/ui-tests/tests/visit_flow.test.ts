@@ -15,6 +15,7 @@ import { v4 as newUuid } from 'uuid';
 import { UDCService } from '../../services/user-defined-collections.service';
 import { ObjectsService } from '../../services';
 import { OrderPage } from '../pom/Pages/OrderPage';
+// import { SurveyTemplateBuilder } from '../pom/addons/SurveyTemplateBuilder';
 
 chai.use(promised);
 
@@ -33,6 +34,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let visitFlow: VisitFlow;
     let pageBuilder: PageBuilder;
     let slugs: Slugs;
+    // let surveyService: SurveyTemplateBuilder;
     let randomString: string;
     let upsertedListingsToVisitFlowGroups: {
         Title: string;
@@ -56,6 +58,9 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     }[];
     let pageUUID: string;
     let pageName: string;
+    // let surveyTemplateName: string;
+    // let surveyTemplateDesc: string;
+    // let surveyUUID: string;
     let visitFlowName: string;
     let visitFlowDescription: string;
     let slugDisplayName: string;
@@ -74,6 +79,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
                 settingsSidePanel = new WebAppSettingsSidePanel(driver);
+                // surveyService = new SurveyTemplateBuilder(driver);
                 e2eUtils = new E2EUtils(driver);
                 orderPage = new OrderPage(driver);
                 visitFlow = new VisitFlow(driver);
@@ -81,6 +87,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 slugs = new Slugs(driver);
                 // resourceViews = new ResourceViews(driver);
                 randomString = generalService.generateRandomString(5);
+                // surveyTemplateName = ``;
+                // surveyTemplateDesc = ``;
                 visitFlowName = `Auto VisiT ${randomString}`;
                 visitFlowDescription = `Auto Visit ${randomString}`;
                 slugDisplayName = `Visit Flow Auto ${randomString}`;
@@ -179,13 +187,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     // console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
                     const sectionKey = createdPage.Layout.Sections[0].Key;
                     const blockKey = newUuid();
-                    const visitFlowPage = new VisitFlowPage(
-                        pageUUID,
-                        blockKey,
-                        sectionKey,
-                        pageName,
-                        'pageDescription',
-                    );
+                    const visitFlowPage = new VisitFlowPage(pageUUID, blockKey, sectionKey, pageName, 'VF Auto Test');
                     // console.info('visitFlowPage: ', JSON.stringify(visitFlowPage, null, 2));
                     const responseOfPublishPage = await pageBuilder.publishPage(visitFlowPage, client);
                     console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 4));
@@ -237,7 +239,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                                     Mandatory: true,
                                 },
                                 {
-                                    Completed: 'In Creation',
+                                    Completed: 'In Progress',
                                     Resource: 'transactions',
                                     Title: 'Sales Order',
                                     Group: group_Orders ? group_Orders.Key : '',
@@ -292,13 +294,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         [{ slug_path: slug_path, pageUUID: pageUUID }],
                         client,
                     );
-                    console.info(
-                        `existingMappedSlugs: ${JSON.stringify(
-                            mappedSlugsUpsertResponse.previouslyExistingMappedSlugs,
-                            null,
-                            4,
-                        )}`,
-                    );
+                    console.info(`mappedSlugsUpsertResponse: ${JSON.stringify(mappedSlugsUpsertResponse, null, 4)}`);
                     await e2eUtils.navigateTo('Slugs');
                     await slugs.clickTab('Mapping_Tab');
                     await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
@@ -310,6 +306,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await webAppHomePage.isSpinnerDone();
                     await e2eUtils.navigateTo('Slugs');
                     await slugs.clickTab('Mapping_Tab');
+                    await webAppHomePage.isSpinnerDone();
                     await slugs.waitTillVisible(slugs.MappingTab_RepCard_InnerListOfMappedSlugs, 15000);
                     const slugNameAtMappedSlugsSmallDisplayInRepCard = await driver.findElement(
                         slugs.getSelectorOfMappedSlugInRepCardSmallDisplayByText(slug_path),
@@ -514,6 +511,199 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
             });
 
+            // describe('Survey Prep', () => {
+            //     it('Configuring Survey Group in UDC: Visit Flow Groups', async () => {
+            //         const collectionName = 'VisitFlowGroups';
+            //         const groupsDocumentsToUpsert = [
+            //             { Title: `Surveys Auto ${randomString}`, SortIndex: 20 },
+            //         ];
+            //         let upsertingValues_Response;
+            //         groupsDocumentsToUpsert.forEach(async (documentToUpsert) => {
+            //             // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlowGroups
+            //             upsertingValues_Response = await udcService.upsertValuesToCollection(
+            //                 documentToUpsert,
+            //                 collectionName,
+            //             );
+            //             console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
+            //             expect(upsertingValues_Response.Ok).to.be.true;
+            //             expect(upsertingValues_Response.Status).to.equal(200);
+            //             expect(upsertingValues_Response.Error).to.eql({});
+            //             upsertedListingsToVisitFlowGroups.push(upsertingValues_Response.Body);
+            //         });
+            //     });
+            //     it('Configuring Survey', async () => {
+            //         await surveyService.enterSurveyBuilderSettingsPage();
+            //         await surveyService.enterSurveyBuilderActualBuilder();
+            //         surveyUUID = await surveyService.configureTheSurveyTemplate(
+            //             surveyTemplateName,
+            //             surveyTemplateDesc,
+            //             surveyService.surveyTemplateToCreate,
+            //         );
+            //         console.info('surveyUUID: ', surveyUUID);
+            //         await webAppHeader.goHome();
+            //         await webAppHomePage.isSpinnerDone();
+            //     });
+            //     it('Configuring Survey in UDC: Flows', async () => {
+            //         driver.sleep(0.5 * 1000);
+            //         const collectionName = 'VisitFlows';
+            //         const group_Start = upsertedListingsToVisitFlowGroups.length
+            //             ? upsertedListingsToVisitFlowGroups.find((group) => {
+            //                   if (group.Title.includes('Start')) {
+            //                       return group.Key;
+            //                   }
+            //               })
+            //             : '';
+            //         const group_Orders = upsertedListingsToVisitFlowGroups.length
+            //             ? upsertedListingsToVisitFlowGroups.find((group) => {
+            //                   if (group.Title.includes('Orders')) {
+            //                       return group.Key;
+            //                   }
+            //               })
+            //             : '';
+            //         const group_End = upsertedListingsToVisitFlowGroups.length
+            //             ? upsertedListingsToVisitFlowGroups.find((group) => {
+            //                   if (group.Title.includes('End')) {
+            //                       return group.Key;
+            //                   }
+            //               })
+            //             : '';
+            //         const group_Surveys = upsertedListingsToVisitFlowGroups.length
+            //             ? upsertedListingsToVisitFlowGroups.find((group) => {
+            //                   if (group.Title.includes('Surveys')) {
+            //                       return group.Key;
+            //                   }
+            //               })
+            //             : '';
+            //         const visitsDocumentsToUpsert = [
+            //             {
+            //                 Name: visitFlowName,
+            //                 Description: visitFlowDescription,
+            //                 Active: true,
+            //                 steps: [
+            //                     {
+            //                         Completed: 'In Creation',
+            //                         Resource: 'activities',
+            //                         Title: 'Start Visit',
+            //                         Group: group_Start ? group_Start.Key : '',
+            //                         ResourceCreationData: 'VF_VisitFlowMainActivity',
+            //                         Mandatory: true,
+            //                     },
+            //                     {
+            //                         Completed: 'In Progress',
+            //                         Resource: 'transactions',
+            //                         Title: 'Sales Order',
+            //                         Group: group_Orders ? group_Orders.Key : '',
+            //                         ResourceCreationData: 'Sales Order',
+            //                     },
+            //                     {
+            //                         Completed: 'In Progress',
+            //                         Resource: 'activities',
+            //                         Title: 'Visit Survey',
+            //                         Group: group_Surveys ? group_Surveys.Key : '',
+            //                         ResourceCreationData: surveyUUID,
+            //                         Mandatory: true,
+            //                     },
+            //                     {
+            //                         Completed: 'Submitted',
+            //                         Resource: 'activities',
+            //                         Title: 'End Visit',
+            //                         Group: group_End ? group_End.Key : '',
+            //                         ResourceCreationData: 'VF_VisitFlowMainActivity',
+            //                         Mandatory: true,
+            //                     },
+            //                 ],
+            //             },
+            //         ];
+            //         let upsertingValues_Response;
+            //         visitsDocumentsToUpsert.forEach(async (documentToUpsert) => {
+            //             // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlows
+            //             upsertingValues_Response = await udcService.upsertValuesToCollection(
+            //                 documentToUpsert,
+            //                 collectionName,
+            //             );
+            //             console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
+            //             expect(upsertingValues_Response.Ok).to.be.true;
+            //             expect(upsertingValues_Response.Status).to.equal(200);
+            //             expect(upsertingValues_Response.Error).to.eql({});
+            //             upsertedListingsToVisitFlows.push(upsertingValues_Response.Body);
+            //         });
+            //     });
+            //     it('Performing Manual Sync', async () => {
+            //         await e2eUtils.performManualSync(client);
+            //     });
+            //     it('Loging out and loging in as Rep', async () => {
+            //         await e2eUtils.logOutLogIn('visit.flow.rep@pepperitest.com', password);
+            //         await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
+            //     });
+            //     it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async () => {
+            //         await webAppHeader.goHome();
+            //         await webAppHomePage.isSpinnerDone();
+            //         await webAppHomePage.clickOnBtn('Accounts');
+            //         await webAppHeader.isSpinnerDone();
+            //         driver.sleep(1 * 1000);
+            //         await visitFlow.waitTillVisible(visitFlow.FirstAccountInList, 15000);
+            //         await visitFlow.clickElement('FirstAccountInList');
+            //         await visitFlow.isSpinnerDone();
+            //         driver.sleep(1 * 1000);
+            //         await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Button, 15000);
+            //         await visitFlow.clickElement('AccountHomePage_HamburgerMenu_Button');
+            //         await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Content, 15000);
+            //         visitFlow.pause(1 * 1000);
+            //         await visitFlow.click(
+            //             visitFlow.getSelectorOfAccountHomePageHamburgerMenuVisitFlowAutomatedSlug(slugDisplayName),
+            //         );
+            //         visitFlow.pause(1 * 1000);
+            //     });
+            //     it('If more than one visit - Choosing a Visit Flow', async () => {
+            //         if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
+            //             visitFlow.pause(1.5 * 1000);
+            //             await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
+            //         } else {
+            //             await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
+            //         }
+            //         visitFlow.pause(1 * 1000);
+            //     });
+            //     it('Checking off "Start"', async () => {
+            //         await visitFlow.clickElement('VisitFlow_GroupButton_Start');
+            //         await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_StartVisit, 15000);
+            //         visitFlow.pause(0.5 * 1000);
+            //         await visitFlow.clickElement('VisitFlow_StepButton_StartVisit');
+            //         await visitFlow.isSpinnerDone();
+            //         await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
+            //         visitFlow.pause(0.5 * 1000);
+            //         await visitFlow.insertTextToInputElement(
+            //             `Automated test (${randomString}) of Visit Flow started`,
+            //             visitFlow.VisitFlowMainActivity_FormPage_SubjectInput,
+            //         );
+            //         visitFlow.pause(0.5 * 1000);
+            //         await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
+            //         await visitFlow.waitTillVisible(
+            //             visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
+            //             15000,
+            //         );
+            //         await visitFlow.waitTillVisible(
+            //             visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
+            //             15000,
+            //         );
+            //         await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
+            //         await visitFlow.isSpinnerDone();
+            //         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
+            //         visitFlow.pause(0.5 * 1000);
+            //     });
+            //     it('Checking off "Survey"', async () => {
+            //         await visitFlow.clickElement('VisitFlow_GroupButton_Surveys');
+            //         await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_Survey, 15000);
+            //         visitFlow.pause(0.5 * 1000);
+            //         await visitFlow.clickElement('VisitFlow_StepButton_Survey');
+            //         await visitFlow.isSpinnerDone();
+            //         visitFlow.pause(0.5 * 1000);
+            //         // await visitFlow.waitTillVisible(visitFlow.VisitFlow_OrdersChooseCatalogDialog_Content, 15000);
+            //         // await visitFlow.isSpinnerDone();
+            //         // await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
+            //         visitFlow.pause(5 * 1000);
+            //     });
+            // });
+
             describe('Teardown', () => {
                 it('Unconfiguring Slug from Account Dashboard', async () => {
                     await webAppHeader.goHome();
@@ -620,33 +810,33 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await driver.click(pageBuilder.PageBuilder_Search_Clear);
                 });
 
-                it('Deleting Pages leftovers via UI', async () => {
-                    pageBuilder.pause(0.1 * 1000);
-                    try {
-                        const allPages = await driver.findElements(pageBuilder.Page_Listing_aLink);
-                        do {
-                            const page = allPages.pop();
-                            if (page) {
-                                const pageName = await page.getAttribute('title');
-                                await pageBuilder.searchForPageByName(pageName);
-                                pageBuilder.pause(0.2 * 1000);
-                                await pageBuilder.deleteFromListByName(pageName);
-                                await pageBuilder.searchForPageByName(pageName);
-                                expect(
-                                    await (
-                                        await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)
-                                    ).getText(),
-                                ).to.contain('No results were found.');
-                                await pageBuilder.isSpinnerDone();
-                                pageBuilder.pause(0.1 * 1000);
-                                await driver.click(pageBuilder.PageBuilder_Search_Clear);
-                            }
-                        } while (allPages.length);
-                        pageBuilder.pause(0.1 * 1000);
-                    } catch (error) {
-                        console.error(error);
-                    }
-                });
+                // it('Deleting Pages leftovers via UI', async () => {
+                //     pageBuilder.pause(0.1 * 1000);
+                //     try {
+                //         const allPages = await driver.findElements(pageBuilder.Page_Listing_aLink);
+                //         do {
+                //             const page = allPages.pop();
+                //             if (page) {
+                //                 const pageName = await page.getAttribute('title');
+                //                 await pageBuilder.searchForPageByName(pageName);
+                //                 pageBuilder.pause(0.2 * 1000);
+                //                 await pageBuilder.deleteFromListByName(pageName);
+                //                 await pageBuilder.searchForPageByName(pageName);
+                //                 expect(
+                //                     await (
+                //                         await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)
+                //                     ).getText(),
+                //                 ).to.contain('No results were found.');
+                //                 await pageBuilder.isSpinnerDone();
+                //                 pageBuilder.pause(0.1 * 1000);
+                //                 await driver.click(pageBuilder.PageBuilder_Search_Clear);
+                //             }
+                //         } while (allPages.length);
+                //         pageBuilder.pause(0.1 * 1000);
+                //     } catch (error) {
+                //         console.error(error);
+                //     }
+                // });
 
                 // it('Verifying Mapped Slugs were cleared', async () => {
                 //     await e2eUtils.logOutLogIn(email, password);

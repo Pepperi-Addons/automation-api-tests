@@ -70,11 +70,60 @@ export class UpsertResourceFieldsToView extends UpsertResourceFields implements 
     public Columns?: GridDataViewColumn[];
 }
 
+export class UpsertResourceFieldsToMenuDataView extends UpsertResourceFields implements MenuDataView {
+    constructor(
+        viewUUID: string,
+        context: 'Menu' | 'LineMenu' | 'SmartSearch' | 'Search',
+        fields?: MenuDataViewField[],
+    ) {
+        super(viewUUID);
+        this.Context.Name = `GV_${this.EditorViewUUID}_${context}`;
+        this.Type = 'Menu';
+        if (fields) {
+            this.Fields = fields;
+            // this.Columns = [];
+            // for (const field of fields) {
+            //     this.Columns.push({ Width: 10 });
+            //     console.info(`field: ${field}`);
+            // }
+        }
+    }
+    public Type: 'Menu';
+    public Fields?: MenuDataViewField[];
+    public FrozenColumnsCount?: number;
+    public MinimumColumnWidth?: number;
+    public Columns?: DataViewColumn[];
+}
+
+export class UpsertResourceFieldsToViewMenu extends UpsertResourceFieldsToMenuDataView {
+    constructor(viewUUID: string, fields?: MenuDataViewField[]) {
+        super(viewUUID, 'Menu', fields);
+    }
+}
+
+export class UpsertResourceFieldsToViewLineMenu extends UpsertResourceFieldsToMenuDataView {
+    constructor(viewUUID: string, fields?: MenuDataViewField[]) {
+        super(viewUUID, 'LineMenu', fields);
+    }
+}
+
+export class UpsertResourceFieldsToViewSmartSearch extends UpsertResourceFieldsToMenuDataView {
+    constructor(viewUUID: string, fields?: MenuDataViewField[]) {
+        super(viewUUID, 'SmartSearch', fields);
+    }
+}
+
+export class UpsertResourceFieldsToViewSearch extends UpsertResourceFieldsToMenuDataView {
+    constructor(viewUUID: string, fields?: MenuDataViewField[]) {
+        super(viewUUID, 'Search', fields);
+    }
+}
+
 export class UpsertUdcGridDataView implements GridDataView {
     constructor(listOfFields: GridDataViewField[]) {
         this.Type = 'Grid';
         this.Context = {
-            ScreenSize: 'Tablet',
+            ScreenSize: 'Landscape',
             Profile: {},
             Name: '',
         };
@@ -95,10 +144,16 @@ export class UpsertUdcGridDataView implements GridDataView {
 }
 
 export class DataViewBaseField implements GridDataViewField {
-    constructor(fieldName: string, type: DataViewFieldType = 'TextBox', mandatory = false, readonly = true) {
+    constructor(
+        fieldName: string,
+        type: DataViewFieldType = 'TextBox',
+        title = '',
+        mandatory = false,
+        readonly = true,
+    ) {
         this.FieldID = fieldName;
         this.Type = type;
-        this.Title = fieldName;
+        this.Title = title || fieldName;
         this.Mandatory = mandatory;
         this.ReadOnly = readonly;
     }
@@ -113,6 +168,7 @@ export class DataFieldForEditorView extends DataViewBaseField implements BaseFor
     constructor(
         fieldID: string,
         type: DataViewFieldType = 'TextBox',
+        title: string,
         mandatory: boolean,
         readonly: boolean,
         index: number,
@@ -128,7 +184,7 @@ export class DataFieldForEditorView extends DataViewBaseField implements BaseFor
         },
         style?: DataViewFieldStyle,
     ) {
-        super(fieldID, type, mandatory, readonly);
+        super(fieldID, type, title, mandatory, readonly);
 
         if (layout) {
             this.Layout = layout;
@@ -177,6 +233,15 @@ export class SlugField implements MenuDataViewField {
     constructor(slugPath: string, pageUUID: string) {
         this.FieldID = slugPath;
         this.Title = pageUUID;
+    }
+    public FieldID: string;
+    public Title: string;
+}
+
+export class ViewMenuTypeField implements MenuDataViewField {
+    constructor(fieldName: string) {
+        this.FieldID = fieldName;
+        this.Title = fieldName;
     }
     public FieldID: string;
     public Title: string;

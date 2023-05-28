@@ -11,10 +11,12 @@ export class VisitFlow extends AddonPage {
     public VisitFlow_Groups_Content: By = By.xpath('//div[contains(@class,"flow-groups")]');
     public VisitFlow_GroupButton_Start: By = this.getSelectorOfVisitFlowGroupButtonByName('Start'); //By.xpath('//visit-details//div[contains(@class,"flow-groups")]//pep-button//button[@data-qa="Start"]');
     public VisitFlow_GroupButton_Orders: By = this.getSelectorOfVisitFlowGroupButtonByName('Orders');
+    public VisitFlow_GroupButton_Surveys: By = this.getSelectorOfVisitFlowGroupButtonByName('Surveys');
     public VisitFlow_GroupButton_End: By = this.getSelectorOfVisitFlowGroupButtonByName('End');
     public VisitFlow_Steps_Content: By = By.xpath('//div[contains(@class,"group-steps")]');
     public VisitFlow_StepButton_StartVisit: By = this.getSelectorOfVisitFlowStepButtonByName('Start Visit'); //By.xpath('//visit-details//div[contains(@class,"group-steps")]//pep-button//button[@data-qa="Start Visit"]');
     public VisitFlow_StepButton_SalesOrder: By = this.getSelectorOfVisitFlowStepButtonByName('Sales Order');
+    public VisitFlow_StepButton_Survey: By = this.getSelectorOfVisitFlowStepButtonByName('Visit Survey');
     public VisitFlow_StepButton_EndVisit: By = this.getSelectorOfVisitFlowStepButtonByName('End Visit');
 
     // Account Dashborad Layout

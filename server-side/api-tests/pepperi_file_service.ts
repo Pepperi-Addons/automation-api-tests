@@ -42,6 +42,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
         const addonUUIDnoHyphen = generalService['client'].AddonUUID.replace(/-/g, '');
         const pfsSchemaNAme = `pfs_${addonUUIDnoHyphen}_${schemaName}`;
         const verifyAfterPurge = [] as any;
+
         describe('Prerequisites Addon for PFS Tests', () => {
             //Test Data
             //PFS
@@ -114,7 +115,9 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const pfsSchema = (await pfsService.getPFSSchema(pfsSchemaNAme)) as any;
                 expect(pfsSchema.Body).to.have.property('Name').a('string').that.is.equal(pfsSchemaNAme);
                 expect(pfsSchema.Body).to.have.property('Type').a('string').that.is.equal('data');
-                expect(pfsSchema.Body).to.have.property('SyncData').that.deep.equals({ Sync: true });
+                expect(pfsSchema.Body)
+                    .to.have.property('SyncData')
+                    .that.deep.equals({ Sync: true, PushLocalChanges: false });
                 expect(pfsSchema.Body.Fields).to.have.property('Description');
                 expect(pfsSchema.Body.Fields).to.have.property('MIME');
                 expect(pfsSchema.Body.Fields).to.have.property('Sync');
@@ -165,7 +168,6 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             });
 
             it(`Post + Get file in root folder`, async () => {
-                debugger;
                 const tempKey = 'RootFolderFile' + Math.floor(Math.random() * 1000000).toString() + '.txt';
                 const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
                 const postFileResponse = await pfsService.postFile(schemaName, {
@@ -228,8 +230,89 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(getFileBeforeDelete).to.not.deep.equal(getFileAfterDelete);
             });
 
+            it(`Temp file`, async () => {
+                const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.txt';
+                const mime = 'file/plain';
+                const tempFileResponse = await pfsService.postTempFile({
+                    FileName: fileName,
+                    MIME: mime,
+                });
+                expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
+                expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
+                expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
+                const URL = tempFileResponse.TemporaryFileURL;
+                const sliceStart = 0 - (fileName.length + 37);
+                const sliceEnd = 0 - fileName.length;
+                const manipulatedURL = URL.slice(sliceStart, sliceEnd);
+                const finalURL = URL.replace(manipulatedURL, '');
+                expect(finalURL).to.include('.pepperi.com/temp/' + distributor.UUID + '/' + fileName);
+            });
+
+            it(`Multipart upload`, async () => {
+                const fileName = 'MultiPartFile' + Math.floor(Math.random() * 1000000).toString() + '.csv';
+                const tempFile1 = await pfsService.postTempFile({});
+                expect(tempFile1).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
+                expect(tempFile1).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
+                expect(tempFile1.TemporaryFileURL).to.include('pfs.');
+                const putPart1 = await pfsService.getFileFromURL(
+                    'https://pfs.staging.pepperi.com/testsData/organizations-100000.csv.000',
+                );
+                const putResponsePart1 = await pfsService.putPresignedURL(tempFile1.PutURL, putPart1);
+                expect(putResponsePart1.ok).to.equal(true);
+                expect(putResponsePart1.status).to.equal(200);
+
+                const tempFile2 = await pfsService.postTempFile({});
+                expect(tempFile2).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
+                expect(tempFile2).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
+                expect(tempFile2.TemporaryFileURL).to.include('pfs.');
+                const putPart2 = await pfsService.getFileFromURL(
+                    'https://pfs.staging.pepperi.com/testsData/organizations-100000.csv.001',
+                );
+                const putResponsePart2 = await pfsService.putPresignedURL(tempFile2.PutURL, putPart2);
+                expect(putResponsePart2.ok).to.equal(true);
+                expect(putResponsePart2.status).to.equal(200);
+
+                const tempFile3 = await pfsService.postTempFile({});
+                expect(tempFile3).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
+                expect(tempFile3).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
+                expect(tempFile3.TemporaryFileURL).to.include('pfs.');
+                const putPart3 = await pfsService.getFileFromURL(
+                    'https://pfs.staging.pepperi.com/testsData/organizations-100000.csv.002',
+                );
+                const putResponsePart3 = await pfsService.putPresignedURL(tempFile3.PutURL, putPart3);
+                expect(putResponsePart3.ok).to.equal(true);
+                expect(putResponsePart3.status).to.equal(200);
+
+                const postMultiPartFile1Response = await pfsService.postFile(schemaName, {
+                    Key: fileName,
+                    MIME: 'application/vnd.ms-excel',
+                    TemporaryFileURLs: [
+                        tempFile1.TemporaryFileURL,
+                        tempFile2.TemporaryFileURL,
+                        tempFile3.TemporaryFileURL,
+                    ],
+                });
+                expect(postMultiPartFile1Response.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(postMultiPartFile1Response.CreationDateTime).to.include('Z');
+                expect(postMultiPartFile1Response.ModificationDateTime).to.include(
+                    new Date().toISOString().split('T')[0],
+                );
+                expect(postMultiPartFile1Response.ModificationDateTime).to.include('Z');
+                expect(postMultiPartFile1Response.Folder).to.equal('/');
+                expect(postMultiPartFile1Response.Key).to.equal(fileName);
+                const MultiPartfile = await pfsService.getFileFromURL(postMultiPartFile1Response.URL);
+                const Completefile = await pfsService.getFileFromURL(
+                    'https://pfs.staging.pepperi.com/testsData/organizations-100000.csv',
+                );
+                expect(Completefile).to.deep.equal(MultiPartfile);
+                const deletedFileResponse = await pfsService.deleteFile(schemaName, fileName);
+                expect(deletedFileResponse.Key).to.equal(fileName);
+                expect(deletedFileResponse.Hidden).to.be.true;
+            });
+
             it(`Post file with space in name`, async () => {
                 const tempKey = 'Name with spaces' + Math.floor(Math.random() * 1000000).toString() + '.txt';
+                const tempKeyNoSpaces = tempKey.replace(/ /g, '%20');
                 const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
                 const postFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
@@ -256,7 +339,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                         '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
                         schemaName +
                         '/' +
-                        tempKey,
+                        tempKeyNoSpaces,
                 );
                 const getFileResponse = await pfsService.getFile(schemaName, tempKey);
                 expect(getFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
@@ -279,7 +362,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                         '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
                         schemaName +
                         '/' +
-                        tempKey,
+                        tempKeyNoSpaces,
                 );
                 let fileBeforeUpdate = await pfsService.getFileFromURL(getFileResponse.URL);
                 fileBeforeUpdate = await pfsService.getFileFromURL(getFileResponse.URL);
@@ -308,7 +391,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                         '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
                         schemaName +
                         '/' +
-                        tempKey,
+                        tempKeyNoSpaces,
                 );
                 const fileAfterUpdate = await pfsService.getFileFromURL(updateFileResponse.URL);
                 expect(fileBeforeUpdate).to.deep.equal(fileAfterUpdate);
@@ -316,60 +399,60 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(deletedFileResponse.Hidden).to.be.true;
             });
 
-            it(`Post + Get file in root folder SDK`, async () => {
-                const tempKey = 'RootFolderFileSDK' + Math.floor(Math.random() * 1000000).toString() + '.txt';
-                const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
-                const postFileResponse = await pfsService.postFileSDK(schemaName, {
-                    Key: tempKey,
-                    URI: 'data:file/plain;base64,VGhpcyBpcyBteSBzaW1wbGUgdGV4dCBmaWxlLiBJdCBoYXMgdmVyeSBsaXR0bGUgaW5mb3JtYXRpb24u',
-                    MIME: 'file/plain',
-                    Sync: 'Device',
-                    Description: tempDescription,
-                });
-                expect(postFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(postFileResponse.CreationDateTime).to.include('Z');
-                expect(postFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(postFileResponse.ModificationDateTime).to.include('Z');
-                expect(postFileResponse.Description).to.equal(tempDescription);
-                expect(postFileResponse.Folder).to.equal('/');
-                expect(postFileResponse.Key).to.equal(tempKey);
-                expect(postFileResponse.MIME).to.equal('file/plain');
-                expect(postFileResponse.Name).to.equal(tempKey);
-                expect(postFileResponse.Sync).to.equal('Device');
-                expect(postFileResponse.URL).to.include('pfs.');
-                expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' +
-                        distributor.UUID +
-                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
-                        schemaName +
-                        '/' +
-                        tempKey,
-                );
-                const getFileResponse = await pfsService.getFileSDK(schemaName, tempKey);
-                expect(getFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(getFileResponse.CreationDateTime).to.include('Z');
-                expect(getFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(getFileResponse.ModificationDateTime).to.include('Z');
-                expect(getFileResponse.Description).to.equal(tempDescription);
-                expect(getFileResponse).to.have.property('FileVersion').that.is.a('string').and.is.not.empty;
-                expect(getFileResponse.Folder).to.equal('/');
-                expect(getFileResponse.Key).to.equal(tempKey);
-                expect(getFileResponse.MIME).to.equal('file/plain');
-                expect(getFileResponse.Name).to.equal(tempKey);
-                expect(getFileResponse.Sync).to.equal('Device');
-                expect(getFileResponse.Hidden).to.be.false;
-                expect(getFileResponse.URL).to.include('pfs.');
-                expect(getFileResponse.URL).to.include(
-                    '.pepperi.com/' +
-                        distributor.UUID +
-                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
-                        schemaName +
-                        '/' +
-                        tempKey,
-                );
-                const deletedFileResponse = await pfsService.deleteFile(schemaName, tempKey);
-                expect(deletedFileResponse.Hidden).to.be.true;
-            });
+            // it(`Post + Get file in root folder SDK`, async () => {
+            //     const tempKey = 'RootFolderFileSDK' + Math.floor(Math.random() * 1000000).toString() + '.txt';
+            //     const tempDescription = 'Description' + Math.floor(Math.random() * 1000000).toString();
+            //     const postFileResponse = await pfsService.postFileSDK(schemaName, {
+            //         Key: tempKey,
+            //         URI: 'data:file/plain;base64,VGhpcyBpcyBteSBzaW1wbGUgdGV4dCBmaWxlLiBJdCBoYXMgdmVyeSBsaXR0bGUgaW5mb3JtYXRpb24u',
+            //         MIME: 'file/plain',
+            //         Sync: 'Device',
+            //         Description: tempDescription,
+            //     });
+            //     expect(postFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+            //     expect(postFileResponse.CreationDateTime).to.include('Z');
+            //     expect(postFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+            //     expect(postFileResponse.ModificationDateTime).to.include('Z');
+            //     expect(postFileResponse.Description).to.equal(tempDescription);
+            //     expect(postFileResponse.Folder).to.equal('/');
+            //     expect(postFileResponse.Key).to.equal(tempKey);
+            //     expect(postFileResponse.MIME).to.equal('file/plain');
+            //     expect(postFileResponse.Name).to.equal(tempKey);
+            //     expect(postFileResponse.Sync).to.equal('Device');
+            //     expect(postFileResponse.URL).to.include('pfs.');
+            //     expect(postFileResponse.URL).to.include(
+            //         '.pepperi.com/' +
+            //             distributor.UUID +
+            //             '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+            //             schemaName +
+            //             '/' +
+            //             tempKey,
+            //     );
+            //     const getFileResponse = await pfsService.getFileSDK(schemaName, tempKey);
+            //     expect(getFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+            //     expect(getFileResponse.CreationDateTime).to.include('Z');
+            //     expect(getFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+            //     expect(getFileResponse.ModificationDateTime).to.include('Z');
+            //     expect(getFileResponse.Description).to.equal(tempDescription);
+            //     expect(getFileResponse).to.have.property('FileVersion').that.is.a('string').and.is.not.empty;
+            //     expect(getFileResponse.Folder).to.equal('/');
+            //     expect(getFileResponse.Key).to.equal(tempKey);
+            //     expect(getFileResponse.MIME).to.equal('file/plain');
+            //     expect(getFileResponse.Name).to.equal(tempKey);
+            //     expect(getFileResponse.Sync).to.equal('Device');
+            //     expect(getFileResponse.Hidden).to.be.false;
+            //     expect(getFileResponse.URL).to.include('pfs.');
+            //     expect(getFileResponse.URL).to.include(
+            //         '.pepperi.com/' +
+            //             distributor.UUID +
+            //             '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+            //             schemaName +
+            //             '/' +
+            //             tempKey,
+            //     );
+            //     const deletedFileResponse = await pfsService.deleteFile(schemaName, tempKey);
+            //     expect(deletedFileResponse.Hidden).to.be.true;
+            // });
 
             it(`Post file using URL`, async () => {
                 const tempKey = 'urlFile' + Math.floor(Math.random() * 1000000).toString() + '.txt';
@@ -464,6 +547,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                         '/TestFolder/' +
                         tempKey,
                 );
+                // generalService.sleep(3000);
                 const getFileResponse = await pfsService.getFile(schemaName, 'TestFolder/' + tempKey);
                 expect(getFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(getFileResponse.CreationDateTime).to.include('Z');
@@ -518,6 +602,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                         '/1/2/3/4/5/6/7/' +
                         tempKey,
                 );
+                // generalService.sleep(3000);
                 const getFileResponse = await pfsService.getFile(schemaName, '1/2/3/4/5/6/7/' + tempKey);
                 expect(getFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
                 expect(getFileResponse.CreationDateTime).to.include('Z');
@@ -932,27 +1017,26 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             //     expect(getFileResponse[19].Name).to.include('-9');
             // });
 
-            // Waiting for fix in ADAL
-            // it(`Validate indexed fields - key`, async () => {
-            //     const keyIndexResponse = await pfsService.getFilesList(folderTempKey + '/', { order_by: 'Key' });
-            // });
+            it(`Validate indexed fields - MIME`, async () => {
+                const mimeIndexResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
+                    order_by: 'MIME',
+                });
+                expect(mimeIndexResponse).to.be.an('array').with.length.above(0);
+            });
 
-            // it(`Validate indexed fields - MIME`, async () => {
-            //     const mimeIndexResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', { order_by: 'MIME' });
-            //     expect(mimeIndexResponse).to.be.an('array').with.length.above(0);
-            // });
+            it(`Validate indexed fields - Folder`, async () => {
+                const folderIndexResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
+                    order_by: 'Folder',
+                });
+                expect(folderIndexResponse).to.be.an('array').with.length.above(0);
+            });
 
-            // Waiting for fix in ADAL
-            // it(`Validate indexed fields - ModificationDate`, async () => {
-            //     const modificationDateIndexResponse = await pfsService.getFilesList(folderTempKey + '/', { order_by: 'ModificationDate' });
-            // });
-
-            // it(`Validate indexed fields - Folder`, async () => {
-            //     const descriptionIndexResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
-            //         order_by: 'Folder',
-            //     });
-            //     expect(descriptionIndexResponse).to.be.an('array').with.length.above(0);
-            // });
+            it(`Validate indexed fields - Description`, async () => {
+                const descriptionIndexResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
+                    order_by: 'Description',
+                });
+                expect(descriptionIndexResponse).to.be.an('array').with.length.above(0);
+            });
 
             it(`Page size parameter`, async () => {
                 const getFileResponse = await pfsService.getFilesList(schemaName, folderTempKey + '/', {
@@ -1090,7 +1174,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
             it(`Post file and PUT to presigned URL`, async () => {
                 const tempKey = 'PresignedURLFile' + Math.floor(Math.random() * 1000000).toString() + '.jpg';
                 const putImage = await pfsService.getFileFromURL(
-                    'https://en.wikipedia.org/wiki/JPEG#/media/File:Felis_silvestris_silvestris_small_gradual_decrease_of_quality.png',
+                    'https://pfs.staging.pepperi.com/e66154d0-06af-4588-a1ea-d5924aba86f2/f6458728-25fd-469d-9a20-73a99265fe52/aDeletedFile.png',
                 );
                 const postFileResponse = await pfsService.postFile(schemaName, {
                     Key: tempKey,
@@ -1115,7 +1199,11 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                         tempKey,
                 );
                 expect(postFileResponse).to.have.property('PresignedURL').that.is.a('string').and.is.not.empty;
-                const putResponse = await pfsService.putPresignedURL(postFileResponse.PresignedURL, putImage);
+                const putResponse = await pfsService.putPresignedURL(
+                    postFileResponse.PresignedURL,
+                    putImage,
+                    'image/jpeg',
+                );
                 expect(putResponse.ok).to.equal(true);
                 expect(putResponse.status).to.equal(200);
                 const presignedPutFile = await pfsService.getFileFromURL(postFileResponse.URL);
@@ -1341,6 +1429,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     Key: tempKey,
                     URI: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN8AAADiCAMAAAD5w+JtAAAAOVBMVEX///+BgYF+fn6mpqbm5uZycnJvb292dnbk5OR/f3/Kysrz8/PFxcX5+fmXl5d7e3uHh4ft7e2qqqrlWm1NAAAAvklEQVR4nO3XCw7CIBRFwT5KpdZP1f0vVmOscQMExZkVnJsmBYYBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPhGh/m4m8acW3dUcjqXNSKVmFuX1HFJ8bSPa+uUKkq8rMfWKTUs67YvptYtNYzpvS/dWsdU8LlvbB1TgX2/7Z/29fh/6f18GHbbvNLl+T7kx83seX1ZWpdUMkdJUaZe5z2+YB5T7vT1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAduANy0AJFN8zV0wAAAABJRU5ErkJggg==',
                     MIME: 'image/png',
+                    Hidden: true,
                     Description: tempDescription,
                     Cache: false,
                 });
@@ -1364,7 +1453,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(invalidateResponse.ModificationDateTime).to.include('Z');
                 expect(invalidateResponse.Description).to.equal(tempDescription);
                 expect(invalidateResponse.Folder).to.equal(Folder + '/');
-                expect(invalidateResponse.Hidden).to.be.false;
+                expect(invalidateResponse.Hidden).to.be.true;
                 expect(invalidateResponse.Key).to.equal(tempKey);
                 expect(invalidateResponse.MIME).to.equal('image/png');
                 expect(invalidateResponse.Name).to.equal(tempKey.split(Folder + '/')[1]);

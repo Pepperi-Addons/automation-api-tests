@@ -1,7 +1,7 @@
 import { Browser } from './browser';
 import { WebAppHeader } from '../pom/WebAppHeader';
-import { WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
-import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
+import { BrandedApp, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
+import { ResourceList, ResourceEditors, ResourceViews, ViewConfiguration } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
 import {
@@ -9,6 +9,7 @@ import {
     DataFieldForEditorView,
     SlugField,
     UpsertFieldsToMappedSlugs,
+    ViewMenuTypeField,
 } from '../blueprints/DataViewBlueprints';
 import {
     BaseFormDataViewField,
@@ -20,6 +21,9 @@ import { BasePomObject } from '../pom/base/BasePomObject';
 import { DataViewsService } from '../../services/data-views.service';
 import { GeneralService } from '../../services';
 import { Client } from '@pepperi-addons/debug-server/dist';
+import { expect } from 'chai';
+import { CollectionDefinition, UDCService } from '../../services/user-defined-collections.service';
+import { SelectedView, ViewerBlock, BasePageLayoutSectionColumn } from '../blueprints/PageBlocksBlueprints';
 
 export default class E2EUtils extends BasePomObject {
     public constructor(protected browser: Browser) {
@@ -127,7 +131,7 @@ export default class E2EUtils extends BasePomObject {
         await resourceViews.deleteAll();
     }
 
-    // public async deleteAllPagesViaUI() {
+    // public async deleteAllPagesViaUI() { // doesn't work
     //     const pageBuilder: PageBuilder = new PageBuilder(this.browser);
     //     await this.navigateTo('Page Builder');
     //     await pageBuilder.validatePageBuilderIsLoaded();
@@ -198,6 +202,45 @@ export default class E2EUtils extends BasePomObject {
         await slugs.mapPageToSlugEVGENY(slugPath, pageName);
     }
 
+    public async createSlug(
+        slugDisplayName: string,
+        slug_path: string,
+        keyOfMappedPage: string,
+        email: string,
+        password: string,
+        client: Client,
+    ) {
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        const webAppHeader = new WebAppHeader(this.browser);
+        const slugs: Slugs = new Slugs(this.browser);
+        await this.navigateTo('Slugs');
+        await slugs.createSlug(slugDisplayName, slug_path, 'slug for Automation');
+        slugs.pause(3 * 1000);
+        const slugUUID = await slugs.getSlugUUIDbySlugName(slug_path, client);
+        console.info('slugUUID: ', slugUUID);
+        await webAppHeader.goHome();
+        expect(slugUUID).to.not.be.undefined;
+        const mappedSlugsUpsertResponse = await this.addToMappedSlugs(
+            [{ slug_path: slug_path, pageUUID: keyOfMappedPage }],
+            client,
+        );
+        console.info(
+            `existingMappedSlugs: ${JSON.stringify(mappedSlugsUpsertResponse.previouslyExistingMappedSlugs, null, 4)}`,
+        );
+        await this.logOutLogIn(email, password);
+        await webAppHomePage.isSpinnerDone();
+        await this.navigateTo('Slugs');
+        await slugs.clickTab('Mapping_Tab');
+        await slugs.waitTillVisible(slugs.MappingTab_RepCard_InnerListOfMappedSlugs, 15000);
+        const slugNameAtMappedSlugsSmallDisplayInRepCard = await this.browser.findElement(
+            slugs.getSelectorOfMappedSlugInRepCardSmallDisplayByText(slug_path),
+            10000,
+        );
+        expect(await slugNameAtMappedSlugsSmallDisplayInRepCard.getText()).to.contain(slug_path);
+        this.browser.sleep(1 * 1000);
+        return slugUUID;
+    }
+
     public prepareListOfBaseFields(
         arrayOfFields: {
             fieldName: string;
@@ -218,6 +261,7 @@ export default class E2EUtils extends BasePomObject {
                 field = new DataViewBaseField(
                     fieldFromArray.fieldName,
                     fieldFromArray.dataViewType ? fieldFromArray.dataViewType : 'TextBox',
+                    fieldFromArray.fieldName,
                     fieldFromArray.hasOwnProperty('mandatory') ? fieldFromArray.mandatory : false,
                     fieldFromArray.hasOwnProperty('readonly') ? fieldFromArray.readonly : true,
                 );
@@ -243,6 +287,7 @@ export default class E2EUtils extends BasePomObject {
                 field = new DataFieldForEditorView(
                     fieldDefinitionArray.fieldName,
                     fieldDefinitionArray.dataViewType,
+                    fieldDefinitionArray.fieldName,
                     fieldDefinitionArray.mandatory,
                     fieldDefinitionArray.readonly,
                     index,
@@ -251,6 +296,16 @@ export default class E2EUtils extends BasePomObject {
                 index++;
             },
         );
+        return fields;
+    }
+
+    public prepareDataToConfigFieldsInViewTabs(arrayOfFields: { fieldName: string }[]) {
+        const fields: MenuDataViewField[] = [];
+        let field: MenuDataViewField;
+        arrayOfFields.forEach((listing: { fieldName: string }) => {
+            field = new ViewMenuTypeField(listing.fieldName);
+            fields.push(field);
+        });
         return fields;
     }
 
@@ -315,7 +370,7 @@ export default class E2EUtils extends BasePomObject {
         const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(this.browser);
         this.browser.sleep(1000);
         await webAppHeader.signOut();
-        this.browser.sleep(2000);
+        this.browser.sleep(5 * 1000);
         await webAppLoginPage.login(email, password);
         this.browser.sleep(1000);
     }
@@ -351,5 +406,158 @@ export default class E2EUtils extends BasePomObject {
         const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
         console.info(`upsertFieldsToMappedSlugs RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 4)}`);
         return upsertFieldsToMappedSlugs;
+    }
+
+    public async configureResourceE2E(
+        client: Client,
+        resourceData: {
+            collection?: {
+                createUDC?: CollectionDefinition;
+                addValuesToCollection?: { collectionName: string; values: { [fieldName: string]: any }[] };
+            };
+            editor?: {
+                editorDetails: { nameOfEditor: string; descriptionOfEditor: string; nameOfResource: string };
+                editorConfiguration?: { editorKey: string; fieldsToConfigureInEditor: BaseFormDataViewField[] };
+            };
+            view?: {
+                viewDetails: { nameOfView: string; descriptionOfView: string; nameOfResource: string };
+                viewConfiguration?: ViewConfiguration;
+            };
+            page?: {
+                pageDetails: { nameOfPage: string; descriptionOfPage: string; extraSection: boolean };
+                pageBlocks: { blockType: 'Viewer' | 'Configuration' | 'Addon'; selectedViews: SelectedView[] }[];
+            };
+            slug?: {
+                slugDisplayName: string;
+                slug_path: string;
+                keyOfMappedPage: string;
+                email: string;
+                password: string;
+            };
+            homePageButton?: { toAdd: boolean; slugDisplayName: string };
+        },
+    ) {
+        const generalService = new GeneralService(client);
+        const udcService = new UDCService(generalService);
+        // const dataViewsService = new DataViewsService(generalService.papiClient);
+        const resourceViews = new ResourceViews(this.browser);
+        const resourceEditors = new ResourceEditors(this.browser);
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        const webAppHeader = new WebAppHeader(this.browser);
+        const pageBuilder = new PageBuilder(this.browser);
+        const brandedApp = new BrandedApp(this.browser);
+        let editorUUID = '';
+        let viewUUID = '';
+        let pageUUID = '';
+
+        if (resourceData.collection) {
+            if (resourceData.collection.createUDC) {
+                const bodyOfCollection = udcService.prepareDataForUdcCreation(resourceData.collection.createUDC);
+                const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+                console.info(`UDC upsert Response: ${JSON.stringify(upsertResponse, null, 2)}`);
+            }
+            if (resourceData.collection.addValuesToCollection) {
+                this.browser.sleep(5 * 1000);
+                resourceData.collection.addValuesToCollection.values.forEach(async (listing) => {
+                    const upsertingValues_Response = await udcService.upsertValuesToCollection(
+                        listing,
+                        resourceData.collection?.addValuesToCollection?.collectionName || '',
+                    );
+                    console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+                    expect(upsertingValues_Response.Ok).to.be.true;
+                    expect(upsertingValues_Response.Status).to.equal(200);
+                    expect(upsertingValues_Response.Error).to.eql({});
+                });
+            }
+        }
+        if (resourceData.editor) {
+            await this.addEditor(resourceData.editor.editorDetails);
+            editorUUID = await this.getUUIDfromURL();
+            if (resourceData.editor.editorConfiguration) {
+                await resourceEditors.customEditorConfig(generalService.papiClient, {
+                    editorKey: resourceData.editor.editorConfiguration.editorKey || editorUUID,
+                    fieldsToConfigureInView: resourceData.editor.editorConfiguration.fieldsToConfigureInEditor,
+                });
+            }
+        }
+        if (resourceData.view) {
+            await this.addView(resourceData.view.viewDetails);
+            viewUUID = await this.getUUIDfromURL();
+            if (resourceData.view.viewConfiguration) {
+                await resourceViews.customViewConfig(client, {
+                    matchingEditorName: '',
+                    viewKey: resourceData.view.viewConfiguration.viewKey || viewUUID,
+                    fieldsToConfigureInView: resourceData.view.viewConfiguration.fieldsToConfigureInView,
+                    fieldsToConfigureInViewMenu: resourceData.view.viewConfiguration.fieldsToConfigureInViewMenu,
+                    fieldsToConfigureInViewLineMenu:
+                        resourceData.view.viewConfiguration.fieldsToConfigureInViewLineMenu,
+                    fieldsToConfigureInViewSmartSearch:
+                        resourceData.view.viewConfiguration.fieldsToConfigureInViewSmartSearch,
+                    fieldsToConfigureInViewSearch: resourceData.view.viewConfiguration.fieldsToConfigureInViewSearch,
+                });
+            }
+            await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
+            await webAppHeader.goHome();
+        }
+        if (resourceData.page) {
+            pageUUID = await this.addPage(
+                resourceData.page.pageDetails.nameOfPage,
+                resourceData.page.pageDetails.descriptionOfPage,
+                resourceData.page.pageDetails.extraSection,
+            );
+            const createdPage = await pageBuilder.getPageByUUID(pageUUID, client);
+            let blockInstance: ViewerBlock;
+            resourceData.page.pageBlocks.forEach((block) => {
+                switch (block.blockType) {
+                    case 'Viewer':
+                        blockInstance = new ViewerBlock(
+                            block.selectedViews || [
+                                {
+                                    collectionName: resourceData.collection?.createUDC?.nameOfCollection || '',
+                                    collectionID: '',
+                                    selectedViewUUID: viewUUID,
+                                    selectedViewName: resourceData.view?.viewDetails.nameOfView || '',
+                                    selectedViewTitle:
+                                        resourceData.collection?.createUDC?.nameOfCollection
+                                            .split(/(?=[A-Z])/)
+                                            .join(' ') || '',
+                                },
+                            ],
+                        );
+                        break;
+                    case 'Configuration':
+                        break;
+
+                    default:
+                        break;
+                }
+                createdPage.Blocks.push(blockInstance);
+                if (resourceData.page && !resourceData.page.pageDetails.extraSection) {
+                    createdPage.Layout.Sections[0]['FillHeight'] = true;
+                }
+                createdPage.Layout.Sections[0].Columns[0] = new BasePageLayoutSectionColumn(blockInstance.Key);
+            });
+            createdPage.Name = resourceData.page.pageDetails.nameOfPage;
+            console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
+            const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
+            console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 2));
+            await webAppHeader.goHome();
+        }
+        if (resourceData.slug) {
+            await this.createSlug(
+                resourceData.slug.slugDisplayName,
+                resourceData.slug.slug_path,
+                resourceData.slug.keyOfMappedPage || pageUUID,
+                resourceData.slug.email,
+                resourceData.slug.password,
+                client,
+            );
+            this.browser.sleep(0.5 * 1000);
+        }
+        if (resourceData.homePageButton && resourceData.homePageButton.toAdd === true) {
+            await brandedApp.addAdminHomePageButtons(resourceData.homePageButton.slugDisplayName);
+            await this.performManualSync(client);
+            await webAppHomePage.validateATDIsApearingOnHomeScreen(resourceData.homePageButton.slugDisplayName);
+        }
     }
 }

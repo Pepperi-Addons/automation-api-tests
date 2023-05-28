@@ -97,7 +97,8 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
         //             );
         //         }
         //         const newSchema = await adalService.postSchema({ Name: schemaNameArr[index] });
-        //         expect(purgedSchema).to.equal('');
+        //         expect(purgedSchema).to.have.property('Done').that.is.true;
+        //         expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
         //         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaNameArr[index]);
         //         expect(newSchema).to.have.property('Type').a('string').that.is.equal('meta_data');
         //     }
@@ -175,13 +176,12 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
             expect(createdUser, 'ModificationDateTime').to.have.property('ModificationDateTime').that.contains('Z');
             expect(createdUser, 'Phone').to.have.property('Phone').that.is.a('string').and.is.not.empty;
             expect(createdUser, 'Profile').to.have.property('Profile').that.is.an('object');
-            expect(createdUser.Profile, 'Profile data').to.deep.equal({
-                Data: {
-                    InternalID: repProfile.InternalID,
-                    Name: 'Rep',
-                },
-                URI: '/profiles/' + repProfile.InternalID,
+            expect(createdUser.Profile.Data, 'Profile data').to.deep.equal({
+                InternalID: repProfile.InternalID,
+                Name: 'Rep',
+                UUID: repProfile.UUID,
             });
+            expect(createdUser.Profile.URI, 'Profile data').to.equal('/profiles/' + repProfile.InternalID);
             expect(createdUser, 'Role').to.have.property('Role');
             expect(createdUser, 'SecurityGroup').to.have.property('SecurityGroup').that.is.an('object');
             expect(createdUser.SecurityGroup, 'SecurityGroup data').to.deep.equal({
@@ -269,6 +269,7 @@ export async function UsersTests(generalService: GeneralService, tester: TesterF
                 Data: {
                     InternalID: repProfile.InternalID,
                     Name: 'Rep',
+                    UUID: repProfile.UUID,
                 },
                 URI: '/profiles/' + repProfile.InternalID,
             });

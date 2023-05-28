@@ -13,7 +13,7 @@ import {
     SurveyTemplateBuilder,
 } from '../pom/addons/SurveyTemplateBuilder';
 import E2EUtils from '../utilities/e2e_utils';
-import { GridDataViewField, MenuDataViewField } from '@pepperi-addons/papi-sdk';
+import { MenuDataViewField } from '@pepperi-addons/papi-sdk';
 import { ResourceViews } from '../pom/addons/ResourceList';
 import { DataViewsService } from '../../services/data-views.service';
 import GeneralService from '../../services/general.service';
@@ -131,13 +131,14 @@ export async function SurveyTests(email: string, password: string, client: Clien
     // #region Upgrade survey dependencies
 
     const testData = {
-        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x to
+        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x
+        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', '0.5.43'], //has to remain untouched
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.5.11'], //has to remain untouched
+        Nebula: ['00000000-0000-0000-0000-000000006a91', '0.7.%'], //has to remain untouched - latest 0.7.x
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.7.%'],
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', ''],
@@ -342,8 +343,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
             it('4. Configure Resource Views For Account + Survey', async function () {
                 const resourceListUtils = new E2EUtils(driver);
                 const resourceViews = new ResourceViews(driver);
-                const generalService = new GeneralService(client);
-                const dataViewsService = new DataViewsService(generalService.papiClient);
                 // Configure View - Accounts
                 await resourceListUtils.addView({
                     nameOfView: 'Accounts',
@@ -351,16 +350,15 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     nameOfResource: 'accounts',
                 });
                 accountViewUUID = await resourceListUtils.getUUIDfromURL();
-                let viewFields: GridDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-                    { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'InternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                ]);
-                await resourceViews.customViewConfig(dataViewsService, {
+                await resourceViews.customViewConfig(client, {
                     matchingEditorName: '',
                     viewKey: accountViewUUID,
-                    fieldsToConfigureInView: viewFields,
+                    fieldsToConfigureInView: [
+                        { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                        { fieldName: 'InternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                        { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                        { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    ],
                 });
                 await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
                 // Configure View - Survey
@@ -371,16 +369,15 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 });
                 // Configure View
                 surveyViewUUID = await resourceListUtils.getUUIDfromURL();
-                viewFields = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-                    { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'Description', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'Sections', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                ]);
-                await resourceViews.customViewConfig(dataViewsService, {
+                await resourceViews.customViewConfig(client, {
                     matchingEditorName: '',
                     viewKey: surveyViewUUID,
-                    fieldsToConfigureInView: viewFields,
+                    fieldsToConfigureInView: [
+                        { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                        { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                        { fieldName: 'Description', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                        { fieldName: 'Sections', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    ],
                 });
                 await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
                 const webAppHeader = new WebAppHeader(driver);
@@ -912,7 +909,7 @@ export async function createSurvey(
     //2. RL creation
     const resourceListUtils = new E2EUtils(driver);
     const resourceViews = new ResourceViews(driver);
-    const dataViewsService = new DataViewsService(generalService.papiClient);
+    // const dataViewsService = new DataViewsService(generalService.papiClient);
     // Configure View - Accounts
     await resourceListUtils.addView({
         nameOfView: 'Accounts',
@@ -920,16 +917,15 @@ export async function createSurvey(
         nameOfResource: 'accounts',
     });
     const accountViewUUID = await resourceListUtils.getUUIDfromURL();
-    let viewFields: GridDataViewField[] = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-        { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
-        { fieldName: 'InternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
-        { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
-        { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
-    ]);
-    await resourceViews.customViewConfig(dataViewsService, {
+    await resourceViews.customViewConfig(client, {
         matchingEditorName: '',
         viewKey: accountViewUUID,
-        fieldsToConfigureInView: viewFields,
+        fieldsToConfigureInView: [
+            { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
+            { fieldName: 'InternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
+            { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
+            { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
+        ],
     });
     await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
     // Configure View - Survey
@@ -940,16 +936,15 @@ export async function createSurvey(
     });
     // Configure View
     const surveyViewUUID = await resourceListUtils.getUUIDfromURL();
-    viewFields = resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-        { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
-        { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
-        { fieldName: 'Description', dataViewType: 'TextBox', mandatory: false, readonly: false },
-        { fieldName: 'Sections', dataViewType: 'TextBox', mandatory: false, readonly: false },
-    ]);
-    await resourceViews.customViewConfig(dataViewsService, {
+    await resourceViews.customViewConfig(client, {
         matchingEditorName: '',
         viewKey: surveyViewUUID,
-        fieldsToConfigureInView: viewFields,
+        fieldsToConfigureInView: [
+            { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: true },
+            { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: true },
+            { fieldName: 'Description', dataViewType: 'TextBox', mandatory: false, readonly: true },
+            { fieldName: 'Sections', dataViewType: 'TextBox', mandatory: false, readonly: true },
+        ],
     });
     await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
     await webAppHeader.goHome();
@@ -1018,4 +1013,16 @@ export async function createSurvey(
         await webAppHomePage.manualResync(client);
     }
     await webAppHomePage.validateATDIsApearingOnHomeScreen(slideshowSlugDisplayName);
+}
+
+export async function configureSurvey(surveyTemplateName, surveyTemplateDesc, driver) {
+    const surveyService = new SurveyTemplateBuilder(driver);
+    await surveyService.enterSurveyBuilderSettingsPage();
+    await surveyService.enterSurveyBuilderActualBuilder();
+    const surveyUUID = await surveyService.configureTheSurveyTemplate(
+        surveyTemplateName,
+        surveyTemplateDesc,
+        surveyService.surveyTemplateToCreate,
+    );
+    return surveyUUID;
 }
