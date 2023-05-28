@@ -682,6 +682,18 @@ const passCreate = process.env.npm_config_pass_create as string;
                     objectToPrintProd = testResultArrayProd.tests;
                     objectToPrintSB = testResultArrayProd.tests;
                 }
+                for (let index = 0; index < objectToPrintProd.length; index++) {
+                    const result = objectToPrintProd[index];
+                    console.log(`\n***PROD result object: ${JSON.stringify(result)}***\n`);
+                }
+                for (let index = 0; index < objectToPrintSB.length; index++) {
+                    const result = objectToPrintSB[index];
+                    console.log(`\n***SB result object: ${JSON.stringify(result)}***\n`);
+                }
+                for (let index = 0; index < objectToPrintEu.length; index++) {
+                    const result = objectToPrintSB[index];
+                    console.log(`\n***EU result object: ${JSON.stringify(result)}***\n`);
+                }
                 const euResults = await printResultsTestObject(
                     objectToPrintEu,
                     euUser,
