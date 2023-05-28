@@ -571,7 +571,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 );
             }
             console.log(
-                `####################### ${addonName} Version: ${latestVersionOfTestedAddonSb} #######################`,
+                `####################### ${addonName} Version: ${latestVersionOfTestedAddonProd} #######################`,
             );
             const isInstalled = await Promise.all([
                 // validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddonEu, 'prod'),
@@ -586,7 +586,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     );
                 }
             }
-            // debugger;
+            debugger;
             //3. run the test on latest version of the template addon
             const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
                 '02754342-e0b5-4300-b728-a94ea5e0e8f4',
@@ -650,6 +650,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     objectToPrintProd = testResultArrayProd.results[0].suites;
                     objectToPrintSB = testResultArraySB.results[0].suites;
                 } else {
+                    // objectToPrintEu = testResultArrayEu.tests;
                     objectToPrintProd = testResultArrayProd.tests;
                     objectToPrintSB = testResultArrayProd.tests;
                 }
@@ -1694,6 +1695,34 @@ async function reportToTeams(
         Description: message,
         Status: passingEnvs.length < 2 ? 'ERROR' : 'SUCCESS',
         Message: message2,
+        UserWebhook: handleTeamsURL(addonName),
+    };
+    const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
+        method: 'POST',
+        headers: {
+            'X-Pepperi-SecretKey': await service.getSecret()[1],
+            'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+        },
+        body: JSON.stringify(bodyToSend),
+    });
+    if (monitoringResponse.Ok !== true) {
+        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+    }
+    if (monitoringResponse.Status !== 200) {
+        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+    }
+    if (Object.keys(monitoringResponse.Error).length !== 0) {
+        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+    }
+}
+
+async function reportToTeamsMessage(addonName, addonUUID, addonVersion, error, service: GeneralService) {
+    const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Failed On: ${error}`;
+    const bodyToSend = {
+        Name: `${addonName} Approvment Tests Status: Failed Due CICD Process Exception`,
+        Description: message,
+        Status: 'ERROR',
+        Message: message,
         UserWebhook: handleTeamsURL(addonName),
     };
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
