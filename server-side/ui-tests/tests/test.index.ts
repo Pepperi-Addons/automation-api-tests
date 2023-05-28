@@ -586,7 +586,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                     );
                 }
             }
-            debugger;
             //3. run the test on latest version of the template addon
             const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
                 '02754342-e0b5-4300-b728-a94ea5e0e8f4',
@@ -623,15 +622,39 @@ const passCreate = process.env.npm_config_pass_create as string;
                     getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI),
                 ]);
                 //4.3. parse the response
-                // const testResultArrayEu = JSON.parse(devTestResutsEu.AuditInfo.ResultObject);
-                const testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
-                const testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
+                // let testResultArrayEu;
+                let testResultArrayProd;
+                let testResultArraySB;
+                try {
+                    // testResultArrayEu = JSON.parse(devTestResutsEu.AuditInfo.ResultObject);
+                    testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
+                    testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
+                } catch (error) {
+                    let errorString = '';
+                    // if (!devTestResutsEu.AuditInfo.ResultObject) {
+                    //     errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage},\n`;
+                    // }
+                    if (!devTestResultsProd.AuditInfo.ResultObject) {
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage},\n`;
+                    }
+                    if (!devTestResultsSb.AuditInfo.ResultObject) {
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage},\n`;
+                    }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                }
                 // debugger;
                 //4.4. print results to log
                 const devPassingEnvs: any[] = [];
                 const devFailedEnvs: any[] = [];
                 //4.5. print the results
-                let objectToPrintEu;
+                // let objectToPrintEu;
                 let objectToPrintProd;
                 let objectToPrintSB;
                 let shouldAlsoPrintVer = false;
@@ -654,6 +677,18 @@ const passCreate = process.env.npm_config_pass_create as string;
                     objectToPrintProd = testResultArrayProd.tests;
                     objectToPrintSB = testResultArrayProd.tests;
                 }
+                for (let index = 0; index < objectToPrintProd.length; index++) {
+                    const result = objectToPrintProd[index];
+                    console.log(`\n***prod result object: ${JSON.stringify(result)}***\n`);
+                }
+                for (let index = 0; index < objectToPrintSB.length; index++) {
+                    const result = objectToPrintSB[index];
+                    console.log(`\n***sb result object: ${JSON.stringify(result)}***\n`);
+                }
+                // for (let index = 0; index < objectToPrintEu.length; index++) {
+                //     const result = objectToPrintSB[index];
+                //     console.log(`sb result object: ${JSON.stringify(result)}`);
+                // }
                 // const euResults = await printResultsTestObject(
                 //     objectToPrintEu,
                 //     euUser,
@@ -1748,13 +1783,13 @@ function resolveUserPerTest(addonName): any[] {
     switch (addonName) {
         case 'DATA INDEX':
         case 'DATA-INDEX':
-            return ['DataIndexEU@pepperitest.com', 'DataIndexProd@pepperitest.com', 'DataIndexSB@pepperitest.com'];
+            return ['DataIndexProd@pepperitest.com', 'DataIndexSB@pepperitest.com'];//'DataIndexEU@pepperitest.com', 
         // case 'NEBULA'://0.6.x
         //     return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
         case 'NEBULA': //0.7.x
             return [ 'Neo4JSyncProd@pepperitest.com', 'Neo4JSyncSB@pepperitest.com']; //'neo4JSyncEU@pepperitest.com',
         case 'ADAL':
-            return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
+            return ['AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];//'AdalEU@pepperitest.com', 
         case 'SYNC':
             return ['syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com ']; //'syncTestEU@pepperitest.com',
         default:
