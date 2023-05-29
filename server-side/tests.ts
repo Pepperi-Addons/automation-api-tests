@@ -1289,7 +1289,7 @@ export async function handleDevTestInstallation(
             addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a'
         ) {
             const depObj = {};
-            depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.7.%'];
+            depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '%'];
             addonDep.push(depObj);
         }
         for (let index = 0; index < addonDep.length; index++) {
