@@ -53,6 +53,7 @@ import { UDCTestser } from '../../api-tests/user_defined_collections';
 import { maintenance3APITestser } from '../../api-tests/addons';
 import { handleDevTestInstallation } from '../../tests';
 import { NgxLibPOC } from './NgxLibPOC.test';
+import { PurgeAllUcds } from './purge_all_udcs_script.test copy';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -231,7 +232,7 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
 
     if (tests.includes('evgeny')) {
-        await OrderTests(email, pass, client);
+        await PurgeAllUcds(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 

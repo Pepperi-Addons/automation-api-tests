@@ -63,6 +63,36 @@ export class UDCService {
         return this.papiClient.userDefinedCollections.schemes.upsert(body);
     }
 
+    async purgeScheme(udcName: string) {
+        let response = await this.generalService.fetchStatus(`/addons/data/schemes/${udcName}/purge`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${this.generalService['client'].OAuthAccessToken}`,
+                'X-Pepperi-OwnerID': '122c0e9d-c240-4865-b446-f37ece866c22',
+                'x-pepperi-secretkey': 'a9cce3ed-3c77-4a40-be0a-b681a63fb2b4',
+            },
+        });
+        // if we got one of these responses - keep trying to purge
+        while (
+            (response.Body.message && response.Body.message === 'Endpoint request timed out') ||
+            (response.Body.fault &&
+                response.Body.fault.faultstring ===
+                    `Failed due to exception: Cannot set properties of null (setting 'dataSourcePurgeResult')`)
+        ) {
+            response = await this.generalService.fetchStatus(`/addons/data/schemes/${udcName}/purge`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${this.generalService['client'].OAuthAccessToken}`,
+                    'X-Pepperi-OwnerID': '122c0e9d-c240-4865-b446-f37ece866c22',
+                    'x-pepperi-secretkey': 'a9cce3ed-3c77-4a40-be0a-b681a63fb2b4',
+                },
+            });
+            console.log(`trying to purge ${udcName} scheme, recieved: ${JSON.stringify(response)}, keep running`);
+        }
+        console.log(`purge ended - ${udcName} should be deleted, response: ${JSON.stringify(response)}`);
+        return response;
+    }
+
     getSchemes(options?: FindOptions) {
         return this.papiClient.userDefinedCollections.schemes.find(options);
     }
