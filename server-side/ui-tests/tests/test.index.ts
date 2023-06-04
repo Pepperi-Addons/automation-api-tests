@@ -300,6 +300,10 @@ const passCreate = process.env.npm_config_pass_create as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
+    if (tests.includes('DataPrepPrc')) {
+        await PricingDataPrep(varPass, client);
+    }
+
     if (tests.includes('Pricing')) {
         await PricingDataPrep(varPass, client);
         await PricingTests(email, pass, client);

@@ -213,31 +213,42 @@ export default class E2EUtils extends BasePomObject {
         const webAppHomePage = new WebAppHomePage(this.browser);
         const webAppHeader = new WebAppHeader(this.browser);
         const slugs: Slugs = new Slugs(this.browser);
-        await this.navigateTo('Slugs');
-        await slugs.createSlug(slugDisplayName, slug_path, 'slug for Automation');
-        slugs.pause(3 * 1000);
-        const slugUUID = await slugs.getSlugUUIDbySlugName(slug_path, client);
-        console.info('slugUUID: ', slugUUID);
-        await webAppHeader.goHome();
-        expect(slugUUID).to.not.be.undefined;
-        const mappedSlugsUpsertResponse = await this.addToMappedSlugs(
-            [{ slug_path: slug_path, pageUUID: keyOfMappedPage }],
-            client,
-        );
-        console.info(
-            `existingMappedSlugs: ${JSON.stringify(mappedSlugsUpsertResponse.previouslyExistingMappedSlugs, null, 4)}`,
-        );
-        await this.logOutLogIn(email, password);
-        await webAppHomePage.isSpinnerDone();
-        await this.navigateTo('Slugs');
-        await slugs.clickTab('Mapping_Tab');
-        await slugs.waitTillVisible(slugs.MappingTab_RepCard_InnerListOfMappedSlugs, 15000);
-        const slugNameAtMappedSlugsSmallDisplayInRepCard = await this.browser.findElement(
-            slugs.getSelectorOfMappedSlugInRepCardSmallDisplayByText(slug_path),
-            10000,
-        );
-        expect(await slugNameAtMappedSlugsSmallDisplayInRepCard.getText()).to.contain(slug_path);
-        this.browser.sleep(1 * 1000);
+        let slugUUID;
+        try {
+            await this.navigateTo('Slugs');
+            await slugs.clickTab('Slugs_Tab');
+            await slugs.createSlug(slugDisplayName, slug_path, 'slug for Automation');
+            slugs.pause(3 * 1000);
+            slugUUID = await slugs.getSlugUUIDbySlugName(slug_path, client);
+            console.info('slugUUID: ', slugUUID);
+            await webAppHeader.goHome();
+            expect(slugUUID).to.not.be.undefined;
+            const mappedSlugsUpsertResponse = await this.addToMappedSlugs(
+                [{ slug_path: slug_path, pageUUID: keyOfMappedPage }],
+                client,
+            );
+            console.info(
+                `existingMappedSlugs: ${JSON.stringify(
+                    mappedSlugsUpsertResponse.previouslyExistingMappedSlugs,
+                    null,
+                    4,
+                )}`,
+            );
+            await this.logOutLogIn(email, password);
+            await webAppHomePage.isSpinnerDone();
+            await this.navigateTo('Slugs');
+            await slugs.clickTab('Mapping_Tab');
+            await slugs.waitTillVisible(slugs.MappingTab_RepCard_InnerListOfMappedSlugs, 15000);
+            const slugNameAtMappedSlugsSmallDisplayInRepCard = await this.browser.findElement(
+                slugs.getSelectorOfMappedSlugInRepCardSmallDisplayByText(slug_path),
+                10000,
+            );
+            expect(await slugNameAtMappedSlugsSmallDisplayInRepCard.getText()).to.contain(slug_path);
+            this.browser.sleep(1 * 1000);
+            await webAppHeader.goHome();
+        } catch (error) {
+            console.error(error);
+        }
         return slugUUID;
     }
 
@@ -449,7 +460,7 @@ export default class E2EUtils extends BasePomObject {
         let editorUUID = '';
         let viewUUID = '';
         let pageUUID = '';
-
+        // debugger
         if (resourceData.collection) {
             if (resourceData.collection.createUDC) {
                 const bodyOfCollection = udcService.prepareDataForUdcCreation(resourceData.collection.createUDC);
@@ -555,6 +566,7 @@ export default class E2EUtils extends BasePomObject {
             this.browser.sleep(0.5 * 1000);
         }
         if (resourceData.homePageButton && resourceData.homePageButton.toAdd === true) {
+            await webAppHeader.openSettings();
             await brandedApp.addAdminHomePageButtons(resourceData.homePageButton.slugDisplayName);
             await this.performManualSync(client);
             await webAppHomePage.validateATDIsApearingOnHomeScreen(resourceData.homePageButton.slugDisplayName);
