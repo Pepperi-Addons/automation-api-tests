@@ -19,7 +19,7 @@ export class SurveyPicker extends AddonPage {
             ['value'].replace('{placeholder}', surveyKey);
         await this.browser.click(By.xpath(xpathQueryForRadioButtonOfSurvey));
         await this.browser.click(this.doneButton);
-        this.browser.sleep(3000);
+        this.browser.sleep(7000);
         const isAccountSelectionVisibale = this.browser.untilIsVisible(this.numberOfResultsIndicator, 5000);
         return isAccountSelectionVisibale;
     }

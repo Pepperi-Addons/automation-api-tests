@@ -1216,7 +1216,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         doc.Name.includes('SchemeBasedOnOnlySchemeTesting') ||
                         doc.Name.includes('AccResource') ||
                         doc.Name.includes('KeyBasicTesting'),
-                    // ||doc.Name.includes('DimxOverwrite')&&!doc.Name.includes('DimxOverwriteinphssnloizjvgc'),// to no delete the collection of DI-23772
+                    // ||(doc.Name.includes('DimxOverwrite') && !doc.Name.includes('DimxOverwriteinphssnloizjvgc')), // to no delete the collection of DI-23772
                 );
                 for (let index = 0; index < toHideCollections.length; index++) {
                     const collectionToHide = toHideCollections[index];
