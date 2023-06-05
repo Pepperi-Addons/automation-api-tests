@@ -1867,9 +1867,9 @@ function resolveUserPerTest(addonName): any[] {
         case 'DATA INDEX':
         case 'DATA-INDEX':
             return ['DataIndexEU@pepperitest.com', 'DataIndexProd@pepperitest.com', 'DataIndexSB@pepperitest.com'];
-        // case 'NEBULA'://0.6.x
+        // case 'NEBULA'://0.6.x neptune
         //     return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
-        case 'NEBULA': //0.7.x
+        case 'NEBULA': //0.7.x noe4j
             return ['neo4JSyncEU@pepperitest.com', 'Neo4JSyncProd@pepperitest.com', 'Neo4JSyncSB@pepperitest.com']; //
         case 'ADAL':
             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
