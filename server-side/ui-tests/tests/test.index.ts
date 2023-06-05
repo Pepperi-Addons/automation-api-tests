@@ -510,7 +510,7 @@ const passCreate = process.env.npm_config_pass_create as string;
         const passedTestsEnv: string[] = [];
         const failingTestsEnv: string[] = [];
         let testsList: string[] = [];
-        addonUUID = generalService.convertNameToUUID(addonName);
+        addonUUID = generalService.convertNameToUUIDForDevTests(addonName);
         if (addonUUID === 'none') {
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
         } else {
@@ -587,7 +587,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                     );
                 }
             }
-            debugger;
             //3. run the test on latest version of the template addon
             const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
                 '02754342-e0b5-4300-b728-a94ea5e0e8f4',
@@ -653,8 +652,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                     );
                     throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
-
-                debugger;
                 // debugger;
                 //4.4. print results to log
                 const devPassingEnvs: any[] = [];
@@ -670,7 +667,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     testResultArrayProd.results[0].suites[0].suites.length > 0
                 ) {
                     shouldAlsoPrintVer = true;
-                    // objectToPrintEu = testResultArrayEu.results[0].suites[0].suites;
+                    objectToPrintEu = testResultArrayEu.results[0].suites[0].suites;
                     objectToPrintProd = testResultArrayProd.results[0].suites[0].suites;
                     objectToPrintSB = testResultArraySB.results[0].suites[0].suites;
                 } else if (testResultArrayProd.results) {
@@ -871,7 +868,7 @@ const passCreate = process.env.npm_config_pass_create as string;
         let jobPathEU = '';
         let jobPathPROD = '';
         let jobPathSB = '';
-        console.log(`####################### Running For: ${addonName}(${addonUUID}) #######################`);
+        console.log(`####################### Approvment Tests For ${addonName} #######################`);
         // 1. parse which addon should run and on which version, run the test on Jenkins
         switch (addonName) {
             //add another 'case' here when adding new addons to this mehcanisem
@@ -942,6 +939,80 @@ const passCreate = process.env.npm_config_pass_create as string;
                         kmsSecret,
                         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL/build?token=ADALApprovmentTests',
                         'Test - A1 Stage - ADAL',
+                    ),
+                ]);
+                latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
+                latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
+                latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
+                break;
+            }
+            case 'PNS': {
+                addonUUID = '00000000-0000-0000-0000-000000040fa9';
+                const responseProd = await service.fetchStatus(
+                    `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Basic ${base64VARCredentialsProd}`,
+                        },
+                    },
+                );
+                addonVersionProd = responseProd.Body[0].Version;
+                addonEntryUUIDProd = responseProd.Body[0].UUID;
+                const responseEu = await service.fetchStatus(
+                    `https://papi-eu.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Basic ${base64VARCredentialsEU}`,
+                        },
+                    },
+                );
+                addonVersionEU = responseEu.Body[0].Version;
+                addonEntryUUIDEu = responseEu.Body[0].UUID;
+                const responseSb = await service.fetchStatus(
+                    `https://papi.staging.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Basic ${base64VARCredentialsSB}`,
+                        },
+                    },
+                );
+                addonVersionSb = responseSb.Body[0].Version;
+                addonEntryUUIDSb = responseSb.Body[0].UUID;
+                if (
+                    addonVersionSb !== addonVersionEU ||
+                    addonVersionProd !== addonVersionEU ||
+                    addonVersionProd !== addonVersionSb
+                ) {
+                    throw new Error(
+                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
+                    );
+                }
+                console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
+                jobPathPROD =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20E1%20Production%20-%20PNS';
+                jobPathEU =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20E1%20EU%20-%20PNS';
+                jobPathSB =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20E1%20Stage%20-%20PNS';
+                JenkinsBuildResultsAllEnvs = await Promise.all([
+                    service.runJenkinsJobRemotely(
+                        kmsSecret,
+                        `${jobPathPROD}/build?token=PNSApprovmentTests`,
+                        'Test - E1 Production - PNS',
+                    ),
+                    service.runJenkinsJobRemotely(
+                        kmsSecret,
+                        `${jobPathEU}/build?token=PNSApprovmentTests`,
+                        'Test - E1 EU - PNS',
+                    ),
+                    service.runJenkinsJobRemotely(
+                        kmsSecret,
+                        `${jobPathSB}/build?token=PNSApprovmentTests`,
+                        'Test - E1 Stage - PNS',
                     ),
                 ]);
                 latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
@@ -1280,6 +1351,8 @@ function handleTeamsURL(addonName) {
         case 'PFS':
         case 'PEPPERI-FILE-STORAGE':
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/29c9fb687840407fa70dce5576356af8/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+        case 'PNS':
+            return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/5a784ad87c4b4f4a9ffab80e4ed61113/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
     }
 }
 
