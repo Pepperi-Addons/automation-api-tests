@@ -483,15 +483,16 @@ export class ResourceViews extends ResourceList {
                 );
                 break;
             case 'SmartSearch':
-                console.info(
-                    `menuDataViews: ${JSON.stringify(
-                        menuDataViews.find((view) => {
-                            view.Context.Name.includes('SmartSearch');
-                        }),
-                        null,
-                        2,
-                    )}`,
-                );
+                // console.info(
+                //     `menuDataViews: ${JSON.stringify(
+                //         menuDataViews.find((view) => {
+                //             view.Context.Name.includes('SmartSearch');
+                //         }),
+                //         null,
+                //         2,
+                //     )}`,
+                // );
+                console.info(`menuDataViews: ${JSON.stringify(menuDataViews, null, 2)}`);
                 resourceFieldsToAddToViewTabObj = new UpsertResourceFieldsToViewSmartSearch(
                     configData.viewKey,
                     configData.fields,
