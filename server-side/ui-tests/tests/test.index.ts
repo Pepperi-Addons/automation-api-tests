@@ -1025,7 +1025,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 break;
             }
-            case 'User-Defined-Collections':
+            case 'USER-DEFINED-COLLECTIONS':
             case 'UDC': {
                 addonUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
                 const responseProd = await service.fetchStatus(
@@ -1324,10 +1324,10 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 break;
             }
-            case 'core':
-            case 'core-generic-resources': {
+            case 'CORE':
+            case 'CORE-GENERIC-RESOURCES': {
                 addonUUID =
-                    addonName === 'core'
+                    addonName === 'CORE'
                         ? '00000000-0000-0000-0000-00000000c07e'
                         : 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
                 const responseProd = await service.fetchStatus(
