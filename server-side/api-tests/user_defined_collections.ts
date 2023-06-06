@@ -2,6 +2,7 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 // import { PFSService } from '../services/pfs.service';
 // import fs from 'fs';
 import { UdcField, UDCService } from '../services/user-defined-collections.service';
+import jwt_decode from 'jwt-decode';
 
 export async function UDCTestser(generalService: GeneralService, request, tester: TesterFunctions) {
     await UDCTests(generalService, request, tester);
@@ -98,8 +99,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             const boolVal = true;
             const today = generalService.getDate().split('/');
             const parsedTodayDate = `${today[2]}-${today[1]}-${today[0]}`; //year-month-day
+            const parsedToken = jwt_decode(generalService.papiClient['options'].token);
+            const userName = parsedToken.email;
             it(`Positive Test: testing DI-22319: mark 'scheme only' schemes with 'sync=true'`, async () => {
-                debugger;
                 const allUdcs = await udcService.getSchemes({ page_size: -1 });
                 const filteredUdcs = allUdcs.filter((collection) => collection.Type === 'contained');
                 const isError = filteredUdcs.filter((collection) => collection.SyncData?.Sync !== true);
@@ -926,11 +928,23 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 };
                 let accUUID = '';
                 if (generalService.papiClient['options'].baseURL.includes('staging')) {
-                    accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
+                    if (userName === 'udcTestingSB@pepperitest.com') {
+                        accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
+                    } else {
+                        accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297'; //TODO
+                    }
                 } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
-                    accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
+                    if (userName === 'udcTesting@pepperitest.com') {
+                        accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
+                    } else {
+                        accUUID = '33b6922e-0ab1-49b1-ae3f-6981f0a9e324';
+                    }
                 } else {
-                    accUUID = '257cd6cc-3e90-450b-bc16-1dc8f67a2ec8';
+                    if (userName === 'udcTestingEU2@pepperitest.com') {
+                        accUUID = '257cd6cc-3e90-450b-bc16-1dc8f67a2ec8';
+                    } else {
+                        accUUID = '44b7e8cb-0b7f-4e33-96da-c9fbe7714400';
+                    }
                 }
                 const response = await udcService.sendDataToField(accResourceCollectionName, fieldValues);
                 expect(response.Ok).to.equal(true);
@@ -994,13 +1008,25 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         let distUUIDToLookFor = ``;
                         if (generalService.papiClient['options'].baseURL.includes('staging')) {
                             uriToLookFor = `"URI":"https://pfs.staging.pepperi.com`;
-                            distUUIDToLookFor = '9154dfe9-a1eb-466e-bf79-bc4fc53051c0';
+                            if (userName === 'udcTestingSB@pepperitest.com') {
+                                distUUIDToLookFor = '9154dfe9-a1eb-466e-bf79-bc4fc53051c0';
+                            } else {
+                                distUUIDToLookFor = '56ea7184-c79d-496c-bb36-912f06f8c297'; //TODO
+                            }
                         } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
                             uriToLookFor = `"URI":"https://pfs.pepperi.com`;
-                            distUUIDToLookFor = 'c87efcca-7170-4e46-8d58-04d2f6817b71';
+                            if (userName === 'udcTesting@pepperitest.com') {
+                                distUUIDToLookFor = 'c87efcca-7170-4e46-8d58-04d2f6817b71';
+                            } else {
+                                distUUIDToLookFor = '4c81682d-6fce-44f3-8c10-1c6769dc8772';
+                            }
                         } else {
                             uriToLookFor = `"URI":"https://eupfs.pepperi.com`;
-                            distUUIDToLookFor = 'a9620f87-7990-428e-a7c6-7d0dda6c3f51';
+                            if (userName === 'udcTestingEU2@pepperitest.com') {
+                                distUUIDToLookFor = 'a9620f87-7990-428e-a7c6-7d0dda6c3f51';
+                            } else {
+                                distUUIDToLookFor = '0b0522d6-9e40-4a89-bf8e-e4027362db66';
+                            }
                         }
                         expect(b.AuditInfo.ResultObject).to.contain(uriToLookFor);
                         expect(b.AuditInfo.ResultObject).to.contain(`"DistributorUUID":"${distUUIDToLookFor}"`);
@@ -1059,11 +1085,23 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             it('Positive Test: importing data to account resource UDC', async () => {
                 let accUUID = '';
                 if (generalService.papiClient['options'].baseURL.includes('staging')) {
-                    accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
+                    if (userName === 'udcTestingSB@pepperitest.com') {
+                        accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
+                    } else {
+                        accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297'; //TODO
+                    }
                 } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
-                    accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
+                    if (userName === 'udcTesting@pepperitest.com') {
+                        accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
+                    } else {
+                        accUUID = '33b6922e-0ab1-49b1-ae3f-6981f0a9e324';
+                    }
                 } else {
-                    accUUID = '257cd6cc-3e90-450b-bc16-1dc8f67a2ec8';
+                    if (userName === 'udcTestingEU2@pepperitest.com') {
+                        accUUID = '257cd6cc-3e90-450b-bc16-1dc8f67a2ec8';
+                    } else {
+                        accUUID = '44b7e8cb-0b7f-4e33-96da-c9fbe7714400';
+                    }
                 }
                 const bodyToImport = {};
                 bodyToImport['Objects'] = [{ 'myAcc.ExternalID': 'Account for order scenarios' }];
@@ -1205,7 +1243,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             //     expect(collection.count).to.equal(howManyOld + howManyUpdated);
             // });
             it("Tear Down: cleaning all upserted UDC's", async () => {
-                const documents = await udcService.getSchemes();
+                const documents = await udcService.getSchemes({ page_size: -1 });
                 const toHideCollections = documents.filter(
                     (doc) =>
                         doc.Name.includes('BasicTesting') ||
