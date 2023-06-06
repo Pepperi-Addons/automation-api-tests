@@ -1529,6 +1529,8 @@ export default class GeneralService {
                 return '00000000-0000-0000-0000-00000e1a571c';
             case 'NEBULA':
                 return '00000000-0000-0000-0000-000000006a91';
+            case 'FEBULA':
+                return 'cebb251f-1c80-4d80-b62c-442e48e678e8';
             case 'SYNC':
                 return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
             default:
