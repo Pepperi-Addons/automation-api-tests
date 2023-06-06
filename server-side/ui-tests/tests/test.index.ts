@@ -1409,7 +1409,7 @@ const passCreate = process.env.npm_config_pass_create as string;
         // 2. parse which envs failed
         const passingEnvs: string[] = [];
         const failingEnvs: string[] = [];
-        debugger;
+        // debugger;
         let isOneOfTestFailed = false;
         for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
             const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
@@ -1434,7 +1434,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 );
             }
         }
-        debugger;
+        // debugger;
         if (!failingEnvs.includes('EU')) {
             passingEnvs.push('EU');
         }
