@@ -932,18 +932,18 @@ const passCreate = process.env.npm_config_pass_create as string;
                 JenkinsBuildResultsAllEnvs = await Promise.all([
                     service.runJenkinsJobRemotely(
                         kmsSecret,
-                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL/build?token=ADALApprovmentTests',
-                        'Test - A1 Production - ADAL',
+                        `${jobPathPROD}/build?token=ADALApprovmentTests`,
+                        'Test - E1 Production - PNS',
                     ),
                     service.runJenkinsJobRemotely(
                         kmsSecret,
-                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL/build?token=ADALApprovmentTests',
-                        'Test - A1 EU - ADAL',
+                        `${jobPathEU}/build?token=ADALApprovmentTests`,
+                        'Test - E1 EU - PNS',
                     ),
                     service.runJenkinsJobRemotely(
                         kmsSecret,
-                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL/build?token=ADALApprovmentTests',
-                        'Test - A1 Stage - ADAL',
+                        `${jobPathSB}/build?token=ADALApprovmentTests`,
+                        'Test - E1 Stage - PNS',
                     ),
                 ]);
                 latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
@@ -1025,7 +1025,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 break;
             }
-            case 'User-Defined-Collections':
+            case 'USER-DEFINED-COLLECTIONS':
             case 'UDC': {
                 addonUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
                 const responseProd = await service.fetchStatus(
@@ -1081,18 +1081,18 @@ const passCreate = process.env.npm_config_pass_create as string;
                 JenkinsBuildResultsAllEnvs = await Promise.all([
                     service.runJenkinsJobRemotely(
                         kmsSecret,
-                        `${jobPathPROD}/build?token=PNSApprovmentTests`,
-                        'Test - E1 Production - PNS',
+                        `${jobPathPROD}/build?token=UDCApprovmentTests`,
+                        'Test - G1 Production - UDC',
                     ),
                     service.runJenkinsJobRemotely(
                         kmsSecret,
-                        `${jobPathEU}/build?token=PNSApprovmentTests`,
-                        'Test - E1 EU - PNS',
+                        `${jobPathEU}/build?token=UDCApprovmentTests`,
+                        'Test - G1 EU - UDC',
                     ),
                     service.runJenkinsJobRemotely(
                         kmsSecret,
-                        `${jobPathSB}/build?token=PNSApprovmentTests`,
-                        'Test - E1 Stage - PNS',
+                        `${jobPathSB}/build?token=UDCApprovmentTests`,
+                        'Test - G1 Stage - UDC',
                     ),
                 ]);
                 latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
@@ -1324,10 +1324,10 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 break;
             }
-            case 'core':
-            case 'core-generic-resources': {
+            case 'CORE':
+            case 'CORE-GENERIC-RESOURCES': {
                 addonUUID =
-                    addonName === 'core'
+                    addonName === 'CORE'
                         ? '00000000-0000-0000-0000-00000000c07e'
                         : 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
                 const responseProd = await service.fetchStatus(
@@ -1383,18 +1383,18 @@ const passCreate = process.env.npm_config_pass_create as string;
                 JenkinsBuildResultsAllEnvs = await Promise.all([
                     service.runJenkinsJobRemotely(
                         kmsSecret,
-                        `${jobPathPROD}/build?token=PFSApprovmentTests`,
-                        'Test - D1 Production - PFS',
+                        `${jobPathPROD}/build?token=COREApprovmentTests`,
+                        'Test - F1 Production - Core',
                     ),
                     service.runJenkinsJobRemotely(
                         kmsSecret,
-                        `${jobPathEU}/build?token=PFSApprovmentTests`,
-                        'Test - D1 EU - PFS',
+                        `${jobPathEU}/build?token=COREApprovmentTests`,
+                        'Test - F1 EU - Core',
                     ),
                     service.runJenkinsJobRemotely(
                         kmsSecret,
-                        `${jobPathSB}/build?token=PFSApprovmentTests`,
-                        'Test - D1 Stage - PFS',
+                        `${jobPathSB}/build?token=COREApprovmentTests`,
+                        'Test - F1 Stage - Core',
                     ),
                 ]);
                 latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
