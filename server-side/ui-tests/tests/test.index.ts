@@ -1516,7 +1516,7 @@ function handleTeamsURL(addonName) {
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/5a784ad87c4b4f4a9ffab80e4ed61113/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
         case 'User-Defined-Collections':
         case 'UDC':
-            return '';
+            return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/a40ddc371df64933aa4bc369a060b1d6/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
     }
 }
 

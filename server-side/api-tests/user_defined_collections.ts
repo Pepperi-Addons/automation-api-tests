@@ -931,7 +931,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     if (userName === 'udcTestingSB@pepperitest.com') {
                         accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
                     } else {
-                        accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297'; //TODO
+                        accUUID = 'b69d4c17-8f68-465b-9d44-f2c3b5b9a1e6';
                     }
                 } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
                     if (userName === 'udcTesting@pepperitest.com') {
@@ -1011,7 +1011,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                             if (userName === 'udcTestingSB@pepperitest.com') {
                                 distUUIDToLookFor = '9154dfe9-a1eb-466e-bf79-bc4fc53051c0';
                             } else {
-                                distUUIDToLookFor = '56ea7184-c79d-496c-bb36-912f06f8c297'; //TODO
+                                distUUIDToLookFor = '15411c8a-f364-46d0-b6b7-53966fca3f51';
                             }
                         } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
                             uriToLookFor = `"URI":"https://pfs.pepperi.com`;
@@ -1088,7 +1088,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     if (userName === 'udcTestingSB@pepperitest.com') {
                         accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
                     } else {
-                        accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297'; //TODO
+                        accUUID = 'b69d4c17-8f68-465b-9d44-f2c3b5b9a1e6';
                     }
                 } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
                     if (userName === 'udcTesting@pepperitest.com') {
