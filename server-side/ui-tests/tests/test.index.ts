@@ -1172,7 +1172,42 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
                 latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
-                break;
+                // let didFailFirstTest = false;
+                // for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
+                //     const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
+                //     if (resultAndEnv[0] === 'FAILURE') {
+                //         didFailFirstTest = true;
+                //         break;
+                //     }
+                // }
+                // if (!didFailFirstTest) {//TODO
+                //     jobPathPROD =
+                //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B1%20Production%20-%20DIMX';
+                //     jobPathEU =
+                //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B1%20EU%20-%20DIMX';
+                //     jobPathSB =
+                //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B1%20Stage%20-%20DIMX';
+                //     JenkinsBuildResultsAllEnvs = await Promise.all([
+                //         service.runJenkinsJobRemotely(
+                //             kmsSecret,
+                //             `${jobPathPROD}/build?token=DIMXApprovmentTests`,
+                //             'Test - B1 Production - DIMX',
+                //         ),
+                //         service.runJenkinsJobRemotely(
+                //             kmsSecret,
+                //             `${jobPathEU}/build?token=DIMXApprovmentTests`,
+                //             'Test - A1 EU - DIMX',
+                //         ),
+                //         service.runJenkinsJobRemotely(
+                //             kmsSecret,
+                //             `${jobPathSB}/build?token=DIMXApprovmentTests`,
+                //             'Test - B1 Stage - DIMX',
+                //         ),
+                //     ]);
+                //     latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
+                //     latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
+                //     latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
+                // }
             }
             case 'DATA INDEX':
             case 'DATA-INDEX': {
@@ -1514,7 +1549,7 @@ function handleTeamsURL(addonName) {
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/29c9fb687840407fa70dce5576356af8/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
         case 'PNS':
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/5a784ad87c4b4f4a9ffab80e4ed61113/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-        case 'User-Defined-Collections':
+        case 'USER-DEFINED-COLLECTIONS':
         case 'UDC':
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/a40ddc371df64933aa4bc369a060b1d6/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
     }
