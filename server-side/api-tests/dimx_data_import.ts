@@ -855,10 +855,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
             )
             .then((res) => res.Body);
         //debugger;
-        if (
-            logcash.add50InsertsToTableOverwriteFalse.ErrorMessage ==
-            'Objects array can contain at most 500 objects'
-        ) {
+        if (logcash.add50InsertsToTableOverwriteFalse.ErrorMessage == 'Objects array can contain at most 500 objects') {
             logcash.add50InsertsToTableOverwriteFalseStatus = true;
         } else {
             (logcash.add50InsertsToTableOverwriteFalseStatus = false),
