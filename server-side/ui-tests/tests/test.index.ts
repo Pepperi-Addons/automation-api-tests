@@ -1172,42 +1172,44 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
                 latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
-                // let didFailFirstTest = false;
-                // for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
-                //     const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
-                //     if (resultAndEnv[0] === 'FAILURE') {
-                //         didFailFirstTest = true;
-                //         break;
-                //     }
-                // }
-                // if (!didFailFirstTest) {//TODO
-                //     jobPathPROD =
-                //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B1%20Production%20-%20DIMX';
-                //     jobPathEU =
-                //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B1%20EU%20-%20DIMX';
-                //     jobPathSB =
-                //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B1%20Stage%20-%20DIMX';
-                //     JenkinsBuildResultsAllEnvs = await Promise.all([
-                //         service.runJenkinsJobRemotely(
-                //             kmsSecret,
-                //             `${jobPathPROD}/build?token=DIMXApprovmentTests`,
-                //             'Test - B1 Production - DIMX',
-                //         ),
-                //         service.runJenkinsJobRemotely(
-                //             kmsSecret,
-                //             `${jobPathEU}/build?token=DIMXApprovmentTests`,
-                //             'Test - A1 EU - DIMX',
-                //         ),
-                //         service.runJenkinsJobRemotely(
-                //             kmsSecret,
-                //             `${jobPathSB}/build?token=DIMXApprovmentTests`,
-                //             'Test - B1 Stage - DIMX',
-                //         ),
-                //     ]);
-                //     latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
-                //     latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
-                //     latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
-                // }
+                let didFailFirstTest = false;
+                for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
+                    const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
+                    if (resultAndEnv[0] === 'FAILURE') {
+                        didFailFirstTest = true;
+                        break;
+                    }
+                }
+                if (!didFailFirstTest) {
+                    //if we already failed - dont run second part just keep running to the end
+                    jobPathPROD =
+                        'API%API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B2%20Production%20-%20DIMX%20Part%202%20-%20CLI';
+                    jobPathEU =
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B2%20EU%20-%20DIMX%20Part%202%20-%20CLI';
+                    jobPathSB =
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B2%20Staging%20-%20DIMX%20Part%202%20-%20CLI';
+                    JenkinsBuildResultsAllEnvs = await Promise.all([
+                        //if well fail here - well get to the regular reporting etc
+                        service.runJenkinsJobRemotely(
+                            kmsSecret,
+                            `${jobPathPROD}/build?token=DIMXApprovmentTests`,
+                            'Test - B2 Production - DIMX Part 2 - CLI',
+                        ),
+                        service.runJenkinsJobRemotely(
+                            kmsSecret,
+                            `${jobPathEU}/build?token=DIMXApprovmentTests`,
+                            'Test - B2 EU - DIMX Part 2 - CLI',
+                        ),
+                        service.runJenkinsJobRemotely(
+                            kmsSecret,
+                            `${jobPathSB}/build?token=DIMXApprovmentTests`,
+                            'Test - B2 Staging - DIMX Part 2 - CLI',
+                        ),
+                    ]);
+                    latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
+                    latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
+                    latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
+                }
             }
             case 'DATA INDEX':
             case 'DATA-INDEX': {
