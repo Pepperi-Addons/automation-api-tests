@@ -996,7 +996,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     expect(a.Status).to.equal(200);
                     const b = await generalService.getAuditLogResultObjectIfValid(a.Body.URI, 90);
                     if (collectionName.includes('SchemeOnlyTesting')) {
-                        expect(b.AuditInfo.ErrorMessage).to.include('Unsupported schema type contained');
+                        const parsedResponse = JSON.parse(b.AuditInfo.ResultObject);
+                        expect(parsedResponse.Success).to.equal(false);
+                        expect(parsedResponse.ErrorMessage).to.include('Unsupported schema type contained');
                     } else {
                         if (b.Status) {
                             expect(b.Status.ID).to.equal(1);
