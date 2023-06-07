@@ -1210,6 +1210,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
                     latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 }
+                break;
             }
             case 'DATA INDEX':
             case 'DATA-INDEX': {
