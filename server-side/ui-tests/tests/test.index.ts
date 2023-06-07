@@ -1183,11 +1183,14 @@ const passCreate = process.env.npm_config_pass_create as string;
                 if (!didFailFirstTest) {
                     //if we already failed - dont run second part just keep running to the end
                     jobPathPROD =
-                        'API%API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B2%20Production%20-%20DIMX%20Part%202%20-%20CLI';
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B2%20Production%20-%20DIMX%20Part%202%20-%20CLI';
                     jobPathEU =
                         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B2%20EU%20-%20DIMX%20Part%202%20-%20CLI';
                     jobPathSB =
                         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B2%20Staging%20-%20DIMX%20Part%202%20-%20CLI';
+                    console.log(
+                        'first part of DINX tests passed - running 2nd part of DIMX approvement tests (CLI DIMX TEST)',
+                    );
                     JenkinsBuildResultsAllEnvs = await Promise.all([
                         //if well fail here - well get to the regular reporting etc
                         service.runJenkinsJobRemotely(
