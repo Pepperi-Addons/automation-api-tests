@@ -2840,8 +2840,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 relationOriginalResponse.URI,
                                 90,
                             );
-                            expect(dimxExport.AuditInfo.ErrorMessage).to.equal(
-                                'Failed due to exception: Delimiter length must be 1. Given delimiter:&&&',
+                            expect(dimxExport.AuditInfo.ResultObject).to.equal(
+                                '{"Success":false,"ErrorMessage":"Delimiter length must be 1. Given delimiter:&&&"}',
                             );
                         });
                     }
@@ -4878,7 +4878,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         let dimxImportAfterChange;
                         let dimxExportAfterChange;
                         it(`Reset Schema`, async () => {
-                            debugger;
                             const adalService = new ADALService(generalService.papiClient);
                             adalService.papiClient['options'].addonUUID = addonUUID;
                             adalService.papiClient['options'].addonSecretKey = secretKey;
