@@ -296,8 +296,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         //     logcash.insertDataToTableNonRelationError = 'Insert without created relation will failed  ';
         // }
         if (
-            logcash.insertDataToTableNonRelation.fault.faultstring.includes(
-                'Failed due to exception: Relation: Permission denied. No results found for the query',
+            logcash.insertDataToTableNonRelation.ErrorMessage.includes(
+                'Relation: Permission denied. No results found for the query',
             )
         ) {
             logcash.insertDataToTableWithOwnerIDStatus = true;
@@ -856,8 +856,8 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
             .then((res) => res.Body);
         //debugger;
         if (
-            logcash.add50InsertsToTableOverwriteFalse.fault.faultstring ==
-            'Failed due to exception: Objects array can contain at most 500 objects'
+            logcash.add50InsertsToTableOverwriteFalse.ErrorMessage ==
+            'Objects array can contain at most 500 objects'
         ) {
             logcash.add50InsertsToTableOverwriteFalseStatus = true;
         } else {
