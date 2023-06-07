@@ -116,7 +116,7 @@ export class SurveyFiller extends AddonPage {
         }
         const elem = await this.browser.switchToActiveElement();
         await elem.sendKeys(Key.ESCAPE);
-        this.browser.sleep(5000);
+        this.browser.sleep(8000);
     }
 
     public async saveSurvey() {

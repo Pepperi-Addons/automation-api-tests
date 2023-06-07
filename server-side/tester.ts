@@ -36,7 +36,7 @@ export default function Tester(client?: Client, testName?: string, environment?:
             autoOpen: isLocal,
             consoleReporter: 'none',
         },
-        timeout: 1200000,
+        timeout: 2200000,
     });
     const root = mocha.suite;
     let context: Suite | undefined = root;

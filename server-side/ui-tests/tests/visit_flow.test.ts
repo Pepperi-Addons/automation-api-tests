@@ -4,7 +4,13 @@ import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { Browser } from '../utilities/browser';
-import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
+import {
+    WebAppDialog,
+    WebAppHeader,
+    WebAppHomePage,
+    WebAppLoginPage,
+    // WebAppSettingsSidePanel
+} from '../pom';
 // import { ResourceEditors, ResourceList, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
@@ -15,6 +21,8 @@ import { v4 as newUuid } from 'uuid';
 import { UDCService } from '../../services/user-defined-collections.service';
 import { ObjectsService } from '../../services';
 import { OrderPage } from '../pom/Pages/OrderPage';
+import { SurveyTemplateBuilder } from '../pom/addons/SurveyTemplateBuilder';
+import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 
 chai.use(promised);
 
@@ -28,11 +36,14 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
-    let settingsSidePanel: WebAppSettingsSidePanel;
+    let webAppDialog: WebAppDialog;
+    // let settingsSidePanel: WebAppSettingsSidePanel;
+    let accountDashboardLayout: AccountDashboardLayout;
     let orderPage: OrderPage;
     let visitFlow: VisitFlow;
     let pageBuilder: PageBuilder;
     let slugs: Slugs;
+    let surveyService: SurveyTemplateBuilder;
     let randomString: string;
     let upsertedListingsToVisitFlowGroups: {
         Title: string;
@@ -56,6 +67,9 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     }[];
     let pageUUID: string;
     let pageName: string;
+    let surveyTemplateName: string;
+    let surveyTemplateDesc: string;
+    let surveyUUID: string;
     let visitFlowName: string;
     let visitFlowDescription: string;
     let slugDisplayName: string;
@@ -73,7 +87,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 webAppLoginPage = new WebAppLoginPage(driver);
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
-                settingsSidePanel = new WebAppSettingsSidePanel(driver);
+                webAppDialog = new WebAppDialog(driver);
+                // settingsSidePanel = new WebAppSettingsSidePanel(driver);
+                accountDashboardLayout = new AccountDashboardLayout(driver);
+                surveyService = new SurveyTemplateBuilder(driver);
                 e2eUtils = new E2EUtils(driver);
                 orderPage = new OrderPage(driver);
                 visitFlow = new VisitFlow(driver);
@@ -81,6 +98,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 slugs = new Slugs(driver);
                 // resourceViews = new ResourceViews(driver);
                 randomString = generalService.generateRandomString(5);
+                surveyTemplateName = ``;
+                surveyTemplateDesc = ``;
                 visitFlowName = `Auto VisiT ${randomString}`;
                 visitFlowDescription = `Auto Visit ${randomString}`;
                 slugDisplayName = `Visit Flow Auto ${randomString}`;
@@ -145,6 +164,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     const groupsDocumentsToUpsert = [
                         { Title: `Start Auto ${randomString}`, SortIndex: 0 },
                         { Title: `Orders Auto ${randomString}`, SortIndex: 10 },
+                        { Title: `Surveys Auto ${randomString}`, SortIndex: 20 },
                         { Title: `End Auto ${randomString}`, SortIndex: 100 },
                     ];
                     let upsertingValues_Response;
@@ -176,17 +196,9 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     expect(pageUUID).to.not.be.undefined;
                     console.info('pageUUID: ', pageUUID);
                     const createdPage = await pageBuilder.getPageByUUID(pageUUID, client);
-                    // console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
                     const sectionKey = createdPage.Layout.Sections[0].Key;
                     const blockKey = newUuid();
-                    const visitFlowPage = new VisitFlowPage(
-                        pageUUID,
-                        blockKey,
-                        sectionKey,
-                        pageName,
-                        'pageDescription',
-                    );
-                    // console.info('visitFlowPage: ', JSON.stringify(visitFlowPage, null, 2));
+                    const visitFlowPage = new VisitFlowPage(pageUUID, blockKey, sectionKey, pageName, 'VF Auto Test');
                     const responseOfPublishPage = await pageBuilder.publishPage(visitFlowPage, client);
                     console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 4));
                 });
@@ -237,7 +249,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                                     Mandatory: true,
                                 },
                                 {
-                                    Completed: 'In Creation',
+                                    Completed: 'In Progress',
                                     Resource: 'transactions',
                                     Title: 'Sales Order',
                                     Group: group_Orders ? group_Orders.Key : '',
@@ -292,13 +304,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         [{ slug_path: slug_path, pageUUID: pageUUID }],
                         client,
                     );
-                    console.info(
-                        `existingMappedSlugs: ${JSON.stringify(
-                            mappedSlugsUpsertResponse.previouslyExistingMappedSlugs,
-                            null,
-                            4,
-                        )}`,
-                    );
+                    console.info(`mappedSlugsUpsertResponse: ${JSON.stringify(mappedSlugsUpsertResponse, null, 4)}`);
                     await e2eUtils.navigateTo('Slugs');
                     await slugs.clickTab('Mapping_Tab');
                     await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
@@ -310,6 +316,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await webAppHomePage.isSpinnerDone();
                     await e2eUtils.navigateTo('Slugs');
                     await slugs.clickTab('Mapping_Tab');
+                    await webAppHomePage.isSpinnerDone();
                     await slugs.waitTillVisible(slugs.MappingTab_RepCard_InnerListOfMappedSlugs, 15000);
                     const slugNameAtMappedSlugsSmallDisplayInRepCard = await driver.findElement(
                         slugs.getSelectorOfMappedSlugInRepCardSmallDisplayByText(slug_path),
@@ -322,75 +329,12 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
 
             describe('Configuring Account Dashboard', () => {
                 it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async () => {
-                    for (let i = 0; i < 2; i++) {
-                        try {
-                            await webAppHeader.goHome();
-                            await webAppHomePage.isSpinnerDone();
-                            await webAppHeader.openSettings();
-                            await webAppHeader.isSpinnerDone();
-                            visitFlow.pause(0.5 * 1000);
-                            await settingsSidePanel.selectSettingsByID('Accounts');
-                            await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
-                            await visitFlow.isSpinnerDone();
-                            visitFlow.pause(10 * 1000);
-                            await driver.switchTo(visitFlow.AddonContainerIframe);
-                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Container, 15000);
-                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Title, 15000);
-                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_ListContainer, 15000);
-                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
-                            await visitFlow.clickElement('AccountDashboardLayout_MenuRow_Container');
-                            await visitFlow.waitTillVisible(
-                                visitFlow.AccountDashboardLayout_MenuRow_PencilButton,
-                                15000,
-                            );
-                            await visitFlow.clickElement('AccountDashboardLayout_MenuRow_PencilButton');
-                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_ConfigPage_Title, 15000);
-                            expect(
-                                await (
-                                    await driver.findElement(visitFlow.AccountDashboardLayout_ConfigPage_Title)
-                                ).getText(),
-                            ).to.equal('Menu');
-                            await visitFlow.waitTillVisible(
-                                visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton,
-                                15000,
-                            );
-                            await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_PencilButton');
-                            await visitFlow.waitTillVisible(
-                                visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox,
-                                15000,
-                            );
-                            await visitFlow.insertTextToInputElement(
-                                slugDisplayName,
-                                visitFlow.AccountDashboardLayout_Menu_RepCard_SearchBox,
-                            );
-                            const plusButton = await driver.findElement(
-                                visitFlow.getSelectorOfSearchResultListRowPlusButtonByUniqueName(randomString),
-                            );
-                            await plusButton.click();
-                            await visitFlow.waitTillVisible(
-                                visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText(slug_path),
-                                15000,
-                            );
-                            await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SaveButton');
-                            // is there a function to wait for round loader to finish?
-                            driver.sleep(5 * 1000);
-                            await visitFlow.waitTillVisible(
-                                visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton,
-                                15000,
-                            );
-                            await visitFlow.clickElement('AccountDashboardLayout_Menu_CancelButton');
-                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
-                            driver.sleep(2 * 1000);
-                            await driver.switchToDefaultContent();
-                            driver.sleep(2 * 1000);
-                            await webAppHeader.goHome();
-                            break;
-                        } catch (error) {
-                            await driver.switchToDefaultContent();
-                            console.error(error);
-                            await webAppHeader.goHome();
-                        }
-                    }
+                    await accountDashboardLayout.configureToAccountMenuRepCard(
+                        driver,
+                        slugDisplayName,
+                        randomString,
+                        slug_path,
+                    );
                 });
 
                 it('Performing Manual Sync', async () => {
@@ -514,66 +458,196 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
             });
 
-            describe('Teardown', () => {
-                it('Unconfiguring Slug from Account Dashboard', async () => {
+            describe('Survey Prep', () => {
+                it('Configuring Survey', async () => {
+                    surveyTemplateName = `VF_Survey_${randomString}`;
+                    surveyTemplateDesc = 'Survey in Visit Flow Automated Test';
+                    await surveyService.enterSurveyBuilderSettingsPage();
+                    await surveyService.enterSurveyBuilderActualBuilder();
+                    surveyUUID = await surveyService.configureTheSurveyTemplate(
+                        surveyTemplateName,
+                        surveyTemplateDesc,
+                        surveyService.surveyTemplateToCreate,
+                    );
+                    console.info('surveyUUID: ', surveyUUID);
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
-                    await webAppHeader.openSettings();
+                });
+                it('Configuring Survey in UDC: Flows', async () => {
+                    driver.sleep(0.5 * 1000);
+                    const collectionName = 'VisitFlows';
+                    const group_Surveys = upsertedListingsToVisitFlowGroups.length
+                        ? upsertedListingsToVisitFlowGroups.find((group) => {
+                              if (group.Title.includes('Surveys')) {
+                                  return group.Key;
+                              }
+                          })
+                        : '';
+                    console.info('group_Surveys: ', group_Surveys);
+                    const visitFlowDocumentResponse = await udcService.getDocuments(collectionName, {
+                        where: `Name LIKE "${visitFlowName}"`,
+                    });
+                    console.info('visitFlowDocumentResponse: ', JSON.stringify(visitFlowDocumentResponse, null, 2));
+                    visitFlowDocumentResponse[0]['steps'].push({
+                        Completed: 'In Progress',
+                        Resource: 'MySurveys',
+                        Title: 'Visit Survey',
+                        Group: group_Surveys ? group_Surveys.Key : '',
+                        ResourceCreationData: surveyUUID,
+                        Mandatory: false,
+                    });
+                    console.info(
+                        'visitFlowDocument after Survey push: ',
+                        JSON.stringify(visitFlowDocumentResponse, null, 2),
+                    );
+                    let upsertingValues_Response;
+                    visitFlowDocumentResponse.forEach(async (documentToUpsert) => {
+                        // POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=VisitFlows
+                        upsertingValues_Response = await udcService.upsertValuesToCollection(
+                            documentToUpsert,
+                            collectionName,
+                        );
+                        console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
+                        expect(upsertingValues_Response.Ok).to.be.true;
+                        expect(upsertingValues_Response.Status).to.equal(200);
+                        expect(upsertingValues_Response.Error).to.eql({});
+                        upsertedListingsToVisitFlows.push(upsertingValues_Response.Body);
+                    });
+                });
+                it('Performing Manual Sync', async () => {
+                    await e2eUtils.performManualSync(client);
+                });
+                it('Loging Out and Loging In as Rep', async () => {
+                    await e2eUtils.logOutLogIn('visit.flow.rep@pepperitest.com', password);
+                    await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
+                    await e2eUtils.performManualSync(client);
+                });
+                it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async () => {
+                    await webAppHeader.goHome();
+                    await webAppHomePage.isSpinnerDone();
+                    await webAppHomePage.clickOnBtn('Accounts');
                     await webAppHeader.isSpinnerDone();
-                    visitFlow.pause(0.5 * 1000);
-                    await settingsSidePanel.selectSettingsByID('Accounts');
-                    await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
-                    for (let i = 0; i < 2; i++) {
-                        visitFlow.pause(10 * 1000);
-                        try {
-                            await visitFlow.isSpinnerDone();
-                            await driver.switchTo(visitFlow.AddonContainerIframe);
-                            await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Container, 15000);
-                            break;
-                        } catch (error) {
-                            console.error(error);
-                        }
+                    driver.sleep(1 * 1000);
+                    await visitFlow.waitTillVisible(visitFlow.FirstAccountInList, 15000);
+                    await visitFlow.clickElement('FirstAccountInList');
+                    await visitFlow.isSpinnerDone();
+                    driver.sleep(1 * 1000);
+                    await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Button, 15000);
+                    await visitFlow.clickElement('AccountHomePage_HamburgerMenu_Button');
+                    await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Content, 15000);
+                    visitFlow.pause(1 * 1000);
+                    await visitFlow.click(
+                        visitFlow.getSelectorOfAccountHomePageHamburgerMenuVisitFlowAutomatedSlug(slugDisplayName),
+                    );
+                    visitFlow.pause(1 * 1000);
+                });
+                it('If more than one visit - Choosing a Visit Flow', async () => {
+                    if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
+                        visitFlow.pause(1.5 * 1000);
+                        await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
+                    } else {
+                        await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Title, 15000);
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_ListContainer, 15000);
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
-                    await visitFlow.clickElement('AccountDashboardLayout_MenuRow_Container');
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_PencilButton, 15000);
-                    await visitFlow.clickElement('AccountDashboardLayout_MenuRow_PencilButton');
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_ConfigPage_Title, 15000);
-                    expect(
-                        await (await driver.findElement(visitFlow.AccountDashboardLayout_ConfigPage_Title)).getText(),
-                    ).to.equal('Menu');
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
-                    await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_PencilButton');
+                    visitFlow.pause(1 * 1000);
+                });
+                it('Checking off "Start"', async () => {
+                    await visitFlow.clickElement('VisitFlow_GroupButton_Start');
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_StartVisit, 15000);
+                    visitFlow.pause(0.5 * 1000);
+                    await visitFlow.clickElement('VisitFlow_StepButton_StartVisit');
+                    await visitFlow.isSpinnerDone();
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
+                    visitFlow.pause(0.5 * 1000);
+                    await visitFlow.insertTextToInputElement(
+                        `Automated test (${randomString}) of Visit Flow started`,
+                        visitFlow.VisitFlowMainActivity_FormPage_SubjectInput,
+                    );
+                    visitFlow.pause(0.5 * 1000);
+                    await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
                     await visitFlow.waitTillVisible(
-                        visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText(slug_path),
+                        visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
                         15000,
                     );
-                    await visitFlow.click(
-                        visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuDELETEbuttonByText(slug_path),
+                    await visitFlow.waitTillVisible(
+                        visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
+                        15000,
                     );
-                    if (
-                        await driver.isElementVisible(
-                            visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuDELETEbuttonByText('_auto_'),
-                        )
-                    ) {
-                        const configuredSlugsLeftovers = await driver.findElements(
-                            visitFlow.getSelectorOfSlugConfiguredToAccountDashboardMenuDELETEbuttonByText('_auto_'),
-                        );
-                        configuredSlugsLeftovers.forEach(async (leftoverSlugDeleteButton) => {
-                            await leftoverSlugDeleteButton.click();
-                        });
-                        driver.sleep(2 * 1000);
+                    await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
+                    await visitFlow.isSpinnerDone();
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
+                    visitFlow.pause(0.5 * 1000);
+                });
+                it('Checking off "Survey"', async () => {
+                    await visitFlow.clickElement('VisitFlow_GroupButton_Surveys');
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_Survey, 15000);
+                    visitFlow.pause(0.5 * 1000);
+                    await visitFlow.clickElement('VisitFlow_StepButton_Survey');
+                    await visitFlow.isSpinnerDone();
+                    visitFlow.pause(0.5 * 1000);
+                    await webAppDialog.isErrorDialogShown(this); // There is an open Bug DI-23784
+                    // await webAppDialog.selectDialogBox('Ok');
+                    // await visitFlow.waitTillVisible(visitFlow.VisitFlow_OrdersChooseCatalogDialog_Content, 15000); // change to survey
+                    visitFlow.pause(5 * 1000);
+                });
+                it('Checking off "End"', async () => {
+                    await visitFlow.clickElement('VisitFlow_GroupButton_End');
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_EndVisit, 15000);
+                    visitFlow.pause(0.5 * 1000);
+                    await visitFlow.clickElement('VisitFlow_StepButton_EndVisit');
+                    await visitFlow.isSpinnerDone();
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
+                    visitFlow.pause(0.5 * 1000);
+                    await visitFlow.insertTextToInputElement(
+                        'Automated test finished Visit',
+                        visitFlow.VisitFlowMainActivity_FormPage_VisitSummaryInput,
+                    );
+                    visitFlow.pause(0.5 * 1000);
+                    await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    await visitFlow.isSpinnerDone();
+                    if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
+                        visitFlow.pause(1.5 * 1000);
+                        await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
+                    } else {
+                        await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
-                    await visitFlow.clickElement('AccountDashboardLayout_Menu_RepCard_SaveButton');
-                    driver.sleep(3 * 1000);
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
-                    await visitFlow.clickElement('AccountDashboardLayout_Menu_CancelButton');
-                    await visitFlow.waitTillVisible(visitFlow.AccountDashboardLayout_MenuRow_Container, 15000);
-                    driver.sleep(2 * 1000);
-                    await driver.switchToDefaultContent();
-                    driver.sleep(7 * 1000);
+                    visitFlow.pause(0.5 * 1000);
+                });
+                it('Deleting Activities', async () => {
+                    await webAppHeader.goHome();
+                    await webAppHomePage.isSpinnerDone();
+                    await webAppHomePage.clickOnBtn('Accounts');
+                    driver.sleep(0.5 * 1000);
+                    await webAppHeader.isSpinnerDone();
+                    await visitFlow.waitTillVisible(visitFlow.FirstAccountInList, 15000);
+                    await visitFlow.clickElement('FirstAccountInList');
+                    driver.sleep(0.5 * 1000);
+                    await visitFlow.waitTillVisible(visitFlow.AccountHomePage_ListSelectAll_Checkbox, 15000);
+                    await visitFlow.clickElement('AccountHomePage_ListSelectAll_Checkbox');
+                    driver.sleep(0.5 * 1000);
+                    await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_PencilButton, 15000);
+                    await visitFlow.clickElement('AccountHomePage_List_PencilButton');
+                    driver.sleep(0.5 * 1000);
+                    await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_UnderPencilButton_Delete, 15000);
+                    await visitFlow.clickElement('AccountHomePage_List_UnderPencilButton_Delete');
+                    driver.sleep(0.5 * 1000);
+                    await visitFlow.waitTillVisible(
+                        visitFlow.AccountHomePage_List_DeletePopUpDialog_RedDeleteButton,
+                        15000,
+                    );
+                    await visitFlow.clickElement('AccountHomePage_List_DeletePopUpDialog_RedDeleteButton');
+                    driver.sleep(0.5 * 1000);
+                    await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_EmptyList_Message, 15000);
+                    driver.sleep(2.5 * 1000);
+                });
+                it('Sign back in as Admin', async () => {
+                    await e2eUtils.logOutLogIn(email, password);
+                    await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
+                });
+            });
+
+            describe('Teardown', () => {
+                it('Unconfiguring Slug from Account Dashboard', async () => {
+                    await accountDashboardLayout.unconfigureFromAccountMenuRepCard(driver, slug_path, '_auto_');
                 });
 
                 it('Getting VF_VisitFlowMainActivity activity (via API)', async () => {
@@ -586,6 +660,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     getCreatedSalesOrderTransaction = await objectsService.getTransaction({
                         order_by: `CreationDateTime DESC`,
                     });
+                });
+
+                it('Deleting Survey Template via API', async () => {
+                    await surveyService.deleteTemplateByKeyViaAPI(surveyUUID, client);
                 });
 
                 it('Deleting Slug via API', async () => {
@@ -620,33 +698,33 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await driver.click(pageBuilder.PageBuilder_Search_Clear);
                 });
 
-                it('Deleting Pages leftovers via UI', async () => {
-                    pageBuilder.pause(0.1 * 1000);
-                    try {
-                        const allPages = await driver.findElements(pageBuilder.Page_Listing_aLink);
-                        do {
-                            const page = allPages.pop();
-                            if (page) {
-                                const pageName = await page.getAttribute('title');
-                                await pageBuilder.searchForPageByName(pageName);
-                                pageBuilder.pause(0.2 * 1000);
-                                await pageBuilder.deleteFromListByName(pageName);
-                                await pageBuilder.searchForPageByName(pageName);
-                                expect(
-                                    await (
-                                        await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)
-                                    ).getText(),
-                                ).to.contain('No results were found.');
-                                await pageBuilder.isSpinnerDone();
-                                pageBuilder.pause(0.1 * 1000);
-                                await driver.click(pageBuilder.PageBuilder_Search_Clear);
-                            }
-                        } while (allPages.length);
-                        pageBuilder.pause(0.1 * 1000);
-                    } catch (error) {
-                        console.error(error);
-                    }
-                });
+                // it('Deleting Pages leftovers via UI', async () => {
+                //     pageBuilder.pause(0.1 * 1000);
+                //     try {
+                //         const allPages = await driver.findElements(pageBuilder.Page_Listing_aLink);
+                //         do {
+                //             const page = allPages.pop();
+                //             if (page) {
+                //                 const pageName = await page.getAttribute('title');
+                //                 await pageBuilder.searchForPageByName(pageName);
+                //                 pageBuilder.pause(0.2 * 1000);
+                //                 await pageBuilder.deleteFromListByName(pageName);
+                //                 await pageBuilder.searchForPageByName(pageName);
+                //                 expect(
+                //                     await (
+                //                         await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)
+                //                     ).getText(),
+                //                 ).to.contain('No results were found.');
+                //                 await pageBuilder.isSpinnerDone();
+                //                 pageBuilder.pause(0.1 * 1000);
+                //                 await driver.click(pageBuilder.PageBuilder_Search_Clear);
+                //             }
+                //         } while (allPages.length);
+                //         pageBuilder.pause(0.1 * 1000);
+                //     } catch (error) {
+                //         console.error(error);
+                //     }
+                // });
 
                 // it('Verifying Mapped Slugs were cleared', async () => {
                 //     await e2eUtils.logOutLogIn(email, password);

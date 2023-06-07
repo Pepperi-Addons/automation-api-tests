@@ -8,7 +8,9 @@ import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage
 import { ObjectsService } from '../../services';
 import { OrderPage } from '../pom/Pages/OrderPage';
 import { Key } from 'selenium-webdriver';
-import { PricingData } from '../pom/addons/Pricing';
+// import { PricingData } from '../pom/addons/Pricing';
+import { PricingData05 } from '../pom/addons/Pricing05';
+import { PricingData06 } from '../pom/addons/Pricing06';
 
 interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;
@@ -24,7 +26,22 @@ chai.use(promised);
 export async function PricingTests(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
-    const pricingData = new PricingData();
+    const installedPricingVersion = (await generalService.getInstalledAddons())
+        .find((addon) => addon.Addon.Name == 'pricing')
+        ?.Version?.split('.')[1];
+    console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
+    let pricingData;
+    switch (installedPricingVersion) {
+        case '5':
+            pricingData = new PricingData05();
+            break;
+        case '6':
+            pricingData = new PricingData06();
+            break;
+
+        default:
+            break;
+    }
 
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
@@ -100,6 +117,10 @@ export async function PricingTests(email: string, password: string, client: Clie
 
         it('Login', async () => {
             await webAppLoginPage.login(email, password);
+        });
+
+        it('Manual Sync', async () => {
+            await webAppHomePage.manualResync(client);
         });
 
         testAccounts.forEach((account) => {
@@ -1865,4 +1886,20 @@ export async function PricingTests(email: string, password: string, client: Clie
         driver.sleep(0.1 * 1000);
         await orderPage.isSpinnerDone();
     }
+
+    // async function getUnitItemsPricingData(args: { item: string, field: string, account: string, state: string }) {
+    //     switch (installedPricingVersion) {
+    //         case "5":
+    //             return pricingData.testItemsValues[args.item][args.field][args.account][args.state];
+    //             break;
+
+    //         default:
+    //             return pricingData.testItemsValues[args.item][args.field][args.account][args.state];
+    //             break;
+    //     }
+    // }
+
+    // async function getAdditionalItemsPricingData() { }
+
+    // async function getGroupItemsPricingData() { }
 }

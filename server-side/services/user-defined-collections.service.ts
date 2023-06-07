@@ -21,6 +21,30 @@ export interface UdcField {
     isArray?: boolean;
 }
 
+export interface CollectionDefinition {
+    nameOfCollection: string;
+    fieldsOfCollection: {
+        classType: 'Primitive' | 'Array' | 'Contained' | 'Resource';
+        fieldName: string;
+        fieldTitle: string;
+        field: CollectionField;
+        dataViewType?: DataViewFieldType;
+        readonly?: boolean;
+    }[];
+    descriptionOfCollection?: string;
+    syncDefinitionOfCollection?: { Sync: boolean; SyncFieldLevel?: boolean };
+    typeOfCollection?:
+        | 'data'
+        | 'meta_data'
+        | 'indexed_data'
+        | 'index'
+        | 'shared_index'
+        | 'pfs'
+        | 'contained'
+        | 'papi'
+        | 'abstract';
+}
+
 const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
 
 export class UDCService {
@@ -37,6 +61,36 @@ export class UDCService {
 
     postScheme(body: any) {
         return this.papiClient.userDefinedCollections.schemes.upsert(body);
+    }
+
+    async purgeScheme(udcName: string) {
+        let response = await this.generalService.fetchStatus(`/addons/data/schemes/${udcName}/purge`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${this.generalService['client'].OAuthAccessToken}`,
+                'X-Pepperi-OwnerID': '122c0e9d-c240-4865-b446-f37ece866c22',
+                'x-pepperi-secretkey': 'a9cce3ed-3c77-4a40-be0a-b681a63fb2b4',
+            },
+        });
+        // if we got one of these responses - keep trying to purge
+        while (
+            (response.Body.message && response.Body.message === 'Endpoint request timed out') ||
+            (response.Body.fault &&
+                response.Body.fault.faultstring ===
+                    `Failed due to exception: Cannot set properties of null (setting 'dataSourcePurgeResult')`)
+        ) {
+            response = await this.generalService.fetchStatus(`/addons/data/schemes/${udcName}/purge`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${this.generalService['client'].OAuthAccessToken}`,
+                    'X-Pepperi-OwnerID': '122c0e9d-c240-4865-b446-f37ece866c22',
+                    'x-pepperi-secretkey': 'a9cce3ed-3c77-4a40-be0a-b681a63fb2b4',
+                },
+            });
+            console.log(`trying to purge ${udcName} scheme, recieved: ${JSON.stringify(response)}, keep running`);
+        }
+        console.log(`purge ended - ${udcName} should be deleted, response: ${JSON.stringify(response)}`);
+        return response;
     }
 
     getSchemes(options?: FindOptions) {
@@ -224,6 +278,9 @@ export class UDCService {
                 return 'NumberReal';
             case 'DateTime':
                 return 'DateAndTime';
+            default:
+                'None';
+                break;
         }
     }
 
@@ -611,7 +668,7 @@ export class UDCService {
         });
     }
 
-    async upsertValuesToCollection(valuesObj, collectionName) {
+    async upsertValuesToCollection(valuesObj: { [fieldName: string]: any }, collectionName: string) {
         return await this.generalService.fetchStatus(
             `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/documents?name=${collectionName}`,
             {
@@ -621,29 +678,7 @@ export class UDCService {
         );
     }
 
-    prepareDataForUdcCreation(collectionData: {
-        nameOfCollection: string;
-        fieldsOfCollection: {
-            classType: 'Primitive' | 'Array' | 'Contained' | 'Resource';
-            fieldName: string;
-            fieldTitle: string;
-            field: CollectionField;
-            dataViewType?: DataViewFieldType;
-            readonly?: boolean;
-        }[];
-        descriptionOfCollection?: string;
-        syncDefinitionOfCollection?: { Sync: boolean; SyncFieldLevel?: boolean };
-        typeOfCollection?:
-            | 'data'
-            | 'meta_data'
-            | 'indexed_data'
-            | 'index'
-            | 'shared_index'
-            | 'pfs'
-            | 'contained'
-            | 'papi'
-            | 'abstract';
-    }) {
+    prepareDataForUdcCreation(collectionData: CollectionDefinition) {
         const collectionFields = {};
         const udcListViewFields = collectionData.fieldsOfCollection.map((scheme) => {
             switch (scheme.classType) {

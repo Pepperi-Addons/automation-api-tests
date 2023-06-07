@@ -6,6 +6,9 @@ import { WebAppHeader } from '../WebAppHeader';
 import { AddonPage } from './base/AddonPage';
 import { v4 as uuidv4 } from 'uuid';
 import E2EUtils from '../../utilities/e2e_utils';
+import { Client } from '@pepperi-addons/debug-server/dist';
+import GeneralService from '../../../services/general.service';
+import { expect } from 'chai';
 
 // {
 //     "surveyTemplate": {
@@ -151,6 +154,86 @@ export class SurveyTemplateBuilder extends AddonPage {
     public surveyListSearch: By = By.xpath('//input[@data-placeholder]');
     public surveyLink: By = By.xpath("//a[contains(text(),'{placeholder}')]");
     public sectionRightSideEditor: By = By.xpath("//span[contains(text(),'Section')]");
+
+    public surveyTemplateToCreate: SurveySection[] = [
+        {
+            Title: 'my survey',
+            Key: '',
+            Questions: [
+                {
+                    Key: '',
+                    Title: 'first question',
+                    Type: 'Multiple Select',
+                    OptionalValues: [
+                        { Value: 'A', Key: 'A' },
+                        { Value: 'B', Key: 'B' },
+                        { Value: 'C', Key: 'C' },
+                    ],
+                    isMandatory: true,
+                },
+                {
+                    Key: '',
+                    Title: 'second question',
+                    Type: 'Radio Group',
+                    OptionalValues: [
+                        { Value: 'A', Key: 'A' },
+                        { Value: 'B', Key: 'B' },
+                    ],
+                    isMandatory: false,
+                    ShowIf: {
+                        Operator: 'And',
+                        FilterData: [{ QuestionName: 'first question', ValueToLookFor: ['A', 'C'] }],
+                    },
+                },
+                {
+                    Key: '',
+                    Title: 'third question',
+                    Type: 'Short Text',
+                    isMandatory: true,
+                    ShowIf: {
+                        Operator: 'And',
+                        FilterData: [
+                            { QuestionName: 'second question', ValueToLookFor: ['B'] },
+                            { QuestionName: 'first question', ValueToLookFor: ['A', 'C'] },
+                        ],
+                    },
+                },
+                {
+                    Key: '',
+                    Title: 'fourth question',
+                    Type: 'Checkbox',
+                    isMandatory: false,
+                    OptionalValues: [
+                        { Value: '1', Key: '1' },
+                        { Value: '2', Key: '2' },
+                    ],
+                },
+                {
+                    Key: '',
+                    Title: 'fifth question',
+                    Type: 'Yes/No',
+                    isMandatory: false,
+                    OptionalValues: [{ Value: '1' }, { Value: '2' }],
+                    ShowIf: {
+                        Operator: 'Or',
+                        FilterData: [{ QuestionName: 'fourth question', ValueToLookFor: ['1', '2'] }],
+                    },
+                },
+                {
+                    Key: '',
+                    Title: 'sixth question',
+                    Type: 'Decimal',
+                    isMandatory: true,
+                },
+                {
+                    Key: '',
+                    Title: 'seventh question',
+                    Type: 'Date',
+                    isMandatory: false,
+                },
+            ],
+        },
+    ];
     //-
     //-
     //
@@ -159,6 +242,18 @@ export class SurveyTemplateBuilder extends AddonPage {
     //     '|textToFill|',
     //     fieldType,
     // );
+
+    public async deleteTemplateByKeyViaAPI(surveyTemplateUUID: string, client: Client) {
+        const generalService = new GeneralService(client);
+        const deleteSurveyTemplateResponse = await generalService.fetchStatus(`/resources/MySurveyTemplates`, {
+            method: 'POST',
+            body: JSON.stringify({ Key: surveyTemplateUUID, Hidden: true }),
+        });
+        expect(deleteSurveyTemplateResponse.Ok).to.equal(true);
+        expect(deleteSurveyTemplateResponse.Status).to.equal(200);
+        expect(deleteSurveyTemplateResponse.Body.Key).to.equal(surveyTemplateUUID);
+        expect(deleteSurveyTemplateResponse.Body.Hidden).to.equal(true);
+    }
 
     public async enterSurveyBuilderSettingsPage(): Promise<boolean> {
         const webAppHeader = new WebAppHeader(this.browser);

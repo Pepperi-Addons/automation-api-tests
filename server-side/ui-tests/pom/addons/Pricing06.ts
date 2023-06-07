@@ -1,205 +1,5 @@
-export class PricingData {
-    public config_05 = {
-        PPM_General: {
-            QuantityCriteriaField: 'UnitsQuantity',
-            PriceCriteriaField: 'TSATotalLinePrice',
-            CalcDateField: '',
-            UOM: {
-                ConfigurationField: 'TSAUOMConfig',
-                AllowedUomsField: 'TSAUOMAllowedUOMs',
-                Fields: [
-                    {
-                        Type: 'TSAAOQMUOM1',
-                        Quantity: 'TSAAOQMQuantity1',
-                    },
-                    {
-                        Type: 'TSAAOQMUOM2',
-                        Quantity: 'TSAAOQMQuantity2',
-                    },
-                ],
-            },
-        },
-        PPM_CalcProcedures: [
-            {
-                Key: 'Proc1',
-                Blocks: [
-                    {
-                        Key: 'Base',
-                        ConditionsOrder: ['ZBASE'],
-                        InitialPrice: {
-                            Type: 'Field',
-                            Name: 'UnitPrice',
-                        },
-                        CalculatedOfPrice: {
-                            Type: 'Field',
-                            Name: 'UnitPrice',
-                        },
-                    },
-                    {
-                        Key: 'Discount',
-                        ConditionsOrder: ['ZDS1', 'ZDS2', 'ZDS3'],
-                        InitialPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                        CalculatedOfPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                    },
-                    {
-                        Key: 'GroupDiscount',
-                        Group: true,
-                        ExclusionRules: [
-                            {
-                                Condition: 'ZGD1',
-                                ExcludeConditions: ['ZGD2'],
-                            },
-                        ],
-                        ConditionsOrder: ['ZGD1', 'ZGD2'],
-                        InitialPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                        CalculatedOfPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                    },
-                    {
-                        Key: 'ManualLine',
-                        ConditionsOrder: [],
-                        InitialPrice: {
-                            Type: 'Block',
-                            Name: 'Discount',
-                        },
-                        CalculatedOfPrice: {
-                            Type: 'Block',
-                            Name: 'Discount',
-                        },
-                        UserManual: {
-                            ValueField: 'TSAUserLineDiscount',
-                        },
-                    },
-                    {
-                        Key: 'Tax',
-                        ConditionsOrder: ['MTAX'],
-                        InitialPrice: {
-                            Type: 'Block',
-                            Name: 'ManualLine',
-                        },
-                        CalculatedOfPrice: {
-                            Type: 'Block',
-                            Name: 'ManualLine',
-                        },
-                    },
-                ],
-                CalculatedItemFields: [
-                    {
-                        Name: 'TSAPriceBaseUnitPriceAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceDiscountUnitPriceAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'Discount',
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceGroupDiscountUnitPriceAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'GroupDiscount',
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceManualLineUnitPriceAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'ManualLine',
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceTaxUnitPriceAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'Tax',
-                        },
-                    },
-                ],
-                AdditionalItemPricing: {
-                    BasedOnBlock: 'Base',
-                    ContinueCalcFromBlock: 'Tax',
-                },
-            },
-        ],
-        PPM_Conditions: [
-            {
-                Key: 'ZBASE',
-                Name: 'ZBASE',
-                TablesSearchOrder: ['A002', 'A001', 'A003'],
-            },
-            {
-                Key: 'ZDS1',
-                Name: 'ZDS1',
-                TablesSearchOrder: ['A001', 'A002', 'A003'],
-            },
-            {
-                Key: 'ZDS2',
-                Name: 'ZDS2',
-                TablesSearchOrder: ['A002'],
-            },
-            {
-                Key: 'ZDS3',
-                Name: 'ZDS3',
-                TablesSearchOrder: ['A001'],
-            },
-            {
-                Key: 'ZGD1',
-                Name: 'ZGD1',
-                TablesSearchOrder: ['A002', 'A003'],
-            },
-            {
-                Key: 'ZGD2',
-                Name: 'ZGD2',
-                TablesSearchOrder: ['A004', 'A003', 'A002'],
-            },
-            {
-                Key: 'MTAX',
-                Name: 'MTAX',
-                TablesSearchOrder: ['A002', 'A004'],
-            },
-        ],
-        PPM_Tables: [
-            {
-                Key: 'A001',
-                KeyFields: ['ItemExternalID'],
-            },
-            {
-                Key: 'A002',
-                KeyFields: ['TransactionAccountExternalID', 'ItemExternalID'],
-            },
-            {
-                Key: 'A003',
-                KeyFields: ['TransactionAccountExternalID', 'ItemMainCategory'],
-            },
-            {
-                Key: 'A004',
-                KeyFields: ['TransactionAccountExternalID'],
-            },
-        ],
-    };
-
-    public config_06 = {
+export class PricingData06 {
+    public config = {
         PPM_General: {
             QuantityCriteriaField: 'UnitsQuantity',
             PriceCriteriaField: 'TSATotalLinePrice',
@@ -782,7 +582,13 @@ export class PricingData {
                 },
             },
             PriceBaseUnitPriceAfter1: {
-                Acc01: { baseline: 10, '1unit': 10, '3units': 10, '1case(6units)': 10, '4cases(24units)': 10 },
+                Acc01: {
+                    baseline: 6 * 10,
+                    '1unit': 10,
+                    '3units': 10,
+                    '1case(6units)': 6 * 10,
+                    '4cases(24units)': 6 * 10,
+                },
                 OtherAcc: {
                     baseline: 26.25,
                     '1unit': 26.25,
@@ -792,7 +598,13 @@ export class PricingData {
                 },
             },
             PriceDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 10, '1unit': 10, '3units': 10, '1case(6units)': 10, '4cases(24units)': 10 },
+                Acc01: {
+                    baseline: 6 * 10,
+                    '1unit': 10,
+                    '3units': 10,
+                    '1case(6units)': 6 * 10,
+                    '4cases(24units)': 6 * 10,
+                },
                 OtherAcc: {
                     baseline: 26.25,
                     '1unit': 26.25,
@@ -802,7 +614,13 @@ export class PricingData {
                 },
             },
             PriceGroupDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 10, '1unit': 10, '3units': 10, '1case(6units)': 10, '4cases(24units)': 10 },
+                Acc01: {
+                    baseline: 6 * 10,
+                    '1unit': 10,
+                    '3units': 10,
+                    '1case(6units)': 6 * 10,
+                    '4cases(24units)': 6 * 10,
+                },
                 OtherAcc: {
                     baseline: 26.25,
                     '1unit': 26.25,
@@ -812,7 +630,13 @@ export class PricingData {
                 },
             },
             PriceManualLineUnitPriceAfter1: {
-                Acc01: { baseline: 10, '1unit': 10, '3units': 10, '1case(6units)': 10, '4cases(24units)': 10 },
+                Acc01: {
+                    baseline: 6 * 10,
+                    '1unit': 10,
+                    '3units': 10,
+                    '1case(6units)': 6 * 10,
+                    '4cases(24units)': 6 * 10,
+                },
                 OtherAcc: {
                     baseline: 26.25,
                     '1unit': 26.25,
@@ -823,11 +647,11 @@ export class PricingData {
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 11.7,
+                    baseline: 6 * 10 * 1.17,
                     '1unit': 11.7,
                     '3units': 11.7,
-                    '1case(6units)': 11.7,
-                    '4cases(24units)': 11.7,
+                    '1case(6units)': 6 * 10 * 1.17,
+                    '4cases(24units)': 6 * 10 * 1.17,
                 },
                 OtherAcc: {
                     baseline: 26.25,
@@ -876,30 +700,84 @@ export class PricingData {
                 },
             },
             PriceBaseUnitPriceAfter1: {
-                Acc01: { baseline: 20, '1unit': 20, '3units': 20, '1case(6units)': 20, '4cases(24units)': 20 },
-                OtherAcc: { baseline: 20, '1unit': 20, '3units': 20, '1case(6units)': 20, '4cases(24units)': 20 },
+                Acc01: {
+                    baseline: 6 * 20,
+                    '1unit': 20,
+                    '3units': 20,
+                    '1case(6units)': 6 * 20,
+                    '4cases(24units)': 6 * 20,
+                },
+                OtherAcc: {
+                    baseline: 6 * 20,
+                    '1unit': 20,
+                    '3units': 20,
+                    '1case(6units)': 6 * 20,
+                    '4cases(24units)': 6 * 20,
+                },
             },
             PriceDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 20, '1unit': 20, '3units': 20, '1case(6units)': 20, '4cases(24units)': 20 },
-                OtherAcc: { baseline: 20, '1unit': 20, '3units': 20, '1case(6units)': 20, '4cases(24units)': 20 },
+                Acc01: {
+                    baseline: 6 * 20,
+                    '1unit': 20,
+                    '3units': 20,
+                    '1case(6units)': 6 * 20,
+                    '4cases(24units)': 6 * 20,
+                },
+                OtherAcc: {
+                    baseline: 6 * 20,
+                    '1unit': 20,
+                    '3units': 20,
+                    '1case(6units)': 6 * 20,
+                    '4cases(24units)': 6 * 20,
+                },
             },
             PriceGroupDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 20, '1unit': 20, '3units': 20, '1case(6units)': 20, '4cases(24units)': 20 },
-                OtherAcc: { baseline: 20, '1unit': 20, '3units': 20, '1case(6units)': 20, '4cases(24units)': 20 },
+                Acc01: {
+                    baseline: 6 * 20,
+                    '1unit': 20,
+                    '3units': 20,
+                    '1case(6units)': 6 * 20,
+                    '4cases(24units)': 6 * 20,
+                },
+                OtherAcc: {
+                    baseline: 6 * 20,
+                    '1unit': 20,
+                    '3units': 20,
+                    '1case(6units)': 6 * 20,
+                    '4cases(24units)': 6 * 20,
+                },
             },
             PriceManualLineUnitPriceAfter1: {
-                Acc01: { baseline: 20, '1unit': 20, '3units': 20, '1case(6units)': 20, '4cases(24units)': 20 },
-                OtherAcc: { baseline: 20, '1unit': 20, '3units': 20, '1case(6units)': 20, '4cases(24units)': 20 },
+                Acc01: {
+                    baseline: 6 * 20,
+                    '1unit': 20,
+                    '3units': 20,
+                    '1case(6units)': 6 * 20,
+                    '4cases(24units)': 6 * 20,
+                },
+                OtherAcc: {
+                    baseline: 6 * 20,
+                    '1unit': 20,
+                    '3units': 20,
+                    '1case(6units)': 6 * 20,
+                    '4cases(24units)': 6 * 20,
+                },
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
-                    baseline: 23.4,
+                    baseline: 6 * 20 * 1.17,
                     '1unit': 23.4,
                     '3units': 23.4,
-                    '1case(6units)': 23.4,
-                    '4cases(24units)': 23.4,
+                    '1case(6units)': 6 * 20 * 1.17,
+                    '4cases(24units)': 6 * 20 * 1.17,
                 },
-                OtherAcc: { baseline: 20, '1unit': 20, '3units': 20, '1case(6units)': 20, '4cases(24units)': 20 },
+                OtherAcc: {
+                    baseline: 6 * 20,
+                    '1unit': 20,
+                    '3units': 20,
+                    '1case(6units)': 6 * 20,
+                    '4cases(24units)': 6 * 20,
+                },
             },
         },
         ToBr56: {

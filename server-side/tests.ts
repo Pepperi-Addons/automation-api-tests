@@ -1281,35 +1281,75 @@ export async function handleDevTestInstallation(
         );
     }
     //3. get dependencys of tested addon
-    const papiClient = service.papiClient;
-    const latestVer = (
-        await papiClient.addons.versions.find({
-            where: `AddonUUID='${addonUUID} AND Available=1'`,
-            order_by: 'CreationDateTime DESC',
-        })
-    )[0] as any;
-    const latestVerPublishConfig = JSON.parse(latestVer.PublishConfig);
-    const dependenciesFromPublishConfig = latestVerPublishConfig.Dependencies;
-    let dependeciesUUIDs;
-    if (dependenciesFromPublishConfig !== undefined && Object.entries(dependenciesFromPublishConfig).length !== 0) {
-        dependeciesUUIDs = await buildTheDependencyArray(service, dependenciesFromPublishConfig);
-        //4. install on dist
-        for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
-            const addonToInstall = {};
-            if (addonName === 'papi' && addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
-                addonToInstall[addonName] = [(uuid as any[])[0], '9.6.%'];
-            } else {
-                addonToInstall[addonName] = uuid;
+    const addonDep = await getDependenciesOfAddon(service, addonUUID, varPass);
+    //4. install on dist
+    if (addonDep !== undefined && addonDep.length !== 0) {
+        if (
+            addonUUID === '00000000-0000-0000-0000-000000006a91' || //Nebula
+            addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a' //Sync
+        ) {
+            const depObj = {};
+            depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '%'];
+            addonDep.push(depObj);
+        }
+        if (
+            addonUUID === 'cebb251f-1c80-4d80-b62c-442e48e678e8' //Febula
+        ) {
+            const depObj = {};
+            depObj['Generic Resource'] = ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '%'];
+            addonDep.push(depObj);
+        }
+        for (let index = 0; index < addonDep.length; index++) {
+            const addonToInstall = addonDep[index];
+            const currentAddonName = Object.entries(addonToInstall)[0][0];
+            const uuid = (Object.entries(addonToInstall)[0][1] as any)[0];
+            if (currentAddonName === 'papi' && addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+                addonToInstall[currentAddonName][1] = '9.6.%';
+            }
+            if (
+                addonName !== 'nebula' &&
+                currentAddonName === 'nebula' &&
+                uuid === '00000000-0000-0000-0000-000000006a91'
+            ) {
+                const NebulaDep = await getDependenciesOfAddon(service, uuid, varPass);
+                for (let index = 0; index < NebulaDep.length; index++) {
+                    const nebulaDepAddon = NebulaDep[index];
+                    const installAddonResponse = (await service.installLatestAvalibaleVersionOfAddon(
+                        varPass,
+                        nebulaDepAddon,
+                    )) as any;
+                    if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
+                        throw new Error(
+                            `Error: can't install one of Nebulas dependency's: ${
+                                Object.entries(nebulaDepAddon)[0][0]
+                            } - ${(Object.entries(nebulaDepAddon)[0][1] as any)[0]}, error:${installAddonResponse[0]}`,
+                        );
+                    }
+                }
             }
             const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
-            if (!installAddonResponse[0]) {
-                throw new Error(`Error: can't install ${addonName} - ${uuid}`);
+            if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
+                throw new Error(`Error: can't install ${addonName} - ${uuid}, error:${installAddonResponse[0]}`);
             }
         }
+        // for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
+        //     const addonToInstall = {};
+        //     if (addonName === 'papi' && addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+        //         addonToInstall[addonName] = [(uuid as any[])[0], '9.6.%'];
+        //     } else {
+        //         addonToInstall[addonName] = uuid;
+        //     }
+        //     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
+        //     if (!installAddonResponse[0]) {
+        //         throw new Error(`Error: can't install ${addonName} - ${uuid}`);
+        //     }
+        // }
     }
+    //5. validate actual tested addon is installed
     const addonToInstall = {};
-    const version = addonName === 'SYNC' || addonName === 'NEBULA' ? '0.6.%' : '';
-    addonToInstall[addonName] = [addonUUID, version];
+    // this can be used to install NOT latest avalivale versions
+    // const version = addonName === 'SYNC' ? '0.7.30' : '%';
+    addonToInstall[addonName] = [addonUUID, '%'];
     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
     if (installAddonResponse[0] != true) {
         throw new Error(`Error: can't install ${addonName} - ${addonUUID}, exception: ${installAddonResponse}`);
@@ -1322,9 +1362,11 @@ async function buildTheDependencyArray(service: GeneralService, dependenciesFrom
     //map the dependency addons to thier real name in VAR
     const allAddonDependencys = await service.fetchStatus('/configuration_fields?key=AddonsForDependencies');
     const allAddonDependencysAsObject = JSON.parse(allAddonDependencys.Body.Value);
-    const arrayOfAllUUIDs = {};
+    const arrayOfAllUUIDs: any[] = [];
     for (const dependecyAddon in dependenciesFromPublishConfig) {
-        arrayOfAllUUIDs[dependecyAddon] = [allAddonDependencysAsObject[dependecyAddon], ''];
+        const depObj = {};
+        depObj[dependecyAddon] = [allAddonDependencysAsObject[dependecyAddon], ''];
+        arrayOfAllUUIDs.push(depObj);
     }
     return arrayOfAllUUIDs;
 }
@@ -1341,4 +1383,28 @@ export async function async_addon_get_remove_codejobs(
     await AsyncAddonGetRemoveTests(service, request, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
+}
+
+async function getDependenciesOfAddon(service: GeneralService, addonUUID, varPass) {
+    const latestVer = (
+        await service.fetchStatus(
+            `${service['client'].BaseURL.replace(
+                'papi-eu',
+                'papi',
+            )}/var/addons/versions?where=AddonUUID='${addonUUID}'AND Available=1&order_by=CreationDateTime DESC`,
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: `Basic ${Buffer.from(varPass).toString('base64')}`,
+                },
+            },
+        )
+    ).Body[0];
+    const latestVerPublishConfig = JSON.parse(latestVer.PublishConfig);
+    const dependenciesFromPublishConfig = latestVerPublishConfig.Dependencies;
+    let dependeciesUUIDs: any[] = [];
+    if (dependenciesFromPublishConfig !== undefined && Object.entries(dependenciesFromPublishConfig).length !== 0) {
+        dependeciesUUIDs = await buildTheDependencyArray(service, dependenciesFromPublishConfig);
+    }
+    return dependeciesUUIDs;
 }
