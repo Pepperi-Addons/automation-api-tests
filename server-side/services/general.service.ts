@@ -21,8 +21,8 @@ import tester from '../tester';
 
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
-    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on TLS 2 version
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'],
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.%'], //CPAS
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.%'], //cpi-node (Cross Platform Engine)
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
@@ -1522,23 +1522,17 @@ export default class GeneralService {
         return;
     }
 
-    convertNameToUUID(addonName: string) {
+    convertNameToUUIDForDevTests(addonName: string) {
         switch (addonName) {
-            // case 'ADAL':
-            //     return '00000000-0000-0000-0000-00000000ada1';
-            // case 'DIMX':
-            //     return '44c97115-6d14-4626-91dc-83f176e9a0fc';
             case 'DATA INDEX':
             case 'DATA-INDEX':
                 return '00000000-0000-0000-0000-00000e1a571c';
-            // case 'UDC':
-            //     return '122c0e9d-c240-4865-b446-f37ece866c22';
             case 'NEBULA':
                 return '00000000-0000-0000-0000-000000006a91';
+            case 'FEBULA':
+                return 'cebb251f-1c80-4d80-b62c-442e48e678e8';
             case 'SYNC':
                 return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
-            // case 'OBJECT TYPES EDITOR':
-            //     return '04de9428-8658-4bf7-8171-b59f6327bbf1';
             default:
                 return 'none';
         }

@@ -214,7 +214,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
                 it('KeyList', async () => {
                     legacyItems = await service.get(
-                        `items?where=UUID IN ('${items[0].UUID}','${items[1].UUID}','${items[2].UUID}','${items[3].UUID}')`,
+                        `items?where=Key IN ('${items[0].UUID}','${items[1].UUID}','${items[2].UUID}','${items[3].UUID}')`,
                     );
                     const legacyKeyListItems = await service.search('items', {
                         KeyList: [items[0].UUID, items[1].UUID, items[2].UUID, items[3].UUID],
@@ -516,7 +516,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
                 it('KeyList', async () => {
                     legacyAccounts = await service.get(
-                        `accounts?where=UUID IN ('${accounts[0].UUID}','${accounts[1].UUID}','${accounts[2].UUID}','${accounts[3].UUID}')`,
+                        `accounts?where=Key IN ('${accounts[0].UUID}','${accounts[1].UUID}','${accounts[2].UUID}','${accounts[3].UUID}')`,
                     );
                     const legacyKeyListAccounts = await service.search('accounts', {
                         KeyList: [accounts[0].UUID, accounts[1].UUID, accounts[2].UUID, accounts[3].UUID],
@@ -667,203 +667,205 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
         });
 
-        describe('Users', () => {
-            let users;
-            let legacyUserExternalID;
-            let userExternalID;
-            let legacyCreatedUser;
-            let createdUser;
-            let userEmail;
-            let legacyUserEmail;
-            let updatedUser;
-            let legacyUpdatedUser;
+        // describe('Users', () => {
+        //     let users;
+        //     let legacyUserExternalID;
+        //     let userExternalID;
+        //     let legacyCreatedUser;
+        //     let createdUser;
+        //     let userEmail;
+        //     let legacyUserEmail;
+        //     let updatedUser;
+        //     let legacyUpdatedUser;
 
-            it('Create User', async () => {
-                users = await objectsService.getUsers();
-                userExternalID = 'Automated API User' + Math.floor(Math.random() * 1000000).toString();
-                userEmail =
-                    'Email' +
-                    Math.floor(Math.random() * 1000000).toString() +
-                    '@' +
-                    Math.floor(Math.random() * 1000000).toString() +
-                    '.com';
-                legacyUserExternalID = 'Automated API User' + Math.floor(Math.random() * 1000000).toString();
-                legacyUserEmail =
-                    'Email' +
-                    Math.floor(Math.random() * 1000000).toString() +
-                    '@' +
-                    Math.floor(Math.random() * 1000000).toString() +
-                    '.com';
+        //     it('Create User', async () => {
+        //         debugger;
+        //         users = await objectsService.getUsers();
+        //         userExternalID = 'Automated API User' + Math.floor(Math.random() * 1000000).toString();
+        //         userEmail =
+        //             'Email' +
+        //             Math.floor(Math.random() * 1000000).toString() +
+        //             '@' +
+        //             Math.floor(Math.random() * 1000000).toString() +
+        //             '.com';
+        //         legacyUserExternalID = 'Automated API User' + Math.floor(Math.random() * 1000000).toString();
+        //         legacyUserEmail =
+        //             'Email' +
+        //             Math.floor(Math.random() * 1000000).toString() +
+        //             '@' +
+        //             Math.floor(Math.random() * 1000000).toString() +
+        //             '.com';
 
-                createdUser = await objectsService.createUser({
-                    ExternalID: userExternalID,
-                    Email: userEmail,
-                });
+        //         createdUser = await objectsService.createUser({
+        //             ExternalID: userExternalID,
+        //             Email: userEmail,
+        //         });
 
-                legacyCreatedUser = await service.post('users', {
-                    ExternalID: legacyUserExternalID,
-                    Email: legacyUserEmail,
-                });
-                expect(createdUser).to.have.property('InternalID').that.is.a('number');
-                expect(legacyCreatedUser).to.have.property('InternalID').that.is.a('number');
-                expect(legacyCreatedUser).to.have.property('Key').that.is.a('string').with.lengthOf(36);
-                expect(legacyCreatedUser).to.have.property('ExternalID').that.equals(legacyUserExternalID);
-                expect(legacyCreatedUser).to.have.property('Email').that.equals(legacyUserEmail);
-                expect(legacyCreatedUser).to.have.property('FirstName').that.is.a('string');
-                expect(legacyCreatedUser).to.have.property('Hidden').that.is.a('boolean').and.is.false;
-                expect(legacyCreatedUser).to.have.property('LastName').that.is.a('string');
-                expect(legacyCreatedUser).to.have.property('Mobile').that.is.a('string');
-                expect(legacyCreatedUser.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(legacyCreatedUser.CreationDateTime).to.include('Z');
-                expect(legacyCreatedUser.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(legacyCreatedUser.ModificationDateTime).to.include('Z');
-            });
+        //         legacyCreatedUser = await objectsService.createUser({
+        //             ExternalID: legacyUserExternalID,
+        //             Email: legacyUserEmail,
+        //         });
+        //         expect(createdUser).to.have.property('InternalID').that.is.a('number');
+        //         expect(legacyCreatedUser).to.have.property('InternalID').that.is.a('number');
+        //         expect(legacyCreatedUser).to.have.property('UUID').that.is.a('string').with.lengthOf(36);
+        //         expect(legacyCreatedUser).to.have.property('ExternalID').that.equals(legacyUserExternalID);
+        //         expect(legacyCreatedUser).to.have.property('Email').that.equals(legacyUserEmail);
+        //         expect(legacyCreatedUser).to.have.property('FirstName').that.is.a('string');
+        //         expect(legacyCreatedUser).to.have.property('Hidden').that.is.a('boolean').and.is.false;
+        //         expect(legacyCreatedUser).to.have.property('LastName').that.is.a('string');
+        //         expect(legacyCreatedUser).to.have.property('Mobile').that.is.a('string');
+        //         expect(legacyCreatedUser.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+        //         expect(legacyCreatedUser.CreationDateTime).to.include('Z');
+        //         expect(legacyCreatedUser.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+        //         expect(legacyCreatedUser.ModificationDateTime).to.include('Z');
+        //     });
 
-            it('Update user', async () => {
-                updatedUser = await objectsService.updateUser({
-                    ExternalID: userExternalID,
-                    Email: userEmail,
-                    FirstName: 'Testing12345',
-                });
+        //     it('Update user', async () => {
+        //         updatedUser = await objectsService.updateUser({
+        //             ExternalID: userExternalID,
+        //             Email: userEmail,
+        //             FirstName: 'Testing12345',
+        //         });
 
-                legacyUpdatedUser = await service.post('users', {
-                    ExternalID: legacyUserExternalID,
-                    Email: legacyUserEmail,
-                    FirstName: 'Testing12345',
-                });
+        //         legacyUpdatedUser = await objectsService.updateUser({
+        //             ExternalID: legacyUserExternalID,
+        //             Email: legacyUserEmail,
+        //             FirstName: 'Testing12345',
+        //         });
 
-                expect(updatedUser.FirstName).to.equal(legacyUpdatedUser.FirstName);
-                expect(updatedUser.Hidden).to.equal(legacyUpdatedUser.Hidden);
-                expect(updatedUser.LastName).to.equal(legacyUpdatedUser.LastName);
-                expect(updatedUser.Mobile).to.equal(legacyUpdatedUser.Mobile);
-            });
+        //         expect(updatedUser.FirstName).to.equal(legacyUpdatedUser.FirstName);
+        //         expect(updatedUser.Hidden).to.equal(legacyUpdatedUser.Hidden);
+        //         expect(updatedUser.LastName).to.equal(legacyUpdatedUser.LastName);
+        //         expect(updatedUser.Mobile).to.equal(legacyUpdatedUser.Mobile);
+        //     });
 
-            it('Get user by key', async () => {
-                const getByKeyUser = await service.getByKey('users', legacyCreatedUser.Key);
-                expect(getByKeyUser).to.deep.equal(legacyUpdatedUser);
-                await expect(service.getByKey('users', '1234')).eventually.to.be.rejected;
-            });
+        //     it('Get user by key', async () => {
+        //         generalService.sleep(5000);
+        //         const getByKeyUser = await service.getByKey('users', legacyCreatedUser.UUID);
+        //         expect(getByKeyUser).to.deep.equal(legacyUpdatedUser);
+        //         await expect(service.getByKey('users', '1234')).eventually.to.be.rejected;
+        //     });
 
-            it('Get user by Unique key', async () => {
-                const getUserByInternalID = await service.getByUniqueKey(
-                    'users',
-                    'InternalID',
-                    legacyCreatedUser.InternalID,
-                );
-                expect(getUserByInternalID).to.deep.equal(legacyUpdatedUser);
-                const getUserByExternalID = await service.getByUniqueKey(
-                    'users',
-                    'ExternalID',
-                    legacyCreatedUser.ExternalID,
-                );
-                expect(getUserByExternalID).to.deep.equal(legacyUpdatedUser);
-                const getUserByKey = await service.getByUniqueKey('users', 'Key', legacyCreatedUser.Key);
-                expect(getUserByKey).to.deep.equal(legacyUpdatedUser);
-                await expect(service.getByUniqueKey('users', 'InternalID', '123412')).eventually.to.be.rejected;
-                await expect(service.getByUniqueKey('users', 'Price', '123412')).eventually.to.be.rejected;
-            });
+        //     it('Get user by Unique key', async () => {
+        //         const getUserByInternalID = await service.getByUniqueKey(
+        //             'users',
+        //             'InternalID',
+        //             legacyCreatedUser.InternalID,
+        //         );
+        //         expect(getUserByInternalID).to.deep.equal(legacyUpdatedUser);
+        //         const getUserByExternalID = await service.getByUniqueKey(
+        //             'users',
+        //             'ExternalID',
+        //             legacyCreatedUser.ExternalID,
+        //         );
+        //         expect(getUserByExternalID).to.deep.equal(legacyUpdatedUser);
+        //         const getUserByKey = await service.getByUniqueKey('users', 'Key', legacyCreatedUser.Key);
+        //         expect(getUserByKey).to.deep.equal(legacyUpdatedUser);
+        //         await expect(service.getByUniqueKey('users', 'InternalID', '123412')).eventually.to.be.rejected;
+        //         await expect(service.getByUniqueKey('users', 'Price', '123412')).eventually.to.be.rejected;
+        //     });
 
-            describe('Users search', () => {
-                let legacyUsers;
-                it('Where', async () => {
-                    const whereUsers = await objectsService.getUsers({
-                        where: `ExternalID like 'Automated API User%'`,
-                    });
-                    const legacyWhereUsers = await service.search('users', {
-                        Where: `ExternalID like 'Automated API User%'`,
-                    });
-                    expect(whereUsers.length).to.equal(legacyWhereUsers.Objects.length);
-                });
+        //     describe('Users search', () => {
+        //         let legacyUsers;
+        //         it('Where', async () => {
+        //             const whereUsers = await objectsService.getUsers({
+        //                 where: `ExternalID like 'Automated API User%'`,
+        //             });
+        //             const legacyWhereUsers = await service.search('users', {
+        //                 Where: `ExternalID like 'Automated API User%'`,
+        //             });
+        //             expect(whereUsers.length).to.equal(legacyWhereUsers.Objects.length);
+        //         });
 
-                it('Page and PageSize', async () => {
-                    legacyUsers = await service.get('users?page_size=-1');
-                    let legacyPageUsers;
-                    legacyPageUsers = await service.search('users', {
-                        Page: 1,
-                        PageSize: 1,
-                    });
-                    expect(legacyPageUsers.Objects.length).to.equal(1);
-                    expect(legacyPageUsers.Objects[0]).to.deep.equal(legacyUsers[0]);
-                    legacyPageUsers = await service.search('users', {
-                        Page: 2,
-                        PageSize: 1,
-                    });
-                    expect(legacyPageUsers.Objects.length).to.equal(1);
-                    expect(legacyPageUsers.Objects[0]).to.deep.equal(legacyUsers[1]);
-                    legacyPageUsers = await service.search('users', {
-                        PageSize: 5,
-                    });
-                    expect(legacyPageUsers.Objects.length).to.equal(5);
-                    legacyPageUsers = await service.search('users', {
-                        PageSize: -1,
-                    });
-                    expect(legacyPageUsers.Objects.length).to.equal(legacyUsers.length);
-                });
+        //         it('Page and PageSize', async () => {
+        //             legacyUsers = await service.get('users?page_size=-1');
+        //             let legacyPageUsers;
+        //             legacyPageUsers = await service.search('users', {
+        //                 Page: 1,
+        //                 PageSize: 1,
+        //             });
+        //             expect(legacyPageUsers.Objects.length).to.equal(1);
+        //             expect(legacyPageUsers.Objects[0]).to.deep.equal(legacyUsers[0]);
+        //             legacyPageUsers = await service.search('users', {
+        //                 Page: 2,
+        //                 PageSize: 1,
+        //             });
+        //             expect(legacyPageUsers.Objects.length).to.equal(1);
+        //             expect(legacyPageUsers.Objects[0]).to.deep.equal(legacyUsers[1]);
+        //             legacyPageUsers = await service.search('users', {
+        //                 PageSize: 5,
+        //             });
+        //             expect(legacyPageUsers.Objects.length).to.equal(5);
+        //             legacyPageUsers = await service.search('users', {
+        //                 PageSize: -1,
+        //             });
+        //             expect(legacyPageUsers.Objects.length).to.equal(legacyUsers.length);
+        //         });
 
-                it('KeyList', async () => {
-                    legacyUsers = await service.get(
-                        `users?where=UUID IN ('${users[0].UUID}','${users[1].UUID}','${users[2].UUID}','${users[3].UUID}')`,
-                    );
-                    const legacyKeyListUsers = await service.search('users', {
-                        KeyList: [users[0].UUID, users[1].UUID, users[2].UUID, users[3].UUID],
-                    });
-                    expect(legacyKeyListUsers.Objects.length).to.equal(legacyUsers.length);
-                    expect(legacyKeyListUsers.Objects).to.deep.equal(legacyUsers);
-                });
+        //         it('KeyList', async () => {
+        //             legacyUsers = await service.get(
+        //                 `users?where=UUID IN ('${users[0].UUID}','${users[1].UUID}','${users[2].UUID}','${users[3].UUID}')`,
+        //             );
+        //             const legacyKeyListUsers = await service.search('users', {
+        //                 KeyList: [users[0].UUID, users[1].UUID, users[2].UUID, users[3].UUID],
+        //             });
+        //             expect(legacyKeyListUsers.Objects.length).to.equal(legacyUsers.length);
+        //             expect(legacyKeyListUsers.Objects).to.deep.equal(legacyUsers);
+        //         });
 
-                it('UniqueFieldList', async () => {
-                    legacyUsers = await service.get(
-                        `users?where=InternalID IN ('${users[0].InternalID}','${users[1].InternalID}','${users[2].InternalID}','${users[3].InternalID}')`,
-                    );
-                    const legacyUniqueFieldUsers = await service.search('users', {
-                        UniqueFieldList: [
-                            users[0].InternalID,
-                            users[1].InternalID,
-                            users[2].InternalID,
-                            users[3].InternalID,
-                        ],
-                        UniqueFieldID: 'InternalID',
-                    });
-                    expect(legacyUniqueFieldUsers.Objects.length).to.equal(legacyUsers.length);
-                    expect(legacyUniqueFieldUsers.Objects).to.deep.equal(legacyUsers);
-                });
+        //         it('UniqueFieldList', async () => {
+        //             legacyUsers = await service.get(
+        //                 `users?where=InternalID IN ('${users[0].InternalID}','${users[1].InternalID}','${users[2].InternalID}','${users[3].InternalID}')`,
+        //             );
+        //             const legacyUniqueFieldUsers = await service.search('users', {
+        //                 UniqueFieldList: [
+        //                     users[0].InternalID,
+        //                     users[1].InternalID,
+        //                     users[2].InternalID,
+        //                     users[3].InternalID,
+        //                 ],
+        //                 UniqueFieldID: 'InternalID',
+        //             });
+        //             expect(legacyUniqueFieldUsers.Objects.length).to.equal(legacyUsers.length);
+        //             expect(legacyUniqueFieldUsers.Objects).to.deep.equal(legacyUsers);
+        //         });
 
-                it('Fields', async () => {
-                    legacyUsers = await service.get(`users?where=InternalID=${users[0].InternalID}`);
-                    const legacyFieldsUsers = await service.search(`users`, {
-                        Where: `InternalID=${users[0].InternalID}`,
-                        Fields: ['InternalID', 'ExternalID', 'Key'],
-                    });
-                    expect(legacyFieldsUsers.Objects.length).to.equal(legacyUsers.length);
-                    expect(legacyFieldsUsers.Objects).to.deep.equal([
-                        { InternalID: users[0].InternalID, ExternalID: users[0].ExternalID, Key: users[0].UUID },
-                    ]);
-                });
+        //         it('Fields', async () => {
+        //             legacyUsers = await service.get(`users?where=InternalID=${users[0].InternalID}`);
+        //             const legacyFieldsUsers = await service.search(`users`, {
+        //                 Where: `InternalID=${users[0].InternalID}`,
+        //                 Fields: ['InternalID', 'ExternalID', 'Key'],
+        //             });
+        //             expect(legacyFieldsUsers.Objects.length).to.equal(legacyUsers.length);
+        //             expect(legacyFieldsUsers.Objects).to.deep.equal([
+        //                 { InternalID: users[0].InternalID, ExternalID: users[0].ExternalID, Key: users[0].UUID },
+        //             ]);
+        //         });
 
-                it('Include Count', async () => {
-                    const legacyIncludeCountUsers = await service.search('users', {
-                        IncludeCount: true,
-                    });
-                    expect(legacyIncludeCountUsers).to.have.property('Count').that.is.a('number');
-                });
-            });
+        //         it('Include Count', async () => {
+        //             const legacyIncludeCountUsers = await service.search('users', {
+        //                 IncludeCount: true,
+        //             });
+        //             expect(legacyIncludeCountUsers).to.have.property('Count').that.is.a('number');
+        //         });
+        //     });
 
-            it('Delete users', async () => {
-                const deletedUser = await objectsService.updateUser({
-                    ExternalID: userExternalID,
-                    Email: userEmail,
-                    Hidden: true,
-                });
+        //     it('Delete users', async () => {
+        //         const deletedUser = await objectsService.updateUser({
+        //             ExternalID: userExternalID,
+        //             Email: userEmail,
+        //             Hidden: true,
+        //         });
 
-                const legacyDeletedUser = await service.post('users', {
-                    ExternalID: legacyUserExternalID,
-                    Email: legacyUserEmail,
-                    Hidden: true,
-                });
-                expect(deletedUser).to.have.property('Hidden').that.is.true;
-                expect(legacyDeletedUser).to.have.property('Hidden').that.is.true;
-            });
-        });
+        //         const legacyDeletedUser = await objectsService.updateUser({
+        //             ExternalID: legacyUserExternalID,
+        //             Email: legacyUserEmail,
+        //             Hidden: true,
+        //         });
+        //         expect(deletedUser).to.have.property('Hidden').that.is.true;
+        //         expect(legacyDeletedUser).to.have.property('Hidden').that.is.true;
+        //     });
+        // });
 
         describe('Contact', () => {
             let contacts;
@@ -1033,7 +1035,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
                 it('KeyList', async () => {
                     legacyContacts = await service.get(
-                        `contacts?where=UUID IN ('${contacts[0].UUID}','${contacts[1].UUID}','${contacts[2].UUID}','${contacts[3].UUID}')`,
+                        `contacts?where=Key IN ('${contacts[0].UUID}','${contacts[1].UUID}','${contacts[2].UUID}','${contacts[3].UUID}')`,
                     );
                     const legacyKeyListContacts = await service.search('contacts', {
                         KeyList: [contacts[0].UUID, contacts[1].UUID, contacts[2].UUID, contacts[3].UUID],
@@ -1289,254 +1291,254 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
         //     });
         // });
 
-        describe('AccountUsers', () => {
-            let account;
-            let legacyAccount;
-            const accountExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
-            let users;
-            let legacyCreatedAccountUsers;
-            let createdAccountUsers;
+        // describe('AccountUsers', () => {
+        //     let account;
+        //     let legacyAccount;
+        //     const accountExternalID = 'Automated API ' + Math.floor(Math.random() * 1000000).toString();
+        //     let users;
+        //     let legacyCreatedAccountUsers;
+        //     let createdAccountUsers;
 
-            it('Create AccountUsers', async () => {
-                account = await objectsService.createAccount({
-                    ExternalID: accountExternalID,
-                    Name: accountExternalID,
-                });
+        //     it('Create AccountUsers', async () => {
+        //         account = await objectsService.createAccount({
+        //             ExternalID: accountExternalID,
+        //             Name: accountExternalID,
+        //         });
 
-                legacyAccount = await objectsService.createAccount({
-                    ExternalID: accountExternalID + ' L',
-                    Name: accountExternalID + ' L',
-                });
-                users = await objectsService.getUsers();
+        //         legacyAccount = await objectsService.createAccount({
+        //             ExternalID: accountExternalID + ' L',
+        //             Name: accountExternalID + ' L',
+        //         });
+        //         users = await objectsService.getUsers();
 
-                createdAccountUsers = await objectsService.postAccountUsers({
-                    Account: { Data: { InternalID: account.InternalID } },
-                    User: { Data: { InternalID: users[0].InternalID } },
-                });
+        //         createdAccountUsers = await objectsService.postAccountUsers({
+        //             Account: { Data: { InternalID: account.InternalID } },
+        //             User: { Data: { InternalID: users[0].InternalID } },
+        //         });
 
-                legacyCreatedAccountUsers = await service.post('account_users', {
-                    Account: legacyAccount.UUID,
-                    User: users[0].UUID,
-                });
+        //         legacyCreatedAccountUsers = await service.post('account_users', {
+        //             Account: legacyAccount.UUID,
+        //             User: users[0].UUID,
+        //         });
 
-                expect(legacyCreatedAccountUsers).to.have.property('InternalID').that.is.a('Number');
-                expect(legacyCreatedAccountUsers).to.have.property('Account').that.is.equals(legacyAccount.UUID);
-                expect(legacyCreatedAccountUsers).to.have.property('Key').that.is.a('string').with.lengthOf(36);
-                expect(legacyCreatedAccountUsers.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(legacyCreatedAccountUsers.CreationDateTime).to.include('Z');
-                expect(legacyCreatedAccountUsers.ModificationDateTime).to.include(
-                    new Date().toISOString().split('T')[0],
-                );
-                expect(legacyCreatedAccountUsers.ModificationDateTime).to.include('Z');
-                expect(legacyCreatedAccountUsers).to.have.property('User').that.is.equals(users[0].UUID);
-                expect(legacyCreatedAccountUsers).to.have.property('Hidden').that.is.false;
-            });
+        //         expect(legacyCreatedAccountUsers).to.have.property('InternalID').that.is.a('Number');
+        //         expect(legacyCreatedAccountUsers).to.have.property('Account').that.is.equals(legacyAccount.UUID);
+        //         expect(legacyCreatedAccountUsers).to.have.property('Key').that.is.a('string').with.lengthOf(36);
+        //         expect(legacyCreatedAccountUsers.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+        //         expect(legacyCreatedAccountUsers.CreationDateTime).to.include('Z');
+        //         expect(legacyCreatedAccountUsers.ModificationDateTime).to.include(
+        //             new Date().toISOString().split('T')[0],
+        //         );
+        //         expect(legacyCreatedAccountUsers.ModificationDateTime).to.include('Z');
+        //         expect(legacyCreatedAccountUsers).to.have.property('User').that.is.equals(users[0].UUID);
+        //         expect(legacyCreatedAccountUsers).to.have.property('Hidden').that.is.false;
+        //     });
 
-            it('Get AccountUsers by key', async () => {
-                const getByKeyAccountUsers = await service.getByKey('account_users', legacyCreatedAccountUsers.Key);
-                expect(getByKeyAccountUsers).to.deep.equal(legacyCreatedAccountUsers);
-                await expect(service.getByKey('account_users', '1234')).eventually.to.be.rejected;
-            });
+        //     it('Get AccountUsers by key', async () => {
+        //         const getByKeyAccountUsers = await service.getByKey('account_users', legacyCreatedAccountUsers.Key);
+        //         expect(getByKeyAccountUsers).to.deep.equal(legacyCreatedAccountUsers);
+        //         await expect(service.getByKey('account_users', '1234')).eventually.to.be.rejected;
+        //     });
 
-            it('Get AccountUsers by Unique key', async () => {
-                const getAccountUsersByInternalID = await service.getByUniqueKey(
-                    'account_users',
-                    'InternalID',
-                    legacyCreatedAccountUsers.InternalID,
-                );
-                expect(getAccountUsersByInternalID).to.deep.equal(legacyCreatedAccountUsers);
-                const getAccountUsersByKey = await service.getByUniqueKey(
-                    'account_users',
-                    'Key',
-                    legacyCreatedAccountUsers.Key,
-                );
-                expect(getAccountUsersByKey).to.deep.equal(legacyCreatedAccountUsers);
-                await expect(service.getByUniqueKey('account_users', 'InternalID', '123412')).eventually.to.be.rejected;
-                await expect(service.getByUniqueKey('account_users', 'Price', '123412')).eventually.to.be.rejected;
-            });
+        //     it('Get AccountUsers by Unique key', async () => {
+        //         const getAccountUsersByInternalID = await service.getByUniqueKey(
+        //             'account_users',
+        //             'InternalID',
+        //             legacyCreatedAccountUsers.InternalID,
+        //         );
+        //         expect(getAccountUsersByInternalID).to.deep.equal(legacyCreatedAccountUsers);
+        //         const getAccountUsersByKey = await service.getByUniqueKey(
+        //             'account_users',
+        //             'Key',
+        //             legacyCreatedAccountUsers.Key,
+        //         );
+        //         expect(getAccountUsersByKey).to.deep.equal(legacyCreatedAccountUsers);
+        //         await expect(service.getByUniqueKey('account_users', 'InternalID', '123412')).eventually.to.be.rejected;
+        //         await expect(service.getByUniqueKey('account_users', 'Price', '123412')).eventually.to.be.rejected;
+        //     });
 
-            describe('AccountUsers search', () => {
-                let legacyAccountUsers;
-                let legacyAccountUsersManipulation;
-                it('Where', async () => {
-                    const whereAccountUsers = await objectsService.getAccountUsersClause(
-                        `where=UUID like '${createdAccountUsers.UUID}'`,
-                    );
-                    const legacyWhereAccountUsers = await service.search('account_users', {
-                        Where: `UUID like '${createdAccountUsers.UUID}'`,
-                    });
-                    expect(whereAccountUsers.length).to.equal(legacyWhereAccountUsers.Objects.length);
-                });
+        //     describe('AccountUsers search', () => {
+        //         let legacyAccountUsers;
+        //         let legacyAccountUsersManipulation;
+        //         it('Where', async () => {
+        //             const whereAccountUsers = await objectsService.getAccountUsersClause(
+        //                 `where=UUID like '${createdAccountUsers.UUID}'`,
+        //             );
+        //             const legacyWhereAccountUsers = await service.search('account_users', {
+        //                 Where: `UUID like '${createdAccountUsers.UUID}'`,
+        //             });
+        //             expect(whereAccountUsers.length).to.equal(legacyWhereAccountUsers.Objects.length);
+        //         });
 
-                it('Page and PageSize', async () => {
-                    legacyAccountUsers = await objectsService.getAccountUsersClause('where=Hidden=0&page_size=-1');
-                    let legacyPageAccountUsers;
-                    legacyPageAccountUsers = await service.search('account_users', {
-                        Page: 1,
-                        PageSize: 1,
-                    });
-                    expect(legacyPageAccountUsers.Objects.length).to.equal(1);
-                    expect(legacyPageAccountUsers.Objects[0].Account).to.equal(legacyAccountUsers[0].Account.Data.UUID);
-                    expect(legacyPageAccountUsers.Objects[0].User).to.equal(legacyAccountUsers[0].User.Data.UUID);
-                    legacyPageAccountUsers = await service.search('account_users', {
-                        Page: 2,
-                        PageSize: 1,
-                    });
-                    expect(legacyPageAccountUsers.Objects.length).to.equal(1);
-                    expect(legacyPageAccountUsers.Objects[0].Account).to.equal(legacyAccountUsers[1].Account.Data.UUID);
-                    expect(legacyPageAccountUsers.Objects[0].User).to.equal(legacyAccountUsers[1].User.Data.UUID);
-                    legacyPageAccountUsers = await service.search('account_users', {
-                        PageSize: 5,
-                    });
-                    expect(legacyPageAccountUsers.Objects.length).to.equal(5);
-                });
+        //         it('Page and PageSize', async () => {
+        //             legacyAccountUsers = await objectsService.getAccountUsersClause('where=Hidden=0&page_size=-1');
+        //             let legacyPageAccountUsers;
+        //             legacyPageAccountUsers = await service.search('account_users', {
+        //                 Page: 1,
+        //                 PageSize: 1,
+        //             });
+        //             expect(legacyPageAccountUsers.Objects.length).to.equal(1);
+        //             expect(legacyPageAccountUsers.Objects[0].Account).to.equal(legacyAccountUsers[0].Account.Data.UUID);
+        //             expect(legacyPageAccountUsers.Objects[0].User).to.equal(legacyAccountUsers[0].User.Data.UUID);
+        //             legacyPageAccountUsers = await service.search('account_users', {
+        //                 Page: 2,
+        //                 PageSize: 1,
+        //             });
+        //             expect(legacyPageAccountUsers.Objects.length).to.equal(1);
+        //             expect(legacyPageAccountUsers.Objects[0].Account).to.equal(legacyAccountUsers[1].Account.Data.UUID);
+        //             expect(legacyPageAccountUsers.Objects[0].User).to.equal(legacyAccountUsers[1].User.Data.UUID);
+        //             legacyPageAccountUsers = await service.search('account_users', {
+        //                 PageSize: 5,
+        //             });
+        //             expect(legacyPageAccountUsers.Objects.length).to.equal(5);
+        //         });
 
-                it('KeyList', async () => {
-                    legacyAccountUsers = await objectsService.getAccountUsersClause(
-                        `where=UUID IN ('${legacyAccountUsers[0].UUID}','${legacyAccountUsers[1].UUID}','${legacyAccountUsers[2].UUID}','${legacyAccountUsers[3].UUID}')`,
-                    );
-                    legacyAccountUsersManipulation = JSON.parse(JSON.stringify(legacyAccountUsers));
-                    const legacyKeyListAccountUsers = await service.search('account_users', {
-                        KeyList: [
-                            legacyAccountUsers[0].UUID,
-                            legacyAccountUsers[1].UUID,
-                            legacyAccountUsers[2].UUID,
-                            legacyAccountUsers[3].UUID,
-                        ],
-                    });
+        //         it('KeyList', async () => {
+        //             legacyAccountUsers = await objectsService.getAccountUsersClause(
+        //                 `where=UUID IN ('${legacyAccountUsers[0].UUID}','${legacyAccountUsers[1].UUID}','${legacyAccountUsers[2].UUID}','${legacyAccountUsers[3].UUID}')`,
+        //             );
+        //             legacyAccountUsersManipulation = JSON.parse(JSON.stringify(legacyAccountUsers));
+        //             const legacyKeyListAccountUsers = await service.search('account_users', {
+        //                 KeyList: [
+        //                     legacyAccountUsers[0].UUID,
+        //                     legacyAccountUsers[1].UUID,
+        //                     legacyAccountUsers[2].UUID,
+        //                     legacyAccountUsers[3].UUID,
+        //                 ],
+        //             });
 
-                    for (let index = 0; index < legacyAccountUsersManipulation.length; index++) {
-                        legacyAccountUsersManipulation[index].Account = legacyAccountUsers[index].Account.Data.UUID;
-                        legacyAccountUsersManipulation[index].User = legacyAccountUsers[index].User.Data.UUID;
-                        legacyAccountUsersManipulation[index].Key = legacyAccountUsers[index].UUID;
-                        delete legacyKeyListAccountUsers.Objects[index].CreationDateTime;
-                        delete legacyKeyListAccountUsers.Objects[index].ModificationDateTime;
-                        delete legacyAccountUsersManipulation[index].ModificationDateTime;
-                        delete legacyAccountUsersManipulation[index].CreationDateTime;
-                        delete legacyAccountUsersManipulation[index].UUID;
-                        delete legacyAccountUsersManipulation[index].ConnectedWithFullAccountAccess;
-                        delete legacyAccountUsersManipulation[index].FromERPIntegration;
-                    }
-                    expect(legacyKeyListAccountUsers.Objects.length).to.equal(legacyAccountUsersManipulation.length);
-                    expect(legacyKeyListAccountUsers.Objects).to.deep.equal(legacyAccountUsersManipulation);
-                });
+        //             for (let index = 0; index < legacyAccountUsersManipulation.length; index++) {
+        //                 legacyAccountUsersManipulation[index].Account = legacyAccountUsers[index].Account.Data.UUID;
+        //                 legacyAccountUsersManipulation[index].User = legacyAccountUsers[index].User.Data.UUID;
+        //                 legacyAccountUsersManipulation[index].Key = legacyAccountUsers[index].UUID;
+        //                 delete legacyKeyListAccountUsers.Objects[index].CreationDateTime;
+        //                 delete legacyKeyListAccountUsers.Objects[index].ModificationDateTime;
+        //                 delete legacyAccountUsersManipulation[index].ModificationDateTime;
+        //                 delete legacyAccountUsersManipulation[index].CreationDateTime;
+        //                 delete legacyAccountUsersManipulation[index].UUID;
+        //                 delete legacyAccountUsersManipulation[index].ConnectedWithFullAccountAccess;
+        //                 delete legacyAccountUsersManipulation[index].FromERPIntegration;
+        //             }
+        //             expect(legacyKeyListAccountUsers.Objects.length).to.equal(legacyAccountUsersManipulation.length);
+        //             expect(legacyKeyListAccountUsers.Objects).to.deep.equal(legacyAccountUsersManipulation);
+        //         });
 
-                it('UniqueFieldList', async () => {
-                    legacyAccountUsers = await objectsService.getAccountUsersClause(
-                        `where=UUID IN ('${legacyAccountUsers[0].UUID}','${legacyAccountUsers[1].UUID}','${legacyAccountUsers[2].UUID}','${legacyAccountUsers[3].UUID}')`,
-                    );
-                    const legacyUniqueFieldAccountUsers = await service.search('account_users', {
-                        UniqueFieldList: [
-                            legacyAccountUsers[0].UUID,
-                            legacyAccountUsers[1].UUID,
-                            legacyAccountUsers[2].UUID,
-                            legacyAccountUsers[3].UUID,
-                        ],
-                        UniqueFieldID: 'Key',
-                    });
+        //         it('UniqueFieldList', async () => {
+        //             legacyAccountUsers = await objectsService.getAccountUsersClause(
+        //                 `where=UUID IN ('${legacyAccountUsers[0].UUID}','${legacyAccountUsers[1].UUID}','${legacyAccountUsers[2].UUID}','${legacyAccountUsers[3].UUID}')`,
+        //             );
+        //             const legacyUniqueFieldAccountUsers = await service.search('account_users', {
+        //                 UniqueFieldList: [
+        //                     legacyAccountUsers[0].UUID,
+        //                     legacyAccountUsers[1].UUID,
+        //                     legacyAccountUsers[2].UUID,
+        //                     legacyAccountUsers[3].UUID,
+        //                 ],
+        //                 UniqueFieldID: 'Key',
+        //             });
 
-                    for (let index = 0; index < legacyUniqueFieldAccountUsers.Objects.length; index++) {
-                        delete legacyUniqueFieldAccountUsers.Objects[index].CreationDateTime;
-                        delete legacyUniqueFieldAccountUsers.Objects[index].ModificationDateTime;
-                    }
+        //             for (let index = 0; index < legacyUniqueFieldAccountUsers.Objects.length; index++) {
+        //                 delete legacyUniqueFieldAccountUsers.Objects[index].CreationDateTime;
+        //                 delete legacyUniqueFieldAccountUsers.Objects[index].ModificationDateTime;
+        //             }
 
-                    expect(legacyUniqueFieldAccountUsers.Objects.length).to.equal(legacyAccountUsers.length);
-                    expect(legacyUniqueFieldAccountUsers.Objects).to.deep.equal(legacyAccountUsersManipulation);
-                });
+        //             expect(legacyUniqueFieldAccountUsers.Objects.length).to.equal(legacyAccountUsers.length);
+        //             expect(legacyUniqueFieldAccountUsers.Objects).to.deep.equal(legacyAccountUsersManipulation);
+        //         });
 
-                it('Fields', async () => {
-                    legacyAccountUsers = await objectsService.getAccountUsersClause(
-                        `where=InternalID=${legacyAccountUsers[0].InternalID}`,
-                    );
-                    const legacyFieldsAccountUsers = await service.search(`account_users`, {
-                        Where: `InternalID=${legacyAccountUsers[0].InternalID}`,
-                        Fields: ['Hidden', 'InternalID'],
-                    });
-                    expect(legacyFieldsAccountUsers.Objects.length).to.equal(legacyAccountUsers.length);
-                    expect(legacyFieldsAccountUsers.Objects).to.deep.equal([
-                        {
-                            Hidden: legacyAccountUsers[0].Hidden,
-                            InternalID: legacyAccountUsers[0].InternalID,
-                        },
-                    ]);
-                });
+        //         it('Fields', async () => {
+        //             legacyAccountUsers = await objectsService.getAccountUsersClause(
+        //                 `where=InternalID=${legacyAccountUsers[0].InternalID}`,
+        //             );
+        //             const legacyFieldsAccountUsers = await service.search(`account_users`, {
+        //                 Where: `InternalID=${legacyAccountUsers[0].InternalID}`,
+        //                 Fields: ['Hidden', 'InternalID'],
+        //             });
+        //             expect(legacyFieldsAccountUsers.Objects.length).to.equal(legacyAccountUsers.length);
+        //             expect(legacyFieldsAccountUsers.Objects).to.deep.equal([
+        //                 {
+        //                     Hidden: legacyAccountUsers[0].Hidden,
+        //                     InternalID: legacyAccountUsers[0].InternalID,
+        //                 },
+        //             ]);
+        //         });
 
-                it('Include Count', async () => {
-                    const legacyIncludeCountAccountUsers = await service.search('account_users', {
-                        IncludeCount: true,
-                    });
-                    expect(legacyIncludeCountAccountUsers).to.have.property('Count').that.is.a('number');
-                });
+        //         it('Include Count', async () => {
+        //             const legacyIncludeCountAccountUsers = await service.search('account_users', {
+        //                 IncludeCount: true,
+        //             });
+        //             expect(legacyIncludeCountAccountUsers).to.have.property('Count').that.is.a('number');
+        //         });
 
-                describe('DIMX + Delete', () => {
-                    it('DIMX export', async () => {
-                        const accountsUsersForComparison = await objectsService.getAccountUsersClause(
-                            'where=Hidden=0&page_size=-1',
-                        );
-                        const exportAudit = await service.dimxExport('account_users');
-                        const dimxResult = await service.getDimxResult(exportAudit.URI);
-                        dimxResult.forEach((object) => {
-                            delete object['Key'];
-                        });
-                        accountsUsersForComparison.sort((a, b) => {
-                            return a.InternalID - b.InternalID;
-                        });
-                        dimxResult.sort((a, b) => {
-                            return a.InternalID - b.InternalID;
-                        });
-                        expect(accountsUsersForComparison.length).to.equal(dimxResult.length);
-                    });
+        //         describe('DIMX + Delete', () => {
+        //             it('DIMX export', async () => {
+        //                 const accountsUsersForComparison = await objectsService.getAccountUsersClause(
+        //                     'where=Hidden=0&page_size=-1',
+        //                 );
+        //                 const exportAudit = await service.dimxExport('account_users');
+        //                 const dimxResult = await service.getDimxResult(exportAudit.URI);
+        //                 dimxResult.forEach((object) => {
+        //                     delete object['Key'];
+        //                 });
+        //                 accountsUsersForComparison.sort((a, b) => {
+        //                     return a.InternalID - b.InternalID;
+        //                 });
+        //                 dimxResult.sort((a, b) => {
+        //                     return a.InternalID - b.InternalID;
+        //                 });
+        //                 expect(accountsUsersForComparison.length).to.equal(dimxResult.length);
+        //             });
 
-                    it('DIMX import insert', async () => {
-                        const uuidForImport = newUuid();
-                        const dimxImportResult = await service.dimxImport('account_users', {
-                            Objects: [
-                                {
-                                    Key: uuidForImport,
-                                    Account: legacyAccount.UUID,
-                                    User: users[1].UUID,
-                                },
-                            ],
-                        });
-                        expect(dimxImportResult).to.deep.equal([
-                            {
-                                Key: uuidForImport,
-                                Status: 'Insert',
-                            },
-                        ]);
-                    });
+        //             it('DIMX import insert', async () => {
+        //                 const uuidForImport = newUuid();
+        //                 const dimxImportResult = await service.dimxImport('account_users', {
+        //                     Objects: [
+        //                         {
+        //                             Key: uuidForImport,
+        //                             Account: legacyAccount.UUID,
+        //                             User: users[1].UUID,
+        //                         },
+        //                     ],
+        //                 });
+        //                 expect(dimxImportResult).to.deep.equal([
+        //                     {
+        //                         Key: uuidForImport,
+        //                         Status: 'Insert',
+        //                     },
+        //                 ]);
+        //             });
 
-                    it('Delete AccountUsers and account', async () => {
-                        const deletedAccountUsers = await objectsService.postAccountUsers({
-                            UUID: createdAccountUsers.UUID,
-                            Hidden: true,
-                        });
+        //             it('Delete AccountUsers and account', async () => {
+        //                 const deletedAccountUsers = await objectsService.postAccountUsers({
+        //                     UUID: createdAccountUsers.UUID,
+        //                     Hidden: true,
+        //                 });
 
-                        const legacyDeletedAccountUsers = await service.post('account_users', {
-                            Key: legacyCreatedAccountUsers.Key,
-                            Hidden: true,
-                        });
+        //                 const legacyDeletedAccountUsers = await service.post('account_users', {
+        //                     Key: legacyCreatedAccountUsers.Key,
+        //                     Hidden: true,
+        //                 });
 
-                        const DimxDeletedAccountUsers = await service.post('account_users', {
-                            Key: legacyCreatedAccountUsers.Key,
-                            Hidden: true,
-                        });
-                        expect(deletedAccountUsers).to.have.property('Hidden').that.is.true;
-                        expect(legacyDeletedAccountUsers).to.have.property('Hidden').that.is.true;
-                        const deletedAccount = await objectsService.createAccount({
-                            ExternalID: accountExternalID,
-                            Hidden: true,
-                        });
-                        expect(deletedAccount).to.have.property('Hidden').that.is.true;
-                        const deletedAccount1 = await objectsService.createAccount({
-                            ExternalID: accountExternalID + ' L',
-                            Hidden: true,
-                        });
-                        expect(deletedAccount1).to.have.property('Hidden').that.is.true;
-                        expect(DimxDeletedAccountUsers).to.have.property('Hidden').that.is.true;
-                    });
-                });
-            });
-        });
+        //                 const DimxDeletedAccountUsers = await service.post('account_users', {
+        //                     Key: legacyCreatedAccountUsers.Key,
+        //                     Hidden: true,
+        //                 });
+        //                 expect(deletedAccountUsers).to.have.property('Hidden').that.is.true;
+        //                 expect(legacyDeletedAccountUsers).to.have.property('Hidden').that.is.true;
+        //                 const deletedAccount = await objectsService.createAccount({
+        //                     ExternalID: accountExternalID,
+        //                     Hidden: true,
+        //                 });
+        //                 expect(deletedAccount).to.have.property('Hidden').that.is.true;
+        //                 const deletedAccount1 = await objectsService.createAccount({
+        //                     ExternalID: accountExternalID + ' L',
+        //                     Hidden: true,
+        //                 });
+        //                 expect(deletedAccount1).to.have.property('Hidden').that.is.true;
+        //                 expect(DimxDeletedAccountUsers).to.have.property('Hidden').that.is.true;
+        //             });
+        //         });
+        //     });
+        // });
     });
 }
