@@ -1,4 +1,4 @@
-import GeneralService, { testData, TesterFunctions } from '../../services/general.service';
+import GeneralService, { testDataWithNewSync, TesterFunctions } from '../../services/general.service';
 
 export async function UpgradeDependenciesTestsWithNewSync(
     generalService: GeneralService,
@@ -16,20 +16,20 @@ export async function UpgradeDependenciesTestsWithNewSync(
     } else {
         varKey = request.body.varKeyPro;
     }
-    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, true);
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testDataWithNewSync, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testDataWithNewSync);
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', () => {
         isInstalledArr.forEach((isInstalled, index) => {
-            it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+            it(`Validate That Needed Addon Is Installed: ${Object.keys(testDataWithNewSync)[index]}`, () => {
                 expect(isInstalled).to.be.true;
             });
         });
 
-        for (const addonName in testData) {
-            const addonUUID = testData[addonName][0];
-            const version = testData[addonName][1];
+        for (const addonName in testDataWithNewSync) {
+            const addonUUID = testDataWithNewSync[addonName][0];
+            const version = testDataWithNewSync[addonName][1];
             const varLatestVersion = chnageVersionResponseArr[addonName][2];
             const changeType = chnageVersionResponseArr[addonName][3];
             describe(`${addonName}`, () => {
