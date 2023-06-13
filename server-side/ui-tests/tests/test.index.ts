@@ -1369,6 +1369,31 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
                 latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
+                let didFailFirstTest = false;
+                for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
+                    const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
+                    if (resultAndEnv[0] === 'FAILURE') {
+                        didFailFirstTest = true;
+                        break;
+                    }
+                }
+                if (!didFailFirstTest) {
+                    jobPathPROD =
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20D2%20Production%20-%20CPI%20PFS';
+                    console.log(
+                        'first part of PFS tests passed - running 2nd part of PFS approvement tests (PFS CPI SIDE TEST)',
+                    );
+                    JenkinsBuildResultsAllEnvs = await Promise.all([
+                        //if well fail here - well get to the regular reporting etc
+                        service.runJenkinsJobRemotely(
+                            kmsSecret,
+                            `${jobPathPROD}/build?token=PFSApprovmentTests`,
+                            'Test - B2 Production - DIMX Part 2 - CLI',
+                        ),
+                    ]);
+                    latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
+                    debugger;
+                }
                 break;
             }
             case 'CORE':
