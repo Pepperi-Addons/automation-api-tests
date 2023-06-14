@@ -10,11 +10,12 @@ chai.use(promised);
 export async function PurgeAllUcds(client: Client) {
     const generalService = new GeneralService(client);
     const udcService = new UDCService(generalService);
-    //in case you want to
+    //in case you want to filter specific collections by name
     // const UDCPrefixName = "DimxOverwrite";
     describe('Purging All UDCs With Certaing Prefix', async function () {
         it(`Purging All UDCs With Certaing Prefix`, async function () {
             let allUdcs = await udcService.getSchemes({ page_size: -1 });
+            //in case you want to filter specific collections by name
             // let onlyRelevantUdcs = allUdcs.filter(doc => (doc.Name.includes(UDCPrefixName) && doc.Hidden === false));
             const onlyRelevantUdcNames = allUdcs.map((doc) => doc.Name);
             for (let index = 0; index < onlyRelevantUdcNames.length; index++) {

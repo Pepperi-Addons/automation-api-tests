@@ -72,9 +72,8 @@ export const testDataWithNewSync = {
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 2/2/23 - has to be upgraded
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-    Nebula: ['00000000-0000-0000-0000-000000006a91', '0.7.%'],
-    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'],
-    // system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '0.0.77'], //needed to be able to report tests results -- notice were locked on a certin version
+    Nebula: ['00000000-0000-0000-0000-000000006a91', '%'],
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '%'],
 };
 
 export const testDataForInitUser = {
@@ -1023,6 +1022,8 @@ export default class GeneralService {
                 addonName == 'Notification Service' || // evgeny 15/1/23: to get newest PNS we have
                 addonName == 'Export and Import Framework' ||
                 addonName == 'Export and Import Framework (DIMX)' || // evgeny 15/1/23: to get newest DIMX
+                addonName == 'Nebula' || //
+                addonName == 'sync' || //
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
@@ -1076,6 +1077,7 @@ export default class GeneralService {
             if (fetchVarResponse.Body.length === 0) {
                 varLatestValidVersion = undefined;
             }
+
             let upgradeResponse = await this.papiClient.addons.installedAddons
                 .addonUUID(`${addonUUID}`)
                 .upgrade(varLatestValidVersion);
@@ -1092,6 +1094,22 @@ export default class GeneralService {
                     testData[addonName].push(changeType);
                     testData[addonName].push('Success');
                     testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
+                } else if (auditLogResponse.AuditInfo.ErrorMessage.includes('does not installed!')) {
+                    const installResponse = await this.papiClient.addons.installedAddons
+                        .addonUUID(`${addonUUID}`)
+                        .install(varLatestValidVersion);
+                    const auditLogResponse = await this.getAuditLogResultObjectIfValid(
+                        installResponse.URI as string,
+                        40,
+                    );
+                    if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
+                        testData[addonName].push(changeType);
+                        testData[addonName].push(auditLogResponse.Status.Name);
+                        testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
+                    } else {
+                        testData[addonName].push(changeType);
+                        testData[addonName].push(String(auditLogResponse.Status?.Name));
+                    }
                 } else if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);

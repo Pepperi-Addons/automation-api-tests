@@ -87,9 +87,9 @@ export class UDCService {
                     'x-pepperi-secretkey': 'a9cce3ed-3c77-4a40-be0a-b681a63fb2b4',
                 },
             });
-            console.log(`trying to purge ${udcName} scheme, recieved: ${JSON.stringify(response)}, keep running`);
+            // console.log(`trying to purge ${udcName} scheme, recieved: ${JSON.stringify(response)}, keep running`);
         }
-        console.log(`purge ended - ${udcName} should be deleted, response: ${JSON.stringify(response)}`);
+        // console.log(`purge ended - ${udcName} should be deleted, response: ${JSON.stringify(response)}`);
         return response;
     }
 
