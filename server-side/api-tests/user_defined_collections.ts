@@ -21,7 +21,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         varKey = request.body.varKeyPro;
     }
 
-    // await generalService.baseAddonVersionsInstallation(varKey);
+    await generalService.baseAddonVersionsInstallation(varKey);
     //#region Upgrade UDC
     const testData = {
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
