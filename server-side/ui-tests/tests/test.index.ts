@@ -7,7 +7,7 @@ import GeneralService, {
 } from '../../services/general.service';
 import fs from 'fs';
 import { describe, it, after, beforeEach, afterEach, run } from 'mocha';
-import chai, { expect } from 'chai';
+import chai, { assert, expect } from 'chai';
 import promised from 'chai-as-promised';
 import {
     TestDataTests,
@@ -55,6 +55,7 @@ import { maintenance3APITestser } from '../../api-tests/addons';
 import { handleDevTestInstallation } from '../../tests';
 import { NgxLibPOC } from './NgxLibPOC.test';
 import { PurgeAllUcds } from './purge_all_udcs_script.test copy';
+import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -234,6 +235,11 @@ const passCreate = process.env.npm_config_pass_create as string;
 
     if (tests.includes('evgeny')) {
         await PurgeAllUcds(client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('Scheduler')) {
+        await SchedulerTester(generalService, { describe, expect, it, assert } as TesterFunctions);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 

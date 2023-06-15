@@ -1,5 +1,9 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 
+export async function SchedulerTester(generalService: GeneralService, tester: TesterFunctions) {
+    await SchedulerTests(generalService, tester);
+}
+
 export async function SchedulerTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = generalService.papiClient;
     const describe = tester.describe;
@@ -30,9 +34,9 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
         it('Insert New AddonJob For Cron Verification Test: Finished', () => {
             assert(logcash.insertNewCJtoCronVerification, logcash.insertNewCJtoCronVerificationErrorMsg);
         });
-        // it('Execute New Addon Job For Cron Verification Test: Finished', () => {
-        //     assert(logcash.executeDraftCodeWithoutRetry, logcash.ErrorFromexecuteDraftCodeWithoutRetry);
-        // });
+        it('Execute New Addon Job For Cron Verification Test: Finished', () => {
+            assert(logcash.executeDraftCodeWithoutRetry, logcash.ErrorFromexecuteDraftCodeWithoutRetry);
+        });
 
         it('Validate Empty log (The Log should Be Empty): Finished', () => {
             assert(logcash.emtyLogResponsCron, logcash.emtyLogResponsCronError);
