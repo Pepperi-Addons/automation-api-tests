@@ -55,6 +55,7 @@ import { maintenance3APITestser } from '../../api-tests/addons';
 import { handleDevTestInstallation } from '../../tests';
 import { NgxLibPOC } from './NgxLibPOC.test';
 import { PurgeAllUcds } from './purge_all_udcs_script.test copy';
+import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -234,6 +235,22 @@ const passCreate = process.env.npm_config_pass_create as string;
 
     if (tests.includes('evgeny')) {
         await PurgeAllUcds(client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('Scheduler')) {
+        const testerFunctions = generalService.initiateTesterFunctions(client, 'Scheduler');
+        await SchedulerTester(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            testerFunctions,
+        );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
@@ -661,6 +678,32 @@ const passCreate = process.env.npm_config_pass_create as string;
                         errorString,
                         service,
                     );
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEU,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
                     throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
                 // debugger;
@@ -1106,6 +1149,121 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
                 break;
             }
+            case 'SCHEDULER': {
+                addonUUID = '8bc903d1-d97a-46b8-990b-50bea356e35b';
+                const responseProd = await service.fetchStatus(
+                    `https://papi.pepperi.com/v1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Basic ${base64VARCredentialsProd}`,
+                        },
+                    },
+                );
+                addonVersionProd = responseProd.Body[0].Version;
+                addonEntryUUIDProd = responseProd.Body[0].UUID;
+                const responseEu = await service.fetchStatus(
+                    `https://papi-eu.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Basic ${base64VARCredentialsEU}`,
+                        },
+                    },
+                );
+                addonVersionEU = responseEu.Body[0].Version;
+                addonEntryUUIDEu = responseEu.Body[0].UUID;
+                const responseSb = await service.fetchStatus(
+                    `https://papi.staging.pepperi.com/V1.0/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1&order_by=CreationDateTime DESC`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Basic ${base64VARCredentialsSB}`,
+                        },
+                    },
+                );
+                addonVersionSb = responseSb.Body[0].Version;
+                addonEntryUUIDSb = responseSb.Body[0].UUID;
+                if (
+                    addonVersionSb !== addonVersionEU ||
+                    addonVersionProd !== addonVersionEU ||
+                    addonVersionProd !== addonVersionSb
+                ) {
+                    throw new Error(
+                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
+                    );
+                }
+                console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
+                jobPathPROD =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20H1%20Production%20-%20%20Scheduler';
+                jobPathEU =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20H1%20EU%20-%20%20Scheduler';
+                jobPathSB =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20H1%20Stage%20-%20Scheduler';
+                JenkinsBuildResultsAllEnvs = await Promise.all([
+                    service.runJenkinsJobRemotely(
+                        kmsSecret,
+                        `${jobPathPROD}/build?token=SchedulerApprovmentTests`,
+                        'Test - H1 Production -  Scheduler',
+                    ),
+                    service.runJenkinsJobRemotely(
+                        kmsSecret,
+                        `${jobPathEU}/build?token=SchedulerApprovmentTests`,
+                        'Test - H1 EU -  Scheduler',
+                    ),
+                    service.runJenkinsJobRemotely(
+                        kmsSecret,
+                        `${jobPathSB}/build?token=SchedulerApprovmentTests`,
+                        'Test - H1 Stage - Scheduler',
+                    ),
+                ]);
+                latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
+                latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
+                latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
+                let didFailFirstTest = false;
+                for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
+                    const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
+                    if (resultAndEnv[0] === 'FAILURE') {
+                        didFailFirstTest = true;
+                        break;
+                    }
+                }
+                if (!didFailFirstTest) {
+                    //if we already failed - dont run second part just keep running to the end
+                    jobPathPROD =
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20H2%20Production%20-%20CodeJobs';
+                    jobPathEU =
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20H2%20EU%20-%20CodeJobs';
+                    jobPathSB =
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20H2%20Stage%20-%20CodeJobs';
+                    console.log(
+                        'first part of Scheduler tests passed - running 2nd part of Scheduler approvement tests (CodeJobs TEST)',
+                    );
+                    JenkinsBuildResultsAllEnvs = await Promise.all([
+                        //if well fail here - well get to the regular reporting etc
+                        service.runJenkinsJobRemotely(
+                            kmsSecret,
+                            `${jobPathPROD}/build?token=SchedulerApprovmentTests`,
+                            'Test - H2 Production - CodeJobs',
+                        ),
+                        service.runJenkinsJobRemotely(
+                            kmsSecret,
+                            `${jobPathEU}/build?token=SchedulerApprovmentTests`,
+                            'Test - H2 EU - CodeJobs',
+                        ),
+                        service.runJenkinsJobRemotely(
+                            kmsSecret,
+                            `${jobPathSB}/build?token=SchedulerApprovmentTests`,
+                            'Test - H2 Stage - CodeJobs',
+                        ),
+                    ]);
+                    latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
+                    latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
+                    latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
+                }
+                break;
+            }
             case 'DIMX': {
                 addonUUID = '44c97115-6d14-4626-91dc-83f176e9a0fc';
                 const responseProd = await service.fetchStatus(
@@ -1195,7 +1353,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     jobPathSB =
                         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B2%20Staging%20-%20DIMX%20Part%202%20-%20CLI';
                     console.log(
-                        'first part of DINX tests passed - running 2nd part of DIMX approvement tests (CLI DIMX TEST)',
+                        'first part of DIMX tests passed - running 2nd part of DIMX approvement tests (CLI DIMX TEST)',
                     );
                     JenkinsBuildResultsAllEnvs = await Promise.all([
                         //if well fail here - well get to the regular reporting etc
@@ -1369,6 +1527,31 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
                 latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
+                let didFailFirstTest = false;
+                for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
+                    const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
+                    if (resultAndEnv[0] === 'FAILURE') {
+                        didFailFirstTest = true;
+                        break;
+                    }
+                }
+                if (!didFailFirstTest) {
+                    jobPathPROD =
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20D2%20Production%20-%20CPI%20PFS';
+                    console.log(
+                        'first part of PFS tests passed - running 2nd part of PFS approvement tests (PFS CPI SIDE TEST)',
+                    );
+                    JenkinsBuildResultsAllEnvs = await Promise.all([
+                        //if well fail here - well get to the regular reporting etc
+                        service.runJenkinsJobRemotely(
+                            kmsSecret,
+                            `${jobPathPROD}/build?token=PFSApprovmentTests`,
+                            'Test - B2 Production - DIMX Part 2 - CLI',
+                        ),
+                    ]);
+                    latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
+                    debugger;
+                }
                 break;
             }
             case 'CORE':
@@ -1456,7 +1639,6 @@ const passCreate = process.env.npm_config_pass_create as string;
         // 2. parse which envs failed
         const passingEnvs: string[] = [];
         const failingEnvs: string[] = [];
-        // debugger;
         let isOneOfTestFailed = false;
         for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
             const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
@@ -1564,6 +1746,8 @@ function handleTeamsURL(addonName) {
         case 'USER-DEFINED-COLLECTIONS':
         case 'UDC':
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/a40ddc371df64933aa4bc369a060b1d6/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+        case 'SCHEDULER':
+            return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/2f1a729eb28642dd9dfe498b59cda766/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
     }
 }
 

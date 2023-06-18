@@ -108,7 +108,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(isError.length).to.equal(0);
             });
             it('Negative Test: trying to create a collection with forbidden names:"smallLetter","NotSupported###%^"', async () => {
-                const numOfInitialCollections = (await udcService.getSchemes()).length;
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 const namesToTest = ['smallLetter', 'NotSupported###%^'];
                 for (let index = 0; index < namesToTest.length; index++) {
                     const name = namesToTest[index];
@@ -1244,20 +1244,10 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             //     const collection = await udcService.getAllObjectFromCollection(dimxOverWriteCollectionName);
             //     expect(collection.count).to.equal(howManyOld + howManyUpdated);
             // });
-            it("Tear Down: cleaning all upserted UDC's", async () => {
-                const documents = await udcService.getSchemes({ page_size: -1 });
-                const toHideCollections = documents.filter(
-                    (doc) =>
-                        doc.Name.includes('BasicTesting') ||
-                        doc.Name.includes('ContainedTesting') ||
-                        doc.Name.includes('IndexedTesting') ||
-                        doc.Name.includes('BasicArrayTesting') ||
-                        doc.Name.includes('BasicOnlineTesting') ||
-                        doc.Name.includes('SchemeBasedOnOnlySchemeTesting') ||
-                        doc.Name.includes('AccResource') ||
-                        doc.Name.includes('KeyBasicTesting'),
-                    // ||(doc.Name.includes('DimxOverwrite') && !doc.Name.includes('DimxOverwriteinphssnloizjvgc')), // to no delete the collection of DI-23772
-                );
+            it("Tear Down Part 1: cleaning all upserted UDC's", async () => {
+                const toHideCollections = await getAllUDCsForDelete(udcService);
+                console.log(`inital number of collections is: ${toHideCollections.length}`);
+                let runningNum = toHideCollections.length;
                 for (let index = 0; index < toHideCollections.length; index++) {
                     const collectionToHide = toHideCollections[index];
                     const collectionsObjcts = await udcService.getAllObjectFromCollection(collectionToHide.Name);
@@ -1282,7 +1272,26 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         expect(hideResponse.Body.Name).to.equal(collectionToHide.Name);
                         expect(hideResponse.Body.ModificationDateTime).to.include(parsedTodayDate);
                         expect(hideResponse.Body.Hidden).to.equal(true);
+                        console.log(`${hideResponse.Body.Name} is deleted`);
+                        const toHideCollections = await getAllUDCsForDelete(udcService);
+                        expect(toHideCollections.length).to.equal(runningNum - 1);
+                        runningNum--;
+                        console.log(`${toHideCollections.length} collections left`);
                     }
+                }
+            });
+            it(`Tear Down Part 2: Purging All left UDCs - To Keep Dist Clean`, async function () {
+                let allUdcs = await udcService.getSchemes({ page_size: -1 });
+                const onlyRelevantUdcNames = allUdcs.map((doc) => doc.Name);
+                for (let index = 0; index < onlyRelevantUdcNames.length; index++) {
+                    const udcName = onlyRelevantUdcNames[index];
+                    const purgeResponse = await udcService.purgeScheme(udcName);
+                    expect(purgeResponse.Ok).to.equal(true);
+                    expect(purgeResponse.Status).to.equal(200);
+                    expect(purgeResponse.Body.Done).to.equal(true);
+                    generalService.sleep(1500);
+                    allUdcs = await udcService.getSchemes({ page_size: -1 });
+                    console.log(`${udcName} was deleted, ${allUdcs.length} left`);
                 }
             });
         });
@@ -1336,3 +1345,20 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
 //         throw new Error(`Error: ${(error as any).message}`);
 //     }
 // }
+
+async function getAllUDCsForDelete(udcService) {
+    const documents = await udcService.getSchemes({ page_size: -1 });
+    const toHideCollections = documents.filter(
+        (doc) =>
+            doc.Name.includes('BasicTesting') ||
+            doc.Name.includes('ContainedTesting') ||
+            doc.Name.includes('IndexedTesting') ||
+            doc.Name.includes('BasicArrayTesting') ||
+            doc.Name.includes('BasicOnlineTesting') ||
+            doc.Name.includes('SchemeBasedOnOnlySchemeTesting') ||
+            doc.Name.includes('AccResource') ||
+            doc.Name.includes('KeyBasicTesting'),
+        // ||(doc.Name.includes('DimxOverwrite') && !doc.Name.includes('DimxOverwriteinphssnloizjvgc')), // to no delete the collection of DI-23772
+    );
+    return toHideCollections;
+}

@@ -1,6 +1,10 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 
-export async function SchedulerTests(generalService: GeneralService, tester: TesterFunctions) {
+export async function SchedulerTester(generalService: GeneralService, request, tester: TesterFunctions) {
+    await SchedulerTests(generalService, request, tester);
+}
+
+export async function SchedulerTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const service = generalService.papiClient;
     const describe = tester.describe;
     const assert = tester.assert;
@@ -12,6 +16,14 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
     const CallbackCash: any = {};
     let CodeJobBody: any = {};
     let CodeJobUUIDCron;
+
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
+    await generalService.baseAddonVersionsInstallation(varKey);
 
     service['options'].addonUUID = '';
     const addonUUID = generalService['client'].BaseURL.includes('staging')
@@ -30,9 +42,9 @@ export async function SchedulerTests(generalService: GeneralService, tester: Tes
         it('Insert New AddonJob For Cron Verification Test: Finished', () => {
             assert(logcash.insertNewCJtoCronVerification, logcash.insertNewCJtoCronVerificationErrorMsg);
         });
-        // it('Execute New Addon Job For Cron Verification Test: Finished', () => {
-        //     assert(logcash.executeDraftCodeWithoutRetry, logcash.ErrorFromexecuteDraftCodeWithoutRetry);
-        // });
+        it('Execute New Addon Job For Cron Verification Test: Finished', () => {
+            assert(logcash.executeDraftCodeWithoutRetry, logcash.ErrorFromexecuteDraftCodeWithoutRetry);
+        });
 
         it('Validate Empty log (The Log should Be Empty): Finished', () => {
             assert(logcash.emtyLogResponsCron, logcash.emtyLogResponsCronError);
