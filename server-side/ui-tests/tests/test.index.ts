@@ -7,7 +7,7 @@ import GeneralService, {
 } from '../../services/general.service';
 import fs from 'fs';
 import { describe, it, after, beforeEach, afterEach, run } from 'mocha';
-import chai, { assert, expect } from 'chai';
+import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import {
     TestDataTests,
