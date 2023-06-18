@@ -583,12 +583,12 @@ export async function dimx_data_import(client: Client, request: Request, testerF
     return await testerFunctions.run();
 }
 
-export async function scheduler(client: Client, testerFunctions: TesterFunctions) {
+export async function scheduler(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Scheduler';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    await SchedulerTests(service, testerFunctions);
+    await SchedulerTests(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
