@@ -239,7 +239,8 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
 
     if (tests.includes('Scheduler')) {
-        await SchedulerTester(generalService, { describe, expect, it, assert } as TesterFunctions);
+        const testerFunctions = generalService.initiateTesterFunctions(client, 'Scheduler');
+        await SchedulerTester(generalService, testerFunctions);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
