@@ -7,7 +7,7 @@ import GeneralService, {
 } from '../../services/general.service';
 import fs from 'fs';
 import { describe, it, after, beforeEach, afterEach, run } from 'mocha';
-import chai, { assert, expect } from 'chai';
+import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import {
     TestDataTests,
@@ -239,7 +239,8 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
 
     if (tests.includes('Scheduler')) {
-        await SchedulerTester(generalService, { describe, expect, it, assert } as TesterFunctions);
+        const testerFunctions = generalService.initiateTesterFunctions(client, 'Scheduler');
+        await SchedulerTester(generalService, testerFunctions);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
