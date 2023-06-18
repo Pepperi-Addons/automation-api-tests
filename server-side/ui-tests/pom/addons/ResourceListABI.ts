@@ -21,4 +21,11 @@ export class ResourceListABI extends AddonPage {
     public ListAbi_results_number: By = By.xpath(
         `${this.ListAbi_container.value}//pep-top-bar//pep-list-total//span[contains(@class,number)]`,
     );
+
+    public ListAbi_Menu_button: By = By.xpath(
+        '//pep-top-bar//div[contains(@class,"right-container")]//pep-menu//button',
+    );
+    public ListAbi_LineMenu_button: By = By.xpath('//pep-top-bar//pep-list-actions//pep-menu//button');
+    public ListAbi_Search_input: By = By.xpath('//pep-search');
+    public ListAbi_SmartSearch_container: By = By.xpath('//pep-smart-filters');
 }
