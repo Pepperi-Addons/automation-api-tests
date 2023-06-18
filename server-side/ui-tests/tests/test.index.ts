@@ -1221,6 +1221,47 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
                 latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
                 latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
+                let didFailFirstTest = false;
+                for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
+                    const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
+                    if (resultAndEnv[0] === 'FAILURE') {
+                        didFailFirstTest = true;
+                        break;
+                    }
+                }
+                if (!didFailFirstTest) {
+                    //if we already failed - dont run second part just keep running to the end
+                    jobPathPROD =
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20H2%20Production%20-%20CodeJobs';
+                    jobPathEU =
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20H2%20EU%20-%20CodeJobs';
+                    jobPathSB =
+                        'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20H2%20Stage%20-%20CodeJobs';
+                    console.log(
+                        'first part of Scheduler tests passed - running 2nd part of Scheduler approvement tests (CodeJobs TEST)',
+                    );
+                    JenkinsBuildResultsAllEnvs = await Promise.all([
+                        //if well fail here - well get to the regular reporting etc
+                        service.runJenkinsJobRemotely(
+                            kmsSecret,
+                            `${jobPathPROD}/build?token=SchedulerApprovmentTests`,
+                            'Test - H2 Production - CodeJobs',
+                        ),
+                        service.runJenkinsJobRemotely(
+                            kmsSecret,
+                            `${jobPathEU}/build?token=SchedulerApprovmentTests`,
+                            'Test - H2 EU - CodeJobs',
+                        ),
+                        service.runJenkinsJobRemotely(
+                            kmsSecret,
+                            `${jobPathSB}/build?token=SchedulerApprovmentTests`,
+                            'Test - H2 Stage - CodeJobs',
+                        ),
+                    ]);
+                    latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
+                    latestRunEU = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathEU);
+                    latestRunSB = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathSB);
+                }
                 break;
             }
             case 'DIMX': {
@@ -1312,7 +1353,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     jobPathSB =
                         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B2%20Staging%20-%20DIMX%20Part%202%20-%20CLI';
                     console.log(
-                        'first part of DINX tests passed - running 2nd part of DIMX approvement tests (CLI DIMX TEST)',
+                        'first part of DIMX tests passed - running 2nd part of DIMX approvement tests (CLI DIMX TEST)',
                     );
                     JenkinsBuildResultsAllEnvs = await Promise.all([
                         //if well fail here - well get to the regular reporting etc
@@ -1598,7 +1639,6 @@ const passCreate = process.env.npm_config_pass_create as string;
         // 2. parse which envs failed
         const passingEnvs: string[] = [];
         const failingEnvs: string[] = [];
-        // debugger;
         let isOneOfTestFailed = false;
         for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
             const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
