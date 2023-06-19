@@ -65,6 +65,7 @@ export const testDataWithNewSync = {
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+    'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', '1.0.2'],
     'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.0.134'], //hardcoded because newest isn't phased and otherwise wont match new webapp
@@ -75,7 +76,7 @@ export const testDataWithNewSync = {
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 2/2/23 - has to be upgraded
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-    Nebula: ['00000000-0000-0000-0000-000000006a91', '%'],
+    Nebula: ['00000000-0000-0000-0000-000000006a91', '0.7.98'],
     sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '%'],
 };
 
