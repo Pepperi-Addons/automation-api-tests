@@ -1032,17 +1032,17 @@ const passCreate = process.env.npm_config_pass_create as string;
                     service.runJenkinsJobRemotely(
                         kmsSecret,
                         `${jobPathPROD}/build?token=ADALApprovmentTests`,
-                        'Test - E1 Production - PNS',
+                        'Test - A1 Production - ADAL',
                     ),
                     service.runJenkinsJobRemotely(
                         kmsSecret,
                         `${jobPathEU}/build?token=ADALApprovmentTests`,
-                        'Test - E1 EU - PNS',
+                        'Test - A1 EU - ADAL',
                     ),
                     service.runJenkinsJobRemotely(
                         kmsSecret,
                         `${jobPathSB}/build?token=ADALApprovmentTests`,
-                        'Test - E1 Stage - PNS',
+                        'Test - A1 Stage - ADAL',
                     ),
                 ]);
                 latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
