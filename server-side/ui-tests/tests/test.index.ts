@@ -533,9 +533,9 @@ const passCreate = process.env.npm_config_pass_create as string;
         let addonEntryUUIDEu = '';
         let addonEntryUUIDSb = '';
         let addonUUID;
-        const passedTests: string[] = [];
-        const passedTestsEnv: string[] = [];
-        const failingTestsEnv: string[] = [];
+        // const passedTests: string[] = [];
+        // const passedTestsEnv: string[] = [];
+        // const failingTestsEnv: string[] = [];
         let testsList: string[] = [];
         addonUUID = generalService.convertNameToUUIDForDevTests(addonName);
         if (addonUUID === 'none') {
@@ -657,6 +657,8 @@ const passCreate = process.env.npm_config_pass_create as string;
                 validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddonProd, 'prod'),
                 validateLatestVersionOfAddonIsInstalled(sbUser, addonUUID, latestVersionOfTestedAddonSb, 'stage'),
             ]);
+            const devPassingEnvs: any[] = [];
+            const devFailedEnvs: any[] = [];
             for (let index = 0; index < isInstalled.length; index++) {
                 const isTestedAddonInstalled = isInstalled[index];
                 if (isTestedAddonInstalled === false) {
@@ -758,8 +760,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                 }
                 // debugger;
                 //4.4. print results to log
-                const devPassingEnvs: any[] = [];
-                const devFailedEnvs: any[] = [];
                 //4.5. print the results
                 let objectToPrintEu;
                 let objectToPrintProd;
@@ -863,85 +863,90 @@ const passCreate = process.env.npm_config_pass_create as string;
                 // debugger;
                 //5. un - available this version if needed
                 //!euResults.didSucceed ||
-                if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
-                    if (!euResults.didSucceed && !failingTestsEnv.includes('eu')) {
-                        failingTestsEnv.push('eu');
-                    } else if (euResults.didSucceed) {
-                        passedTestsEnv.push('eu');
-                    }
-                    if (!prodResults.didSucceed && !failingTestsEnv.includes('prod')) {
-                        failingTestsEnv.push('prod');
-                    } else if (prodResults.didSucceed) {
-                        passedTestsEnv.push('prod');
-                    }
-                    if (!sbResults.didSucceed && !failingTestsEnv.includes('sb')) {
-                        failingTestsEnv.push('sb');
-                    } else if (sbResults.didSucceed) {
-                        passedTestsEnv.push('sb');
-                    }
-                    // debugger;
-                    // const addonToInstall = {};
-                    // addonToInstall[addonName] = [addonUUID, ''];
-                    // debugger;
-                } else {
-                    passedTests.push(currentTestName);
-                    if (euResults.didSucceed && !failingTestsEnv.includes('eu')) {
-                        passedTestsEnv.push('eu');
-                    }
-                    if (prodResults.didSucceed && !failingTestsEnv.includes('prod')) {
-                        passedTestsEnv.push('prod');
-                    }
-                    if (sbResults.didSucceed && !failingTestsEnv.includes('sb')) {
-                        passedTestsEnv.push('sb');
-                    }
-                }
+                // if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
+                //     if (!euResults.didSucceed && !failingTestsEnv.includes('eu')) {
+                //         failingTestsEnv.push('eu');
+                //     } else if (euResults.didSucceed) {
+                //         passedTestsEnv.push('eu');
+                //     }
+                //     if (!prodResults.didSucceed && !failingTestsEnv.includes('prod')) {
+                //         failingTestsEnv.push('prod');
+                //     } else if (prodResults.didSucceed) {
+                //         passedTestsEnv.push('prod');
+                //     }
+                //     if (!sbResults.didSucceed && !failingTestsEnv.includes('sb')) {
+                //         failingTestsEnv.push('sb');
+                //     } else if (sbResults.didSucceed) {
+                //         passedTestsEnv.push('sb');
+                //     }
+                //     // debugger;
+                //     // const addonToInstall = {};
+                //     // addonToInstall[addonName] = [addonUUID, ''];
+                //     // debugger;
+                // } else {
+                //     passedTests.push(currentTestName);
+                //     if (euResults.didSucceed && !failingTestsEnv.includes('eu')) {
+                //         passedTestsEnv.push('eu');
+                //     }
+                //     if (prodResults.didSucceed && !failingTestsEnv.includes('prod')) {
+                //         passedTestsEnv.push('prod');
+                //     }
+                //     if (sbResults.didSucceed && !failingTestsEnv.includes('sb')) {
+                //         passedTestsEnv.push('sb');
+                //     }
+                // }
             }
-            const devPassingEnvs: string[] = [];
-            if (passedTestsEnv.filter((v) => v === 'eu').length === testsList.length) {
-                devPassingEnvs.push('EU');
+            const devPassingEnvs2: string[] = [];
+            const devFailedEnvs2: string[] = [];
+            if (devPassingEnvs.filter((v) => v === 'eu').length === testsList.length) {
+                devPassingEnvs2.push('EU');
+            } else {
+                devFailedEnvs2.push('EU');
             }
-            if (passedTestsEnv.filter((v) => v === 'prod').length === testsList.length) {
-                devPassingEnvs.push('PROD');
+            if (devPassingEnvs.filter((v) => v === 'prod').length === testsList.length) {
+                devPassingEnvs2.push('PROD');
+            } else {
+                devFailedEnvs2.push('PROD');
             }
-            if (passedTestsEnv.filter((v) => v === 'sb').length === testsList.length) {
-                devPassingEnvs.push('STAGING');
+            if (devPassingEnvs.filter((v) => v === 'sb').length === testsList.length) {
+                devPassingEnvs2.push('STAGING');
+            } else {
+                devFailedEnvs2.push('STAGING');
             }
-            if (passedTests.length != testsList.length) {
-                if (failingTestsEnv.length != 0) {
-                    await Promise.all([
-                        unavailableAddonVersion(
-                            'prod',
-                            addonName,
-                            addonEntryUUIDEU,
-                            latestVersionOfTestedAddonProd,
-                            addonUUID,
-                            varPassEU,
-                        ),
-                        unavailableAddonVersion(
-                            'prod',
-                            addonName,
-                            addonEntryUUIDProd,
-                            latestVersionOfTestedAddonProd,
-                            addonUUID,
-                            varPass,
-                        ),
-                        unavailableAddonVersion(
-                            'stage',
-                            addonName,
-                            addonEntryUUIDSb,
-                            latestVersionOfTestedAddonProd,
-                            addonUUID,
-                            varPassSB,
-                        ),
-                    ]);
-                }
+            if (devFailedEnvs2.length != 0) {
+                await Promise.all([
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDEU,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassEU,
+                    ),
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDProd,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPass,
+                    ),
+                    unavailableAddonVersion(
+                        'stage',
+                        addonName,
+                        addonEntryUUIDSb,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassSB,
+                    ),
+                ]);
                 await reportToTeams(
                     addonName,
                     addonUUID,
                     service,
                     latestVersionOfTestedAddonProd,
-                    devPassingEnvs,
-                    failingTestsEnv,
+                    devPassingEnvs2,
+                    devFailedEnvs2,
                     true,
                 );
                 console.log('Dev Test Didnt Pass - No Point In Running Approvment');
@@ -952,8 +957,8 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonUUID,
                     service,
                     latestVersionOfTestedAddonProd,
-                    devPassingEnvs,
-                    failingTestsEnv,
+                    devPassingEnvs2,
+                    devFailedEnvs2,
                     true,
                 );
             }
@@ -2431,7 +2436,7 @@ async function printResultsTestObject(testResultArray, userName, env, addonUUID,
         } else {
             for (let index = 0; index < testResultArray.length; index++) {
                 const test = testResultArray[index];
-                if (!test.passed) {
+                if (!test.passed || test.failed || (test.hasOwnProperty('failure') && test.failure.length > 0)) {
                     didSucceed = false;
                 }
             }
