@@ -47,6 +47,39 @@ export const testData = {
     // system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '0.0.77'], //needed to be able to report tests results -- notice were locked on a certin version
 };
 
+export const testDataWithNewSync = {
+    'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.%'], //CPAS
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.%'], //cpi-node (Cross Platform Engine)
+    'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+    'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+    'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+    'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+    'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.%'], //NG14 latest webapp
+    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
+    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
+    'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
+    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+    ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+    'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+    'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
+    'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', '1.0.2'],
+    'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.0.134'], //hardcoded because newest isn't phased and otherwise wont match new webapp
+    'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+    'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
+    'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
+    'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
+    'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
+    'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 2/2/23 - has to be upgraded
+    'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+    Nebula: ['00000000-0000-0000-0000-000000006a91', '0.7.98'],
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '%'],
+};
+
 export const testDataForInitUser = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on newest
@@ -993,6 +1026,8 @@ export default class GeneralService {
                 addonName == 'Notification Service' || // evgeny 15/1/23: to get newest PNS we have
                 addonName == 'Export and Import Framework' ||
                 addonName == 'Export and Import Framework (DIMX)' || // evgeny 15/1/23: to get newest DIMX
+                addonName == 'Nebula' || //
+                addonName == 'sync' || //
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
@@ -1046,6 +1081,7 @@ export default class GeneralService {
             if (fetchVarResponse.Body.length === 0) {
                 varLatestValidVersion = undefined;
             }
+
             let upgradeResponse = await this.papiClient.addons.installedAddons
                 .addonUUID(`${addonUUID}`)
                 .upgrade(varLatestValidVersion);
@@ -1062,6 +1098,22 @@ export default class GeneralService {
                     testData[addonName].push(changeType);
                     testData[addonName].push('Success');
                     testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
+                } else if (auditLogResponse.AuditInfo.ErrorMessage.includes('does not installed!')) {
+                    const installResponse = await this.papiClient.addons.installedAddons
+                        .addonUUID(`${addonUUID}`)
+                        .install(varLatestValidVersion);
+                    const auditLogResponse = await this.getAuditLogResultObjectIfValid(
+                        installResponse.URI as string,
+                        40,
+                    );
+                    if (auditLogResponse.Status && auditLogResponse.Status.Name == 'Failure') {
+                        testData[addonName].push(changeType);
+                        testData[addonName].push(auditLogResponse.Status.Name);
+                        testData[addonName].push(auditLogResponse.AuditInfo.ErrorMessage);
+                    } else {
+                        testData[addonName].push(changeType);
+                        testData[addonName].push(String(auditLogResponse.Status?.Name));
+                    }
                 } else if (!auditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')) {
                     testData[addonName].push(changeType);
                     testData[addonName].push(auditLogResponse.Status.Name);
