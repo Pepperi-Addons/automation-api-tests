@@ -48,6 +48,7 @@ export const testData = {
 };
 
 export const testDataWithNewSync = {
+    //this includes the NEW Sync, Nebula, UDC, Core & Generic Resource - for tests that are related to CPI
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
@@ -76,8 +77,8 @@ export const testDataWithNewSync = {
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 2/2/23 - has to be upgraded
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-    Nebula: ['00000000-0000-0000-0000-000000006a91', '0.7.98'],
-    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '%'],
+    Nebula: ['00000000-0000-0000-0000-000000006a91', '0.7.%'], //change once new versions are available
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //change once new versions are available
 };
 
 export const testDataForInitUser = {
