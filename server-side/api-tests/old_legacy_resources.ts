@@ -3,7 +3,7 @@ import { ObjectsService } from '../services/objects.service';
 import { LegacyResourcesService } from '../services/legacy-resources.service';
 import { v4 as newUuid } from 'uuid';
 
-export async function LegacyResourcesTests(generalService: GeneralService, request, tester: TesterFunctions) {
+export async function OldLegacyResourcesTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const objectsService = new ObjectsService(generalService);
     const service = new LegacyResourcesService(generalService);
     const describe = tester.describe;
@@ -29,7 +29,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     //#endregion Upgrade Legacy Resources
 
-    describe('Legacy Resources Test Suites', () => {
+    describe('OLD Legacy Resources Test Suites', () => {
         describe('Prerequisites Addon for Legacy Resources Tests', () => {
             //Test Data
             isInstalledArr.forEach((isInstalled, index) => {

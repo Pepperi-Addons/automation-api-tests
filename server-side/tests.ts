@@ -89,6 +89,7 @@ import { SingleMaintenanceAndDependenciesAddonsTestsPart3 } from './api-tests/ad
 import { DataIndexDor } from './api-tests/dor_data_index_tests';
 import SurveyBuilderTest from './cpi-tester/addonsTests/surveyBuilder';
 import { UpgradeDependenciesTestsWithNewSync } from './api-tests/test-service/upgrade_dependencies_with_new_sync';
+import { OldLegacyResourcesTests } from './api-tests/old_legacy_resources';
 // import { PapiClient } from '@pepperi-addons/papi-sdk'; WIP - dev tests
 // import { checkVersionsTest } from './api-tests/check_versions';
 
@@ -1164,6 +1165,18 @@ export async function legacy_resources(client: Client, request: Request, testerF
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await LegacyResourcesTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    const results = await testerFunctions.run();
+    service.PrintMemoryUseToLog('End', testName);
+    return results;
+}
+
+export async function old_legacy_resources(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'OLD_Legacy_Resources';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await OldLegacyResourcesTests(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     const results = await testerFunctions.run();
     service.PrintMemoryUseToLog('End', testName);
