@@ -371,7 +371,9 @@ export async function ResourceListAbiTests(email: string, password: string) {
         expect(Number(listAbiResultsNumber.trim())).to.equal(expectedNumOfResults);
     }
 
-    async function getSelector(elemName: 'Menu' | 'LineMenu' | 'Search' | 'SmartSearch' | 'ListRow' | 'MultiCheckbox' | 'SingleRadioButton') {
+    async function getSelector(
+        elemName: 'Menu' | 'LineMenu' | 'Search' | 'SmartSearch' | 'ListRow' | 'MultiCheckbox' | 'SingleRadioButton',
+    ) {
         let selectorOfElemToFind: By;
         let selectorName: string;
         switch (elemName) {
@@ -412,7 +414,9 @@ export async function ResourceListAbiTests(email: string, password: string) {
         return { selector: selectorOfElemToFind, name: selectorName };
     }
 
-    async function elemntDoNotExist(element: 'Menu' | 'LineMenu' | 'Search' | 'SmartSearch' | 'ListRow' | 'MultiCheckbox' | 'SingleRadioButton') {
+    async function elemntDoNotExist(
+        element: 'Menu' | 'LineMenu' | 'Search' | 'SmartSearch' | 'ListRow' | 'MultiCheckbox' | 'SingleRadioButton',
+    ) {
         const selectorDetails = getSelector(element);
         try {
             await driver.findElement((await selectorDetails).selector);
@@ -423,7 +427,9 @@ export async function ResourceListAbiTests(email: string, password: string) {
         }
     }
 
-    async function elemntExist(element: 'Menu' | 'LineMenu' | 'Search' | 'SmartSearch' | 'ListRow' | 'MultiCheckbox' | 'SingleRadioButton') {
+    async function elemntExist(
+        element: 'Menu' | 'LineMenu' | 'Search' | 'SmartSearch' | 'ListRow' | 'MultiCheckbox' | 'SingleRadioButton',
+    ) {
         const selectorDetails = getSelector(element);
         try {
             const element = await driver.findElement((await selectorDetails).selector);
