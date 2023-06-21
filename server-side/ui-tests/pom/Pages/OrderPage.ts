@@ -135,6 +135,27 @@ export class OrderPage extends WebAppList {
         await this.browser.click(this.ChangeViewButton);
         await this.browser.sleep(1500);
     }
+
+    public async searchInOrderCenter(nameOfItem: string): Promise<void> {
+        await this.isSpinnerDone();
+        const searchInput = await this.browser.findElement(this.Search_Input);
+        await searchInput.clear();
+        this.browser.sleep(0.1 * 1000);
+        await searchInput.sendKeys(nameOfItem);
+        this.browser.sleep(0.5 * 1000);
+        await this.browser.click(this.HtmlBody);
+        await this.browser.click(this.Search_Magnifier_Button);
+        this.browser.sleep(0.1 * 1000);
+        await this.isSpinnerDone();
+        await this.browser.untilIsVisible(this.getSelectorOfItemInOrderCenterByName(nameOfItem));
+    }
+
+    public async clearOrderCenterSearch(): Promise<void> {
+        await this.isSpinnerDone();
+        await this.browser.click(this.Search_X_Button);
+        this.browser.sleep(0.1 * 1000);
+        await this.isSpinnerDone();
+    }
 }
 
 export class OrderPageItem {
