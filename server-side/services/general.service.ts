@@ -48,7 +48,7 @@ export const testData = {
 };
 
 export const testDataWithNewSync = {
-    //this includes the NEW Sync, Nebula, UDC, Core & Generic Resource - for tests that are related to CPI
+    //this includes the NEW Sync, Nebula, UDC, Core, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
