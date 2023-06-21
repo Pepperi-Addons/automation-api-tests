@@ -50,7 +50,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''], // current phased version 0.6.26 | dependency > 0.6.3
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI on version 9.6.x , current phased version 9.5.533
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
-        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', '0.7.%'],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
