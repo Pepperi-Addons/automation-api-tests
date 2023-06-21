@@ -680,13 +680,19 @@ const passCreate = process.env.npm_config_pass_create as string;
             );
             console.log(entryUUID);
             //3.1 get test names
-            testsList = await getTestNames(
-                addonName,
-                prodUser,
-                'prod',
-                latestVersionOfAutomationTemplateAddon,
-                addonUUID,
-            );
+            try {
+                testsList = await getTestNames(
+                    addonName,
+                    prodUser,
+                    'prod',
+                    latestVersionOfAutomationTemplateAddon,
+                    addonUUID,
+                );
+            } catch (error) {
+                const errorString = `Error: got exception trying to get test Names: ${(error as any).message}`;
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
+                throw new Error(`Error: got exception trying to get test Names: ${(error as any).message} `);
+            }
             //4. iterate on all test names and call each
             for (let index = 0; index < testsList.length; index++) {
                 const currentTestName = testsList[index];
@@ -942,9 +948,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                     kmsSecret,
                     'API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons',
                 );
-                jenkinsLink = `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons/${
-                    latestRun + 1
-                }/console`;
+                jenkinsLink = `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons/${latestRun}/console`;
             }
             if (devFailedEnvs2.length != 0) {
                 await Promise.all([
@@ -2298,10 +2302,12 @@ async function reportToTeams(
         const uniqFailingEnvs = [...new Set(failingEnvs)];
         message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
             passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : uniqFailingEnvs.join(', ')}, Link: ${jenkinsLink}`;
-        message2 = `FAILED SUITES: PROD: ${failedSuitesProd.length === 0 ? 'None' : failedSuitesProd.join(', ')}, EU: ${
-            failedSuitesEU.length === 0 ? 'None' : failedSuitesEU.join(', ')
-        }, SB:${failedSuitesSB.length === 0 ? 'None' : failedSuitesSB.join(', ')} `;
+        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : uniqFailingEnvs.join(', ')},<br>Link: ${jenkinsLink}`;
+        message2 = `FAILED TESTS:<br>PROD: ${
+            failedSuitesProd.length === 0 ? 'None' : failedSuitesProd.join(', ')
+        },<br>EU: ${failedSuitesEU.length === 0 ? 'None' : failedSuitesEU.join(', ')},<br>SB:${
+            failedSuitesSB.length === 0 ? 'None' : failedSuitesSB.join(', ')
+        } `;
     } else {
         message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
             passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
