@@ -845,6 +845,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 }
                 // debugger;
                 //4.6. create the array of passing / failing tests
+                // debugger;
                 if (euResults.didSucceed) {
                     devPassingEnvs.push('Eu');
                 } else {
@@ -896,23 +897,25 @@ const passCreate = process.env.npm_config_pass_create as string;
                 //     }
                 // }
             }
+            debugger;
             const devPassingEnvs2: string[] = [];
             const devFailedEnvs2: string[] = [];
-            if (devPassingEnvs.filter((v) => v === 'eu').length === testsList.length) {
+            if (devPassingEnvs.filter((v) => v === 'Eu').length === testsList.length) {
                 devPassingEnvs2.push('EU');
             } else {
                 devFailedEnvs2.push('EU');
             }
-            if (devPassingEnvs.filter((v) => v === 'prod').length === testsList.length) {
+            if (devPassingEnvs.filter((v) => v === 'Production').length === testsList.length) {
                 devPassingEnvs2.push('PROD');
             } else {
                 devFailedEnvs2.push('PROD');
             }
-            if (devPassingEnvs.filter((v) => v === 'sb').length === testsList.length) {
+            if (devPassingEnvs.filter((v) => v === 'Stage').length === testsList.length) {
                 devPassingEnvs2.push('STAGING');
             } else {
                 devFailedEnvs2.push('STAGING');
             }
+            debugger;
             if (devFailedEnvs2.length != 0) {
                 await Promise.all([
                     unavailableAddonVersion(
