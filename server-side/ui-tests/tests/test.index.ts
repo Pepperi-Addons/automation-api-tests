@@ -689,6 +689,8 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonUUID,
                 );
             } catch (error) {
+                const errorString = `Error: got exception trying to get test Names: ${(error as any).message}`;
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
                 throw new Error(`Error: got exception trying to get test Names: ${(error as any).message} `);
             }
             //4. iterate on all test names and call each
