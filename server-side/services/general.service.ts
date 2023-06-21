@@ -65,6 +65,7 @@ export const testDataWithNewSync = {
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+    'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
