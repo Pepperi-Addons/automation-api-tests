@@ -533,9 +533,9 @@ const passCreate = process.env.npm_config_pass_create as string;
         let addonEntryUUIDEu = '';
         let addonEntryUUIDSb = '';
         let addonUUID;
-        const passedTests: string[] = [];
-        const passedTestsEnv: string[] = [];
-        const failingTestsEnv: string[] = [];
+        // const passedTests: string[] = [];
+        // const passedTestsEnv: string[] = [];
+        // const failingTestsEnv: string[] = [];
         let testsList: string[] = [];
         addonUUID = generalService.convertNameToUUIDForDevTests(addonName);
         if (addonUUID === 'none') {
@@ -544,33 +544,6 @@ const passCreate = process.env.npm_config_pass_create as string;
             const [euUser, prodUser, sbUser] = resolveUserPerTest(addonName); //
             console.log(`####################### Running For: ${addonName}(${addonUUID}) #######################`);
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
-            await Promise.all([
-                handleDevTestInstallation(
-                    euUser,
-                    addonName,
-                    addonUUID,
-                    { describe, expect, it } as TesterFunctions,
-                    varPass,
-                    'prod',
-                ),
-                handleDevTestInstallation(
-                    prodUser,
-                    addonName,
-                    addonUUID,
-                    { describe, expect, it } as TesterFunctions,
-                    varPass,
-                    'prod',
-                ),
-                handleDevTestInstallation(
-                    sbUser,
-                    addonName,
-                    addonUUID,
-                    { describe, expect, it } as TesterFunctions,
-                    varPassSB,
-                    'stage',
-                ),
-            ]);
-            //2. validate tested addon is installed on latest available version
             const [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
                 addonUUID,
                 varPass,
@@ -589,6 +562,83 @@ const passCreate = process.env.npm_config_pass_create as string;
                 null,
                 'stage',
             );
+            try {
+                await Promise.all([
+                    handleDevTestInstallation(
+                        euUser,
+                        addonName,
+                        addonUUID,
+                        { describe, expect, it } as TesterFunctions,
+                        varPass,
+                        'prod',
+                    ),
+                    handleDevTestInstallation(
+                        prodUser,
+                        addonName,
+                        addonUUID,
+                        { describe, expect, it } as TesterFunctions,
+                        varPass,
+                        'prod',
+                    ),
+                    handleDevTestInstallation(
+                        sbUser,
+                        addonName,
+                        addonUUID,
+                        { describe, expect, it } as TesterFunctions,
+                        varPassSB,
+                        'stage',
+                    ),
+                ]);
+            } catch (error) {
+                const errorString = (error as any).message;
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
+                await Promise.all([
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDEU,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassEU,
+                    ),
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDProd,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPass,
+                    ),
+                    unavailableAddonVersion(
+                        'stage',
+                        addonName,
+                        addonEntryUUIDSb,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassSB,
+                    ),
+                ]);
+                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            }
+            //2. validate tested addon is installed on latest available version
+            // const [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
+            //     addonUUID,
+            //     varPass,
+            //     null,
+            //     'prod',
+            // );
+            // const [latestVersionOfTestedAddonEu, addonEntryUUIDEU] = await generalService.getLatestAvailableVersion(
+            //     addonUUID,
+            //     varPassEU,
+            //     null,
+            //     'prod',
+            // );
+            // const [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await generalService.getLatestAvailableVersion(
+            //     addonUUID,
+            //     varPassSB,
+            //     null,
+            //     'stage',
+            // );
             if (
                 latestVersionOfTestedAddonSb !== latestVersionOfTestedAddonEu ||
                 latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonEu ||
@@ -607,6 +657,8 @@ const passCreate = process.env.npm_config_pass_create as string;
                 validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddonProd, 'prod'),
                 validateLatestVersionOfAddonIsInstalled(sbUser, addonUUID, latestVersionOfTestedAddonSb, 'stage'),
             ]);
+            const devPassingEnvs: any[] = [];
+            const devFailedEnvs: any[] = [];
             for (let index = 0; index < isInstalled.length; index++) {
                 const isTestedAddonInstalled = isInstalled[index];
                 if (isTestedAddonInstalled === false) {
@@ -708,8 +760,6 @@ const passCreate = process.env.npm_config_pass_create as string;
                 }
                 // debugger;
                 //4.4. print results to log
-                const devPassingEnvs: any[] = [];
-                const devFailedEnvs: any[] = [];
                 //4.5. print the results
                 let objectToPrintEu;
                 let objectToPrintProd;
@@ -795,6 +845,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 }
                 // debugger;
                 //4.6. create the array of passing / failing tests
+                // debugger;
                 if (euResults.didSucceed) {
                     devPassingEnvs.push('Eu');
                 } else {
@@ -813,85 +864,92 @@ const passCreate = process.env.npm_config_pass_create as string;
                 // debugger;
                 //5. un - available this version if needed
                 //!euResults.didSucceed ||
-                if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
-                    if (!euResults.didSucceed && !failingTestsEnv.includes('eu')) {
-                        failingTestsEnv.push('eu');
-                    } else if (euResults.didSucceed) {
-                        passedTestsEnv.push('eu');
-                    }
-                    if (!prodResults.didSucceed && !failingTestsEnv.includes('prod')) {
-                        failingTestsEnv.push('prod');
-                    } else if (prodResults.didSucceed) {
-                        passedTestsEnv.push('prod');
-                    }
-                    if (!sbResults.didSucceed && !failingTestsEnv.includes('sb')) {
-                        failingTestsEnv.push('sb');
-                    } else if (sbResults.didSucceed) {
-                        passedTestsEnv.push('sb');
-                    }
-                    // debugger;
-                    // const addonToInstall = {};
-                    // addonToInstall[addonName] = [addonUUID, ''];
-                    // debugger;
-                } else {
-                    passedTests.push(currentTestName);
-                    if (euResults.didSucceed && !failingTestsEnv.includes('eu')) {
-                        passedTestsEnv.push('eu');
-                    }
-                    if (prodResults.didSucceed && !failingTestsEnv.includes('prod')) {
-                        passedTestsEnv.push('prod');
-                    }
-                    if (sbResults.didSucceed && !failingTestsEnv.includes('sb')) {
-                        passedTestsEnv.push('sb');
-                    }
-                }
+                // if (!euResults.didSucceed || !prodResults.didSucceed || !sbResults.didSucceed) {
+                //     if (!euResults.didSucceed && !failingTestsEnv.includes('eu')) {
+                //         failingTestsEnv.push('eu');
+                //     } else if (euResults.didSucceed) {
+                //         passedTestsEnv.push('eu');
+                //     }
+                //     if (!prodResults.didSucceed && !failingTestsEnv.includes('prod')) {
+                //         failingTestsEnv.push('prod');
+                //     } else if (prodResults.didSucceed) {
+                //         passedTestsEnv.push('prod');
+                //     }
+                //     if (!sbResults.didSucceed && !failingTestsEnv.includes('sb')) {
+                //         failingTestsEnv.push('sb');
+                //     } else if (sbResults.didSucceed) {
+                //         passedTestsEnv.push('sb');
+                //     }
+                //     // debugger;
+                //     // const addonToInstall = {};
+                //     // addonToInstall[addonName] = [addonUUID, ''];
+                //     // debugger;
+                // } else {
+                //     passedTests.push(currentTestName);
+                //     if (euResults.didSucceed && !failingTestsEnv.includes('eu')) {
+                //         passedTestsEnv.push('eu');
+                //     }
+                //     if (prodResults.didSucceed && !failingTestsEnv.includes('prod')) {
+                //         passedTestsEnv.push('prod');
+                //     }
+                //     if (sbResults.didSucceed && !failingTestsEnv.includes('sb')) {
+                //         passedTestsEnv.push('sb');
+                //     }
+                // }
             }
-            const devPassingEnvs: string[] = [];
-            if (passedTestsEnv.filter((v) => v === 'eu').length === testsList.length) {
-                devPassingEnvs.push('EU');
+            debugger;
+            const devPassingEnvs2: string[] = [];
+            const devFailedEnvs2: string[] = [];
+            if (devPassingEnvs.filter((v) => v === 'Eu').length === testsList.length) {
+                devPassingEnvs2.push('EU');
+            } else {
+                devFailedEnvs2.push('EU');
             }
-            if (passedTestsEnv.filter((v) => v === 'prod').length === testsList.length) {
-                devPassingEnvs.push('PROD');
+            if (devPassingEnvs.filter((v) => v === 'Production').length === testsList.length) {
+                devPassingEnvs2.push('PROD');
+            } else {
+                devFailedEnvs2.push('PROD');
             }
-            if (passedTestsEnv.filter((v) => v === 'sb').length === testsList.length) {
-                devPassingEnvs.push('STAGING');
+            if (devPassingEnvs.filter((v) => v === 'Stage').length === testsList.length) {
+                devPassingEnvs2.push('STAGING');
+            } else {
+                devFailedEnvs2.push('STAGING');
             }
-            if (passedTests.length != testsList.length) {
-                if (failingTestsEnv.length != 0) {
-                    await Promise.all([
-                        unavailableAddonVersion(
-                            'prod',
-                            addonName,
-                            addonEntryUUIDEU,
-                            latestVersionOfTestedAddonProd,
-                            addonUUID,
-                            varPassEU,
-                        ),
-                        unavailableAddonVersion(
-                            'prod',
-                            addonName,
-                            addonEntryUUIDProd,
-                            latestVersionOfTestedAddonProd,
-                            addonUUID,
-                            varPass,
-                        ),
-                        unavailableAddonVersion(
-                            'stage',
-                            addonName,
-                            addonEntryUUIDSb,
-                            latestVersionOfTestedAddonProd,
-                            addonUUID,
-                            varPassSB,
-                        ),
-                    ]);
-                }
+            debugger;
+            if (devFailedEnvs2.length != 0) {
+                await Promise.all([
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDEU,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassEU,
+                    ),
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDProd,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPass,
+                    ),
+                    unavailableAddonVersion(
+                        'stage',
+                        addonName,
+                        addonEntryUUIDSb,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassSB,
+                    ),
+                ]);
                 await reportToTeams(
                     addonName,
                     addonUUID,
                     service,
                     latestVersionOfTestedAddonProd,
-                    devPassingEnvs,
-                    failingTestsEnv,
+                    devPassingEnvs2,
+                    devFailedEnvs2,
                     true,
                 );
                 console.log('Dev Test Didnt Pass - No Point In Running Approvment');
@@ -902,8 +960,8 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonUUID,
                     service,
                     latestVersionOfTestedAddonProd,
-                    devPassingEnvs,
-                    failingTestsEnv,
+                    devPassingEnvs2,
+                    devFailedEnvs2,
                     true,
                 );
             }
@@ -982,17 +1040,17 @@ const passCreate = process.env.npm_config_pass_create as string;
                     service.runJenkinsJobRemotely(
                         kmsSecret,
                         `${jobPathPROD}/build?token=ADALApprovmentTests`,
-                        'Test - E1 Production - PNS',
+                        'Test - A1 Production - ADAL',
                     ),
                     service.runJenkinsJobRemotely(
                         kmsSecret,
                         `${jobPathEU}/build?token=ADALApprovmentTests`,
-                        'Test - E1 EU - PNS',
+                        'Test - A1 EU - ADAL',
                     ),
                     service.runJenkinsJobRemotely(
                         kmsSecret,
                         `${jobPathSB}/build?token=ADALApprovmentTests`,
-                        'Test - E1 Stage - PNS',
+                        'Test - A1 Stage - ADAL',
                     ),
                 ]);
                 latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
@@ -1732,7 +1790,7 @@ function handleTeamsURL(addonName) {
         case 'ADAL':
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/b5117c82e129495fabbe8291e0cb615e/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
         case 'NEBULA':
-            return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/e20f96ddfa3d48768922c8489eb5e604/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/3e20b0b37e1148d0b12ccf82adb619c4/79d2ba58-6e75-40c6-be86-84e3c74fd694';
         case 'DIMX':
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/a5c62481e39743cb9d6651fa88284deb/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
         case 'DATA INDEX':
@@ -2381,7 +2439,7 @@ async function printResultsTestObject(testResultArray, userName, env, addonUUID,
         } else {
             for (let index = 0; index < testResultArray.length; index++) {
                 const test = testResultArray[index];
-                if (!test.passed) {
+                if (!test.passed || test.failed || (test.hasOwnProperty('failure') && test.failure.length > 0)) {
                     didSucceed = false;
                 }
             }
