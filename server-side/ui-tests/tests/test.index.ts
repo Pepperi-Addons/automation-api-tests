@@ -516,13 +516,16 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
 
     if (tests.includes('Remote_Jenkins_Handler')) {
+        let isLocal = true;
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
         if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
             generalService['client'].AddonSecretKey = await generalService.getSecretKey(
                 generalService['client'].AddonUUID,
                 varPass,
             );
+            isLocal = false;
         }
+        let jenkinsLink;
         // getting VAR credentials for all envs
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
@@ -533,6 +536,9 @@ const passCreate = process.env.npm_config_pass_create as string;
         let addonEntryUUIDEu = '';
         let addonEntryUUIDSb = '';
         let addonUUID;
+        const failedSuitesProd: string[] = [];
+        const failedSuitesEU: string[] = [];
+        const failedSuitesSB: string[] = [];
         // const passedTests: string[] = [];
         // const passedTestsEnv: string[] = [];
         // const failingTestsEnv: string[] = [];
@@ -850,16 +856,19 @@ const passCreate = process.env.npm_config_pass_create as string;
                     devPassingEnvs.push('Eu');
                 } else {
                     devFailedEnvs.push('Eu');
+                    failedSuitesEU.push(currentTestName);
                 }
                 if (prodResults.didSucceed) {
                     devPassingEnvs.push('Production');
                 } else {
                     devFailedEnvs.push('Production');
+                    failedSuitesProd.push(currentTestName);
                 }
                 if (sbResults.didSucceed) {
                     devPassingEnvs.push('Stage');
                 } else {
                     devFailedEnvs.push('Stage');
+                    failedSuitesSB.push(currentTestName);
                 }
                 // debugger;
                 //5. un - available this version if needed
@@ -900,22 +909,43 @@ const passCreate = process.env.npm_config_pass_create as string;
             debugger;
             const devPassingEnvs2: string[] = [];
             const devFailedEnvs2: string[] = [];
-            if (devPassingEnvs.filter((v) => v === 'Eu').length === testsList.length) {
+            if (
+                devPassingEnvs.filter((v) => v === 'Eu').length === testsList.length &&
+                devFailedEnvs.filter((v) => v === 'Eu').length === 0
+            ) {
                 devPassingEnvs2.push('EU');
             } else {
                 devFailedEnvs2.push('EU');
             }
-            if (devPassingEnvs.filter((v) => v === 'Production').length === testsList.length) {
+            if (
+                devPassingEnvs.filter((v) => v === 'Production').length === testsList.length &&
+                devFailedEnvs.filter((v) => v === 'Production').length === 0
+            ) {
                 devPassingEnvs2.push('PROD');
             } else {
                 devFailedEnvs2.push('PROD');
             }
-            if (devPassingEnvs.filter((v) => v === 'Stage').length === testsList.length) {
+            if (
+                devPassingEnvs.filter((v) => v === 'Stage').length === testsList.length &&
+                devFailedEnvs.filter((v) => v === 'Stage').length === 0
+            ) {
                 devPassingEnvs2.push('STAGING');
             } else {
                 devFailedEnvs2.push('STAGING');
             }
             debugger;
+            if (isLocal) {
+                jenkinsLink = 'none, running locally';
+            } else {
+                const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
+                const latestRun = await generalService.getLatestJenkinsJobExecutionId(
+                    kmsSecret,
+                    'API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons',
+                );
+                jenkinsLink = `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons/${
+                    latestRun + 1
+                }/console`;
+            }
             if (devFailedEnvs2.length != 0) {
                 await Promise.all([
                     unavailableAddonVersion(
@@ -951,11 +981,18 @@ const passCreate = process.env.npm_config_pass_create as string;
                     devPassingEnvs2,
                     devFailedEnvs2,
                     true,
+                    failedSuitesProd,
+                    failedSuitesEU,
+                    failedSuitesSB,
+                    jenkinsLink,
                 );
                 console.log('Dev Test Didnt Pass - No Point In Running Approvment');
                 return;
             } else if (!doWeHaveSuchAppTest(addonName)) {
+                //https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons/lastBuild/api/json
+                //
                 await reportToTeams(
+                    //-->https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons/320/console
                     addonName,
                     addonUUID,
                     service,
@@ -963,6 +1000,10 @@ const passCreate = process.env.npm_config_pass_create as string;
                     devPassingEnvs2,
                     devFailedEnvs2,
                     true,
+                    failedSuitesProd,
+                    failedSuitesEU,
+                    failedSuitesSB,
+                    jenkinsLink,
                 );
             }
         }
@@ -1741,6 +1782,10 @@ const passCreate = process.env.npm_config_pass_create as string;
             passingEnvs,
             failingEnvs,
             false,
+            null,
+            null,
+            null,
+            null,
             jobPathPROD,
             latestRunProd,
             jobPathEU,
@@ -2236,6 +2281,10 @@ async function reportToTeams(
     passingEnvs,
     failingEnvs,
     isDev,
+    failedSuitesProd?,
+    failedSuitesEU?,
+    failedSuitesSB?,
+    jenkinsLink?,
     jobPathPROD?,
     latestRunProd?,
     jobPathEU?,
@@ -2249,8 +2298,10 @@ async function reportToTeams(
         const uniqFailingEnvs = [...new Set(failingEnvs)];
         message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
             passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : uniqFailingEnvs.join(', ')}`;
-        message2 = `DEV TEST RESULT`;
+        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : uniqFailingEnvs.join(', ')}, Link: ${jenkinsLink}`;
+        message2 = `FAILED SUITES: PROD: ${failedSuitesProd.length === 0 ? 'None' : failedSuitesProd.join(', ')}, EU: ${
+            failedSuitesEU.length === 0 ? 'None' : failedSuitesEU.join(', ')
+        }, SB:${failedSuitesSB.length === 0 ? 'None' : failedSuitesSB.join(', ')} `;
     } else {
         message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
             passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
