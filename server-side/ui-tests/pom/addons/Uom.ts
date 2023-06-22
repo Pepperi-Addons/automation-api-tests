@@ -208,6 +208,19 @@ export class Uom extends AddonPage {
         itemGrandTotal?: number,
         pageGrandTotal?: number,
     ) {
+        console.info(
+            'inside testQtysOfItem. ',
+            'aoqmUom1Qty: ',
+            aoqmUom1Qty,
+            ' aoqmUom2Qty: ',
+            aoqmUom2Qty,
+            ' wholeItemQty: ',
+            wholeItemQty,
+            ' itemGrandTotal: ',
+            itemGrandTotal,
+            ' pageGrandTotal: ',
+            pageGrandTotal,
+        );
         const orderPage = new OrderPage(this.browser);
         if (aoqmUom1Qty !== undefined) {
             const optionArr = [
@@ -215,9 +228,12 @@ export class Uom extends AddonPage {
                 parseFloat(aoqmUom1Qty.toString()).toFixed(1),
                 parseFloat(aoqmUom1Qty.toString()).toFixed(2),
             ];
-            expect(
-                await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title'),
-            ).to.be.oneOf(optionArr);
+            console.info('optionArr at aoqmUom1Qty: ', optionArr);
+            const workingUomObjectAoqmUom1Qty = await (
+                await this.browser.findElement(workingUomObject.aoqmUom1Qty)
+            ).getAttribute('title'); // Hagit June 23
+            console.info('workingUomObjectAoqmUom1Qty: ', workingUomObjectAoqmUom1Qty);
+            expect(workingUomObjectAoqmUom1Qty).to.be.oneOf(optionArr);
         }
         if (aoqmUom2Qty !== undefined) {
             const optionArr = [
@@ -225,31 +241,51 @@ export class Uom extends AddonPage {
                 parseFloat(aoqmUom2Qty.toString()).toFixed(1),
                 parseFloat(aoqmUom2Qty.toString()).toFixed(2),
             ];
-            expect(
-                await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title'),
-            ).to.be.oneOf(optionArr);
+            console.info('optionArr at aoqmUom2Qty: ', optionArr);
+            const workingUomObjectAoqmUom2Qty = await (
+                await this.browser.findElement(workingUomObject.aoqmUom2Qty)
+            ).getAttribute('title');
+            console.info('workingUomObjectAoqmUom2Qty: ', workingUomObjectAoqmUom2Qty);
+            expect(workingUomObjectAoqmUom2Qty).to.be.oneOf(optionArr);
         }
         if (wholeItemQty !== undefined) {
             const workingUomObjectWholeItemQty = await (
                 await this.browser.findElement(workingUomObject.wholeItemQty)
             ).getText(); // Hagit June 23
             // debugger
-            expect(workingUomObjectWholeItemQty).to.equal(
-                wholeItemQty.toString().includes('.')
-                    ? `${parseFloat(wholeItemQty.toString()).toFixed(4)}`
-                    : wholeItemQty.toString(),
-            );
+            console.info('workingUomObjectWholeItemQty: ', workingUomObjectWholeItemQty);
+            const theDecimalPortionOf_wholeItemQty = (wholeItemQty - Math.floor(wholeItemQty)) * 10;
+            console.info('theDecimalPortionOf_wholeItemQty: ', theDecimalPortionOf_wholeItemQty);
+            let newWholeItemQty: number; // Hagit June 23 - checking if when item's quantity has decimal portion - it rounds up
+            if (theDecimalPortionOf_wholeItemQty > 0) {
+                const base =
+                    wholeItemQty > 0
+                        ? wholeItemQty - theDecimalPortionOf_wholeItemQty / 10
+                        : wholeItemQty + theDecimalPortionOf_wholeItemQty / 10;
+                newWholeItemQty = wholeItemQty > 0 ? base + 1 : base - 1;
+            } else {
+                newWholeItemQty = wholeItemQty;
+            }
+            console.info('newWholeItemQty: ', newWholeItemQty);
+            expect(workingUomObjectWholeItemQty).to.equal(newWholeItemQty.toString());
+            // expect(workingUomObjectWholeItemQty).to.equal(
+            //     wholeItemQty.toString().includes('.')
+            //         ? `${parseFloat(wholeItemQty.toString()).toFixed(4)}`
+            //         : wholeItemQty.toString(),
+            // );
         }
         if (itemGrandTotal !== undefined) {
             const itemGrandTotalString = parseFloat(itemGrandTotal.toString()).toFixed(2);
+            console.info('itemGrandTotalString: ', itemGrandTotalString);
             const workingUomObjectItemGrandTotal = (
                 await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()
             )
                 .split('$')[1]
                 .trim();
+            console.info('workingUomObjectItemGrandTotal: ', workingUomObjectItemGrandTotal);
             expect(workingUomObjectItemGrandTotal).to.be.oneOf([
                 `${itemGrandTotalString.trim()}`,
-                `${itemGrandTotalString.trim()}`,
+                `-${itemGrandTotalString.trim()}`,
             ]);
         }
 
@@ -613,11 +649,13 @@ export class Uom extends AddonPage {
         );
         this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 0, 0, 0, 56, 56);
+        // debugger;
         for (let i = 1; i < 9; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
             this.browser.sleep(1500);
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, -i, 0, -(i * 2.5), 56 + i * -2.5, 56 + i * -2.5);
+            // await this.testQtysOfItem(workingUomObject, -i, 0, -(i * 3), 56 + i * -3, 56 + i * -3); // Hagit June 23 - has to be verifyed!
         }
 
         //set lower uom type to Box

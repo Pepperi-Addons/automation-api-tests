@@ -25,6 +25,14 @@ export async function ResourceListAbiTests(email: string, password: string) {
     let resourceListABI: ResourceListABI;
 
     describe('Resource List ABI UI tests', async () => {
+        /** Description **/
+        /** for the purpose of this test an Addon named "resource_list_abi" was created **/
+        /** it's code can be found at the following repository: https://github.com/Pepperi-Addons/resource-list-abi-tests/tree/main/client-side/src/app/settings/rl-abi **/
+        /** the Addon provides a set of list containers that through the "Resource List ABI" are displayed as Generic List inside a Dialog - upon a button click **/
+        /** the access to the UI of the Addon is either via the Settings Side Panel, or through the path:
+         * https://app.pepperi.com/settings_block/cd3ba412-66a4-42f4-8abc-65768c5dc606/resource_list_abi/view *
+         * or through the Home Page Slug: "Resource List ABI" **/
+
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
