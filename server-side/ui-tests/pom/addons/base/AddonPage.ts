@@ -247,19 +247,24 @@ export class AddonPage extends Page {
      * @returns the id of the order submitted as string
      */
     public async testCartItems(wholePageExpectedPrice: string, ...itemsToValidate: OrderPageItem[]): Promise<void> {
-        const wholeOrderPrice = (await (await this.browser.findElement(this.WholeOrderPrice)).getAttribute('title'))
-            .split('$')[1]
-            .trim(); // Hagit June 23
+        const wholeOrderPrice = await (await this.browser.findElement(this.WholeOrderPrice)).getAttribute('title'); // Hagit June 23
+        console.info(
+            'wholeOrderPrice: ',
+            wholeOrderPrice,
+            'wholeOrderPrice after split and trim: ',
+            wholeOrderPrice.split('$')[1].trim(),
+        );
+        // debugger
         expect(wholeOrderPrice).to.equal(wholePageExpectedPrice);
         for (let i = 0; i < itemsToValidate.length; i++) {
-            const itemQuantity = (await (await this.browser.findElement(itemsToValidate[i].qty)).getAttribute('title'))
-                .split('$')[1]
-                .trim();
-            const itemTotalUnitPrice = (
-                await (await this.browser.findElement(itemsToValidate[i].totalUnitPrice)).getAttribute('title')
-            )
-                .split('$')[1]
-                .trim();
+            const itemQuantity = await (await this.browser.findElement(itemsToValidate[i].qty)).getAttribute('title');
+            console.info('itemQuantity: ', itemQuantity);
+            // debugger
+            const itemTotalUnitPrice = await (
+                await this.browser.findElement(itemsToValidate[i].totalUnitPrice)
+            ).getAttribute('title');
+            console.info('itemTotalUnitPrice: ', itemTotalUnitPrice);
+            // debugger
             expect(itemQuantity).to.equal(itemsToValidate[i].expectedQty);
             expect(itemTotalUnitPrice).to.equal(itemsToValidate[i].expectedUnitPrice);
         }
