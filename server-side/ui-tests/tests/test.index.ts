@@ -2272,7 +2272,7 @@ function handleTeamsURL(addonName) {
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/a5c62481e39743cb9d6651fa88284deb/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
         case 'DATA INDEX':
         case 'DATA-INDEX':
-            return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/8a8345b9eace4c74a7a7fdf19df1200f/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/49cf698436ce4a1f9d2d38e121722d0c/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
         case 'PFS':
         case 'PEPPERI-FILE-STORAGE':
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/29c9fb687840407fa70dce5576356af8/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
