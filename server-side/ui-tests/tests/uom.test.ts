@@ -34,16 +34,16 @@ export async function UomTests(email: string, password: string, varPass: string,
     //data validating lists to test the result of webapp flow with
     //1. expected order data of first phase - not using item config
     const expectedOrderNoConfigItems: OrderPageItem[] = [
-        new OrderPageItem('1234', '37', '$37.00'),
-        new OrderPageItem('1233', '48', '$48.00'),
-        new OrderPageItem('1232', '48', '$48.00'),
-        new OrderPageItem('1231', '48', '$48.00'),
+        new OrderPageItem('1234', '37', '37.00'),
+        new OrderPageItem('1233', '48', '48.00'),
+        new OrderPageItem('1232', '48', '48.00'),
+        new OrderPageItem('1231', '48', '48.00'),
     ];
     //2. expected order data of second phase - using item config
     const expectedOrderConfigItems: OrderPageItem[] = [
-        new OrderPageItem('1233', '-20', '$-20.00'),
-        new OrderPageItem('1232', '8', '$8.00'),
-        new OrderPageItem('1231', '48', '$48.00'),
+        new OrderPageItem('1233', '-20', '-20.00'),
+        new OrderPageItem('1232', '8', '8.00'),
+        new OrderPageItem('1231', '48', '48.00'),
     ];
 
     //3. expected response from server data of non item config order - first phase
@@ -203,7 +203,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                 //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
                 //3.2. add fields to UI control of ATD
                 const uom = new Uom(driver);
-                debugger;
+                // debugger;
                 await uom.configUomATD();
                 let webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.returnToHomePage();
@@ -230,7 +230,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                     await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
                     await uom.testUomAtdUI();
                     const addonPage = new AddonPage(driver);
-                    await addonPage.testCartItems('$181.00', ...expectedOrderNoConfigItems);
+                    await addonPage.testCartItems('181.00', ...expectedOrderNoConfigItems);
                     await addonPage.submitOrder();
                     webAppHomePage = new WebAppHomePage(driver);
                     await webAppHomePage.manualResync(client);
@@ -259,7 +259,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                     await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
                     await uom.testUomAtdUIWithItemConfig();
                     const addonPage = new AddonPage(driver);
-                    await addonPage.testCartItems('$36.00', ...expectedOrderConfigItems);
+                    await addonPage.testCartItems('36.00', ...expectedOrderConfigItems);
                     await addonPage.submitOrder();
                     webAppHomePage = new WebAppHomePage(driver);
                     await webAppHomePage.manualResync(client);

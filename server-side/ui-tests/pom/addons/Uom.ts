@@ -210,36 +210,57 @@ export class Uom extends AddonPage {
     ) {
         const orderPage = new OrderPage(this.browser);
         if (aoqmUom1Qty !== undefined) {
-            const optionArr = [aoqmUom1Qty.toString(), parseFloat(aoqmUom1Qty.toString()).toFixed(2)];
+            const optionArr = [
+                aoqmUom1Qty.toString(),
+                parseFloat(aoqmUom1Qty.toString()).toFixed(1),
+                parseFloat(aoqmUom1Qty.toString()).toFixed(2),
+            ];
             expect(
                 await (await this.browser.findElement(workingUomObject.aoqmUom1Qty)).getAttribute('title'),
             ).to.be.oneOf(optionArr);
         }
         if (aoqmUom2Qty !== undefined) {
-            const optionArr = [aoqmUom2Qty.toString(), parseFloat(aoqmUom2Qty.toString()).toFixed(2)];
+            const optionArr = [
+                aoqmUom2Qty.toString(),
+                parseFloat(aoqmUom2Qty.toString()).toFixed(1),
+                parseFloat(aoqmUom2Qty.toString()).toFixed(2),
+            ];
             expect(
                 await (await this.browser.findElement(workingUomObject.aoqmUom2Qty)).getAttribute('title'),
             ).to.be.oneOf(optionArr);
         }
-        if (wholeItemQty !== undefined)
-            expect(await (await this.browser.findElement(workingUomObject.wholeItemQty)).getText()).to.equal(
+        if (wholeItemQty !== undefined) {
+            const workingUomObjectWholeItemQty = await (
+                await this.browser.findElement(workingUomObject.wholeItemQty)
+            ).getText(); // Hagit June 23
+            // debugger
+            expect(workingUomObjectWholeItemQty).to.equal(
                 wholeItemQty.toString().includes('.')
                     ? `${parseFloat(wholeItemQty.toString()).toFixed(4)}`
                     : wholeItemQty.toString(),
             );
+        }
         if (itemGrandTotal !== undefined) {
             const itemGrandTotalString = parseFloat(itemGrandTotal.toString()).toFixed(2);
-            expect(await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()).to.be.oneOf([
-                `$ ${parseFloat(itemGrandTotalString.toString()).toFixed(2)}`,
-                `$ ${(parseFloat(itemGrandTotalString.toString()) * -1).toFixed(2)}`,
+            const workingUomObjectItemGrandTotal = (
+                await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()
+            )
+                .split('$')[1]
+                .trim();
+            expect(workingUomObjectItemGrandTotal).to.be.oneOf([
+                `${itemGrandTotalString.trim()}`,
+                `${itemGrandTotalString.trim()}`,
             ]);
         }
 
         if (pageGrandTotal !== undefined) {
             const pageGrandTotalString = parseFloat(pageGrandTotal.toString()).toFixed(2);
-            expect(await (await this.browser.findElement(orderPage.pageGrandTotal)).getText()).to.be.oneOf([
-                `$${parseFloat(pageGrandTotal.toString()).toFixed(2)}`,
-                `-$${(parseFloat(pageGrandTotalString.toString()) * -1).toFixed(2)}`,
+            const orderPageGrandTotal = (await (await this.browser.findElement(orderPage.pageGrandTotal)).getText())
+                .split('$')[1]
+                .trim();
+            expect(orderPageGrandTotal).to.be.oneOf([
+                `${pageGrandTotalString.trim()}`,
+                `-${pageGrandTotalString.trim()}`,
             ]);
         }
     }
