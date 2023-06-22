@@ -106,7 +106,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 slug_path = `visit_flow_auto_${randomString}`;
                 upsertedListingsToVisitFlowGroups = [];
                 upsertedListingsToVisitFlows = [];
-                salesOrderItemName = 'MaNa15';
+                salesOrderItemName = 'MaNa22';
             });
 
             after(async function () {
@@ -311,6 +311,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
                     await slugs.isSpinnerDone();
                     await slugs.waitTillVisible(slugs.MappedSlugs_Title, 15000);
+                    // await slugs.clickTab('Slugs_Tab');
                     driver.sleep(2 * 1000);
                     await e2eUtils.logOutLogIn(email, password);
                     await webAppHomePage.isSpinnerDone();
@@ -323,6 +324,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         10000,
                     );
                     expect(await slugNameAtMappedSlugsSmallDisplayInRepCard.getText()).to.contain(slug_path);
+                    await slugs.clickTab('Slugs_Tab');
                     driver.sleep(1 * 1000);
                 });
             });
@@ -419,9 +421,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.clickElement('VisitFlow_OrdersChooseCatalogDialog_DoneButton');
                     await visitFlow.isSpinnerDone();
                     // Choosing an item in Order Center:
+                    await orderPage.searchInOrderCenter(salesOrderItemName);
                     await driver.click(
                         orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(salesOrderItemName),
                     );
+                    await orderPage.clearOrderCenterSearch();
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_DefaultCatalog_CartButton, 15000);
                     await visitFlow.clickElement('VisitFlow_DefaultCatalog_CartButton');
@@ -689,6 +693,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     pageBuilder.pause(0.2 * 1000);
                     await pageBuilder.deleteFromListByName(pageName);
                     pageBuilder.pause(3 * 1000);
+                    await pageBuilder.isSpinnerDone();
                     await pageBuilder.searchForPageByName(pageName);
                     expect(
                         await (await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)).getText(),

@@ -69,7 +69,7 @@ export class AccountDashboardLayout extends AddonPage {
                 await settingsSidePanel.selectSettingsByID('Accounts');
                 await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
                 await this.isSpinnerDone();
-                driver.sleep(10 * 1000);
+                driver.sleep(20 * 1000);
                 await driver.switchTo(this.AddonContainerIframe);
                 await this.waitTillVisible(this.AccountDashboardLayout_Container, 15000);
                 await this.waitTillVisible(this.AccountDashboardLayout_Title, 15000);
