@@ -208,7 +208,42 @@ export async function ResourceListAbiTests(email: string, password: string) {
                                         : await elemntDoNotExist('MultiCheckbox');
                                     break;
                                 case 'Line Menu':
-                                    isDisplayed ? await elemntExist('LineMenu') : await elemntDoNotExist('LineMenu');
+                                    switch (title) {
+                                        case 'Items Basic':
+                                            await lineMenuSingleDoNotExist();
+                                            break;
+                                        case 'Accounts Basic':
+                                            await lineMenuMultiDoNotExist();
+                                            break;
+                                        case 'Accounts Selection - Multi':
+                                            await lineMenuMultiDoNotExist();
+                                            break;
+                                        case 'Accounts Selection - Single':
+                                            await lineMenuSingleDoNotExist();
+                                            break;
+                                        case 'Accounts Selection - None':
+                                            await webAppList.clickOnRowByIndex();
+                                            await webAppList.isSpinnerDone();
+                                            await elemntDoNotExist('LineMenu');
+                                            // resourceListABI.pause(0.2 * 1000);
+                                            // await webAppList.clickOnRowByIndex();
+                                            // await webAppList.isSpinnerDone();
+                                            // await elemntDoNotExist('LineMenu');
+                                            resourceListABI.pause(2 * 1000);
+                                            break;
+                                        case 'ReferenceAccount with 2 Views - Tests':
+                                            await lineMenuMultiExist();
+                                            break;
+                                        case 'FiltersAccRef with 2 Views - Tests':
+                                            await lineMenuMultiExist();
+                                            break;
+
+                                        default:
+                                            isDisplayed
+                                                ? await elemntExist('LineMenu')
+                                                : await elemntDoNotExist('LineMenu');
+                                            break;
+                                    }
                                     break;
 
                                 default:
@@ -216,6 +251,26 @@ export async function ResourceListAbiTests(email: string, password: string) {
                             }
                         });
                     });
+                    switch (title) {
+                        case 'ReferenceAccount with 2 Views - Tests':
+                            it('Line Menu - Disappear', async () => {
+                                // await webAppList.clickOnCheckBoxByElementIndex();
+                                // await webAppList.isSpinnerDone();
+                                // await elemntDoNotExist('LineMenu');
+                                // resourceListABI.pause(2 * 1000);
+                                await lineMenuMultiDisappear();
+                            });
+
+                            break;
+                        case 'FiltersAccRef with 2 Views - Tests':
+                            it('Line Menu - Disappear', async () => {
+                                await lineMenuMultiDisappear();
+                            });
+                            break;
+
+                        default:
+                            break;
+                    }
                 });
             });
             // describe('Items Basic - Tests', async () => {
@@ -596,4 +651,42 @@ export async function ResourceListAbiTests(email: string, password: string) {
             expect(theError.message).to.be.undefined;
         }
     }
+
+    async function lineMenuMultiDoNotExist() {
+        await webAppList.clickOnCheckBoxByElementIndex();
+        await webAppList.isSpinnerDone();
+        await elemntDoNotExist('LineMenu');
+        resourceListABI.pause(0.2 * 1000);
+        await webAppList.clickOnCheckBoxByElementIndex();
+        await webAppList.isSpinnerDone();
+        await elemntDoNotExist('LineMenu');
+        resourceListABI.pause(2 * 1000);
+    }
+
+    async function lineMenuMultiExist() {
+        await webAppList.clickOnCheckBoxByElementIndex();
+        await webAppList.isSpinnerDone();
+        await elemntExist('LineMenu');
+        resourceListABI.pause(0.2 * 1000);
+    }
+
+    async function lineMenuSingleDoNotExist() {
+        await webAppList.clickOnRadioButtonByElementIndex();
+        await webAppList.isSpinnerDone();
+        await elemntDoNotExist('LineMenu');
+        resourceListABI.pause(0.2 * 1000);
+        await webAppList.clickOnRadioButtonByElementIndex();
+        await webAppList.isSpinnerDone();
+        await elemntDoNotExist('LineMenu');
+        resourceListABI.pause(2 * 1000);
+    }
+
+    async function lineMenuMultiDisappear() {
+        await webAppList.clickOnCheckBoxByElementIndex();
+        await webAppList.isSpinnerDone();
+        await elemntDoNotExist('LineMenu');
+        resourceListABI.pause(2 * 1000);
+    }
+
+    // async function lineMenuSingleExist() {}
 }

@@ -247,16 +247,21 @@ export class AddonPage extends Page {
      * @returns the id of the order submitted as string
      */
     public async testCartItems(wholePageExpectedPrice: string, ...itemsToValidate: OrderPageItem[]): Promise<void> {
-        expect(await (await this.browser.findElement(this.WholeOrderPrice)).getAttribute('title')).to.equal(
-            wholePageExpectedPrice,
-        );
+        const wholeOrderPrice = (await (await this.browser.findElement(this.WholeOrderPrice)).getAttribute('title'))
+            .split('$')[1]
+            .trim(); // Hagit June 23
+        expect(wholeOrderPrice).to.equal(wholePageExpectedPrice);
         for (let i = 0; i < itemsToValidate.length; i++) {
-            expect(await (await this.browser.findElement(itemsToValidate[i].qty)).getAttribute('title')).to.equal(
-                itemsToValidate[i].expectedQty,
-            );
-            expect(
-                await (await this.browser.findElement(itemsToValidate[i].totalUnitPrice)).getAttribute('title'),
-            ).to.equal(itemsToValidate[i].expectedUnitPrice);
+            const itemQuantity = (await (await this.browser.findElement(itemsToValidate[i].qty)).getAttribute('title'))
+                .split('$')[1]
+                .trim();
+            const itemTotalUnitPrice = (
+                await (await this.browser.findElement(itemsToValidate[i].totalUnitPrice)).getAttribute('title')
+            )
+                .split('$')[1]
+                .trim();
+            expect(itemQuantity).to.equal(itemsToValidate[i].expectedQty);
+            expect(itemTotalUnitPrice).to.equal(itemsToValidate[i].expectedUnitPrice);
         }
     }
 
