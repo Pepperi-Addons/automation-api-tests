@@ -568,6 +568,45 @@ const passCreate = process.env.npm_config_pass_create as string;
                 null,
                 'stage',
             );
+            if (
+                latestVersionOfTestedAddonSb !== latestVersionOfTestedAddonEu ||
+                latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonEu ||
+                latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonSb
+            ) {
+                const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`;
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
+                await Promise.all([
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDEU,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassEU,
+                    ),
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDProd,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPass,
+                    ),
+                    unavailableAddonVersion(
+                        'stage',
+                        addonName,
+                        addonEntryUUIDSb,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassSB,
+                    ),
+                ]);
+                throw new Error(errorString);
+            }
+            console.log(
+                `####################### Running For: ${addonName}(${addonUUID}), version: ${latestVersionOfTestedAddonProd} #######################`,
+            );
+            await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonProd, generalService);
             try {
                 await Promise.all([
                     handleDevTestInstallation(
@@ -626,38 +665,9 @@ const passCreate = process.env.npm_config_pass_create as string;
                 ]);
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
-            //2. validate tested addon is installed on latest available version
-            // const [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
-            //     addonUUID,
-            //     varPass,
-            //     null,
-            //     'prod',
-            // );
-            // const [latestVersionOfTestedAddonEu, addonEntryUUIDEU] = await generalService.getLatestAvailableVersion(
-            //     addonUUID,
-            //     varPassEU,
-            //     null,
-            //     'prod',
-            // );
-            // const [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await generalService.getLatestAvailableVersion(
-            //     addonUUID,
-            //     varPassSB,
-            //     null,
-            //     'stage',
-            // );
-            if (
-                latestVersionOfTestedAddonSb !== latestVersionOfTestedAddonEu ||
-                latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonEu ||
-                latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonSb
-            ) {
-                throw new Error(
-                    `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`,
-                );
-            }
             console.log(
                 `####################### ${addonName} Version: ${latestVersionOfTestedAddonProd} #######################`,
             );
-            debugger;
             const isInstalled = await Promise.all([
                 validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddonEu, 'prod'),
                 validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddonProd, 'prod'),
@@ -993,10 +1003,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 console.log('Dev Test Didnt Pass - No Point In Running Approvment');
                 return;
             } else if (!doWeHaveSuchAppTest(addonName)) {
-                //https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons/lastBuild/api/json
-                //
                 await reportToTeams(
-                    //-->https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons/320/console
                     addonName,
                     addonUUID,
                     service,
@@ -1069,11 +1076,38 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw new Error(
-                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
-                    );
+                    const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    await reportToTeamsMessage(addonName, addonUUID, addonVersionProd, errorString, service);
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEu,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            addonVersionProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(errorString);
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                await reportBuildStarted(addonName, addonUUID, addonVersionProd, generalService);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
                 jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL';
@@ -1144,11 +1178,38 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw new Error(
-                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
-                    );
+                    const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    await reportToTeamsMessage(addonName, addonUUID, addonVersionProd, errorString, service);
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEu,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            addonVersionProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(errorString);
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                await reportBuildStarted(addonName, addonUUID, addonVersionProd, generalService);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
                 jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Production%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
@@ -1179,6 +1240,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 break;
             }
             case 'CPI DATA':
+            case 'ADDONS-CPI-DATA':
             case 'CPI-DATA': {
                 addonUUID = 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b';
                 const responseProd = await service.fetchStatus(
@@ -1219,11 +1281,38 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw new Error(
-                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
-                    );
+                    const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    await reportToTeamsMessage(addonName, addonUUID, addonVersionProd, errorString, service);
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEu,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            addonVersionProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(errorString);
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                await reportBuildStarted(addonName, addonUUID, addonVersionProd, generalService);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
                 jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Production%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
@@ -1293,11 +1382,38 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw new Error(
-                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
-                    );
+                    const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    await reportToTeamsMessage(addonName, addonUUID, addonVersionProd, errorString, service);
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEu,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            addonVersionProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(errorString);
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                await reportBuildStarted(addonName, addonUUID, addonVersionProd, generalService);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
                 jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20E1%20Production%20-%20PNS';
@@ -1368,11 +1484,38 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw new Error(
-                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
-                    );
+                    const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    await reportToTeamsMessage(addonName, addonUUID, addonVersionProd, errorString, service);
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEu,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            addonVersionProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(errorString);
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                await reportBuildStarted(addonName, addonUUID, addonVersionProd, generalService);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
                 jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20G1%20Production%20-%20UDC';
@@ -1442,11 +1585,38 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw new Error(
-                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
-                    );
+                    const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    await reportToTeamsMessage(addonName, addonUUID, addonVersionProd, errorString, service);
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEu,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            addonVersionProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(errorString);
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                await reportBuildStarted(addonName, addonUUID, addonVersionProd, generalService);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
                 jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20H1%20Production%20-%20%20Scheduler';
@@ -1557,11 +1727,38 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw new Error(
-                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
-                    );
+                    const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    await reportToTeamsMessage(addonName, addonUUID, addonVersionProd, errorString, service);
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEu,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            addonVersionProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(errorString);
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                await reportBuildStarted(addonName, addonUUID, addonVersionProd, generalService);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
                 jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B1%20Production%20-%20DIMX';
@@ -1673,11 +1870,38 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw new Error(
-                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
-                    );
+                    const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    await reportToTeamsMessage(addonName, addonUUID, addonVersionProd, errorString, service);
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEu,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            addonVersionProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(errorString);
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                await reportBuildStarted(addonName, addonUUID, addonVersionProd, generalService);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
                 jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20C1%20Production%20-%20DATA%20INDEX%20FRAMEWORK';
@@ -1748,11 +1972,38 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw new Error(
-                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
-                    );
+                    const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    await reportToTeamsMessage(addonName, addonUUID, addonVersionProd, errorString, service);
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEu,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            addonVersionProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(errorString);
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                await reportBuildStarted(addonName, addonUUID, addonVersionProd, generalService);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
                 jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20D1%20Production%20-%20PFS';
@@ -1851,11 +2102,38 @@ const passCreate = process.env.npm_config_pass_create as string;
                     addonVersionProd !== addonVersionEU ||
                     addonVersionProd !== addonVersionSb
                 ) {
-                    throw new Error(
-                        `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`,
-                    );
+                    const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
+                    await reportToTeamsMessage(addonName, addonUUID, addonVersionProd, errorString, service);
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEu,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            addonVersionProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            addonVersionProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(errorString);
                 }
                 console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
+                await reportBuildStarted(addonName, addonUUID, addonVersionProd, generalService);
                 const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
                 jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20F1%20EU%20-%20Core';
@@ -1987,7 +2265,7 @@ const passCreate = process.env.npm_config_pass_create as string;
 function handleTeamsURL(addonName) {
     switch (addonName) {
         case 'ADAL':
-            return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/b5117c82e129495fabbe8291e0cb615e/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/60921b31c28a4d208953f6597131368f/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
         case 'NEBULA':
             return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/3e20b0b37e1148d0b12ccf82adb619c4/79d2ba58-6e75-40c6-be86-84e3c74fd694';
         case 'DIMX':
@@ -2005,12 +2283,12 @@ function handleTeamsURL(addonName) {
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/a40ddc371df64933aa4bc369a060b1d6/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
         case 'SCHEDULER':
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/2f1a729eb28642dd9dfe498b59cda766/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-        //TODO
-        // case 'CPI-DATA':
-        // case 'CPI DATA':
-        // case 'GENERIC-RESOURCE':
-        // case 'GENERIC RESOURCE':
-        //     return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/2f1a729eb28642dd9dfe498b59cda766/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+        case 'CPI-DATA': //->
+        case 'CPI DATA':
+            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/344df5f19cc04563a9b1c35a02984e3d/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+        case 'GENERIC-RESOURCE':
+        case 'GENERIC RESOURCE':
+            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/ddaaedb079ce4d0c9d1fcfb3ca9843f1/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
     }
 }
 
@@ -2504,6 +2782,35 @@ async function reportToTeamsMessage(addonName, addonUUID, addonVersion, error, s
         Status: 'ERROR',
         Message: message,
         UserWebhook: handleTeamsURL(addonName),
+    };
+    const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
+        method: 'POST',
+        headers: {
+            'X-Pepperi-SecretKey': await service.getSecret()[1],
+            'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+        },
+        body: JSON.stringify(bodyToSend),
+    });
+    if (monitoringResponse.Ok !== true) {
+        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+    }
+    if (monitoringResponse.Status !== 200) {
+        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+    }
+    if (Object.keys(monitoringResponse.Error).length !== 0) {
+        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+    }
+}
+
+async function reportBuildStarted(addonName, addonUUID, addonVersion, service: GeneralService) {
+    const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Started Building`;
+    const bodyToSend = {
+        Name: `${addonName}, ${addonUUID}, ${addonVersion}`,
+        Description: message,
+        Status: 'INFO',
+        Message: message,
+        UserWebhook:
+            'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/9c8e4de02a81424fbe9f51b99a2d484a/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
     };
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
