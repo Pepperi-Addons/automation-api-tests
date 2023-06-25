@@ -575,32 +575,32 @@ const passCreate = process.env.npm_config_pass_create as string;
             ) {
                 const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`;
                 await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
-                await Promise.all([
-                    unavailableAddonVersion(
-                        'prod',
-                        addonName,
-                        addonEntryUUIDEU,
-                        latestVersionOfTestedAddonProd,
-                        addonUUID,
-                        varPassEU,
-                    ),
-                    unavailableAddonVersion(
-                        'prod',
-                        addonName,
-                        addonEntryUUIDProd,
-                        latestVersionOfTestedAddonProd,
-                        addonUUID,
-                        varPass,
-                    ),
-                    unavailableAddonVersion(
-                        'stage',
-                        addonName,
-                        addonEntryUUIDSb,
-                        latestVersionOfTestedAddonProd,
-                        addonUUID,
-                        varPassSB,
-                    ),
-                ]);
+                // await Promise.all([
+                //     unavailableAddonVersion(
+                //         'prod',
+                //         addonName,
+                //         addonEntryUUIDEU,
+                //         latestVersionOfTestedAddonProd,
+                //         addonUUID,
+                //         varPassEU,
+                //     ),
+                //     unavailableAddonVersion(
+                //         'prod',
+                //         addonName,
+                //         addonEntryUUIDProd,
+                //         latestVersionOfTestedAddonProd,
+                //         addonUUID,
+                //         varPass,
+                //     ),
+                //     unavailableAddonVersion(
+                //         'stage',
+                //         addonName,
+                //         addonEntryUUIDSb,
+                //         latestVersionOfTestedAddonProd,
+                //         addonUUID,
+                //         varPassSB,
+                //     ),
+                // ]);
                 throw new Error(errorString);
             }
             console.log(
@@ -637,32 +637,32 @@ const passCreate = process.env.npm_config_pass_create as string;
             } catch (error) {
                 const errorString = (error as any).message;
                 await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
-                await Promise.all([
-                    unavailableAddonVersion(
-                        'prod',
-                        addonName,
-                        addonEntryUUIDEU,
-                        latestVersionOfTestedAddonProd,
-                        addonUUID,
-                        varPassEU,
-                    ),
-                    unavailableAddonVersion(
-                        'prod',
-                        addonName,
-                        addonEntryUUIDProd,
-                        latestVersionOfTestedAddonProd,
-                        addonUUID,
-                        varPass,
-                    ),
-                    unavailableAddonVersion(
-                        'stage',
-                        addonName,
-                        addonEntryUUIDSb,
-                        latestVersionOfTestedAddonProd,
-                        addonUUID,
-                        varPassSB,
-                    ),
-                ]);
+                // await Promise.all([
+                //     unavailableAddonVersion(
+                //         'prod',
+                //         addonName,
+                //         addonEntryUUIDEU,
+                //         latestVersionOfTestedAddonProd,
+                //         addonUUID,
+                //         varPassEU,
+                //     ),
+                //     unavailableAddonVersion(
+                //         'prod',
+                //         addonName,
+                //         addonEntryUUIDProd,
+                //         latestVersionOfTestedAddonProd,
+                //         addonUUID,
+                //         varPass,
+                //     ),
+                //     unavailableAddonVersion(
+                //         'stage',
+                //         addonName,
+                //         addonEntryUUIDSb,
+                //         latestVersionOfTestedAddonProd,
+                //         addonUUID,
+                //         varPassSB,
+                //     ),
+                // ]);
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
             console.log(
