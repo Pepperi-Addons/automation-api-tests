@@ -26,12 +26,102 @@ export async function ResourceListAbiTests(email: string, password: string) {
 
     describe('Resource List ABI UI tests', async () => {
         /** Description **/
-        /** for the purpose of this test an Addon named "resource_list_abi" was created **/
-        /** it's code can be found at the following repository: https://github.com/Pepperi-Addons/resource-list-abi-tests/tree/main/client-side/src/app/settings/rl-abi **/
-        /** the Addon provides a set of list containers that through the "Resource List ABI" are displayed as Generic List inside a Dialog - upon a button click **/
-        /** the access to the UI of the Addon is either via the Settings Side Panel, or through the path:
+        /* for the purpose of this test an Addon named "resource_list_abi" was created *
+        /* it's code can be found at the following repository: https://github.com/Pepperi-Addons/resource-list-abi-tests/tree/main/client-side/src/app/settings/rl-abi *
+        /* the Addon provides a set of list containers that through the "Resource List ABI" are displayed as Generic List inside a Dialog - upon a button click *
+        /* the access to the UI of the Addon is either via the Settings Side Panel, or through the path:
          * https://app.pepperi.com/settings_block/cd3ba412-66a4-42f4-8abc-65768c5dc606/resource_list_abi/view *
-         * or through the Home Page Slug: "Resource List ABI" **/
+         * or through the Home Page Slug: "Resource List ABI" */
+
+        const lists = {
+            'Items Basic': { listToSelect: '', expectedTitle: 'Items Basic', expectedNumOfResults: 78 },
+            'Accounts Basic': {
+                listToSelect: 'Accounts View - Basic',
+                expectedTitle: 'Accounts Basic',
+                expectedNumOfResults: 4,
+            },
+            'Accounts Selection - Multi': {
+                listToSelect: 'Accounts with Selection Type "Multi"',
+                expectedTitle: 'Accounts Selection Type Multi',
+                expectedNumOfResults: 4,
+            },
+            'Accounts Selection - Single': {
+                listToSelect: 'Accounts with Selection Type "Single"',
+                expectedTitle: 'Accounts Selection Type Single',
+                expectedNumOfResults: 4,
+            },
+            'Accounts Selection - None': {
+                listToSelect: 'Accounts with Selection Type "None"',
+                expectedTitle: 'Accounts Selection Type None',
+                expectedNumOfResults: 4,
+            },
+            'ReferenceAccount with 2 Views - Tests': {
+                listToSelect: 'ReferenceAccount with 2 Views',
+                expectedTitle: 'Reference Account',
+                expectedNumOfResults: 7,
+            },
+            'FiltersAccRef with 2 Views - Tests': {
+                listToSelect: 'FiltersAccRef with 2 Views',
+                expectedTitle: 'Filters Acc Ref ABI View',
+                expectedNumOfResults: 28,
+            },
+        };
+        const elements = {
+            Menu: {
+                'Items Basic': false,
+                'Accounts Basic': false,
+                'Accounts Selection - Multi': false,
+                'Accounts Selection - Single': false,
+                'Accounts Selection - None': false,
+                'ReferenceAccount with 2 Views - Tests': true,
+                'FiltersAccRef with 2 Views - Tests': true,
+            },
+            'Search Input': {
+                'Items Basic': false,
+                'Accounts Basic': false,
+                'Accounts Selection - Multi': false,
+                'Accounts Selection - Single': false,
+                'Accounts Selection - None': false,
+                'ReferenceAccount with 2 Views - Tests': true,
+                'FiltersAccRef with 2 Views - Tests': true,
+            },
+            'Smart Search': {
+                'Items Basic': false,
+                'Accounts Basic': false,
+                'Accounts Selection - Multi': false,
+                'Accounts Selection - Single': false,
+                'Accounts Selection - None': false,
+                'ReferenceAccount with 2 Views - Tests': true,
+                'FiltersAccRef with 2 Views - Tests': true,
+            },
+            'Single Radio Button': {
+                'Items Basic': true,
+                'Accounts Basic': false,
+                'Accounts Selection - Multi': false,
+                'Accounts Selection - Single': true,
+                'Accounts Selection - None': false,
+                'ReferenceAccount with 2 Views - Tests': false,
+                'FiltersAccRef with 2 Views - Tests': false,
+            },
+            'Select All Checkbox': {
+                'Items Basic': false,
+                'Accounts Basic': true,
+                'Accounts Selection - Multi': true,
+                'Accounts Selection - Single': false,
+                'Accounts Selection - None': false,
+                'ReferenceAccount with 2 Views - Tests': true,
+                'FiltersAccRef with 2 Views - Tests': true,
+            },
+            'Line Menu': {
+                'Items Basic': false,
+                'Accounts Basic': false,
+                'Accounts Selection - Multi': false,
+                'Accounts Selection - Single': false,
+                'Accounts Selection - None': false,
+                'ReferenceAccount with 2 Views - Tests': true,
+                'FiltersAccRef with 2 Views - Tests': true,
+            },
+        };
 
         before(async function () {
             driver = await Browser.initiateChrome();
@@ -70,103 +160,15 @@ export async function ResourceListAbiTests(email: string, password: string) {
                 driver.sleep(0.5 * 1000);
                 await webAppHomePage.collectEndTestData(this);
             });
-            const lists = {
-                'Items Basic': { listToSelect: '', expectedTitle: 'Items Basic', expectedNumOfResults: 78 },
-                'Accounts Basic': {
-                    listToSelect: 'Accounts View - Basic',
-                    expectedTitle: 'Accounts Basic',
-                    expectedNumOfResults: 4,
-                },
-                'Accounts Selection - Multi': {
-                    listToSelect: 'Accounts with Selection Type "Multi"',
-                    expectedTitle: 'Accounts Selection Type Multi',
-                    expectedNumOfResults: 4,
-                },
-                'Accounts Selection - Single': {
-                    listToSelect: 'Accounts with Selection Type "Single"',
-                    expectedTitle: 'Accounts Selection Type Single',
-                    expectedNumOfResults: 4,
-                },
-                'Accounts Selection - None': {
-                    listToSelect: 'Accounts with Selection Type "None"',
-                    expectedTitle: 'Accounts Selection Type None',
-                    expectedNumOfResults: 4,
-                },
-                'ReferenceAccount with 2 Views - Tests': {
-                    listToSelect: 'ReferenceAccount with 2 Views',
-                    expectedTitle: 'Reference Account',
-                    expectedNumOfResults: 7,
-                },
-                'FiltersAccRef with 2 Views - Tests': {
-                    listToSelect: 'FiltersAccRef with 2 Views',
-                    expectedTitle: 'Filters Acc Ref ABI View',
-                    expectedNumOfResults: 28,
-                },
-            };
-            const elements = {
-                Menu: {
-                    'Items Basic': false,
-                    'Accounts Basic': false,
-                    'Accounts Selection - Multi': false,
-                    'Accounts Selection - Single': false,
-                    'Accounts Selection - None': false,
-                    'ReferenceAccount with 2 Views - Tests': true,
-                    'FiltersAccRef with 2 Views - Tests': true,
-                },
-                'Search Input': {
-                    'Items Basic': false,
-                    'Accounts Basic': false,
-                    'Accounts Selection - Multi': false,
-                    'Accounts Selection - Single': false,
-                    'Accounts Selection - None': false,
-                    'ReferenceAccount with 2 Views - Tests': true,
-                    'FiltersAccRef with 2 Views - Tests': true,
-                },
-                'Smart Search': {
-                    'Items Basic': false,
-                    'Accounts Basic': false,
-                    'Accounts Selection - Multi': false,
-                    'Accounts Selection - Single': false,
-                    'Accounts Selection - None': false,
-                    'ReferenceAccount with 2 Views - Tests': true,
-                    'FiltersAccRef with 2 Views - Tests': true,
-                },
-                'Single Radio Button': {
-                    'Items Basic': true,
-                    'Accounts Basic': false,
-                    'Accounts Selection - Multi': false,
-                    'Accounts Selection - Single': true,
-                    'Accounts Selection - None': false,
-                    'ReferenceAccount with 2 Views - Tests': false,
-                    'FiltersAccRef with 2 Views - Tests': false,
-                },
-                'Select All Checkbox': {
-                    'Items Basic': false,
-                    'Accounts Basic': true,
-                    'Accounts Selection - Multi': true,
-                    'Accounts Selection - Single': false,
-                    'Accounts Selection - None': false,
-                    'ReferenceAccount with 2 Views - Tests': true,
-                    'FiltersAccRef with 2 Views - Tests': true,
-                },
-                'Line Menu': {
-                    'Items Basic': false,
-                    'Accounts Basic': false,
-                    'Accounts Selection - Multi': false,
-                    'Accounts Selection - Single': false,
-                    'Accounts Selection - None': false,
-                    'ReferenceAccount with 2 Views - Tests': true,
-                    'FiltersAccRef with 2 Views - Tests': true,
-                },
-            };
-            Object.keys(lists).forEach((title) => {
-                describe(title, async () => {
+
+            Object.keys(lists).forEach((listTitle) => {
+                describe(listTitle, async () => {
                     after(async function () {
                         await driver.refresh();
                     });
                     let enteringListTitle = '';
 
-                    switch (title) {
+                    switch (listTitle) {
                         case 'Items Basic':
                             enteringListTitle = 'Entering Default Selected List';
                             break;
@@ -177,20 +179,20 @@ export async function ResourceListAbiTests(email: string, password: string) {
                     }
                     it(enteringListTitle, async () => {
                         await listPickAndVerify(
-                            lists[title].listToSelect,
-                            lists[title].expectedTitle,
-                            lists[title].expectedNumOfResults,
+                            lists[listTitle].listToSelect,
+                            lists[listTitle].expectedTitle,
+                            lists[listTitle].expectedNumOfResults,
                         );
                         resourceListABI.pause(0.1 * 1000);
                     });
-                    if (lists[title].expectedNumOfResults > 0) {
+                    if (lists[listTitle].expectedNumOfResults > 0) {
                         it('List Row - Appear', async () => {
                             await elemntExist('ListRow');
                             resourceListABI.pause(0.2 * 1000);
                         });
                     }
                     Object.keys(elements).forEach((webElement) => {
-                        const isDisplayed = elements[webElement][title];
+                        const isDisplayed = elements[webElement][listTitle];
                         it(`${webElement} - ${isDisplayed ? 'DISPLAYED' : 'NOT Displayed'}`, async () => {
                             // debugger
                             switch (webElement) {
@@ -216,7 +218,7 @@ export async function ResourceListAbiTests(email: string, password: string) {
                                         : await elemntDoNotExist('MultiCheckbox');
                                     break;
                                 case 'Line Menu':
-                                    switch (title) {
+                                    switch (listTitle) {
                                         case 'Items Basic':
                                             await lineMenuSingleDoNotExist();
                                             break;
@@ -259,7 +261,7 @@ export async function ResourceListAbiTests(email: string, password: string) {
                             }
                         });
                     });
-                    switch (title) {
+                    switch (listTitle) {
                         case 'ReferenceAccount with 2 Views - Tests':
                             it('Line Menu - Disappear', async () => {
                                 // await webAppList.clickOnCheckBoxByElementIndex();
