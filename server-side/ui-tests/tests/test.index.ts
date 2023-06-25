@@ -575,38 +575,38 @@ const passCreate = process.env.npm_config_pass_create as string;
             ) {
                 const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`;
                 await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
-                // await Promise.all([
-                //     unavailableAddonVersion(
-                //         'prod',
-                //         addonName,
-                //         addonEntryUUIDEU,
-                //         latestVersionOfTestedAddonProd,
-                //         addonUUID,
-                //         varPassEU,
-                //     ),
-                //     unavailableAddonVersion(
-                //         'prod',
-                //         addonName,
-                //         addonEntryUUIDProd,
-                //         latestVersionOfTestedAddonProd,
-                //         addonUUID,
-                //         varPass,
-                //     ),
-                //     unavailableAddonVersion(
-                //         'stage',
-                //         addonName,
-                //         addonEntryUUIDSb,
-                //         latestVersionOfTestedAddonProd,
-                //         addonUUID,
-                //         varPassSB,
-                //     ),
-                // ]);
+                await Promise.all([
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDEU,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassEU,
+                    ),
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDProd,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPass,
+                    ),
+                    unavailableAddonVersion(
+                        'stage',
+                        addonName,
+                        addonEntryUUIDSb,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassSB,
+                    ),
+                ]);
                 throw new Error(errorString);
             }
             console.log(
                 `####################### Running For: ${addonName}(${addonUUID}), version: ${latestVersionOfTestedAddonProd} #######################`,
             );
-            await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonProd, generalService);
+            // await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonProd, generalService);
             try {
                 await Promise.all([
                     handleDevTestInstallation(
@@ -637,32 +637,32 @@ const passCreate = process.env.npm_config_pass_create as string;
             } catch (error) {
                 const errorString = (error as any).message;
                 await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
-                // await Promise.all([
-                //     unavailableAddonVersion(
-                //         'prod',
-                //         addonName,
-                //         addonEntryUUIDEU,
-                //         latestVersionOfTestedAddonProd,
-                //         addonUUID,
-                //         varPassEU,
-                //     ),
-                //     unavailableAddonVersion(
-                //         'prod',
-                //         addonName,
-                //         addonEntryUUIDProd,
-                //         latestVersionOfTestedAddonProd,
-                //         addonUUID,
-                //         varPass,
-                //     ),
-                //     unavailableAddonVersion(
-                //         'stage',
-                //         addonName,
-                //         addonEntryUUIDSb,
-                //         latestVersionOfTestedAddonProd,
-                //         addonUUID,
-                //         varPassSB,
-                //     ),
-                // ]);
+                await Promise.all([
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDEU,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassEU,
+                    ),
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDProd,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPass,
+                    ),
+                    unavailableAddonVersion(
+                        'stage',
+                        addonName,
+                        addonEntryUUIDSb,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassSB,
+                    ),
+                ]);
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
             console.log(
@@ -689,6 +689,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 varPass,
             );
             console.log(entryUUID);
+            // debugger;
             //3.1 get test names
             try {
                 testsList = await getTestNames(
@@ -922,7 +923,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 //     }
                 // }
             }
-            debugger;
+            // debugger;
             const devPassingEnvs2: string[] = [];
             const devFailedEnvs2: string[] = [];
             if (
@@ -949,7 +950,7 @@ const passCreate = process.env.npm_config_pass_create as string;
             } else {
                 devFailedEnvs2.push('STAGING');
             }
-            debugger;
+            // debugger;
             if (isLocal) {
                 jenkinsLink = 'none, running locally';
             } else {
@@ -2054,7 +2055,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                         ),
                     ]);
                     latestRunProd = await generalService.getLatestJenkinsJobExecutionId(kmsSecret, jobPathPROD);
-                    debugger;
+                    // debugger;
                 }
                 break;
             }
