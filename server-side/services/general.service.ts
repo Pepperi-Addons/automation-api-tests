@@ -27,6 +27,7 @@ export const testData = {
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.%'], //cpi-node (Cross Platform Engine)
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+    'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''],
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.16.%'], //NG14 latest webapp
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
@@ -44,7 +45,6 @@ export const testData = {
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 2/2/23 - has to be upgraded
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-    // system_health: ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '0.0.77'], //needed to be able to report tests results -- notice were locked on a certin version
 };
 
 export const testDataWithNewSync = {
