@@ -21,7 +21,7 @@ chai.use(promised);
 
 export async function ResourceListAbiTests(email: string, password: string, client: Client) {
     /** Description **/
-    /* for the purpose of this test an Addon named "resource_list_abi" was created *
+    /* for the purpose of this test an Addon named "ResourceListABI_Addon" was created *
     /* it's code can be found at the following repository: https://github.com/Pepperi-Addons/resource-list-abi-tests/tree/main/client-side/src/app/settings/rl-abi *
     /* the Addon provides a set of list containers that through the "Resource List ABI" are displayed as Generic List inside a Dialog - upon a button click *
     /* the access to the UI of the Addon is either via the Settings Side Panel, or through the path:
@@ -29,13 +29,14 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     * or through the Home Page Slug: "Resource List ABI" */
 
     const generalService = new GeneralService(client);
+    const udcService = new UDCService(generalService);
     const objectsService = new ObjectsService(generalService);
     const openCatalogService = new OpenCatalogService(generalService);
-    const udcService = new UDCService(generalService);
-    const installedResourceListVersion = (await generalService.getInstalledAddons()).find(
-        (addon) => addon.Addon.Name === 'Resource List',
-    )?.Version;
-    const installedRLABIVersion = (await generalService.getInstalledAddons()).find(
+
+    const installedAddons = await generalService.getInstalledAddons();
+
+    const installedResourceListVersion = installedAddons.find((addon) => addon.Addon.Name === 'Resource List')?.Version;
+    const installedRLABIVersion = installedAddons.find(
         (addon) => addon.Addon.Name === 'ResourceListABI_Addon',
     )?.Version;
     const numOfListingsIn_items = (await openCatalogService.getItems()).length;
@@ -184,17 +185,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             after(async function () {
                 await driver.quit();
             });
-
-            // it('Get RL Version', async () => {
-            //     installedResourceListVersion = (await generalService.getInstalledAddons())
-            //         .find((addon) => addon.Addon.Name === 'Resource List')
-            //         ?.Version;
-            // });
-
-            // it(`Resource List Version: ${installedResourceListVersion}`, async () => {
-            //     console.info('Installed Resource List Version: ', JSON.stringify(installedResourceListVersion, null, 2));
-            //     expect(installedResourceListVersion?.split('.')[1]).to.equal('9');
-            // });
 
             it('Login', async () => {
                 await webAppLoginPage.login(email, password);
