@@ -256,23 +256,24 @@ export class Uom extends AddonPage {
             console.info('workingUomObjectWholeItemQty: ', workingUomObjectWholeItemQty);
             const theDecimalPortionOf_wholeItemQty = (wholeItemQty - Math.floor(wholeItemQty)) * 10;
             console.info('theDecimalPortionOf_wholeItemQty: ', theDecimalPortionOf_wholeItemQty);
-            let newWholeItemQty: number; // Hagit June 23 - checking if when item's quantity has decimal portion - it rounds up
-            if (theDecimalPortionOf_wholeItemQty > 0) {
-                const base =
-                    wholeItemQty > 0
-                        ? wholeItemQty - theDecimalPortionOf_wholeItemQty / 10
-                        : wholeItemQty + theDecimalPortionOf_wholeItemQty / 10;
-                newWholeItemQty = wholeItemQty > 0 ? base + 1 : base - 1;
-            } else {
-                newWholeItemQty = wholeItemQty;
-            }
-            console.info('newWholeItemQty: ', newWholeItemQty);
-            expect(workingUomObjectWholeItemQty).to.equal(newWholeItemQty.toString());
-            // expect(workingUomObjectWholeItemQty).to.equal(
-            //     wholeItemQty.toString().includes('.')
-            //         ? `${parseFloat(wholeItemQty.toString()).toFixed(4)}`
-            //         : wholeItemQty.toString(),
-            // );
+            // let newWholeItemQty: number; // Hagit June 23 - checking if when item's quantity has decimal portion - it rounds up
+            // if (theDecimalPortionOf_wholeItemQty > 0) {
+            //     const base =
+            //         wholeItemQty > 0
+            //             ? wholeItemQty - theDecimalPortionOf_wholeItemQty / 10
+            //             : wholeItemQty + theDecimalPortionOf_wholeItemQty / 10;
+            //     newWholeItemQty = wholeItemQty > 0 ? base + 1 : base - 1;
+            // } else {
+            //     newWholeItemQty = wholeItemQty;
+            // }
+            // console.info('newWholeItemQty: ', newWholeItemQty);
+            // expect(workingUomObjectWholeItemQty).to.equal(newWholeItemQty.toString());
+            expect(workingUomObjectWholeItemQty).to.equal(
+                // Hagit - needs to check if a "Decimal" key is sent (it's value would be 4)
+                wholeItemQty.toString().includes('.')
+                    ? `${parseFloat(wholeItemQty.toString()).toFixed(4)}`
+                    : wholeItemQty.toString(),
+            );
         }
         if (itemGrandTotal !== undefined) {
             const itemGrandTotalString = parseFloat(itemGrandTotal.toString()).toFixed(2);
