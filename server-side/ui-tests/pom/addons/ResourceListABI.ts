@@ -28,4 +28,14 @@ export class ResourceListABI extends AddonPage {
     public ListAbi_LineMenu_button: By = By.xpath('//pep-top-bar//pep-list-actions//pep-menu//button');
     public ListAbi_Search_input: By = By.xpath('//pep-search');
     public ListAbi_SmartSearch_container: By = By.xpath('//pep-smart-filters');
+
+    public ListAbi_Pager_container: By = By.xpath('//pep-list-pager');
+    public ListAbi_PageIndex: By = By.xpath(
+        `${this.ListAbi_Pager_container.value}//pep-textbox[@data-qa="pageIndex"]]//input`,
+    );
+    public ListAbi_NumOfPages: By = By.xpath(
+        `${this.ListAbi_Pager_container.value}//div[contains(@class,"pager-container")]/span[contains(@class,"pep-spacing-element")][3]`,
+    );
+    public ListAbi_Pager_LeftArrow: By = By.xpath(`${this.ListAbi_Pager_container.value}//button[@title="Previous"]`); // when disabled: class="disabled mat-button-disabled"
+    public ListAbi_Pager_RightArrow: By = By.xpath(`${this.ListAbi_Pager_container.value}//button[@title="Next"]`); // when disabled: class="disabled mat-button-disabled"
 }

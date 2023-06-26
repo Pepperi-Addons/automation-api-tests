@@ -1,13 +1,7 @@
 import promised from 'chai-as-promised';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { Browser } from '../utilities/browser';
-import {
-    WebAppLoginPage,
-    WebAppHomePage,
-    WebAppHeader,
-    // WebAppDialog,
-    WebAppList,
-} from '../pom';
+import { WebAppLoginPage, WebAppHomePage, WebAppHeader, WebAppList } from '../pom';
 import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import { ResourceListABI } from '../pom/addons/ResourceListABI';
@@ -49,9 +43,167 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
-    // let webAppDialog: WebAppDialog;
     let webAppList: WebAppList;
     let resourceListABI: ResourceListABI;
+
+    const lists = {
+        'Items Basic': {
+            listToSelect: '',
+            expectedTitle: 'Items Basic',
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: [
+                'Menu',
+                'Search Input',
+                'Smart Search',
+                'Single Radio Button',
+                'Select All Checkbox',
+                'Line Menu',
+            ],
+        },
+        'Accounts Basic': {
+            listToSelect: 'Accounts View - Basic',
+            expectedTitle: 'Accounts Basic',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [
+                'Menu',
+                'Search Input',
+                'Smart Search',
+                'Single Radio Button',
+                'Select All Checkbox',
+                'Line Menu',
+            ],
+        },
+        'Accounts Selection - Multi': {
+            listToSelect: 'Accounts with Selection Type "Multi"',
+            expectedTitle: 'Accounts Selection Type Multi',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [
+                'Menu',
+                'Search Input',
+                'Smart Search',
+                'Single Radio Button',
+                'Select All Checkbox',
+                'Line Menu',
+            ],
+        },
+        'Accounts Selection - Single': {
+            listToSelect: 'Accounts with Selection Type "Single"',
+            expectedTitle: 'Accounts Selection Type Single',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [
+                'Menu',
+                'Search Input',
+                'Smart Search',
+                'Single Radio Button',
+                'Select All Checkbox',
+                'Line Menu',
+            ],
+        },
+        'Accounts Selection - None': {
+            listToSelect: 'Accounts with Selection Type "None"',
+            expectedTitle: 'Accounts Selection Type None',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [
+                'Menu',
+                'Search Input',
+                'Smart Search',
+                'Single Radio Button',
+                'Select All Checkbox',
+                'Line Menu',
+            ],
+        },
+        'ReferenceAccount with 2 Views - Tests': {
+            listToSelect: 'ReferenceAccount with 2 Views',
+            expectedTitle: 'Reference Account',
+            expectedNumOfResults: numOfListingsIn_ReferenceAccountAuto,
+            elements: [
+                'Menu',
+                'Search Input',
+                'Smart Search',
+                'Single Radio Button',
+                'Select All Checkbox',
+                'Line Menu',
+            ],
+        },
+        'FiltersAccRef with 2 Views - Tests': {
+            listToSelect: 'FiltersAccRef with 2 Views',
+            expectedTitle: 'Filters Acc Ref ABI View',
+            expectedNumOfResults: numOfListingsIn_FiltersAccRefAuto,
+            elements: [
+                'Menu',
+                'Search Input',
+                'Smart Search',
+                'Single Radio Button',
+                'Select All Checkbox',
+                'Line Menu',
+            ],
+        },
+    };
+    const elements = {
+        Menu: {
+            'Items Basic': false,
+            'Accounts Basic': false,
+            'Accounts Selection - Multi': false,
+            'Accounts Selection - Single': false,
+            'Accounts Selection - None': false,
+            'ReferenceAccount with 2 Views - Tests': true,
+            'FiltersAccRef with 2 Views - Tests': true,
+        },
+        'Search Input': {
+            'Items Basic': false,
+            'Accounts Basic': false,
+            'Accounts Selection - Multi': false,
+            'Accounts Selection - Single': false,
+            'Accounts Selection - None': false,
+            'ReferenceAccount with 2 Views - Tests': true,
+            'FiltersAccRef with 2 Views - Tests': true,
+        },
+        'Smart Search': {
+            'Items Basic': false,
+            'Accounts Basic': false,
+            'Accounts Selection - Multi': false,
+            'Accounts Selection - Single': false,
+            'Accounts Selection - None': false,
+            'ReferenceAccount with 2 Views - Tests': true,
+            'FiltersAccRef with 2 Views - Tests': true,
+        },
+        'Single Radio Button': {
+            'Items Basic': true,
+            'Accounts Basic': false,
+            'Accounts Selection - Multi': false,
+            'Accounts Selection - Single': true,
+            'Accounts Selection - None': false,
+            'ReferenceAccount with 2 Views - Tests': false,
+            'FiltersAccRef with 2 Views - Tests': false,
+        },
+        'Select All Checkbox': {
+            'Items Basic': false,
+            'Accounts Basic': true,
+            'Accounts Selection - Multi': true,
+            'Accounts Selection - Single': false,
+            'Accounts Selection - None': false,
+            'ReferenceAccount with 2 Views - Tests': true,
+            'FiltersAccRef with 2 Views - Tests': true,
+        },
+        'Line Menu': {
+            'Items Basic': false,
+            'Accounts Basic': false,
+            'Accounts Selection - Multi': false,
+            'Accounts Selection - Single': false,
+            'Accounts Selection - None': false,
+            'ReferenceAccount with 2 Views - Tests': true,
+            'FiltersAccRef with 2 Views - Tests': true,
+        },
+        Pager: {
+            'Items Basic': true,
+            'Accounts Basic': false,
+            'Accounts Selection - Multi': false,
+            'Accounts Selection - Single': false,
+            'Accounts Selection - None': false,
+            'ReferenceAccount with 2 Views - Tests': true,
+            'FiltersAccRef with 2 Views - Tests': true,
+        },
+    };
 
     describe('Resource List ABI Test Suite', async () => {
         before(async function () {
@@ -78,106 +230,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         });
 
         describe('RL ABI UI tests', async () => {
-            const lists = {
-                'Items Basic': {
-                    listToSelect: '',
-                    expectedTitle: 'Items Basic',
-                    expectedNumOfResults: numOfListingsIn_items,
-                },
-                'Accounts Basic': {
-                    listToSelect: 'Accounts View - Basic',
-                    expectedTitle: 'Accounts Basic',
-                    expectedNumOfResults: numOfListingsIn_accounts,
-                },
-                'Accounts Selection - Multi': {
-                    listToSelect: 'Accounts with Selection Type "Multi"',
-                    expectedTitle: 'Accounts Selection Type Multi',
-                    expectedNumOfResults: numOfListingsIn_accounts,
-                },
-                'Accounts Selection - Single': {
-                    listToSelect: 'Accounts with Selection Type "Single"',
-                    expectedTitle: 'Accounts Selection Type Single',
-                    expectedNumOfResults: numOfListingsIn_accounts,
-                },
-                'Accounts Selection - None': {
-                    listToSelect: 'Accounts with Selection Type "None"',
-                    expectedTitle: 'Accounts Selection Type None',
-                    expectedNumOfResults: numOfListingsIn_accounts,
-                },
-                'ReferenceAccount with 2 Views - Tests': {
-                    listToSelect: 'ReferenceAccount with 2 Views',
-                    expectedTitle: 'Reference Account',
-                    expectedNumOfResults: numOfListingsIn_ReferenceAccountAuto,
-                },
-                'FiltersAccRef with 2 Views - Tests': {
-                    listToSelect: 'FiltersAccRef with 2 Views',
-                    expectedTitle: 'Filters Acc Ref ABI View',
-                    expectedNumOfResults: numOfListingsIn_FiltersAccRefAuto,
-                },
-            };
-            const elements = {
-                Menu: {
-                    'Items Basic': false,
-                    'Accounts Basic': false,
-                    'Accounts Selection - Multi': false,
-                    'Accounts Selection - Single': false,
-                    'Accounts Selection - None': false,
-                    'ReferenceAccount with 2 Views - Tests': true,
-                    'FiltersAccRef with 2 Views - Tests': true,
-                },
-                'Search Input': {
-                    'Items Basic': false,
-                    'Accounts Basic': false,
-                    'Accounts Selection - Multi': false,
-                    'Accounts Selection - Single': false,
-                    'Accounts Selection - None': false,
-                    'ReferenceAccount with 2 Views - Tests': true,
-                    'FiltersAccRef with 2 Views - Tests': true,
-                },
-                'Smart Search': {
-                    'Items Basic': false,
-                    'Accounts Basic': false,
-                    'Accounts Selection - Multi': false,
-                    'Accounts Selection - Single': false,
-                    'Accounts Selection - None': false,
-                    'ReferenceAccount with 2 Views - Tests': true,
-                    'FiltersAccRef with 2 Views - Tests': true,
-                },
-                'Single Radio Button': {
-                    'Items Basic': true,
-                    'Accounts Basic': false,
-                    'Accounts Selection - Multi': false,
-                    'Accounts Selection - Single': true,
-                    'Accounts Selection - None': false,
-                    'ReferenceAccount with 2 Views - Tests': false,
-                    'FiltersAccRef with 2 Views - Tests': false,
-                },
-                'Select All Checkbox': {
-                    'Items Basic': false,
-                    'Accounts Basic': true,
-                    'Accounts Selection - Multi': true,
-                    'Accounts Selection - Single': false,
-                    'Accounts Selection - None': false,
-                    'ReferenceAccount with 2 Views - Tests': true,
-                    'FiltersAccRef with 2 Views - Tests': true,
-                },
-                'Line Menu': {
-                    'Items Basic': false,
-                    'Accounts Basic': false,
-                    'Accounts Selection - Multi': false,
-                    'Accounts Selection - Single': false,
-                    'Accounts Selection - None': false,
-                    'ReferenceAccount with 2 Views - Tests': true,
-                    'FiltersAccRef with 2 Views - Tests': true,
-                },
-            };
-
             before(async function () {
                 driver = await Browser.initiateChrome();
                 webAppLoginPage = new WebAppLoginPage(driver);
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
-                // webAppDialog = new WebAppDialog(driver);
                 webAppList = new WebAppList(driver);
                 resourceListABI = new ResourceListABI(driver);
             });
@@ -240,10 +297,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 resourceListABI.pause(0.2 * 1000);
                             });
                         }
-                        Object.keys(elements).forEach((webElement) => {
+
+                        lists[listTitle].elements.forEach((webElement) => {
                             const isDisplayed = elements[webElement][listTitle];
                             it(`${webElement} - ${isDisplayed ? 'DISPLAYED' : 'NOT Displayed'}`, async () => {
-                                // debugger
                                 switch (webElement) {
                                     case 'Menu':
                                         isDisplayed ? await elemntExist('Menu') : await elemntDoNotExist('Menu');
@@ -310,317 +367,17 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 }
                             });
                         });
-                        switch (listTitle) {
-                            case 'ReferenceAccount with 2 Views - Tests':
-                                it('Line Menu - Disappear', async () => {
-                                    // await webAppList.clickOnCheckBoxByElementIndex();
-                                    // await webAppList.isSpinnerDone();
-                                    // await elemntDoNotExist('LineMenu');
-                                    // resourceListABI.pause(2 * 1000);
+                        if (elements['Line Menu'][listTitle]) {
+                            it('Line Menu - Disappear', async () => {
+                                if (elements['Accounts Selection - Multi'][listTitle]) {
                                     await lineMenuMultiDisappear();
-                                });
-
-                                break;
-                            case 'FiltersAccRef with 2 Views - Tests':
-                                it('Line Menu - Disappear', async () => {
-                                    await lineMenuMultiDisappear();
-                                });
-                                break;
-
-                            default:
-                                break;
+                                } else if (elements['Accounts Selection - Single'][listTitle]) {
+                                    await lineMenuSingleDisappear();
+                                }
+                            });
                         }
                     });
                 });
-                // describe('Items Basic - Tests', async () => {
-                //     after(async function () {
-                //         await driver.refresh();
-                //     });
-                //     it('Entering Default Selected List', async () => {
-                //         await listPickAndVerify('', 'Items Basic', 78);
-                //         resourceListABI.pause(0.1 * 1000);
-                //     });
-                //     it('List Row - Appear', async () => {
-                //         await elemntExist('ListRow');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Single Radio Button - Appear', async () => {
-                //         await elemntExist('SingleRadioButton');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Menu - Do Not Appear', async () => {
-                //         await elemntDoNotExist('Menu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Search Input - Do Not Appear', async () => {
-                //         await elemntDoNotExist('Search');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Smart Search - Do Not Appear', async () => {
-                //         await elemntDoNotExist('SmartSearch');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Line Menu - Do Not Appear', async () => {
-                //         await webAppList.clickOnRadioButtonByElementIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntDoNotExist('LineMenu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //         await webAppList.clickOnRadioButtonByElementIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntDoNotExist('LineMenu');
-                //         resourceListABI.pause(2 * 1000);
-                //     });
-                // });
-                // describe('Accounts Basic - Tests', async () => {
-                //     after(async function () {
-                //         await driver.refresh();
-                //     });
-                //     it('Choosing List Data and Opening the Dialog', async () => {
-                //         const listToSelect = 'Accounts View - Basic';
-                //         await listPickAndVerify(listToSelect, 'Accounts Basic', 4);
-                //         resourceListABI.pause(0.1 * 1000);
-                //     });
-                //     it('List Row - Appear', async () => {
-                //         await elemntExist('ListRow');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Select All Checkbox - Appear', async () => {
-                //         await elemntExist('MultiCheckbox');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Menu - Do Not Appear', async () => {
-                //         await elemntDoNotExist('Menu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Search Input - Do Not Appear', async () => {
-                //         await elemntDoNotExist('Search');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Smart Search - Do Not Appear', async () => {
-                //         await elemntDoNotExist('SmartSearch');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Line Menu - Do Not Appear', async () => {
-                //         await webAppList.clickOnCheckBoxByElementIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntDoNotExist('LineMenu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //         await webAppList.clickOnCheckBoxByElementIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntDoNotExist('LineMenu');
-                //         resourceListABI.pause(2 * 1000);
-                //     });
-                // });
-                // describe('Accounts Selection - Multi', async () => {
-                //     after(async function () {
-                //         await driver.refresh();
-                //     });
-                //     it('Choosing List Data and Opening the Dialog', async () => {
-                //         const listToSelect = 'Accounts with Selection Type "Multi"';
-                //         await listPickAndVerify(listToSelect, 'Accounts Selection Type Multi', 4);
-                //         resourceListABI.pause(0.1 * 1000);
-                //     });
-                //     it('List Row - Appear', async () => {
-                //         await elemntExist('ListRow');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Select All Checkbox - Appear', async () => {
-                //         await elemntExist('MultiCheckbox');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Single Radio Button - Do Not Appear', async () => {
-                //         await elemntDoNotExist('SingleRadioButton');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Menu - Do Not Appear', async () => {
-                //         await elemntDoNotExist('Menu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Search Input - Do Not Appear', async () => {
-                //         await elemntDoNotExist('Search');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Smart Search - Do Not Appear', async () => {
-                //         await elemntDoNotExist('SmartSearch');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Line Menu - Do Not Appear', async () => {
-                //         await webAppList.clickOnCheckBoxByElementIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntDoNotExist('LineMenu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //         await webAppList.clickOnCheckBoxByElementIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntDoNotExist('LineMenu');
-                //         resourceListABI.pause(2 * 1000);
-                //     });
-                // });
-                // describe('Accounts Selection - Single', async () => {
-                //     after(async function () {
-                //         await driver.refresh();
-                //     });
-                //     it('Choosing List Data and Opening the Dialog', async () => {
-                //         const listToSelect = 'Accounts with Selection Type "Single"';
-                //         await listPickAndVerify(listToSelect, 'Accounts Selection Type Single', 4);
-                //         resourceListABI.pause(0.1 * 1000);
-                //     });
-                //     it('List Row - Appear', async () => {
-                //         await elemntExist('ListRow');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Single Radio Button - Appear', async () => {
-                //         await elemntExist('SingleRadioButton');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Select All Checkbox - Do Not Appear', async () => {
-                //         await elemntDoNotExist('MultiCheckbox');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Menu - Do Not Appear', async () => {
-                //         await elemntDoNotExist('Menu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Search Input - Do Not Appear', async () => {
-                //         await elemntDoNotExist('Search');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Smart Search - Do Not Appear', async () => {
-                //         await elemntDoNotExist('SmartSearch');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Line Menu - Do Not Appear', async () => {
-                //         await webAppList.clickOnRadioButtonByElementIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntDoNotExist('LineMenu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //         await webAppList.clickOnRadioButtonByElementIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntDoNotExist('LineMenu');
-                //         resourceListABI.pause(2 * 1000);
-                //     });
-                // });
-                // describe('Accounts Selection - None', async () => {
-                //     after(async function () {
-                //         await driver.refresh();
-                //     });
-                //     it('Choosing List Data and Opening the Dialog', async () => {
-                //         const listToSelect = 'Accounts with Selection Type "None"';
-                //         await listPickAndVerify(listToSelect, 'Accounts Selection Type None', 4);
-                //         resourceListABI.pause(0.1 * 1000);
-                //     });
-                //     it('List Row - Appear', async () => {
-                //         await elemntExist('ListRow');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Select All Checkbox - Do Not Appear', async () => {
-                //         await elemntDoNotExist('MultiCheckbox');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Single Radio Button - Do Not Appear', async () => {
-                //         await elemntDoNotExist('SingleRadioButton');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Menu - Do Not Appear', async () => {
-                //         await elemntDoNotExist('Menu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Search Input - Do Not Appear', async () => {
-                //         await elemntDoNotExist('Search');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Smart Search - Do Not Appear', async () => {
-                //         await elemntDoNotExist('SmartSearch');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Line Menu - Do Not Appear', async () => {
-                //         await webAppList.clickOnRowByIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntDoNotExist('LineMenu');
-                //         // resourceListABI.pause(0.2 * 1000);
-                //         // await webAppList.clickOnRowByIndex();
-                //         // await webAppList.isSpinnerDone();
-                //         // await elemntDoNotExist('LineMenu');
-                //         resourceListABI.pause(2 * 1000);
-                //     });
-                // });
-                // describe('ReferenceAccount with 2 Views - Tests', async () => {
-                //     after(async function () {
-                //         await driver.refresh();
-                //     });
-                //     it('Choosing List Data and Opening the Dialog', async () => {
-                //         driver.refresh();
-                //         const listToSelect = 'ReferenceAccount with 2 Views';
-                //         await listPickAndVerify(listToSelect, 'Reference Account', 7);
-                //         resourceListABI.pause(0.1 * 1000);
-                //     });
-                //     it('Menu - Appear', async () => {
-                //         await elemntExist('Menu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Search Input - Appear', async () => {
-                //         await elemntExist('Search');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Smart Search - Appear', async () => {
-                //         await elemntExist('SmartSearch');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Line Menu - Appear', async () => {
-                //         await webAppList.clickOnCheckBoxByElementIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntExist('LineMenu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Line Menu - Disappear', async () => {
-                //         await webAppList.clickOnCheckBoxByElementIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntDoNotExist('LineMenu');
-                //         resourceListABI.pause(2 * 1000);
-                //     });
-                // });
-                // describe('FiltersAccRef with 2 Views - Tests', async () => {
-                //     after(async function () {
-                //         await driver.refresh();
-                //     });
-                //     it('Choosing List Data and Opening the Dialog', async () => {
-                //         driver.refresh();
-                //         const listToSelect = 'FiltersAccRef with 2 Views';
-                //         await listPickAndVerify(listToSelect, 'Filters Acc Ref ABI View', 28);
-                //         resourceListABI.pause(0.1 * 1000);
-                //     });
-                //     it('Menu - Appear', async () => {
-                //         await elemntExist('Menu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Search Input - Appear', async () => {
-                //         await elemntExist('Search');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Smart Search - Appear', async () => {
-                //         await elemntExist('SmartSearch');
-                //         resourceListABI.pause(0.2 * 1000);
-                //     });
-                //     it('Line Menu - Appear', async () => {
-                //         await webAppList.clickOnCheckBoxByElementIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntExist('LineMenu');
-                //         resourceListABI.pause(0.2 * 1000);
-                //         // await webAppList.clickOnCheckBoxByElementIndex();
-                //         // resourceListABI.pause(2 * 1000);
-                //     });
-                //     it('Line Menu - Disappear', async () => {
-                //         await webAppList.clickOnCheckBoxByElementIndex();
-                //         await webAppList.isSpinnerDone();
-                //         await elemntDoNotExist('LineMenu');
-                //         // resourceListABI.pause(0.2 * 1000);
-                //         // await webAppList.clickOnCheckBoxByElementIndex();
-                //         resourceListABI.pause(2 * 1000);
-                //     });
-                //     it('To Be Continued...', async () => {
-                //         // await webAppList.clickOnFromListRowWebElementByName(nameOfAccount); //5737a507-fa00-4c32-a26a-8bc32572e24d
-                //         resourceListABI.pause(10 * 1000);
-                //     });
-                // });
             });
         });
     });
@@ -633,8 +390,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         }
         await resourceListABI.clickElement('TestsAddon_openABI_button');
         await resourceListABI.isSpinnerDone();
-        // await resourceListABI.click(resourceListABI.HtmlBody);
-        // await resourceListABI.waitTillVisible(webAppDialog.ButtonArr, 15000);
         await resourceListABI.waitTillVisible(resourceListABI.ListAbi_container, 15000);
         const listAbiTitle = await (await driver.findElement(resourceListABI.ListAbi_title)).getAttribute('title');
         expect(listAbiTitle.trim()).to.equal(expectedTitle);
@@ -643,7 +398,15 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     }
 
     async function getSelector(
-        elemName: 'Menu' | 'LineMenu' | 'Search' | 'SmartSearch' | 'ListRow' | 'MultiCheckbox' | 'SingleRadioButton',
+        elemName:
+            | 'Menu'
+            | 'LineMenu'
+            | 'Search'
+            | 'SmartSearch'
+            | 'ListRow'
+            | 'MultiCheckbox'
+            | 'SingleRadioButton'
+            | 'Pager',
     ) {
         let selectorOfElemToFind: By;
         let selectorName: string;
@@ -676,6 +439,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 selectorOfElemToFind = webAppList.RadioButtons;
                 selectorName = 'Selection Type Single (Radio Button)';
                 break;
+            case 'Pager':
+                selectorOfElemToFind = resourceListABI.ListAbi_Pager_container;
+                selectorName = 'Pager Box';
+                break;
 
             default:
                 selectorOfElemToFind = resourceListABI.ListAbi_container;
@@ -686,7 +453,15 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     }
 
     async function elemntDoNotExist(
-        element: 'Menu' | 'LineMenu' | 'Search' | 'SmartSearch' | 'ListRow' | 'MultiCheckbox' | 'SingleRadioButton',
+        element:
+            | 'Menu'
+            | 'LineMenu'
+            | 'Search'
+            | 'SmartSearch'
+            | 'ListRow'
+            | 'MultiCheckbox'
+            | 'SingleRadioButton'
+            | 'Pager',
     ) {
         const selectorDetails = getSelector(element);
         try {
@@ -699,16 +474,23 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     }
 
     async function elemntExist(
-        element: 'Menu' | 'LineMenu' | 'Search' | 'SmartSearch' | 'ListRow' | 'MultiCheckbox' | 'SingleRadioButton',
+        element:
+            | 'Menu'
+            | 'LineMenu'
+            | 'Search'
+            | 'SmartSearch'
+            | 'ListRow'
+            | 'MultiCheckbox'
+            | 'SingleRadioButton'
+            | 'Pager',
     ) {
         const selectorDetails = getSelector(element);
         try {
             const element = await driver.findElement((await selectorDetails).selector);
             expect(await typeof element).to.equal('object');
         } catch (error) {
-            const theError = error as Error;
             console.error(error);
-            expect(theError.message).to.be.undefined;
+            expect((await selectorDetails).name).to.be.a.string('Shown - but is NOT');
         }
     }
 
@@ -743,6 +525,13 @@ export async function ResourceListAbiTests(email: string, password: string, clie
 
     async function lineMenuMultiDisappear() {
         await webAppList.clickOnCheckBoxByElementIndex();
+        await webAppList.isSpinnerDone();
+        await elemntDoNotExist('LineMenu');
+        resourceListABI.pause(2 * 1000);
+    }
+
+    async function lineMenuSingleDisappear() {
+        await webAppList.clickOnRadioButtonByElementIndex();
         await webAppList.isSpinnerDone();
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(2 * 1000);
