@@ -57,6 +57,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 'Smart Search',
                 'Single Radio Button',
                 'Select All Checkbox',
+                'Pager',
                 'Line Menu',
             ],
         },
@@ -70,47 +71,171 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 'Smart Search',
                 'Single Radio Button',
                 'Select All Checkbox',
+                'Pager',
                 'Line Menu',
             ],
+        },
+        'Accounts Default Draw': {
+            listToSelect: 'Accounts Basic View with Default Draw',
+            expectedTitle: 'Accounts With Default Draw',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [],
         },
         'Accounts Selection - Multi': {
             listToSelect: 'Accounts with Selection Type "Multi"',
             expectedTitle: 'Accounts Selection Type Multi',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [
-                'Menu',
-                'Search Input',
-                'Smart Search',
-                'Single Radio Button',
-                'Select All Checkbox',
-                'Line Menu',
-            ],
+            elements: ['Single Radio Button', 'Select All Checkbox', 'Line Menu'],
         },
         'Accounts Selection - Single': {
             listToSelect: 'Accounts with Selection Type "Single"',
             expectedTitle: 'Accounts Selection Type Single',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [
-                'Menu',
-                'Search Input',
-                'Smart Search',
-                'Single Radio Button',
-                'Select All Checkbox',
-                'Line Menu',
-            ],
+            elements: ['Single Radio Button', 'Select All Checkbox', 'Line Menu'],
         },
         'Accounts Selection - None': {
             listToSelect: 'Accounts with Selection Type "None"',
             expectedTitle: 'Accounts Selection Type None',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [
-                'Menu',
-                'Search Input',
-                'Smart Search',
-                'Single Radio Button',
-                'Select All Checkbox',
-                'Line Menu',
-            ],
+            elements: ['Single Radio Button', 'Select All Checkbox', 'Line Menu'],
+        },
+        'Accounts Menu': {
+            listToSelect: 'Accounts with Menu',
+            expectedTitle: 'Accounts With Menu',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [],
+        },
+        'Accounts Menu Hosting Addon Functionality': {
+            listToSelect: 'Accounts with Menu of Hosting Addon Func',
+            expectedTitle: 'Accounts Menu With Hosting Addon functionality',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [],
+        },
+        'Accounts Menu Full': {
+            listToSelect: 'Accounts with Menu - Full',
+            expectedTitle: 'Accounts With Menu Full',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [],
+        },
+        'Accounts Line Menu': {
+            listToSelect: 'Accounts with Line Menu',
+            expectedTitle: 'Accounts With Line Menu',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: ['Line Menu'],
+        },
+        'Items Line Menu Selection Type Multi': {
+            listToSelect: 'Items with Line Menu & Selection "Multi"',
+            expectedTitle: "Items with Line Menu (Selection Type 'Multi')",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Line Menu'],
+        },
+        'Items Search': {
+            listToSelect: 'Items with Search',
+            expectedTitle: 'Items With Search (Name, Category, Description)',
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: [],
+        },
+        'Accounts Smart Search': {
+            listToSelect: 'Accounts with Smart Search',
+            expectedTitle: 'Accounts With Smart Search (Name)',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [],
+        },
+        'Accounts Sorting Ascending': {
+            listToSelect: 'Accounts with Sorting - Ascending',
+            expectedTitle: 'Accounts Sorting by Name Acsending',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [],
+        },
+        'Accounts Sorting Descending': {
+            listToSelect: 'Accounts with Sorting - Descending',
+            expectedTitle: 'Accounts Sorting by Name Decsending',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [],
+        },
+        'Items Page Type Pages': {
+            listToSelect: 'Items with Page Type "Pages"',
+            expectedTitle: "Items Page Type 'Pages'",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Pager'],
+        },
+        'Items Page Type Pages - Page size': {
+            listToSelect: 'Items with Page Type "Pages" & Page Size',
+            expectedTitle: "Items Page Type 'Pages' with Page Size",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Pager'],
+        },
+        'Items Page Type Pages - Page Index': {
+            listToSelect: 'Items with Page Type "Pages" & Page Index',
+            expectedTitle: "Items Page Type 'Pages' with Page Index",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Pager'],
+        },
+        'Items Page Type Pages - Top Scroll Index': {
+            listToSelect: 'Items Page Type "Pages" & Top Scroll Index',
+            expectedTitle: "Items Page Type 'Pages' with Top Scroll Index",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Pager'],
+        },
+        'Items Page Type Pages - Page Size & Page Index': {
+            listToSelect: 'Items with Page Type "Pages" & Page Size & Page Index',
+            expectedTitle: "Items Page Type 'Pages' with Page Size & Page Index",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Pager'],
+        },
+        'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': {
+            listToSelect: 'Items with Page Type "Pages" & Page Size & Page Index & Top Scroll Index',
+            expectedTitle: "Items Page Type 'Pages' with Page Size, Page Index and Top Scroll Index",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Pager'],
+        },
+        'Items Page Type Scroll': {
+            listToSelect: 'Items with Page Type "Scroll"',
+            expectedTitle: "Items Page Type 'Scroll'",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Pager'],
+        },
+        'Items Page Type Scroll - Top Scroll Index': {
+            listToSelect: 'Items with Page Type "Scroll" & Top Scroll Index',
+            expectedTitle: "Items: Page Type 'Scroll' with Top Scroll Index",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Pager'],
+        },
+        'Items Page Type Scroll - Page Index': {
+            listToSelect: 'Items with Page Type "Scroll" & Page Index',
+            expectedTitle: "Items Page Type 'Scroll' with Page Index",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Pager'],
+        },
+        'Items Page Type Scroll - Page Index & Top Scroll Index': {
+            listToSelect: 'Items with Page Type "Scroll" & Page Index & Top Scroll Index',
+            expectedTitle: "Items Page Type 'Scroll' with Page Index and Top Scroll Index",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Pager'],
+        },
+        'Items Page Type Scroll - Page Size & Page Index': {
+            listToSelect: 'Items with Page Type "Scroll" & Page Size & Page Index',
+            expectedTitle: "Items Page Type 'Scroll' with Page Size and Page Index",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Pager'],
+        },
+        'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': {
+            listToSelect: 'Items with Page Type "Scroll" & Page Size & Page Index & Top Scroll Index',
+            expectedTitle: "Items Page Type 'Scroll' with Page Size, Page Index and Top Scroll Index",
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Pager'],
+        },
+        'Accounts Full': {
+            listToSelect: 'Accounts View - Full',
+            expectedTitle: 'Accounts Full',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [],
+        },
+        'Accounts Draw Grid Relation': {
+            listToSelect: 'Accounts - Test Draw Grid',
+            expectedTitle: 'Accounts Test Draw Grid',
+            expectedNumOfResults: numOfListingsIn_accounts,
+            elements: [],
         },
         'ReferenceAccount with 2 Views - Tests': {
             listToSelect: 'ReferenceAccount with 2 Views',
@@ -122,6 +247,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 'Smart Search',
                 'Single Radio Button',
                 'Select All Checkbox',
+                'Pager',
                 'Line Menu',
             ],
         },
@@ -135,6 +261,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 'Smart Search',
                 'Single Radio Button',
                 'Select All Checkbox',
+                'Pager',
                 'Line Menu',
             ],
         },
@@ -143,65 +270,266 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         Menu: {
             'Items Basic': false,
             'Accounts Basic': false,
+            'Accounts Default Draw': false,
             'Accounts Selection - Multi': false,
             'Accounts Selection - Single': false,
             'Accounts Selection - None': false,
+            'Accounts Menu': false,
+            'Accounts Menu Hosting Addon Functionality': false,
+            'Accounts Menu Full': false,
+            'Accounts Line Menu': false,
+            'Items Line Menu Selection Type Multi': false,
+            'Items Search': false,
+            'Accounts Smart Search': false,
+            'Accounts Sorting Ascending': false,
+            'Accounts Sorting Descending': false,
+            'Items Page Type Pages': false,
+            'Items Page Type Pages - Page size': false,
+            'Items Page Type Pages - Page Index': false,
+            'Items Page Type Pages - Top Scroll Index': false,
+            'Items Page Type Pages - Page Size & Page Index': false,
+            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll': false,
+            'Items Page Type Scroll - Top Scroll Index': false,
+            'Items Page Type Scroll - Page Index': false,
+            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll - Page Size & Page Index': false,
+            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
+            'Accounts Full': false,
+            'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': true,
             'FiltersAccRef with 2 Views - Tests': true,
         },
         'Search Input': {
             'Items Basic': false,
             'Accounts Basic': false,
+            'Accounts Default Draw': false,
             'Accounts Selection - Multi': false,
             'Accounts Selection - Single': false,
             'Accounts Selection - None': false,
+            'Accounts Menu': false,
+            'Accounts Menu Hosting Addon Functionality': false,
+            'Accounts Menu Full': false,
+            'Accounts Line Menu': false,
+            'Items Line Menu Selection Type Multi': false,
+            'Items Search': false,
+            'Accounts Smart Search': false,
+            'Accounts Sorting Ascending': false,
+            'Accounts Sorting Descending': false,
+            'Items Page Type Pages': false,
+            'Items Page Type Pages - Page size': false,
+            'Items Page Type Pages - Page Index': false,
+            'Items Page Type Pages - Top Scroll Index': false,
+            'Items Page Type Pages - Page Size & Page Index': false,
+            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll': false,
+            'Items Page Type Scroll - Top Scroll Index': false,
+            'Items Page Type Scroll - Page Index': false,
+            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll - Page Size & Page Index': false,
+            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
+            'Accounts Full': false,
+            'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': true,
             'FiltersAccRef with 2 Views - Tests': true,
         },
         'Smart Search': {
             'Items Basic': false,
             'Accounts Basic': false,
+            'Accounts Default Draw': false,
             'Accounts Selection - Multi': false,
             'Accounts Selection - Single': false,
             'Accounts Selection - None': false,
+            'Accounts Menu': false,
+            'Accounts Menu Hosting Addon Functionality': false,
+            'Accounts Menu Full': false,
+            'Accounts Line Menu': false,
+            'Items Line Menu Selection Type Multi': false,
+            'Items Search': false,
+            'Accounts Smart Search': false,
+            'Accounts Sorting Ascending': false,
+            'Accounts Sorting Descending': false,
+            'Items Page Type Pages': false,
+            'Items Page Type Pages - Page size': false,
+            'Items Page Type Pages - Page Index': false,
+            'Items Page Type Pages - Top Scroll Index': false,
+            'Items Page Type Pages - Page Size & Page Index': false,
+            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll': false,
+            'Items Page Type Scroll - Top Scroll Index': false,
+            'Items Page Type Scroll - Page Index': false,
+            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll - Page Size & Page Index': false,
+            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
+            'Accounts Full': false,
+            'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': true,
             'FiltersAccRef with 2 Views - Tests': true,
         },
         'Single Radio Button': {
             'Items Basic': true,
-            'Accounts Basic': false,
+            'Accounts Basic': true,
+            'Accounts Default Draw': false,
             'Accounts Selection - Multi': false,
             'Accounts Selection - Single': true,
             'Accounts Selection - None': false,
+            'Accounts Menu': false,
+            'Accounts Menu Hosting Addon Functionality': false,
+            'Accounts Menu Full': false,
+            'Accounts Line Menu': false,
+            'Items Line Menu Selection Type Multi': false,
+            'Items Search': false,
+            'Accounts Smart Search': false,
+            'Accounts Sorting Ascending': false,
+            'Accounts Sorting Descending': false,
+            'Items Page Type Pages': false,
+            'Items Page Type Pages - Page size': false,
+            'Items Page Type Pages - Page Index': false,
+            'Items Page Type Pages - Top Scroll Index': false,
+            'Items Page Type Pages - Page Size & Page Index': false,
+            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll': false,
+            'Items Page Type Scroll - Top Scroll Index': false,
+            'Items Page Type Scroll - Page Index': false,
+            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll - Page Size & Page Index': false,
+            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
+            'Accounts Full': false,
+            'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': false,
             'FiltersAccRef with 2 Views - Tests': false,
         },
         'Select All Checkbox': {
             'Items Basic': false,
-            'Accounts Basic': true,
+            'Accounts Basic': false,
+            'Accounts Default Draw': false,
             'Accounts Selection - Multi': true,
             'Accounts Selection - Single': false,
             'Accounts Selection - None': false,
+            'Accounts Menu': false,
+            'Accounts Menu Hosting Addon Functionality': false,
+            'Accounts Menu Full': false,
+            'Accounts Line Menu': false,
+            'Items Line Menu Selection Type Multi': false,
+            'Items Search': false,
+            'Accounts Smart Search': false,
+            'Accounts Sorting Ascending': false,
+            'Accounts Sorting Descending': false,
+            'Items Page Type Pages': false,
+            'Items Page Type Pages - Page size': false,
+            'Items Page Type Pages - Page Index': false,
+            'Items Page Type Pages - Top Scroll Index': false,
+            'Items Page Type Pages - Page Size & Page Index': false,
+            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll': false,
+            'Items Page Type Scroll - Top Scroll Index': false,
+            'Items Page Type Scroll - Page Index': false,
+            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll - Page Size & Page Index': false,
+            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
+            'Accounts Full': false,
+            'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': true,
             'FiltersAccRef with 2 Views - Tests': true,
         },
         'Line Menu': {
             'Items Basic': false,
             'Accounts Basic': false,
+            'Accounts Default Draw': false,
             'Accounts Selection - Multi': false,
             'Accounts Selection - Single': false,
             'Accounts Selection - None': false,
+            'Accounts Menu': false,
+            'Accounts Menu Hosting Addon Functionality': false,
+            'Accounts Menu Full': false,
+            'Accounts Line Menu': false,
+            'Items Line Menu Selection Type Multi': false,
+            'Items Search': false,
+            'Accounts Smart Search': false,
+            'Accounts Sorting Ascending': false,
+            'Accounts Sorting Descending': false,
+            'Items Page Type Pages': false,
+            'Items Page Type Pages - Page size': false,
+            'Items Page Type Pages - Page Index': false,
+            'Items Page Type Pages - Top Scroll Index': false,
+            'Items Page Type Pages - Page Size & Page Index': false,
+            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll': false,
+            'Items Page Type Scroll - Top Scroll Index': false,
+            'Items Page Type Scroll - Page Index': false,
+            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll - Page Size & Page Index': false,
+            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
+            'Accounts Full': false,
+            'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': true,
             'FiltersAccRef with 2 Views - Tests': true,
         },
         Pager: {
             'Items Basic': true,
+            'Accounts Basic': true,
+            'Accounts Default Draw': true,
+            'Accounts Selection - Multi': true,
+            'Accounts Selection - Single': true,
+            'Accounts Selection - None': true,
+            'Accounts Menu': true,
+            'Accounts Menu Hosting Addon Functionality': true,
+            'Accounts Menu Full': true,
+            'Accounts Line Menu': true,
+            'Items Line Menu Selection Type Multi': true,
+            'Items Search': true,
+            'Accounts Smart Search': true,
+            'Accounts Sorting Ascending': true,
+            'Accounts Sorting Descending': true,
+            'Items Page Type Pages': true,
+            'Items Page Type Pages - Page size': true,
+            'Items Page Type Pages - Page Index': true,
+            'Items Page Type Pages - Top Scroll Index': true,
+            'Items Page Type Pages - Page Size & Page Index': true,
+            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': true,
+            'Items Page Type Scroll': false,
+            'Items Page Type Scroll - Top Scroll Index': false,
+            'Items Page Type Scroll - Page Index': false,
+            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll - Page Size & Page Index': false,
+            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
+            'Accounts Full': false,
+            'Accounts Draw Grid Relation': false,
+            'ReferenceAccount with 2 Views - Tests': false,
+            'FiltersAccRef with 2 Views - Tests': true,
+        },
+        Scroll: {
+            'Items Basic': false,
             'Accounts Basic': false,
+            'Accounts Default Draw': false,
             'Accounts Selection - Multi': false,
             'Accounts Selection - Single': false,
             'Accounts Selection - None': false,
-            'ReferenceAccount with 2 Views - Tests': true,
-            'FiltersAccRef with 2 Views - Tests': true,
+            'Accounts Menu': false,
+            'Accounts Menu Hosting Addon Functionality': false,
+            'Accounts Menu Full': false,
+            'Accounts Line Menu': false,
+            'Items Line Menu Selection Type Multi': false,
+            'Items Search': false,
+            'Accounts Smart Search': false,
+            'Accounts Sorting Ascending': false,
+            'Accounts Sorting Descending': false,
+            'Items Page Type Pages': false,
+            'Items Page Type Pages - Page size': false,
+            'Items Page Type Pages - Page Index': false,
+            'Items Page Type Pages - Top Scroll Index': false,
+            'Items Page Type Pages - Page Size & Page Index': false,
+            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll': false,
+            'Items Page Type Scroll - Top Scroll Index': false,
+            'Items Page Type Scroll - Page Index': false,
+            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
+            'Items Page Type Scroll - Page Size & Page Index': false,
+            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
+            'Accounts Full': false,
+            'Accounts Draw Grid Relation': false,
+            'ReferenceAccount with 2 Views - Tests': false,
+            'FiltersAccRef with 2 Views - Tests': false,
         },
     };
 
@@ -247,6 +575,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 await webAppLoginPage.login(email, password);
             });
 
+            it('Manual Sync', async () => {
+                await webAppHomePage.manualResync(client);
+            });
+
             it('Entering Resource List ABI tests Addon', async () => {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
@@ -259,6 +591,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                     await driver.findElement(resourceListABI.TestsAddon_dropdownTitle)
                 ).getAttribute('title');
                 expect(dropdownTitle).to.contain('Select List Data');
+                await driver.refresh();
+                await resourceListABI.isSpinnerDone();
             });
 
             describe('List Content Tests', async () => {
@@ -323,20 +657,31 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                             ? await elemntExist('MultiCheckbox')
                                             : await elemntDoNotExist('MultiCheckbox');
                                         break;
+                                    case 'Pager':
+                                        isDisplayed ? await elemntExist('Pager') : await elemntDoNotExist('Pager');
+                                        break;
                                     case 'Line Menu':
                                         switch (listTitle) {
+                                            case 'Accounts Line Menu':
+                                                await lineMenuSingleExist();
+                                                break;
+
+                                            case 'Items Line Menu Selection Type Multi':
+                                            case 'ReferenceAccount with 2 Views - Tests':
+                                            case 'FiltersAccRef with 2 Views - Tests':
+                                                await lineMenuMultiExist();
+                                                break;
+
                                             case 'Items Basic':
-                                                await lineMenuSingleDoNotExist();
-                                                break;
                                             case 'Accounts Basic':
-                                                await lineMenuMultiDoNotExist();
-                                                break;
-                                            case 'Accounts Selection - Multi':
-                                                await lineMenuMultiDoNotExist();
-                                                break;
                                             case 'Accounts Selection - Single':
                                                 await lineMenuSingleDoNotExist();
                                                 break;
+
+                                            case 'Accounts Selection - Multi':
+                                                await lineMenuMultiDoNotExist();
+                                                break;
+
                                             case 'Accounts Selection - None':
                                                 await webAppList.clickOnRowByIndex();
                                                 await webAppList.isSpinnerDone();
@@ -346,12 +691,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                                 // await webAppList.isSpinnerDone();
                                                 // await elemntDoNotExist('LineMenu');
                                                 resourceListABI.pause(2 * 1000);
-                                                break;
-                                            case 'ReferenceAccount with 2 Views - Tests':
-                                                await lineMenuMultiExist();
-                                                break;
-                                            case 'FiltersAccRef with 2 Views - Tests':
-                                                await lineMenuMultiExist();
                                                 break;
 
                                             default:
@@ -406,7 +745,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             | 'ListRow'
             | 'MultiCheckbox'
             | 'SingleRadioButton'
-            | 'Pager',
+            | 'Pager'
+            | 'Scroll',
     ) {
         let selectorOfElemToFind: By;
         let selectorName: string;
@@ -537,5 +877,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         resourceListABI.pause(2 * 1000);
     }
 
-    // async function lineMenuSingleExist() {}
+    async function lineMenuSingleExist() {
+        await webAppList.clickOnRadioButtonByElementIndex();
+        await webAppList.isSpinnerDone();
+        await elemntExist('LineMenu');
+        resourceListABI.pause(0.2 * 1000);
+    }
 }
