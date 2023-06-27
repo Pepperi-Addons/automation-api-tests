@@ -606,7 +606,7 @@ const passCreate = process.env.npm_config_pass_create as string;
             console.log(
                 `####################### Running For: ${addonName}(${addonUUID}), version: ${latestVersionOfTestedAddonProd} #######################`,
             );
-            // await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonProd, generalService);
+            await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonProd, generalService);
             try {
                 await Promise.all([
                     handleDevTestInstallation(
