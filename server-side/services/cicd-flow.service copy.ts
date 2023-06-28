@@ -41,6 +41,9 @@ export class CiCdFlow {
             addonEntryUUIDProd,
             addonEntryUUIDEu,
             addonEntryUUIDSb,
+            addonVersionProd,
+            addonVersionEU,
+            addonVersionSb,
         } = await this.jenkinsSingleJobTestRunner(addonName, addonUUID, jobPathPROD, jobPathEU, jobPathSB, buildToken);
         let didFailFirstTest = false;
         for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
@@ -56,25 +59,23 @@ export class CiCdFlow {
         let latestRunSB2;
         if (!didFailFirstTest) {
             //if we already failed - dont run second part just keep running to the end
-            console.log(
-                'first part of Scheduler tests passed - running 2nd part of Scheduler approvement tests (CodeJobs TEST)',
-            );
+            console.log(`first part of ${addonName} tests passed - running 2nd part of ${addonName} approvement tests`);
             JenkinsBuildResultsAllEnvs2 = await Promise.all([
                 //if well fail here - well get to the regular reporting etc
                 this.service.runJenkinsJobRemotely(
                     this.kmsSecret,
-                    `${jobPathPROD2}/build?token=SchedulerApprovmentTests`,
-                    'Test - H2 Production - CodeJobs',
+                    `${jobPathPROD2}/build?token=${buildToken}`,
+                    `Test - ${addonName} Part 2 - Prod`,
                 ),
                 this.service.runJenkinsJobRemotely(
                     this.kmsSecret,
-                    `${jobPathEU2}/build?token=SchedulerApprovmentTests`,
-                    'Test - H2 EU - CodeJobs',
+                    `${jobPathEU2}/build?token=${buildToken}`,
+                    `Test - ${addonName} Part 2 - EU`,
                 ),
                 this.service.runJenkinsJobRemotely(
                     this.kmsSecret,
-                    `${jobPathSB2}/build?token=SchedulerApprovmentTests`,
-                    'Test - H2 Stage - CodeJobs',
+                    `${jobPathSB2}/build?token=${buildToken}`,
+                    `Test - ${addonName} Part 2 - SB`,
                 ),
             ]);
             latestRunProd2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathPROD);
@@ -95,6 +96,9 @@ export class CiCdFlow {
             latestRunEUReturn,
             latestRunSBReturn,
             JenkinsBuildResultsAllEnvsToReturn,
+            addonVersionProd,
+            addonVersionEU,
+            addonVersionSb,
         };
     }
 
@@ -155,17 +159,17 @@ export class CiCdFlow {
             this.service.runJenkinsJobRemotely(
                 this.kmsSecret,
                 `${jobPathPROD}/build?token=${buildToken}`,
-                'Test - E1 Production - PNS',
+                `Test - ${addonName} - Prod`,
             ),
             this.service.runJenkinsJobRemotely(
                 this.kmsSecret,
                 `${jobPathEU}/build?token=${buildToken}`,
-                'Test - E1 EU - PNS',
+                `Test - ${addonName} - EU`,
             ),
             this.service.runJenkinsJobRemotely(
                 this.kmsSecret,
                 `${jobPathSB}/build?token=${buildToken}`,
-                'Test - E1 Stage - PNS',
+                `Test - ${addonName} - SB`,
             ),
         ]);
         const latestRunProd = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathPROD);
@@ -179,6 +183,9 @@ export class CiCdFlow {
             addonEntryUUIDProd,
             addonEntryUUIDEu,
             addonEntryUUIDSb,
+            addonVersionProd,
+            addonVersionEU,
+            addonVersionSb,
         };
     }
 
