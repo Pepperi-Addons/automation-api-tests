@@ -75,6 +75,20 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 'Line Menu',
             ],
         },
+        // 'Accounts Basic': {
+        //     listToSelect: 'Accounts View - Basic',
+        //     expectedTitle: 'Accounts Basic',
+        //     expectedNumOfResults: numOfListingsIn_accounts,
+        //     elements: [
+        //         ['Menu', false],
+        //         ['Search Input', false],
+        //         ['Smart Search', false],
+        //         ['Single Radio Button', true],
+        //         ['Select All Checkbox', false],
+        //         ['Pager', true],
+        //         ['Line Menu', false],
+        //     ],
+        // },
         'Accounts Default Draw': {
             listToSelect: 'Accounts Basic View with Default Draw',
             expectedTitle: 'Accounts With Default Draw',
@@ -103,19 +117,19 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts with Menu',
             expectedTitle: 'Accounts With Menu',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [],
+            elements: ['Menu'],
         },
         'Accounts Menu Hosting Addon Functionality': {
             listToSelect: 'Accounts with Menu of Hosting Addon Func',
             expectedTitle: 'Accounts Menu With Hosting Addon functionality',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [],
+            elements: ['Menu'],
         },
         'Accounts Menu Full': {
             listToSelect: 'Accounts with Menu - Full',
             expectedTitle: 'Accounts With Menu Full',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [],
+            elements: ['Menu'],
         },
         'Accounts Line Menu': {
             listToSelect: 'Accounts with Line Menu',
@@ -133,13 +147,13 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Search',
             expectedTitle: 'Items With Search (Name, Category, Description)',
             expectedNumOfResults: numOfListingsIn_items,
-            elements: [],
+            elements: ['Search Input'],
         },
         'Accounts Smart Search': {
             listToSelect: 'Accounts with Smart Search',
             expectedTitle: 'Accounts With Smart Search (Name)',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [],
+            elements: ['Smart Search'],
         },
         'Accounts Sorting Ascending': {
             listToSelect: 'Accounts with Sorting - Ascending',
@@ -152,6 +166,12 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts Sorting by Name Decsending',
             expectedNumOfResults: numOfListingsIn_accounts,
             elements: [],
+        },
+        'Items Search String': {
+            listToSelect: 'Items with Search String',
+            expectedTitle: 'Items - Search String',
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: ['Search Input'],
         },
         'Items Page Type Pages': {
             listToSelect: 'Items with Page Type "Pages"',
@@ -229,13 +249,43 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts View - Full',
             expectedTitle: 'Accounts Full',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [],
+            elements: [
+                'Menu',
+                'Search Input',
+                'Smart Search',
+                'Single Radio Button',
+                'Select All Checkbox',
+                'Pager',
+                'Line Menu',
+            ],
+        },
+        'Items Full - with 2 Views': {
+            listToSelect: 'Items View - Full with 2 Views',
+            expectedTitle: 'Items Full - 2 Views',
+            expectedNumOfResults: numOfListingsIn_items,
+            elements: [
+                'Menu',
+                'Search Input',
+                'Smart Search',
+                'Single Radio Button',
+                'Select All Checkbox',
+                'Pager',
+                'Line Menu',
+            ],
         },
         'Accounts Draw Grid Relation': {
             listToSelect: 'Accounts - Test Draw Grid',
             expectedTitle: 'Accounts Test Draw Grid',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [],
+            elements: [
+                'Menu',
+                'Search Input',
+                'Smart Search',
+                'Single Radio Button',
+                'Select All Checkbox',
+                'Pager',
+                'Line Menu',
+            ],
         },
         'ReferenceAccount with 2 Views - Tests': {
             listToSelect: 'ReferenceAccount with 2 Views',
@@ -283,6 +333,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Accounts Smart Search': false,
             'Accounts Sorting Ascending': false,
             'Accounts Sorting Descending': false,
+            'Items Search String': false,
             'Items Page Type Pages': false,
             'Items Page Type Pages - Page size': false,
             'Items Page Type Pages - Page Index': false,
@@ -296,6 +347,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Items Page Type Scroll - Page Size & Page Index': false,
             'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
             'Accounts Full': false,
+            'Items Full - with 2 Views': false,
             'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': true,
             'FiltersAccRef with 2 Views - Tests': true,
@@ -316,6 +368,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Accounts Smart Search': false,
             'Accounts Sorting Ascending': false,
             'Accounts Sorting Descending': false,
+            'Items Search String': false,
             'Items Page Type Pages': false,
             'Items Page Type Pages - Page size': false,
             'Items Page Type Pages - Page Index': false,
@@ -329,6 +382,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Items Page Type Scroll - Page Size & Page Index': false,
             'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
             'Accounts Full': false,
+            'Items Full - with 2 Views': false,
             'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': true,
             'FiltersAccRef with 2 Views - Tests': true,
@@ -349,6 +403,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Accounts Smart Search': false,
             'Accounts Sorting Ascending': false,
             'Accounts Sorting Descending': false,
+            'Items Search String': false,
             'Items Page Type Pages': false,
             'Items Page Type Pages - Page size': false,
             'Items Page Type Pages - Page Index': false,
@@ -362,6 +417,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Items Page Type Scroll - Page Size & Page Index': false,
             'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
             'Accounts Full': false,
+            'Items Full - with 2 Views': false,
             'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': true,
             'FiltersAccRef with 2 Views - Tests': true,
@@ -382,6 +438,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Accounts Smart Search': false,
             'Accounts Sorting Ascending': false,
             'Accounts Sorting Descending': false,
+            'Items Search String': false,
             'Items Page Type Pages': false,
             'Items Page Type Pages - Page size': false,
             'Items Page Type Pages - Page Index': false,
@@ -395,6 +452,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Items Page Type Scroll - Page Size & Page Index': false,
             'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
             'Accounts Full': false,
+            'Items Full - with 2 Views': false,
             'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': false,
             'FiltersAccRef with 2 Views - Tests': false,
@@ -415,6 +473,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Accounts Smart Search': false,
             'Accounts Sorting Ascending': false,
             'Accounts Sorting Descending': false,
+            'Items Search String': false,
             'Items Page Type Pages': false,
             'Items Page Type Pages - Page size': false,
             'Items Page Type Pages - Page Index': false,
@@ -428,6 +487,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Items Page Type Scroll - Page Size & Page Index': false,
             'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
             'Accounts Full': false,
+            'Items Full - with 2 Views': false,
             'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': true,
             'FiltersAccRef with 2 Views - Tests': true,
@@ -448,6 +508,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Accounts Smart Search': false,
             'Accounts Sorting Ascending': false,
             'Accounts Sorting Descending': false,
+            'Items Search String': false,
             'Items Page Type Pages': false,
             'Items Page Type Pages - Page size': false,
             'Items Page Type Pages - Page Index': false,
@@ -461,6 +522,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Items Page Type Scroll - Page Size & Page Index': false,
             'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
             'Accounts Full': false,
+            'Items Full - with 2 Views': false,
             'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': true,
             'FiltersAccRef with 2 Views - Tests': true,
@@ -481,6 +543,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Accounts Smart Search': true,
             'Accounts Sorting Ascending': true,
             'Accounts Sorting Descending': true,
+            'Items Search String': false,
             'Items Page Type Pages': true,
             'Items Page Type Pages - Page size': true,
             'Items Page Type Pages - Page Index': true,
@@ -494,6 +557,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Items Page Type Scroll - Page Size & Page Index': false,
             'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
             'Accounts Full': false,
+            'Items Full - with 2 Views': false,
             'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': false,
             'FiltersAccRef with 2 Views - Tests': true,
@@ -514,6 +578,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Accounts Smart Search': false,
             'Accounts Sorting Ascending': false,
             'Accounts Sorting Descending': false,
+            'Items Search String': false,
             'Items Page Type Pages': false,
             'Items Page Type Pages - Page size': false,
             'Items Page Type Pages - Page Index': false,
@@ -527,6 +592,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             'Items Page Type Scroll - Page Size & Page Index': false,
             'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
             'Accounts Full': false,
+            'Items Full - with 2 Views': false,
             'Accounts Draw Grid Relation': false,
             'ReferenceAccount with 2 Views - Tests': false,
             'FiltersAccRef with 2 Views - Tests': false,
@@ -686,11 +752,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                                 await webAppList.clickOnRowByIndex();
                                                 await webAppList.isSpinnerDone();
                                                 await elemntDoNotExist('LineMenu');
-                                                // resourceListABI.pause(0.2 * 1000);
-                                                // await webAppList.clickOnRowByIndex();
-                                                // await webAppList.isSpinnerDone();
-                                                // await elemntDoNotExist('LineMenu');
-                                                resourceListABI.pause(2 * 1000);
+                                                resourceListABI.pause(0.2 * 1000);
                                                 break;
 
                                             default:
@@ -706,14 +768,81 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 }
                             });
                         });
-                        if (elements['Line Menu'][listTitle]) {
+                        if (elements['Line Menu'][listTitle] && elements['Accounts Selection - Multi'][listTitle]) {
                             it('Line Menu - Disappear', async () => {
-                                if (elements['Accounts Selection - Multi'][listTitle]) {
-                                    await lineMenuMultiDisappear();
-                                } else if (elements['Accounts Selection - Single'][listTitle]) {
-                                    await lineMenuSingleDisappear();
-                                }
+                                await lineMenuMultiDisappear();
                             });
+                        }
+                        switch (listTitle) {
+                            case 'Items Basic':
+                                break;
+                            case 'Accounts Basic':
+                                break;
+                            case 'Accounts Default Draw':
+                                break;
+                            case 'Accounts Selection - Multi':
+                                break;
+                            case 'Accounts Selection - Single':
+                                break;
+                            case 'Accounts Selection - None':
+                                break;
+                            case 'Accounts Menu':
+                                break;
+                            case 'Accounts Menu Hosting Addon Functionality':
+                                break;
+                            case 'Accounts Menu Full':
+                                break;
+                            case 'Accounts Line Menu':
+                                break;
+                            case 'Items Line Menu Selection Type Multi':
+                                break;
+                            case 'Items Search':
+                                break;
+                            case 'Accounts Smart Search':
+                                break;
+                            case 'Accounts Sorting Ascending':
+                                break;
+                            case 'Accounts Sorting Descending':
+                                break;
+                            case 'Items Search String':
+                                break;
+                            case 'Items Page Type Pages':
+                                break;
+                            case 'Items Page Type Pages - Page size':
+                                break;
+                            case 'Items Page Type Pages - Page Index':
+                                break;
+                            case 'Items Page Type Pages - Top Scroll Index':
+                                break;
+                            case 'Items Page Type Pages - Page Size & Page Index':
+                                break;
+                            case 'Items Page Type Pages - Page Size, Page Index & Top Scroll Index':
+                                break;
+                            case 'Items Page Type Scroll':
+                                break;
+                            case 'Items Page Type Scroll - Top Scroll Index':
+                                break;
+                            case 'Items Page Type Scroll - Page Index':
+                                break;
+                            case 'Items Page Type Scroll - Page Index & Top Scroll Index':
+                                break;
+                            case 'Items Page Type Scroll - Page Size & Page Index':
+                                break;
+                            case 'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index':
+                                break;
+                            case 'Accounts Full':
+                                break;
+                            case 'Items Full - with 2 Views':
+                                break;
+                            case 'Accounts Draw Grid Relation':
+                                break;
+                            case 'ReferenceAccount with 2 Views - Tests':
+                                break;
+                            case 'FiltersAccRef with 2 Views - Tests':
+                                break;
+
+                            default:
+                                break;
                         }
                     });
                 });
@@ -746,7 +875,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             | 'MultiCheckbox'
             | 'SingleRadioButton'
             | 'Pager'
-            | 'Scroll',
+            | 'Scroll'
+            | 'Views',
     ) {
         let selectorOfElemToFind: By;
         let selectorName: string;
@@ -783,6 +913,14 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 selectorOfElemToFind = resourceListABI.ListAbi_Pager_container;
                 selectorName = 'Pager Box';
                 break;
+            case 'Scroll':
+                selectorOfElemToFind = resourceListABI.ListAbi_VerticalScroll;
+                selectorName = 'Vertical Scroll';
+                break;
+            case 'Views':
+                selectorOfElemToFind = resourceListABI.ListAbi_ViewsDropdown;
+                selectorName = 'Vertical Scroll';
+                break;
 
             default:
                 selectorOfElemToFind = resourceListABI.ListAbi_container;
@@ -801,7 +939,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             | 'ListRow'
             | 'MultiCheckbox'
             | 'SingleRadioButton'
-            | 'Pager',
+            | 'Pager'
+            | 'Scroll'
+            | 'Views',
     ) {
         const selectorDetails = getSelector(element);
         try {
@@ -822,7 +962,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             | 'ListRow'
             | 'MultiCheckbox'
             | 'SingleRadioButton'
-            | 'Pager',
+            | 'Pager'
+            | 'Scroll'
+            | 'Views',
     ) {
         const selectorDetails = getSelector(element);
         try {
@@ -870,12 +1012,12 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         resourceListABI.pause(2 * 1000);
     }
 
-    async function lineMenuSingleDisappear() {
-        await webAppList.clickOnRadioButtonByElementIndex();
-        await webAppList.isSpinnerDone();
-        await elemntDoNotExist('LineMenu');
-        resourceListABI.pause(2 * 1000);
-    }
+    // async function lineMenuSingleDisappear() {
+    //     await webAppList.clickOnRadioButtonByElementIndex();
+    //     await webAppList.isSpinnerDone();
+    //     await elemntDoNotExist('LineMenu');
+    //     resourceListABI.pause(2 * 1000);
+    // }
 
     async function lineMenuSingleExist() {
         await webAppList.clickOnRadioButtonByElementIndex();

@@ -38,4 +38,15 @@ export class ResourceListABI extends AddonPage {
     );
     public ListAbi_Pager_LeftArrow: By = By.xpath(`${this.ListAbi_Pager_container.value}//button[@title="Previous"]`); // when disabled: class="disabled mat-button-disabled"
     public ListAbi_Pager_RightArrow: By = By.xpath(`${this.ListAbi_Pager_container.value}//button[@title="Next"]`); // when disabled: class="disabled mat-button-disabled"
+
+    public ListAbi_VerticalScroll: By = By.xpath(
+        '//pep-list//virtual-scroller[contains(@class, "virtual-scroller")][contains(@class, "vertical selfScroll")]',
+    );
+    // no scroll: <virtual-scroller _ngcontent-xfn-c622 class="virtual-scroller table-body vertical selfScroll ng-star-inserted" _nghost-xfn-c620>
+    // scroll: <virtual-scroller _ngcontent-hei-c622 class="virtual-scroller table-body vertical selfScroll ng-star-inserted" _nghost-hei-c620>
+
+    public ListAbi_ViewsDropdown: By = By.xpath('//pep-top-bar//pep-select[@label="select view"]//mat-select');
+    public ListAbi_ViewsDropdown_value: By = By.xpath(
+        `${this.ListAbi_ViewsDropdown.value}//div[contains(@id, "mat-select-value-")]/span/span`,
+    );
 }
