@@ -21,6 +21,7 @@ export class WebAppList extends Page {
     public Headers: By = By.css('pep-list .table-header-fieldset fieldset .header-label');
     public PencilMenu: By = By.xpath('//list-actions//button[@aria-haspopup="menu"]');
     public RadioButtons: By = By.css('pep-list .table-row-fieldset .mat-radio-button');
+    public SelectAllCheckbox: By = By.css('pep-list .table-header-fieldset .mat-checkbox');
     public Cells: By = By.css('pep-list .table-row-fieldset .pep-report-fields');
     public ListRowElements: By = By.css('pep-list .table-row-fieldset');
     public RowElementCheckBox: By = By.css('pep-list .table-row-fieldset > mat-checkbox');
@@ -112,7 +113,13 @@ export class WebAppList extends Page {
 
     public async clickOnCheckBoxByElementIndex(position = 0, waitUntil = 15000): Promise<void> {
         await this.isSpinnerDone();
+        await this.clickOnFromListRowWebElement(position, waitUntil);
         return await this.browser.click(this.RowElementCheckBox, position, waitUntil);
+    }
+
+    public async clickOnRadioButtonByElementIndex(position = 0, waitUntil = 15000): Promise<void> {
+        await this.isSpinnerDone();
+        return await this.browser.click(this.RadioButtons, position, waitUntil);
     }
 
     public async clickOnRowByIndex(position = 0, waitUntil = 15000): Promise<void> {

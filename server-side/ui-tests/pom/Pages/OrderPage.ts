@@ -24,6 +24,7 @@ export class OrderPage extends WebAppList {
     public ItemQuantity_Plus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[5]/button');
 
     public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
+    public Cart_Totals: By = By.xpath('//list-totals-view');
     public Cart_Total_Header: By = By.xpath('//pep-textbox[@data-qa="PSAGrandTotalHeader"]');
     public Cart_Submit_Button: By = By.xpath('//button[@data-qa="Submit"]');
     public TransactionUUID: By = By.id('UUID');
@@ -134,6 +135,27 @@ export class OrderPage extends WebAppList {
     public async clickViewMenu() {
         await this.browser.click(this.ChangeViewButton);
         await this.browser.sleep(1500);
+    }
+
+    public async searchInOrderCenter(nameOfItem: string): Promise<void> {
+        await this.isSpinnerDone();
+        const searchInput = await this.browser.findElement(this.Search_Input);
+        await searchInput.clear();
+        this.browser.sleep(0.1 * 1000);
+        await searchInput.sendKeys(nameOfItem);
+        this.browser.sleep(0.5 * 1000);
+        await this.browser.click(this.HtmlBody);
+        await this.browser.click(this.Search_Magnifier_Button);
+        this.browser.sleep(0.1 * 1000);
+        await this.isSpinnerDone();
+        await this.browser.untilIsVisible(this.getSelectorOfItemInOrderCenterByName(nameOfItem));
+    }
+
+    public async clearOrderCenterSearch(): Promise<void> {
+        await this.isSpinnerDone();
+        await this.browser.click(this.Search_X_Button);
+        this.browser.sleep(0.1 * 1000);
+        await this.isSpinnerDone();
     }
 }
 

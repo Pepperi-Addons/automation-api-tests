@@ -1436,7 +1436,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                             await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
                             driver.sleep(0.1 * 1000);
                             await driver.click(orderPage.Cart_Button);
-                            await driver.untilIsVisible(orderPage.Cart_Total_Header);
+                            await driver.untilIsVisible(orderPage.Cart_Totals);
                             driver.sleep(0.1 * 1000);
                         });
                         it('Checking Cart', async () => {
