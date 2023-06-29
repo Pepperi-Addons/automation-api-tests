@@ -24,7 +24,7 @@ export const testData = {
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.%'], //CPAS
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.%'], //cpi-node (Cross Platform Engine)
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.3.%'], //cpi-node (Cross Platform Engine)
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
     'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''],
@@ -33,6 +33,7 @@ export const testData = {
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+    'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 28/6/23 - has to be ABOVE activity data index
     'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
@@ -43,7 +44,6 @@ export const testData = {
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
-    'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 2/2/23 - has to be upgraded
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
 };
 
@@ -53,8 +53,9 @@ export const testDataWithNewSync = {
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.%'], //CPAS
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.%'], //cpi-node (Cross Platform Engine)
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.3.%'], //cpi-node (Cross Platform Engine)
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+    'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 2/2/23 - has to be upgraded
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
@@ -76,10 +77,9 @@ export const testDataWithNewSync = {
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
-    'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 2/2/23 - has to be upgraded
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-    Nebula: ['00000000-0000-0000-0000-000000006a91', '0.7.%'], //change once new versions are available
-    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //change once new versions are available
+    Nebula: ['00000000-0000-0000-0000-000000006a91', '0.8.21'], //change once new versions are available
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.37'], //change once new versions are available
 };
 
 export const testDataForInitUser = {
