@@ -1,16 +1,17 @@
 import { describe, it } from 'mocha';
-import chai, { expect } from 'chai';
+import chai from 'chai';
+// import { expect } from 'chai';
 import promised from 'chai-as-promised';
 // import { UDCService } from '../../services/user-defined-collections.service';
 import GeneralService from '../../services/general.service';
 import { Client } from '@pepperi-addons/debug-server/dist';
-import { PFSService } from '../../services/pfs.service';
-import fs from 'fs';
+// import { PFSService } from '../../services/pfs.service';
+// import fs from 'fs';
 
 chai.use(promised);
 
 export async function PurgeAllUcds(client: Client) {
-    const generalService = new GeneralService(client);
+    // const generalService = new GeneralService(client);
     // const udcService = new UDCService(generalService);
     //in case you want to filter specific collections by name
     // const UDCPrefixName = "DimxOverwrite";
@@ -48,63 +49,61 @@ export async function PurgeAllUcds(client: Client) {
             //         '504 - Gateway Timeout error: {"message":"Endpoint request timed out"}',
             //     )
             // );
-            debugger;
-            const pfsService = new PFSService(generalService);
-            const howManyRows = 50000;
-            //1. create the file to import
-            const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
-            const mime = 'text/csv';
-            const tempFileResponse = await pfsService.postTempFile({
-                FileName: fileName,
-                MIME: mime,
-            });
-            expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
-            expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
-            expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
-            await createInitalData(howManyRows);
-            const buf = fs.readFileSync('./Data.csv');
-            debugger;
-            const putResponsePart1 = await pfsService.putPresignedURL(tempFileResponse.PutURL, buf);
-            expect(putResponsePart1.ok).to.equal(true);
-            expect(putResponsePart1.status).to.equal(200);
-            const bodyToImport = {
-                URI: tempFileResponse.TemporaryFileURL,
-            };
-            const importResponse = await generalService.fetchStatus(
-                `/addons/data/import/file/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/di22999`,
-                { method: 'POST', body: JSON.stringify(bodyToImport) },
-            );
-            const executionURI = importResponse.Body.URI;
-            const auditLogDevTestResponse = await generalService.getAuditLogResultObjectIfValid(
-                executionURI as string,
-                120,
-                7000,
-            );
-            debugger;
+            // debugger;
+            // const pfsService = new PFSService(generalService);
+            // const howManyRows = 50000;
+            // //1. create the file to import
+            // const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
+            // const mime = 'text/csv';
+            // const tempFileResponse = await pfsService.postTempFile({
+            //     FileName: fileName,
+            //     MIME: mime,
+            // });
+            // expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
+            // expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
+            // expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
+            // await createInitalData(howManyRows);
+            // const buf = fs.readFileSync('./Data.csv');
+            // debugger;
+            // const putResponsePart1 = await pfsService.putPresignedURL(tempFileResponse.PutURL, buf);
+            // expect(putResponsePart1.ok).to.equal(true);
+            // expect(putResponsePart1.status).to.equal(200);
+            // const bodyToImport = {
+            //     URI: tempFileResponse.TemporaryFileURL,
+            // };
+            // const importResponse = await generalService.fetchStatus(
+            //     `/addons/data/import/file/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/di22999`,
+            //     { method: 'POST', body: JSON.stringify(bodyToImport) },
+            // );
+            // const executionURI = importResponse.Body.URI;
+            // const auditLogDevTestResponse = await generalService.getAuditLogResultObjectIfValid(
+            //     executionURI as string,
+            //     120,
+            //     7000,
+            // );
+            // debugger;
         });
     });
 }
 
+// async function createInitalData(howManyDataRows: number) {
+//     const headers = 'Value,Hidden';
+//     const runningDataValue1 = 'index';
+//     const runningDataValue2 = 'false';
+//     const runningDataValue3 = 'data';
+//     let strData = '';
+//     strData += headers + '\n';
+//     for (let index = 0; index < howManyDataRows; index++) {
+//         strData += `${runningDataValue1.replace('index', index.toString())},`;
+//         strData += `${runningDataValue2.replace('index', index.toString())}\n`;
+//     }
+//     await genrateFile('Data', strData);
+// }
 
-async function createInitalData(howManyDataRows: number) {
-    const headers = 'Value,Hidden';
-    const runningDataValue1 = 'index';
-    const runningDataValue2 = 'false';
-    const runningDataValue3 = 'data';
-    let strData = '';
-    strData += headers + '\n';
-    for (let index = 0; index < howManyDataRows; index++) {
-        strData += `${runningDataValue1.replace('index', index.toString())},`;
-        strData += `${runningDataValue2.replace('index', index.toString())}\n`;
-    }
-    await genrateFile('Data', strData);
-}
-
-
-async function genrateFile(tempFileName, data) {
-    try {
-        fs.writeFileSync(`./${tempFileName}.csv`, data, 'utf-8');
-    } catch (error) {
-        throw new Error(`Error: ${(error as any).message}`);
-    }
-}
+// async function genrateFile(tempFileName, data) {
+//     try {
+//         fs.writeFileSync(`./${tempFileName}.csv`, data, 'utf-8');
+//     } catch (error) {
+//         throw new Error(`Error: ${(error as any).message}`);
+//     }
+// }

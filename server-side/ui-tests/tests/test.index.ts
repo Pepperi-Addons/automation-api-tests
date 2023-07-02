@@ -721,6 +721,9 @@ const passCreate = process.env.npm_config_pass_create as string;
                     runDevTestOnCertainEnv(sbUser, 'stage', latestVersionOfAutomationTemplateAddon, body, addonName),
                 ]);
                 //4.2. poll audit log response for each env
+                console.log(
+                    `####################### EXECUTION UUIDS:\nEU - ${devTestResponseEu.Body.URI}\nPROD - ${devTestResponseProd.Body.URI}\nSB - ${devTestResponseSb.Body.URI}`,
+                );
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
                     prodUser,
