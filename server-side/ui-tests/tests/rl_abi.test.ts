@@ -57,6 +57,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const numOfListingsIn_ReferenceAccountAuto = (await udcService.getAllObjectFromCollection('ReferenceAccountAuto'))
         .count;
     const numOfListingsIn_FiltersAccRefAuto = (await udcService.getAllObjectFromCollection('FiltersAccRefAuto')).count;
+    const numOfListingsIn_ArraysOfPrimitivesAuto = (
+        await udcService.getAllObjectFromCollection('ArraysOfPrimitivesAuto')
+    ).count;
+    const numOfListingsIn_ContainedArray = (await udcService.getAllObjectFromCollection('ContainedArray')).count;
 
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
@@ -376,6 +380,18 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 'Line Menu': true,
             },
         },
+        'Arrays Of Primitives Numbers Names Reals': {
+            listToSelect: 'Arrays Of Primitives - Test Draw Array',
+            expectedTitle: 'Arrays Of Primitives - Numbers, Names, Reals (Test Draw Array)',
+            expectedNumOfResults: numOfListingsIn_ArraysOfPrimitivesAuto,
+            elements: {},
+        },
+        'Contained Array Scheme Only Name Age': {
+            listToSelect: 'Contained Array - Test Draw Array',
+            expectedTitle: 'Contained Array - Scheme Only Name Age (Test Draw Array)',
+            expectedNumOfResults: numOfListingsIn_ContainedArray,
+            elements: {},
+        },
     };
 
     describe('Resource List ABI Test Suite', async () => {
@@ -402,6 +418,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 'numOfListingsIn_accounts_filtered_a: ',
                 JSON.stringify(numOfListingsIn_accounts_filtered_a, null, 2),
             );
+            console.info(
+                'numOfListingsIn_ArraysOfPrimitivesAuto: ',
+                JSON.stringify(numOfListingsIn_ArraysOfPrimitivesAuto, null, 2),
+            );
+            console.info('numOfListingsIn_ContainedArray: ', JSON.stringify(numOfListingsIn_ContainedArray, null, 2));
         });
 
         it(`Resource List Version: ${installedResourceListVersion}`, async () => {
@@ -555,7 +576,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                         });
                         if (
                             lists[listTitle].elements['Line Menu'] &&
-                            lists[listTitle].elements['Accounts Selection - Multi']
+                            lists[listTitle].elements['Select All Checkbox']
                         ) {
                             it('Line Menu - Disappear', async () => {
                                 await lineMenuMultiDisappear();
@@ -627,6 +648,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             case 'ReferenceAccount with 2 Views - Tests':
                                 break;
                             case 'FiltersAccRef with 2 Views - Tests':
+                                break;
+                            case 'Arrays Of Primitives Numbers Names Reals':
+                                break;
+                            case 'Contained Array Scheme Only Name Age':
                                 break;
 
                             default:
