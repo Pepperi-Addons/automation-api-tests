@@ -33,8 +33,27 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const installedRLABIVersion = installedAddons.find(
         (addon) => addon.Addon.Name === 'ResourceListABI_Addon',
     )?.Version;
-    const numOfListingsIn_items = (await openCatalogService.getItems()).length;
-    const numOfListingsIn_accounts = (await objectsService.getAccounts()).length;
+    const items = await openCatalogService.getItems();
+    const accounts = await objectsService.getAccounts();
+    // console.info('items: ', JSON.stringify(items, null, 2));
+    // console.info('accounts: ', JSON.stringify(accounts, null, 2));
+    const numOfListingsIn_items = items.length;
+    const numOfListingsIn_accounts = accounts.length;
+    const numOfListingsIn_items_filtered_MaNa = items.filter((item) => {
+        if (item.ExternalID.includes('MaNa')) {
+            return item;
+        }
+    }).length;
+    const numOfListingsIn_items_filtered_a = items.filter((item) => {
+        if (item.Name.toLowerCase().includes('a')) {
+            return item;
+        }
+    }).length;
+    const numOfListingsIn_accounts_filtered_a = accounts.filter((account) => {
+        if (account.Name?.toLowerCase().includes('a')) {
+            return account;
+        }
+    }).length;
     const numOfListingsIn_ReferenceAccountAuto = (await udcService.getAllObjectFromCollection('ReferenceAccountAuto'))
         .count;
     const numOfListingsIn_FiltersAccRefAuto = (await udcService.getAllObjectFromCollection('FiltersAccRefAuto')).count;
@@ -51,551 +70,311 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: '',
             expectedTitle: 'Items Basic',
             expectedNumOfResults: numOfListingsIn_items,
-            elements: [
-                'Menu',
-                'Search Input',
-                'Smart Search',
-                'Single Radio Button',
-                'Select All Checkbox',
-                'Pager',
-                'Line Menu',
-            ],
+            elements: {
+                Menu: false,
+                'Search Input': false,
+                'Smart Search': false,
+                'Single Radio Button': true,
+                'Select All Checkbox': false,
+                Pager: true,
+                'Line Menu': false,
+            },
         },
         'Accounts Basic': {
             listToSelect: 'Accounts View - Basic',
             expectedTitle: 'Accounts Basic',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [
-                'Menu',
-                'Search Input',
-                'Smart Search',
-                'Single Radio Button',
-                'Select All Checkbox',
-                'Pager',
-                'Line Menu',
-            ],
+            elements: {
+                Menu: false,
+                'Search Input': false,
+                'Smart Search': false,
+                'Single Radio Button': true,
+                'Select All Checkbox': false,
+                Pager: true,
+                'Line Menu': false,
+            },
         },
-        // 'Accounts Basic': {
-        //     listToSelect: 'Accounts View - Basic',
-        //     expectedTitle: 'Accounts Basic',
-        //     expectedNumOfResults: numOfListingsIn_accounts,
-        //     elements: [
-        //         ['Menu', false],
-        //         ['Search Input', false],
-        //         ['Smart Search', false],
-        //         ['Single Radio Button', true],
-        //         ['Select All Checkbox', false],
-        //         ['Pager', true],
-        //         ['Line Menu', false],
-        //     ],
-        // },
         'Accounts Default Draw': {
             listToSelect: 'Accounts Basic View with Default Draw',
             expectedTitle: 'Accounts With Default Draw',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [],
+            elements: {},
         },
         'Accounts Selection - Multi': {
             listToSelect: 'Accounts with Selection Type "Multi"',
             expectedTitle: 'Accounts Selection Type Multi',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: ['Single Radio Button', 'Select All Checkbox', 'Line Menu'],
+            elements: {
+                'Single Radio Button': false,
+                'Select All Checkbox': true,
+                'Line Menu': false,
+            },
         },
         'Accounts Selection - Single': {
             listToSelect: 'Accounts with Selection Type "Single"',
             expectedTitle: 'Accounts Selection Type Single',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: ['Single Radio Button', 'Select All Checkbox', 'Line Menu'],
+            elements: {
+                'Single Radio Button': true,
+                'Select All Checkbox': false,
+                'Line Menu': false,
+            },
         },
         'Accounts Selection - None': {
             listToSelect: 'Accounts with Selection Type "None"',
             expectedTitle: 'Accounts Selection Type None',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: ['Single Radio Button', 'Select All Checkbox', 'Line Menu'],
+            elements: {
+                'Single Radio Button': false,
+                'Select All Checkbox': false,
+                'Line Menu': false,
+            },
         },
         'Accounts Menu': {
             listToSelect: 'Accounts with Menu',
             expectedTitle: 'Accounts With Menu',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: ['Menu'],
+            elements: {
+                Menu: true,
+            },
         },
         'Accounts Menu Hosting Addon Functionality': {
             listToSelect: 'Accounts with Menu of Hosting Addon Func',
             expectedTitle: 'Accounts Menu With Hosting Addon functionality',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: ['Menu'],
+            elements: {
+                Menu: true,
+            },
         },
         'Accounts Menu Full': {
             listToSelect: 'Accounts with Menu - Full',
             expectedTitle: 'Accounts With Menu Full',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: ['Menu'],
+            elements: {
+                Menu: true,
+            },
         },
         'Accounts Line Menu': {
             listToSelect: 'Accounts with Line Menu',
             expectedTitle: 'Accounts With Line Menu',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: ['Line Menu'],
+            elements: {
+                'Single Radio Button': true,
+                'Select All Checkbox': false,
+                'Line Menu': true,
+            },
         },
         'Items Line Menu Selection Type Multi': {
             listToSelect: 'Items with Line Menu & Selection "Multi"',
             expectedTitle: "Items with Line Menu (Selection Type 'Multi')",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Line Menu'],
+            elements: {
+                'Single Radio Button': false,
+                'Select All Checkbox': true,
+                'Line Menu': true,
+            },
         },
         'Items Search': {
             listToSelect: 'Items with Search',
             expectedTitle: 'Items With Search (Name, Category, Description)',
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Search Input'],
+            elements: {
+                'Search Input': true,
+            },
         },
         'Accounts Smart Search': {
             listToSelect: 'Accounts with Smart Search',
             expectedTitle: 'Accounts With Smart Search (Name)',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: ['Smart Search'],
+            elements: {
+                'Smart Search': true,
+            },
         },
         'Accounts Sorting Ascending': {
             listToSelect: 'Accounts with Sorting - Ascending',
             expectedTitle: 'Accounts Sorting by Name Acsending',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [],
+            elements: {},
         },
         'Accounts Sorting Descending': {
             listToSelect: 'Accounts with Sorting - Descending',
             expectedTitle: 'Accounts Sorting by Name Decsending',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [],
+            elements: {},
         },
         'Items Search String': {
             listToSelect: 'Items with Search String',
             expectedTitle: 'Items - Search String',
-            expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Search Input'],
+            expectedNumOfResults: numOfListingsIn_items_filtered_MaNa,
+            elements: {
+                'Search Input': true,
+            },
         },
         'Items Page Type Pages': {
             listToSelect: 'Items with Page Type "Pages"',
             expectedTitle: "Items Page Type 'Pages'",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Pager'],
+            elements: {
+                Pager: true,
+            },
         },
         'Items Page Type Pages - Page size': {
             listToSelect: 'Items with Page Type "Pages" & Page Size',
             expectedTitle: "Items Page Type 'Pages' with Page Size",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Pager'],
+            elements: {
+                Pager: true,
+            },
         },
         'Items Page Type Pages - Page Index': {
             listToSelect: 'Items with Page Type "Pages" & Page Index',
             expectedTitle: "Items Page Type 'Pages' with Page Index",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Pager'],
+            elements: {
+                Pager: true,
+            },
         },
         'Items Page Type Pages - Top Scroll Index': {
             listToSelect: 'Items Page Type "Pages" & Top Scroll Index',
             expectedTitle: "Items Page Type 'Pages' with Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Pager'],
+            elements: {
+                Pager: true,
+            },
         },
         'Items Page Type Pages - Page Size & Page Index': {
             listToSelect: 'Items with Page Type "Pages" & Page Size & Page Index',
             expectedTitle: "Items Page Type 'Pages' with Page Size & Page Index",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Pager'],
+            elements: {
+                Pager: true,
+            },
         },
         'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': {
             listToSelect: 'Items with Page Type "Pages" & Page Size & Page Index & Top Scroll Index',
             expectedTitle: "Items Page Type 'Pages' with Page Size, Page Index and Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Pager'],
+            elements: {
+                Pager: true,
+            },
         },
         'Items Page Type Scroll': {
             listToSelect: 'Items with Page Type "Scroll"',
             expectedTitle: "Items Page Type 'Scroll'",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Pager'],
+            elements: {
+                Pager: false,
+            },
         },
         'Items Page Type Scroll - Top Scroll Index': {
             listToSelect: 'Items with Page Type "Scroll" & Top Scroll Index',
             expectedTitle: "Items: Page Type 'Scroll' with Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Pager'],
+            elements: {
+                Pager: false,
+            },
         },
         'Items Page Type Scroll - Page Index': {
             listToSelect: 'Items with Page Type "Scroll" & Page Index',
             expectedTitle: "Items Page Type 'Scroll' with Page Index",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Pager'],
+            elements: {
+                Pager: false,
+            },
         },
         'Items Page Type Scroll - Page Index & Top Scroll Index': {
             listToSelect: 'Items with Page Type "Scroll" & Page Index & Top Scroll Index',
             expectedTitle: "Items Page Type 'Scroll' with Page Index and Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Pager'],
+            elements: {
+                Pager: false,
+            },
         },
         'Items Page Type Scroll - Page Size & Page Index': {
             listToSelect: 'Items with Page Type "Scroll" & Page Size & Page Index',
             expectedTitle: "Items Page Type 'Scroll' with Page Size and Page Index",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Pager'],
+            elements: {
+                Pager: false,
+            },
         },
         'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': {
             listToSelect: 'Items with Page Type "Scroll" & Page Size & Page Index & Top Scroll Index',
             expectedTitle: "Items Page Type 'Scroll' with Page Size, Page Index and Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
-            elements: ['Pager'],
+            elements: {
+                Pager: false,
+            },
         },
         'Accounts Full': {
             listToSelect: 'Accounts View - Full',
             expectedTitle: 'Accounts Full',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [
-                'Menu',
-                'Search Input',
-                'Smart Search',
-                'Single Radio Button',
-                'Select All Checkbox',
-                'Pager',
-                'Line Menu',
-            ],
+            expectedNumOfResults: numOfListingsIn_accounts_filtered_a,
+            elements: {
+                Menu: true,
+                'Search Input': true,
+                'Smart Search': true,
+                'Single Radio Button': false,
+                'Select All Checkbox': true,
+                Pager: true,
+                'Line Menu': true,
+            },
         },
         'Items Full - with 2 Views': {
             listToSelect: 'Items View - Full with 2 Views',
             expectedTitle: 'Items Full - 2 Views',
-            expectedNumOfResults: numOfListingsIn_items,
-            elements: [
-                'Menu',
-                'Search Input',
-                'Smart Search',
-                'Single Radio Button',
-                'Select All Checkbox',
-                'Pager',
-                'Line Menu',
-            ],
+            expectedNumOfResults: numOfListingsIn_items_filtered_a,
+            elements: {
+                Menu: true,
+                'Search Input': true,
+                'Smart Search': true,
+                'Single Radio Button': true,
+                'Select All Checkbox': false,
+                Pager: true,
+                'Line Menu': true,
+            },
         },
         'Accounts Draw Grid Relation': {
             listToSelect: 'Accounts - Test Draw Grid',
             expectedTitle: 'Accounts Test Draw Grid',
             expectedNumOfResults: numOfListingsIn_accounts,
-            elements: [
-                'Menu',
-                'Search Input',
-                'Smart Search',
-                'Single Radio Button',
-                'Select All Checkbox',
-                'Pager',
-                'Line Menu',
-            ],
+            elements: {
+                Menu: false,
+                'Search Input': false,
+                'Smart Search': false,
+                'Single Radio Button': false,
+                'Select All Checkbox': true,
+                Pager: true,
+                'Line Menu': false,
+            },
         },
         'ReferenceAccount with 2 Views - Tests': {
             listToSelect: 'ReferenceAccount with 2 Views',
             expectedTitle: 'Reference Account',
             expectedNumOfResults: numOfListingsIn_ReferenceAccountAuto,
-            elements: [
-                'Menu',
-                'Search Input',
-                'Smart Search',
-                'Single Radio Button',
-                'Select All Checkbox',
-                'Pager',
-                'Line Menu',
-            ],
+            elements: {
+                Menu: true,
+                'Search Input': true,
+                'Smart Search': true,
+                'Single Radio Button': false,
+                'Select All Checkbox': true,
+                Pager: false,
+                'Line Menu': true,
+            },
         },
         'FiltersAccRef with 2 Views - Tests': {
             listToSelect: 'FiltersAccRef with 2 Views',
             expectedTitle: 'Filters Acc Ref ABI View',
             expectedNumOfResults: numOfListingsIn_FiltersAccRefAuto,
-            elements: [
-                'Menu',
-                'Search Input',
-                'Smart Search',
-                'Single Radio Button',
-                'Select All Checkbox',
-                'Pager',
-                'Line Menu',
-            ],
-        },
-    };
-    const elements = {
-        Menu: {
-            'Items Basic': false,
-            'Accounts Basic': false,
-            'Accounts Default Draw': false,
-            'Accounts Selection - Multi': false,
-            'Accounts Selection - Single': false,
-            'Accounts Selection - None': false,
-            'Accounts Menu': false,
-            'Accounts Menu Hosting Addon Functionality': false,
-            'Accounts Menu Full': false,
-            'Accounts Line Menu': false,
-            'Items Line Menu Selection Type Multi': false,
-            'Items Search': false,
-            'Accounts Smart Search': false,
-            'Accounts Sorting Ascending': false,
-            'Accounts Sorting Descending': false,
-            'Items Search String': false,
-            'Items Page Type Pages': false,
-            'Items Page Type Pages - Page size': false,
-            'Items Page Type Pages - Page Index': false,
-            'Items Page Type Pages - Top Scroll Index': false,
-            'Items Page Type Pages - Page Size & Page Index': false,
-            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll': false,
-            'Items Page Type Scroll - Top Scroll Index': false,
-            'Items Page Type Scroll - Page Index': false,
-            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll - Page Size & Page Index': false,
-            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
-            'Accounts Full': false,
-            'Items Full - with 2 Views': false,
-            'Accounts Draw Grid Relation': false,
-            'ReferenceAccount with 2 Views - Tests': true,
-            'FiltersAccRef with 2 Views - Tests': true,
-        },
-        'Search Input': {
-            'Items Basic': false,
-            'Accounts Basic': false,
-            'Accounts Default Draw': false,
-            'Accounts Selection - Multi': false,
-            'Accounts Selection - Single': false,
-            'Accounts Selection - None': false,
-            'Accounts Menu': false,
-            'Accounts Menu Hosting Addon Functionality': false,
-            'Accounts Menu Full': false,
-            'Accounts Line Menu': false,
-            'Items Line Menu Selection Type Multi': false,
-            'Items Search': false,
-            'Accounts Smart Search': false,
-            'Accounts Sorting Ascending': false,
-            'Accounts Sorting Descending': false,
-            'Items Search String': false,
-            'Items Page Type Pages': false,
-            'Items Page Type Pages - Page size': false,
-            'Items Page Type Pages - Page Index': false,
-            'Items Page Type Pages - Top Scroll Index': false,
-            'Items Page Type Pages - Page Size & Page Index': false,
-            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll': false,
-            'Items Page Type Scroll - Top Scroll Index': false,
-            'Items Page Type Scroll - Page Index': false,
-            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll - Page Size & Page Index': false,
-            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
-            'Accounts Full': false,
-            'Items Full - with 2 Views': false,
-            'Accounts Draw Grid Relation': false,
-            'ReferenceAccount with 2 Views - Tests': true,
-            'FiltersAccRef with 2 Views - Tests': true,
-        },
-        'Smart Search': {
-            'Items Basic': false,
-            'Accounts Basic': false,
-            'Accounts Default Draw': false,
-            'Accounts Selection - Multi': false,
-            'Accounts Selection - Single': false,
-            'Accounts Selection - None': false,
-            'Accounts Menu': false,
-            'Accounts Menu Hosting Addon Functionality': false,
-            'Accounts Menu Full': false,
-            'Accounts Line Menu': false,
-            'Items Line Menu Selection Type Multi': false,
-            'Items Search': false,
-            'Accounts Smart Search': false,
-            'Accounts Sorting Ascending': false,
-            'Accounts Sorting Descending': false,
-            'Items Search String': false,
-            'Items Page Type Pages': false,
-            'Items Page Type Pages - Page size': false,
-            'Items Page Type Pages - Page Index': false,
-            'Items Page Type Pages - Top Scroll Index': false,
-            'Items Page Type Pages - Page Size & Page Index': false,
-            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll': false,
-            'Items Page Type Scroll - Top Scroll Index': false,
-            'Items Page Type Scroll - Page Index': false,
-            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll - Page Size & Page Index': false,
-            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
-            'Accounts Full': false,
-            'Items Full - with 2 Views': false,
-            'Accounts Draw Grid Relation': false,
-            'ReferenceAccount with 2 Views - Tests': true,
-            'FiltersAccRef with 2 Views - Tests': true,
-        },
-        'Single Radio Button': {
-            'Items Basic': true,
-            'Accounts Basic': true,
-            'Accounts Default Draw': false,
-            'Accounts Selection - Multi': false,
-            'Accounts Selection - Single': true,
-            'Accounts Selection - None': false,
-            'Accounts Menu': false,
-            'Accounts Menu Hosting Addon Functionality': false,
-            'Accounts Menu Full': false,
-            'Accounts Line Menu': false,
-            'Items Line Menu Selection Type Multi': false,
-            'Items Search': false,
-            'Accounts Smart Search': false,
-            'Accounts Sorting Ascending': false,
-            'Accounts Sorting Descending': false,
-            'Items Search String': false,
-            'Items Page Type Pages': false,
-            'Items Page Type Pages - Page size': false,
-            'Items Page Type Pages - Page Index': false,
-            'Items Page Type Pages - Top Scroll Index': false,
-            'Items Page Type Pages - Page Size & Page Index': false,
-            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll': false,
-            'Items Page Type Scroll - Top Scroll Index': false,
-            'Items Page Type Scroll - Page Index': false,
-            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll - Page Size & Page Index': false,
-            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
-            'Accounts Full': false,
-            'Items Full - with 2 Views': false,
-            'Accounts Draw Grid Relation': false,
-            'ReferenceAccount with 2 Views - Tests': false,
-            'FiltersAccRef with 2 Views - Tests': false,
-        },
-        'Select All Checkbox': {
-            'Items Basic': false,
-            'Accounts Basic': false,
-            'Accounts Default Draw': false,
-            'Accounts Selection - Multi': true,
-            'Accounts Selection - Single': false,
-            'Accounts Selection - None': false,
-            'Accounts Menu': false,
-            'Accounts Menu Hosting Addon Functionality': false,
-            'Accounts Menu Full': false,
-            'Accounts Line Menu': false,
-            'Items Line Menu Selection Type Multi': false,
-            'Items Search': false,
-            'Accounts Smart Search': false,
-            'Accounts Sorting Ascending': false,
-            'Accounts Sorting Descending': false,
-            'Items Search String': false,
-            'Items Page Type Pages': false,
-            'Items Page Type Pages - Page size': false,
-            'Items Page Type Pages - Page Index': false,
-            'Items Page Type Pages - Top Scroll Index': false,
-            'Items Page Type Pages - Page Size & Page Index': false,
-            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll': false,
-            'Items Page Type Scroll - Top Scroll Index': false,
-            'Items Page Type Scroll - Page Index': false,
-            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll - Page Size & Page Index': false,
-            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
-            'Accounts Full': false,
-            'Items Full - with 2 Views': false,
-            'Accounts Draw Grid Relation': false,
-            'ReferenceAccount with 2 Views - Tests': true,
-            'FiltersAccRef with 2 Views - Tests': true,
-        },
-        'Line Menu': {
-            'Items Basic': false,
-            'Accounts Basic': false,
-            'Accounts Default Draw': false,
-            'Accounts Selection - Multi': false,
-            'Accounts Selection - Single': false,
-            'Accounts Selection - None': false,
-            'Accounts Menu': false,
-            'Accounts Menu Hosting Addon Functionality': false,
-            'Accounts Menu Full': false,
-            'Accounts Line Menu': false,
-            'Items Line Menu Selection Type Multi': false,
-            'Items Search': false,
-            'Accounts Smart Search': false,
-            'Accounts Sorting Ascending': false,
-            'Accounts Sorting Descending': false,
-            'Items Search String': false,
-            'Items Page Type Pages': false,
-            'Items Page Type Pages - Page size': false,
-            'Items Page Type Pages - Page Index': false,
-            'Items Page Type Pages - Top Scroll Index': false,
-            'Items Page Type Pages - Page Size & Page Index': false,
-            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll': false,
-            'Items Page Type Scroll - Top Scroll Index': false,
-            'Items Page Type Scroll - Page Index': false,
-            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll - Page Size & Page Index': false,
-            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
-            'Accounts Full': false,
-            'Items Full - with 2 Views': false,
-            'Accounts Draw Grid Relation': false,
-            'ReferenceAccount with 2 Views - Tests': true,
-            'FiltersAccRef with 2 Views - Tests': true,
-        },
-        Pager: {
-            'Items Basic': true,
-            'Accounts Basic': true,
-            'Accounts Default Draw': true,
-            'Accounts Selection - Multi': true,
-            'Accounts Selection - Single': true,
-            'Accounts Selection - None': true,
-            'Accounts Menu': true,
-            'Accounts Menu Hosting Addon Functionality': true,
-            'Accounts Menu Full': true,
-            'Accounts Line Menu': true,
-            'Items Line Menu Selection Type Multi': true,
-            'Items Search': true,
-            'Accounts Smart Search': true,
-            'Accounts Sorting Ascending': true,
-            'Accounts Sorting Descending': true,
-            'Items Search String': false,
-            'Items Page Type Pages': true,
-            'Items Page Type Pages - Page size': true,
-            'Items Page Type Pages - Page Index': true,
-            'Items Page Type Pages - Top Scroll Index': true,
-            'Items Page Type Pages - Page Size & Page Index': true,
-            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': true,
-            'Items Page Type Scroll': false,
-            'Items Page Type Scroll - Top Scroll Index': false,
-            'Items Page Type Scroll - Page Index': false,
-            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll - Page Size & Page Index': false,
-            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
-            'Accounts Full': false,
-            'Items Full - with 2 Views': false,
-            'Accounts Draw Grid Relation': false,
-            'ReferenceAccount with 2 Views - Tests': false,
-            'FiltersAccRef with 2 Views - Tests': true,
-        },
-        Scroll: {
-            'Items Basic': false,
-            'Accounts Basic': false,
-            'Accounts Default Draw': false,
-            'Accounts Selection - Multi': false,
-            'Accounts Selection - Single': false,
-            'Accounts Selection - None': false,
-            'Accounts Menu': false,
-            'Accounts Menu Hosting Addon Functionality': false,
-            'Accounts Menu Full': false,
-            'Accounts Line Menu': false,
-            'Items Line Menu Selection Type Multi': false,
-            'Items Search': false,
-            'Accounts Smart Search': false,
-            'Accounts Sorting Ascending': false,
-            'Accounts Sorting Descending': false,
-            'Items Search String': false,
-            'Items Page Type Pages': false,
-            'Items Page Type Pages - Page size': false,
-            'Items Page Type Pages - Page Index': false,
-            'Items Page Type Pages - Top Scroll Index': false,
-            'Items Page Type Pages - Page Size & Page Index': false,
-            'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll': false,
-            'Items Page Type Scroll - Top Scroll Index': false,
-            'Items Page Type Scroll - Page Index': false,
-            'Items Page Type Scroll - Page Index & Top Scroll Index': false,
-            'Items Page Type Scroll - Page Size & Page Index': false,
-            'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': false,
-            'Accounts Full': false,
-            'Items Full - with 2 Views': false,
-            'Accounts Draw Grid Relation': false,
-            'ReferenceAccount with 2 Views - Tests': false,
-            'FiltersAccRef with 2 Views - Tests': false,
+            elements: {
+                Menu: true,
+                'Search Input': true,
+                'Smart Search': true,
+                'Single Radio Button': false,
+                'Select All Checkbox': true,
+                Pager: true,
+                'Line Menu': true,
+            },
         },
     };
 
@@ -610,6 +389,18 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             console.info(
                 'numOfListingsIn_FiltersAccRefAuto: ',
                 JSON.stringify(numOfListingsIn_FiltersAccRefAuto, null, 2),
+            );
+            console.info(
+                'numOfListingsIn_items_filtered_MaNa: ',
+                JSON.stringify(numOfListingsIn_items_filtered_MaNa, null, 2),
+            );
+            console.info(
+                'numOfListingsIn_items_filtered_a: ',
+                JSON.stringify(numOfListingsIn_items_filtered_a, null, 2),
+            );
+            console.info(
+                'numOfListingsIn_accounts_filtered_a: ',
+                JSON.stringify(numOfListingsIn_accounts_filtered_a, null, 2),
             );
         });
 
@@ -691,17 +482,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             );
                             resourceListABI.pause(0.1 * 1000);
                         });
-                        if (lists[listTitle].expectedNumOfResults > 0) {
-                            it('List Row - Appear', async () => {
-                                await elemntExist('ListRow');
-                                resourceListABI.pause(0.2 * 1000);
-                            });
-                        }
 
-                        lists[listTitle].elements.forEach((webElement) => {
-                            const isDisplayed = elements[webElement][listTitle];
-                            it(`${webElement} - ${isDisplayed ? 'DISPLAYED' : 'NOT Displayed'}`, async () => {
-                                switch (webElement) {
+                        Object.keys(lists[listTitle].elements).forEach((element) => {
+                            const isDisplayed = lists[listTitle].elements[element];
+                            it(`${element} - ${isDisplayed ? 'DISPLAYED' : 'NOT Displayed'}`, async () => {
+                                switch (element) {
                                     case 'Menu':
                                         isDisplayed ? await elemntExist('Menu') : await elemntDoNotExist('Menu');
                                         break;
@@ -768,7 +553,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 }
                             });
                         });
-                        if (elements['Line Menu'][listTitle] && elements['Accounts Selection - Multi'][listTitle]) {
+                        if (
+                            lists[listTitle].elements['Line Menu'] &&
+                            lists[listTitle].elements['Accounts Selection - Multi']
+                        ) {
                             it('Line Menu - Disappear', async () => {
                                 await lineMenuMultiDisappear();
                             });
@@ -863,6 +651,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         expect(listAbiTitle.trim()).to.equal(expectedTitle);
         const listAbiResultsNumber = await (await driver.findElement(resourceListABI.ListAbi_results_number)).getText();
         expect(Number(listAbiResultsNumber.trim())).to.equal(expectedNumOfResults);
+        if (expectedNumOfResults > 0) {
+            await elemntExist('ListRow');
+            resourceListABI.pause(0.2 * 1000);
+        }
     }
 
     async function getSelector(
@@ -1011,13 +803,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(2 * 1000);
     }
-
-    // async function lineMenuSingleDisappear() {
-    //     await webAppList.clickOnRadioButtonByElementIndex();
-    //     await webAppList.isSpinnerDone();
-    //     await elemntDoNotExist('LineMenu');
-    //     resourceListABI.pause(2 * 1000);
-    // }
 
     async function lineMenuSingleExist() {
         await webAppList.clickOnRadioButtonByElementIndex();
