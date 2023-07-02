@@ -3,14 +3,15 @@ import chai from 'chai';
 // import { expect } from 'chai';
 import promised from 'chai-as-promised';
 // import { UDCService } from '../../services/user-defined-collections.service';
-import GeneralService from '../../services/general.service';
-import { Client } from '@pepperi-addons/debug-server/dist';
+// import GeneralService from '../../services/general.service';
+// import { Client } from '@pepperi-addons/debug-server/dist';
 // import { PFSService } from '../../services/pfs.service';
 // import fs from 'fs';
 
 chai.use(promised);
 
-export async function PurgeAllUcds(client: Client) {
+export async function PurgeAllUcds() {
+    //client: Client
     // const generalService = new GeneralService(client);
     // const udcService = new UDCService(generalService);
     //in case you want to filter specific collections by name

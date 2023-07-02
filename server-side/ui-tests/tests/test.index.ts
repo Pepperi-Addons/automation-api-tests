@@ -235,7 +235,7 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
 
     if (tests.includes('evgeny')) {
-        await PurgeAllUcds(client);
+        await PurgeAllUcds(); //client
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
