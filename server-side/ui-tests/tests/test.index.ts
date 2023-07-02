@@ -531,7 +531,6 @@ const passCreate = process.env.npm_config_pass_create as string;
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
-        debugger;
         const service = new GeneralService(client);
         const addonName = addon.toUpperCase();
         let addonUUID;
@@ -573,6 +572,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonSb
             ) {
                 const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`;
+                // debugger;
                 await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
                 await Promise.all([
                     unavailableAddonVersion(
@@ -606,6 +606,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 `####################### Running For: ${addonName}(${addonUUID}), version: ${latestVersionOfTestedAddonProd} #######################`,
             );
             await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonProd, generalService);
+            // debugger;
             try {
                 await Promise.all([
                     handleDevTestInstallation(
