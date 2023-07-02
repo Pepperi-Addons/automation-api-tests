@@ -316,6 +316,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedNumOfResults: numOfListingsIn_accounts_filtered_a,
             elements: {
                 Menu: true,
+                'New Button': true,
                 'Search Input': true,
                 'Smart Search': true,
                 'Single Radio Button': false,
@@ -330,6 +331,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedNumOfResults: numOfListingsIn_items_filtered_a,
             elements: {
                 Menu: true,
+                'New Button': true,
                 'Search Input': true,
                 'Smart Search': true,
                 'Single Radio Button': true,
@@ -344,6 +346,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedNumOfResults: numOfListingsIn_accounts,
             elements: {
                 Menu: false,
+                'New Button': false,
                 'Search Input': false,
                 'Smart Search': false,
                 'Single Radio Button': false,
@@ -358,6 +361,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedNumOfResults: numOfListingsIn_ReferenceAccountAuto,
             elements: {
                 Menu: true,
+                'New Button': false,
                 'Search Input': true,
                 'Smart Search': true,
                 'Single Radio Button': false,
@@ -372,6 +376,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedNumOfResults: numOfListingsIn_FiltersAccRefAuto,
             elements: {
                 Menu: true,
+                'New Button': true,
                 'Search Input': true,
                 'Smart Search': true,
                 'Single Radio Button': false,
@@ -379,6 +384,12 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 Pager: true,
                 'Line Menu': true,
             },
+        },
+        'Accounts Propagated Error': {
+            listToSelect: 'Accounts - throw Error due to wrong AddonUUID',
+            expectedTitle: '',
+            expectedNumOfResults: 0,
+            elements: {},
         },
         'Arrays Of Primitives Numbers Names Reals': {
             listToSelect: 'Arrays Of Primitives - Test Draw Array',
@@ -496,12 +507,21 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 break;
                         }
                         it(enteringListTitle, async () => {
-                            await listPickAndVerify(
-                                lists[listTitle].listToSelect,
-                                lists[listTitle].expectedTitle,
-                                lists[listTitle].expectedNumOfResults,
-                            );
+                            listTitle === 'Accounts Propagated Error' ?
+                                await listPickAndVerify(
+                                    lists[listTitle].listToSelect,
+                                    lists[listTitle].expectedTitle,
+                                    lists[listTitle].expectedNumOfResults,
+                                    true,
+                                    "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files"
+                                ) :
+                                await listPickAndVerify(
+                                    lists[listTitle].listToSelect,
+                                    lists[listTitle].expectedTitle,
+                                    lists[listTitle].expectedNumOfResults,
+                                );
                             resourceListABI.pause(0.1 * 1000);
+                            await resourceListABI.isSpinnerDone();
                         });
 
                         Object.keys(lists[listTitle].elements).forEach((element) => {
@@ -649,6 +669,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 break;
                             case 'FiltersAccRef with 2 Views - Tests':
                                 break;
+                            case 'Accounts Propagated Error':
+                                break;
                             case 'Arrays Of Primitives Numbers Names Reals':
                                 break;
                             case 'Contained Array Scheme Only Name Age':
@@ -663,28 +685,36 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         });
     });
 
-    async function listPickAndVerify(listToSelect: string, expectedTitle: string, expectedNumOfResults: number) {
-        await resourceListABI.isSpinnerDone();
-        if (listToSelect) {
-            await resourceListABI.selectDropBoxByString(resourceListABI.TestsAddon_dropdownElement, listToSelect);
+    async function listPickAndVerify(listToSelect: string, expectedTitle: string, expectedNumOfResults: number, err = false, errorText?: string) {
+        if (!err) {
             await resourceListABI.isSpinnerDone();
+            if (listToSelect) {
+                await resourceListABI.selectDropBoxByString(resourceListABI.TestsAddon_dropdownElement, listToSelect);
+                await resourceListABI.isSpinnerDone();
+            }
+            await resourceListABI.clickElement('TestsAddon_openABI_button');
+            await resourceListABI.isSpinnerDone();
+            await resourceListABI.waitTillVisible(resourceListABI.ListAbi_container, 15000);
+            const listAbiTitle = await (await driver.findElement(resourceListABI.ListAbi_title)).getAttribute('title');
+            expect(listAbiTitle.trim()).to.equal(expectedTitle);
+            if (expectedNumOfResults > 0) {
+                await elemntExist('ListRow');
+                resourceListABI.pause(0.2 * 1000);
+            }
+        } else {
+            const listAbiErrorTitle = await (await driver.findElement(resourceListABI.ListAbi_Empty_Error_title)).getText();
+            const listAbiErrorDescription = await (await driver.findElement(resourceListABI.ListAbi_Empty_Error_description)).getText();
+            expect(listAbiErrorTitle.trim()).to.equal('Error');
+            expect(listAbiErrorDescription.trim()).to.contain(errorText);
         }
-        await resourceListABI.clickElement('TestsAddon_openABI_button');
-        await resourceListABI.isSpinnerDone();
-        await resourceListABI.waitTillVisible(resourceListABI.ListAbi_container, 15000);
-        const listAbiTitle = await (await driver.findElement(resourceListABI.ListAbi_title)).getAttribute('title');
-        expect(listAbiTitle.trim()).to.equal(expectedTitle);
         const listAbiResultsNumber = await (await driver.findElement(resourceListABI.ListAbi_results_number)).getText();
         expect(Number(listAbiResultsNumber.trim())).to.equal(expectedNumOfResults);
-        if (expectedNumOfResults > 0) {
-            await elemntExist('ListRow');
-            resourceListABI.pause(0.2 * 1000);
-        }
     }
 
     async function getSelector(
         elemName:
             | 'Menu'
+            | 'New Button'
             | 'LineMenu'
             | 'Search'
             | 'SmartSearch'
@@ -701,6 +731,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             case 'Menu':
                 selectorOfElemToFind = resourceListABI.ListAbi_Menu_button;
                 selectorName = 'Menu Button';
+                break;
+            case 'New Button':
+                selectorOfElemToFind = resourceListABI.ListAbi_New_button;
+                selectorName = 'New Button';
                 break;
             case 'LineMenu':
                 selectorOfElemToFind = resourceListABI.ListAbi_LineMenu_button;
@@ -750,6 +784,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     async function elemntDoNotExist(
         element:
             | 'Menu'
+            | 'New Button'
             | 'LineMenu'
             | 'Search'
             | 'SmartSearch'
@@ -773,6 +808,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     async function elemntExist(
         element:
             | 'Menu'
+            | 'New Button'
             | 'LineMenu'
             | 'Search'
             | 'SmartSearch'
@@ -804,13 +840,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         resourceListABI.pause(2 * 1000);
     }
 
-    async function lineMenuMultiExist() {
-        await webAppList.clickOnCheckBoxByElementIndex();
-        await webAppList.isSpinnerDone();
-        await elemntExist('LineMenu');
-        resourceListABI.pause(0.2 * 1000);
-    }
-
     async function lineMenuSingleDoNotExist() {
         await webAppList.clickOnRadioButtonByElementIndex();
         await webAppList.isSpinnerDone();
@@ -822,17 +851,24 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         resourceListABI.pause(2 * 1000);
     }
 
-    async function lineMenuMultiDisappear() {
-        await webAppList.clickOnCheckBoxByElementIndex();
-        await webAppList.isSpinnerDone();
-        await elemntDoNotExist('LineMenu');
-        resourceListABI.pause(2 * 1000);
-    }
-
     async function lineMenuSingleExist() {
         await webAppList.clickOnRadioButtonByElementIndex();
         await webAppList.isSpinnerDone();
         await elemntExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
+    }
+
+    async function lineMenuMultiExist() {
+        await webAppList.clickOnCheckBoxByElementIndex();
+        await webAppList.isSpinnerDone();
+        await elemntExist('LineMenu');
+        resourceListABI.pause(0.2 * 1000);
+    }
+
+    async function lineMenuMultiDisappear() {
+        await webAppList.clickOnCheckBoxByElementIndex();
+        await webAppList.isSpinnerDone();
+        await elemntDoNotExist('LineMenu');
+        resourceListABI.pause(2 * 1000);
     }
 }
