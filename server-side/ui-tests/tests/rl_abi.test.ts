@@ -507,19 +507,19 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 break;
                         }
                         it(enteringListTitle, async () => {
-                            listTitle === 'Accounts Propagated Error' ?
-                                await listPickAndVerify(
-                                    lists[listTitle].listToSelect,
-                                    lists[listTitle].expectedTitle,
-                                    lists[listTitle].expectedNumOfResults,
-                                    true,
-                                    "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files"
-                                ) :
-                                await listPickAndVerify(
-                                    lists[listTitle].listToSelect,
-                                    lists[listTitle].expectedTitle,
-                                    lists[listTitle].expectedNumOfResults,
-                                );
+                            listTitle === 'Accounts Propagated Error'
+                                ? await listPickAndVerify(
+                                      lists[listTitle].listToSelect,
+                                      lists[listTitle].expectedTitle,
+                                      lists[listTitle].expectedNumOfResults,
+                                      true,
+                                      "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files",
+                                  )
+                                : await listPickAndVerify(
+                                      lists[listTitle].listToSelect,
+                                      lists[listTitle].expectedTitle,
+                                      lists[listTitle].expectedNumOfResults,
+                                  );
                             resourceListABI.pause(0.1 * 1000);
                             await resourceListABI.isSpinnerDone();
                         });
@@ -685,7 +685,13 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         });
     });
 
-    async function listPickAndVerify(listToSelect: string, expectedTitle: string, expectedNumOfResults: number, err = false, errorText?: string) {
+    async function listPickAndVerify(
+        listToSelect: string,
+        expectedTitle: string,
+        expectedNumOfResults: number,
+        err = false,
+        errorText?: string,
+    ) {
         if (!err) {
             await resourceListABI.isSpinnerDone();
             if (listToSelect) {
@@ -702,8 +708,12 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 resourceListABI.pause(0.2 * 1000);
             }
         } else {
-            const listAbiErrorTitle = await (await driver.findElement(resourceListABI.ListAbi_Empty_Error_title)).getText();
-            const listAbiErrorDescription = await (await driver.findElement(resourceListABI.ListAbi_Empty_Error_description)).getText();
+            const listAbiErrorTitle = await (
+                await driver.findElement(resourceListABI.ListAbi_Empty_Error_title)
+            ).getText();
+            const listAbiErrorDescription = await (
+                await driver.findElement(resourceListABI.ListAbi_Empty_Error_description)
+            ).getText();
             expect(listAbiErrorTitle.trim()).to.equal('Error');
             expect(listAbiErrorDescription.trim()).to.contain(errorText);
         }
