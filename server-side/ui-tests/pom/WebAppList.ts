@@ -34,6 +34,13 @@ export class WebAppList extends Page {
     public TotalResultsText: By = By.css('.total-items .number');
     public LinksInListArr: By = By.css('pep-internal-button a');
 
+    public RadioButtonSelected: By = By.xpath(
+        '//virtual-scroller//fieldset//input[@type="radio"]/ancestor::mat-radio-button[contains(@class,"mat-radio-checked")]',
+    );
+    public RowElementCheckBoxSelected: By = By.xpath(
+        '//virtual-scroller//fieldset//input[@type="checkbox"][@aria-checked="true"]',
+    );
+
     //Addon Page
     public AddonCells: By = By.css('pep-list .table-row-fieldset');
     public AddonAddButton: By = By.css('[data-qa] [title="Add"]');
