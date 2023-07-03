@@ -593,10 +593,12 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                     case 'Line Menu':
                                         switch (listTitle) {
                                             case 'Accounts Line Menu':
+                                            case 'Items Full - with 2 Views':
                                                 await lineMenuSingleExist();
                                                 break;
 
                                             case 'Items Line Menu Selection Type Multi':
+                                            case 'Accounts Full':
                                             case 'ReferenceAccount with 2 Views - Tests':
                                             case 'FiltersAccRef with 2 Views - Tests':
                                                 await lineMenuMultiExist();
@@ -609,6 +611,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                                 break;
 
                                             case 'Accounts Selection - Multi':
+                                            case 'Accounts Draw Grid Relation':
                                                 await lineMenuMultiDoNotExist();
                                                 break;
 
