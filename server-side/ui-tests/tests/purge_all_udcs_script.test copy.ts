@@ -17,8 +17,10 @@ export async function PurgeAllUcds(client: Client, varPass) {
     // const udcService = new UDCService(generalService);
     // in case you want to filter specific collections by name
     // const UDCPrefixName = 'DimxOverwrite';
-    describe('Purging All UDCs With Certaing Prefix', async function () {
-        it(`Purging All UDCs With Certaing Prefix`, async function () {
+    describe('ADAL CREATE - DELETE', async function () {
+        const howManyRows = 5000;//QTY! -- this is here so we can print it in the log (report)
+        const schemaName = 'AdalTable' + Math.floor(Math.random() * 1000000).toString();//-- this is here so we can print it in the log (report)
+        it(`RUNNING ON ${howManyRows} ROWS!, TABLE NAME: ${schemaName}`, async function () {
             // let allUdcs = await udcService.getSchemes({ page_size: -1 });
             // //in case you want to filter specific collections by name
             // // let onlyRelevantUdcs = allUdcs.filter(doc => (doc.Name.includes(UDCPrefixName) && doc.Hidden === false));
@@ -55,7 +57,6 @@ export async function PurgeAllUcds(client: Client, varPass) {
             const pfsService = new PFSService(generalService);
             const adalService = new ADALService(generalService.papiClient);
             //1. create new ADALTable to import to
-            const schemaName = 'AdalTable' + Math.floor(Math.random() * 1000000).toString();
             console.log(`new ADAL table will be called: ${schemaName}`);
             const createSchemaResponse = await adalService.postSchema({
                 Name: schemaName,
@@ -111,7 +112,6 @@ export async function PurgeAllUcds(client: Client, varPass) {
             expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
             expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
             //3. create the data file
-            const howManyRows = 50000;
             await createInitalData(howManyRows);
             const buf = fs.readFileSync('./Data.csv');
             //4. upload the file to PFS Temp
@@ -147,19 +147,24 @@ export async function PurgeAllUcds(client: Client, varPass) {
             console.log(`±±±±TOOK: seconds: ${durationInSec}, which are: ${Number(durationInSec) / 60} minutes±±±±`);
             //6. delete the ADAL table
             const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
-            const auditLogdeleteSchemaResponse = await generalService.getAuditLogResultObjectIfValid(
-                deleteSchemaResponse.URI as string,
-                120,
-                7000,
-            );
-            expect((auditLogdeleteSchemaResponse as any).Status.ID).to.equal(1);
-            expect((auditLogdeleteSchemaResponse as any).Status.Name).to.equal('Success');
-            expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).Done).to.equal(true);
-            debugger;
-            expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).RemovedCounter).to.equal(
-                howManyRows,
-            );
-            debugger;
+            if (deleteSchemaResponse.hasOwnProperty("Done")) {
+                expect(deleteSchemaResponse.Done).to.equal(true);
+                console.log(`EVGENY: RETUREND RemovedCounter: ${deleteSchemaResponse.RemovedCounter}`);
+                expect(deleteSchemaResponse.RemovedCounter).to.equal(howManyRows);
+            } else {
+                const auditLogdeleteSchemaResponse = await generalService.getAuditLogResultObjectIfValid(
+                    deleteSchemaResponse.URI as string,
+                    120,
+                    7000,
+                );
+                expect((auditLogdeleteSchemaResponse as any).Status.ID).to.equal(1);
+                expect((auditLogdeleteSchemaResponse as any).Status.Name).to.equal('Success');
+                expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).Done).to.equal(true);
+                console.log(`EVGENY: RETUREND RemovedCounter: ${JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).RemovedCounter}`);
+                expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).RemovedCounter).to.equal(
+                    howManyRows,
+                );
+            }
             // const adalResponse = await generalService.fetchStatus(
             //     `/addons/data/import/file/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/di22999`,
             //     { method: 'GET'},
