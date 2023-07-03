@@ -59,8 +59,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const numOfListingsIn_FiltersAccRefAuto = (await udcService.getAllObjectFromCollection('FiltersAccRefAuto')).count;
     const numOfListingsIn_ArraysOfPrimitivesAuto = (
         await udcService.getAllObjectFromCollection('ArraysOfPrimitivesAuto')
-    ).count;
-    const numOfListingsIn_ContainedArray = (await udcService.getAllObjectFromCollection('ContainedArray')).count;
+    ).objects.length;
+    const numOfListingsIn_ContainedArray = (await udcService.getAllObjectFromCollection('ContainedArray')).objects
+        .length;
 
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
