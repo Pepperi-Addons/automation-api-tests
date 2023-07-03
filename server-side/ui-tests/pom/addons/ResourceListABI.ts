@@ -22,8 +22,21 @@ export class ResourceListABI extends AddonPage {
         `${this.ListAbi_container.value}//pep-top-bar//pep-list-total//span[contains(@class,number)]`,
     );
 
+    public ListAbi_Empty_Error_container: By = By.xpath(
+        '//pep-page-layout//div[contains(@class,"pep-main-area")]//div[contains(@class,"list-empty-state")]',
+    );
+    public ListAbi_Empty_Error_title: By = By.xpath(
+        `${this.ListAbi_Empty_Error_container.value}/div[contains(@class,"list-empty-title")]`,
+    );
+    public ListAbi_Empty_Error_description: By = By.xpath(
+        `${this.ListAbi_Empty_Error_container.value}/div[contains(@class,"list-empty-descr")]`,
+    );
+
     public ListAbi_Menu_button: By = By.xpath(
         '//pep-top-bar//div[contains(@class,"right-container")]//pep-menu//button',
+    );
+    public ListAbi_New_button: By = By.xpath(
+        `${this.ListAbi_container.value}//pep-top-bar//div[contains(@class,"right-container")]//pep-button/button[contains(@data-qa,"_new")]`,
     );
     public ListAbi_LineMenu_button: By = By.xpath('//pep-top-bar//pep-list-actions//pep-menu//button');
     public ListAbi_Search_input: By = By.xpath('//pep-search');
