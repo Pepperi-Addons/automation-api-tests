@@ -692,17 +692,18 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         err = false,
         errorText?: string,
     ) {
+        await resourceListABI.isSpinnerDone();
+        if (listToSelect) {
+            await resourceListABI.selectDropBoxByString(resourceListABI.TestsAddon_dropdownElement, listToSelect);
+            await resourceListABI.isSpinnerDone();
+        }
+        await resourceListABI.clickElement('TestsAddon_openABI_button');
+        await resourceListABI.isSpinnerDone();
+        await resourceListABI.waitTillVisible(resourceListABI.ListAbi_container, 15000);
         if (!err) {
-            await resourceListABI.isSpinnerDone();
-            if (listToSelect) {
-                await resourceListABI.selectDropBoxByString(resourceListABI.TestsAddon_dropdownElement, listToSelect);
-                await resourceListABI.isSpinnerDone();
-            }
-            await resourceListABI.clickElement('TestsAddon_openABI_button');
-            await resourceListABI.isSpinnerDone();
-            await resourceListABI.waitTillVisible(resourceListABI.ListAbi_container, 15000);
             const listAbiTitle = await (await driver.findElement(resourceListABI.ListAbi_title)).getAttribute('title');
             expect(listAbiTitle.trim()).to.equal(expectedTitle);
+            resourceListABI.pause(0.1 * 1000);
             if (expectedNumOfResults > 0) {
                 await elemntExist('ListRow');
                 resourceListABI.pause(0.2 * 1000);
