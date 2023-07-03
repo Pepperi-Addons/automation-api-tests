@@ -59,8 +59,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const numOfListingsIn_FiltersAccRefAuto = (await udcService.getAllObjectFromCollection('FiltersAccRefAuto')).count;
     const numOfListingsIn_ArraysOfPrimitivesAuto = (
         await udcService.getAllObjectFromCollection('ArraysOfPrimitivesAuto')
-    ).count;
-    const numOfListingsIn_ContainedArray = (await udcService.getAllObjectFromCollection('ContainedArray')).count;
+    ).objects.length;
+    const numOfListingsIn_ContainedArray = (await udcService.getAllObjectFromCollection('ContainedArray')).objects
+        .length;
 
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
@@ -592,10 +593,12 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                     case 'Line Menu':
                                         switch (listTitle) {
                                             case 'Accounts Line Menu':
+                                            case 'Items Full - with 2 Views':
                                                 await lineMenuSingleExist();
                                                 break;
 
                                             case 'Items Line Menu Selection Type Multi':
+                                            case 'Accounts Full':
                                             case 'ReferenceAccount with 2 Views - Tests':
                                             case 'FiltersAccRef with 2 Views - Tests':
                                                 await lineMenuMultiExist();
@@ -608,6 +611,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                                 break;
 
                                             case 'Accounts Selection - Multi':
+                                            case 'Accounts Draw Grid Relation':
                                                 await lineMenuMultiDoNotExist();
                                                 break;
 
