@@ -1565,6 +1565,34 @@ export default class GeneralService {
         return updateVersionResponse.Body.SecretKey;
     }
 
+    async genrateFile(tempFileName, data) {
+        try {
+            fs.writeFileSync(`./${tempFileName}.csv`, data, 'utf-8');
+        } catch (error) {
+            throw new Error(`Error: ${(error as any).message}`);
+        }
+    }
+
+    async createCSVFile(
+        howManyDataRows: number,
+        headers: string,
+        keyData: string,
+        valueData: string[],
+        isHidden: string,
+    ) {
+        let strData = '';
+        strData += headers + '\n';
+        for (let index = 0; index < howManyDataRows; index++) {
+            strData += `${keyData.replace('index', index.toString())},`;
+            for (let index1 = 0; index1 < valueData.length; index1++) {
+                const value = valueData[index1];
+                strData += `${value.replace('index', index.toString())},`;
+            }
+            strData += `${isHidden.replace('index', index.toString())}\n`;
+        }
+        await this.genrateFile('Data', strData);
+    }
+
     generateRandomString(length: number): string {
         let result = '';
         for (let i = 0; i < length; i++) {
