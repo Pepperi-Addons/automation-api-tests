@@ -54,7 +54,7 @@ import { UDCTestser } from '../../api-tests/user_defined_collections';
 import { maintenance3APITestser } from '../../api-tests/addons';
 import { handleDevTestInstallation } from '../../tests';
 import { NgxLibPOC } from './NgxLibPOC.test';
-import { PurgeAllUcds } from './purge_all_udcs_script.test copy';
+import { PfsFileUploadToAdalUsingDimx } from './purge_all_udcs_script.test copy';
 import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
 import { CiCdFlow } from '../../services/cicd-flow.service copy';
 
@@ -235,7 +235,7 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
 
     if (tests.includes('evgeny')) {
-        await PurgeAllUcds(client, varPass); //
+        await PfsFileUploadToAdalUsingDimx(client, varPass); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 

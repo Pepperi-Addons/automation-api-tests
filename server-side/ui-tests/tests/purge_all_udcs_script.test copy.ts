@@ -9,63 +9,30 @@ import { PFSService } from '../../services/pfs.service';
 import fs from 'fs';
 import { ADALService } from '../../services/adal.service';
 import { v4 as newUuid } from 'uuid';
+import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
 chai.use(promised);
 
-export async function PurgeAllUcds(client: Client, varPass) {
+export async function PfsFileUploadToAdalUsingDimx(client: Client, varPass) {
     //
     const generalService = new GeneralService(client);
-    // const udcService = new UDCService(generalService);
-    // in case you want to filter specific collections by name
-    // const UDCPrefixName = 'DimxOverwrite';
     describe('ADAL CREATE - DELETE', async function () {
         const howManyRows = 10000; //QTY! -- this is here so we can print it in the log (report)
         const schemaName = 'AdalTable' + Math.floor(Math.random() * 1000000).toString(); //-- this is here so we can print it in the log (report)
-        it(`RUNNING ON ${howManyRows} ROWS!, TABLE NAME: ${schemaName}`, async function () {
-            // let allUdcs = await udcService.getSchemes({ page_size: -1 });
-            // //in case you want to filter specific collections by name
-            // // let onlyRelevantUdcs = allUdcs.filter(doc => (doc.Name.includes(UDCPrefixName) && doc.Hidden === false));
-            // const onlyRelevantUdcNames = allUdcs.map((doc) => doc.Name);
-            // for (let index = 0; index < onlyRelevantUdcNames.length; index++) {
-            //     const udcName = onlyRelevantUdcNames[index];
-            //     await udcService.purgeScheme(udcName);
-            //     generalService.sleep(2500);
-            //     allUdcs = await udcService.getSchemes({ page_size: -1 });
-            //     console.log(`${udcName} was deleted, ${allUdcs.length} left`);
-            // }
-            // let auditLogResponse;
-            // let counter = 0;
-            // do {
-            //     if (counter > 0) {
-            //         console.log(`trying for the: ${counter} time!`);
-            //     }
-            //     const addonUUID = '00000000-0000-0000-0000-000000006a91';
-            //     const uninstallResponse = await generalService.papiClient.addons.installedAddons
-            //         .addonUUID(`${addonUUID}`)
-            //         .uninstall();
-            //     auditLogResponse = await generalService.getAuditLogResultObjectIfValid(
-            //         uninstallResponse.URI as string,
-            //         40,
-            //     );
-            //     console.log(`received: ${JSON.stringify(auditLogResponse)}`);
-            //     counter++;
-            // } while (
-            //     auditLogResponse.AuditInfo.ErrorMessage.includes(
-            //         '504 - Gateway Timeout error: {"message":"Endpoint request timed out"}',
-            //     )
-            // );
+        const scheme: AddonDataScheme = {
+            Name: schemaName,
+            Type: 'data',
+            Fields: {
+                Value: { Type: 'String' },
+            }
+        };
+        it(`RUNNING ON ${howManyRows} ROWS!, TABLE NAME: ${schemaName}, SCHEME: ${scheme}`, async function () {
             //START OF DIMX UPLOAD USING PFS
             const pfsService = new PFSService(generalService);
             const adalService = new ADALService(generalService.papiClient);
             //1. create new ADALTable to import to
             console.log(`new ADAL table will be called: ${schemaName}`);
-            const createSchemaResponse = await adalService.postSchema({
-                Name: schemaName,
-                Type: 'data',
-                Fields: {
-                    Value: { Type: 'String' },
-                },
-            });
+            const createSchemaResponse = await adalService.postSchema(scheme);
             expect(createSchemaResponse.Name).to.equal(schemaName);
             expect(createSchemaResponse.Hidden).to.be.false;
             expect(createSchemaResponse.Type).to.equal('data');
@@ -172,8 +139,7 @@ export async function PurgeAllUcds(client: Client, varPass) {
                 expect((auditLogdeleteSchemaResponse as any).Status.Name).to.equal('Success');
                 expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).Done).to.equal(true);
                 console.log(
-                    `EVGENY: RETUREND RemovedCounter: ${
-                        JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).RemovedCounter
+                    `EVGENY: RETUREND RemovedCounter: ${JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).RemovedCounter
                     }`,
                 );
                 expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).RemovedCounter).to.equal(
