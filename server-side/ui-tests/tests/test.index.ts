@@ -235,7 +235,7 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
 
     if (tests.includes('evgeny')) {
-        await PurgeAllUcds(client);
+        await PurgeAllUcds(client, varPass); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
@@ -531,7 +531,6 @@ const passCreate = process.env.npm_config_pass_create as string;
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
-        debugger;
         const service = new GeneralService(client);
         const addonName = addon.toUpperCase();
         let addonUUID;
@@ -573,6 +572,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonSb
             ) {
                 const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`;
+                // debugger;
                 await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
                 await Promise.all([
                     unavailableAddonVersion(
@@ -606,6 +606,7 @@ const passCreate = process.env.npm_config_pass_create as string;
                 `####################### Running For: ${addonName}(${addonUUID}), version: ${latestVersionOfTestedAddonProd} #######################`,
             );
             await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonProd, generalService);
+            // debugger;
             try {
                 await Promise.all([
                     handleDevTestInstallation(
@@ -720,6 +721,9 @@ const passCreate = process.env.npm_config_pass_create as string;
                     runDevTestOnCertainEnv(sbUser, 'stage', latestVersionOfAutomationTemplateAddon, body, addonName),
                 ]);
                 //4.2. poll audit log response for each env
+                console.log(
+                    `####################### ${currentTestName}: EXECUTION UUIDS:\nEU - ${devTestResponseEu.Body.URI}\nPROD - ${devTestResponseProd.Body.URI}\nSB - ${devTestResponseSb.Body.URI}`,
+                );
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
                     prodUser,
@@ -1502,7 +1506,8 @@ function handleTeamsURL(addonName) {
     switch (addonName) {
         case 'ADAL': //new teams
             return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/60921b31c28a4d208953f6597131368f/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-        case 'NEBULA': //new teams
+        case 'NEBULA':
+        case 'FEBULA': //new teams
             return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/3e20b0b37e1148d0b12ccf82adb619c4/79d2ba58-6e75-40c6-be86-84e3c74fd694';
         case 'DIMX':
             return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/a5c62481e39743cb9d6651fa88284deb/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
@@ -2112,12 +2117,27 @@ async function getNebulaTests(userName, env) {
     return toReturn;
 }
 
+async function getFebulaTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/cebb251f-1c80-4d80-b62c-442e48e678e8/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function runDevTestOnCertainEnv(userName, env, latestVersionOfAutomationTemplateAddon, bodyToSend, addonName) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
     let urlToCall;
     if (addonName === 'NEBULA') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-000000006a91/tests/tests';
+    } else if (addonName === 'FEBULA') {
+        urlToCall = '/addons/api/async/cebb251f-1c80-4d80-b62c-442e48e678e8/tests/tests';
     } else {
         urlToCall = `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`;
     }
@@ -2141,7 +2161,9 @@ async function getTestResponseFromAuditLog(userName, env, URI: string) {
 async function getTestNames(addonName, user, env, latestVersionOfAutomationTemplateAddon, addonUUID) {
     if (addonName === 'NEBULA') {
         // testsList
-        return getNebulaTests(user, 'prod');
+        return await getNebulaTests(user, 'prod');
+    } else if (addonName === 'FEBULA') {
+        return await getFebulaTests(user, 'prod');
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
         const service = new GeneralService(client);
@@ -2159,7 +2181,7 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
 
 function prepareTestBody(addonName, currentTestName, addonUUID) {
     let body;
-    if (addonName === 'NEBULA') {
+    if (addonName === 'NEBULA' || addonName === 'FEBULA') {
         body = {
             Name: currentTestName,
         };
