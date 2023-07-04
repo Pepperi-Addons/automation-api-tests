@@ -59,8 +59,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const numOfListingsIn_FiltersAccRefAuto = (await udcService.getAllObjectFromCollection('FiltersAccRefAuto')).count;
     const numOfListingsIn_ArraysOfPrimitivesAuto = (
         await udcService.getAllObjectFromCollection('ArraysOfPrimitivesAuto')
-    ).count;
-    const numOfListingsIn_ContainedArray = (await udcService.getAllObjectFromCollection('ContainedArray')).count;
+    ).objects.length;
+    const numOfListingsIn_ContainedArray = (await udcService.getAllObjectFromCollection('ContainedArray')).objects
+        .length;
 
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
@@ -74,6 +75,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: '',
             expectedTitle: 'Items Basic',
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items'],
             elements: {
                 Menu: false,
                 'Search Input': false,
@@ -88,6 +90,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts View - Basic',
             expectedTitle: 'Accounts Basic',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts'],
             elements: {
                 Menu: false,
                 'Search Input': false,
@@ -102,12 +105,14 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts Basic View with Default Draw',
             expectedTitle: 'Accounts With Default Draw',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts'],
             elements: {},
         },
         'Accounts Selection - Multi': {
             listToSelect: 'Accounts with Selection Type "Multi"',
             expectedTitle: 'Accounts Selection Type Multi',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts'],
             elements: {
                 'Single Radio Button': false,
                 'Select All Checkbox': true,
@@ -118,6 +123,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts with Selection Type "Single"',
             expectedTitle: 'Accounts Selection Type Single',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts'],
             elements: {
                 'Single Radio Button': true,
                 'Select All Checkbox': false,
@@ -128,6 +134,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts with Selection Type "None"',
             expectedTitle: 'Accounts Selection Type None',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts'],
             elements: {
                 'Single Radio Button': false,
                 'Select All Checkbox': false,
@@ -138,6 +145,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts with Menu',
             expectedTitle: 'Accounts With Menu',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts'],
             elements: {
                 Menu: true,
             },
@@ -146,6 +154,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts with Menu of Hosting Addon Func',
             expectedTitle: 'Accounts Menu With Hosting Addon functionality',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts'],
             elements: {
                 Menu: true,
             },
@@ -154,6 +163,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts with Menu - Full',
             expectedTitle: 'Accounts With Menu Full',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts'],
             elements: {
                 Menu: true,
             },
@@ -162,6 +172,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts with Line Menu',
             expectedTitle: 'Accounts With Line Menu',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts'],
             elements: {
                 'Single Radio Button': true,
                 'Select All Checkbox': false,
@@ -172,6 +183,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Line Menu & Selection "Multi"',
             expectedTitle: "Items with Line Menu (Selection Type 'Multi')",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items Line Menu Selection Multi'],
             elements: {
                 'Single Radio Button': false,
                 'Select All Checkbox': true,
@@ -182,6 +194,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Search',
             expectedTitle: 'Items With Search (Name, Category, Description)',
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items'],
             elements: {
                 'Search Input': true,
             },
@@ -190,6 +203,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts with Smart Search',
             expectedTitle: 'Accounts With Smart Search (Name)',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts'],
             elements: {
                 'Smart Search': true,
             },
@@ -198,18 +212,21 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts with Sorting - Ascending',
             expectedTitle: 'Accounts Sorting by Name Acsending',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts'],
             elements: {},
         },
         'Accounts Sorting Descending': {
             listToSelect: 'Accounts with Sorting - Descending',
             expectedTitle: 'Accounts Sorting by Name Decsending',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts'],
             elements: {},
         },
         'Items Search String': {
             listToSelect: 'Items with Search String',
             expectedTitle: 'Items - Search String',
             expectedNumOfResults: numOfListingsIn_items_filtered_MaNa,
+            views: ['Items'],
             elements: {
                 'Search Input': true,
             },
@@ -218,6 +235,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Page Type "Pages"',
             expectedTitle: "Items Page Type 'Pages'",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ["Items Page Type 'Pages'"],
             elements: {
                 Pager: true,
             },
@@ -226,6 +244,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Page Type "Pages" & Page Size',
             expectedTitle: "Items Page Type 'Pages' with Page Size",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items Pages Page Size'],
             elements: {
                 Pager: true,
             },
@@ -234,6 +253,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Page Type "Pages" & Page Index',
             expectedTitle: "Items Page Type 'Pages' with Page Index",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items Pages Page Index'],
             elements: {
                 Pager: true,
             },
@@ -242,6 +262,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items Page Type "Pages" & Top Scroll Index',
             expectedTitle: "Items Page Type 'Pages' with Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items Pages Top Scroll Index'],
             elements: {
                 Pager: true,
             },
@@ -250,6 +271,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Page Type "Pages" & Page Size & Page Index',
             expectedTitle: "Items Page Type 'Pages' with Page Size & Page Index",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items Pages Page Size & Page Index'],
             elements: {
                 Pager: true,
             },
@@ -258,6 +280,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Page Type "Pages" & Page Size & Page Index & Top Scroll Index',
             expectedTitle: "Items Page Type 'Pages' with Page Size, Page Index and Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items Pages Page Size, Page Index, Top Scroll Index'],
             elements: {
                 Pager: true,
             },
@@ -266,6 +289,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Page Type "Scroll"',
             expectedTitle: "Items Page Type 'Scroll'",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ["Items Page Type 'Scroll'"],
             elements: {
                 Pager: false,
             },
@@ -274,6 +298,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Page Type "Scroll" & Top Scroll Index',
             expectedTitle: "Items: Page Type 'Scroll' with Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items Scroll Top Scroll Index'],
             elements: {
                 Pager: false,
             },
@@ -282,6 +307,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Page Type "Scroll" & Page Index',
             expectedTitle: "Items Page Type 'Scroll' with Page Index",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items Scroll Page Index'],
             elements: {
                 Pager: false,
             },
@@ -290,6 +316,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Page Type "Scroll" & Page Index & Top Scroll Index',
             expectedTitle: "Items Page Type 'Scroll' with Page Index and Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items Scroll Page Index Top Scroll Index'],
             elements: {
                 Pager: false,
             },
@@ -298,6 +325,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Page Type "Scroll" & Page Size & Page Index',
             expectedTitle: "Items Page Type 'Scroll' with Page Size and Page Index",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items Scroll Page Size Page Index'],
             elements: {
                 Pager: false,
             },
@@ -306,6 +334,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items with Page Type "Scroll" & Page Size & Page Index & Top Scroll Index',
             expectedTitle: "Items Page Type 'Scroll' with Page Size, Page Index and Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
+            views: ['Items Scroll Page Size Page Index Top Scroll Index'],
             elements: {
                 Pager: false,
             },
@@ -314,6 +343,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Accounts View - Full',
             expectedTitle: 'Accounts Full',
             expectedNumOfResults: numOfListingsIn_accounts_filtered_a,
+            views: ['Accounts Full'],
             elements: {
                 Menu: true,
                 'New Button': true,
@@ -329,6 +359,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Items View - Full with 2 Views',
             expectedTitle: 'Items Full - 2 Views',
             expectedNumOfResults: numOfListingsIn_items_filtered_a,
+            views: ['Items Name Main Category', 'Items Name Price'],
             elements: {
                 Menu: true,
                 'New Button': true,
@@ -341,9 +372,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Accounts Draw Grid Relation': {
-            listToSelect: 'Accounts - Test Draw Grid',
-            expectedTitle: 'Accounts Test Draw Grid',
+            listToSelect: 'Accounts - Test Draw Grid Relation',
+            expectedTitle: 'Accounts Test Draw Grid Relation',
             expectedNumOfResults: numOfListingsIn_accounts,
+            views: ['Accounts Test Draw'],
             elements: {
                 Menu: false,
                 'New Button': false,
@@ -359,6 +391,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'ReferenceAccount with 2 Views',
             expectedTitle: 'Reference Account',
             expectedNumOfResults: numOfListingsIn_ReferenceAccountAuto,
+            views: ['Best Seller', 'Max Quantity'],
             elements: {
                 Menu: true,
                 'New Button': false,
@@ -374,6 +407,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'FiltersAccRef with 2 Views',
             expectedTitle: 'Filters Acc Ref ABI View',
             expectedNumOfResults: numOfListingsIn_FiltersAccRefAuto,
+            views: ['Additional Indexed Fields', 'No Additional'],
             elements: {
                 Menu: true,
                 'New Button': true,
@@ -395,12 +429,14 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: 'Arrays Of Primitives - Test Draw Array',
             expectedTitle: 'Arrays Of Primitives - Numbers, Names, Reals (Test Draw Array)',
             expectedNumOfResults: numOfListingsIn_ArraysOfPrimitivesAuto,
+            views: ['Arrays Of Primitives'],
             elements: {},
         },
         'Contained Array Scheme Only Name Age': {
             listToSelect: 'Contained Array - Test Draw Array',
             expectedTitle: 'Contained Array - Scheme Only Name Age (Test Draw Array)',
             expectedNumOfResults: numOfListingsIn_ContainedArray,
+            views: ['Contained Array'],
             elements: {},
         },
     };
@@ -512,6 +548,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                       lists[listTitle].listToSelect,
                                       lists[listTitle].expectedTitle,
                                       lists[listTitle].expectedNumOfResults,
+                                      '',
                                       true,
                                       "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files",
                                   )
@@ -519,6 +556,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                       lists[listTitle].listToSelect,
                                       lists[listTitle].expectedTitle,
                                       lists[listTitle].expectedNumOfResults,
+                                      lists[listTitle].views[0],
                                   );
                             resourceListABI.pause(0.1 * 1000);
                             await resourceListABI.isSpinnerDone();
@@ -555,10 +593,12 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                     case 'Line Menu':
                                         switch (listTitle) {
                                             case 'Accounts Line Menu':
+                                            case 'Items Full - with 2 Views':
                                                 await lineMenuSingleExist();
                                                 break;
 
                                             case 'Items Line Menu Selection Type Multi':
+                                            case 'Accounts Full':
                                             case 'ReferenceAccount with 2 Views - Tests':
                                             case 'FiltersAccRef with 2 Views - Tests':
                                                 await lineMenuMultiExist();
@@ -571,6 +611,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                                 break;
 
                                             case 'Accounts Selection - Multi':
+                                            case 'Accounts Draw Grid Relation':
                                                 await lineMenuMultiDoNotExist();
                                                 break;
 
@@ -689,6 +730,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         listToSelect: string,
         expectedTitle: string,
         expectedNumOfResults: number,
+        defaultView: string,
         err = false,
         errorText?: string,
     ) {
@@ -703,6 +745,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         if (!err) {
             const listAbiTitle = await (await driver.findElement(resourceListABI.ListAbi_title)).getAttribute('title');
             expect(listAbiTitle.trim()).to.equal(expectedTitle);
+            await resourceListABI.waitTillVisible(resourceListABI.ListAbi_ViewsDropdown, 15000);
+            const listAbi_ViewTitle = await (
+                await driver.findElement(resourceListABI.ListAbi_ViewsDropdown_value)
+            ).getText();
+            expect(listAbi_ViewTitle.trim()).to.equal(defaultView);
             resourceListABI.pause(0.1 * 1000);
             if (expectedNumOfResults > 0) {
                 await elemntExist('ListRow');
@@ -734,6 +781,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             | 'SingleRadioButton'
             | 'Pager'
             | 'Scroll'
+            | 'RadioButtonSelected'
+            | 'CheckboxSelected'
             | 'Views',
     ) {
         let selectorOfElemToFind: By;
@@ -779,9 +828,17 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 selectorOfElemToFind = resourceListABI.ListAbi_VerticalScroll;
                 selectorName = 'Vertical Scroll';
                 break;
+            case 'RadioButtonSelected':
+                selectorOfElemToFind = webAppList.RadioButtonSelected;
+                selectorName = 'Selected Radio Button';
+                break;
+            case 'CheckboxSelected':
+                selectorOfElemToFind = webAppList.RowElementCheckBoxSelected;
+                selectorName = 'Selected Checkbox';
+                break;
             case 'Views':
                 selectorOfElemToFind = resourceListABI.ListAbi_ViewsDropdown;
-                selectorName = 'Vertical Scroll';
+                selectorName = 'Views Box';
                 break;
 
             default:
@@ -804,6 +861,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             | 'SingleRadioButton'
             | 'Pager'
             | 'Scroll'
+            | 'RadioButtonSelected'
+            | 'CheckboxSelected'
             | 'Views',
     ) {
         const selectorDetails = getSelector(element);
@@ -828,6 +887,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             | 'SingleRadioButton'
             | 'Pager'
             | 'Scroll'
+            | 'RadioButtonSelected'
+            | 'CheckboxSelected'
             | 'Views',
     ) {
         const selectorDetails = getSelector(element);
@@ -841,19 +902,24 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     }
 
     async function lineMenuMultiDoNotExist() {
+        await elemntDoNotExist('CheckboxSelected');
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
+        await webAppList.untilIsVisible(webAppList.RowElementCheckBoxSelected);
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
+        await elemntDoNotExist('CheckboxSelected');
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(2 * 1000);
     }
 
     async function lineMenuSingleDoNotExist() {
+        await elemntDoNotExist('RadioButtonSelected');
         await webAppList.clickOnRadioButtonByElementIndex();
         await webAppList.isSpinnerDone();
+        await webAppList.untilIsVisible(webAppList.RadioButtonSelected);
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
         await webAppList.clickOnRadioButtonByElementIndex();
@@ -863,22 +929,28 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     }
 
     async function lineMenuSingleExist() {
+        await elemntDoNotExist('RadioButtonSelected');
         await webAppList.clickOnRadioButtonByElementIndex();
         await webAppList.isSpinnerDone();
+        await webAppList.untilIsVisible(webAppList.RadioButtonSelected);
         await elemntExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
     }
 
     async function lineMenuMultiExist() {
+        await elemntDoNotExist('CheckboxSelected');
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
+        await webAppList.untilIsVisible(webAppList.RowElementCheckBoxSelected);
         await elemntExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
     }
 
     async function lineMenuMultiDisappear() {
+        await elemntExist('CheckboxSelected');
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
+        await elemntDoNotExist('CheckboxSelected');
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(2 * 1000);
     }
