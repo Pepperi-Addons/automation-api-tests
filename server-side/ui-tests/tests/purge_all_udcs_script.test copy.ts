@@ -26,7 +26,7 @@ export async function PfsFileUploadToAdalUsingDimx(client: Client, varPass) {
                 Value: { Type: 'String' },
             }
         };
-        it(`RUNNING ON ${howManyRows} ROWS!, TABLE NAME: ${schemaName}, SCHEME: ${scheme}`, async function () {
+        it(`RUNNING ON ${howManyRows} ROWS!, TABLE NAME: ${schemaName}, SCHEME: ${JSON.stringify(scheme)}`, async function () {
             //START OF DIMX UPLOAD USING PFS
             const pfsService = new PFSService(generalService);
             const adalService = new ADALService(generalService.papiClient);
