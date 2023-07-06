@@ -91,6 +91,7 @@ import SurveyBuilderTest from './cpi-tester/addonsTests/surveyBuilder';
 import { UpgradeDependenciesTestsWithNewSync } from './api-tests/test-service/upgrade_dependencies_with_new_sync';
 import { OldLegacyResourcesTests } from './api-tests/old_legacy_resources';
 import { Adal40KImportAndPurgeTest } from './api-tests/adal_40k_import_and_purge';
+import { UnistallAddonFromAllUsers } from './api-tests/uninstall_addon_from_all_auto_users';
 // import { PapiClient } from '@pepperi-addons/papi-sdk'; WIP - dev tests
 // import { checkVersionsTest } from './api-tests/check_versions';
 
@@ -954,6 +955,20 @@ export async function import_export_atd_transactions_box(
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await ImportExportATDTransactionsBoxTests(service, request, testerFunctions);
     await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return testerFunctions.run();
+}
+
+export async function uninstall_addon_from_all_auto_users(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'uninstall_addon_from_all_auto_users';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await UnistallAddonFromAllUsers(service, request, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return testerFunctions.run();
 }
