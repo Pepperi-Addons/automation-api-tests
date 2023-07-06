@@ -3,8 +3,8 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 import { v4 as newUuid } from 'uuid';
 import { PFSService } from '../services/pfs.service';
 import { ADALService } from '../services/adal.service';
-import fs from 'fs';
 import { AddonRelationService } from '../services/addon-relation.service';
+import { fileForAdal40KImportAndPurgeTest } from './textFileForAdal40KImportAndPurgeTest';
 
 export async function Adal40KImportAndPurgeTest(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
@@ -13,7 +13,7 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
 
     //#region Upgrade ADAL
     const testData = {
-        // 'ADAL': ['00000000-0000-0000-0000-00000000ada1', '1.5.99'],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
     let varKey;
@@ -114,8 +114,8 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
                 expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
                 expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
                 //3. create the data file
-                await generalService.createCSVFile(howManyRows, 'Key,Value,Hidden', 'key_index', [`"index"`], 'false');
-                const buf = fs.readFileSync('./Data.csv');
+                // await generalService.createCSVFile(howManyRows, 'Key,Value,Hidden', 'key_index', [`"index"`], 'false');
+                const buf = Buffer.from(fileForAdal40KImportAndPurgeTest);
                 //4. upload the file to PFS Temp
                 const putResponsePart1 = await pfsService.putPresignedURL(tempFileResponse.PutURL, buf);
                 expect(putResponsePart1.ok).to.equal(true);
