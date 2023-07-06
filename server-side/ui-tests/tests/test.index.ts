@@ -2199,6 +2199,10 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
         const service = new GeneralService(client);
+        if (addonUUID === '00000000-0000-0000-0000-00000000ada1') {
+            // in case of ADAL we want to run data index dev tests
+            addonUUID = '00000000-0000-0000-0000-00000e1a571c'; // data index framework UUID
+        }
         return (
             await service.fetchStatus(
                 `/addons/api/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/which_tests_for_addonUUID`,
@@ -2218,6 +2222,9 @@ function prepareTestBody(addonName, currentTestName, addonUUID) {
             Name: currentTestName,
         };
     } else {
+        if (addonUUID === '00000000-0000-0000-0000-00000000ada1') {
+            addonUUID = '00000000-0000-0000-0000-00000e1a571c';
+        }
         body = {
             AddonUUID: addonUUID,
             TestName: currentTestName,
