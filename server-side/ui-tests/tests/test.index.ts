@@ -57,6 +57,7 @@ import { NgxLibPOC } from './NgxLibPOC.test';
 // import { PfsFileUploadToAdalUsingDimx } from './purge_all_udcs_script.test copy';
 import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
 import { CiCdFlow } from '../../services/cicd-flow.service copy';
+import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon_from_all_auto_users';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -82,6 +83,8 @@ const varPassSB = process.env.npm_config_var_pass_sb as string;
 const addon = process.env.npm_config_addon as string;
 const userNameCreate = process.env.npm_config_user_name_create as string;
 const passCreate = process.env.npm_config_pass_create as string;
+const whichEnvToRun = process.env.npm_config_envs as string;
+const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
 (async function () {
     const tempGeneralService = new GeneralService({
@@ -492,6 +495,20 @@ const passCreate = process.env.npm_config_pass_create as string;
     if (tests.includes('login_performance')) {
         await LoginPerfTests(email, pass, varPass, client, varPassEU);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+    if (tests.includes('uninstall_addon_from_all_auto_users')) {
+        if (!whichEnvToRun) {
+            throw new Error(`Error: you have to pass '--envs=' to run this job`);
+        }
+        if (!whichAddonToUninstall) {
+            throw new Error(`Error: you have to pass '--which_addon=' to run this job`);
+        }
+        const envsAsArray = whichEnvToRun.split(',');
+        await UnistallAddonFromAllUsersTester(
+            { describe, expect, it } as TesterFunctions,
+            envsAsArray,
+            whichAddonToUninstall,
+        );
     }
     if (tests.includes('login_perf_sqlite')) {
         await LoginPerfSqlitefTests(email, pass, varPass, client);

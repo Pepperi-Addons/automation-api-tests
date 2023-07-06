@@ -1,7 +1,11 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { initiateTester } from '../services/general.service';
 
-export async function UnistallAddonFromAllUsers(generalService: GeneralService, request, tester: TesterFunctions) {
+export async function UnistallAddonFromAllUsersTester(tester: TesterFunctions, whichEnvsArray, AddonUUID) {
+    await UnistallAddonFromAllUsers(whichEnvsArray, AddonUUID, tester);
+}
+
+export async function UnistallAddonFromAllUsers(whichEnvsArray, AddonUUID, tester: TesterFunctions) {
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
@@ -12,7 +16,7 @@ export async function UnistallAddonFromAllUsers(generalService: GeneralService, 
         env: string;
     }
 
-    const ADDON_UUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f'; //TODO: get this from CLI
+    const ADDON_UUID = AddonUUID;
 
     const SBUsers: AutomationUser[] = [
         { email: 'DataIndexSB@pepperitest.com', pass: 'Aa123456', env: 'stage' },
@@ -70,15 +74,7 @@ export async function UnistallAddonFromAllUsers(generalService: GeneralService, 
         { email: 'febulaEU@pepperitest.com', pass: 'Aa123456', env: 'prod' },
         { email: 'syncNeo4JEU@pepperitest.com', pass: 'Aa123456', env: 'prod' },
     ];
-
-    const whichEnvsToRuns = ['PROD']; //TODO: get this from CLI
-
-    // let varKey;
-    // if (generalService.papiClient['options'].baseURL.includes('staging')) {
-    //     varKey = request.body.varKeyStage;
-    // } else {
-    //     varKey = request.body.varKeyPro;
-    // }
+    const whichEnvsToRuns = whichEnvsArray;
 
     describe(`Uninstall A Certain Addon From All Test Users`, () => {
         if (whichEnvsToRuns.includes('SB'))
