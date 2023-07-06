@@ -498,15 +498,30 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     }
     if (tests.includes('uninstall_addon_from_all_auto_users')) {
         if (!whichEnvToRun) {
-            throw new Error(`Error: you have to pass '--envs=' to run this job`);
-        }
-        if (!whichAddonToUninstall) {
-            throw new Error(`Error: you have to pass '--which_addon=' to run this job`);
+            throw new Error(`Error: You Have To Pass '--envs=' To Run This Job`);
         }
         const envsAsArray = whichEnvToRun.split(',');
+        const envsAsArrayCapital = envsAsArray.map((env) => env.toLocaleUpperCase());
+        for (let index = 0; index < envsAsArrayCapital.length; index++) {
+            const env = envsAsArrayCapital[index];
+            if (env !== 'SB' && env !== 'PROD' && env !== 'EU') {
+                throw new Error(
+                    `Error: You Must Provide Only Value That Are From The Form EU/eu/Eu/eU/SB/sb/Sb/sB/PROD/prod/Prod/.... As Env - ${env} Is Not Recognised`,
+                );
+            }
+        }
+        if (!whichAddonToUninstall) {
+            throw new Error(`Error: You Have To Pass '--which_addon=' To Run This Job`);
+        }
+        if (whichAddonToUninstall.length < 36) {
+            throw new Error(`Error: Provided UUID Is Too Short: '${whichAddonToUninstall}'`);
+        }
+        if (whichAddonToUninstall.length > 36) {
+            throw new Error(`Error: Provided UUID Is Too Long: '${whichAddonToUninstall}'`);
+        }
         await UnistallAddonFromAllUsersTester(
             { describe, expect, it } as TesterFunctions,
-            envsAsArray,
+            envsAsArrayCapital,
             whichAddonToUninstall,
         );
     }
