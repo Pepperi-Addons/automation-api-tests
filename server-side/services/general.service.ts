@@ -1608,6 +1608,8 @@ export default class GeneralService {
 
     convertNameToUUIDForDevTests(addonName: string) {
         switch (addonName) {
+            case 'ADAL':
+                return '00000000-0000-0000-0000-00000000ada1';
             case 'DATA INDEX':
             case 'DATA-INDEX':
                 return '00000000-0000-0000-0000-00000e1a571c';
