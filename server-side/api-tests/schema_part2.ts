@@ -499,7 +499,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
                 }),
             })
             .then((res) => res.Body);
-        //debugger;
+        debugger;
         if (logcash.createSchemaAbstract.Name.includes('Test_positive2')) {
             logcash.createSchemaAbstractStatus = true;
         } else {
