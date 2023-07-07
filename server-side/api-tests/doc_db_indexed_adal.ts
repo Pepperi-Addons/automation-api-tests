@@ -106,6 +106,9 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             it('Insert data to created survey schema ', () => {
                 assert(logcash.insertDataToSurveyTableStatus, logcash.insertDataToSurveyTableError);
             }); //
+            it('Search on dot DI 23572 ', () => {
+                assert(logcash.getDataDI23572Status, logcash.getDataDI23572Error);
+            }); //
             it('GET survey (second) schema with referance to account schema from ADAL', () => {
                 assert(logcash.getSurveySchemeStatus, logcash.getSurveySchemeErrorMessage);
             }); //
@@ -201,6 +204,35 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 assert(logcash.getDataPageKeyFromPapiStatus, logcash.getDataPageKeyFromPapiError);
             });
         });
+        describe('Nelt issues + bug fixes', () => {
+            it('indexed ADAL pns on value change upload not indexed fields DI-24110', () => {
+                assert(logcash.createSchemaDI24110Status, logcash.createSchemaDI24110Message);
+            });
+            it('Insert data (one indexed field and one not indexed)', () => {
+                assert(logcash.insertDataToTestTableStatus, logcash.insertDataToTestTableError);
+            });
+            it('Search by not indexed field DI-20949', () => {
+                assert(logcash.getByNotIndexedFieldNegativeStatus, logcash.getByNotIndexedFieldNegativeError);
+            });
+            it('Drop Temp table(table with same index and field name(indexed)', () => {
+                assert(logcash.dropTestTableTmpStatus, logcash.dropTestTableTmpError);
+            });
+            it('Get from elastic (jus indexed field)', () => {
+                assert(logcash.getFromElasticTableStatus, logcash.getFromElasticTableError);
+            });
+            it('update values (index and not indexed)', () => {
+                assert(logcash.updateTestTableStatus, logcash.updateTestTableError);
+            });
+            it('Get from elastic (jus indexed field) - verify updated value', () => {
+                assert(logcash.getFromElasticTableSecStatus, logcash.getFromElasticTableSecError);
+            });
+            it('Post after rebuild DI-20949', () => {
+                assert(logcash.getFromElasticTable3Status, logcash.getFromElasticTable3Error);
+            });
+            it('Drop created schema ', () => {
+                assert(logcash.dropTestTableStatus, logcash.dropTestTableError);
+            });
+        });
     });
     //#endregion Mocha
 
@@ -213,7 +245,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             throw new Error(`Fail To Get Addon Secret Key ${error}`);
         }
         //Oren added this to skip insatll after I talked with Oleg, the installADallAddon, upgradADallAddon and getAuditLogInstallStatus functions are suspended for now
-        //await  createAbstractSchemaPositive();
+        //await  createSchemaDI24110();
         await getPapiSchema();
     }
 
@@ -465,8 +497,39 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
         //debugger;
         //await getSurveyScheme();
         generalService.sleep(5000);
+        await getDataDI23572();
+    }
+    //////////DI-23572
+    async function getDataDI23572() {
+        logcash.getDataDI23572 = await generalService
+            .fetchStatus(baseURL + '/addons/data/search/' + whaitOwnerUUID + '/' + logcash.createSecondSchema1.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': addonUUID,
+                    //'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    PageSize: 40,
+                    //Fields: ['IndexedInt1', 'IndexedString2', 'Field1'],
+                    //OrderBy: 'Field1',
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataDI23572.Objects.length == 1 &&
+            logcash.getDataDI23572.Objects[0].PappiAccount.Type == undefined
+        ) {
+            logcash.getDataDI23572Status = true;
+        } else {
+            logcash.getDataDI23572Status = false;
+            logcash.getDataDI23572Error = 'Will get 1 docs on page';
+        }
+        //debugger;
         await createSecondSchema();
     }
+    /////////////////
 
     async function createSecondSchema() {
         // upsert survey schema with referance fild(account field changed to resource fild to verify deticated schema rebuild)
@@ -1664,12 +1727,14 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 await dropTables1();
             } else {
                 logcash.dropTables1Status = true;
+                await createSchemaToPageKeyTest();
             }
         } else {
             logcash.dropTables1Status = false;
             logcash.dropTables1Error = 'Drop tables failed.';
+            await createSchemaToPageKeyTest();
         }
-        await createSchemaToPageKeyTest();
+        //await createSchemaToPageKeyTest();
     }
 
     //#endregion GET from doc DB on schema with references fields doesn't return the default fields (except Key)
@@ -2067,10 +2132,410 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.dropPageKeyTestTable1Status = false;
             logcash.dropPageKeyTestTable1Error = 'Drop table failed.';
         }
+        await createSchemaDI24110();
     }
 
-    //#region
+    //#region indexed ADAL pns on value change upload not indexed fields DI-24110
 
+    async function createSchemaDI24110() {
+        logcash.createSchemaDI24110 = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': whaitOwnerUUID,
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'testSchema' + generalService.generateRandomString(6),
+                    Type: 'data',
+                    DataSourceData: {
+                        IndexName: 'my_index_' + generalService.generateRandomString(3),
+                        //NumberOfShards: 3
+                    },
+                    StringIndexName: 'my_index',
+                    Fields: {
+                        // IndexedString1: { Type: 'String', Indexed: true },
+                        Field1: { Type: 'String' },
+                        Field2: { Type: 'Integer', Indexed: true },
+                    },
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createSchemaDI24110.Hidden == false &&
+            logcash.createSchemaDI24110.Type == 'data' &&
+            logcash.createSchemaDI24110.Fields.Field2.Type == 'Integer' &&
+            logcash.createSchemaDI24110.Fields.Field1.Type == 'String' //&&
+        ) {
+            logcash.createSchemaDI24110Status = true;
+        } else {
+            logcash.createSchemaDI24110Status = false;
+            logcash.createSchemaDI24110Message = 'One of parameters on Schema creation get with wrong value';
+        }
+        await insertDataToTestTable();
+    }
+
+    async function insertDataToTestTable() {
+        let counter = 0;
+        for (counter; counter < 25; counter++) {
+            //logcash.randomInt = Math.floor(Math.random() * 5);
+            logcash.insertDataToTestTable = await generalService
+                .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSchemaDI24110.Name, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': whaitSecretKey,
+                        'x-pepperi-await-indexing': 'true', //oleg DI-22540
+                    },
+                    body: JSON.stringify({
+                        Key: `${counter}`,
+                        Field2: counter,
+                        Field1: 'String1-' + counter,
+                    }),
+                })
+                .then((res) => [res.Status, res.Body]);
+            //debugger;
+            if (logcash.insertDataToTestTable[0] == 200) {
+                logcash.insertDataToTestTableStatus = true;
+            } else {
+                logcash.insertDataToTestTableStatus = false;
+                logcash.insertDataToTestTableError = 'Insert data failed on try number: ' + counter;
+            }
+        }
+        counter = 0;
+        //debugger;
+        await createSchemaDI23704();
+    }
+    ////////// Search over fields that aren't indexed returns empty array DI-23704
+    async function createSchemaDI23704() {
+        logcash.createSchemaDI23704 = await generalService
+            .fetchStatus(baseURL + '/addons/data/schemes', {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': whaitOwnerUUID,
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    Name: 'testSchemaTmp' + generalService.generateRandomString(6),
+                    Type: 'data',
+                    DataSourceData: {
+                        IndexName: logcash.createSchemaDI24110.DataSourceData.IndexName,
+                        //NumberOfShards: 3
+                    },
+                    StringIndexName: 'my_index',
+                    Fields: {
+                        // IndexedString1: { Type: 'String', Indexed: true },
+                        Field1: { Type: 'String', Indexed: true },
+                    },
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.createSchemaDI23704.Hidden == false &&
+            logcash.createSchemaDI23704.Type == 'data' &&
+            logcash.createSchemaDI23704.Fields.Field1.Type == 'String' //&&
+        ) {
+            logcash.createSchemaDI23704Status = true;
+        } else {
+            logcash.createSchemaDI23704Status = false;
+            logcash.createSchemaDI23704Message = 'One of parameters on Schema creation get with wrong value';
+        }
+        await getByNotIndexedFieldNegative();
+    }
+
+    async function getByNotIndexedFieldNegative() {
+        logcash.getByNotIndexedFieldNegative = await generalService
+            .fetchStatus(baseURL + '/addons/data/search/' + whaitOwnerUUID + '/' + logcash.createSchemaDI24110.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': addonUUID,
+                    //'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+                body: JSON.stringify({
+                    PageSize: 40,
+                    Fields: ['Field1'],
+                    OrderBy: 'Field1',
+                    //PageKey: logcash.getDataPageKey2.NextPageKey,
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getByNotIndexedFieldNegative.fault.faultstring ==
+            'Failed due to exception: Field "Field1" is not indexed'
+            // logcash.getDataPageKey1Status == true &&
+            // logcash.getDataPageKey2Status == true
+        ) {
+            logcash.getByNotIndexedFieldNegativeStatus = true;
+        } else {
+            logcash.getByNotIndexedFieldNegativeStatus = false;
+            logcash.getByNotIndexedFieldNegativeError = 'Will get error';
+        }
+        //debugger;
+        await dropTestTableTmp();
+    }
+
+    async function dropTestTableTmp() {
+        const res = await generalService.fetchStatus(
+            baseURL + '/addons/data/schemes/' + logcash.createSchemaDI23704.Name + '/purge',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': whaitOwnerUUID,
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+            },
+        );
+        //debugger;
+        if (res.Ok) {
+            logcash.dropTestTableTmpStatus = true;
+        } else {
+            logcash.dropTestTableTmpStatus = false;
+            logcash.dropTestTableTmpError = 'Drop table failed.';
+        }
+        await getFromElasticTable();
+    }
+    ////////////
+    async function getFromElasticTable() {
+        // get data from elastic
+        //logcash.getDataDedicatedStatus = true;
+        logcash.getFromElasticTable = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/shared_index/index/' +
+                    logcash.createSchemaDI24110.DataSourceData.IndexName +
+                    '/' +
+                    adalOwnerId +
+                    '/' +
+                    whaitOwnerUUID +
+                    '~' +
+                    logcash.createSchemaDI24110.Name,
+                //  +
+                // '?fields=testString1,ElasticSearchType,Key',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                        'x-pepperi-await-indexing': 'true',
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getFromElasticTable.length == 25 &&
+            //logcash.getFromElasticTable[0].Field2 == 0 &&
+            logcash.getFromElasticTable[0].Field1 == undefined
+        ) {
+            logcash.getFromElasticTableStatus = true;
+        } else {
+            logcash.getFromElasticTableStatus = false;
+            logcash.getFromElasticTableError = 'Wrong value in elastic table';
+        }
+        //debugger;
+        await updateTestTable();
+    }
+
+    async function updateTestTable() {
+        logcash.updateTestTable = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSchemaDI24110.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    Key: '0',
+                    Field2: 99,
+                    Field1: 'Updated table value',
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.updateTestTable[0] == 200) {
+            logcash.updateTestTableStatus = true;
+        } else {
+            logcash.updateTestTableStatus = false;
+            logcash.updateTestTableError = 'Update data to Accounts table failed';
+        }
+        generalService.sleep(3000);
+        await getFromElasticTableSec();
+    }
+
+    async function getFromElasticTableSec() {
+        // get data from elastic
+        //logcash.getDataDedicatedStatus = true;
+        logcash.getFromElasticTableSec = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/shared_index/index/' +
+                    logcash.createSchemaDI24110.DataSourceData.IndexName +
+                    '/' +
+                    adalOwnerId +
+                    '/' +
+                    whaitOwnerUUID +
+                    '~' +
+                    logcash.createSchemaDI24110.Name +
+                    '?where=Key="0"',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                        'x-pepperi-await-indexing': 'true',
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getFromElasticTableSec.length == 1 &&
+            logcash.getFromElasticTableSec[0].Field2 == 99 &&
+            logcash.getFromElasticTableSec[0].Field1 == undefined
+        ) {
+            logcash.getFromElasticTableSecStatus = true;
+        } else {
+            logcash.getFromElasticTableSecStatus = false;
+            logcash.getFromElasticTableSecError = 'Wrong value in elastic table';
+        }
+        //debugger;
+        await cleanRebuildSec();
+    }
+
+    /////  clean rebuild - no need lock on post DI-23586
+    async function cleanRebuildSec() {
+        logcash.cleanRebuildSec = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/api/async/' +
+                    adalOwnerId +
+                    '/' +
+                    'indexed_adal_api/clean_rebuild?table_name=' +
+                    logcash.createSchemaDI24110.Name,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': whaitOwnerUUID,
+                        'X-Pepperi-SecretKey': whaitSecretKey,
+                    },
+                },
+            )
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        //Failed due to exception: Table schema must exist, for table
+        if (logcash.cleanRebuildSec[0] == 200) {
+            logcash.cleanRebuildSecStatus = true;
+        } else {
+            logcash.cleanRebuildSecStatus = false;
+            logcash.cleanRebuildSecError = 'Clean rebuild failed';
+        }
+
+        //debugger;
+        generalService.sleep(500);
+        await updateTestTableSec();
+    }
+
+    async function updateTestTableSec() {
+        logcash.updateTestTableSec = await generalService
+            .fetchStatus(baseURL + '/addons/data/' + whaitOwnerUUID + '/' + logcash.createSchemaDI24110.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+                body: JSON.stringify({
+                    Key: '0',
+                    Field2: 199,
+                    Field1: 'Updated2 table value',
+                }),
+            })
+            .then((res) => [res.Status, res.Body]);
+        //debugger;
+        if (logcash.updateTestTableSec[0] == 200) {
+            logcash.updateTestTableSecStatus = true;
+        } else {
+            logcash.updateTestTableSecStatus = false;
+            logcash.updateTestTableSecError = 'Update data to Accounts table failed';
+        }
+        generalService.sleep(2000);
+        await getFromElasticTable3();
+    }
+
+    async function getFromElasticTable3() {
+        // get data from elastic
+        //logcash.getDataDedicatedStatus = true;
+        logcash.getFromElasticTable3 = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/shared_index/index/' +
+                    logcash.createSchemaDI24110.DataSourceData.IndexName +
+                    '/' +
+                    adalOwnerId +
+                    '/' +
+                    whaitOwnerUUID +
+                    '~' +
+                    logcash.createSchemaDI24110.Name +
+                    '?where=Key="0"',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                        'x-pepperi-await-indexing': 'true',
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getFromElasticTable3.length == 1 &&
+            logcash.getFromElasticTable3[0].Field2 == 199 &&
+            logcash.getFromElasticTable3[0].Field1 == undefined
+        ) {
+            logcash.getFromElasticTable3Status = true;
+        } else {
+            logcash.getFromElasticTable3Status = false;
+            logcash.getFromElasticTable3Error = 'Wrong value in elastic table';
+        }
+        //debugger;
+        await dropTestTableLast();
+    }
+
+    async function dropTestTableLast() {
+        const res5 = await generalService.fetchStatus(
+            baseURL + '/addons/data/schemes/' + logcash.createSchemaDI24110.Name + '/purge',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': whaitOwnerUUID,
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+            },
+        );
+        //debugger;
+        if (res5.Ok) {
+            logcash.dropTestTableStatus = true;
+        } else {
+            logcash.dropTestTableStatus = false;
+            logcash.dropTestTableError = 'Drop table failed.';
+        }
+        //await createSchemaDI24110();
+    }
     //#endregion
 
     /////////////////////////////////Get from ADAL and from Elastic

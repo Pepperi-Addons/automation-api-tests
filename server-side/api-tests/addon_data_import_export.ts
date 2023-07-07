@@ -1175,7 +1175,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                                 );
                         }
-                        await generalService.sleepAsync(10 * 1000);
+                        // await generalService.sleepAsync(10 * 1000);
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
                             Type: 'data',

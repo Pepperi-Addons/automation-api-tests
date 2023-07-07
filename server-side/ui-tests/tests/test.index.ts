@@ -54,9 +54,10 @@ import { UDCTestser } from '../../api-tests/user_defined_collections';
 import { maintenance3APITestser } from '../../api-tests/addons';
 import { handleDevTestInstallation } from '../../tests';
 import { NgxLibPOC } from './NgxLibPOC.test';
-import { PurgeAllUcds } from './purge_all_udcs_script.test copy';
+// import { PfsFileUploadToAdalUsingDimx } from './purge_all_udcs_script.test copy';
 import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
 import { CiCdFlow } from '../../services/cicd-flow.service copy';
+import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon_from_all_auto_users';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -82,6 +83,8 @@ const varPassSB = process.env.npm_config_var_pass_sb as string;
 const addon = process.env.npm_config_addon as string;
 const userNameCreate = process.env.npm_config_user_name_create as string;
 const passCreate = process.env.npm_config_pass_create as string;
+const whichEnvToRun = process.env.npm_config_envs as string;
+const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
 (async function () {
     const tempGeneralService = new GeneralService({
@@ -235,7 +238,7 @@ const passCreate = process.env.npm_config_pass_create as string;
     }
 
     if (tests.includes('evgeny')) {
-        await PurgeAllUcds(client, varPass); //
+        // await PfsFileUploadToAdalUsingDimx(client, varPass); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
@@ -492,6 +495,35 @@ const passCreate = process.env.npm_config_pass_create as string;
     if (tests.includes('login_performance')) {
         await LoginPerfTests(email, pass, varPass, client, varPassEU);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+    if (tests.includes('uninstall_addon_from_all_auto_users')) {
+        if (!whichEnvToRun) {
+            throw new Error(`Error: You Have To Pass '--envs=' To Run This Job`);
+        }
+        const envsAsArray = whichEnvToRun.split(',');
+        const envsAsArrayCapital = envsAsArray.map((env) => env.toLocaleUpperCase());
+        for (let index = 0; index < envsAsArrayCapital.length; index++) {
+            const env = envsAsArrayCapital[index];
+            if (env !== 'SB' && env !== 'PROD' && env !== 'EU') {
+                throw new Error(
+                    `Error: You Must Provide Only Value That Are From The Form EU/eu/Eu/eU/SB/sb/Sb/sB/PROD/prod/Prod/.... As Env - ${env} Is Not Recognised`,
+                );
+            }
+        }
+        if (!whichAddonToUninstall) {
+            throw new Error(`Error: You Have To Pass '--which_addon=' To Run This Job`);
+        }
+        if (whichAddonToUninstall.length < 36) {
+            throw new Error(`Error: Provided UUID Is Too Short: '${whichAddonToUninstall}'`);
+        }
+        if (whichAddonToUninstall.length > 36) {
+            throw new Error(`Error: Provided UUID Is Too Long: '${whichAddonToUninstall}'`);
+        }
+        await UnistallAddonFromAllUsersTester(
+            { describe, expect, it } as TesterFunctions,
+            envsAsArrayCapital,
+            whichAddonToUninstall,
+        );
     }
     if (tests.includes('login_perf_sqlite')) {
         await LoginPerfSqlitefTests(email, pass, varPass, client);
@@ -2167,6 +2199,10 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
         const service = new GeneralService(client);
+        if (addonUUID === '00000000-0000-0000-0000-00000000ada1') {
+            // in case of ADAL we want to run data index dev tests
+            addonUUID = '00000000-0000-0000-0000-00000e1a571c'; // data index framework UUID
+        }
         return (
             await service.fetchStatus(
                 `/addons/api/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/which_tests_for_addonUUID`,
@@ -2186,6 +2222,9 @@ function prepareTestBody(addonName, currentTestName, addonUUID) {
             Name: currentTestName,
         };
     } else {
+        if (addonUUID === '00000000-0000-0000-0000-00000000ada1') {
+            addonUUID = '00000000-0000-0000-0000-00000e1a571c';
+        }
         body = {
             AddonUUID: addonUUID,
             TestName: currentTestName,
