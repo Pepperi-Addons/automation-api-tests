@@ -10,20 +10,20 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
-
     //#region Upgrade ADAL
-    const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-    };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
     } else {
         varKey = request.body.varKeyPro;
     }
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    await generalService.baseAddonVersionsInstallation(varKey);
+    const testData = {
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+    };
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const pfsService = new PFSService(generalService);
     const adalService = new ADALService(generalService.papiClient);
     const relationService = new AddonRelationService(generalService);
