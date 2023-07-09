@@ -90,7 +90,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Accounts Basic': {
-            listToSelect: 'Accounts View - Basic',
+            listToSelect: '2. Accounts View - Basic',
             expectedTitle: 'Accounts Basic',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
@@ -105,20 +105,20 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Accounts Propagated Error': {
-            listToSelect: 'Accounts - throw Error due to wrong AddonUUID',
+            listToSelect: '3. Accounts - throw Error due to wrong AddonUUID',
             expectedTitle: '',
             expectedNumOfResults: 0,
             elements: {},
         },
         'Accounts Default Draw': {
-            listToSelect: 'Accounts Basic View with Default Draw',
+            listToSelect: '4. Accounts Basic View with Default Draw',
             expectedTitle: 'Accounts With Default Draw',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
             elements: {},
         },
         'Accounts Selection - Multi': {
-            listToSelect: 'Accounts with Selection Type "Multi"',
+            listToSelect: '5. Accounts with Selection Type "Multi"',
             expectedTitle: 'Accounts Selection Type Multi',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
@@ -129,7 +129,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Accounts Selection - Single': {
-            listToSelect: 'Accounts with Selection Type "Single"',
+            listToSelect: '6. Accounts with Selection Type "Single"',
             expectedTitle: 'Accounts Selection Type Single',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
@@ -140,7 +140,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Accounts Selection - None': {
-            listToSelect: 'Accounts with Selection Type "None"',
+            listToSelect: '7. Accounts with Selection Type "None"',
             expectedTitle: 'Accounts Selection Type None',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
@@ -151,7 +151,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Accounts Menu': {
-            listToSelect: 'Accounts with Menu',
+            listToSelect: '8. Accounts with Menu',
             expectedTitle: 'Accounts With Menu',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
@@ -160,7 +160,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Accounts Menu Hosting Addon Functionality': {
-            listToSelect: 'Accounts with Menu of Hosting Addon Func',
+            listToSelect: '9. Accounts with Menu of Hosting Addon Func',
             expectedTitle: 'Accounts Menu With Hosting Addon functionality',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
@@ -169,7 +169,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Accounts Menu Full': {
-            listToSelect: 'Accounts with Menu - Full',
+            listToSelect: '10. Accounts with Menu - Full',
             expectedTitle: 'Accounts With Menu Full',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
@@ -177,19 +177,19 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 Menu: true,
             },
         },
-        'Accounts Line Menu': {
-            listToSelect: 'Accounts with Line Menu',
-            expectedTitle: 'Accounts With Line Menu',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts'],
-            elements: {
-                'Single Radio Button': true,
-                'Select All Checkbox': false,
-                'Line Menu': true,
-            },
-        },
+        // 'Accounts Line Menu': {                                  // https://pepperi.atlassian.net/browse/DI-24145 - Release: Resource List 1.1
+        //     listToSelect: '11. Accounts with Line Menu',
+        //     expectedTitle: 'Accounts With Line Menu',
+        //     expectedNumOfResults: numOfListingsIn_accounts,
+        //     views: ['Accounts'],
+        //     elements: {
+        //         'Single Radio Button': true,
+        //         'Select All Checkbox': false,
+        //         'Line Menu': true,
+        //     },
+        // },
         'Items Line Menu Selection Type Multi': {
-            listToSelect: 'Items with Line Menu & Selection "Multi"',
+            listToSelect: '12. Items with Line Menu & Selection "Multi"',
             expectedTitle: "Items with Line Menu (Selection Type 'Multi')",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Line Menu Selection Multi'],
@@ -200,7 +200,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Items Search': {
-            listToSelect: 'Items with Search',
+            listToSelect: '13. Items with Search',
             expectedTitle: 'Items With Search (Name, Category, Description)',
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items'],
@@ -209,7 +209,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Accounts Smart Search': {
-            listToSelect: 'Accounts with Smart Search',
+            listToSelect: '14. Accounts with Smart Search',
             expectedTitle: 'Accounts With Smart Search (Name)',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
@@ -218,21 +218,21 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Accounts Sorting Ascending': {
-            listToSelect: 'Accounts with Sorting - Ascending',
+            listToSelect: '15. Accounts with Sorting - Ascending',
             expectedTitle: 'Accounts Sorting by Name Acsending',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
             elements: {},
         },
         'Accounts Sorting Descending': {
-            listToSelect: 'Accounts with Sorting - Descending',
+            listToSelect: '16. Accounts with Sorting - Descending',
             expectedTitle: 'Accounts Sorting by Name Decsending',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
             elements: {},
         },
         'Items Search String': {
-            listToSelect: 'Items with Search String',
+            listToSelect: '17. Items with Search String',
             expectedTitle: 'Items - Search String',
             expectedNumOfResults: numOfListingsIn_items_filtered_MaNa,
             views: ['Items'],
@@ -241,7 +241,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Items Page Type Pages': {
-            listToSelect: 'Items with Page Type "Pages"',
+            listToSelect: '18. Items with Page Type "Pages"',
             expectedTitle: "Items Page Type 'Pages'",
             expectedNumOfResults: numOfListingsIn_items,
             views: ["Items Page Type 'Pages'"],
@@ -250,7 +250,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Items Page Type Pages - Page size': {
-            listToSelect: 'Items with Page Type "Pages" & Page Size',
+            listToSelect: '19. Items with Page Type "Pages" & Page Size',
             expectedTitle: "Items Page Type 'Pages' with Page Size",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Pages Page Size'],
@@ -259,7 +259,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Items Page Type Pages - Page Index': {
-            listToSelect: 'Items with Page Type "Pages" & Page Index',
+            listToSelect: '20. Items with Page Type "Pages" & Page Index',
             expectedTitle: "Items Page Type 'Pages' with Page Index",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Pages Page Index'],
@@ -268,7 +268,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Items Page Type Pages - Top Scroll Index': {
-            listToSelect: 'Items Page Type "Pages" & Top Scroll Index',
+            listToSelect: '21. Items Page Type "Pages" & Top Scroll Index',
             expectedTitle: "Items Page Type 'Pages' with Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Pages Top Scroll Index'],
@@ -277,7 +277,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Items Page Type Pages - Page Size & Page Index': {
-            listToSelect: 'Items with Page Type "Pages" & Page Size & Page Index',
+            listToSelect: '22. Items with Page Type "Pages" & Page Size & Page Index',
             expectedTitle: "Items Page Type 'Pages' with Page Size & Page Index",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Pages Page Size & Page Index'],
@@ -286,7 +286,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Items Page Type Pages - Page Size, Page Index & Top Scroll Index': {
-            listToSelect: 'Items with Page Type "Pages" & Page Size & Page Index & Top Scroll Index',
+            listToSelect: '23. Items with Page Type "Pages" & Page Size & Page Index & Top Scroll Index',
             expectedTitle: "Items Page Type 'Pages' with Page Size, Page Index and Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Pages Page Size, Page Index, Top Scroll Index'],
@@ -295,7 +295,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Items Page Type Scroll': {
-            listToSelect: 'Items with Page Type "Scroll"',
+            listToSelect: '24. Items with Page Type "Scroll"',
             expectedTitle: "Items Page Type 'Scroll'",
             expectedNumOfResults: numOfListingsIn_items,
             views: ["Items Page Type 'Scroll'"],
@@ -303,17 +303,17 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 Pager: false,
             },
         },
-        'Items Page Type Scroll - Top Scroll Index': {
-            listToSelect: 'Items with Page Type "Scroll" & Top Scroll Index',
-            expectedTitle: "Items: Page Type 'Scroll' with Top Scroll Index",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items Scroll Top Scroll Index'],
-            elements: {
-                Pager: false,
-            },
-        },
+        // 'Items Page Type Scroll - Top Scroll Index': {                                // https://pepperi.atlassian.net/browse/DI-24307 - Release: Resource List 1.1
+        //     listToSelect: '25. Items with Page Type "Scroll" & Top Scroll Index',
+        //     expectedTitle: "Items: Page Type 'Scroll' with Top Scroll Index",
+        //     expectedNumOfResults: numOfListingsIn_items,
+        //     views: ['Items Scroll Top Scroll Index'],
+        //     elements: {
+        //         Pager: false,
+        //     },
+        // },
         'Items Page Type Scroll - Page Index': {
-            listToSelect: 'Items with Page Type "Scroll" & Page Index',
+            listToSelect: '26. Items with Page Type "Scroll" & Page Index',
             expectedTitle: "Items Page Type 'Scroll' with Page Index",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Scroll Page Index'],
@@ -321,17 +321,17 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 Pager: false,
             },
         },
-        'Items Page Type Scroll - Page Index & Top Scroll Index': {
-            listToSelect: 'Items with Page Type "Scroll" & Page Index & Top Scroll Index',
-            expectedTitle: "Items Page Type 'Scroll' with Page Index and Top Scroll Index",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items Scroll Page Index Top Scroll Index'],
-            elements: {
-                Pager: false,
-            },
-        },
+        // 'Items Page Type Scroll - Page Index & Top Scroll Index': {                            // https://pepperi.atlassian.net/browse/DI-24307 - Release: Resource List 1.1
+        //     listToSelect: '27. Items with Page Type "Scroll" & Page Index & Top Scroll Index',
+        //     expectedTitle: "Items Page Type 'Scroll' with Page Index and Top Scroll Index",
+        //     expectedNumOfResults: numOfListingsIn_items,
+        //     views: ['Items Scroll Page Index Top Scroll Index'],
+        //     elements: {
+        //         Pager: false,
+        //     },
+        // },
         'Items Page Type Scroll - Page Size & Page Index': {
-            listToSelect: 'Items with Page Type "Scroll" & Page Size & Page Index',
+            listToSelect: '28. Items with Page Type "Scroll" & Page Size & Page Index',
             expectedTitle: "Items Page Type 'Scroll' with Page Size and Page Index",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Scroll Page Size Page Index'],
@@ -339,17 +339,17 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 Pager: false,
             },
         },
-        'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': {
-            listToSelect: 'Items with Page Type "Scroll" & Page Size & Page Index & Top Scroll Index',
-            expectedTitle: "Items Page Type 'Scroll' with Page Size, Page Index and Top Scroll Index",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items Scroll Page Size Page Index Top Scroll Index'],
-            elements: {
-                Pager: false,
-            },
-        },
+        // 'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': {                    // https://pepperi.atlassian.net/browse/DI-24154 - Release: Resource List 1.1
+        //     listToSelect: '29. Items with Page Type "Scroll" & Page Size & Page Index & Top Scroll Index',
+        //     expectedTitle: "Items Page Type 'Scroll' with Page Size, Page Index and Top Scroll Index",
+        //     expectedNumOfResults: numOfListingsIn_items,
+        //     views: ['Items Scroll Page Size Page Index Top Scroll Index'],
+        //     elements: {
+        //         Pager: false,
+        //     },
+        // },
         'Accounts Full': {
-            listToSelect: 'Accounts View - Full',
+            listToSelect: '30. Accounts View - Full',
             expectedTitle: 'Accounts Full',
             expectedNumOfResults: numOfListingsIn_accounts_filtered_a,
             views: ['Accounts Full'],
@@ -365,7 +365,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Items Full - with 2 Views': {
-            listToSelect: 'Items View - Full with 2 Views',
+            listToSelect: '31. Items View - Full with 2 Views',
             expectedTitle: 'Items Full - 2 Views',
             expectedNumOfResults: numOfListingsIn_items_filtered_a,
             views: ['Items Name Main Category', 'Items Name Price'],
@@ -381,11 +381,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 'Single Radio Button': true,
                 'Select All Checkbox': false,
                 Pager: true,
-                'Line Menu': true,
+                // 'Line Menu': true,                     // https://pepperi.atlassian.net/browse/DI-24145 - Release: Resource List 1.1
             },
         },
         'Accounts Draw Grid Relation': {
-            listToSelect: 'Accounts - Test Draw Grid Relation',
+            listToSelect: '32. Accounts - Test Draw Grid Relation',
             expectedTitle: 'Accounts Test Draw Grid Relation',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts Test Draw'],
@@ -401,7 +401,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'ReferenceAccount with 2 Views - Tests': {
-            listToSelect: 'ReferenceAccount with 2 Views',
+            listToSelect: '33. ReferenceAccount with 2 Views',
             expectedTitle: 'Reference Account',
             expectedNumOfResults: numOfListingsIn_ReferenceAccountAuto,
             views: ['Best Seller', 'Max Quantity'],
@@ -417,7 +417,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'FiltersAccRef with 2 Views - Tests': {
-            listToSelect: 'FiltersAccRef with 2 Views',
+            listToSelect: '34. FiltersAccRef with 2 Views',
             expectedTitle: 'Filters Acc Ref ABI View',
             expectedNumOfResults: numOfListingsIn_FiltersAccRefAuto,
             views: ['Additional Indexed Fields', 'No Additional'],
@@ -433,14 +433,14 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             },
         },
         'Arrays Of Primitives Numbers Names Reals': {
-            listToSelect: 'Arrays Of Primitives - Test Draw Array',
+            listToSelect: '35.Arrays Of Primitives - Test Draw Array',
             expectedTitle: 'Arrays Of Primitives - Numbers, Names, Reals (Test Draw Array)',
             expectedNumOfResults: numOfListingsIn_ArraysOfPrimitivesAuto,
             views: ['Arrays Of Primitives'],
             elements: {},
         },
         'Contained Array Scheme Only Name Age': {
-            listToSelect: 'Contained Array - Test Draw Array',
+            listToSelect: '36. Contained Array - Test Draw Array',
             expectedTitle: 'Contained Array - Scheme Only Name Age (Test Draw Array)',
             expectedNumOfResults: numOfListingsIn_ContainedArray,
             views: ['Contained Array'],

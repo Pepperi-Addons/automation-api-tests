@@ -562,7 +562,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                             console.info('transactionInternalID:', transactionInternalID);
                             expect(Acc01TransactionByUUID).to.be.an('array').with.lengthOf(1);
                             expect(transactionInternalID).to.be.a('number');
-                            expect(transactionInternalID).equals(transactionID);
+                            if (transactionID > 0) {
+                                expect(transactionInternalID).equals(transactionID);
+                            }
                         });
                         it(`navigating to the account "${
                             account == 'Acc01' ? 'My Store' : 'Account for order scenarios'

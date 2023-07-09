@@ -63,6 +63,162 @@ export async function MockTest(email: string, password: string, client: Client) 
     describe('Resource List Test Suite', () => {
         describe('API Creation of UDCs', () => {
             /********************  RL Data Prep  ********************/
+            it('1. Creating a UDC of "Big Data Reference Account" with API', async () => {
+                // Collection:  ====>   BigDataReferenceAccountAuto   <====        //
+                const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                    nameOfCollection: 'BigDataReferenceAccountAuto',
+                    descriptionOfCollection: 'Created with Automation',
+                    fieldsOfCollection: [
+                        {
+                            classType: 'Resource',
+                            fieldName: 'in_account',
+                            fieldTitle: '',
+                            field: {
+                                Type: 'Resource',
+                                Resource: 'accounts',
+                                Description: '',
+                                Mandatory: false,
+                                Indexed: true,
+                                IndexedFields: {
+                                    Email: { Indexed: true, Type: 'String' },
+                                    Name: { Indexed: true, Type: 'String' },
+                                    UUID: { Indexed: true, Type: 'String' },
+                                },
+                                Items: { Description: '', Mandatory: false, Type: 'String' },
+                                OptionalValues: [],
+                                AddonUUID: coreResourcesUUID,
+                            },
+                        },
+                        {
+                            classType: 'Primitive',
+                            fieldName: 'best_seller_item',
+                            fieldTitle: '',
+                            field: {
+                                Type: 'String',
+                                Description: '',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                                IndexedFields: {},
+                                OptionalValues: [
+                                    'A',
+                                    'B',
+                                    'C',
+                                    'D',
+                                    'Hair dryer',
+                                    'Roller',
+                                    'Cart',
+                                    'Mask',
+                                    'Shirt',
+                                    '',
+                                ],
+                            },
+                        },
+                        {
+                            classType: 'Primitive',
+                            fieldName: 'max_quantity',
+                            fieldTitle: '',
+                            field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
+                        },
+                        {
+                            classType: 'Primitive',
+                            fieldName: 'discount_rate',
+                            fieldTitle: '',
+                            field: { Type: 'Double', Mandatory: false, Indexed: false, Description: '' },
+                        },
+                        {
+                            classType: 'Array',
+                            fieldName: 'offered_discount_location',
+                            fieldTitle: '',
+                            field: {
+                                Type: 'String',
+                                Mandatory: false,
+                                Indexed: false,
+                                Description: '',
+                                OptionalValues: ['store', 'on-line', 'rep'],
+                            },
+                        },
+                    ],
+                });
+                const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+                console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+            });
+            it('2. Adding Values to Collection: "BigDataReferenceAccountAuto"', async () => {
+                // Collection:  ====>   BigDataReferenceAccountAuto   <====        //
+                const acc01UUID = '5737a507-fa00-4c32-a26a-8bc32572e24d'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d'
+                const acc02UUID = '56363496-f8ce-42e8-9305-de5d28737e66'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868'
+                const acc03UUID = '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e'
+                // const bestSellerOptions = ['Cart', 'Hair dryer', 'Mask', 'Shirt']
+                // let dataBigDataReferenceAccountAuto: {}[] = [];
+                // for (let index = 0; index < 3450; index++) {
+                //     dataBigDataReferenceAccountAuto.push({ in_account: acc01UUID, best_seller_item: `Cart_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['rep'] });
+                //     dataBigDataReferenceAccountAuto.push({ in_account: acc02UUID, best_seller_item: `Mask_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['store'] });
+                //     dataBigDataReferenceAccountAuto.push({ in_account: acc03UUID, best_seller_item: `Shirt_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['on-line'] });
+                // }
+                const dataBigDataReferenceAccountAuto = [
+                    { in_account: acc03UUID, best_seller_item: 'Cart', max_quantity: 1500 },
+                    {
+                        in_account: '',
+                        best_seller_item: '',
+                        max_quantity: 100000,
+                        discount_rate: 0.1,
+                        offered_discount_location: [],
+                    },
+                    {
+                        in_account: acc02UUID,
+                        best_seller_item: '',
+                        max_quantity: 1,
+                        discount_rate: 0.1,
+                        offered_discount_location: ['rep'],
+                    },
+                    {
+                        in_account: acc01UUID,
+                        best_seller_item: 'Hair dryer',
+                        max_quantity: 0,
+                        discount_rate: 0.4,
+                        offered_discount_location: ['store', 'on-line', 'rep'],
+                    },
+                    {
+                        in_account: acc02UUID,
+                        best_seller_item: 'Mask',
+                        max_quantity: 40000,
+                        discount_rate: 0.15,
+                        offered_discount_location: ['store', 'on-line'],
+                    },
+                    { in_account: acc03UUID, max_quantity: 600, discount_rate: 0.1, offered_discount_location: [] },
+                    { in_account: acc01UUID, best_seller_item: 'Shirt', max_quantity: 55, discount_rate: 0.22 },
+                    {
+                        in_account: acc03UUID,
+                        best_seller_item: 'item2',
+                        discount_rate: 0.3,
+                        offered_discount_location: ['store'],
+                    },
+                    {
+                        best_seller_item: 'A',
+                        max_quantity: 111,
+                        discount_rate: 0.35,
+                        offered_discount_location: ['on-line'],
+                    },
+                ];
+                dataBigDataReferenceAccountAuto.forEach(async (listing) => {
+                    const upsertingValues_Response = await udcService.upsertValuesToCollection(
+                        listing,
+                        'BigDataReferenceAccountAuto',
+                    );
+                    console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+                    expect(upsertingValues_Response.Ok).to.be.true;
+                    expect(upsertingValues_Response.Status).to.equal(200);
+                    expect(upsertingValues_Response.Error).to.eql({});
+                });
+                await generalService.createCSVFile(
+                    100,
+                    'in_account,best_seller_item,max_quantity,discount_rate,offered_discount_location,Hidden',
+                    '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb',
+                    ['Candy_index', 'index', '0.index1', '["on-line"]'],
+                    'false',
+                );
+            });
             it('1. Creating a UDC of "Reference Account" with API', async () => {
                 // Collection:  ====>   ReferenceAccount   <====        //
                 const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -594,6 +750,128 @@ export async function MockTest(email: string, password: string, client: Client) 
                 await resourceListBlock.isSpinnerDone();
                 driver.sleep(8 * 1000);
             });
+            it('1. Configure Resource View For the Resource "BigDataReferenceAccountAuto"', async function () {
+                await resourceListUtils.addView({
+                    nameOfView: 'BigDataReferenceAccountAuto View',
+                    descriptionOfView: 'Generated with Automation',
+                    nameOfResource: 'BigDataReferenceAccountAuto',
+                });
+                referenceAccountAutoViewUUID = await resourceListUtils.getUUIDfromURL();
+                const viewFields: {
+                    fieldName: string;
+                    dataViewType: DataViewFieldType;
+                    mandatory: boolean;
+                    readonly: boolean;
+                }[] = [
+                    {
+                        fieldName: 'in_account',
+                        dataViewType: udcService.resolveUIType('Resource') || 'TextBox',
+                        mandatory: false,
+                        readonly: true,
+                    },
+                    {
+                        fieldName: 'in_account.Name',
+                        dataViewType: udcService.resolveUIType('String') || 'TextBox',
+                        mandatory: false,
+                        readonly: true,
+                    },
+                    {
+                        fieldName: 'in_account.Email',
+                        dataViewType: udcService.resolveUIType('String') || 'TextBox',
+                        mandatory: false,
+                        readonly: true,
+                    },
+                    {
+                        fieldName: 'best_seller_item',
+                        dataViewType: udcService.resolveUIType('String') || 'TextBox',
+                        mandatory: false,
+                        readonly: true,
+                    },
+                    {
+                        fieldName: 'max_quantity',
+                        dataViewType: udcService.resolveUIType('Integer') || 'TextBox',
+                        mandatory: false,
+                        readonly: true,
+                    },
+                    {
+                        fieldName: 'discount_rate',
+                        dataViewType: udcService.resolveUIType('Double') || 'TextBox',
+                        mandatory: false,
+                        readonly: true,
+                    },
+                    {
+                        fieldName: 'offered_discount_location',
+                        dataViewType: udcService.resolveUIType('Array') || 'TextBox',
+                        mandatory: false,
+                        readonly: true,
+                    },
+                ];
+                await resourceViews.customViewConfig(client, {
+                    matchingEditorName: '',
+                    viewKey: referenceAccountAutoViewUUID,
+                    fieldsToConfigureInView: viewFields,
+                    fieldsToConfigureInViewSmartSearch: [
+                        { fieldName: 'in_account' },
+                        { fieldName: 'in_account.Name' },
+                        { fieldName: 'in_account.Email' },
+                        { fieldName: 'best_seller_item' },
+                        { fieldName: 'max_quantity' },
+                        { fieldName: 'discount_rate' },
+                        { fieldName: 'offered_discount_location' },
+                    ],
+                });
+                await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
+                await webAppHeader.goHome();
+            });
+            it('2. Create Page With Viewer Block Inside It', async function () {
+                referenceAccountPageName = 'BigDataReferenceAccountAuto Page';
+                referenceAccountAutoPageUUID = await e2eUiService.addPage(referenceAccountPageName, 'tests');
+
+                const createdPage = await pageBuilder.getPageByUUID(referenceAccountAutoPageUUID, client);
+                const viewerBlockInstance = new ViewerBlock([
+                    {
+                        collectionName: 'BigDataReferenceAccountAuto',
+                        collectionID: '',
+                        selectedViewUUID: referenceAccountAutoViewUUID,
+                        selectedViewName: 'BigDataReferenceAccountAuto View',
+                    },
+                ]);
+                createdPage.Blocks.push(viewerBlockInstance);
+                createdPage.Layout.Sections[0].Columns[0] = new BasePageLayoutSectionColumn(viewerBlockInstance.Key);
+                createdPage.Name = referenceAccountPageName;
+                console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
+                const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
+                console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 2));
+                await webAppHeader.goHome();
+            });
+            it('3. Create A Slug For The Viewer Page And Set It To Show On Homepage', async function () {
+                referenceAccountSlugDisplayName = `Big Data Ref Account`;
+                referenceAccountSlugPath = 'big_data_ref_account_auto';
+                // referenceAccountSlugUUID = await e2eUiService.createSlug(
+                await e2eUiService.createSlug(
+                    referenceAccountSlugDisplayName,
+                    referenceAccountSlugPath,
+                    referenceAccountAutoPageUUID,
+                    email,
+                    password,
+                    client,
+                );
+                driver.sleep(0.5 * 1000);
+                await brandedApp.addAdminHomePageButtons(referenceAccountSlugDisplayName);
+                await e2eUiService.performManualSync(client);
+                await webAppHomePage.validateATDIsApearingOnHomeScreen(referenceAccountSlugDisplayName);
+            });
+            it('4. Click On "Big Data Ref Account" Button at Homepage', async function () {
+                resourceListBlock = new ResourceListBlock(
+                    driver,
+                    `https://app.pepperi.com/${referenceAccountSlugPath}`,
+                );
+                await webAppHeader.goHome();
+                await webAppHomePage.isSpinnerDone();
+                await webAppHomePage.clickOnBtn(referenceAccountSlugDisplayName);
+                await resourceListBlock.isSpinnerDone();
+                driver.sleep(8 * 1000);
+            });
             // NameAge
             it('5. Configure Resource View For the Resource "NameAgeAuto"', async function () {
                 await resourceListUtils.addView({
@@ -916,39 +1194,39 @@ export async function MockTest(email: string, password: string, client: Client) 
                             ],
                         },
                     },
-                    // editor: {
-                    //     editorDetails: {
-                    //         nameOfEditor: `${resourceName} Editor`,
-                    //         descriptionOfEditor: 'Generated with Automation',
-                    //         nameOfResource: resourceName,
-                    //     },
-                    //     editorConfiguration: {
-                    //         editorKey: '',
-                    //         fieldsToConfigureInEditor: [
-                    //             {
-                    //                 FieldID: 'numbers',
-                    //                 Type: udcService.resolveUIType('Integer') || 'TextBox',
-                    //                 Title: 'numbers',
-                    //                 Mandatory: false,
-                    //                 ReadOnly: false,
-                    //             },
-                    //             {
-                    //                 FieldID: 'names',
-                    //                 Type: udcService.resolveUIType('String') || 'TextBox',
-                    //                 Title: 'names',
-                    //                 Mandatory: false,
-                    //                 ReadOnly: false,
-                    //             },
-                    //             {
-                    //                 FieldID: 'reals',
-                    //                 Type: udcService.resolveUIType('Double') || 'TextBox',
-                    //                 Title: 'reals',
-                    //                 Mandatory: false,
-                    //                 ReadOnly: false,
-                    //             },
-                    //         ],
-                    //     },
-                    // },
+                    editor: {
+                        editorDetails: {
+                            nameOfEditor: `${resourceName} Editor`,
+                            descriptionOfEditor: 'Generated with Automation',
+                            nameOfResource: resourceName,
+                        },
+                        editorConfiguration: {
+                            editorKey: '',
+                            fieldsToConfigureInEditor: [
+                                {
+                                    FieldID: 'numbers',
+                                    Type: udcService.resolveUIType('Integer') || 'TextBox',
+                                    Title: 'numbers',
+                                    Mandatory: false,
+                                    ReadOnly: false,
+                                },
+                                {
+                                    FieldID: 'names',
+                                    Type: udcService.resolveUIType('String') || 'TextBox',
+                                    Title: 'names',
+                                    Mandatory: false,
+                                    ReadOnly: false,
+                                },
+                                {
+                                    FieldID: 'reals',
+                                    Type: udcService.resolveUIType('Double') || 'TextBox',
+                                    Title: 'reals',
+                                    Mandatory: false,
+                                    ReadOnly: false,
+                                },
+                            ],
+                        },
+                    },
                     view: {
                         viewDetails: {
                             nameOfView: `${resourceName} View`,
