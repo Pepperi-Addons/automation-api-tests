@@ -76,6 +76,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Items Basic',
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items'],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 Menu: false,
                 'Search Input': false,
@@ -100,6 +103,12 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 Pager: true,
                 'Line Menu': false,
             },
+        },
+        'Accounts Propagated Error': {
+            listToSelect: 'Accounts - throw Error due to wrong AddonUUID',
+            expectedTitle: '',
+            expectedNumOfResults: 0,
+            elements: {},
         },
         'Accounts Default Draw': {
             listToSelect: 'Accounts Basic View with Default Draw',
@@ -360,6 +369,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Items Full - 2 Views',
             expectedNumOfResults: numOfListingsIn_items_filtered_a,
             views: ['Items Name Main Category', 'Items Name Price'],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category'],
+                ['Name', 'External ID', 'Price', 'Cost Price', 'UPC'],
+            ],
             elements: {
                 Menu: true,
                 'New Button': true,
@@ -418,12 +431,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 Pager: true,
                 'Line Menu': true,
             },
-        },
-        'Accounts Propagated Error': {
-            listToSelect: 'Accounts - throw Error due to wrong AddonUUID',
-            expectedTitle: '',
-            expectedNumOfResults: 0,
-            elements: {},
         },
         'Arrays Of Primitives Numbers Names Reals': {
             listToSelect: 'Arrays Of Primitives - Test Draw Array',
@@ -543,21 +550,27 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 break;
                         }
                         it(enteringListTitle, async () => {
-                            listTitle === 'Accounts Propagated Error'
-                                ? await listPickAndVerify(
-                                      lists[listTitle].listToSelect,
-                                      lists[listTitle].expectedTitle,
-                                      lists[listTitle].expectedNumOfResults,
-                                      '',
-                                      true,
-                                      "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files",
-                                  )
-                                : await listPickAndVerify(
-                                      lists[listTitle].listToSelect,
-                                      lists[listTitle].expectedTitle,
-                                      lists[listTitle].expectedNumOfResults,
-                                      lists[listTitle].views[0],
-                                  );
+                            const listData: [string, string, number, string, boolean | undefined, string | undefined] =
+                                [
+                                    lists[listTitle].listToSelect,
+                                    lists[listTitle].expectedTitle,
+                                    lists[listTitle].expectedNumOfResults,
+                                    '',
+                                    undefined,
+                                    undefined,
+                                ];
+                            switch (listTitle) {
+                                case 'Accounts Propagated Error':
+                                    listData[4] = true;
+                                    listData[5] =
+                                        "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files";
+                                    break;
+
+                                default:
+                                    listData[3] = lists[listTitle].views[0];
+                                    break;
+                            }
+                            await listPickAndVerify(...listData);
                             resourceListABI.pause(0.1 * 1000);
                             await resourceListABI.isSpinnerDone();
                         });
@@ -645,22 +658,41 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                         }
                         switch (listTitle) {
                             case 'Items Basic':
+                                it('Validate Views', async () => {
+                                    const currentListExpectedViews = lists[listTitle].views;
+                                    const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
+                                    await validateViewsTitles(
+                                        currentListExpectedViews.length,
+                                        currentListExpectedViews,
+                                    );
+                                    await validateViewsListHeaders(
+                                        currentListExpectedViews.length,
+                                        currentListExpectedViews,
+                                        currentListExpectedHeadersPerView,
+                                    );
+                                });
                                 break;
-                            case 'Accounts Basic':
-                                break;
-                            case 'Accounts Default Draw':
-                                break;
-                            case 'Accounts Selection - Multi':
-                                break;
-                            case 'Accounts Selection - Single':
-                                break;
-                            case 'Accounts Selection - None':
-                                break;
+                            // case 'Accounts Basic':
+                            //     break;
+                            // case 'Accounts Propagated Error':
+                            //     break;
+                            // case 'Accounts Default Draw':
+                            //     break;
+                            // case 'Accounts Selection - Multi':
+                            //     break;
+                            // case 'Accounts Selection - Single':
+                            //     break;
+                            // case 'Accounts Selection - None':
+                            //     break;
                             case 'Accounts Menu':
+                                // open menu and check that the items are there - Recycle Bin | Import | Export
                                 break;
                             case 'Accounts Menu Hosting Addon Functionality':
+                                // open menu and check that the items are there - Test | Go To Home Page
+                                // click "Go To Home Page" button and check to be on home page
                                 break;
                             case 'Accounts Menu Full':
+                                // open menu and check that the items are there - Recycle Bin | Import | Export | Test | Go To Home Page
                                 break;
                             case 'Accounts Line Menu':
                                 break;
@@ -675,46 +707,62 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             case 'Accounts Sorting Descending':
                                 break;
                             case 'Items Search String':
+                                // check that search input holds the correct string
                                 break;
-                            case 'Items Page Type Pages':
-                                break;
-                            case 'Items Page Type Pages - Page size':
-                                break;
-                            case 'Items Page Type Pages - Page Index':
-                                break;
-                            case 'Items Page Type Pages - Top Scroll Index':
-                                break;
-                            case 'Items Page Type Pages - Page Size & Page Index':
-                                break;
-                            case 'Items Page Type Pages - Page Size, Page Index & Top Scroll Index':
-                                break;
-                            case 'Items Page Type Scroll':
-                                break;
-                            case 'Items Page Type Scroll - Top Scroll Index':
-                                break;
-                            case 'Items Page Type Scroll - Page Index':
-                                break;
-                            case 'Items Page Type Scroll - Page Index & Top Scroll Index':
-                                break;
-                            case 'Items Page Type Scroll - Page Size & Page Index':
-                                break;
-                            case 'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index':
-                                break;
+                            // case 'Items Page Type Pages':
+                            //     break;
+                            // case 'Items Page Type Pages - Page size':
+                            //     break;
+                            // case 'Items Page Type Pages - Page Index':
+                            //     break;
+                            // case 'Items Page Type Pages - Top Scroll Index':
+                            //     break;
+                            // case 'Items Page Type Pages - Page Size & Page Index':
+                            //     break;
+                            // case 'Items Page Type Pages - Page Size, Page Index & Top Scroll Index':
+                            //     break;
+                            // case 'Items Page Type Scroll':
+                            //     break;
+                            // case 'Items Page Type Scroll - Top Scroll Index':
+                            //     break;
+                            // case 'Items Page Type Scroll - Page Index':
+                            //     break;
+                            // case 'Items Page Type Scroll - Page Index & Top Scroll Index':
+                            //     break;
+                            // case 'Items Page Type Scroll - Page Size & Page Index':
+                            //     break;
+                            // case 'Items Page Type Scroll - Page Size & Page Index & Top Scroll Index':
+                            //     break;
                             case 'Accounts Full':
+                                // click "Test" button in Menu and check that "Hello World" appear in search input and search response
                                 break;
                             case 'Items Full - with 2 Views':
+                                it('Validate Views', async () => {
+                                    const currentListExpectedViews = lists[listTitle].views;
+                                    const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
+                                    await validateViewsTitles(
+                                        currentListExpectedViews.length,
+                                        currentListExpectedViews,
+                                    );
+                                    await validateViewsListHeaders(
+                                        currentListExpectedViews.length,
+                                        currentListExpectedViews,
+                                        currentListExpectedHeadersPerView,
+                                    );
+                                });
                                 break;
                             case 'Accounts Draw Grid Relation':
+                                // DI-22735
                                 break;
                             case 'ReferenceAccount with 2 Views - Tests':
                                 break;
                             case 'FiltersAccRef with 2 Views - Tests':
                                 break;
-                            case 'Accounts Propagated Error':
-                                break;
                             case 'Arrays Of Primitives Numbers Names Reals':
+                                // test the content on the list cells - that it is displayed correctly
                                 break;
                             case 'Contained Array Scheme Only Name Age':
+                                // test the content on the list cells - that it is displayed correctly
                                 break;
 
                             default:
@@ -953,5 +1001,74 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         await elemntDoNotExist('CheckboxSelected');
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(2 * 1000);
+    }
+
+    async function validateView(expectedViewTitle: string, expectedColumnHeaders: string[]) {
+        console.info(`***In Validate View*** ${expectedViewTitle}`);
+        const listHeaders = await driver.findElements(webAppList.Headers);
+        const viewTitle = await (await driver.findElement(resourceListABI.ListAbi_ViewsDropdown_value)).getText();
+        driver.sleep(0.1 * 1000);
+        console.info(`in validateView, expectedColumnHeaders: ${expectedColumnHeaders}`);
+        console.info(`in validateView, viewTitle: ${viewTitle}`);
+        expect(listHeaders.length).to.equal(expectedColumnHeaders.length);
+        expect(viewTitle).to.equal(expectedViewTitle);
+        listHeaders.forEach(async (header, index) => {
+            try {
+                const headerTitle = (await header.getText()).trim();
+                console.info(`headerTitle: ${headerTitle}`);
+                expect(headerTitle).equals(expectedColumnHeaders[index]);
+            } catch (error) {
+                console.error(
+                    `Validating List Headers: looking for ${index}. ${await header.getText()}, getting error: ${error}`,
+                );
+            }
+        });
+    }
+
+    async function validateViewsTitles(expectedNumOfViews: number, expectedViewsTitles: string[]) {
+        await driver.click(resourceListABI.ListAbi_ViewsDropdown);
+        await driver.untilIsVisible(resourceListABI.ListAbi_ViewsDropdownOptions_container);
+        const views = await driver.findElements(resourceListABI.ListAbi_ViewsDropdownSingleOption_textContent);
+        resourceListABI.pause(0.2 * 1000);
+        expect(views.length).to.equal(expectedNumOfViews);
+        await views[0].click();
+        resourceListABI.pause(0.1 * 1000);
+        views.forEach(async (view) => {
+            try {
+                const viewTitle = await view.getText();
+                expect(expectedViewsTitles).contains(viewTitle);
+            } catch (error) {
+                console.error(
+                    `Validating View Title: "${JSON.stringify(
+                        await view.getText(),
+                    )}" in dropdown, getting an error: ${error}`,
+                );
+            }
+        });
+    }
+
+    async function validateViewsListHeaders(
+        expectedNumOfViews: number,
+        expectedViewsTitles: string[],
+        columnHeadersOfEachView: string[][],
+    ) {
+        driver.sleep(0.1 * 1000);
+        for (let viewIndex = 0; viewIndex < expectedNumOfViews; viewIndex++) {
+            console.info(`In validateViews, viewIndex: ${viewIndex}`);
+            await switchViewByName(expectedViewsTitles[viewIndex]);
+            await validateView(expectedViewsTitles[viewIndex], columnHeadersOfEachView[viewIndex]);
+        }
+        driver.sleep(5 * 1000);
+    }
+
+    async function switchViewByName(viewText: string) {
+        console.info('***In Switch View***');
+        await driver.untilIsVisible(resourceListABI.ListAbi_ViewsDropdown);
+        await resourceListABI.selectDropBoxByString(resourceListABI.ListAbi_ViewsDropdown, viewText);
+        driver.sleep(0.1 * 1000);
+        await driver.click(resourceListABI.ListAbi_title);
+        driver.sleep(1 * 1000);
+        const currentView = await (await driver.findElement(resourceListABI.ListAbi_ViewsDropdown_value)).getText();
+        expect(currentView).equals(viewText);
     }
 }

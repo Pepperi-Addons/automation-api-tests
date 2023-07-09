@@ -62,4 +62,11 @@ export class ResourceListABI extends AddonPage {
     public ListAbi_ViewsDropdown_value: By = By.xpath(
         `${this.ListAbi_ViewsDropdown.value}//div[contains(@id, "mat-select-value-")]/span/span`,
     );
+    public ListAbi_ViewsDropdownOptions_container: By = By.xpath('//div[contains(@class,"mat-select-panel-wrap")]');
+    public ListAbi_ViewsDropdown_singleOption: By = By.xpath(
+        `${this.ListAbi_ViewsDropdownOptions_container.value}/div[@role="listbox"]/mat-option`,
+    );
+    public ListAbi_ViewsDropdownSingleOption_textContent: By = By.xpath(
+        `${this.ListAbi_ViewsDropdown_singleOption.value}/span`,
+    );
 }
