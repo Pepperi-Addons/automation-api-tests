@@ -53,10 +53,14 @@ export class CiCdFlow {
                 break;
             }
         }
+        debugger;
         let JenkinsBuildResultsAllEnvs2;
         let latestRunProd2;
         let latestRunEU2;
         let latestRunSB2;
+        let jobPathToReturnProd = jobPathPROD;
+        let jobPathToReturnSB = jobPathSB;
+        let jobPathToReturnEU = jobPathEU;
         if (!didFailFirstTest) {
             //if we already failed - dont run second part just keep running to the end
             console.log(`first part of ${addonName} tests passed - running 2nd part of ${addonName} approvement tests`);
@@ -78,12 +82,16 @@ export class CiCdFlow {
                     `Test - ${addonName} Part 2 - SB`,
                 ),
             ]);
-            latestRunProd2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathPROD);
-            latestRunEU2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathEU);
-            latestRunSB2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathSB);
+            latestRunProd2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathPROD2);
+            latestRunEU2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathEU2);
+            latestRunSB2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathSB2);
+            jobPathToReturnProd = jobPathPROD2;
+            jobPathToReturnSB = jobPathSB2;
+            jobPathToReturnEU = jobPathEU2;
         }
+        debugger;
         const latestRunProdReturn = latestRunProd2 ? latestRunProd2 : latestRunProd;
-        const latestRunEUReturn = latestRunEU ? latestRunEU2 : latestRunEU;
+        const latestRunEUReturn = latestRunEU2 ? latestRunEU2 : latestRunEU;
         const latestRunSBReturn = latestRunSB2 ? latestRunSB2 : latestRunSB;
         const JenkinsBuildResultsAllEnvsToReturn = JenkinsBuildResultsAllEnvs2
             ? JenkinsBuildResultsAllEnvs2
@@ -99,6 +107,9 @@ export class CiCdFlow {
             addonVersionProd,
             addonVersionEU,
             addonVersionSb,
+            jobPathToReturnProd,
+            jobPathToReturnSB,
+            jobPathToReturnEU,
         };
     }
 

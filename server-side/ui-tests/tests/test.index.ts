@@ -604,7 +604,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonSb
             ) {
                 const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`;
-                // debugger;
+                debugger;
                 await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
                 await Promise.all([
                     unavailableAddonVersion(
@@ -637,6 +637,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             console.log(
                 `####################### Running For: ${addonName}(${addonUUID}), version: ${latestVersionOfTestedAddonProd} #######################`,
             );
+            debugger;
             await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonProd, generalService);
             // debugger;
             try {
@@ -667,6 +668,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     ),
                 ]);
             } catch (error) {
+                debugger;
                 const errorString = (error as any).message;
                 await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
                 await Promise.all([
@@ -715,6 +717,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     );
                 }
             }
+            debugger;
             //3. run the test on latest version of the template addon
             const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
                 '02754342-e0b5-4300-b728-a94ea5e0e8f4',
@@ -732,6 +735,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonUUID,
                 );
             } catch (error) {
+                debugger;
                 const errorString = `Error: got exception trying to get test Names: ${(error as any).message}`;
                 await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
                 throw new Error(`Error: got exception trying to get test Names: ${(error as any).message} `);
@@ -772,6 +776,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
                     testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
                 } catch (error) {
+                    debugger;
                     let errorString = '';
                     if (!devTestResutsEu.AuditInfo.ResultObject) {
                         errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage},\n`;
@@ -817,6 +822,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     ]);
                     throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
+                debugger;
                 // debugger;
                 //4.4. print results to log
                 //4.5. print the results
@@ -963,6 +969,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 jenkinsLink = `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons/${latestRun}/console`;
             }
             if (devFailedEnvs2.length != 0) {
+                debugger;
                 await Promise.all([
                     unavailableAddonVersion(
                         'prod',
@@ -1291,6 +1298,9 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
+                    jobPathToReturnProd,
+                    jobPathToReturnSB,
+                    jobPathToReturnEU,
                 } = await runnnerService.jenkinsDoubleJobTestRunner(
                     addonName,
                     addonUUID,
@@ -1306,9 +1316,9 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 latestRunProdEx = latestRunProdReturn;
                 latestRunEUEx = latestRunEUReturn;
                 latestRunSBEx = latestRunSBReturn;
-                pathProdEx = jobPathPROD;
-                pathEUEx = jobPathEU;
-                pathSBEx = jobPathSB;
+                pathProdEx = jobPathToReturnProd;
+                pathEUEx = jobPathToReturnEU;
+                pathSBEx = jobPathToReturnSB;
                 addonEntryUUIDProdEx = addonEntryUUIDProd;
                 addonEntryUUIDEuEx = addonEntryUUIDEu;
                 addonEntryUUIDSbEx = addonEntryUUIDSb;
@@ -1331,7 +1341,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 const jobPathEU2 =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B2%20EU%20-%20DIMX%20Part%202%20-%20CLI';
                 const jobPathSB2 =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B2%20Staging%20-%20DIMX%20Part%202%20-%20CLI';
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20B2%20Stage%20-%20DIMX%20Part%202%20-%20CLI';
                 const {
                     addonEntryUUIDProd,
                     addonEntryUUIDEu,
@@ -1343,6 +1353,9 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
+                    jobPathToReturnProd,
+                    jobPathToReturnSB,
+                    jobPathToReturnEU,
                 } = await runnnerService.jenkinsDoubleJobTestRunner(
                     addonName,
                     addonUUID,
@@ -1354,13 +1367,14 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     jobPathEU2,
                     jobPathSB2,
                 );
+                debugger;
                 JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvsToReturn;
                 latestRunProdEx = latestRunProdReturn;
                 latestRunEUEx = latestRunEUReturn;
                 latestRunSBEx = latestRunSBReturn;
-                pathProdEx = jobPathPROD;
-                pathEUEx = jobPathEU;
-                pathSBEx = jobPathSB;
+                pathProdEx = jobPathToReturnProd;
+                pathEUEx = jobPathToReturnEU;
+                pathSBEx = jobPathToReturnSB;
                 addonEntryUUIDProdEx = addonEntryUUIDProd;
                 addonEntryUUIDEuEx = addonEntryUUIDEu;
                 addonEntryUUIDSbEx = addonEntryUUIDSb;
@@ -1436,6 +1450,9 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
+                    jobPathToReturnProd,
+                    jobPathToReturnSB,
+                    jobPathToReturnEU,
                 } = await runnnerService.jenkinsDoubleJobTestRunner(
                     addonName,
                     addonUUID,
@@ -1451,9 +1468,9 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 latestRunProdEx = latestRunProdReturn;
                 latestRunEUEx = latestRunEUReturn;
                 latestRunSBEx = latestRunSBReturn;
-                pathProdEx = jobPathPROD;
-                pathEUEx = jobPathEU;
-                pathSBEx = jobPathSB;
+                pathProdEx = jobPathToReturnProd;
+                pathEUEx = jobPathToReturnEU;
+                pathSBEx = jobPathToReturnSB;
                 addonEntryUUIDProdEx = addonEntryUUIDProd;
                 addonEntryUUIDEuEx = addonEntryUUIDEu;
                 addonEntryUUIDSbEx = addonEntryUUIDSb;
@@ -1536,6 +1553,8 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
 function handleTeamsURL(addonName) {
     switch (addonName) {
+        case 'SYNC':
+            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/992b7ac1fcbf443a9f3a6c394ae2bf6e/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
         case 'ADAL': //new teams
             return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/60921b31c28a4d208953f6597131368f/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
         case 'NEBULA':
@@ -2162,6 +2181,19 @@ async function getFebulaTests(userName, env) {
     return toReturn;
 }
 
+async function getSyncTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/5122dc6d-745b-4f46-bb8e-bd25225d350a/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function runDevTestOnCertainEnv(userName, env, latestVersionOfAutomationTemplateAddon, bodyToSend, addonName) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
@@ -2170,6 +2202,8 @@ async function runDevTestOnCertainEnv(userName, env, latestVersionOfAutomationTe
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-000000006a91/tests/tests';
     } else if (addonName === 'FEBULA') {
         urlToCall = '/addons/api/async/cebb251f-1c80-4d80-b62c-442e48e678e8/tests/tests';
+    } else if (addonName === 'SYNC') {
+        urlToCall = '/addons/api/async/5122dc6d-745b-4f46-bb8e-bd25225d350a/tests/tests';
     } else {
         urlToCall = `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`;
     }
@@ -2196,6 +2230,8 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getNebulaTests(user, 'prod');
     } else if (addonName === 'FEBULA') {
         return await getFebulaTests(user, 'prod');
+    } else if (addonName === 'SYNC') {
+        return await getSyncTests(user, 'prod');
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
         const service = new GeneralService(client);
@@ -2217,7 +2253,7 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
 
 function prepareTestBody(addonName, currentTestName, addonUUID) {
     let body;
-    if (addonName === 'NEBULA' || addonName === 'FEBULA') {
+    if (addonName === 'NEBULA' || addonName === 'FEBULA' || addonName === 'SYNC') {
         body = {
             Name: currentTestName,
         };
