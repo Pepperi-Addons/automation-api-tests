@@ -104,8 +104,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         }
     }).length;
     const numOfListingsIn_ReferenceAccountAuto = (await udcService.getAllObjectFromCollection('ReferenceAccountAuto'))
-        .count;
-    const numOfListingsIn_FiltersAccRefAuto = (await udcService.getAllObjectFromCollection('FiltersAccRefAuto')).count;
+        .objects.length;
+    const numOfListingsIn_FiltersAccRefAuto = (await udcService.getAllObjectFromCollection('FiltersAccRefAuto')).objects.length;
     const numOfListingsIn_ArraysOfPrimitivesAuto = (
         await udcService.getAllObjectFromCollection('ArraysOfPrimitivesAuto')
     ).objects.length;
