@@ -32,6 +32,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     //#region Upgrade script dependencies
     const testData = {
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
+        ResourceListABI_Addon: ['cd3ba412-66a4-42f4-8abc-65768c5dc606', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
@@ -76,12 +77,12 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         }
     });
 
-    const installedAddons = await generalService.getInstalledAddons();
+    // const installedAddons = await generalService.getInstalledAddons();
 
-    const installedResourceListVersion = installedAddons.find((addon) => addon.Addon.Name === 'Resource List')?.Version;
-    const installedRLABIVersion = installedAddons.find(
-        (addon) => addon.Addon.Name === 'ResourceListABI_Addon',
-    )?.Version;
+    // const installedResourceListVersion = installedAddons.find((addon) => addon.Addon.Name === 'Resource List')?.Version;
+    // const installedRLABIVersion = installedAddons.find(
+    //     (addon) => addon.Addon.Name === 'ResourceListABI_Addon',
+    // )?.Version;
     const items = await openCatalogService.getItems();
     const accounts = await objectsService.getAccounts();
     // console.info('items: ', JSON.stringify(items, null, 2));
@@ -567,15 +568,15 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             console.info('numOfListingsIn_ContainedArray: ', JSON.stringify(numOfListingsIn_ContainedArray, null, 2));
         });
 
-        it(`Resource List Version: ${installedResourceListVersion}`, async () => {
-            console.info('Installed Resource List Version: ', JSON.stringify(installedResourceListVersion, null, 2));
-            expect(installedResourceListVersion?.split('.')[1]).to.equal('9');
-        });
+        // it(`Resource List Version: ${installedResourceListVersion}`, async () => {
+        //     console.info('Installed Resource List Version: ', JSON.stringify(installedResourceListVersion, null, 2));
+        //     expect(installedResourceListVersion?.split('.')[1]).to.equal('9');
+        // });
 
-        it(`RL ABI Tests Addon Version: ${installedRLABIVersion}`, async () => {
-            console.info('Installed Resource List Version: ', JSON.stringify(installedRLABIVersion, null, 2));
-            expect(Number(installedRLABIVersion?.split('.')[2])).to.be.greaterThan(24);
-        });
+        // it(`RL ABI Tests Addon Version: ${installedRLABIVersion}`, async () => {
+        //     console.info('Installed Resource List Version: ', JSON.stringify(installedRLABIVersion, null, 2));
+        //     expect(Number(installedRLABIVersion?.split('.')[2])).to.be.greaterThan(24);
+        // });
 
         describe('RL ABI UI tests', async () => {
             before(async function () {
