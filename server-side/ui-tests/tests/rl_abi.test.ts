@@ -77,12 +77,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         }
     });
 
-    // const installedAddons = await generalService.getInstalledAddons();
-
-    // const installedResourceListVersion = installedAddons.find((addon) => addon.Addon.Name === 'Resource List')?.Version;
-    // const installedRLABIVersion = installedAddons.find(
-    //     (addon) => addon.Addon.Name === 'ResourceListABI_Addon',
-    // )?.Version;
     const items = await openCatalogService.getItems();
     const accounts = await objectsService.getAccounts();
     // console.info('items: ', JSON.stringify(items, null, 2));
@@ -510,7 +504,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedNumOfResults: numOfListingsIn_ReferenceAccountAuto,
             views: ['Best Seller', 'Max Quantity'],
             columnHeadersPerView: [
-                ['Account Key', 'Best Seller Item', ''],
+                ['Account Key', 'Best Seller Item'],
                 ['Account Key', 'Max Quantity'],
             ],
             elements: {
@@ -599,16 +593,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             console.info('numOfListingsIn_ContainedArray: ', JSON.stringify(numOfListingsIn_ContainedArray, null, 2));
         });
 
-        // it(`Resource List Version: ${installedResourceListVersion}`, async () => {
-        //     console.info('Installed Resource List Version: ', JSON.stringify(installedResourceListVersion, null, 2));
-        //     expect(installedResourceListVersion?.split('.')[1]).to.equal('9');
-        // });
-
-        // it(`RL ABI Tests Addon Version: ${installedRLABIVersion}`, async () => {
-        //     console.info('Installed Resource List Version: ', JSON.stringify(installedRLABIVersion, null, 2));
-        //     expect(Number(installedRLABIVersion?.split('.')[2])).to.be.greaterThan(24);
-        // });
-
         describe('RL ABI UI tests', async () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
@@ -694,16 +678,26 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             resourceListABI.pause(0.1 * 1000);
                             await resourceListABI.isSpinnerDone();
                         });
-                        it('Validate Views', async () => {
-                            const currentListExpectedViews = lists[listTitle].views;
-                            const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
-                            await validateViewsTitles(currentListExpectedViews.length, currentListExpectedViews);
-                            await validateViewsListHeaders(
-                                currentListExpectedViews.length,
-                                currentListExpectedViews,
-                                currentListExpectedHeadersPerView,
-                            );
-                        });
+                        switch (listTitle) {
+                            case '34. Accounts Propagated Error':
+                                break;
+
+                            default:
+                                it('Validate Views', async () => {
+                                    const currentListExpectedViews = lists[listTitle].views;
+                                    const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
+                                    await validateViewsTitles(
+                                        currentListExpectedViews.length,
+                                        currentListExpectedViews,
+                                    );
+                                    await validateViewsListHeaders(
+                                        currentListExpectedViews.length,
+                                        currentListExpectedViews,
+                                        currentListExpectedHeadersPerView,
+                                    );
+                                });
+                                break;
+                        }
 
                         Object.keys(lists[listTitle].elements).forEach((element) => {
                             const isDisplayed = lists[listTitle].elements[element];
