@@ -29,9 +29,9 @@ export class CiCdFlow {
         jobPathEU,
         jobPathSB,
         buildToken: string,
-        jobPathPROD2,
-        jobPathEU2,
-        jobPathSB2,
+        jobPathPROD2?,
+        jobPathEU2?,
+        jobPathSB2?,
     ) {
         const {
             JenkinsBuildResultsAllEnvs,
@@ -53,7 +53,6 @@ export class CiCdFlow {
                 break;
             }
         }
-        debugger;
         let JenkinsBuildResultsAllEnvs2;
         let latestRunProd2;
         let latestRunEU2;
@@ -64,32 +63,44 @@ export class CiCdFlow {
         if (!didFailFirstTest) {
             //if we already failed - dont run second part just keep running to the end
             console.log(`first part of ${addonName} tests passed - running 2nd part of ${addonName} approvement tests`);
-            JenkinsBuildResultsAllEnvs2 = await Promise.all([
-                //if well fail here - well get to the regular reporting etc
-                this.service.runJenkinsJobRemotely(
-                    this.kmsSecret,
-                    `${jobPathPROD2}/build?token=${buildToken}`,
-                    `Test - ${addonName} Part 2 - Prod`,
-                ),
-                this.service.runJenkinsJobRemotely(
-                    this.kmsSecret,
-                    `${jobPathEU2}/build?token=${buildToken}`,
-                    `Test - ${addonName} Part 2 - EU`,
-                ),
-                this.service.runJenkinsJobRemotely(
-                    this.kmsSecret,
-                    `${jobPathSB2}/build?token=${buildToken}`,
-                    `Test - ${addonName} Part 2 - SB`,
-                ),
-            ]);
-            latestRunProd2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathPROD2);
-            latestRunEU2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathEU2);
-            latestRunSB2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathSB2);
-            jobPathToReturnProd = jobPathPROD2;
-            jobPathToReturnSB = jobPathSB2;
-            jobPathToReturnEU = jobPathEU2;
+            if (jobPathPROD2 && jobPathSB2 && jobPathEU2) {
+                JenkinsBuildResultsAllEnvs2 = await Promise.all([
+                    //if well fail here - well get to the regular reporting etc
+                    this.service.runJenkinsJobRemotely(
+                        this.kmsSecret,
+                        `${jobPathPROD2}/build?token=${buildToken}`,
+                        `Test - ${addonName} Part 2 - Prod`,
+                    ),
+                    this.service.runJenkinsJobRemotely(
+                        this.kmsSecret,
+                        `${jobPathEU2}/build?token=${buildToken}`,
+                        `Test - ${addonName} Part 2 - EU`,
+                    ),
+                    this.service.runJenkinsJobRemotely(
+                        this.kmsSecret,
+                        `${jobPathSB2}/build?token=${buildToken}`,
+                        `Test - ${addonName} Part 2 - SB`,
+                    ),
+                ]);
+                latestRunProd2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathPROD2);
+                latestRunEU2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathEU2);
+                latestRunSB2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathSB2);
+                jobPathToReturnProd = jobPathPROD2;
+                jobPathToReturnSB = jobPathSB2;
+                jobPathToReturnEU = jobPathEU2;
+            } else if (jobPathPROD2) {
+                JenkinsBuildResultsAllEnvs2 = await Promise.all([
+                    //if well fail here - well get to the regular reporting etc
+                    this.service.runJenkinsJobRemotely(
+                        this.kmsSecret,
+                        `${jobPathPROD2}/build?token=${buildToken}`,
+                        `Test - ${addonName} Part 2 - Prod`,
+                    ),
+                ]);
+                latestRunProd2 = await this.service.getLatestJenkinsJobExecutionId(this.kmsSecret, jobPathPROD2);
+                jobPathToReturnProd = jobPathPROD2;
+            }
         }
-        debugger;
         const latestRunProdReturn = latestRunProd2 ? latestRunProd2 : latestRunProd;
         const latestRunEUReturn = latestRunEU2 ? latestRunEU2 : latestRunEU;
         const latestRunSBReturn = latestRunSB2 ? latestRunSB2 : latestRunSB;
