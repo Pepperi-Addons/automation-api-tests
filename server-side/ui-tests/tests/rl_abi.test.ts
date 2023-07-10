@@ -145,7 +145,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts Basic',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Account Key', 'Account Name', 'Account Email', 'Country', 'City', 'Type']],
             elements: {
                 Menu: false,
                 'Search Input': false,
@@ -161,7 +161,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts With Default Draw',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Account Key', 'Account Name', 'Account Email', 'Country', 'City', 'Type']],
             elements: {},
         },
         '4. Accounts Selection - Multi': {
@@ -169,7 +169,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts Selection Type Multi',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
             elements: {
                 'Single Radio Button': false,
                 'Select All Checkbox': true,
@@ -181,7 +181,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts Selection Type Single',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
             elements: {
                 'Single Radio Button': true,
                 'Select All Checkbox': false,
@@ -193,7 +193,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts Selection Type None',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
             elements: {
                 'Single Radio Button': false,
                 'Select All Checkbox': false,
@@ -205,7 +205,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts With Menu',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
             elements: {
                 Menu: true,
             },
@@ -215,7 +215,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts Menu With Hosting Addon functionality',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
             elements: {
                 Menu: true,
             },
@@ -225,7 +225,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts With Menu Full',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
             elements: {
                 Menu: true,
             },
@@ -235,6 +235,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         //     expectedTitle: 'Accounts With Line Menu',
         //     expectedNumOfResults: numOfListingsIn_accounts,
         //     views: ['Accounts'],
+        // columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
         //     elements: {
         //         'Single Radio Button': true,
         //         'Select All Checkbox': false,
@@ -246,7 +247,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: "Items with Line Menu (Selection Type 'Multi')",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Line Menu Selection Multi'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 'Single Radio Button': false,
                 'Select All Checkbox': true,
@@ -258,7 +261,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Items With Search (Name, Category, Description)',
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 'Search Input': true,
             },
@@ -268,7 +273,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts With Smart Search (Name)',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
             elements: {
                 'Smart Search': true,
             },
@@ -278,7 +283,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts Sorting by Name Acsending',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
             elements: {},
         },
         '15. Accounts Sorting Descending': {
@@ -286,7 +291,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts Sorting by Name Decsending',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
             elements: {},
         },
         '16. Items Search String': {
@@ -294,7 +299,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Items - Search String',
             expectedNumOfResults: numOfListingsIn_items_filtered_MaNa,
             views: ['Items'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 'Search Input': true,
             },
@@ -304,7 +311,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: "Items Page Type 'Pages'",
             expectedNumOfResults: numOfListingsIn_items,
             views: ["Items Page Type 'Pages'"],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 Pager: true,
             },
@@ -314,7 +323,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: "Items Page Type 'Pages' with Page Size",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Pages Page Size'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 Pager: true,
             },
@@ -324,7 +335,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: "Items Page Type 'Pages' with Page Index",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Pages Page Index'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 Pager: true,
             },
@@ -334,7 +347,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: "Items Page Type 'Pages' with Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Pages Top Scroll Index'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 Pager: true,
             },
@@ -344,7 +359,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: "Items Page Type 'Pages' with Page Size & Page Index",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Pages Page Size & Page Index'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 Pager: true,
             },
@@ -354,7 +371,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: "Items Page Type 'Pages' with Page Size, Page Index and Top Scroll Index",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Pages Page Size, Page Index, Top Scroll Index'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 Pager: true,
             },
@@ -364,7 +383,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: "Items Page Type 'Scroll'",
             expectedNumOfResults: numOfListingsIn_items,
             views: ["Items Page Type 'Scroll'"],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 Pager: false,
             },
@@ -374,9 +395,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         //     expectedTitle: "Items: Page Type 'Scroll' with Top Scroll Index",
         //     expectedNumOfResults: numOfListingsIn_items,
         //     views: ['Items Scroll Top Scroll Index'],
-        // columnHeadersPerView: [
-        //     [''],
-        // ],
+        //     columnHeadersPerView: [
+        //         ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+        //     ],
         //     elements: {
         //         Pager: false,
         //     },
@@ -386,7 +407,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: "Items Page Type 'Scroll' with Page Index",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Scroll Page Index'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 Pager: false,
             },
@@ -396,9 +419,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         //     expectedTitle: "Items Page Type 'Scroll' with Page Index and Top Scroll Index",
         //     expectedNumOfResults: numOfListingsIn_items,
         //     views: ['Items Scroll Page Index Top Scroll Index'],
-        // columnHeadersPerView: [
-        //     [''],
-        // ],
+        //     columnHeadersPerView: [
+        //         ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+        //     ],
         //     elements: {
         //         Pager: false,
         //     },
@@ -408,7 +431,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: "Items Page Type 'Scroll' with Page Size and Page Index",
             expectedNumOfResults: numOfListingsIn_items,
             views: ['Items Scroll Page Size Page Index'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+            ],
             elements: {
                 Pager: false,
             },
@@ -418,9 +443,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         //     expectedTitle: "Items Page Type 'Scroll' with Page Size, Page Index and Top Scroll Index",
         //     expectedNumOfResults: numOfListingsIn_items,
         //     views: ['Items Scroll Page Size Page Index Top Scroll Index'],
-        // columnHeadersPerView: [
-        //     [''],
-        // ],
+        //     columnHeadersPerView: [
+        //         ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
+        //     ],
         //     elements: {
         //         Pager: false,
         //     },
@@ -430,7 +455,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts Full',
             expectedNumOfResults: numOfListingsIn_accounts_filtered_a,
             views: ['Accounts Full'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Account Key', 'Account Name', 'Account Email', 'Country', 'City', 'Type']],
             elements: {
                 Menu: true,
                 'New Button': true,
@@ -467,7 +492,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Accounts Test Draw Grid Relation',
             expectedNumOfResults: numOfListingsIn_accounts,
             views: ['Accounts Test Draw'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Name', 'Email', 'Country', 'City', 'Type']],
             elements: {
                 Menu: false,
                 'New Button': false,
@@ -484,7 +509,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Reference Account',
             expectedNumOfResults: numOfListingsIn_ReferenceAccountAuto,
             views: ['Best Seller', 'Max Quantity'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Account Key', 'Best Seller Item', ''],
+                ['Account Key', 'Max Quantity'],
+            ],
             elements: {
                 Menu: true,
                 'New Button': false,
@@ -501,7 +529,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Filters Acc Ref ABI View',
             expectedNumOfResults: numOfListingsIn_FiltersAccRefAuto,
             views: ['Additional Indexed Fields', 'No Additional'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [
+                ['Item', 'Price', 'Quantity', 'In Stock', 'Account Key', 'Account Name', 'Account Email'],
+                ['Account Key', 'Item', 'Price', 'Quantity', 'In Stock'],
+            ],
             elements: {
                 Menu: true,
                 'New Button': true,
@@ -524,7 +555,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Arrays Of Primitives - Numbers, Names, Reals (Test Draw Array)',
             expectedNumOfResults: numOfListingsIn_ArraysOfPrimitivesAuto,
             views: ['Arrays Of Primitives'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Numbers', 'Names', 'Reals']],
             elements: {},
         },
         '36. Contained Array Scheme Only Name Age': {
@@ -532,7 +563,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expectedTitle: 'Contained Array - Scheme Only Name Age (Test Draw Array)',
             expectedNumOfResults: numOfListingsIn_ContainedArray,
             views: ['Contained Array'],
-            columnHeadersPerView: [['']],
+            columnHeadersPerView: [['Title', 'Contained Scheme Only Name Age']],
             elements: {},
         },
     };
@@ -663,6 +694,16 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             resourceListABI.pause(0.1 * 1000);
                             await resourceListABI.isSpinnerDone();
                         });
+                        it('Validate Views', async () => {
+                            const currentListExpectedViews = lists[listTitle].views;
+                            const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
+                            await validateViewsTitles(currentListExpectedViews.length, currentListExpectedViews);
+                            await validateViewsListHeaders(
+                                currentListExpectedViews.length,
+                                currentListExpectedViews,
+                                currentListExpectedHeadersPerView,
+                            );
+                        });
 
                         Object.keys(lists[listTitle].elements).forEach((element) => {
                             const isDisplayed = lists[listTitle].elements[element];
@@ -747,19 +788,19 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                         }
                         switch (listTitle) {
                             case '1. Items Basic':
-                                it('Validate Views', async () => {
-                                    const currentListExpectedViews = lists[listTitle].views;
-                                    const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
-                                    await validateViewsTitles(
-                                        currentListExpectedViews.length,
-                                        currentListExpectedViews,
-                                    );
-                                    await validateViewsListHeaders(
-                                        currentListExpectedViews.length,
-                                        currentListExpectedViews,
-                                        currentListExpectedHeadersPerView,
-                                    );
-                                });
+                                // it('Validate Views', async () => {
+                                //     const currentListExpectedViews = lists[listTitle].views;
+                                //     const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
+                                //     await validateViewsTitles(
+                                //         currentListExpectedViews.length,
+                                //         currentListExpectedViews,
+                                //     );
+                                //     await validateViewsListHeaders(
+                                //         currentListExpectedViews.length,
+                                //         currentListExpectedViews,
+                                //         currentListExpectedHeadersPerView,
+                                //     );
+                                // });
                                 break;
                             // case '2. Accounts Basic':
                             //     break;
@@ -824,19 +865,19 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 // click "Test" button in Menu and check that "Hello World" appear in search input and search response
                                 break;
                             case '30. Items Full - with 2 Views':
-                                it('Validate Views', async () => {
-                                    const currentListExpectedViews = lists[listTitle].views;
-                                    const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
-                                    await validateViewsTitles(
-                                        currentListExpectedViews.length,
-                                        currentListExpectedViews,
-                                    );
-                                    await validateViewsListHeaders(
-                                        currentListExpectedViews.length,
-                                        currentListExpectedViews,
-                                        currentListExpectedHeadersPerView,
-                                    );
-                                });
+                                // it('Validate Views', async () => {
+                                //     const currentListExpectedViews = lists[listTitle].views;
+                                //     const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
+                                //     await validateViewsTitles(
+                                //         currentListExpectedViews.length,
+                                //         currentListExpectedViews,
+                                //     );
+                                //     await validateViewsListHeaders(
+                                //         currentListExpectedViews.length,
+                                //         currentListExpectedViews,
+                                //         currentListExpectedHeadersPerView,
+                                //     );
+                                // });
                                 break;
                             case '31. Accounts Draw Grid Relation':
                                 // DI-22735
