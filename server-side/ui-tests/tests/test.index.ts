@@ -319,7 +319,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
     if (tests.includes('AbiRL')) {
         // await ResourceListAbiTests(email, pass, varPass, client); //
-        await ResourceListAbiTests(email, pass, client);
+        await ResourceListAbiTests(email, pass, client, varPass);
     }
 
     if (tests.includes('VisitFlow')) {
