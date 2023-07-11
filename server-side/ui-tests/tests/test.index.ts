@@ -58,6 +58,7 @@ import { NgxLibPOC } from './NgxLibPOC.test';
 import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
 import { CiCdFlow } from '../../services/cicd-flow.service copy';
 import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon_from_all_auto_users';
+import { FlowAPITest } from '../../api-tests/flows_api_part';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -238,7 +239,17 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     }
 
     if (tests.includes('evgeny')) {
-        // await PfsFileUploadToAdalUsingDimx(client, varPass); //
+        await FlowAPITest(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        ); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
@@ -702,6 +713,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             console.log(
                 `####################### ${addonName} Version: ${latestVersionOfTestedAddonProd} #######################`,
             );
+            debugger;
             const isInstalled = await Promise.all([
                 validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddonEu, 'prod'),
                 validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddonProd, 'prod'),
@@ -822,7 +834,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     ]);
                     throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
-                debugger;
+                // debugger;
                 // debugger;
                 //4.4. print results to log
                 //4.5. print the results
