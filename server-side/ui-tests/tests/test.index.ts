@@ -580,6 +580,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         const failedSuitesProd: string[] = [];
         const failedSuitesEU: string[] = [];
         const failedSuitesSB: string[] = [];
+        const ownerID = '';
         // const passedTests: string[] = [];
         // const passedTestsEnv: string[] = [];
         // const failingTestsEnv: string[] = [];
@@ -779,6 +780,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     devTestResponseProd.Body.URI,
                 );
                 const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
+                debugger;
                 //4.3. parse the response
                 let testResultArrayEu;
                 let testResultArrayProd;
@@ -2204,26 +2206,58 @@ async function getSyncTests(userName, env) {
     return toReturn;
 }
 
+async function getDataIndexTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/00000000-0000-0000-0000-00000e1a571c/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function runDevTestOnCertainEnv(userName, env, latestVersionOfAutomationTemplateAddon, bodyToSend, addonName) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
     let urlToCall;
+    let headers;
     if (addonName === 'NEBULA') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-000000006a91/tests/tests';
     } else if (addonName === 'FEBULA') {
         urlToCall = '/addons/api/async/cebb251f-1c80-4d80-b62c-442e48e678e8/tests/tests';
     } else if (addonName === 'SYNC') {
         urlToCall = '/addons/api/async/5122dc6d-745b-4f46-bb8e-bd25225d350a/tests/tests';
+    } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+        urlToCall = '/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests';
+        const uuidAndSk = await service.getSecret();
+        headers = {
+            'x-pepperi-ownerid': uuidAndSk[0],
+            'x-pepperi-secretkey': uuidAndSk[1],
+            Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
+        };
     } else {
         urlToCall = `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`;
     }
-    const testResponse = await service.fetchStatus(urlToCall, {
-        body: JSON.stringify(bodyToSend),
-        method: 'POST',
-        headers: {
-            Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
-        },
-    });
+    let testResponse;
+    if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+        testResponse = await service.fetchStatus(urlToCall, {
+            body: JSON.stringify(bodyToSend),
+            method: 'POST',
+            headers: headers,
+        });
+    } else {
+        testResponse = await service.fetchStatus(urlToCall, {
+            body: JSON.stringify(bodyToSend),
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
+            },
+        });
+    }
+
     return testResponse;
 }
 
@@ -2242,6 +2276,8 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getFebulaTests(user, 'prod');
     } else if (addonName === 'SYNC') {
         return await getSyncTests(user, 'prod');
+    } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+        return await getDataIndexTests(user, 'prod');
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
         const service = new GeneralService(client);
@@ -2263,7 +2299,13 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
 
 function prepareTestBody(addonName, currentTestName, addonUUID) {
     let body;
-    if (addonName === 'NEBULA' || addonName === 'FEBULA' || addonName === 'SYNC') {
+    if (
+        addonName === 'NEBULA' ||
+        addonName === 'FEBULA' ||
+        addonName === 'SYNC' ||
+        addonName === 'DATA INDEX' ||
+        addonName === 'DATA-INDEX'
+    ) {
         body = {
             Name: currentTestName,
         };
