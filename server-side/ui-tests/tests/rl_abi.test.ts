@@ -36,7 +36,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         ResourceListABI_Addon: ['cd3ba412-66a4-42f4-8abc-65768c5dc606', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
-        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', '0.8.%'],
+        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
@@ -229,7 +229,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                         let enteringListTitle = '';
 
                         switch (listTitle) {
-                            case '1. Items Basic':
+                            case '1. Items - Basic':
                                 enteringListTitle = 'Entering Default Selected List';
                                 break;
 
@@ -248,7 +248,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                     undefined,
                                 ];
                             switch (listTitle) {
-                                case '34. Accounts Propagated Error':
+                                case '34. Accounts - Propagated Error':
                                     listData[4] = true;
                                     listData[5] =
                                         "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files";
@@ -263,7 +263,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             await resourceListABI.isSpinnerDone();
                         });
                         switch (listTitle) {
-                            case '34. Accounts Propagated Error':
+                            case '34. Accounts - Propagated Error':
                                 break;
 
                             default:
@@ -313,30 +313,30 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                         break;
                                     case 'Line Menu':
                                         switch (listTitle) {
-                                            case '10. Accounts Line Menu':
-                                            case '30. Items Full - with 2 Views':
+                                            case '10. Accounts - Line Menu':
+                                            case '30. Items - Full - 2 Views':
                                                 await lineMenuSingleExist();
                                                 break;
 
-                                            case '11. Items Line Menu Selection Type Multi':
-                                            case '29. Accounts Full':
-                                            case '32. ReferenceAccount with 2 Views - Tests':
-                                            case '33. FiltersAccRef with 2 Views - Tests':
+                                            case '11. Items - Line Menu - Selection Type Multi':
+                                            case '29. Accounts - Full':
+                                            case '32. ReferenceAccount - 2 Views':
+                                            case '33. FiltersAccRef - 2 Views':
                                                 await lineMenuMultiExist();
                                                 break;
 
-                                            case '1. Items Basic':
-                                            case '2. Accounts Basic':
-                                            case '5. Accounts Selection - Single':
+                                            case '1. Items - Basic':
+                                            case '2. Accounts - Basic':
+                                            case '5. Accounts - Selection - Single':
                                                 await lineMenuSingleDoNotExist();
                                                 break;
 
-                                            case '4. Accounts Selection - Multi':
-                                            case '31. Accounts Draw Grid Relation':
+                                            case '4. Accounts - Selection - Multi':
+                                            case '31. Accounts - Draw Grid Relation':
                                                 await lineMenuMultiDoNotExist();
                                                 break;
 
-                                            case '6. Accounts Selection - None':
+                                            case '6. Accounts - Selection - None':
                                                 await webAppList.clickOnRowByIndex();
                                                 await webAppList.isSpinnerDone();
                                                 await elemntDoNotExist('LineMenu');
@@ -365,85 +365,85 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             });
                         }
                         switch (listTitle) {
-                            case '1. Items Basic':
+                            case '1. Items - Basic':
                                 break;
-                            case '2. Accounts Basic':
+                            case '2. Accounts - Basic':
                                 break;
-                            case '3. Accounts Default Draw':
+                            case '3. Accounts - Default Draw':
                                 break;
-                            case '4. Accounts Selection - Multi':
+                            case '4. Accounts - Selection - Multi':
                                 break;
-                            case '5. Accounts Selection - Single':
+                            case '5. Accounts - Selection - Single':
                                 break;
-                            case '6. Accounts Selection - None':
+                            case '6. Accounts - Selection - None':
                                 break;
-                            case '7. Accounts Menu':
+                            case '7. Accounts - Menu':
                                 // open menu and check that the items are there - Recycle Bin | Import | Export
                                 break;
-                            case '8. Accounts Menu Hosting Addon Functionality':
+                            case '8. Accounts - Menu - Hosting Addon Functionality':
                                 // open menu and check that the items are there - Test | Go To Home Page
                                 // click "Go To Home Page" button and check to be on home page
                                 break;
-                            case '9. Accounts Menu Full':
+                            case '9. Accounts - Menu - Full':
                                 // open menu and check that the items are there - Recycle Bin | Import | Export | Test | Go To Home Page
                                 break;
-                            case '10. Accounts Line Menu':
+                            case '10. Accounts - Line Menu':
                                 break;
-                            case '11. Items Line Menu Selection Type Multi':
+                            case '11. Items - Line Menu - Selection Type Multi':
                                 break;
-                            case 'Items Search':
+                            case '12. Items - Search':
                                 break;
-                            case '13. Accounts Smart Search':
+                            case '13. Accounts - Smart Search':
                                 break;
-                            case '14. Accounts Sorting Ascending':
+                            case '14. Accounts - Sorting Ascending':
                                 break;
-                            case '15. Accounts Sorting Descending':
+                            case '15. Accounts - Sorting Descending':
                                 break;
-                            case '16. Items Search String':
+                            case '16. Items - Search String':
                                 // check that search input holds the correct string
                                 break;
-                            case '17. Items Page Type Pages':
+                            case '17. Items - Page Type Pages':
                                 break;
-                            case '18. Items Page Type Pages - Page size':
+                            case '18. Items - Page Type Pages - Page size':
                                 break;
-                            case '19. Items Page Type Pages - Page Index':
+                            case '19. Items - Page Type Pages - Page Index':
                                 break;
-                            case '20. Items Page Type Pages - Top Scroll Index':
+                            case '20. Items - Page Type Pages - Top Scroll Index':
                                 break;
-                            case '21. Items Page Type Pages - Page Size & Page Index':
+                            case '21. Items - Page Type Pages - Page Size & Page Index':
                                 break;
-                            case '22. Items Page Type Pages - Page Size, Page Index & Top Scroll Index':
+                            case '22. Items - Page Type Pages - Page Size, Page Index & Top Scroll Index':
                                 break;
-                            case '23. Items Page Type Scroll':
+                            case '23. Items - Page Type Scroll':
                                 break;
-                            case '24. Items Page Type Scroll - Top Scroll Index':
+                            case '24. Items - Page Type Scroll - Top Scroll Index':
                                 break;
-                            case '25. Items Page Type Scroll - Page Index':
+                            case '25. Items - Page Type Scroll - Page Index':
                                 break;
-                            case '26. Items Page Type Scroll - Page Index & Top Scroll Index':
+                            case '26. Items - Page Type Scroll - Page Index & Top Scroll Index':
                                 break;
-                            case '27. Items Page Type Scroll - Page Size & Page Index':
+                            case '27. Items - Page Type Scroll - Page Size & Page Index':
                                 break;
-                            case '28. Items Page Type Scroll - Page Size & Page Index & Top Scroll Index':
+                            case '28. Items - Page Type Scroll - Page Size & Page Index & Top Scroll Index':
                                 break;
-                            case '29. Accounts Full':
+                            case '29. Accounts - Full':
                                 // click "Test" button in Menu and check that "Hello World" appear in search input and search response
                                 break;
-                            case '30. Items Full - with 2 Views':
+                            case '30. Items - Full - 2 Views':
                                 break;
-                            case '31. Accounts Draw Grid Relation':
+                            case '31. Accounts - Draw Grid Relation':
                                 // DI-22735
                                 break;
-                            case '32. ReferenceAccount with 2 Views - Tests':
+                            case '32. ReferenceAccount - 2 Views':
                                 break;
-                            case '33. FiltersAccRef with 2 Views - Tests':
+                            case '33. FiltersAccRef - 2 Views':
                                 break;
-                            case '34. Accounts Propagated Error':
+                            case '34. Accounts - Propagated Error':
                                 break;
-                            case '35. Arrays Of Primitives Numbers Names Reals':
+                            case '35. ArraysOfPrimitives - Numbers, Names, Reals':
                                 // test the content on the list cells - that it is displayed correctly
                                 break;
-                            case '36. Contained Array Scheme Only Name Age':
+                            case '36. ContainedArray - Scheme Only: Name, Age':
                                 // test the content on the list cells - that it is displayed correctly
                                 break;
 
