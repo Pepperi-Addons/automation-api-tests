@@ -35,7 +35,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         ResourceListABI_Addon: ['cd3ba412-66a4-42f4-8abc-65768c5dc606', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
-        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', '0.8.%'],
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
@@ -79,34 +79,38 @@ export async function ResourceListAbiTests(email: string, password: string, clie
 
     const items = await openCatalogService.getItems();
     const accounts = await objectsService.getAccounts();
-    // console.info('items: ', JSON.stringify(items, null, 2));
-    // console.info('accounts: ', JSON.stringify(accounts, null, 2));
-    const numOfListingsIn_items = items.length;
-    const numOfListingsIn_accounts = accounts.length;
-    const numOfListingsIn_items_filtered_MaNa = items.filter((item) => {
+    console.info('items: ', JSON.stringify(items, null, 2));
+    console.info('accounts: ', JSON.stringify(accounts, null, 2));
+
+    const items_filtered_MaNa = items?.filter((item) => {
         if (item.ExternalID.includes('MaNa')) {
             return item;
         }
-    }).length;
-    const numOfListingsIn_items_filtered_a = items.filter((item) => {
+    });
+    const items_filtered_a = items?.filter((item) => {
         if (item.Name.toLowerCase().includes('a')) {
             return item;
         }
-    }).length;
-    const numOfListingsIn_accounts_filtered_a = accounts.filter((account) => {
+    });
+    const accounts_filtered_a = accounts?.filter((account) => {
         if (account.Name?.toLowerCase().includes('a')) {
             return account;
         }
-    }).length;
-    const numOfListingsIn_ReferenceAccountAuto = (await udcService.getAllObjectFromCollection('ReferenceAccountAuto'))
-        .objects.length;
-    const numOfListingsIn_FiltersAccRefAuto = (await udcService.getAllObjectFromCollection('FiltersAccRefAuto')).objects
-        .length;
-    const numOfListingsIn_ArraysOfPrimitivesAuto = (
-        await udcService.getAllObjectFromCollection('ArraysOfPrimitivesAuto')
-    ).objects.length;
-    const numOfListingsIn_ContainedArray = (await udcService.getAllObjectFromCollection('ContainedArray')).objects
-        .length;
+    });
+    const referenceAccountAuto = await udcService.getAllObjectFromCollection('ReferenceAccountAuto');
+    const filtersAccRefAuto = await udcService.getAllObjectFromCollection('FiltersAccRefAuto');
+    const arraysOfPrimitivesAuto = await udcService.getAllObjectFromCollection('ArraysOfPrimitivesAuto');
+    const containedArray = await udcService.getAllObjectFromCollection('ContainedArray');
+
+    let numOfListingsIn_items;
+    let numOfListingsIn_accounts;
+    let numOfListingsIn_items_filtered_MaNa;
+    let numOfListingsIn_items_filtered_a;
+    let numOfListingsIn_accounts_filtered_a;
+    let numOfListingsIn_ReferenceAccountAuto;
+    let numOfListingsIn_FiltersAccRefAuto;
+    let numOfListingsIn_ArraysOfPrimitivesAuto;
+    let numOfListingsIn_ContainedArray;
 
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
@@ -304,7 +308,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: '17. Items with Page Type "Pages"',
             expectedTitle: "Items Page Type 'Pages'",
             expectedNumOfResults: numOfListingsIn_items,
-            views: ["Items Page Type 'Pages'"],
+            views: ['Items Page Type Pages'],
             columnHeadersPerView: [
                 ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
             ],
@@ -376,7 +380,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             listToSelect: '23. Items with Page Type "Scroll"',
             expectedTitle: "Items Page Type 'Scroll'",
             expectedNumOfResults: numOfListingsIn_items,
-            views: ["Items Page Type 'Scroll'"],
+            views: ['Items Page Type Scroll'],
             columnHeadersPerView: [
                 ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
             ],
@@ -564,6 +568,16 @@ export async function ResourceListAbiTests(email: string, password: string, clie
 
     describe('Resource List ABI Test Suite', async () => {
         before(async function () {
+            numOfListingsIn_items = items?.length;
+            numOfListingsIn_accounts = accounts?.length;
+            numOfListingsIn_items_filtered_MaNa = items_filtered_MaNa?.length;
+            numOfListingsIn_items_filtered_a = items_filtered_a?.length;
+            numOfListingsIn_accounts_filtered_a = accounts_filtered_a?.length;
+            numOfListingsIn_ReferenceAccountAuto = referenceAccountAuto?.objects?.length;
+            numOfListingsIn_FiltersAccRefAuto = filtersAccRefAuto?.objects?.length;
+            numOfListingsIn_ArraysOfPrimitivesAuto = arraysOfPrimitivesAuto?.objects?.length;
+            numOfListingsIn_ContainedArray = containedArray?.objects?.length;
+
             console.info('numOfListingsIn_accounts: ', JSON.stringify(numOfListingsIn_accounts, null, 2));
             console.info('numOfListingsIn_items: ', JSON.stringify(numOfListingsIn_items, null, 2));
             console.info(
@@ -591,6 +605,18 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 JSON.stringify(numOfListingsIn_ArraysOfPrimitivesAuto, null, 2),
             );
             console.info('numOfListingsIn_ContainedArray: ', JSON.stringify(numOfListingsIn_ContainedArray, null, 2));
+        });
+
+        it('Validating Resources Data', async () => {
+            expect(typeof numOfListingsIn_items).to.equal('number');
+            expect(typeof numOfListingsIn_accounts).to.equal('number');
+            expect(typeof numOfListingsIn_items_filtered_MaNa).to.equal('number');
+            expect(typeof numOfListingsIn_items_filtered_a).to.equal('number');
+            expect(typeof numOfListingsIn_accounts_filtered_a).to.equal('number');
+            expect(typeof numOfListingsIn_ReferenceAccountAuto).to.equal('number');
+            expect(typeof numOfListingsIn_FiltersAccRefAuto).to.equal('number');
+            expect(typeof numOfListingsIn_ArraysOfPrimitivesAuto).to.equal('number');
+            expect(typeof numOfListingsIn_ContainedArray).to.equal('number');
         });
 
         describe('RL ABI UI tests', async () => {
@@ -1180,6 +1206,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         for (let viewIndex = 0; viewIndex < expectedNumOfViews; viewIndex++) {
             console.info(`In validateViews, viewIndex: ${viewIndex}`);
             await switchViewByName(expectedViewsTitles[viewIndex]);
+            resourceListABI.isSpinnerDone();
             await validateView(expectedViewsTitles[viewIndex], columnHeadersOfEachView[viewIndex]);
         }
         driver.sleep(5 * 1000);
