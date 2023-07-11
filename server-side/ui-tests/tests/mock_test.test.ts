@@ -63,6 +63,86 @@ export async function MockTest(email: string, password: string, client: Client) 
     describe('Resource List Test Suite', () => {
         describe('API Creation of UDCs', () => {
             /********************  RL Data Prep  ********************/
+            it('Creating UDC of Arrays of Primiteve Types Fields with API', async () => {
+                //  Strings Array  |  Integers Array  |  Doubles Array  //
+                const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                    nameOfCollection: 'ArraysPrimitivesAuto',
+                    descriptionOfCollection: 'Created with Automation',
+                    fieldsOfCollection: [
+                        {
+                            classType: 'Array',
+                            fieldName: 'numbers',
+                            fieldTitle: 'Numbers',
+                            field: {
+                                Type: 'String',
+                                Description: 'list of products',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                                // IndexedFields: {},
+                                // OptionalValues: [],
+                            },
+                        },
+                        {
+                            classType: 'Array',
+                            fieldName: 'names',
+                            fieldTitle: 'Names',
+                            field: {
+                                Type: 'Integer',
+                                Description: 'in stock quantity',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                                // IndexedFields: {},
+                                // OptionalValues: [],
+                            },
+                        },
+                        {
+                            classType: 'Array',
+                            fieldName: 'reals',
+                            fieldTitle: 'Reals',
+                            field: {
+                                Type: 'Double',
+                                Description: 'average items sold per month',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                                // IndexedFields: {},
+                                // OptionalValues: [],
+                            },
+                        },
+                    ],
+                });
+                const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+                console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+
+                expect(upsertResponse.Ok).to.be.true;
+                expect(upsertResponse.Status).to.equal(200);
+                expect(upsertResponse.Error).to.eql({});
+            });
+
+            // Collection: ==========>   ArraysPrimitivesAuto   <==========   //
+            it('Adding Values to Collection: ArraysPrimitivesAuto', async () => {
+                const collectionName = 'ArraysPrimitivesAuto';
+                const upsertingValues_Response = await udcService.upsertValuesToCollection(
+                    {
+                        numbers: [1, 2, 3, 4],
+                        names: ['Happy', 'New', 'Year', '!!!'],
+                        reals: [0.1, 0.2, 0.3, 0.4],
+                    },
+                    collectionName,
+                );
+                console.info(
+                    `Response of POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName} :\n`,
+                    `${JSON.stringify(upsertingValues_Response, null, 2)}`,
+                );
+                expect(upsertingValues_Response.Ok).to.be.true;
+                expect(upsertingValues_Response.Status).to.equal(200);
+                expect(upsertingValues_Response.Error).to.eql({});
+            });
             it('1. Creating a UDC of "Big Data Reference Account" with API', async () => {
                 // Collection:  ====>   BigDataReferenceAccountAuto   <====        //
                 const bodyOfCollection = udcService.prepareDataForUdcCreation({
