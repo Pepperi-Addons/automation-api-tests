@@ -580,7 +580,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         const failedSuitesProd: string[] = [];
         const failedSuitesEU: string[] = [];
         const failedSuitesSB: string[] = [];
-        const ownerID = '';
         // const passedTests: string[] = [];
         // const passedTestsEnv: string[] = [];
         // const failingTestsEnv: string[] = [];
