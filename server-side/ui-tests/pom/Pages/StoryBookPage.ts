@@ -30,7 +30,7 @@ export class StoryBookPage extends Page {
         this.browser.sleep(5000);
     }
 
-    public async chooseComponent(componentName: string): Promise<void> {
+    public async chooseComponent(componentName: 'color-picker' | 'border-radius'): Promise<void> {
         //1. enter storybook
         await this.browser.click(this.ViewStoryBookButton);
         await this.browser.switchToOtherTab(1);
