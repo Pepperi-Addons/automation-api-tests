@@ -336,12 +336,12 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     }
 
     if (tests.includes('AbiRL')) {
-        // await ResourceListAbiTests(email, pass, varPass, client); //
         await ResourceListAbiTests(email, pass, client, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('VisitFlow')) {
-        // await VFdataPrep(varPass, client);
+        await VFdataPrep(varPass, client);
         await VisitFlowTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }

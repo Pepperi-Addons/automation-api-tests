@@ -10,6 +10,8 @@ import GeneralService from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
 import { OpenCatalogService } from '../../services/open-catalog.service';
 import { UDCService } from '../../services/user-defined-collections.service';
+import { ListAbiTestData } from '../pom/addons/ListAbiTestData';
+import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
@@ -79,34 +81,50 @@ export async function ResourceListAbiTests(email: string, password: string, clie
 
     const items = await openCatalogService.getItems();
     const accounts = await objectsService.getAccounts();
-    // console.info('items: ', JSON.stringify(items, null, 2));
-    // console.info('accounts: ', JSON.stringify(accounts, null, 2));
-    const numOfListingsIn_items = items.length;
-    const numOfListingsIn_accounts = accounts.length;
-    const numOfListingsIn_items_filtered_MaNa = items.filter((item) => {
+    console.info('items: ', JSON.stringify(items, null, 2));
+    console.info('accounts: ', JSON.stringify(accounts, null, 2));
+
+    const items_filtered_MaNa = items?.filter((item) => {
         if (item.ExternalID.includes('MaNa')) {
             return item;
         }
-    }).length;
-    const numOfListingsIn_items_filtered_a = items.filter((item) => {
+    });
+    const items_filtered_a = items?.filter((item) => {
         if (item.Name.toLowerCase().includes('a')) {
             return item;
         }
-    }).length;
-    const numOfListingsIn_accounts_filtered_a = accounts.filter((account) => {
+    });
+    const accounts_filtered_a = accounts?.filter((account) => {
         if (account.Name?.toLowerCase().includes('a')) {
             return account;
         }
-    }).length;
-    const numOfListingsIn_ReferenceAccountAuto = (await udcService.getAllObjectFromCollection('ReferenceAccountAuto'))
-        .objects.length;
-    const numOfListingsIn_FiltersAccRefAuto = (await udcService.getAllObjectFromCollection('FiltersAccRefAuto')).objects
-        .length;
-    const numOfListingsIn_ArraysOfPrimitivesAuto = (
-        await udcService.getAllObjectFromCollection('ArraysOfPrimitivesAuto')
-    ).objects.length;
-    const numOfListingsIn_ContainedArray = (await udcService.getAllObjectFromCollection('ContainedArray')).objects
-        .length;
+    });
+    const referenceAccountAuto = await udcService.getAllObjectFromCollection('ReferenceAccountAuto');
+    const filtersAccRefAuto = await udcService.getAllObjectFromCollection('FiltersAccRefAuto');
+    const arraysOfPrimitivesAuto = await udcService.getAllObjectFromCollection('ArraysOfPrimitivesAuto');
+    const containedArray = await udcService.getAllObjectFromCollection('ContainedArray');
+
+    const numOfListingsIn_items: number = items?.length;
+    const numOfListingsIn_accounts: number = accounts?.length;
+    const numOfListingsIn_items_filtered_MaNa: number = items_filtered_MaNa?.length;
+    const numOfListingsIn_items_filtered_a: number = items_filtered_a?.length;
+    const numOfListingsIn_accounts_filtered_a: number = accounts_filtered_a?.length;
+    const numOfListingsIn_ReferenceAccountAuto: number = referenceAccountAuto?.objects?.length;
+    const numOfListingsIn_FiltersAccRefAuto: number = filtersAccRefAuto?.objects?.length;
+    const numOfListingsIn_ArraysOfPrimitivesAuto: number = arraysOfPrimitivesAuto?.objects?.length;
+    const numOfListingsIn_ContainedArray: number = containedArray?.objects?.length;
+
+    const lists: ListAbiTestData = new ListAbiTestData(
+        numOfListingsIn_items,
+        numOfListingsIn_accounts,
+        numOfListingsIn_items_filtered_MaNa,
+        numOfListingsIn_accounts_filtered_a,
+        numOfListingsIn_items_filtered_a,
+        numOfListingsIn_ReferenceAccountAuto,
+        numOfListingsIn_FiltersAccRefAuto,
+        numOfListingsIn_ArraysOfPrimitivesAuto,
+        numOfListingsIn_ContainedArray,
+    );
 
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
@@ -114,453 +132,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     let webAppHeader: WebAppHeader;
     let webAppList: WebAppList;
     let resourceListABI: ResourceListABI;
-
-    const lists = {
-        '1. Items Basic': {
-            listToSelect: '',
-            expectedTitle: 'Items Basic',
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items'],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                Menu: false,
-                'Search Input': false,
-                'Smart Search': false,
-                'Single Radio Button': true,
-                'Select All Checkbox': false,
-                Pager: true,
-                'Line Menu': false,
-            },
-        },
-        '2. Accounts Basic': {
-            listToSelect: '2. Accounts View - Basic',
-            expectedTitle: 'Accounts Basic',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts'],
-            columnHeadersPerView: [['Account Key', 'Account Name', 'Account Email', 'Country', 'City', 'Type']],
-            elements: {
-                Menu: false,
-                'Search Input': false,
-                'Smart Search': false,
-                'Single Radio Button': true,
-                'Select All Checkbox': false,
-                Pager: true,
-                'Line Menu': false,
-            },
-        },
-        '3. Accounts Default Draw': {
-            listToSelect: '3. Accounts Basic View with Default Draw',
-            expectedTitle: 'Accounts With Default Draw',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts'],
-            columnHeadersPerView: [['Account Key', 'Account Name', 'Account Email', 'Country', 'City', 'Type']],
-            elements: {},
-        },
-        '4. Accounts Selection - Multi': {
-            listToSelect: '4. Accounts with Selection Type "Multi"',
-            expectedTitle: 'Accounts Selection Type Multi',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts'],
-            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
-            elements: {
-                'Single Radio Button': false,
-                'Select All Checkbox': true,
-                'Line Menu': false,
-            },
-        },
-        '5. Accounts Selection - Single': {
-            listToSelect: '5. Accounts with Selection Type "Single"',
-            expectedTitle: 'Accounts Selection Type Single',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts'],
-            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
-            elements: {
-                'Single Radio Button': true,
-                'Select All Checkbox': false,
-                'Line Menu': false,
-            },
-        },
-        '6. Accounts Selection - None': {
-            listToSelect: '6. Accounts with Selection Type "None"',
-            expectedTitle: 'Accounts Selection Type None',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts'],
-            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
-            elements: {
-                'Single Radio Button': false,
-                'Select All Checkbox': false,
-                'Line Menu': false,
-            },
-        },
-        '7. Accounts Menu': {
-            listToSelect: '7. Accounts with Menu',
-            expectedTitle: 'Accounts With Menu',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts'],
-            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
-            elements: {
-                Menu: true,
-            },
-        },
-        '8. Accounts Menu Hosting Addon Functionality': {
-            listToSelect: '8. Accounts with Menu of Hosting Addon Func',
-            expectedTitle: 'Accounts Menu With Hosting Addon functionality',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts'],
-            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
-            elements: {
-                Menu: true,
-            },
-        },
-        '9. Accounts Menu Full': {
-            listToSelect: '9. Accounts with Menu - Full',
-            expectedTitle: 'Accounts With Menu Full',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts'],
-            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
-            elements: {
-                Menu: true,
-            },
-        },
-        // '10. Accounts Line Menu': {                                  // https://pepperi.atlassian.net/browse/DI-24145 - Release: Resource List 1.1
-        //     listToSelect: '10. Accounts with Line Menu',
-        //     expectedTitle: 'Accounts With Line Menu',
-        //     expectedNumOfResults: numOfListingsIn_accounts,
-        //     views: ['Accounts'],
-        // columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
-        //     elements: {
-        //         'Single Radio Button': true,
-        //         'Select All Checkbox': false,
-        //         'Line Menu': true,
-        //     },
-        // },
-        '11. Items Line Menu Selection Type Multi': {
-            listToSelect: '11. Items with Line Menu & Selection "Multi"',
-            expectedTitle: "Items with Line Menu (Selection Type 'Multi')",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items Line Menu Selection Multi'],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                'Single Radio Button': false,
-                'Select All Checkbox': true,
-                'Line Menu': true,
-            },
-        },
-        '12. Items Search': {
-            listToSelect: '12. Items with Search',
-            expectedTitle: 'Items With Search (Name, Category, Description)',
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items'],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                'Search Input': true,
-            },
-        },
-        '13. Accounts Smart Search': {
-            listToSelect: '13. Accounts with Smart Search',
-            expectedTitle: 'Accounts With Smart Search (Name)',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts'],
-            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
-            elements: {
-                'Smart Search': true,
-            },
-        },
-        '14. Accounts Sorting Ascending': {
-            listToSelect: '14. Accounts with Sorting - Ascending',
-            expectedTitle: 'Accounts Sorting by Name Acsending',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts'],
-            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
-            elements: {},
-        },
-        '15. Accounts Sorting Descending': {
-            listToSelect: '15. Accounts with Sorting - Descending',
-            expectedTitle: 'Accounts Sorting by Name Decsending',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts'],
-            columnHeadersPerView: [['Account Name', 'Account Email', 'Country', 'City', 'Type']],
-            elements: {},
-        },
-        '16. Items Search String': {
-            listToSelect: '16. Items with Search String',
-            expectedTitle: 'Items - Search String',
-            expectedNumOfResults: numOfListingsIn_items_filtered_MaNa,
-            views: ['Items'],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                'Search Input': true,
-            },
-        },
-        '17. Items Page Type Pages': {
-            listToSelect: '17. Items with Page Type "Pages"',
-            expectedTitle: "Items Page Type 'Pages'",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ["Items Page Type 'Pages'"],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                Pager: true,
-            },
-        },
-        '18. Items Page Type Pages - Page size': {
-            listToSelect: '18. Items with Page Type "Pages" & Page Size',
-            expectedTitle: "Items Page Type 'Pages' with Page Size",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items Pages Page Size'],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                Pager: true,
-            },
-        },
-        '19. Items Page Type Pages - Page Index': {
-            listToSelect: '19. Items with Page Type "Pages" & Page Index',
-            expectedTitle: "Items Page Type 'Pages' with Page Index",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items Pages Page Index'],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                Pager: true,
-            },
-        },
-        '20. Items Page Type Pages - Top Scroll Index': {
-            listToSelect: '20. Items Page Type "Pages" & Top Scroll Index',
-            expectedTitle: "Items Page Type 'Pages' with Top Scroll Index",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items Pages Top Scroll Index'],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                Pager: true,
-            },
-        },
-        '21. Items Page Type Pages - Page Size & Page Index': {
-            listToSelect: '21. Items with Page Type "Pages" & Page Size & Page Index',
-            expectedTitle: "Items Page Type 'Pages' with Page Size & Page Index",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items Pages Page Size & Page Index'],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                Pager: true,
-            },
-        },
-        '22. Items Page Type Pages - Page Size, Page Index & Top Scroll Index': {
-            listToSelect: '22. Items with Page Type "Pages" & Page Size & Page Index & Top Scroll Index',
-            expectedTitle: "Items Page Type 'Pages' with Page Size, Page Index and Top Scroll Index",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items Pages Page Size, Page Index, Top Scroll Index'],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                Pager: true,
-            },
-        },
-        '23. Items Page Type Scroll': {
-            listToSelect: '23. Items with Page Type "Scroll"',
-            expectedTitle: "Items Page Type 'Scroll'",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ["Items Page Type 'Scroll'"],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                Pager: false,
-            },
-        },
-        // '24. Items Page Type Scroll - Top Scroll Index': {                                // https://pepperi.atlassian.net/browse/DI-24307 - Release: Resource List 1.1
-        //     listToSelect: '24. Items with Page Type "Scroll" & Top Scroll Index',
-        //     expectedTitle: "Items: Page Type 'Scroll' with Top Scroll Index",
-        //     expectedNumOfResults: numOfListingsIn_items,
-        //     views: ['Items Scroll Top Scroll Index'],
-        //     columnHeadersPerView: [
-        //         ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-        //     ],
-        //     elements: {
-        //         Pager: false,
-        //     },
-        // },
-        '25. Items Page Type Scroll - Page Index': {
-            listToSelect: '25. Items with Page Type "Scroll" & Page Index',
-            expectedTitle: "Items Page Type 'Scroll' with Page Index",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items Scroll Page Index'],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                Pager: false,
-            },
-        },
-        // '26. Items Page Type Scroll - Page Index & Top Scroll Index': {                            // https://pepperi.atlassian.net/browse/DI-24307 - Release: Resource List 1.1
-        //     listToSelect: '26. Items with Page Type "Scroll" & Page Index & Top Scroll Index',
-        //     expectedTitle: "Items Page Type 'Scroll' with Page Index and Top Scroll Index",
-        //     expectedNumOfResults: numOfListingsIn_items,
-        //     views: ['Items Scroll Page Index Top Scroll Index'],
-        //     columnHeadersPerView: [
-        //         ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-        //     ],
-        //     elements: {
-        //         Pager: false,
-        //     },
-        // },
-        '27. Items Page Type Scroll - Page Size & Page Index': {
-            listToSelect: '27. Items with Page Type "Scroll" & Page Size & Page Index',
-            expectedTitle: "Items Page Type 'Scroll' with Page Size and Page Index",
-            expectedNumOfResults: numOfListingsIn_items,
-            views: ['Items Scroll Page Size Page Index'],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-            ],
-            elements: {
-                Pager: false,
-            },
-        },
-        // '28. Items Page Type Scroll - Page Size & Page Index & Top Scroll Index': {                    // https://pepperi.atlassian.net/browse/DI-24154 - Release: Resource List 1.1
-        //     listToSelect: '28. Items with Page Type "Scroll" & Page Size & Page Index & Top Scroll Index',
-        //     expectedTitle: "Items Page Type 'Scroll' with Page Size, Page Index and Top Scroll Index",
-        //     expectedNumOfResults: numOfListingsIn_items,
-        //     views: ['Items Scroll Page Size Page Index Top Scroll Index'],
-        //     columnHeadersPerView: [
-        //         ['Name', 'External ID', 'Main Category', 'Price', 'Cost Price', 'UPC', 'Description'],
-        //     ],
-        //     elements: {
-        //         Pager: false,
-        //     },
-        // },
-        '29. Accounts Full': {
-            listToSelect: '29. Accounts View - Full',
-            expectedTitle: 'Accounts Full',
-            expectedNumOfResults: numOfListingsIn_accounts_filtered_a,
-            views: ['Accounts Full'],
-            columnHeadersPerView: [['Account Key', 'Account Name', 'Account Email', 'Country', 'City', 'Type']],
-            elements: {
-                Menu: true,
-                'New Button': true,
-                'Search Input': true,
-                'Smart Search': true,
-                'Single Radio Button': false,
-                'Select All Checkbox': true,
-                Pager: true,
-                'Line Menu': true,
-            },
-        },
-        '30. Items Full - with 2 Views': {
-            listToSelect: '30. Items View - Full with 2 Views',
-            expectedTitle: 'Items Full - 2 Views',
-            expectedNumOfResults: numOfListingsIn_items_filtered_a,
-            views: ['Items Name Main Category', 'Items Name Price'],
-            columnHeadersPerView: [
-                ['Name', 'External ID', 'Main Category'],
-                ['Name', 'External ID', 'Price', 'Cost Price', 'UPC'],
-            ],
-            elements: {
-                Menu: true,
-                'New Button': true,
-                'Search Input': true,
-                'Smart Search': true,
-                'Single Radio Button': true,
-                'Select All Checkbox': false,
-                Pager: true,
-                // 'Line Menu': true,                     // https://pepperi.atlassian.net/browse/DI-24145 - Release: Resource List 1.1
-            },
-        },
-        '31. Accounts Draw Grid Relation': {
-            listToSelect: '31. Accounts - Test Draw Grid Relation',
-            expectedTitle: 'Accounts Test Draw Grid Relation',
-            expectedNumOfResults: numOfListingsIn_accounts,
-            views: ['Accounts Test Draw'],
-            columnHeadersPerView: [['Name', 'Email', 'Country', 'City', 'Type']],
-            elements: {
-                Menu: false,
-                'New Button': false,
-                'Search Input': false,
-                'Smart Search': false,
-                'Single Radio Button': false,
-                'Select All Checkbox': true,
-                Pager: true,
-                'Line Menu': false,
-            },
-        },
-        '32. ReferenceAccount with 2 Views - Tests': {
-            listToSelect: '32. ReferenceAccount with 2 Views',
-            expectedTitle: 'Reference Account',
-            expectedNumOfResults: numOfListingsIn_ReferenceAccountAuto,
-            views: ['Best Seller', 'Max Quantity'],
-            columnHeadersPerView: [
-                ['Account Key', 'Best Seller Item'],
-                ['Account Key', 'Max Quantity'],
-            ],
-            elements: {
-                Menu: true,
-                'New Button': false,
-                'Search Input': true,
-                'Smart Search': true,
-                'Single Radio Button': false,
-                'Select All Checkbox': true,
-                Pager: false,
-                'Line Menu': true,
-            },
-        },
-        '33. FiltersAccRef with 2 Views - Tests': {
-            listToSelect: '33. FiltersAccRef with 2 Views',
-            expectedTitle: 'Filters Acc Ref ABI View',
-            expectedNumOfResults: numOfListingsIn_FiltersAccRefAuto,
-            views: ['Additional Indexed Fields', 'No Additional'],
-            columnHeadersPerView: [
-                ['Item', 'Price', 'Quantity', 'In Stock', 'Account Key', 'Account Name', 'Account Email'],
-                ['Account Key', 'Item', 'Price', 'Quantity', 'In Stock'],
-            ],
-            elements: {
-                Menu: true,
-                'New Button': true,
-                'Search Input': true,
-                'Smart Search': true,
-                'Single Radio Button': false,
-                'Select All Checkbox': true,
-                Pager: true,
-                'Line Menu': true,
-            },
-        },
-        '34. Accounts Propagated Error': {
-            listToSelect: '34. Accounts - throw Error due to wrong AddonUUID',
-            expectedTitle: '',
-            expectedNumOfResults: 0,
-            elements: {},
-        },
-        '35. Arrays Of Primitives Numbers Names Reals': {
-            listToSelect: '35. Arrays Of Primitives - Test Draw Array',
-            expectedTitle: 'Arrays Of Primitives - Numbers, Names, Reals (Test Draw Array)',
-            expectedNumOfResults: numOfListingsIn_ArraysOfPrimitivesAuto,
-            views: ['Arrays Of Primitives'],
-            columnHeadersPerView: [['Numbers', 'Names', 'Reals']],
-            elements: {},
-        },
-        '36. Contained Array Scheme Only Name Age': {
-            listToSelect: '36. Contained Array - Test Draw Array',
-            expectedTitle: 'Contained Array - Scheme Only Name Age (Test Draw Array)',
-            expectedNumOfResults: numOfListingsIn_ContainedArray,
-            views: ['Contained Array'],
-            columnHeadersPerView: [['Title', 'Contained Scheme Only Name Age']],
-            elements: {},
-        },
-    };
 
     describe('Resource List ABI Test Suite', async () => {
         before(async function () {
@@ -591,6 +162,20 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 JSON.stringify(numOfListingsIn_ArraysOfPrimitivesAuto, null, 2),
             );
             console.info('numOfListingsIn_ContainedArray: ', JSON.stringify(numOfListingsIn_ContainedArray, null, 2));
+
+            console.info('lists: ', JSON.stringify(lists, null, 2));
+        });
+
+        it('Validating Resources Data', async () => {
+            expect(typeof numOfListingsIn_items).to.equal('number');
+            expect(typeof numOfListingsIn_accounts).to.equal('number');
+            expect(typeof numOfListingsIn_items_filtered_MaNa).to.equal('number');
+            expect(typeof numOfListingsIn_items_filtered_a).to.equal('number');
+            expect(typeof numOfListingsIn_accounts_filtered_a).to.equal('number');
+            expect(typeof numOfListingsIn_ReferenceAccountAuto).to.equal('number');
+            expect(typeof numOfListingsIn_FiltersAccRefAuto).to.equal('number');
+            expect(typeof numOfListingsIn_ArraysOfPrimitivesAuto).to.equal('number');
+            expect(typeof numOfListingsIn_ContainedArray).to.equal('number');
         });
 
         describe('RL ABI UI tests', async () => {
@@ -645,7 +230,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                         let enteringListTitle = '';
 
                         switch (listTitle) {
-                            case '1. Items Basic':
+                            case '1. Items - Basic':
                                 enteringListTitle = 'Entering Default Selected List';
                                 break;
 
@@ -664,7 +249,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                     undefined,
                                 ];
                             switch (listTitle) {
-                                case '34. Accounts Propagated Error':
+                                case '34. Accounts - Propagated Error':
                                     listData[4] = true;
                                     listData[5] =
                                         "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files";
@@ -677,9 +262,14 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             await listPickAndVerify(...listData);
                             resourceListABI.pause(0.1 * 1000);
                             await resourceListABI.isSpinnerDone();
+                            const base64ImageBuild = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Were Running On This Build Of StoryBook`,
+                                value: 'data:image/png;base64,' + base64ImageBuild,
+                            });
                         });
                         switch (listTitle) {
-                            case '34. Accounts Propagated Error':
+                            case '34. Accounts - Propagated Error':
                                 break;
 
                             default:
@@ -729,30 +319,30 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                         break;
                                     case 'Line Menu':
                                         switch (listTitle) {
-                                            case '10. Accounts Line Menu':
-                                            case '30. Items Full - with 2 Views':
+                                            case '10. Accounts - Line Menu':
+                                            case '30. Items - Full - 2 Views':
                                                 await lineMenuSingleExist();
                                                 break;
 
-                                            case '11. Items Line Menu Selection Type Multi':
-                                            case '29. Accounts Full':
-                                            case '32. ReferenceAccount with 2 Views - Tests':
-                                            case '33. FiltersAccRef with 2 Views - Tests':
+                                            case '11. Items - Line Menu - Selection Type Multi':
+                                            case '29. Accounts - Full':
+                                            case '32. ReferenceAccount - 2 Views':
+                                            case '33. FiltersAccRef - 2 Views':
                                                 await lineMenuMultiExist();
                                                 break;
 
-                                            case '1. Items Basic':
-                                            case '2. Accounts Basic':
-                                            case '5. Accounts Selection - Single':
+                                            case '1. Items - Basic':
+                                            case '2. Accounts - Basic':
+                                            case '5. Accounts - Selection - Single':
                                                 await lineMenuSingleDoNotExist();
                                                 break;
 
-                                            case '4. Accounts Selection - Multi':
-                                            case '31. Accounts Draw Grid Relation':
+                                            case '4. Accounts - Selection - Multi':
+                                            case '31. Accounts - Draw Grid Relation':
                                                 await lineMenuMultiDoNotExist();
                                                 break;
 
-                                            case '6. Accounts Selection - None':
+                                            case '6. Accounts - Selection - None':
                                                 await webAppList.clickOnRowByIndex();
                                                 await webAppList.isSpinnerDone();
                                                 await elemntDoNotExist('LineMenu');
@@ -781,111 +371,85 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             });
                         }
                         switch (listTitle) {
-                            case '1. Items Basic':
-                                // it('Validate Views', async () => {
-                                //     const currentListExpectedViews = lists[listTitle].views;
-                                //     const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
-                                //     await validateViewsTitles(
-                                //         currentListExpectedViews.length,
-                                //         currentListExpectedViews,
-                                //     );
-                                //     await validateViewsListHeaders(
-                                //         currentListExpectedViews.length,
-                                //         currentListExpectedViews,
-                                //         currentListExpectedHeadersPerView,
-                                //     );
-                                // });
+                            case '1. Items - Basic':
                                 break;
-                            // case '2. Accounts Basic':
-                            //     break;
-                            // case '3. Accounts Default Draw':
-                            //     break;
-                            // case '4. Accounts Selection - Multi':
-                            //     break;
-                            // case '5. Accounts Selection - Single':
-                            //     break;
-                            // case '6. Accounts Selection - None':
-                            //     break;
-                            case '7. Accounts Menu':
+                            case '2. Accounts - Basic':
+                                break;
+                            case '3. Accounts - Default Draw':
+                                break;
+                            case '4. Accounts - Selection - Multi':
+                                break;
+                            case '5. Accounts - Selection - Single':
+                                break;
+                            case '6. Accounts - Selection - None':
+                                break;
+                            case '7. Accounts - Menu':
                                 // open menu and check that the items are there - Recycle Bin | Import | Export
                                 break;
-                            case '8. Accounts Menu Hosting Addon Functionality':
+                            case '8. Accounts - Menu - Hosting Addon Functionality':
                                 // open menu and check that the items are there - Test | Go To Home Page
                                 // click "Go To Home Page" button and check to be on home page
                                 break;
-                            case '9. Accounts Menu Full':
+                            case '9. Accounts - Menu - Full':
                                 // open menu and check that the items are there - Recycle Bin | Import | Export | Test | Go To Home Page
                                 break;
-                            case '10. Accounts Line Menu':
+                            case '10. Accounts - Line Menu':
                                 break;
-                            case '11. Items Line Menu Selection Type Multi':
+                            case '11. Items - Line Menu - Selection Type Multi':
                                 break;
-                            case 'Items Search':
+                            case '12. Items - Search':
                                 break;
-                            case '13. Accounts Smart Search':
+                            case '13. Accounts - Smart Search':
                                 break;
-                            case '14. Accounts Sorting Ascending':
+                            case '14. Accounts - Sorting Ascending':
                                 break;
-                            case '15. Accounts Sorting Descending':
+                            case '15. Accounts - Sorting Descending':
                                 break;
-                            case '16. Items Search String':
+                            case '16. Items - Search String':
                                 // check that search input holds the correct string
                                 break;
-                            // case '17. Items Page Type Pages':
-                            //     break;
-                            // case '18. Items Page Type Pages - Page size':
-                            //     break;
-                            // case '19. Items Page Type Pages - Page Index':
-                            //     break;
-                            // case '20. Items Page Type Pages - Top Scroll Index':
-                            //     break;
-                            // case '21. Items Page Type Pages - Page Size & Page Index':
-                            //     break;
-                            // case '22. Items Page Type Pages - Page Size, Page Index & Top Scroll Index':
-                            //     break;
-                            // case '23. Items Page Type Scroll':
-                            //     break;
-                            // case '24. Items Page Type Scroll - Top Scroll Index':
-                            //     break;
-                            // case '25. Items Page Type Scroll - Page Index':
-                            //     break;
-                            // case '26. Items Page Type Scroll - Page Index & Top Scroll Index':
-                            //     break;
-                            // case '27. Items Page Type Scroll - Page Size & Page Index':
-                            //     break;
-                            // case '28. Items Page Type Scroll - Page Size & Page Index & Top Scroll Index':
-                            //     break;
-                            case '29. Accounts Full':
+                            case '17. Items - Page Type Pages':
+                                break;
+                            case '18. Items - Page Type Pages - Page size':
+                                break;
+                            case '19. Items - Page Type Pages - Page Index':
+                                break;
+                            case '20. Items - Page Type Pages - Top Scroll Index':
+                                break;
+                            case '21. Items - Page Type Pages - Page Size & Page Index':
+                                break;
+                            case '22. Items - Page Type Pages - Page Size, Page Index & Top Scroll Index':
+                                break;
+                            case '23. Items - Page Type Scroll':
+                                break;
+                            case '24. Items - Page Type Scroll - Top Scroll Index':
+                                break;
+                            case '25. Items - Page Type Scroll - Page Index':
+                                break;
+                            case '26. Items - Page Type Scroll - Page Index & Top Scroll Index':
+                                break;
+                            case '27. Items - Page Type Scroll - Page Size & Page Index':
+                                break;
+                            case '28. Items - Page Type Scroll - Page Size & Page Index & Top Scroll Index':
+                                break;
+                            case '29. Accounts - Full':
                                 // click "Test" button in Menu and check that "Hello World" appear in search input and search response
                                 break;
-                            case '30. Items Full - with 2 Views':
-                                // it('Validate Views', async () => {
-                                //     const currentListExpectedViews = lists[listTitle].views;
-                                //     const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
-                                //     await validateViewsTitles(
-                                //         currentListExpectedViews.length,
-                                //         currentListExpectedViews,
-                                //     );
-                                //     await validateViewsListHeaders(
-                                //         currentListExpectedViews.length,
-                                //         currentListExpectedViews,
-                                //         currentListExpectedHeadersPerView,
-                                //     );
-                                // });
+                            case '30. Items - Full - 2 Views':
                                 break;
-                            case '31. Accounts Draw Grid Relation':
+                            case '31. Accounts - Draw Grid Relation':
                                 // DI-22735
                                 break;
-                            case '32. ReferenceAccount with 2 Views - Tests':
+                            case '32. ReferenceAccount - 2 Views':
                                 break;
-                            case '33. FiltersAccRef with 2 Views - Tests':
+                            case '33. FiltersAccRef - 2 Views':
                                 break;
-                            // case '34. Accounts Propagated Error':
-                            //     break;
-                            case '35. Arrays Of Primitives Numbers Names Reals':
+                            case '34. Accounts - Propagated Error':
+                                break;
+                            case '35. ArraysOfPrimitives - Numbers, Names, Reals':
                                 // test the content on the list cells - that it is displayed correctly
                                 break;
-                            case '36. Contained Array Scheme Only Name Age':
+                            case '36. ContainedArray - Scheme Only: Name, Age':
                                 // test the content on the list cells - that it is displayed correctly
                                 break;
 
@@ -1180,6 +744,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         for (let viewIndex = 0; viewIndex < expectedNumOfViews; viewIndex++) {
             console.info(`In validateViews, viewIndex: ${viewIndex}`);
             await switchViewByName(expectedViewsTitles[viewIndex]);
+            resourceListABI.isSpinnerDone();
             await validateView(expectedViewsTitles[viewIndex], columnHeadersOfEachView[viewIndex]);
         }
         driver.sleep(5 * 1000);

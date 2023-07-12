@@ -63,6 +63,86 @@ export async function MockTest(email: string, password: string, client: Client) 
     describe('Resource List Test Suite', () => {
         describe('API Creation of UDCs', () => {
             /********************  RL Data Prep  ********************/
+            it('Creating UDC of Arrays of Primiteve Types Fields with API', async () => {
+                //  Strings Array  |  Integers Array  |  Doubles Array  //
+                const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                    nameOfCollection: 'ArraysPrimitivesAuto',
+                    descriptionOfCollection: 'Created with Automation',
+                    fieldsOfCollection: [
+                        {
+                            classType: 'Array',
+                            fieldName: 'numbers',
+                            fieldTitle: 'Numbers',
+                            field: {
+                                Type: 'String',
+                                Description: 'list of products',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                                // IndexedFields: {},
+                                // OptionalValues: [],
+                            },
+                        },
+                        {
+                            classType: 'Array',
+                            fieldName: 'names',
+                            fieldTitle: 'Names',
+                            field: {
+                                Type: 'Integer',
+                                Description: 'in stock quantity',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                                // IndexedFields: {},
+                                // OptionalValues: [],
+                            },
+                        },
+                        {
+                            classType: 'Array',
+                            fieldName: 'reals',
+                            fieldTitle: 'Reals',
+                            field: {
+                                Type: 'Double',
+                                Description: 'average items sold per month',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                                // IndexedFields: {},
+                                // OptionalValues: [],
+                            },
+                        },
+                    ],
+                });
+                const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+                console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+
+                expect(upsertResponse.Ok).to.be.true;
+                expect(upsertResponse.Status).to.equal(200);
+                expect(upsertResponse.Error).to.eql({});
+            });
+
+            // Collection: ==========>   ArraysPrimitivesAuto   <==========   //
+            it('Adding Values to Collection: ArraysPrimitivesAuto', async () => {
+                const collectionName = 'ArraysPrimitivesAuto';
+                const upsertingValues_Response = await udcService.upsertValuesToCollection(
+                    {
+                        numbers: [1, 2, 3, 4],
+                        names: ['Happy', 'New', 'Year', '!!!'],
+                        reals: [0.1, 0.2, 0.3, 0.4],
+                    },
+                    collectionName,
+                );
+                console.info(
+                    `Response of POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName} :\n`,
+                    `${JSON.stringify(upsertingValues_Response, null, 2)}`,
+                );
+                expect(upsertingValues_Response.Ok).to.be.true;
+                expect(upsertingValues_Response.Status).to.equal(200);
+                expect(upsertingValues_Response.Error).to.eql({});
+            });
             it('1. Creating a UDC of "Big Data Reference Account" with API', async () => {
                 // Collection:  ====>   BigDataReferenceAccountAuto   <====        //
                 const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -146,9 +226,9 @@ export async function MockTest(email: string, password: string, client: Client) 
             });
             it('2. Adding Values to Collection: "BigDataReferenceAccountAuto"', async () => {
                 // Collection:  ====>   BigDataReferenceAccountAuto   <====        //
-                const acc01UUID = '5737a507-fa00-4c32-a26a-8bc32572e24d'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '3889ed1c-8d10-4042-8209-ac4cbf32299d'
-                const acc02UUID = '56363496-f8ce-42e8-9305-de5d28737e66'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868'
-                const acc03UUID = '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e'
+                const acc01UUID = '9d315555-dbb4-4390-8b67-5fc1a9304514'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
+                const acc02UUID = '28290d15-bf25-43a2-a71a-2c8514188d07'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
+                const acc03UUID = '58e20103-3550-4943-b63b-05d3e0914b66'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
                 // const bestSellerOptions = ['Cart', 'Hair dryer', 'Mask', 'Shirt']
                 // let dataBigDataReferenceAccountAuto: {}[] = [];
                 // for (let index = 0; index < 3450; index++) {
@@ -302,9 +382,9 @@ export async function MockTest(email: string, password: string, client: Client) 
             });
             it('2. Adding Values to Collection: "ReferenceAccountAuto"', async () => {
                 // Collection:  ====>   ReferenceAccountAuto   <====        //
-                const acc01UUID = '3889ed1c-8d10-4042-8209-ac4cbf32299d'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '3889ed1c-8d10-4042-8209-ac4cbf32299d'
-                const acc02UUID = '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868'
-                const acc03UUID = '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e'
+                const acc01UUID = '9d315555-dbb4-4390-8b67-5fc1a9304514'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
+                const acc02UUID = '28290d15-bf25-43a2-a71a-2c8514188d07'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
+                const acc03UUID = '58e20103-3550-4943-b63b-05d3e0914b66'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
                 const dataReferenceAccountAuto = [
                     { of_account: acc03UUID, best_seller_item: 'Cart', max_quantity: 1500 },
                     {
@@ -583,9 +663,9 @@ export async function MockTest(email: string, password: string, client: Client) 
             it('10. Adding Values to Collection: "FiltersAccRefAuto"', async () => {
                 // Collection:  ====>   IndexedFieldsAuto   <====        //
                 generalService.sleep(5 * 1000);
-                const acc01UUID = '5737a507-fa00-4c32-a26a-8bc32572e24d';
-                const acc02UUID = '56363496-f8ce-42e8-9305-de5d28737e66';
-                const acc03UUID = '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb';
+                const acc01UUID = '9d315555-dbb4-4390-8b67-5fc1a9304514'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
+                const acc02UUID = '28290d15-bf25-43a2-a71a-2c8514188d07'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
+                const acc03UUID = '58e20103-3550-4943-b63b-05d3e0914b66'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
                 const dataReferenceAccountAuto = [
                     { from_account: acc02UUID, item: 'Abagada', price: 10.5, quantity: 80, instock: true },
                     { from_account: acc01UUID, item: 'Bananza', price: 0.99, quantity: 1000, instock: false },
