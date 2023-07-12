@@ -11,6 +11,7 @@ import { ObjectsService } from '../../services/objects.service';
 import { OpenCatalogService } from '../../services/open-catalog.service';
 import { UDCService } from '../../services/user-defined-collections.service';
 import { ListAbiTestData } from '../pom/addons/ListAbiTestData';
+import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
@@ -261,6 +262,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             await listPickAndVerify(...listData);
                             resourceListABI.pause(0.1 * 1000);
                             await resourceListABI.isSpinnerDone();
+                            const base64ImageBuild = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Were Running On This Build Of StoryBook`,
+                                value: 'data:image/png;base64,' + base64ImageBuild,
+                            });
                         });
                         switch (listTitle) {
                             case '34. Accounts - Propagated Error':

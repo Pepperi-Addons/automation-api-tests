@@ -429,7 +429,7 @@ export class ListAbiTestData {
                 'Single Radio Button': false,
                 'Select All Checkbox': true,
                 Pager: true,
-                'Line Menu': true,
+                // 'Line Menu': true,       // https://pepperi.atlassian.net/browse/DI-24424
             },
         };
         this['34. Accounts - Propagated Error'] = {
