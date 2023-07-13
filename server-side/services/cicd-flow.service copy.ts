@@ -1,4 +1,4 @@
-import { handleTeamsURL, reportBuildStarted, reportToTeams, reportToTeamsMessage } from '../ui-tests/tests/test.index';
+import { reportBuildStarted, reportToTeams, reportToTeamsMessage } from '../ui-tests/tests/test.index';
 import GeneralService from './general.service';
 import { initiateTester } from './general.service';
 
