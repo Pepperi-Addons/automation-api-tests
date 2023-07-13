@@ -75,7 +75,7 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                     //console.log({ createSchemaResponse: createSchemaResponse });
                     const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
                     //expect(deleteSchemaResponse).to.equal('');Oleg 27-04-23
-                    expect(deleteSchemaResponse).to.deep.equal({ Done: true, RemovedCounter: 0 });
+                    expect(deleteSchemaResponse).to.deep.equal({ Done: true, ProcessedCounter: 0 });
                     //console.log({deleteSchemaResponse:deleteSchemaResponse})
                 });
 
@@ -110,7 +110,7 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                     //console.log({ createSchemaResponse: createSchemaResponse });
                     const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
                     //expect(deleteSchemaResponse).to.equal('');Oleg 27-04-23
-                    expect(deleteSchemaResponse).to.deep.equal({ Done: true, RemovedCounter: 0 });
+                    expect(deleteSchemaResponse).to.deep.equal({ Done: true, ProcessedCounter: 0 });
                     //console.log({deleteSchemaResponse:deleteSchemaResponse})
                 });
 
@@ -141,7 +141,7 @@ export async function ADALTests(generalService: GeneralService, request, tester:
                     //console.log({ createSchemaResponse: createSchemaResponse });
                     const deleteSchemaResponse = await adalService.deleteSchema(schemaName);
                     //expect(deleteSchemaResponse).to.equal('');Oleg 27-04-23
-                    expect(deleteSchemaResponse).to.deep.equal({ Done: true, RemovedCounter: 1 });
+                    expect(deleteSchemaResponse).to.deep.equal({ Done: true, ProcessedCounter: 1 });
                     //console.log({deleteSchemaResponse:deleteSchemaResponse})
                 });
             });
