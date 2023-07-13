@@ -298,6 +298,9 @@ export class CiCdFlow {
 
     handleTeamsURL(addonName) {
         switch (addonName) {
+            case 'RESOURCE LIST':
+            case 'RESOURCE-LIST':
+                return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/5dee3122509948b1bb3df33f5e6a2610/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
             case 'ADAL': //new teams
                 return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/60921b31c28a4d208953f6597131368f/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
             case 'NEBULA': //new teams
@@ -422,22 +425,22 @@ export class CiCdFlow {
                 isOneOfTestFailed = true;
                 failingEnvs.push(resultAndEnv[1]);
             }
-            if (isOneOfTestFailed) {
-                await this.unavailableVersionAfterAppTestFail(
-                    addonEntryUUIDEu,
-                    addonEntryUUIDProd,
-                    addonEntryUUIDSb,
-                    addonVersionEU,
-                    addonVersionProd,
-                    addonVersionSb,
-                    addonUUID,
-                    this.service,
-                    this.base64VARCredentialsEU,
-                    this.base64VARCredentialsProd,
-                    this.base64VARCredentialsSB,
-                    addonName,
-                );
-            }
+        }
+        if (isOneOfTestFailed) {
+            await this.unavailableVersionAfterAppTestFail(
+                addonEntryUUIDEu,
+                addonEntryUUIDProd,
+                addonEntryUUIDSb,
+                addonVersionEU,
+                addonVersionProd,
+                addonVersionSb,
+                addonUUID,
+                this.service,
+                this.base64VARCredentialsEU,
+                this.base64VARCredentialsProd,
+                this.base64VARCredentialsSB,
+                addonName,
+            );
         }
         // debugger;
         if (!failingEnvs.includes('EU')) {
@@ -777,6 +780,23 @@ export class CiCdFlow {
             case 'DATA INDEX':
             case 'DATA-INDEX':
                 return 'DATAINDEX';
+            case 'RESOURCE LIST':
+            case 'RESOURCE-LIST':
+                return 'PNSApprovmentTests';
+            case 'GENERIC-RESOURCE':
+            case 'GENERIC RESOURCE':
+                return 'COREApprovmentTests';
+            case 'CPI-DATA': //new teams
+            case 'ADDONS-CPI-DATA':
+            case 'CPI DATA':
+                return 'CPIDATAApprovmentTests';
+            case 'PNS':
+                return 'PNSApprovmentTests';
+            case 'USER-DEFINED-COLLECTIONS':
+            case 'UDC':
+                return 'UDCApprovmentTests';
+            case 'SCHEDULER':
+                return 'SchedulerApprovmentTests';
         }
     }
 }

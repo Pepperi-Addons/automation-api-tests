@@ -59,6 +59,7 @@ import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
 import { CiCdFlow } from '../../services/cicd-flow.service copy';
 import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon_from_all_auto_users';
 import { FlowAPITest } from '../../api-tests/flows_api_part';
+import { FlowTests } from './flows_builder.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -234,6 +235,12 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
     if (tests.includes('Sanity')) {
         await LoginTests(email, pass);
+        await OrderTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('FlowBuilder')) {
+        await FlowTests(email, pass, client, varPass);
         await OrderTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
@@ -1388,6 +1395,50 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 pathProdEx = jobPathToReturnProd;
                 pathEUEx = jobPathToReturnEU;
                 pathSBEx = jobPathToReturnSB;
+                addonEntryUUIDProdEx = addonEntryUUIDProd;
+                addonEntryUUIDEuEx = addonEntryUUIDEu;
+                addonEntryUUIDSbEx = addonEntryUUIDSb;
+                addonVersionProdEx = addonVersionProd;
+                addonVersionEUEx = addonVersionEU;
+                addonVersionSbEx = addonVersionSb;
+                break;
+            }
+            case 'RESOURCE LIST':
+            case 'RESOURCE-LIST': {
+                addonUUID = '0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3';
+                const jobPathPROD =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/E2E%20Test%20-%20A1%20Production%20-%20Resource%20List%20ABI%20-%20CLI';
+                const jobPathEU =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/E2E%20Test%20-%20A1%20EU%20-%20Resource%20List%20ABI%20-%20CLI';
+                const jobPathSB =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/E2E%20Test%20-%20A1%20Stage%20-%20Resource%20List%20ABI%20-%20CLI';
+                const buildToken = 'ResourceListABIApprovmentTests';
+                const {
+                    JenkinsBuildResultsAllEnvs,
+                    latestRunProd,
+                    latestRunEU,
+                    latestRunSB,
+                    addonEntryUUIDProd,
+                    addonEntryUUIDEu,
+                    addonEntryUUIDSb,
+                    addonVersionProd,
+                    addonVersionEU,
+                    addonVersionSb,
+                } = await runnnerService.jenkinsSingleJobTestRunner(
+                    addonName,
+                    addonUUID,
+                    jobPathPROD,
+                    jobPathEU,
+                    jobPathSB,
+                    buildToken,
+                );
+                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
+                latestRunProdEx = latestRunProd;
+                latestRunEUEx = latestRunEU;
+                latestRunSBEx = latestRunSB;
+                pathProdEx = jobPathPROD;
+                pathEUEx = jobPathEU;
+                pathSBEx = jobPathSB;
                 addonEntryUUIDProdEx = addonEntryUUIDProd;
                 addonEntryUUIDEuEx = addonEntryUUIDEu;
                 addonEntryUUIDSbEx = addonEntryUUIDSb;
