@@ -476,6 +476,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             await resourceListABI.isSpinnerDone();
         }
         await resourceListABI.clickElement('TestsAddon_openABI_button');
+        driver.sleep(3 * 1000);
         await resourceListABI.isSpinnerDone();
         await resourceListABI.waitTillVisible(resourceListABI.ListAbi_container, 15000);
         if (!err) {
