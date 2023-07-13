@@ -424,7 +424,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
                 const scriptEditor = new ScriptEditor(driver);
-                scriptUUID = await scriptEditor.configureScript(script3, generalService);
+                scriptUUID = await scriptEditor.configureScriptForSurvey(script3, generalService);
                 await webAppHeader.goHome();
             });
             it('8. Create Page With SlideShow Which Will Run The Script', async function () {
@@ -977,7 +977,7 @@ export async function createSurvey(
     const script3 = script2.replace('{surveySlugNamePlaceHolder}', surveySlugDisplayName);
     await webAppHeader.goHome();
     const scriptEditor = new ScriptEditor(driver);
-    const scriptUUID = await scriptEditor.configureScript(script3, generalService);
+    const scriptUUID = await scriptEditor.configureScriptForSurvey(script3, generalService);
     await webAppHeader.goHome();
     //6. slide show page creation with survey inside
     surveyBlockPageName = 'surveySlideShow';

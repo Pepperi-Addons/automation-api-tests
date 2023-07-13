@@ -1,3 +1,4 @@
+import { handleTeamsURL, reportBuildStarted, reportToTeams, reportToTeamsMessage } from '../ui-tests/tests/test.index';
 import GeneralService from './general.service';
 import { initiateTester } from './general.service';
 
@@ -44,7 +45,16 @@ export class CiCdFlow {
             addonVersionProd,
             addonVersionEU,
             addonVersionSb,
-        } = await this.jenkinsSingleJobTestRunner(addonName, addonUUID, jobPathPROD, jobPathEU, jobPathSB, buildToken);
+        } = await this.jenkinsSingleJobTestRunner(
+            this.adminUser,
+            this.adminPass,
+            addonName,
+            addonUUID,
+            jobPathPROD,
+            jobPathEU,
+            jobPathSB,
+            buildToken,
+        );
         let didFailFirstTest = false;
         for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
             const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
@@ -125,6 +135,8 @@ export class CiCdFlow {
     }
 
     async jenkinsSingleJobTestRunner(
+        email,
+        pass,
         addonName: string,
         addonUUID: string,
         jobPathPROD,
@@ -171,11 +183,11 @@ export class CiCdFlow {
             addonVersionProd !== addonVersionSb
         ) {
             const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${addonVersionProd}, sb - ${addonVersionSb}, eu - ${addonVersionEU}`;
-            await this.reportToTeamsMessage(addonName, addonUUID, errorString, this.service);
+            await reportToTeamsMessage(addonName, addonUUID, addonVersionProd, errorString, this.service);
             throw new Error(errorString);
         }
         console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
-        await this.reportBuildStarted(addonName, addonUUID, addonVersionProd, this.service);
+        await reportBuildStarted(addonName, addonUUID, addonVersionProd, this.service);
         this.kmsSecret = await this.service.getSecretfromKMS(this.adminUser, this.adminPass, 'JenkinsBuildUserCred');
         const JenkinsBuildResultsAllEnvs = await Promise.all([
             this.service.runJenkinsJobRemotely(
@@ -209,39 +221,6 @@ export class CiCdFlow {
             addonVersionEU,
             addonVersionSb,
         };
-    }
-
-    async reportToTeamsMessage(addonName, addonUUID, error, service: GeneralService, addonVersion?) {
-        const message = `${addonName} - (${addonUUID}), ${
-            addonVersion ? `Version:${addonVersion}` : ''
-        }, Failed On: ${error}`;
-        const bodyToSend = {
-            Name: `${addonName} Approvment Tests Status: Failed Due CICD Process Exception`,
-            Description: message,
-            Status: 'ERROR',
-            Message: message,
-            UserWebhook: this.handleTeamsURL(addonName),
-        };
-        const monitoringResponse = await service.fetchStatus(
-            'https://papi.pepperi.com/v1.0/system_health/notifications',
-            {
-                method: 'POST',
-                headers: {
-                    'X-Pepperi-SecretKey': await service.getSecret()[1],
-                    'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                },
-                body: JSON.stringify(bodyToSend),
-            },
-        );
-        if (monitoringResponse.Ok !== true) {
-            throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
-        }
-        if (monitoringResponse.Status !== 200) {
-            throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-        }
-        if (Object.keys(monitoringResponse.Error).length !== 0) {
-            throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-        }
     }
 
     async unavailableAddonVersion(env, addonName, addonEntryUUID, addonVersion, addonUUID, varCredentials) {
@@ -296,71 +275,6 @@ export class CiCdFlow {
         );
     }
 
-    handleTeamsURL(addonName) {
-        switch (addonName) {
-            case 'RESOURCE LIST':
-            case 'RESOURCE-LIST':
-                return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/5dee3122509948b1bb3df33f5e6a2610/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-            case 'ADAL': //new teams
-                return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/60921b31c28a4d208953f6597131368f/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-            case 'NEBULA': //new teams
-                return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/3e20b0b37e1148d0b12ccf82adb619c4/79d2ba58-6e75-40c6-be86-84e3c74fd694';
-            case 'DIMX':
-                return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/a5c62481e39743cb9d6651fa88284deb/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-            case 'DATA INDEX': //new teams
-            case 'DATA-INDEX':
-                return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/49cf698436ce4a1f9d2d38e121722d0c/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-            case 'PFS':
-            case 'PEPPERI-FILE-STORAGE':
-                return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/29c9fb687840407fa70dce5576356af8/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-            case 'PNS':
-                return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/5a784ad87c4b4f4a9ffab80e4ed61113/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-            case 'USER-DEFINED-COLLECTIONS':
-            case 'UDC':
-                return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/a40ddc371df64933aa4bc369a060b1d6/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-            case 'SCHEDULER':
-                return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/2f1a729eb28642dd9dfe498b59cda766/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-            case 'CPI-DATA': //new teams
-            case 'CPI DATA':
-                return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/344df5f19cc04563a9b1c35a02984e3d/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-            case 'GENERIC-RESOURCE': //new teams
-            case 'GENERIC RESOURCE':
-                return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/ddaaedb079ce4d0c9d1fcfb3ca9843f1/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
-        }
-    }
-
-    async reportBuildStarted(addonName, addonUUID, addonVersion, service: GeneralService) {
-        const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Started Building`;
-        const bodyToSend = {
-            Name: `${addonName}, ${addonUUID}, ${addonVersion}`,
-            Description: message,
-            Status: 'INFO',
-            Message: message,
-            UserWebhook:
-                'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/9c8e4de02a81424fbe9f51b99a2d484a/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
-        };
-        const monitoringResponse = await service.fetchStatus(
-            'https://papi.pepperi.com/v1.0/system_health/notifications',
-            {
-                method: 'POST',
-                headers: {
-                    'X-Pepperi-SecretKey': await service.getSecret()[1],
-                    'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                },
-                body: JSON.stringify(bodyToSend),
-            },
-        );
-        if (monitoringResponse.Ok !== true) {
-            throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
-        }
-        if (monitoringResponse.Status !== 200) {
-            throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-        }
-        if (Object.keys(monitoringResponse.Error).length !== 0) {
-            throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-        }
-    }
-
     async unavailableVersionAndReportMessage(
         addonName,
         addonUUID,
@@ -370,7 +284,7 @@ export class CiCdFlow {
         addonEntryUUIDSb,
         addonEntryUUIDProd,
     ) {
-        await this.reportToTeamsMessage(addonName, addonUUID, errorString, this.service, addonVersion);
+        await reportToTeamsMessage(addonName, addonUUID, addonVersion, errorString, this.service);
         await Promise.all([
             this.unavailableAddonVersion(
                 'prod',
@@ -452,12 +366,13 @@ export class CiCdFlow {
         if (!failingEnvs.includes('Production')) {
             passingEnvs.push('Production');
         }
-
         //3. send to Teams
-        await this.reportToTeams(
+        await reportToTeams(
+            this.service,
+            this.adminUser,
+            this.adminPass,
             addonName,
             addonUUID,
-            this.service,
             addonVersionProd,
             passingEnvs,
             failingEnvs,
@@ -645,74 +560,6 @@ export class CiCdFlow {
         console.log(
             `${addonName}, version: ${addonVersionSb} on Staging became unavailable: Approvment tests didnt pass`,
         );
-    }
-
-    async reportToTeams(
-        addonName,
-        addonUUID,
-        service: GeneralService,
-        addonVersion,
-        passingEnvs,
-        failingEnvs,
-        isDev,
-        failedSuitesProd?,
-        failedSuitesEU?,
-        failedSuitesSB?,
-        jenkinsLink?,
-        jobPathPROD?,
-        latestRunProd?,
-        jobPathEU?,
-        latestRunEU?,
-        jobPathSB?,
-        latestRunSB?,
-    ) {
-        let message;
-        let message2;
-        if (isDev) {
-            const uniqFailingEnvs = [...new Set(failingEnvs)];
-            message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
-                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On: ${
-                failingEnvs.length === 0 ? 'None' : uniqFailingEnvs.join(', ')
-            },<br>Link: ${jenkinsLink}`;
-            message2 = `FAILED TESTS:<br>PROD: ${
-                failedSuitesProd.length === 0 ? 'None' : failedSuitesProd.join(', ')
-            },<br>EU: ${failedSuitesEU.length === 0 ? 'None' : failedSuitesEU.join(', ')},<br>SB:${
-                failedSuitesSB.length === 0 ? 'None' : failedSuitesSB.join(', ')
-            } `;
-        } else {
-            message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
-                passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-            } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
-            message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
-        }
-        const bodyToSend = {
-            Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
-            Description: message,
-            Status: passingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
-            Message: message2,
-            UserWebhook: this.handleTeamsURL(addonName),
-        };
-        const monitoringResponse = await service.fetchStatus(
-            'https://papi.pepperi.com/v1.0/system_health/notifications',
-            {
-                method: 'POST',
-                headers: {
-                    'X-Pepperi-SecretKey': await service.getSecret()[1],
-                    'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                },
-                body: JSON.stringify(bodyToSend),
-            },
-        );
-        if (monitoringResponse.Ok !== true) {
-            throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
-        }
-        if (monitoringResponse.Status !== 200) {
-            throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-        }
-        if (Object.keys(monitoringResponse.Error).length !== 0) {
-            throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-        }
     }
 
     async getLatestAvailableVersionAndValidateAllEnvsAreSimilar(addonUUID, service) {

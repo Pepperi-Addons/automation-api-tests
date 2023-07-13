@@ -59,7 +59,7 @@ import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
 import { CiCdFlow } from '../../services/cicd-flow.service copy';
 import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon_from_all_auto_users';
 import { FlowAPITest } from '../../api-tests/flows_api_part';
-import { FlowTests } from './flows_builder.test';
+// import { FlowTests } from './flows_builder.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -239,11 +239,9 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
-    if (tests.includes('FlowBuilder')) {
-        await FlowTests(email, pass, client, varPass);
-        await OrderTests(email, pass, client);
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
+    // if (tests.includes('FlowBuilder')) {
+    //     await FlowTests(email, pass, client, varPass);
+    // }
 
     if (tests.includes('evgeny')) {
         await FlowAPITest(
@@ -779,6 +777,24 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 console.log(
                     `####################### ${currentTestName}: EXECUTION UUIDS:\nEU - ${devTestResponseEu.Body.URI}\nPROD - ${devTestResponseProd.Body.URI}\nSB - ${devTestResponseSb.Body.URI}`,
                 );
+                if (
+                    devTestResponseEu === undefined ||
+                    devTestResponseProd === undefined ||
+                    devTestResponseSb === undefined
+                ) {
+                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
+                    whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
+                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`${errorString}`);
+                }
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
                     prodUser,
@@ -786,7 +802,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     devTestResponseProd.Body.URI,
                 );
                 const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
-                debugger;
                 //4.3. parse the response
                 let testResultArrayEu;
                 let testResultArrayProd;
@@ -1017,9 +1032,11 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     ),
                 ]);
                 await reportToTeams(
+                    service,
+                    email,
+                    pass,
                     addonName,
                     addonUUID,
-                    service,
                     latestVersionOfTestedAddonProd,
                     devPassingEnvs2,
                     devFailedEnvs2,
@@ -1033,9 +1050,11 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 return;
             } else if (!doWeHaveSuchAppTest(addonName)) {
                 await reportToTeams(
+                    service,
+                    email,
+                    pass,
                     addonName,
                     addonUUID,
-                    service,
                     latestVersionOfTestedAddonProd,
                     devPassingEnvs2,
                     devFailedEnvs2,
@@ -1094,6 +1113,8 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await runnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1138,6 +1159,8 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await runnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1183,6 +1206,8 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await runnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1226,6 +1251,8 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await runnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1270,6 +1297,8 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await runnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1387,7 +1416,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     jobPathEU2,
                     jobPathSB2,
                 );
-                debugger;
                 JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvsToReturn;
                 latestRunProdEx = latestRunProdReturn;
                 latestRunEUEx = latestRunEUReturn;
@@ -1425,6 +1453,8 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await runnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1469,6 +1499,8 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await runnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1566,6 +1598,8 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await runnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1613,36 +1647,42 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     run();
 })();
 
-function handleTeamsURL(addonName) {
+export async function handleTeamsURL(addonName, service, email, pass) {
+    //-->eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
     switch (addonName) {
+        case 'QA':
+            return await service.getSecretfromKMS(email, pass, 'QAWebHook');
         case 'SYNC':
-            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/992b7ac1fcbf443a9f3a6c394ae2bf6e/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+            return await service.getSecretfromKMS(email, pass, 'SyncTeamsWebHook');
         case 'ADAL': //new teams
-            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/60921b31c28a4d208953f6597131368f/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+            return await service.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
         case 'NEBULA':
         case 'FEBULA': //new teams
-            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/3e20b0b37e1148d0b12ccf82adb619c4/79d2ba58-6e75-40c6-be86-84e3c74fd694';
+            return await service.getSecretfromKMS(email, pass, 'NebulaTeamsWebHook');
         case 'DIMX':
-            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/543f83ab05ae4715909c17f9f12ae2b5/4361420b-8fde-48eb-b62a-0e34fec63f5c';
+            return await service.getSecretfromKMS(email, pass, 'DIMXTeamsWebHook');
         case 'DATA INDEX': //new teams
         case 'DATA-INDEX':
-            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/49cf698436ce4a1f9d2d38e121722d0c/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+            return await service.getSecretfromKMS(email, pass, 'DataIndexTeamsWebHook');
         case 'PFS':
         case 'PEPPERI-FILE-STORAGE':
-            return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/29c9fb687840407fa70dce5576356af8/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+            return await service.getSecretfromKMS(email, pass, 'PFSTeamsWebHook');
         case 'PNS':
-            return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/5a784ad87c4b4f4a9ffab80e4ed61113/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+            return await service.getSecretfromKMS(email, pass, 'PNSTeamsWebHook');
         case 'USER-DEFINED-COLLECTIONS':
         case 'UDC':
-            return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/a40ddc371df64933aa4bc369a060b1d6/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+            return await service.getSecretfromKMS(email, pass, 'UDCTeamsWebHook');
         case 'SCHEDULER':
-            return 'https://wrnty.webhook.office.com/webhookb2/1e9787b3-a1e5-4c2c-99c0-96bd61c0ff5e@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/2f1a729eb28642dd9dfe498b59cda766/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+            return await service.getSecretfromKMS(email, pass, 'SchedulerTeamsWebHook');
         case 'CPI-DATA': //new teams
         case 'CPI DATA':
-            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/344df5f19cc04563a9b1c35a02984e3d/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+            return await service.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
         case 'GENERIC-RESOURCE': //new teams
         case 'GENERIC RESOURCE':
-            return 'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/ddaaedb079ce4d0c9d1fcfb3ca9843f1/83111104-c68a-4d02-bd4e-0b6ce9f14aa0';
+            return await service.getSecretfromKMS(email, pass, 'GenericResourceTeamsWebHook');
+        case 'RESOURCE-LIST': //new teams
+        case 'RESOURCE LIST':
+            return await service.getSecretfromKMS(email, pass, 'ResourceListTeamsWebHook');
     }
 }
 
@@ -2065,10 +2105,12 @@ async function unavailableAddonVersion(env, addonName, addonEntryUUID, addonVers
     );
 }
 
-async function reportToTeams(
+export async function reportToTeams(
+    generalService: GeneralService,
+    email,
+    pass,
     addonName,
     addonUUID,
-    service: GeneralService,
     addonVersion,
     passingEnvs,
     failingEnvs,
@@ -2107,16 +2149,19 @@ async function reportToTeams(
         Description: message,
         Status: passingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
         Message: message2,
-        UserWebhook: handleTeamsURL(addonName),
+        UserWebhook: await handleTeamsURL(addonName, generalService, email, pass),
     };
-    const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
-        method: 'POST',
-        headers: {
-            'X-Pepperi-SecretKey': await service.getSecret()[1],
-            'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+    const monitoringResponse = await generalService.fetchStatus(
+        'https://papi.pepperi.com/v1.0/system_health/notifications',
+        {
+            method: 'POST',
+            headers: {
+                'X-Pepperi-SecretKey': await generalService.getSecret()[1],
+                'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+            },
+            body: JSON.stringify(bodyToSend),
         },
-        body: JSON.stringify(bodyToSend),
-    });
+    );
     if (monitoringResponse.Ok !== true) {
         throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
     }
@@ -2128,14 +2173,14 @@ async function reportToTeams(
     }
 }
 
-async function reportToTeamsMessage(addonName, addonUUID, addonVersion, error, service: GeneralService) {
+export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, error, service: GeneralService) {
     const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Failed On: ${error}`;
     const bodyToSend = {
-        Name: `${addonName} Approvment Tests Status: Failed Due CICD Process Exception`,
+        Name: `${addonName} Approvment Tests Status: Failed Due CI/CD Process Exception`,
         Description: message,
         Status: 'ERROR',
         Message: message,
-        UserWebhook: handleTeamsURL(addonName),
+        UserWebhook: await handleTeamsURL(addonName, service, email, pass),
     };
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
@@ -2156,15 +2201,14 @@ async function reportToTeamsMessage(addonName, addonUUID, addonVersion, error, s
     }
 }
 
-async function reportBuildStarted(addonName, addonUUID, addonVersion, service: GeneralService) {
+export async function reportBuildStarted(addonName, addonUUID, addonVersion, service: GeneralService) {
     const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Started Building`;
     const bodyToSend = {
         Name: `${addonName}, ${addonUUID}, ${addonVersion}`,
         Description: message,
         Status: 'INFO',
         Message: message,
-        UserWebhook:
-            'https://wrnty.webhook.office.com/webhookb2/84e28b5e-1f7f-4e05-820f-9728916558b2@2f2b54b7-0141-4ba7-8fcd-ab7d17a60547/IncomingWebhook/9c8e4de02a81424fbe9f51b99a2d484a/83111104-c68a-4d02-bd4e-0b6ce9f14aa0',
+        UserWebhook: await handleTeamsURL('QA', service, email, pass),
     };
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
