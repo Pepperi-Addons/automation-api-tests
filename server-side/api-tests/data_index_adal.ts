@@ -412,7 +412,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 const adalService = new ADALService(generalService.papiClient);
                 const readDocumentResponse = await adalService.deleteSchema(indexSchema.Name);
                 //expect(readDocumentResponse).to.deep.equal('');//Oleg 27-04-23
-                expect(readDocumentResponse).to.deep.equal({ Done: true, RemovedCounter: 0 });
+                expect(readDocumentResponse).to.deep.equal({ Done: true, ProcessedCounter: 0 });
             });
         });
 
@@ -765,7 +765,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
                 const adalService = new ADALService(generalService.papiClient);
                 const readDocumentResponse = await adalService.deleteSchema(typedIndexSchema.Name);
                 //expect(readDocumentResponse).to.deep.equal('');Oleg 27-01-23
-                expect(readDocumentResponse).to.deep.equal({ Done: true, RemovedCounter: 0 });
+                expect(readDocumentResponse).to.deep.equal({ Done: true, ProcessedCounter: 0 });
             });
         });
 
