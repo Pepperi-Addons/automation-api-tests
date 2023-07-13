@@ -382,9 +382,9 @@ export async function MockTest(email: string, password: string, client: Client) 
             });
             it('2. Adding Values to Collection: "ReferenceAccountAuto"', async () => {
                 // Collection:  ====>   ReferenceAccountAuto   <====        //
-                const acc01UUID = '9d315555-dbb4-4390-8b67-5fc1a9304514'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
-                const acc02UUID = '28290d15-bf25-43a2-a71a-2c8514188d07'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
-                const acc03UUID = '58e20103-3550-4943-b63b-05d3e0914b66'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
+                const acc01UUID = '3889ed1c-8d10-4042-8209-ac4cbf32299d'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
+                const acc02UUID = '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
+                const acc03UUID = '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
                 const dataReferenceAccountAuto = [
                     { of_account: acc03UUID, best_seller_item: 'Cart', max_quantity: 1500 },
                     {
@@ -403,14 +403,14 @@ export async function MockTest(email: string, password: string, client: Client) 
                     },
                     {
                         of_account: acc01UUID,
-                        best_seller_item: 'Hair dryer',
+                        best_seller_item: 'Mask',
                         max_quantity: 0,
                         discount_rate: 0.4,
                         offered_discount_location: ['store', 'on-line', 'rep'],
                     },
                     {
                         of_account: acc02UUID,
-                        best_seller_item: 'Mask',
+                        best_seller_item: 'Hair dryer',
                         max_quantity: 40000,
                         discount_rate: 0.15,
                         offered_discount_location: ['store', 'on-line'],
@@ -419,7 +419,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                     { of_account: acc01UUID, best_seller_item: 'Shirt', max_quantity: 55, discount_rate: 0.22 },
                     {
                         of_account: acc03UUID,
-                        best_seller_item: 'item2',
+                        best_seller_item: 'Shirt',
                         discount_rate: 0.3,
                         offered_discount_location: ['store'],
                     },
