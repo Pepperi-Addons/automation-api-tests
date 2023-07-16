@@ -22,6 +22,7 @@ import { SurveyTests } from './survey.test';
 import { PricingTests } from './pricing.test';
 import { PricingDataPrep } from './pricing_data.test';
 import { ResourceListAbiTests } from './rl_abi.test';
+import { InstallationsTest } from './installations.test';
 
 export {
     LoginTests,
@@ -48,4 +49,5 @@ export {
     PricingTests,
     PricingDataPrep,
     ResourceListAbiTests,
+    InstallationsTest,
 };
