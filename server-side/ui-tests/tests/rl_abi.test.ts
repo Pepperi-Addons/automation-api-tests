@@ -272,13 +272,15 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             describe('List Content Tests', async () => {
                 afterEach(async function () {
                     driver.sleep(0.5 * 1000);
-                    await webAppHomePage.collectEndTestData(this);
                 });
 
                 Object.keys(lists).forEach((listTitle) => {
                     describe(listTitle, async () => {
                         after(async function () {
                             await driver.refresh();
+                        });
+                        afterEach(async function () {
+                            await webAppHomePage.collectEndTestData(this);
                         });
                         let enteringListTitle = '';
 
@@ -291,33 +293,35 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 enteringListTitle = 'Choosing List Data and Opening the Dialog';
                                 break;
                         }
-                        it(enteringListTitle, async () => {
-                            const listData: [string, string, number, string, boolean | undefined, string | undefined] =
-                                [
-                                    lists[listTitle].listToSelect,
-                                    lists[listTitle].expectedTitle,
-                                    lists[listTitle].expectedNumOfResults,
-                                    '',
-                                    undefined,
-                                    undefined,
-                                ];
+                        it(enteringListTitle, async function () {
+                            const list = lists[listTitle].listToSelect;
+                            const expectedTitle = lists[listTitle].expectedTitle;
+                            const expectedNumOfResults = lists[listTitle].expectedNumOfResults;
+
                             switch (listTitle) {
                                 case '34. Accounts - Propagated Error':
-                                    listData[4] = true;
-                                    listData[5] =
+                                    const errorMessage =
                                         "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files";
+                                    await listPickAndVerify(
+                                        list,
+                                        expectedTitle,
+                                        expectedNumOfResults,
+                                        '',
+                                        true,
+                                        errorMessage,
+                                    );
                                     break;
 
                                 default:
-                                    listData[3] = lists[listTitle].views[0];
+                                    const listDefaultView = lists[listTitle].views[0];
+                                    await listPickAndVerify(list, expectedTitle, expectedNumOfResults, listDefaultView);
                                     break;
                             }
-                            await listPickAndVerify(...listData);
                             resourceListABI.pause(0.1 * 1000);
                             await resourceListABI.isSpinnerDone();
                             const base64ImageBuild = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Were Running On This Build Of StoryBook`,
+                                title: `Current List ABI`,
                                 value: 'data:image/png;base64,' + base64ImageBuild,
                             });
                         });
@@ -344,7 +348,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
 
                         Object.keys(lists[listTitle].elements).forEach((element) => {
                             const isDisplayed = lists[listTitle].elements[element];
-                            it(`${element} - ${isDisplayed ? 'DISPLAYED' : 'NOT Displayed'}`, async () => {
+                            it(`${element} - ${isDisplayed ? 'DISPLAYED' : 'NOT Displayed'}`, async function () {
                                 switch (element) {
                                     case 'Menu':
                                         isDisplayed ? await elemntExist('Menu') : await elemntDoNotExist('Menu');
@@ -807,7 +811,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
 
     async function switchViewByName(viewText: string) {
         console.info('***In Switch View***');
+        driver.sleep(0.1 * 1000);
         await driver.untilIsVisible(resourceListABI.ListAbi_ViewsDropdown);
+        driver.sleep(0.1 * 1000);
         await resourceListABI.selectDropBoxByString(resourceListABI.ListAbi_ViewsDropdown, viewText);
         driver.sleep(0.1 * 1000);
         await driver.click(resourceListABI.ListAbi_title);

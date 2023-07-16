@@ -175,7 +175,7 @@ export class AddonPage extends Page {
     }
 
     public async selectDropBoxByString(locator: By, option: string, index?: number): Promise<void> {
-        // this.browser.sleep(3000);
+        this.browser.sleep(0.1 * 1000);
         this.browser.untilIsVisible(locator);
         if (index !== undefined) {
             await this.browser.click(locator, index);
