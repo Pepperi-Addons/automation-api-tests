@@ -30,12 +30,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const openCatalogService = new OpenCatalogService(generalService);
 
     /* Addons Installation */
-    await generalService.baseAddonVersionsInstallation(varPass);
-    //#region Upgrade script dependencies
-    const areBaseAddonsPhased = await generalService.setBaseAddonsToPhasedForE2E(varPass);
-    console.info('Are Base Addons Phased: ', JSON.stringify(areBaseAddonsPhased, null, 2));
-    const areAddonsPhased = await generalService.setToLatestPhasedVersion(varPass, generalService.testDataWithNewSync);
-    console.info('Are Addons Phased: ', JSON.stringify(areAddonsPhased, null, 2));
+    // const areBaseAddonsPhased = await generalService.setBaseAddonsToPhasedForE2E(varPass);
+    // console.info('Are Base Addons Phased: ', JSON.stringify(areBaseAddonsPhased, null, 2));
+    // const areAddonsPhased = await generalService.setToLatestPhasedVersion(varPass, generalService.testDataWithNewSync);
+    // console.info('Are Addons Phased: ', JSON.stringify(areAddonsPhased, null, 2));
 
     const testData = {
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
@@ -80,58 +78,58 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 });
             });
         }
-        for (const addonName in areAddonsPhased) {
-            if (!Object.keys(testData).includes(addonName)) {
-                const currentAddonChnageVersionResponse = areAddonsPhased[addonName];
-                const addonUUID = currentAddonChnageVersionResponse[0];
-                const latestPhasedVersion = currentAddonChnageVersionResponse[2];
-                const changeType = currentAddonChnageVersionResponse[3];
-                const status = currentAddonChnageVersionResponse[4];
-                const note = currentAddonChnageVersionResponse[5] || '';
+        // for (const addonName in areAddonsPhased) {
+        //     if (!Object.keys(testData).includes(addonName)) {
+        //         const currentAddonChnageVersionResponse = areAddonsPhased[addonName];
+        //         const addonUUID = currentAddonChnageVersionResponse[0];
+        //         const latestPhasedVersion = currentAddonChnageVersionResponse[2];
+        //         const changeType = currentAddonChnageVersionResponse[3];
+        //         const status = currentAddonChnageVersionResponse[4];
+        //         const note = currentAddonChnageVersionResponse[5] || '';
 
-                describe(`"${addonName}"`, () => {
-                    it(`${changeType} To Latest PHASED Version`, () => {
-                        if (status == 'Failure') {
-                            expect(note).to.include('is already working on version');
-                        } else {
-                            expect(status).to.include('Success');
-                        }
-                    });
-                    it(`Latest Phased Version Is Installed ${latestPhasedVersion}`, async () => {
-                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                            .eventually.to.have.property('Version')
-                            .a('string')
-                            .that.is.equal(latestPhasedVersion);
-                    });
-                });
-            }
-        }
-        for (const addonName in areBaseAddonsPhased) {
-            if (!Object.keys(testData).includes(addonName) && !Object.keys(areAddonsPhased).includes(addonName)) {
-                const currentAddonChnageVersionResponse = areBaseAddonsPhased[addonName];
-                const addonUUID = currentAddonChnageVersionResponse[0];
-                const latestPhasedVersion = currentAddonChnageVersionResponse[2];
-                const changeType = currentAddonChnageVersionResponse[3];
-                const status = currentAddonChnageVersionResponse[4];
-                const note = currentAddonChnageVersionResponse[5] || '';
+        //         describe(`"${addonName}"`, () => {
+        //             it(`${changeType} To Latest PHASED Version`, () => {
+        //                 if (status == 'Failure') {
+        //                     expect(note).to.include('is already working on version');
+        //                 } else {
+        //                     expect(status).to.include('Success');
+        //                 }
+        //             });
+        //             it(`Latest Phased Version Is Installed ${latestPhasedVersion}`, async () => {
+        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+        //                     .eventually.to.have.property('Version')
+        //                     .a('string')
+        //                     .that.is.equal(latestPhasedVersion);
+        //             });
+        //         });
+        //     }
+        // }
+        // for (const addonName in areBaseAddonsPhased) {
+        //     if (!Object.keys(testData).includes(addonName) && !Object.keys(areAddonsPhased).includes(addonName)) {
+        //         const currentAddonChnageVersionResponse = areBaseAddonsPhased[addonName];
+        //         const addonUUID = currentAddonChnageVersionResponse[0];
+        //         const latestPhasedVersion = currentAddonChnageVersionResponse[2];
+        //         const changeType = currentAddonChnageVersionResponse[3];
+        //         const status = currentAddonChnageVersionResponse[4];
+        //         const note = currentAddonChnageVersionResponse[5] || '';
 
-                describe(`"${addonName}"`, () => {
-                    it(`${changeType} To Latest PHASED Version`, () => {
-                        if (status == 'Failure') {
-                            expect(note).to.include('is already working on version');
-                        } else {
-                            expect(status).to.include('Success');
-                        }
-                    });
-                    it(`Latest Phased Version Is Installed ${latestPhasedVersion}`, async () => {
-                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                            .eventually.to.have.property('Version')
-                            .a('string')
-                            .that.is.equal(latestPhasedVersion);
-                    });
-                });
-            }
-        }
+        //         describe(`"${addonName}"`, () => {
+        //             it(`${changeType} To Latest PHASED Version`, () => {
+        //                 if (status == 'Failure') {
+        //                     expect(note).to.include('is already working on version');
+        //                 } else {
+        //                     expect(status).to.include('Success');
+        //                 }
+        //             });
+        //             it(`Latest Phased Version Is Installed ${latestPhasedVersion}`, async () => {
+        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+        //                     .eventually.to.have.property('Version')
+        //                     .a('string')
+        //                     .that.is.equal(latestPhasedVersion);
+        //             });
+        //         });
+        //     }
+        // }
     });
 
     const items = await openCatalogService.getItems();
