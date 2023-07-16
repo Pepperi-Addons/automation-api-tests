@@ -271,7 +271,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
 
             describe('List Content Tests', async () => {
                 afterEach(async function () {
-                    // await webAppHomePage.collectEndTestData(this);
                     driver.sleep(0.5 * 1000);
                 });
 
