@@ -40,6 +40,7 @@ import {
     PricingTests,
     PricingDataPrep,
     ResourceListAbiTests,
+    InstallationsTest,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -357,6 +358,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     if (tests.includes('MockTest')) {
         await MockTest(email, pass, client);
         // await ResourceListTests(email, pass, varPass, client);
+    }
+
+    if (tests.includes('InstallationsTest')) {
+        await InstallationsTest(varPass, client);
     }
 
     if (tests.includes('Distributor')) {
