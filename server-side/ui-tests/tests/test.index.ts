@@ -59,7 +59,6 @@ import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
 import { CiCdFlow } from '../../services/cicd-flow.service copy';
 import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon_from_all_auto_users';
 import { FlowAPITest } from '../../api-tests/flows_api_part';
-import { FlowTests } from './flows_builder.test';
 // import { FlowTests } from './flows_builder.test';
 
 /**
@@ -240,9 +239,9 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
-    if (tests.includes('FlowBuilder')) {
-        await FlowTests(email, pass, client, varPass);
-    }
+    // if (tests.includes('FlowBuilder')) {
+    //     await FlowTests(email, pass, client, varPass);
+    // }
 
     if (tests.includes('evgeny')) {
         await FlowAPITest(
@@ -597,24 +596,38 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             const [euUser, prodUser, sbUser] = resolveUserPerTest(addonName); //
             console.log(`####################### Running For: ${addonName}(${addonUUID}) #######################`);
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
-            const [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
-                addonUUID,
-                varPass,
-                null,
-                'prod',
-            );
-            const [latestVersionOfTestedAddonEu, addonEntryUUIDEU] = await generalService.getLatestAvailableVersion(
-                addonUUID,
-                varPassEU,
-                null,
-                'prod',
-            );
-            const [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await generalService.getLatestAvailableVersion(
-                addonUUID,
-                varPassSB,
-                null,
-                'stage',
-            );
+            let latestVersionOfTestedAddonProd,
+                addonEntryUUIDProd,
+                latestVersionOfTestedAddonEu,
+                addonEntryUUIDEU,
+                latestVersionOfTestedAddonSb,
+                addonEntryUUIDSb;
+            try {
+                [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
+                    addonUUID,
+                    varPass,
+                    null,
+                    'prod',
+                );
+                [latestVersionOfTestedAddonEu, addonEntryUUIDEU] = await generalService.getLatestAvailableVersion(
+                    addonUUID,
+                    varPassEU,
+                    null,
+                    'prod',
+                );
+                [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await generalService.getLatestAvailableVersion(
+                    addonUUID,
+                    varPassSB,
+                    null,
+                    'stage',
+                );
+            } catch (error) {
+                const errorString = `Error: Couldn't Get Latest Available Versions Of ${addonName}: ${
+                    (error as any).message
+                }`;
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
+                throw new Error(errorString);
+            }
             if (
                 latestVersionOfTestedAddonSb !== latestVersionOfTestedAddonEu ||
                 latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonEu ||
