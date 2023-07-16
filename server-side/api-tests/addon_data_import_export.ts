@@ -353,7 +353,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -762,7 +762,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -1097,7 +1097,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -1210,7 +1210,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -1422,7 +1422,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     },
                                 });
                                 expect(purgedSchema).to.have.property('Done').that.is.true;
-                                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                                expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                             });
@@ -1956,7 +1956,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     },
                                 });
                                 expect(purgedSchema).to.have.property('Done').that.is.true;
-                                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                                expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                             });
@@ -2206,7 +2206,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -2458,7 +2458,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 },
                             });
                             expect(purgedSchema).to.have.property('Done').that.is.true;
-                            expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                            expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                         });
@@ -2798,7 +2798,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 },
                             });
                             expect(purgedSchema).to.have.property('Done').that.is.true;
-                            expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                            expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                         });
@@ -3100,7 +3100,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     },
                                 });
                                 expect(purgedSchema).to.have.property('Done').that.is.true;
-                                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                                expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                             });
@@ -3437,7 +3437,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 //             },
                 //         });
                 //         expect(purgedSchema).to.have.property('Done').that.is.true;
-                //         expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                //         expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                 //         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                 //         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                 //     });
@@ -3702,7 +3702,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -3792,7 +3792,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -4354,7 +4354,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //                 },
             //             });
             //             expect(purgedSchema).to.have.property('Done').that.is.true;
-            //             expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+            //             expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
             //             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
             //             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
             //         });
@@ -4444,7 +4444,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //                 },
             //             });
             //             expect(purgedSchema).to.have.property('Done').that.is.true;
-            //             expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+            //             expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
             //             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
             //             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
             //         });
@@ -4926,7 +4926,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 },
                             });
                             expect(purgedSchema).to.have.property('Done').that.is.true;
-                            expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                            expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                         });

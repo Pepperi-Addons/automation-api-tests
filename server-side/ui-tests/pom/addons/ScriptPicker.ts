@@ -74,6 +74,13 @@ export class ScriptEditor extends AddonPage {
     public CodeTextArea: By = By.xpath(`//textarea`);
     public ModalCloseBtn: By = By.xpath(`//mat-dialog-container//button`);
     public Modal: By = By.xpath(`//div[contains(text(),'New script was added successfully')]`);
+    public AddParamModalButton: By = By.xpath('(//addon-script-editor-form//pep-button)[1]');
+    public NameInputParamModal: By = By.xpath('(//addon-script-param-form//input)[1]');
+    public DescriptionInputParamModal: By = By.xpath('(//addon-script-param-form//input)[2]');
+    public TypeInitalButtonParamModal: By = By.xpath('//mat-form-field//mat-select');
+    public TypeValueDDParamModal: By = By.xpath(`//mat-option[@title='|PLACEHOLDER|']`);
+    public ParamModalSaveButton: By = By.xpath(`//addon-script-param-form//pep-button//*[@data-qa="Save"]`);
+    //->
 
     public async enterPickerModal(): Promise<void> {
         await this.browser.click(this.PencilMenuBtn);
@@ -234,7 +241,7 @@ export class ScriptEditor extends AddonPage {
         await expect(this.untilIsVisible(this.PencilMenuBtn, 90000)).eventually.to.be.true;
     }
 
-    public async configureScript(sciptText: string, generalService: GeneralService) {
+    public async configureScriptForSurvey(sciptText: string, generalService: GeneralService) {
         const webAppHeader = new WebAppHeader(this.browser);
         await webAppHeader.openSettings();
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
@@ -282,5 +289,80 @@ export class ScriptEditor extends AddonPage {
             if (script.Name === 'SurveyScript') surveyScript = script;
         }
         return surveyScript.Key;
+    }
+
+    public async configureScript(
+        actualScriptCode: string,
+        scriptName,
+        scriptDesc,
+        scriptParams: any[],
+        generalService: GeneralService,
+    ) {
+        const webAppHeader = new WebAppHeader(this.browser);
+        await webAppHeader.openSettings();
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Configuration');
+        await this.browser.click(webAppSettingsSidePanel.ScriptsEditor);
+        this.browser.sleep(5000);
+        const scriptEditor = new ScriptEditor(this.browser);
+        await this.browser.click(scriptEditor.addScriptButton);
+        const isModalFound = await this.browser.isElementVisible(scriptEditor.addScriptModal);
+        const isMainTitleFound = await this.browser.isElementVisible(scriptEditor.addScriptMainTitle);
+        expect(isModalFound).to.equal(true);
+        expect(isMainTitleFound).to.equal(true);
+        //1. give name
+        await this.browser.sendKeys(scriptEditor.NameInput, scriptName);
+        //2. give desc
+        await this.browser.sendKeys(scriptEditor.DescInput, scriptDesc);
+        //----- add params if needed
+        for (let index = 0; index < scriptParams.length; index++) {
+            const param = scriptParams[index];
+            await this.browser.click(this.AddParamModalButton);
+            await this.browser.untilIsVisible(this.NameInputParamModal);
+            this.browser.sleep(1700);
+            await this.click(this.NameInputParamModal);
+            await this.sendKeys(this.NameInputParamModal, param.name);
+            await this.click(this.DescriptionInputParamModal);
+            await this.sendKeys(this.DescriptionInputParamModal, param.desc);
+            await this.click(this.TypeInitalButtonParamModal);
+            const actualScriptDDValue: string = this.TypeValueDDParamModal.valueOf()['value'].replace(
+                '|PLACEHOLDER|',
+                param.type,
+            );
+            await this.browser.click(By.xpath(actualScriptDDValue));
+            await this.browser.click(this.ParamModalSaveButton);
+        }
+        //3. push code of script instead of the code found in the UI
+        this.browser.sleep(1500);
+        await this.browser.click(scriptEditor.CodeTextArea);
+        const selectAll = Key.chord(Key.COMMAND, 'a'); //CONTROL
+        await this.browser.sendKeysNoClear(scriptEditor.CodeTextArea, selectAll);
+        await this.browser.sendKeysNoClear(scriptEditor.CodeTextArea, Key.DELETE); //DELETE
+        await this.browser.sendKeysNoClear(scriptEditor.CodeTextArea, actualScriptCode);
+        this.browser.sleep(4500);
+        //4. save
+        await this.browser.click(scriptEditor.SaveBtn);
+        this.browser.sleep(5000);
+        await this.browser.untilIsVisible(scriptEditor.ModalCloseBtn, 6000);
+        await this.browser.click(scriptEditor.ModalCloseBtn);
+        this.browser.sleep(1000);
+        //5. validate script is found in list
+        const webAppList = new WebAppList(this.browser);
+        const allListElemsText = await webAppList.getAllListElementsTextValue();
+        expect(allListElemsText.length).to.be.at.least(1);
+        const foundScript = allListElemsText.find((elem) => elem.includes(scriptName));
+        expect(foundScript).to.not.be.undefined;
+        const allScripts = await generalService.fetchStatus(
+            '/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts',
+            {
+                method: 'GET',
+            },
+        );
+        let scriptToReturn;
+        for (let index = 0; index < allScripts.Body.length; index++) {
+            const script = allScripts.Body[index];
+            if (script.Name === scriptName) scriptToReturn = script;
+        }
+        return scriptToReturn.Key;
     }
 }

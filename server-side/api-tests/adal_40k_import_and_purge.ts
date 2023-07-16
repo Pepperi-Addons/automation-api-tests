@@ -166,7 +166,7 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
                 const deleteSchemaResponseBody = deleteSchemaResponse.Body;
                 if (deleteSchemaResponseBody.hasOwnProperty('Done')) {
                     expect(deleteSchemaResponseBody.Done).to.equal(true);
-                    expect(deleteSchemaResponseBody.RemovedCounter).to.equal(howManyRows);
+                    expect(deleteSchemaResponseBody.ProcessedCounter).to.equal(howManyRows);
                 } else {
                     const auditLogdeleteSchemaResponse = await generalService.getAuditLogResultObjectIfValid(
                         deleteSchemaResponseBody.URI as string,
@@ -176,7 +176,7 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
                     expect((auditLogdeleteSchemaResponse as any).Status.ID).to.equal(1);
                     expect((auditLogdeleteSchemaResponse as any).Status.Name).to.equal('Success');
                     expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).Done).to.equal(true);
-                    expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).RemovedCounter).to.equal(
+                    expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).ProcessedCounter).to.equal(
                         howManyRows,
                     );
                 }

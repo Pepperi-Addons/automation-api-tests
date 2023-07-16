@@ -132,8 +132,8 @@
 //             const deleteSchemaResponseBody = deleteSchemaResponse.Body;
 //             if (deleteSchemaResponseBody.hasOwnProperty('Done')) {
 //                 expect(deleteSchemaResponseBody.Done).to.equal(true);
-//                 console.log(`EVGENY: RETUREND RemovedCounter: ${deleteSchemaResponseBody.RemovedCounter}`);
-//                 expect(deleteSchemaResponseBody.RemovedCounter).to.equal(howManyRows_delete);
+//                 console.log(`EVGENY: RETUREND ProcessedCounter: ${deleteSchemaResponseBody.ProcessedCounter}`);
+//                 expect(deleteSchemaResponseBody.ProcessedCounter).to.equal(howManyRows_delete);
 //             } else {
 //                 const auditLogdeleteSchemaResponse = await generalService.getAuditLogResultObjectIfValid(
 //                     deleteSchemaResponseBody.URI as string,
@@ -144,11 +144,11 @@
 //                 expect((auditLogdeleteSchemaResponse as any).Status.Name).to.equal('Success');
 //                 expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).Done).to.equal(true);
 //                 console.log(
-//                     `EVGENY: RETUREND RemovedCounter: ${
-//                         JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).RemovedCounter
+//                     `EVGENY: RETUREND ProcessedCounter: ${
+//                         JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).ProcessedCounter
 //                     }`,
 //                 );
-//                 expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).RemovedCounter).to.equal(
+//                 expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).ProcessedCounter).to.equal(
 //                     howManyRows_delete,
 //                 );
 //             }
@@ -369,8 +369,8 @@
 //         //     // const deleteSchemaResponseBody = deleteSchemaResponse.Body;
 //         //     // if (deleteSchemaResponseBody.hasOwnProperty('Done')) {
 //         //     //     expect(deleteSchemaResponseBody.Done).to.equal(true);
-//         //     //     console.log(`EVGENY: RETUREND RemovedCounter: ${deleteSchemaResponseBody.RemovedCounter}`);
-//         //     //     expect(deleteSchemaResponseBody.RemovedCounter).to.equal(howManyRows_create);
+//         //     //     console.log(`EVGENY: RETUREND ProcessedCounter: ${deleteSchemaResponseBody.ProcessedCounter}`);
+//         //     //     expect(deleteSchemaResponseBody.ProcessedCounter).to.equal(howManyRows_create);
 //         //     // } else if (deleteSchemaResponseBody.hasOwnProperty('URI')) {
 //         //     //     const auditLogdeleteSchemaResponse = await generalService.getAuditLogResultObjectIfValid(
 //         //     //         deleteSchemaResponseBody.URI as string,
@@ -381,11 +381,11 @@
 //         //     //     expect((auditLogdeleteSchemaResponse as any).Status.Name).to.equal('Success');
 //         //     //     expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).Done).to.equal(true);
 //         //     //     console.log(
-//         //     //         `EVGENY: RETUREND RemovedCounter: ${
-//         //     //             JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).RemovedCounter
+//         //     //         `EVGENY: RETUREND ProcessedCounter: ${
+//         //     //             JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).ProcessedCounter
 //         //     //         }`,
 //         //     //     );
-//         //     //     expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).RemovedCounter).to.equal(
+//         //     //     expect(JSON.parse(auditLogdeleteSchemaResponse.AuditInfo.ResultObject).ProcessedCounter).to.equal(
 //         //     //         howManyRows_create,
 //         //     //     );
 //         //     // } else {
