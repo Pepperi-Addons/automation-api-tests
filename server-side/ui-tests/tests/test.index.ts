@@ -622,6 +622,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     'stage',
                 );
             } catch (error) {
+                debugger;
                 const errorString = `Error: Couldn't Get Latest Available Versions Of ${addonName}: ${
                     (error as any).message
                 }`;
@@ -2196,14 +2197,18 @@ export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, e
         Message: message,
         UserWebhook: await handleTeamsURL(addonName, service, email, pass),
     };
+    const testAddonSecretKey = await service.getSecret()[1];
+    const testAddonUUID = await service.getSecret()[0];
+    debugger;
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
         headers: {
-            'X-Pepperi-SecretKey': await service.getSecret()[1],
-            'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+            'X-Pepperi-SecretKey': testAddonSecretKey,
+            'X-Pepperi-OwnerID': testAddonUUID,
         },
         body: JSON.stringify(bodyToSend),
     });
+    debugger;
     if (monitoringResponse.Ok !== true) {
         throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
     }
