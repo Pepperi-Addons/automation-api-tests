@@ -596,24 +596,38 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             const [euUser, prodUser, sbUser] = resolveUserPerTest(addonName); //
             console.log(`####################### Running For: ${addonName}(${addonUUID}) #######################`);
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
-            const [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
-                addonUUID,
-                varPass,
-                null,
-                'prod',
-            );
-            const [latestVersionOfTestedAddonEu, addonEntryUUIDEU] = await generalService.getLatestAvailableVersion(
-                addonUUID,
-                varPassEU,
-                null,
-                'prod',
-            );
-            const [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await generalService.getLatestAvailableVersion(
-                addonUUID,
-                varPassSB,
-                null,
-                'stage',
-            );
+            let latestVersionOfTestedAddonProd,
+                addonEntryUUIDProd,
+                latestVersionOfTestedAddonEu,
+                addonEntryUUIDEU,
+                latestVersionOfTestedAddonSb,
+                addonEntryUUIDSb;
+            try {
+                [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
+                    addonUUID,
+                    varPass,
+                    null,
+                    'prod',
+                );
+                [latestVersionOfTestedAddonEu, addonEntryUUIDEU] = await generalService.getLatestAvailableVersion(
+                    addonUUID,
+                    varPassEU,
+                    null,
+                    'prod',
+                );
+                [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await generalService.getLatestAvailableVersion(
+                    addonUUID,
+                    varPassSB,
+                    null,
+                    'stage',
+                );
+            } catch (error) {
+                const errorString = `Error: Couldn't Get Latest Available Versions Of ${addonName}: ${
+                    (error as any).message
+                }`;
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
+                throw new Error(errorString);
+            }
             if (
                 latestVersionOfTestedAddonSb !== latestVersionOfTestedAddonEu ||
                 latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonEu ||

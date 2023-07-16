@@ -12,15 +12,24 @@
 
 // export async function FlowTests(email: string, password: string, client: Client, varPass) {
 //     const generalService = new GeneralService(client);
-//     const firstStepScript = `export async function main(data)  {
-//         return data.first;
-//     }`;
-//     const firstScriptParam = { Name: 'first', Type: 'String' };
-//     const secondStepScript = `export async function main(data)  {
-//         return data.second + "XXX";
-//     }`;
-//     const secondScriptParam = { Name: 'second', Type: 'String' };
 //     let driver: Browser;
+//     let firstScriptUUID = '';
+//     let secondScriptUUID = '';
+//     const firstScriptParam = { name: 'first', desc: 'test', type: 'String' };
+//     const firstStepScript = {
+//         actualScript: `export async function main(data){return data.first;}`,
+//         scriptName: 'firstScriptForFlowStep',
+//         scriptDesc: 'forFlow',
+//         params: firstScriptParam,
+//     };
+//     const secondScriptParam = { name: 'second', desc: 'test', type: 'String' };
+//     const secondStepScript = {
+//         actualScript: `export async function main(data){return data.second + "XXX";}`,
+//         scriptName: 'secondScriptForFlowStep',
+//         scriptDesc: 'forFlow',
+//         params: secondScriptParam,
+//     };
+
 //     const emptyStep: any[] = [
 //         {
 //             Configuration: {},
@@ -129,23 +138,25 @@
 //                 const webAppLoginPage = new WebAppLoginPage(driver);
 //                 await webAppLoginPage.login(email, password);
 //                 const scriptEditor = new ScriptEditor(driver);
-//                 const firstScriptUUID = await scriptEditor.configureScript(
-//                     firstStepScript,
-//                     'firstScriptForFlowStep',
-//                     'forFlow',
+//                 firstScriptUUID = await scriptEditor.configureScript(
+//                     firstStepScript.actualScript,
+//                     firstStepScript.scriptName,
+//                     firstStepScript.scriptDesc,
+//                     [firstStepScript.params],
 //                     generalService,
 //                 );
-//                 const secondScriptUUID = await scriptEditor.configureScript(
-//                     secondStepScript,
-//                     'secondScriptForFlowStep',
-//                     'forFlow',
+//                 const webAppHomePage = new WebAppHomePage(driver);
+//                 await webAppHomePage.returnToHomePage();
+//                 secondScriptUUID = await scriptEditor.configureScript(
+//                     secondStepScript.actualScript,
+//                     secondStepScript.scriptName,
+//                     secondStepScript.scriptDesc,
+//                     [secondStepScript.params],
 //                     generalService,
 //                 );
-//                 debugger;
+//                 await webAppHomePage.returnToHomePage();
 //             });
 //             it(`Create Flow Using UI - Call It From Api And See Everything Is Correct`, async function () {
-//                 const webAppLoginPage = new WebAppLoginPage(driver);
-//                 await webAppLoginPage.login(email, password);
 //                 const flowService = new FlowService(driver);
 //                 //enter flows from settings
 //                 const isFlowBuilderMainPageShown = await flowService.enterFlowBuilderSettingsPage();
@@ -192,9 +203,56 @@
 //                 await flowService.enterFlowBySearchingName(positiveFlow.Name);
 //                 debugger;
 //                 //3. add steps by given flow
-
+//                 //3.1. validate first step has all correct data
+//                 //3.2. duplicate it - validate it happened
+//                 //3.3. add first and secnod scripts
 //                 //4. save everything
 //                 //5. call API to see everything is similar
+//                 //other it: -> run "test" and validate
+//                 //other it: -> run "log" and validate
+//             });
+//             it('Data Cleansing: 1. script', async function () {
+//                 //delete the script
+//                 let bodyForSctips = { Keys: [`${firstScriptUUID}`] };
+//                 let deleteScriptResponse = await generalService.fetchStatus(
+//                     `/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/delete_scripts`,
+//                     {
+//                         method: 'POST',
+//                         body: JSON.stringify(bodyForSctips),
+//                     },
+//                 );
+//                 expect(deleteScriptResponse.Ok).to.equal(true);
+//                 expect(deleteScriptResponse.Status).to.equal(200);
+//                 expect(deleteScriptResponse.Body[0].Key).to.equal(firstScriptUUID);
+//                 bodyForSctips = { Keys: [`${secondScriptUUID}`] };
+//                 deleteScriptResponse = await generalService.fetchStatus(
+//                     `/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/delete_scripts`,
+//                     {
+//                         method: 'POST',
+//                         body: JSON.stringify(bodyForSctips),
+//                     },
+//                 );
+//                 expect(deleteScriptResponse.Ok).to.equal(true);
+//                 expect(deleteScriptResponse.Status).to.equal(200);
+//                 expect(deleteScriptResponse.Body[0].Key).to.equal(secondScriptUUID);
+//             });
+//             it('Data Cleansing: 2. flows', async function () {
+//                 //delete the script
+//                 const flowService = new FlowService(driver);
+//                 const flowResponse = await flowService.getAllFlowsViaAPI(generalService);
+//                 const allFlows = flowResponse.Body;
+//                 console.log(`There Are: ${allFlows.length} Flows`);
+//                 for (let index = 0; index < allFlows.length; index++) {
+//                     const flow = allFlows[index];
+//                     const hideResponse = await flowService.hideFlowViaAPI(generalService, flow.Key);
+//                     expect(hideResponse.Ok).to.equal(true);
+//                     expect(hideResponse.Status).to.equal(200);
+//                     expect(hideResponse.Body.Key).to.equal(flow.Key);
+//                     expect(hideResponse.Body.Hidden).to.equal(true);
+//                     const flowResponse_ = await flowService.getAllFlowsViaAPI(generalService);
+//                     const allFlows_ = flowResponse_.Body;
+//                     console.log(`${flow.Key} Is Deleted, There Are: ${allFlows_.length} Flows Left`);
+//                 }
 //             });
 //         });
 //     });

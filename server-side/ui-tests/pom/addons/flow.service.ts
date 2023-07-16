@@ -239,6 +239,22 @@
 //         return responseForFlow;
 //     }
 
+//     async hideFlowViaAPI(generalService, flowKey) {
+//         const bodyToSend = { Key: flowKey, Hidden: true };
+//         const responseForFlow = await generalService.fetchStatus('/user_defined_flows', {
+//             method: 'POST',
+//             body: JSON.stringify(bodyToSend),
+//         });
+//         return responseForFlow;
+//     }
+
+//     async getAllFlowsViaAPI(generalService) {
+//         const responseForFlow = await generalService.fetchStatus('/user_defined_flows?page_size=-1', {
+//             method: 'GET',
+//         });
+//         return responseForFlow;
+//     }
+
 //     async enterFlowBySearchingName(flowName) {
 //         await this.browser.click(this.SearchInput);
 //         await this.browser.sendKeys(this.SearchInput, flowName + Key.ENTER);
