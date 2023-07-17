@@ -30,6 +30,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const openCatalogService = new OpenCatalogService(generalService);
 
     /* Addons Installation */
+    // TO USE FOR PHASED LEVELING:
     // const areBaseAddonsPhased = await generalService.setBaseAddonsToPhasedForE2E(varPass);
     // console.info('Are Base Addons Phased: ', JSON.stringify(areBaseAddonsPhased, null, 2));
     // const areAddonsPhased = await generalService.setToLatestPhasedVersion(varPass, generalService.testDataWithNewSync);
@@ -78,6 +79,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 });
             });
         }
+        // TO USE FOR PHASED LEVELING:
         // for (const addonName in areAddonsPhased) {
         //     if (!Object.keys(testData).includes(addonName)) {
         //         const currentAddonChnageVersionResponse = areAddonsPhased[addonName];
@@ -532,9 +534,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             await resourceListABI.selectDropBoxByString(resourceListABI.TestsAddon_dropdownElement, listToSelect);
             await resourceListABI.isSpinnerDone();
         }
-        driver.sleep(0.3 * 1000);
+        driver.sleep(1 * 1000);
         await resourceListABI.clickElement('TestsAddon_openABI_button');
-        driver.sleep(3 * 1000);
+        driver.sleep(2.5 * 1000);
         await resourceListABI.isSpinnerDone();
         await resourceListABI.waitTillVisible(resourceListABI.ListAbi_container, 15000);
         if (!err) {
