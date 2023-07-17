@@ -491,4 +491,5 @@ export class ListAbiTestData {
     public '34. Accounts - Propagated Error';
     public '35. ArraysOfPrimitives - Numbers, Names, Reals';
     public '36. ContainedArray - Scheme Only: Name, Age';
+    // 37. container of IndexedFieldsAuto  - https://pepperi.atlassian.net/browse/DI-24421
 }
