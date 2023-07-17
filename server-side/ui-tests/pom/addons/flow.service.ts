@@ -96,7 +96,7 @@
 //     public SaveParamModalButton: By = By.css(`[data-qa="Save"]`);
 //     public ListParamLinks: By = By.xpath(`//a[@id='Name' and text()='|PLACEHOLDER|']`);
 //     public UpdateFlowButton: By = By.css('[data-qa="Update"]');
-//     public SearchInput: By = By.xpath('//input[@id="mat-input-14"]');
+//     public SearchInput: By = By.xpath('//pep-search//mat-form-field//input');
 //     public EditStepButton: By = By.xpath('//pep-button[@iconname="system_edit"]');
 //     public ScriptChoosingModalTitle: By = By.xpath('//mat-label[@title="Scripts"]');
 //     public InitialDDButtonOfScripts: By = By.xpath(`//mat-select[@id='mat-select-8']`);
@@ -104,6 +104,7 @@
 //     public SaveScriptModalButton: By = By.xpath(
 //         '(//button[@class="mat-focus-indicator mat-button mat-button-base pep-button md strong system" and @data-qa])[2]',
 //     );
+//     public StepBlockElement: By = By.xpath('//block-editor//pep-textbox');
 
 //     public async enterFlowBuilderSettingsPage(): Promise<boolean> {
 //         const webAppHeader = new WebAppHeader(this.browser);
@@ -262,6 +263,14 @@
 //         await this.browser.untilIsVisible(By.xpath(paramNameInList));
 //         await this.browser.click(By.xpath(paramNameInList));
 //         await this.browser.untilIsVisible(this.FlowTabList, 6000);
+//     }
+
+//     async validateStepCreatedByApi(stepName: string, index: number) {
+//         const cretedBlockElem = await this.browser.findElements(this.StepBlockElement);
+//         const relevantElement = cretedBlockElem[index];
+//         const isShown = await relevantElement.isDisplayed();
+//         const blockName = await relevantElement.getAttribute('title');
+//         return isShown && blockName === stepName;
 //     }
 
 //     async editStep(scriptName, scriptParams) {
