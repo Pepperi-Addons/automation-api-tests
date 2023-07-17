@@ -171,6 +171,7 @@ export async function FlowTests(email: string, password: string, client: Client)
                 await webAppHomePage.returnToHomePage();
             });
             it(`Create Flow Using UI - Call It From Api And See Everything Is Correct`, async function () {
+                //TODO: split this it lol
                 const flowService = new FlowService(driver);
                 //enter flows from settings
                 const isFlowBuilderMainPageShown = await flowService.enterFlowBuilderSettingsPage();
