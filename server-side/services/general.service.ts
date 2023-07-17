@@ -62,8 +62,8 @@ export const testDataWithNewSync = {
     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.41'],
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.16.%'], //NG14 latest webapp
     'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '1.0.132'],
-    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.%'], //NG14 latest webapp
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
@@ -247,7 +247,16 @@ export default class GeneralService {
         });
         this.adalService = new ADALService(this.papiClient);
         this.assetsBaseUrl = client.AssetsBaseUrl;
+        this.testData = testData;
+        this.testDataWithNewSync = testDataWithNewSync;
+        this.testDataForInitUser = testDataForInitUser;
+        this.ConsoleColors = ConsoleColors;
     }
+    public testData;
+    public testDataWithNewSync;
+    public testDataForInitUser;
+    public ConsoleColors;
+
     /**
      * This is Async/Non-Blocking sleep
      * @param ms
@@ -1140,6 +1149,26 @@ export default class GeneralService {
         return testData;
     }
 
+    async getAddonLatestPhasedVersion(addonUUID: string, varKey: string) {
+        const fetchVarResponse = (
+            await this.fetchStatus(
+                `${this.client.BaseURL.replace(
+                    'papi-eu',
+                    'papi',
+                )}/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 AND Phased=1 &order_by=CreationDateTime DESC`,
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                    },
+                },
+            )
+        ).Body;
+        const res = fetchVarResponse[0]?.Version;
+        console.info(`Addon ${addonUUID} Latest Phased Version: `, JSON.stringify(res, null, 2));
+        return res || '';
+    }
+
     //currently immplemented only for dev-tests: will get better with time
     async installLatestAvalibaleVersionOfAddon(varKey: string, testData: { [any: string]: string[] }) {
         const addonName = Object.entries(testData)[0][0];
@@ -1368,6 +1397,63 @@ export default class GeneralService {
         );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
+
+    async setBaseAddonsToPhasedForE2E(varPass: string) {
+        const addonsToSwitchToPhased = {};
+        const systemAddons = await this.getSystemAddons();
+        console.info('System Addons: ', JSON.stringify(systemAddons, null, 2));
+        for (let index = 0; index < systemAddons.length; index++) {
+            const sysAddon = systemAddons[index];
+            const addonName = sysAddon.Name || '';
+            const addonUUID = sysAddon.UUID || '';
+            const phasedVersion = (await this.getAddonLatestPhasedVersion(addonUUID, varPass)) || '';
+            addonsToSwitchToPhased[addonName] = [addonUUID, phasedVersion];
+        }
+        console.info(
+            'List of Base Addons to Change to Latest Phased Version: ',
+            JSON.stringify(addonsToSwitchToPhased, null, 2),
+        );
+        const chnageVersionResponseArr = await this.changeVersion(varPass, addonsToSwitchToPhased, true);
+        return chnageVersionResponseArr;
+    }
+
+    async setToLatestPhasedVersion(varPass: string, otherTestData?: any) {
+        const addonsToSwitchToPhased = {};
+        const excludeAddons = ['cpi-node-automation'];
+        const testedData = otherTestData ? Object.keys(otherTestData) : Object.keys(testData);
+        for (let index = 0; index < testedData.length; index++) {
+            const addonName = testedData[index];
+            const addonUUID = otherTestData ? otherTestData[addonName][0] : testData[addonName][0];
+            if (!excludeAddons.includes(addonName)) {
+                const phasedVersion = (await this.getAddonLatestPhasedVersion(addonUUID, varPass)) || '';
+                addonsToSwitchToPhased[addonName] = [addonUUID, phasedVersion];
+            }
+        }
+        console.info(
+            'List Of Addons To Change to Latest Phased Version: ',
+            JSON.stringify(addonsToSwitchToPhased, null, 2),
+        );
+        const chnageVersionResponseArr = await this.changeVersion(varPass, addonsToSwitchToPhased, true);
+        return chnageVersionResponseArr;
+    }
+
+    // async setTestDataWithNewSyncToLatestPhasedVersion(varPass: string) {
+    //     const addonsToSwitchToPhased = {};
+    //     const testedData = Object.keys(testDataWithNewSync);
+    //     for (let index = 0; index < testedData.length; index++) {
+    //         const addonName = testedData[index];
+    //         const addonUUID = testDataWithNewSync[addonName][0];
+    //         const phasedVersion = (await this.getAddonLatestPhasedVersion(addonUUID, varPass)) || '';
+    //         addonsToSwitchToPhased[addonName] = [addonUUID, phasedVersion];
+    //     }
+    //     console.info('List Of Addons To Change to Latest Phased Version: ', JSON.stringify(addonsToSwitchToPhased, null, 2));
+    //     const chnageVersionResponseArr = await this.changeVersion(
+    //         varPass,
+    //         addonsToSwitchToPhased,
+    //         true,
+    //     );
+    //     return chnageVersionResponseArr;
+    // }
 
     // async sendResultsToMonitoringAddon(userName: string, testName: string, testStatus: string, env: string) {
     //     const addonsSK = this.getSecret()[1];
