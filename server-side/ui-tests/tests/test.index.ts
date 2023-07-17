@@ -781,12 +781,37 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                         testsList.length
                     }  #######################`,
                 );
+                let addonSk = null;
+                if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+                    addonSk = await service.getSecretfromKMS(email, pass, 'AutomationAddonSecretKey');
+                }
                 //4.1. call current test async->
                 const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
                     //devTestResponseEu,
-                    runDevTestOnCertainEnv(euUser, 'prod', latestVersionOfAutomationTemplateAddon, body, addonName),
-                    runDevTestOnCertainEnv(prodUser, 'prod', latestVersionOfAutomationTemplateAddon, body, addonName),
-                    runDevTestOnCertainEnv(sbUser, 'stage', latestVersionOfAutomationTemplateAddon, body, addonName),
+                    runDevTestOnCertainEnv(
+                        euUser,
+                        'prod',
+                        latestVersionOfAutomationTemplateAddon,
+                        body,
+                        addonName,
+                        addonSk,
+                    ),
+                    runDevTestOnCertainEnv(
+                        prodUser,
+                        'prod',
+                        latestVersionOfAutomationTemplateAddon,
+                        body,
+                        addonName,
+                        addonSk,
+                    ),
+                    runDevTestOnCertainEnv(
+                        sbUser,
+                        'stage',
+                        latestVersionOfAutomationTemplateAddon,
+                        body,
+                        addonName,
+                        addonSk,
+                    ),
                 ]);
                 //4.2. poll audit log response for each env
                 console.log(
@@ -2332,7 +2357,14 @@ async function getDataIndexTests(userName, env) {
     return toReturn;
 }
 
-async function runDevTestOnCertainEnv(userName, env, latestVersionOfAutomationTemplateAddon, bodyToSend, addonName) {
+async function runDevTestOnCertainEnv(
+    userName,
+    env,
+    latestVersionOfAutomationTemplateAddon,
+    bodyToSend,
+    addonName,
+    addonSk?,
+) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
     let urlToCall;
@@ -2345,10 +2377,9 @@ async function runDevTestOnCertainEnv(userName, env, latestVersionOfAutomationTe
         urlToCall = '/addons/api/async/5122dc6d-745b-4f46-bb8e-bd25225d350a/tests/tests';
     } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests';
-        const uuidAndSk = await service.getSecret();
         headers = {
-            'x-pepperi-ownerid': uuidAndSk[0],
-            'x-pepperi-secretkey': uuidAndSk[1],
+            'x-pepperi-ownerid': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+            'x-pepperi-secretkey': addonSk,
             Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
         };
     } else {

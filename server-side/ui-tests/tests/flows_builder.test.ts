@@ -132,7 +132,7 @@
 
 //             afterEach(async function () {
 //                 const webAppHomePage = new WebAppHomePage(driver);
-//                 await webAppHomePage.collectEndTestData(this);
+//                 await webAppHomePage.collectEndTestData2(this);
 //             });
 //             it('1. Create Two Scripts To Use As Flow Steps', async function () {
 //                 const webAppLoginPage = new WebAppLoginPage(driver);
@@ -199,11 +199,14 @@
 //                 expect(stepsResponse.Body.Params).to.deep.equal(positiveFlow.Params);
 //                 expect(stepsResponse.Body.Steps.length).to.equal(1);
 //                 expect(stepsResponse.Body.Steps[0]).to.deep.equal(emptyStep[0]);
+//                 debugger;
 //                 //- search for flow in search input
 //                 await flowService.enterFlowBySearchingName(positiveFlow.Name);
 //                 debugger;
 //                 //3. add steps by given flow
 //                 //3.1. validate first step has all correct data
+//                 const isCreatedSecsefully = await flowService.validateStepCreatedByApi(emptyStep[0].Name, 1);
+//                 expect(isCreatedSecsefully).to.equal(true);
 //                 //3.2. duplicate it - validate it happened
 //                 //3.3. add first and secnod scripts
 //                 //4. save everything
