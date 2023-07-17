@@ -36,7 +36,6 @@ export abstract class BasePomObject {
     public async collectEndTestData2(that): Promise<void> {
         if (that.currentTest.state != 'passed') {
             console.log('%cTest Failed', ConsoleColors.Error);
-            await this.addUrlToContext(that);
             // if(overwriteConsoleLogs || !that.currentTest.context.find(x => x.title == 'Console Logs')){
             //Waiting for all the logs to be printed (this usually takes more than 3 seconds)
             this.browser.sleep(6006);
