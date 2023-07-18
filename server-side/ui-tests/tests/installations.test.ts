@@ -69,10 +69,10 @@ export async function InstallationsTest(varPass: string, client: Client) {
         { addonName: 'sync', addonUUID: '5122dc6d-745b-4f46-bb8e-bd25225d350a', setToLatestAvailable: true },
     ];
     const generalService = new GeneralService(client);
-    const baseAddons = await generalService.getSystemAddons();
+    // const baseAddons = await generalService.getSystemAddons();
     // console.info('List of Base Addons: ', JSON.stringify(baseAddons, null, 2));
     // debugger
-    console.info('Length of List of Base Addons: ', baseAddons.length);
+    // console.info('Length of List of Base Addons: ', baseAddons.length);
     const changedVersionsResponses = await generalService.changeSetOfAddonsToRequestedVersions(
         setOfAddonsForE2EusersWithNewSync,
         varPass,

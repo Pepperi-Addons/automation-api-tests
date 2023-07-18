@@ -1507,6 +1507,7 @@ export default class GeneralService {
         if (requested.setToLatestPhased) {
             const phasedVersionResponse = await this.getAddonLatestPhasedVersion(requested.addonUUID, varKey);
             if (phasedVersionResponse.message === 'Latest phased version retrieved successfully') {
+                changeResponseObject['latestPhasedVersion'] = phasedVersionResponse.latestPhasedVersion;
                 const setToPhasedResponse = await this.setAddonToVersion(
                     requested.addonUUID,
                     phasedVersionResponse.latestPhasedVersion,
@@ -1520,11 +1521,11 @@ export default class GeneralService {
                 if (setToPhasedResponse.hasOwnProperty('errorMessage')) {
                     changeResponseObject['auditLogResponseErrorMessage'] = setToPhasedResponse['errorMessage'];
                 }
-                changeResponseObject['latestPhasedVersion'] = phasedVersionResponse.latestPhasedVersion;
             }
         } else if (requested.setToLatestAvailable) {
             const availableVersionResponse = await this.getAddonLatestAvailableVersion(requested.addonUUID, varKey);
             if (availableVersionResponse.message.includes('retrieved successfully')) {
+                changeResponseObject['latestAvailableVersion'] = availableVersionResponse.latestVersion;
                 const setToLatestAvailableResponse = await this.setAddonToVersion(
                     requested.addonUUID,
                     availableVersionResponse.latestVersion,
@@ -1538,7 +1539,6 @@ export default class GeneralService {
                 if (setToLatestAvailableResponse.hasOwnProperty('errorMessage')) {
                     changeResponseObject['auditLogResponseErrorMessage'] = setToLatestAvailableResponse['errorMessage'];
                 }
-                changeResponseObject['latestAvailableVersion'] = availableVersionResponse.latestVersion;
             }
         } else if (requested.setToVersion) {
             const setToVersionResponse = await this.setAddonToVersion(requested.addonUUID, requested.setToVersion);
@@ -1778,8 +1778,12 @@ export default class GeneralService {
                     );
                 } catch (error) {
                     console.error(error);
+                    const theError = error as Error;
+                    chnageVersionResponse['changeType'] = changeType;
+                    chnageVersionResponse['status'] = 'Failure';
+                    chnageVersionResponse['errorMessage'] = theError.message;
                 }
-                if (upgrade_AuditLogResponse.Status?.Name == 'Failure') {
+                if (upgrade_AuditLogResponse?.Status?.Name == 'Failure') {
                     if (
                         upgrade_AuditLogResponse.AuditInfo.ErrorMessage.includes(
                             `is already working on version ${toVersion}`,
@@ -1807,6 +1811,10 @@ export default class GeneralService {
                             );
                         } catch (error) {
                             console.error(error);
+                            const theError = error as Error;
+                            chnageVersionResponse['changeType'] = changeType;
+                            chnageVersionResponse['status'] = 'Failure';
+                            chnageVersionResponse['errorMessage'] = theError.message;
                         }
                         if (auditLogResponse.Status?.Name == 'Failure') {
                             chnageVersionResponse['changeType'] = changeType;
@@ -1832,8 +1840,12 @@ export default class GeneralService {
                     );
                 } catch (error) {
                     console.error(error);
+                    const theError = error as Error;
+                    chnageVersionResponse['changeType'] = changeType;
+                    chnageVersionResponse['status'] = 'Failure';
+                    chnageVersionResponse['errorMessage'] = theError.message;
                 }
-                if (downgrade_auditLogResponse.Status?.Name == 'Failure') {
+                if (downgrade_auditLogResponse?.Status?.Name == 'Failure') {
                     if (
                         downgrade_auditLogResponse.AuditInfo.ErrorMessage.includes(
                             `is already working on version ${toVersion}`,
@@ -1855,6 +1867,10 @@ export default class GeneralService {
                             );
                         } catch (error) {
                             console.error(error);
+                            const theError = error as Error;
+                            chnageVersionResponse['changeType'] = changeType;
+                            chnageVersionResponse['status'] = 'Failure';
+                            chnageVersionResponse['errorMessage'] = theError.message;
                         }
                         if (auditLogResponse.Status?.Name == 'Failure') {
                             chnageVersionResponse['changeType'] = changeType;
@@ -1877,8 +1893,12 @@ export default class GeneralService {
                 install_auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI as string, 40);
             } catch (error) {
                 console.error(error);
+                const theError = error as Error;
+                chnageVersionResponse['changeType'] = changeType;
+                chnageVersionResponse['status'] = 'Failure';
+                chnageVersionResponse['errorMessage'] = theError.message;
             }
-            if (install_auditLogResponse.Status?.Name == 'Failure') {
+            if (install_auditLogResponse?.Status?.Name == 'Failure') {
                 chnageVersionResponse['changeType'] = changeType;
                 chnageVersionResponse['status'] = install_auditLogResponse.Status.Name;
                 chnageVersionResponse['errorMessage'] = install_auditLogResponse.AuditInfo.ErrorMessage;
