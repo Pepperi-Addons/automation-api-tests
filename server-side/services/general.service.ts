@@ -26,7 +26,7 @@ export const testData = {
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.%'], //CPAS
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.3.%'], //cpi-node (Cross Platform Engine)
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-    'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.41'], //evgeny: has to stay like this currently
+    'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''], //evgeny: has to stay like this currently
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
     'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '1.0.132'],
@@ -59,7 +59,7 @@ export const testDataWithNewSync = {
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 2/2/23 - has to be upgraded
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-    'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.41'],
+    'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.16.%'], //NG14 latest webapp
