@@ -134,8 +134,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         // }
     });
 
-    const items = await openCatalogService.getItems();
-    const accounts = await objectsService.getAccounts();
+    const items = await openCatalogService.getItems({ page_size: -1 });
+    const accounts = await objectsService.getAccounts({ page_size: -1 });
     console.info('items: ', JSON.stringify(items, null, 2));
     console.info('accounts: ', JSON.stringify(accounts, null, 2));
 
@@ -509,6 +509,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 // test the content on the list cells - that it is displayed correctly
                                 break;
                             case '36. ContainedArray - Scheme Only: Name, Age':
+                                // test the content on the list cells - that it is displayed correctly
+                                break;
+                            case '37. ':
                                 // test the content on the list cells - that it is displayed correctly
                                 break;
 
