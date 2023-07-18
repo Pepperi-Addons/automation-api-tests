@@ -1706,6 +1706,8 @@ export default class GeneralService {
                 return 'cebb251f-1c80-4d80-b62c-442e48e678e8';
             case 'SYNC':
                 return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
+            case 'CORE':
+                return 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
             default:
                 return 'none';
         }

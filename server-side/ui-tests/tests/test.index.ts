@@ -1086,6 +1086,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     devPassingEnvs2,
                     devFailedEnvs2,
                     true,
+                    [euUser, prodUser, sbUser],
                     failedSuitesProd,
                     failedSuitesEU,
                     failedSuitesSB,
@@ -1104,6 +1105,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     devPassingEnvs2,
                     devFailedEnvs2,
                     true,
+                    [euUser, prodUser, sbUser],
                     failedSuitesProd,
                     failedSuitesEU,
                     failedSuitesSB,
@@ -2160,6 +2162,7 @@ export async function reportToTeams(
     passingEnvs,
     failingEnvs,
     isDev,
+    users?: string[],
     failedSuitesProd?,
     failedSuitesEU?,
     failedSuitesSB?,
@@ -2174,19 +2177,18 @@ export async function reportToTeams(
     let message;
     let message2;
     if (isDev) {
+        const stringUsers = users?.join(',');
         const uniqFailingEnvs = [...new Set(failingEnvs)];
-        message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
-            passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : uniqFailingEnvs.join(', ')},<br>Link: ${jenkinsLink}`;
-        message2 = `FAILED TESTS:<br>PROD: ${
-            failedSuitesProd.length === 0 ? 'None' : failedSuitesProd.join(', ')
-        },<br>EU: ${failedSuitesEU.length === 0 ? 'None' : failedSuitesEU.join(', ')},<br>SB:${
-            failedSuitesSB.length === 0 ? 'None' : failedSuitesSB.join(', ')
-        } `;
+        message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion}, Users:${stringUsers} ||| ${
+            passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ') + ' |||'
+        } ${failingEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')},<br>Link: ${jenkinsLink}`;
+        message2 = `${failedSuitesProd.length === 0 ? '' : 'FAILED TESTS:<br>PROD:' + failedSuitesProd.join(', ')}${
+            failedSuitesEU.length === 0 ? '' : ',<br>EU:' + failedSuitesEU.join(', ')
+        }${failedSuitesSB.length === 0 ? '' : ',<br>SB:' + failedSuitesSB.join(', ')} `;
     } else {
-        message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
-            passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
+        message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| ${
+            passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ') + '|||'
+        }  ${failingEnvs.length === 0 ? '' : 'Failed On: ' + failingEnvs.join(', ')}`;
         message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
     }
     const bodyToSend = {
@@ -2293,6 +2295,8 @@ function resolveUserPerTest(addonName): any[] {
             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
         case 'SYNC':
             return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com']; //'syncTestEU@pepperitest.com',
+        case 'CORE':
+            return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
         default:
             return [];
     }
@@ -2362,6 +2366,19 @@ async function getDataIndexTests(userName, env) {
     return toReturn;
 }
 
+async function getCoreTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function runDevTestOnCertainEnv(
     userName,
     env,
@@ -2380,6 +2397,8 @@ async function runDevTestOnCertainEnv(
         urlToCall = '/addons/api/async/cebb251f-1c80-4d80-b62c-442e48e678e8/tests/tests';
     } else if (addonName === 'SYNC') {
         urlToCall = '/addons/api/async/5122dc6d-745b-4f46-bb8e-bd25225d350a/tests/tests';
+    } else if (addonName === 'CORE') {
+        urlToCall = '/addons/api/async/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/tests/tests';
     } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests';
         headers = {
@@ -2427,6 +2446,8 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getSyncTests(user, 'prod');
     } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
         return await getDataIndexTests(user, 'prod');
+    } else if (addonName === 'CORE') {
+        return await getCoreTests(user, 'prod');
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
         const service = new GeneralService(client);
@@ -2453,7 +2474,8 @@ function prepareTestBody(addonName, currentTestName, addonUUID) {
         addonName === 'FEBULA' ||
         addonName === 'SYNC' ||
         addonName === 'DATA INDEX' ||
-        addonName === 'DATA-INDEX'
+        addonName === 'DATA-INDEX' ||
+        addonName === 'CORE'
     ) {
         body = {
             Name: currentTestName,
