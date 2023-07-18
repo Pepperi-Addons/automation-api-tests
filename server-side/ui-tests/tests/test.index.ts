@@ -2180,15 +2180,15 @@ export async function reportToTeams(
         const stringUsers = users?.join(',');
         const uniqFailingEnvs = [...new Set(failingEnvs)];
         message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion}, Users:${stringUsers} ||| ${
-            passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ')
-        } ||| ${failingEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')},<br>Link: ${jenkinsLink}`;
+            passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ') + ' |||'
+        } ${failingEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')},<br>Link: ${jenkinsLink}`;
         message2 = `${failedSuitesProd.length === 0 ? '' : 'FAILED TESTS:<br>PROD:' + failedSuitesProd.join(', ')}${
             failedSuitesEU.length === 0 ? '' : ',<br>EU:' + failedSuitesEU.join(', ')
         }${failedSuitesSB.length === 0 ? '' : ',<br>SB:' + failedSuitesSB.join(', ')} `;
     } else {
-        message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| Passed On: ${
-            passingEnvs.length === 0 ? 'None' : passingEnvs.join(', ')
-        } ||| Failed On: ${failingEnvs.length === 0 ? 'None' : failingEnvs.join(', ')}`;
+        message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| ${
+            passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ') + '|||'
+        }  ${failingEnvs.length === 0 ? '' : 'Failed On: ' + failingEnvs.join(', ')}`;
         message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
     }
     const bodyToSend = {
