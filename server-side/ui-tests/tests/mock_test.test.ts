@@ -63,95 +63,251 @@ export async function MockTest(email: string, password: string, client: Client) 
     describe('Resource List Test Suite', () => {
         describe('API Creation of UDCs', () => {
             /********************  RL Data Prep  ********************/
-            it('Creating UDC of Arrays of Primiteve Types Fields with API', async () => {
-                //  Strings Array  |  Integers Array  |  Doubles Array  //
-                const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                    nameOfCollection: 'ArraysPrimitivesAuto',
-                    descriptionOfCollection: 'Created with Automation',
-                    fieldsOfCollection: [
-                        {
-                            classType: 'Array',
-                            fieldName: 'numbers',
-                            fieldTitle: 'Numbers',
-                            field: {
-                                Type: 'String',
-                                Description: 'list of products',
-                                AddonUUID: '',
-                                ApplySystemFilter: false,
-                                Mandatory: false,
-                                Indexed: false,
-                                // IndexedFields: {},
-                                // OptionalValues: [],
-                            },
-                        },
-                        {
-                            classType: 'Array',
-                            fieldName: 'names',
-                            fieldTitle: 'Names',
-                            field: {
-                                Type: 'Integer',
-                                Description: 'in stock quantity',
-                                AddonUUID: '',
-                                ApplySystemFilter: false,
-                                Mandatory: false,
-                                Indexed: false,
-                                // IndexedFields: {},
-                                // OptionalValues: [],
-                            },
-                        },
-                        {
-                            classType: 'Array',
-                            fieldName: 'reals',
-                            fieldTitle: 'Reals',
-                            field: {
-                                Type: 'Double',
-                                Description: 'average items sold per month',
-                                AddonUUID: '',
-                                ApplySystemFilter: false,
-                                Mandatory: false,
-                                Indexed: false,
-                                // IndexedFields: {},
-                                // OptionalValues: [],
-                            },
-                        },
-                    ],
-                });
-                const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
-                console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+            // it('Creating UDC of Arrays of Primiteve Types Fields with API', async () => {
+            //     //  Strings Array  |  Integers Array  |  Doubles Array  //
+            //     const bodyOfCollection = udcService.prepareDataForUdcCreation({
+            //         nameOfCollection: 'ArraysPrimitivesAuto',
+            //         descriptionOfCollection: 'Created with Automation',
+            //         fieldsOfCollection: [
+            //             {
+            //                 classType: 'Array',
+            //                 fieldName: 'numbers',
+            //                 fieldTitle: 'Numbers',
+            //                 field: {
+            //                     Type: 'String',
+            //                     Description: 'list of products',
+            //                     AddonUUID: '',
+            //                     ApplySystemFilter: false,
+            //                     Mandatory: false,
+            //                     Indexed: false,
+            //                     // IndexedFields: {},
+            //                     // OptionalValues: [],
+            //                 },
+            //             },
+            //             {
+            //                 classType: 'Array',
+            //                 fieldName: 'names',
+            //                 fieldTitle: 'Names',
+            //                 field: {
+            //                     Type: 'Integer',
+            //                     Description: 'in stock quantity',
+            //                     AddonUUID: '',
+            //                     ApplySystemFilter: false,
+            //                     Mandatory: false,
+            //                     Indexed: false,
+            //                     // IndexedFields: {},
+            //                     // OptionalValues: [],
+            //                 },
+            //             },
+            //             {
+            //                 classType: 'Array',
+            //                 fieldName: 'reals',
+            //                 fieldTitle: 'Reals',
+            //                 field: {
+            //                     Type: 'Double',
+            //                     Description: 'average items sold per month',
+            //                     AddonUUID: '',
+            //                     ApplySystemFilter: false,
+            //                     Mandatory: false,
+            //                     Indexed: false,
+            //                     // IndexedFields: {},
+            //                     // OptionalValues: [],
+            //                 },
+            //             },
+            //         ],
+            //     });
+            //     const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+            //     console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
 
-                expect(upsertResponse.Ok).to.be.true;
-                expect(upsertResponse.Status).to.equal(200);
-                expect(upsertResponse.Error).to.eql({});
-            });
+            //     expect(upsertResponse.Ok).to.be.true;
+            //     expect(upsertResponse.Status).to.equal(200);
+            //     expect(upsertResponse.Error).to.eql({});
+            // });
 
-            // Collection: ==========>   ArraysPrimitivesAuto   <==========   //
-            it('Adding Values to Collection: ArraysPrimitivesAuto', async () => {
-                const collectionName = 'ArraysPrimitivesAuto';
-                const upsertingValues_Response = await udcService.upsertValuesToCollection(
-                    {
-                        numbers: [1, 2, 3, 4],
-                        names: ['Happy', 'New', 'Year', '!!!'],
-                        reals: [0.1, 0.2, 0.3, 0.4],
-                    },
-                    collectionName,
-                );
-                console.info(
-                    `Response of POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName} :\n`,
-                    `${JSON.stringify(upsertingValues_Response, null, 2)}`,
-                );
-                expect(upsertingValues_Response.Ok).to.be.true;
-                expect(upsertingValues_Response.Status).to.equal(200);
-                expect(upsertingValues_Response.Error).to.eql({});
-            });
-            it('1. Creating a UDC of "Big Data Reference Account" with API', async () => {
-                // Collection:  ====>   BigDataReferenceAccountAuto   <====        //
+            // // Collection: ==========>   ArraysPrimitivesAuto   <==========   //
+            // it('Adding Values to Collection: ArraysPrimitivesAuto', async () => {
+            //     const collectionName = 'ArraysPrimitivesAuto';
+            //     const upsertingValues_Response = await udcService.upsertValuesToCollection(
+            //         {
+            //             numbers: [1, 2, 3, 4],
+            //             names: ['Happy', 'New', 'Year', '!!!'],
+            //             reals: [0.1, 0.2, 0.3, 0.4],
+            //         },
+            //         collectionName,
+            //     );
+            //     console.info(
+            //         `Response of POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName} :\n`,
+            //         `${JSON.stringify(upsertingValues_Response, null, 2)}`,
+            //     );
+            //     expect(upsertingValues_Response.Ok).to.be.true;
+            //     expect(upsertingValues_Response.Status).to.equal(200);
+            //     expect(upsertingValues_Response.Error).to.eql({});
+            // });
+            // it('1. Creating a UDC of "Big Data Reference Account" with API', async () => {
+            //     // Collection:  ====>   BigDataReferenceAccountAuto   <====        //
+            //     const bodyOfCollection = udcService.prepareDataForUdcCreation({
+            //         nameOfCollection: 'BigDataReferenceAccountAuto',
+            //         descriptionOfCollection: 'Created with Automation',
+            //         fieldsOfCollection: [
+            //             {
+            //                 classType: 'Resource',
+            //                 fieldName: 'in_account',
+            //                 fieldTitle: '',
+            //                 field: {
+            //                     Type: 'Resource',
+            //                     Resource: 'accounts',
+            //                     Description: '',
+            //                     Mandatory: false,
+            //                     Indexed: true,
+            //                     IndexedFields: {
+            //                         Email: { Indexed: true, Type: 'String' },
+            //                         Name: { Indexed: true, Type: 'String' },
+            //                         UUID: { Indexed: true, Type: 'String' },
+            //                     },
+            //                     Items: { Description: '', Mandatory: false, Type: 'String' },
+            //                     OptionalValues: [],
+            //                     AddonUUID: coreResourcesUUID,
+            //                 },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'best_seller_item',
+            //                 fieldTitle: '',
+            //                 field: {
+            //                     Type: 'String',
+            //                     Description: '',
+            //                     AddonUUID: '',
+            //                     ApplySystemFilter: false,
+            //                     Mandatory: false,
+            //                     Indexed: false,
+            //                     IndexedFields: {},
+            //                     OptionalValues: [
+            //                         'A',
+            //                         'B',
+            //                         'C',
+            //                         'D',
+            //                         'Hair dryer',
+            //                         'Roller',
+            //                         'Cart',
+            //                         'Mask',
+            //                         'Shirt',
+            //                         '',
+            //                     ],
+            //                 },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'max_quantity',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'discount_rate',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Double', Mandatory: false, Indexed: false, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Array',
+            //                 fieldName: 'offered_discount_location',
+            //                 fieldTitle: '',
+            //                 field: {
+            //                     Type: 'String',
+            //                     Mandatory: false,
+            //                     Indexed: false,
+            //                     Description: '',
+            //                     OptionalValues: ['store', 'on-line', 'rep'],
+            //                 },
+            //             },
+            //         ],
+            //     });
+            //     const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+            //     console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+            // });
+            // it('2. Adding Values to Collection: "BigDataReferenceAccountAuto"', async () => {
+            //     // Collection:  ====>   BigDataReferenceAccountAuto   <====        //
+            //     const acc01UUID = '9d315555-dbb4-4390-8b67-5fc1a9304514'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
+            //     const acc02UUID = '28290d15-bf25-43a2-a71a-2c8514188d07'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
+            //     const acc03UUID = '58e20103-3550-4943-b63b-05d3e0914b66'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
+            //     // const bestSellerOptions = ['Cart', 'Hair dryer', 'Mask', 'Shirt']
+            //     // let dataBigDataReferenceAccountAuto: {}[] = [];
+            //     // for (let index = 0; index < 3450; index++) {
+            //     //     dataBigDataReferenceAccountAuto.push({ in_account: acc01UUID, best_seller_item: `Cart_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['rep'] });
+            //     //     dataBigDataReferenceAccountAuto.push({ in_account: acc02UUID, best_seller_item: `Mask_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['store'] });
+            //     //     dataBigDataReferenceAccountAuto.push({ in_account: acc03UUID, best_seller_item: `Shirt_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['on-line'] });
+            //     // }
+            //     const dataBigDataReferenceAccountAuto = [
+            //         { in_account: acc03UUID, best_seller_item: 'Cart', max_quantity: 1500 },
+            //         {
+            //             in_account: '',
+            //             best_seller_item: '',
+            //             max_quantity: 100000,
+            //             discount_rate: 0.1,
+            //             offered_discount_location: [],
+            //         },
+            //         {
+            //             in_account: acc02UUID,
+            //             best_seller_item: '',
+            //             max_quantity: 1,
+            //             discount_rate: 0.1,
+            //             offered_discount_location: ['rep'],
+            //         },
+            //         {
+            //             in_account: acc01UUID,
+            //             best_seller_item: 'Hair dryer',
+            //             max_quantity: 0,
+            //             discount_rate: 0.4,
+            //             offered_discount_location: ['store', 'on-line', 'rep'],
+            //         },
+            //         {
+            //             in_account: acc02UUID,
+            //             best_seller_item: 'Mask',
+            //             max_quantity: 40000,
+            //             discount_rate: 0.15,
+            //             offered_discount_location: ['store', 'on-line'],
+            //         },
+            //         { in_account: acc03UUID, max_quantity: 600, discount_rate: 0.1, offered_discount_location: [] },
+            //         { in_account: acc01UUID, best_seller_item: 'Shirt', max_quantity: 55, discount_rate: 0.22 },
+            //         {
+            //             in_account: acc03UUID,
+            //             best_seller_item: 'item2',
+            //             discount_rate: 0.3,
+            //             offered_discount_location: ['store'],
+            //         },
+            //         {
+            //             best_seller_item: 'A',
+            //             max_quantity: 111,
+            //             discount_rate: 0.35,
+            //             offered_discount_location: ['on-line'],
+            //         },
+            //     ];
+            //     dataBigDataReferenceAccountAuto.forEach(async (listing) => {
+            //         const upsertingValues_Response = await udcService.upsertValuesToCollection(
+            //             listing,
+            //             'BigDataReferenceAccountAuto',
+            //         );
+            //         console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+            //         expect(upsertingValues_Response.Ok).to.be.true;
+            //         expect(upsertingValues_Response.Status).to.equal(200);
+            //         expect(upsertingValues_Response.Error).to.eql({});
+            //     });
+            //     await generalService.createCSVFile(
+            //         100,
+            //         'in_account,best_seller_item,max_quantity,discount_rate,offered_discount_location,Hidden',
+            //         '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb',
+            //         ['Candy_index', 'index', '0.index1', '["on-line"]'],
+            //         'false',
+            //     );
+            // });
+            it('1. Creating a UDC of "Account Filter Reference Account" with API', async () => {
+                // Collection:  ====>   AccountFilterReferenceAccountAuto   <====        //
                 const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                    nameOfCollection: 'BigDataReferenceAccountAuto',
+                    nameOfCollection: 'AccountFilterReferenceAccountAuto',
                     descriptionOfCollection: 'Created with Automation',
                     fieldsOfCollection: [
                         {
                             classType: 'Resource',
-                            fieldName: 'in_account',
+                            fieldName: 'an_account',
                             fieldTitle: '',
                             field: {
                                 Type: 'Resource',
@@ -159,6 +315,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                                 Description: '',
                                 Mandatory: false,
                                 Indexed: true,
+                                ApplySystemFilter: true,
                                 IndexedFields: {
                                     Email: { Indexed: true, Type: 'String' },
                                     Name: { Indexed: true, Type: 'String' },
@@ -224,67 +381,67 @@ export async function MockTest(email: string, password: string, client: Client) 
                 const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
                 console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
             });
-            it('2. Adding Values to Collection: "BigDataReferenceAccountAuto"', async () => {
-                // Collection:  ====>   BigDataReferenceAccountAuto   <====        //
-                const acc01UUID = '9d315555-dbb4-4390-8b67-5fc1a9304514'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
-                const acc02UUID = '28290d15-bf25-43a2-a71a-2c8514188d07'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
-                const acc03UUID = '58e20103-3550-4943-b63b-05d3e0914b66'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
+            it('2. Adding Values to Collection: "AccountFilterReferenceAccountAuto"', async () => {
+                // Collection:  ====>   AccountFilterReferenceAccountAuto   <====        //
+                const acc01UUID = '5737a507-fa00-4c32-a26a-8bc32572e24d'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
+                const acc02UUID = '56363496-f8ce-42e8-9305-de5d28737e66'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
+                const acc03UUID = '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
                 // const bestSellerOptions = ['Cart', 'Hair dryer', 'Mask', 'Shirt']
-                // let dataBigDataReferenceAccountAuto: {}[] = [];
+                // let dataAccountFilterReferenceAccountAuto: {}[] = [];
                 // for (let index = 0; index < 3450; index++) {
-                //     dataBigDataReferenceAccountAuto.push({ in_account: acc01UUID, best_seller_item: `Cart_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['rep'] });
-                //     dataBigDataReferenceAccountAuto.push({ in_account: acc02UUID, best_seller_item: `Mask_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['store'] });
-                //     dataBigDataReferenceAccountAuto.push({ in_account: acc03UUID, best_seller_item: `Shirt_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['on-line'] });
+                //     dataAccountFilterReferenceAccountAuto.push({ an_account: acc01UUID, best_seller_item: `Cart_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['rep'] });
+                //     dataAccountFilterReferenceAccountAuto.push({ an_account: acc02UUID, best_seller_item: `Mask_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['store'] });
+                //     dataAccountFilterReferenceAccountAuto.push({ an_account: acc03UUID, best_seller_item: `Shirt_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['on-line'] });
                 // }
-                const dataBigDataReferenceAccountAuto = [
-                    { in_account: acc03UUID, best_seller_item: 'Cart', max_quantity: 1500 },
+                const dataAccountFilterReferenceAccountAuto = [
+                    { an_account: acc03UUID, best_seller_item: 'Cart', max_quantity: 1500 },
                     {
-                        in_account: '',
+                        an_account: '',
                         best_seller_item: '',
                         max_quantity: 100000,
                         discount_rate: 0.1,
-                        offered_discount_location: [],
+                        offered_discount_location: ['store', 'rep'],
                     },
                     {
-                        in_account: acc02UUID,
+                        an_account: acc02UUID,
                         best_seller_item: '',
                         max_quantity: 1,
                         discount_rate: 0.1,
                         offered_discount_location: ['rep'],
                     },
                     {
-                        in_account: acc01UUID,
+                        an_account: acc01UUID,
                         best_seller_item: 'Hair dryer',
                         max_quantity: 0,
                         discount_rate: 0.4,
                         offered_discount_location: ['store', 'on-line', 'rep'],
                     },
                     {
-                        in_account: acc02UUID,
+                        an_account: acc02UUID,
                         best_seller_item: 'Mask',
                         max_quantity: 40000,
                         discount_rate: 0.15,
                         offered_discount_location: ['store', 'on-line'],
                     },
-                    { in_account: acc03UUID, max_quantity: 600, discount_rate: 0.1, offered_discount_location: [] },
-                    { in_account: acc01UUID, best_seller_item: 'Shirt', max_quantity: 55, discount_rate: 0.22 },
+                    { an_account: acc03UUID, max_quantity: 600, discount_rate: 0.1, offered_discount_location: [] },
+                    { an_account: acc01UUID, best_seller_item: 'Shirt', max_quantity: 55, discount_rate: 0.22 },
                     {
-                        in_account: acc03UUID,
+                        an_account: acc03UUID,
                         best_seller_item: 'item2',
                         discount_rate: 0.3,
-                        offered_discount_location: ['store'],
+                        offered_discount_location: ['store', 'on-line', 'rep'],
                     },
                     {
                         best_seller_item: 'A',
                         max_quantity: 111,
                         discount_rate: 0.35,
-                        offered_discount_location: ['on-line'],
+                        offered_discount_location: ['on-line', 'rep'],
                     },
                 ];
-                dataBigDataReferenceAccountAuto.forEach(async (listing) => {
+                dataAccountFilterReferenceAccountAuto.forEach(async (listing) => {
                     const upsertingValues_Response = await udcService.upsertValuesToCollection(
                         listing,
-                        'BigDataReferenceAccountAuto',
+                        'AccountFilterReferenceAccountAuto',
                     );
                     console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
                     expect(upsertingValues_Response.Ok).to.be.true;
@@ -292,401 +449,402 @@ export async function MockTest(email: string, password: string, client: Client) 
                     expect(upsertingValues_Response.Error).to.eql({});
                 });
                 await generalService.createCSVFile(
-                    100,
-                    'in_account,best_seller_item,max_quantity,discount_rate,offered_discount_location,Hidden',
-                    '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb',
+                    25,
+                    'an_account,best_seller_item,max_quantity,discount_rate,offered_discount_location,Hidden',
+                    acc01UUID,
                     ['Candy_index', 'index', '0.index1', '["on-line"]'],
                     'false',
                 );
             });
-            it('1. Creating a UDC of "Reference Account" with API', async () => {
-                // Collection:  ====>   ReferenceAccount   <====        //
-                const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                    nameOfCollection: 'ReferenceAccountAuto',
-                    descriptionOfCollection: 'Created with Automation',
-                    fieldsOfCollection: [
-                        {
-                            classType: 'Resource',
-                            fieldName: 'of_account',
-                            fieldTitle: '',
-                            field: {
-                                Type: 'Resource',
-                                Resource: 'accounts',
-                                Description: '',
-                                Mandatory: false,
-                                Indexed: true,
-                                IndexedFields: {
-                                    Email: { Indexed: true, Type: 'String' },
-                                    Name: { Indexed: true, Type: 'String' },
-                                    UUID: { Indexed: true, Type: 'String' },
-                                },
-                                Items: { Description: '', Mandatory: false, Type: 'String' },
-                                OptionalValues: [],
-                                AddonUUID: coreResourcesUUID,
-                            },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'best_seller_item',
-                            fieldTitle: '',
-                            field: {
-                                Type: 'String',
-                                Description: '',
-                                AddonUUID: '',
-                                ApplySystemFilter: false,
-                                Mandatory: false,
-                                Indexed: false,
-                                IndexedFields: {},
-                                OptionalValues: [
-                                    'A',
-                                    'B',
-                                    'C',
-                                    'D',
-                                    'Hair dryer',
-                                    'Roller',
-                                    'Cart',
-                                    'Mask',
-                                    'Shirt',
-                                    '',
-                                ],
-                            },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'max_quantity',
-                            fieldTitle: '',
-                            field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'discount_rate',
-                            fieldTitle: '',
-                            field: { Type: 'Double', Mandatory: false, Indexed: false, Description: '' },
-                        },
-                        {
-                            classType: 'Array',
-                            fieldName: 'offered_discount_location',
-                            fieldTitle: '',
-                            field: {
-                                Type: 'String',
-                                Mandatory: false,
-                                Indexed: false,
-                                Description: '',
-                                OptionalValues: ['store', 'on-line', 'rep'],
-                            },
-                        },
-                    ],
-                });
-                const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
-                console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
-            });
-            it('2. Adding Values to Collection: "ReferenceAccountAuto"', async () => {
-                // Collection:  ====>   ReferenceAccountAuto   <====        //
-                const acc01UUID = '5737a507-fa00-4c32-a26a-8bc32572e24d'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
-                const acc02UUID = '56363496-f8ce-42e8-9305-de5d28737e66'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
-                const acc03UUID = '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
-                const dataReferenceAccountAuto = [
-                    { of_account: acc03UUID, best_seller_item: 'Daisy', max_quantity: 1500 },
-                    {
-                        of_account: '',
-                        best_seller_item: '',
-                        max_quantity: 100000,
-                        discount_rate: 0.1,
-                        offered_discount_location: [],
-                    },
-                    {
-                        of_account: acc02UUID,
-                        best_seller_item: 'Lily',
-                        max_quantity: 1,
-                        discount_rate: 0.1,
-                        offered_discount_location: ['rep'],
-                    },
-                    {
-                        of_account: acc01UUID,
-                        best_seller_item: 'Rose',
-                        max_quantity: 0,
-                        discount_rate: 0.4,
-                        offered_discount_location: ['store', 'on-line', 'rep'],
-                    },
-                    {
-                        of_account: acc02UUID,
-                        best_seller_item: 'Iris',
-                        max_quantity: 40000,
-                        discount_rate: 0.15,
-                        offered_discount_location: ['store', 'on-line'],
-                    },
-                    { of_account: acc03UUID, max_quantity: 600, discount_rate: 0.1, offered_discount_location: [] },
-                    { of_account: acc01UUID, best_seller_item: '', max_quantity: 55, discount_rate: 0.22 },
-                    {
-                        of_account: acc03UUID,
-                        best_seller_item: 'Tulip',
-                        discount_rate: 0.3,
-                        offered_discount_location: ['store'],
-                    },
-                    {
-                        best_seller_item: 'NO Account',
-                        max_quantity: 111,
-                        discount_rate: 0.35,
-                        offered_discount_location: ['on-line'],
-                    },
-                ];
-                const upsertingValues_Responses = await Promise.all(
-                    dataReferenceAccountAuto.map(async (listing) => {
-                        return await udcService.upsertValuesToCollection(listing, 'ReferenceAccountAuto');
-                    }),
-                );
-                upsertingValues_Responses.forEach((upsertingValues_Response) => {
-                    console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
-                    expect(upsertingValues_Response.Ok).to.be.true;
-                    expect(upsertingValues_Response.Status).to.equal(200);
-                    expect(upsertingValues_Response.Error).to.eql({});
-                });
-            });
-            it('3. Creating a UDC of "Name Age" with API', async () => {
-                // Collection:  ====>   NameAgeAuto   <====        //
-                const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                    nameOfCollection: 'NameAgeAuto',
-                    descriptionOfCollection: 'Created with Automation',
-                    fieldsOfCollection: [
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'name',
-                            fieldTitle: '',
-                            field: { Type: 'String', Mandatory: false, Indexed: false, Description: '' },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'age',
-                            fieldTitle: '',
-                            field: { Type: 'Integer', Mandatory: false, Indexed: false, Description: '' },
-                        },
-                    ],
-                });
-                const upsertCollecionResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
-                console.info(`upsertCollecionResponse: ${JSON.stringify(upsertCollecionResponse, null, 2)}`);
-            });
-            it('4. Adding Values to Collection: "NameAgeAuto"', async () => {
-                // Collection:  ====>   NameAgeAuto   <====        //
-                const dataReferenceAccountAuto = [
-                    { name: 'Shoshi', age: 20 },
-                    { name: 'Avram', age: 100 },
-                    { name: 'Menachem', age: 5 },
-                    { name: 'Charlie', age: 1 },
-                    { name: 'Gil', age: 51 },
-                    { name: 'Ari', age: 13 },
-                    { name: 'Ruth', age: 69 },
-                    { name: 'Charls', age: 7 },
-                    { name: 'Alex', age: 33 },
-                    { name: 'Chocky', age: 4 },
-                    { name: 'Shin', age: 82 },
-                    { name: 'Bibi', age: 47 },
-                    { name: 'Amsalem', age: 99 },
-                    { name: 'Uri', age: 19 },
-                    { name: 'Motty', age: 18 },
-                    { name: 'David', age: 17 },
-                    { name: 'Eli', age: 16 },
-                    { name: 'Franc', age: 15 },
-                    { name: 'Hagit', age: 14 },
-                    { name: 'Iris', age: 13 },
-                    { name: 'Penny', age: 12 },
-                    { name: 'Zux', age: 11 },
-                    { name: 'Iris', age: 10 },
-                ];
-                dataReferenceAccountAuto.forEach(async (listing) => {
-                    const upsertingValues_Response = await udcService.upsertValuesToCollection(listing, 'NameAgeAuto');
-                    console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
-                    expect(upsertingValues_Response.Ok).to.be.true;
-                    expect(upsertingValues_Response.Status).to.equal(200);
-                    expect(upsertingValues_Response.Error).to.eql({});
-                });
-            });
-            it('5. Creating a UDC of "Indexed Name Age" with API', async () => {
-                // Collection:  ====>   IndexedNameAgeAuto   <====        //
-                const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                    nameOfCollection: 'IndexedNameAgeAuto',
-                    descriptionOfCollection: 'Created with Automation',
-                    fieldsOfCollection: [
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'name',
-                            fieldTitle: '',
-                            field: { Type: 'String', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'age',
-                            fieldTitle: '',
-                            field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                    ],
-                    syncDefinitionOfCollection: { Sync: false },
-                });
-                const upsertCollecionResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
-                console.info(`upsertCollecionResponse: ${JSON.stringify(upsertCollecionResponse, null, 2)}`);
-            });
-            it('6. Adding Values to Collection: "IndexedNameAgeAuto"', async () => {
-                // Collection:  ====>   IndexedNameAgeAuto   <====        //
-                const dataReferenceAccountAuto = [
-                    { name: 'Shoshi', age: 47 },
-                    { name: 'Avram', age: 82 },
-                    { name: 'Menachem', age: 4 },
-                    { name: 'Charlie', age: 33 },
-                    { name: 'Gil', age: 7 },
-                    { name: 'Ari', age: 69 },
-                    { name: 'Ruth', age: 13 },
-                    { name: 'Charls', age: 51 },
-                    { name: 'Alex', age: 1 },
-                    { name: 'Chocky', age: 5 },
-                    { name: 'Shin', age: 100 },
-                    { name: 'Bibi', age: 20 },
-                ];
-                dataReferenceAccountAuto.forEach(async (listing) => {
-                    const upsertingValues_Response = await udcService.upsertValuesToCollection(
-                        listing,
-                        'IndexedNameAgeAuto',
-                    );
-                    console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
-                    expect(upsertingValues_Response.Ok).to.be.true;
-                    expect(upsertingValues_Response.Status).to.equal(200);
-                    expect(upsertingValues_Response.Error).to.eql({});
-                });
-            });
-            it('7. Creating a UDC of "Indexed Fields" with API', async () => {
-                // Collection:  ====>   IndexedFieldsAuto   <====        //
-                const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                    nameOfCollection: 'IndexedFieldsAuto',
-                    descriptionOfCollection: 'Created with Automation',
-                    fieldsOfCollection: [
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'item',
-                            fieldTitle: '',
-                            field: { Type: 'String', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'price',
-                            fieldTitle: '',
-                            field: { Type: 'Double', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'quantity',
-                            fieldTitle: '',
-                            field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'instock',
-                            fieldTitle: '',
-                            field: { Type: 'Bool', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                    ],
-                });
-                const upsertCollecionResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
-                console.info(`upsertCollecionResponse: ${JSON.stringify(upsertCollecionResponse, null, 2)}`);
-            });
-            it('8. Adding Values to Collection: "IndexedFieldsAuto"', async () => {
-                // Collection:  ====>   IndexedFieldsAuto   <====        //
-                const dataReferenceAccountAuto = [
-                    { item: 'Aa', price: 10.5, quantity: 80, instock: true },
-                    { item: 'Bb', price: 0.99, quantity: 1000, instock: false },
-                    { item: 'Cc', price: 5.0, quantity: 100, instock: true },
-                    { item: 'Dd', price: 6.75, quantity: 100, instock: false },
-                    { item: 'Ee', price: 66.7, quantity: 1, instock: false },
-                ];
-                dataReferenceAccountAuto.forEach(async (listing) => {
-                    const upsertingValues_Response = await udcService.upsertValuesToCollection(
-                        listing,
-                        'IndexedFieldsAuto',
-                    );
-                    console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
-                    expect(upsertingValues_Response.Ok).to.be.true;
-                    expect(upsertingValues_Response.Status).to.equal(200);
-                    expect(upsertingValues_Response.Error).to.eql({});
-                });
-            });
-            it('9. Creating a UDC of "Filters Account Ref" with API', async () => {
-                // Collection:  ====>   IndexedFieldsAuto   <====        //
-                const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                    nameOfCollection: 'FiltersAccRefAuto',
-                    descriptionOfCollection: 'Created with Automation',
-                    fieldsOfCollection: [
-                        {
-                            classType: 'Resource',
-                            fieldName: 'from_account',
-                            fieldTitle: '',
-                            field: {
-                                Type: 'Resource',
-                                Resource: 'accounts',
-                                Description: '',
-                                Mandatory: false,
-                                Indexed: true,
-                                IndexedFields: {
-                                    Email: { Indexed: true, Type: 'String' },
-                                    Name: { Indexed: true, Type: 'String' },
-                                    UUID: { Indexed: true, Type: 'String' },
-                                },
-                                Items: { Description: '', Mandatory: false, Type: 'String' },
-                                OptionalValues: [],
-                                AddonUUID: coreResourcesUUID,
-                            },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'item',
-                            fieldTitle: '',
-                            field: { Type: 'String', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'price',
-                            fieldTitle: '',
-                            field: { Type: 'Double', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'quantity',
-                            fieldTitle: '',
-                            field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'instock',
-                            fieldTitle: '',
-                            field: { Type: 'Bool', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                    ],
-                });
-                const upsertCollecionResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
-                console.info(`upsertCollecionResponse: ${JSON.stringify(upsertCollecionResponse, null, 2)}`);
-            });
-            it('10. Adding Values to Collection: "FiltersAccRefAuto"', async () => {
-                // Collection:  ====>   IndexedFieldsAuto   <====        //
-                generalService.sleep(5 * 1000);
-                const acc01UUID = '9d315555-dbb4-4390-8b67-5fc1a9304514'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
-                const acc02UUID = '28290d15-bf25-43a2-a71a-2c8514188d07'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
-                const acc03UUID = '58e20103-3550-4943-b63b-05d3e0914b66'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
-                const dataReferenceAccountAuto = [
-                    { from_account: acc02UUID, item: 'Abagada', price: 10.5, quantity: 80, instock: true },
-                    { from_account: acc01UUID, item: 'Bananza', price: 0.99, quantity: 1000, instock: false },
-                    { from_account: acc03UUID, item: 'Cockie', price: 5.0, quantity: 100, instock: true },
-                    { from_account: acc01UUID, item: 'Dov', price: 6.75, quantity: 100, instock: false },
-                    { from_account: acc03UUID, item: 'Emerald', price: 66.7, quantity: 1, instock: false },
-                    { from_account: acc02UUID, item: 'Funny', price: 66.7, quantity: 80, instock: false },
-                    { from_account: acc01UUID, item: 'Great', price: 0.99, quantity: 1, instock: false },
-                ];
-                dataReferenceAccountAuto.forEach(async (listing) => {
-                    const upsertingValues_Response = await udcService.upsertValuesToCollection(
-                        listing,
-                        'FiltersAccRefAuto',
-                    );
-                    console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
-                    expect(upsertingValues_Response.Ok).to.be.true;
-                    expect(upsertingValues_Response.Status).to.equal(200);
-                    expect(upsertingValues_Response.Error).to.eql({});
-                });
-            });
+            // it('1. Creating a UDC of "Reference Account" with API', async () => {
+            //     // Collection:  ====>   ReferenceAccount   <====        //
+            //     const bodyOfCollection = udcService.prepareDataForUdcCreation({
+            //         nameOfCollection: 'ReferenceAccountAuto',
+            //         descriptionOfCollection: 'Created with Automation',
+            //         fieldsOfCollection: [
+            //             {
+            //                 classType: 'Resource',
+            //                 fieldName: 'of_account',
+            //                 fieldTitle: '',
+            //                 field: {
+            //                     Type: 'Resource',
+            //                     Resource: 'accounts',
+            //                     Description: '',
+            //                     Mandatory: false,
+            //                     Indexed: true,
+            //                     IndexedFields: {
+            //                         Email: { Indexed: true, Type: 'String' },
+            //                         Name: { Indexed: true, Type: 'String' },
+            //                         UUID: { Indexed: true, Type: 'String' },
+            //                     },
+            //                     Items: { Description: '', Mandatory: false, Type: 'String' },
+            //                     OptionalValues: [],
+            //                     AddonUUID: coreResourcesUUID,
+            //                 },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'best_seller_item',
+            //                 fieldTitle: '',
+            //                 field: {
+            //                     Type: 'String',
+            //                     Description: '',
+            //                     AddonUUID: '',
+            //                     ApplySystemFilter: false,
+            //                     Mandatory: false,
+            //                     Indexed: false,
+            //                     IndexedFields: {},
+            //                     OptionalValues: [
+            //                         'A',
+            //                         'B',
+            //                         'C',
+            //                         'D',
+            //                         'Hair dryer',
+            //                         'Roller',
+            //                         'Cart',
+            //                         'Mask',
+            //                         'Shirt',
+            //                         '',
+            //                     ],
+            //                 },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'max_quantity',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'discount_rate',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Double', Mandatory: false, Indexed: false, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Array',
+            //                 fieldName: 'offered_discount_location',
+            //                 fieldTitle: '',
+            //                 field: {
+            //                     Type: 'String',
+            //                     Mandatory: false,
+            //                     Indexed: false,
+            //                     Description: '',
+            //                     OptionalValues: ['store', 'on-line', 'rep'],
+            //                 },
+            //             },
+            //         ],
+            //     });
+            //     const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+            //     console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+            // });
+            // it('2. Adding Values to Collection: "ReferenceAccountAuto"', async () => {
+            //     // Collection:  ====>   ReferenceAccountAuto   <====        //
+            //     const acc01UUID = '5737a507-fa00-4c32-a26a-8bc32572e24d'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
+            //     const acc02UUID = '56363496-f8ce-42e8-9305-de5d28737e66'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
+            //     const acc03UUID = '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
+            //     const dataReferenceAccountAuto = [
+            //         { of_account: acc03UUID, best_seller_item: 'Daisy', max_quantity: 1500 },
+            //         {
+            //             of_account: '',
+            //             best_seller_item: '',
+            //             max_quantity: 100000,
+            //             discount_rate: 0.1,
+            //             offered_discount_location: [],
+            //         },
+            //         {
+            //             of_account: acc02UUID,
+            //             best_seller_item: 'Lily',
+            //             max_quantity: 1,
+            //             discount_rate: 0.1,
+            //             offered_discount_location: ['rep'],
+            //         },
+            //         {
+            //             of_account: acc01UUID,
+            //             best_seller_item: 'Rose',
+            //             max_quantity: 0,
+            //             discount_rate: 0.4,
+            //             offered_discount_location: ['store', 'on-line', 'rep'],
+            //         },
+            //         {
+            //             of_account: acc02UUID,
+            //             best_seller_item: 'Iris',
+            //             max_quantity: 40000,
+            //             discount_rate: 0.15,
+            //             offered_discount_location: ['store', 'on-line'],
+            //         },
+            //         { of_account: acc03UUID, max_quantity: 600, discount_rate: 0.1, offered_discount_location: [] },
+            //         { of_account: acc01UUID, best_seller_item: '', max_quantity: 55, discount_rate: 0.22 },
+            //         {
+            //             of_account: acc03UUID,
+            //             best_seller_item: 'Tulip',
+            //             discount_rate: 0.3,
+            //             offered_discount_location: ['store'],
+            //         },
+            //         {
+            //             best_seller_item: 'NO Account',
+            //             max_quantity: 111,
+            //             discount_rate: 0.35,
+            //             offered_discount_location: ['on-line'],
+            //         },
+            //     ];
+            //     const upsertingValues_Responses = await Promise.all(
+            //         dataReferenceAccountAuto.map(async (listing) => {
+            //             return await udcService.upsertValuesToCollection(listing, 'ReferenceAccountAuto');
+            //         }),
+            //     );
+            //     upsertingValues_Responses.forEach((upsertingValues_Response) => {
+            //         console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+            //         expect(upsertingValues_Response.Ok).to.be.true;
+            //         expect(upsertingValues_Response.Status).to.equal(200);
+            //         expect(upsertingValues_Response.Error).to.eql({});
+            //     });
+            // });
+
+            // it('3. Creating a UDC of "Name Age" with API', async () => {
+            //     // Collection:  ====>   NameAgeAuto   <====        //
+            //     const bodyOfCollection = udcService.prepareDataForUdcCreation({
+            //         nameOfCollection: 'NameAgeAuto',
+            //         descriptionOfCollection: 'Created with Automation',
+            //         fieldsOfCollection: [
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'name',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'String', Mandatory: false, Indexed: false, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'age',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Integer', Mandatory: false, Indexed: false, Description: '' },
+            //             },
+            //         ],
+            //     });
+            //     const upsertCollecionResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+            //     console.info(`upsertCollecionResponse: ${JSON.stringify(upsertCollecionResponse, null, 2)}`);
+            // });
+            // it('4. Adding Values to Collection: "NameAgeAuto"', async () => {
+            //     // Collection:  ====>   NameAgeAuto   <====        //
+            //     const dataReferenceAccountAuto = [
+            //         { name: 'Shoshi', age: 20 },
+            //         { name: 'Avram', age: 100 },
+            //         { name: 'Menachem', age: 5 },
+            //         { name: 'Charlie', age: 1 },
+            //         { name: 'Gil', age: 51 },
+            //         { name: 'Ari', age: 13 },
+            //         { name: 'Ruth', age: 69 },
+            //         { name: 'Charls', age: 7 },
+            //         { name: 'Alex', age: 33 },
+            //         { name: 'Chocky', age: 4 },
+            //         { name: 'Shin', age: 82 },
+            //         { name: 'Bibi', age: 47 },
+            //         { name: 'Amsalem', age: 99 },
+            //         { name: 'Uri', age: 19 },
+            //         { name: 'Motty', age: 18 },
+            //         { name: 'David', age: 17 },
+            //         { name: 'Eli', age: 16 },
+            //         { name: 'Franc', age: 15 },
+            //         { name: 'Hagit', age: 14 },
+            //         { name: 'Iris', age: 13 },
+            //         { name: 'Penny', age: 12 },
+            //         { name: 'Zux', age: 11 },
+            //         { name: 'Iris', age: 10 },
+            //     ];
+            //     dataReferenceAccountAuto.forEach(async (listing) => {
+            //         const upsertingValues_Response = await udcService.upsertValuesToCollection(listing, 'NameAgeAuto');
+            //         console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+            //         expect(upsertingValues_Response.Ok).to.be.true;
+            //         expect(upsertingValues_Response.Status).to.equal(200);
+            //         expect(upsertingValues_Response.Error).to.eql({});
+            //     });
+            // });
+            // it('5. Creating a UDC of "Indexed Name Age" with API', async () => {
+            //     // Collection:  ====>   IndexedNameAgeAuto   <====        //
+            //     const bodyOfCollection = udcService.prepareDataForUdcCreation({
+            //         nameOfCollection: 'IndexedNameAgeAuto',
+            //         descriptionOfCollection: 'Created with Automation',
+            //         fieldsOfCollection: [
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'name',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'String', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'age',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //         ],
+            //         syncDefinitionOfCollection: { Sync: false },
+            //     });
+            //     const upsertCollecionResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+            //     console.info(`upsertCollecionResponse: ${JSON.stringify(upsertCollecionResponse, null, 2)}`);
+            // });
+            // it('6. Adding Values to Collection: "IndexedNameAgeAuto"', async () => {
+            //     // Collection:  ====>   IndexedNameAgeAuto   <====        //
+            //     const dataReferenceAccountAuto = [
+            //         { name: 'Shoshi', age: 47 },
+            //         { name: 'Avram', age: 82 },
+            //         { name: 'Menachem', age: 4 },
+            //         { name: 'Charlie', age: 33 },
+            //         { name: 'Gil', age: 7 },
+            //         { name: 'Ari', age: 69 },
+            //         { name: 'Ruth', age: 13 },
+            //         { name: 'Charls', age: 51 },
+            //         { name: 'Alex', age: 1 },
+            //         { name: 'Chocky', age: 5 },
+            //         { name: 'Shin', age: 100 },
+            //         { name: 'Bibi', age: 20 },
+            //     ];
+            //     dataReferenceAccountAuto.forEach(async (listing) => {
+            //         const upsertingValues_Response = await udcService.upsertValuesToCollection(
+            //             listing,
+            //             'IndexedNameAgeAuto',
+            //         );
+            //         console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+            //         expect(upsertingValues_Response.Ok).to.be.true;
+            //         expect(upsertingValues_Response.Status).to.equal(200);
+            //         expect(upsertingValues_Response.Error).to.eql({});
+            //     });
+            // });
+            // it('7. Creating a UDC of "Indexed Fields" with API', async () => {
+            //     // Collection:  ====>   IndexedFieldsAuto   <====        //
+            //     const bodyOfCollection = udcService.prepareDataForUdcCreation({
+            //         nameOfCollection: 'IndexedFieldsAuto',
+            //         descriptionOfCollection: 'Created with Automation',
+            //         fieldsOfCollection: [
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'item',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'String', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'price',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Double', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'quantity',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'instock',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Bool', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //         ],
+            //     });
+            //     const upsertCollecionResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+            //     console.info(`upsertCollecionResponse: ${JSON.stringify(upsertCollecionResponse, null, 2)}`);
+            // });
+            // it('8. Adding Values to Collection: "IndexedFieldsAuto"', async () => {
+            //     // Collection:  ====>   IndexedFieldsAuto   <====        //
+            //     const dataReferenceAccountAuto = [
+            //         { item: 'Aa', price: 10.5, quantity: 80, instock: true },
+            //         { item: 'Bb', price: 0.99, quantity: 1000, instock: false },
+            //         { item: 'Cc', price: 5.0, quantity: 100, instock: true },
+            //         { item: 'Dd', price: 6.75, quantity: 100, instock: false },
+            //         { item: 'Ee', price: 66.7, quantity: 1, instock: false },
+            //     ];
+            //     dataReferenceAccountAuto.forEach(async (listing) => {
+            //         const upsertingValues_Response = await udcService.upsertValuesToCollection(
+            //             listing,
+            //             'IndexedFieldsAuto',
+            //         );
+            //         console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+            //         expect(upsertingValues_Response.Ok).to.be.true;
+            //         expect(upsertingValues_Response.Status).to.equal(200);
+            //         expect(upsertingValues_Response.Error).to.eql({});
+            //     });
+            // });
+            // it('9. Creating a UDC of "Filters Account Ref" with API', async () => {
+            //     // Collection:  ====>   IndexedFieldsAuto   <====        //
+            //     const bodyOfCollection = udcService.prepareDataForUdcCreation({
+            //         nameOfCollection: 'FiltersAccRefAuto',
+            //         descriptionOfCollection: 'Created with Automation',
+            //         fieldsOfCollection: [
+            //             {
+            //                 classType: 'Resource',
+            //                 fieldName: 'from_account',
+            //                 fieldTitle: '',
+            //                 field: {
+            //                     Type: 'Resource',
+            //                     Resource: 'accounts',
+            //                     Description: '',
+            //                     Mandatory: false,
+            //                     Indexed: true,
+            //                     IndexedFields: {
+            //                         Email: { Indexed: true, Type: 'String' },
+            //                         Name: { Indexed: true, Type: 'String' },
+            //                         UUID: { Indexed: true, Type: 'String' },
+            //                     },
+            //                     Items: { Description: '', Mandatory: false, Type: 'String' },
+            //                     OptionalValues: [],
+            //                     AddonUUID: coreResourcesUUID,
+            //                 },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'item',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'String', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'price',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Double', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'quantity',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'instock',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Bool', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //         ],
+            //     });
+            //     const upsertCollecionResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+            //     console.info(`upsertCollecionResponse: ${JSON.stringify(upsertCollecionResponse, null, 2)}`);
+            // });
+            // it('10. Adding Values to Collection: "FiltersAccRefAuto"', async () => {
+            //     // Collection:  ====>   IndexedFieldsAuto   <====        //
+            //     generalService.sleep(5 * 1000);
+            //     const acc01UUID = '9d315555-dbb4-4390-8b67-5fc1a9304514'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
+            //     const acc02UUID = '28290d15-bf25-43a2-a71a-2c8514188d07'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
+            //     const acc03UUID = '58e20103-3550-4943-b63b-05d3e0914b66'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
+            //     const dataReferenceAccountAuto = [
+            //         { from_account: acc02UUID, item: 'Abagada', price: 10.5, quantity: 80, instock: true },
+            //         { from_account: acc01UUID, item: 'Bananza', price: 0.99, quantity: 1000, instock: false },
+            //         { from_account: acc03UUID, item: 'Cockie', price: 5.0, quantity: 100, instock: true },
+            //         { from_account: acc01UUID, item: 'Dov', price: 6.75, quantity: 100, instock: false },
+            //         { from_account: acc03UUID, item: 'Emerald', price: 66.7, quantity: 1, instock: false },
+            //         { from_account: acc02UUID, item: 'Funny', price: 66.7, quantity: 80, instock: false },
+            //         { from_account: acc01UUID, item: 'Great', price: 0.99, quantity: 1, instock: false },
+            //     ];
+            //     dataReferenceAccountAuto.forEach(async (listing) => {
+            //         const upsertingValues_Response = await udcService.upsertValuesToCollection(
+            //             listing,
+            //             'FiltersAccRefAuto',
+            //         );
+            //         console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+            //         expect(upsertingValues_Response.Ok).to.be.true;
+            //         expect(upsertingValues_Response.Status).to.equal(200);
+            //         expect(upsertingValues_Response.Error).to.eql({});
+            //     });
+            // });
         });
 
         describe('Resource List UI tests', () => {
@@ -831,128 +989,128 @@ export async function MockTest(email: string, password: string, client: Client) 
                 await resourceListBlock.isSpinnerDone();
                 driver.sleep(8 * 1000);
             });
-            it('1. Configure Resource View For the Resource "BigDataReferenceAccountAuto"', async function () {
-                await resourceListUtils.addView({
-                    nameOfView: 'BigDataReferenceAccountAuto View',
-                    descriptionOfView: 'Generated with Automation',
-                    nameOfResource: 'BigDataReferenceAccountAuto',
-                });
-                referenceAccountAutoViewUUID = await resourceListUtils.getUUIDfromURL();
-                const viewFields: {
-                    fieldName: string;
-                    dataViewType: DataViewFieldType;
-                    mandatory: boolean;
-                    readonly: boolean;
-                }[] = [
-                    {
-                        fieldName: 'in_account',
-                        dataViewType: udcService.resolveUIType('Resource') || 'TextBox',
-                        mandatory: false,
-                        readonly: true,
-                    },
-                    {
-                        fieldName: 'in_account.Name',
-                        dataViewType: udcService.resolveUIType('String') || 'TextBox',
-                        mandatory: false,
-                        readonly: true,
-                    },
-                    {
-                        fieldName: 'in_account.Email',
-                        dataViewType: udcService.resolveUIType('String') || 'TextBox',
-                        mandatory: false,
-                        readonly: true,
-                    },
-                    {
-                        fieldName: 'best_seller_item',
-                        dataViewType: udcService.resolveUIType('String') || 'TextBox',
-                        mandatory: false,
-                        readonly: true,
-                    },
-                    {
-                        fieldName: 'max_quantity',
-                        dataViewType: udcService.resolveUIType('Integer') || 'TextBox',
-                        mandatory: false,
-                        readonly: true,
-                    },
-                    {
-                        fieldName: 'discount_rate',
-                        dataViewType: udcService.resolveUIType('Double') || 'TextBox',
-                        mandatory: false,
-                        readonly: true,
-                    },
-                    {
-                        fieldName: 'offered_discount_location',
-                        dataViewType: udcService.resolveUIType('Array') || 'TextBox',
-                        mandatory: false,
-                        readonly: true,
-                    },
-                ];
-                await resourceViews.customViewConfig(client, {
-                    matchingEditorName: '',
-                    viewKey: referenceAccountAutoViewUUID,
-                    fieldsToConfigureInView: viewFields,
-                    fieldsToConfigureInViewSmartSearch: [
-                        { fieldName: 'in_account' },
-                        { fieldName: 'in_account.Name' },
-                        { fieldName: 'in_account.Email' },
-                        { fieldName: 'best_seller_item' },
-                        { fieldName: 'max_quantity' },
-                        { fieldName: 'discount_rate' },
-                        { fieldName: 'offered_discount_location' },
-                    ],
-                });
-                await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
-                await webAppHeader.goHome();
-            });
-            it('2. Create Page With Viewer Block Inside It', async function () {
-                referenceAccountPageName = 'BigDataReferenceAccountAuto Page';
-                referenceAccountAutoPageUUID = await e2eUiService.addPage(referenceAccountPageName, 'tests');
+            //     it('1. Configure Resource View For the Resource "BigDataReferenceAccountAuto"', async function () {
+            //         await resourceListUtils.addView({
+            //             nameOfView: 'BigDataReferenceAccountAuto View',
+            //             descriptionOfView: 'Generated with Automation',
+            //             nameOfResource: 'BigDataReferenceAccountAuto',
+            //         });
+            //         referenceAccountAutoViewUUID = await resourceListUtils.getUUIDfromURL();
+            //         const viewFields: {
+            //             fieldName: string;
+            //             dataViewType: DataViewFieldType;
+            //             mandatory: boolean;
+            //             readonly: boolean;
+            //         }[] = [
+            //             {
+            //                 fieldName: 'in_account',
+            //                 dataViewType: udcService.resolveUIType('Resource') || 'TextBox',
+            //                 mandatory: false,
+            //                 readonly: true,
+            //             },
+            //             {
+            //                 fieldName: 'in_account.Name',
+            //                 dataViewType: udcService.resolveUIType('String') || 'TextBox',
+            //                 mandatory: false,
+            //                 readonly: true,
+            //             },
+            //             {
+            //                 fieldName: 'in_account.Email',
+            //                 dataViewType: udcService.resolveUIType('String') || 'TextBox',
+            //                 mandatory: false,
+            //                 readonly: true,
+            //             },
+            //             {
+            //                 fieldName: 'best_seller_item',
+            //                 dataViewType: udcService.resolveUIType('String') || 'TextBox',
+            //                 mandatory: false,
+            //                 readonly: true,
+            //             },
+            //             {
+            //                 fieldName: 'max_quantity',
+            //                 dataViewType: udcService.resolveUIType('Integer') || 'TextBox',
+            //                 mandatory: false,
+            //                 readonly: true,
+            //             },
+            //             {
+            //                 fieldName: 'discount_rate',
+            //                 dataViewType: udcService.resolveUIType('Double') || 'TextBox',
+            //                 mandatory: false,
+            //                 readonly: true,
+            //             },
+            //             {
+            //                 fieldName: 'offered_discount_location',
+            //                 dataViewType: udcService.resolveUIType('Array') || 'TextBox',
+            //                 mandatory: false,
+            //                 readonly: true,
+            //             },
+            //         ];
+            //         await resourceViews.customViewConfig(client, {
+            //             matchingEditorName: '',
+            //             viewKey: referenceAccountAutoViewUUID,
+            //             fieldsToConfigureInView: viewFields,
+            //             fieldsToConfigureInViewSmartSearch: [
+            //                 { fieldName: 'in_account' },
+            //                 { fieldName: 'in_account.Name' },
+            //                 { fieldName: 'in_account.Email' },
+            //                 { fieldName: 'best_seller_item' },
+            //                 { fieldName: 'max_quantity' },
+            //                 { fieldName: 'discount_rate' },
+            //                 { fieldName: 'offered_discount_location' },
+            //             ],
+            //         });
+            //         await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
+            //         await webAppHeader.goHome();
+            //     });
+            //     it('2. Create Page With Viewer Block Inside It', async function () {
+            //         referenceAccountPageName = 'BigDataReferenceAccountAuto Page';
+            //         referenceAccountAutoPageUUID = await e2eUiService.addPage(referenceAccountPageName, 'tests');
 
-                const createdPage = await pageBuilder.getPageByUUID(referenceAccountAutoPageUUID, client);
-                const viewerBlockInstance = new ViewerBlock([
-                    {
-                        collectionName: 'BigDataReferenceAccountAuto',
-                        collectionID: '',
-                        selectedViewUUID: referenceAccountAutoViewUUID,
-                        selectedViewName: 'BigDataReferenceAccountAuto View',
-                    },
-                ]);
-                createdPage.Blocks.push(viewerBlockInstance);
-                createdPage.Layout.Sections[0].Columns[0] = new BasePageLayoutSectionColumn(viewerBlockInstance.Key);
-                createdPage.Name = referenceAccountPageName;
-                console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
-                const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
-                console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 2));
-                await webAppHeader.goHome();
-            });
-            it('3. Create A Slug For The Viewer Page And Set It To Show On Homepage', async function () {
-                referenceAccountSlugDisplayName = `Big Data Ref Account`;
-                referenceAccountSlugPath = 'big_data_ref_account_auto';
-                // referenceAccountSlugUUID = await e2eUiService.createSlug(
-                await e2eUiService.createSlug(
-                    referenceAccountSlugDisplayName,
-                    referenceAccountSlugPath,
-                    referenceAccountAutoPageUUID,
-                    email,
-                    password,
-                    client,
-                );
-                driver.sleep(0.5 * 1000);
-                await brandedApp.addAdminHomePageButtons(referenceAccountSlugDisplayName);
-                await e2eUiService.performManualSync(client);
-                await webAppHomePage.validateATDIsApearingOnHomeScreen(referenceAccountSlugDisplayName);
-            });
-            it('4. Click On "Big Data Ref Account" Button at Homepage', async function () {
-                resourceListBlock = new ResourceListBlock(
-                    driver,
-                    `https://app.pepperi.com/${referenceAccountSlugPath}`,
-                );
-                await webAppHeader.goHome();
-                await webAppHomePage.isSpinnerDone();
-                await webAppHomePage.clickOnBtn(referenceAccountSlugDisplayName);
-                await resourceListBlock.isSpinnerDone();
-                driver.sleep(8 * 1000);
-            });
+            //         const createdPage = await pageBuilder.getPageByUUID(referenceAccountAutoPageUUID, client);
+            //         const viewerBlockInstance = new ViewerBlock([
+            //             {
+            //                 collectionName: 'BigDataReferenceAccountAuto',
+            //                 collectionID: '',
+            //                 selectedViewUUID: referenceAccountAutoViewUUID,
+            //                 selectedViewName: 'BigDataReferenceAccountAuto View',
+            //             },
+            //         ]);
+            //         createdPage.Blocks.push(viewerBlockInstance);
+            //         createdPage.Layout.Sections[0].Columns[0] = new BasePageLayoutSectionColumn(viewerBlockInstance.Key);
+            //         createdPage.Name = referenceAccountPageName;
+            //         console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
+            //         const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
+            //         console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 2));
+            //         await webAppHeader.goHome();
+            //     });
+            //     it('3. Create A Slug For The Viewer Page And Set It To Show On Homepage', async function () {
+            //         referenceAccountSlugDisplayName = `Big Data Ref Account`;
+            //         referenceAccountSlugPath = 'big_data_ref_account_auto';
+            //         // referenceAccountSlugUUID = await e2eUiService.createSlug(
+            //         await e2eUiService.createSlug(
+            //             referenceAccountSlugDisplayName,
+            //             referenceAccountSlugPath,
+            //             referenceAccountAutoPageUUID,
+            //             email,
+            //             password,
+            //             client,
+            //         );
+            //         driver.sleep(0.5 * 1000);
+            //         await brandedApp.addAdminHomePageButtons(referenceAccountSlugDisplayName);
+            //         await e2eUiService.performManualSync(client);
+            //         await webAppHomePage.validateATDIsApearingOnHomeScreen(referenceAccountSlugDisplayName);
+            //     });
+            //     it('4. Click On "Big Data Ref Account" Button at Homepage', async function () {
+            //         resourceListBlock = new ResourceListBlock(
+            //             driver,
+            //             `https://app.pepperi.com/${referenceAccountSlugPath}`,
+            //         );
+            //         await webAppHeader.goHome();
+            //         await webAppHomePage.isSpinnerDone();
+            //         await webAppHomePage.clickOnBtn(referenceAccountSlugDisplayName);
+            //         await resourceListBlock.isSpinnerDone();
+            //         driver.sleep(8 * 1000);
+            //     });
             // NameAge
             it('5. Configure Resource View For the Resource "NameAgeAuto"', async function () {
                 await resourceListUtils.addView({
@@ -1882,414 +2040,414 @@ export async function MockTest(email: string, password: string, client: Client) 
                     homePageButton: { toAdd: true, slugDisplayName: slugDisplay },
                 });
             });
-            it('21. Reference Account collection E2E', async function () {
-                const resourceName = 'ReferenceAccountAuto';
-                const slugDisplay = 'Ref Account Auto';
-                const slugPath = 'ref_account_auto';
-                const acc01UUID = '5737a507-fa00-4c32-a26a-8bc32572e24d';
-                const acc02UUID = '56363496-f8ce-42e8-9305-de5d28737e66';
-                const acc03UUID = '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb';
-                await e2eUiService.configureResourceE2E(client, {
-                    collection: {
-                        createUDC: {
-                            nameOfCollection: resourceName,
-                            descriptionOfCollection: 'Created with Automation',
-                            fieldsOfCollection: [
-                                {
-                                    classType: 'Resource',
-                                    fieldName: 'of_account',
-                                    fieldTitle: '',
-                                    field: {
-                                        Type: 'Resource',
-                                        Resource: 'accounts',
-                                        Description: '',
-                                        Mandatory: false,
-                                        Indexed: true,
-                                        IndexedFields: {
-                                            Email: { Indexed: true, Type: 'String' },
-                                            Name: { Indexed: true, Type: 'String' },
-                                            UUID: { Indexed: true, Type: 'String' },
-                                        },
-                                        Items: { Description: '', Mandatory: false, Type: 'String' },
-                                        OptionalValues: [],
-                                        AddonUUID: coreResourcesUUID,
-                                    },
-                                },
-                                {
-                                    classType: 'Primitive',
-                                    fieldName: 'best_seller_item',
-                                    fieldTitle: '',
-                                    field: {
-                                        Type: 'String',
-                                        Description: '',
-                                        AddonUUID: '',
-                                        ApplySystemFilter: false,
-                                        Mandatory: false,
-                                        Indexed: false,
-                                        IndexedFields: {},
-                                        OptionalValues: [
-                                            'A',
-                                            'B',
-                                            'C',
-                                            'D',
-                                            'Hair dryer',
-                                            'Roller',
-                                            'Cart',
-                                            'Mask',
-                                            'Shirt',
-                                            '',
-                                        ],
-                                    },
-                                },
-                                {
-                                    classType: 'Primitive',
-                                    fieldName: 'max_quantity',
-                                    fieldTitle: '',
-                                    field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
-                                },
-                                {
-                                    classType: 'Primitive',
-                                    fieldName: 'discount_rate',
-                                    fieldTitle: '',
-                                    field: { Type: 'Double', Mandatory: false, Indexed: false, Description: '' },
-                                },
-                                {
-                                    classType: 'Array',
-                                    fieldName: 'offered_discount_location',
-                                    fieldTitle: '',
-                                    field: {
-                                        Type: 'String',
-                                        Mandatory: false,
-                                        Indexed: false,
-                                        Description: '',
-                                        OptionalValues: ['store', 'on-line', 'rep'],
-                                    },
-                                },
-                            ],
-                        },
-                        addValuesToCollection: {
-                            collectionName: resourceName,
-                            values: [
-                                {
-                                    of_account: acc03UUID,
-                                    best_seller_item: 'Cart',
-                                    max_quantity: 1500,
-                                },
-                                {
-                                    of_account: '',
-                                    best_seller_item: '',
-                                    max_quantity: 100000,
-                                    discount_rate: 0.1,
-                                    offered_discount_location: [],
-                                },
-                                {
-                                    of_account: acc02UUID,
-                                    best_seller_item: '',
-                                    max_quantity: 1,
-                                    discount_rate: 0.1,
-                                    offered_discount_location: ['rep'],
-                                },
-                                {
-                                    of_account: acc01UUID,
-                                    best_seller_item: 'Hair dryer',
-                                    max_quantity: 0,
-                                    discount_rate: 0.4,
-                                    offered_discount_location: ['store', 'on-line', 'rep'],
-                                },
-                                {
-                                    of_account: acc02UUID,
-                                    best_seller_item: 'Mask',
-                                    max_quantity: 40000,
-                                    discount_rate: 0.15,
-                                    offered_discount_location: ['store', 'on-line'],
-                                },
-                                {
-                                    of_account: acc03UUID,
-                                    max_quantity: 600,
-                                    discount_rate: 0.1,
-                                    offered_discount_location: [],
-                                },
-                                {
-                                    of_account: acc01UUID,
-                                    best_seller_item: 'Shirt',
-                                    max_quantity: 55,
-                                    discount_rate: 0.22,
-                                },
-                                {
-                                    of_account: acc03UUID,
-                                    best_seller_item: 'item2',
-                                    discount_rate: 0.3,
-                                    offered_discount_location: ['store'],
-                                },
-                                {
-                                    best_seller_item: 'A',
-                                    max_quantity: 111,
-                                    discount_rate: 0.35,
-                                    offered_discount_location: ['on-line'],
-                                },
-                            ],
-                        },
-                    },
-                    view: {
-                        viewDetails: {
-                            nameOfView: `${resourceName} View`,
-                            descriptionOfView: 'Generated with Automation',
-                            nameOfResource: resourceName,
-                        },
-                        viewConfiguration: {
-                            matchingEditorName: ``,
-                            viewKey: '',
-                            fieldsToConfigureInView: [
-                                {
-                                    fieldName: 'of_account',
-                                    dataViewType: udcService.resolveUIType('Resource') || 'TextBox',
-                                    mandatory: false,
-                                    readonly: true,
-                                },
-                                {
-                                    fieldName: 'of_account.Name',
-                                    dataViewType: udcService.resolveUIType('String') || 'TextBox',
-                                    mandatory: false,
-                                    readonly: true,
-                                },
-                                {
-                                    fieldName: 'of_account.Email',
-                                    dataViewType: udcService.resolveUIType('String') || 'TextBox',
-                                    mandatory: false,
-                                    readonly: true,
-                                },
-                                {
-                                    fieldName: 'best_seller_item',
-                                    dataViewType: udcService.resolveUIType('String') || 'TextBox',
-                                    mandatory: false,
-                                    readonly: true,
-                                },
-                                {
-                                    fieldName: 'max_quantity',
-                                    dataViewType: udcService.resolveUIType('Integer') || 'TextBox',
-                                    mandatory: false,
-                                    readonly: true,
-                                },
-                                {
-                                    fieldName: 'discount_rate',
-                                    dataViewType: udcService.resolveUIType('Double') || 'TextBox',
-                                    mandatory: false,
-                                    readonly: true,
-                                },
-                                {
-                                    fieldName: 'offered_discount_location',
-                                    dataViewType: udcService.resolveUIType('Array') || 'TextBox',
-                                    mandatory: false,
-                                    readonly: true,
-                                },
-                            ],
-                        },
-                    },
-                    page: {
-                        pageDetails: {
-                            nameOfPage: `${resourceName} Page`,
-                            descriptionOfPage: 'Automated testing',
-                            extraSection: false,
-                        },
-                        pageBlocks: [
-                            {
-                                blockType: 'Viewer',
-                                selectedViews: [
-                                    {
-                                        collectionName: resourceName,
-                                        collectionID: '',
-                                        selectedViewUUID: '',
-                                        selectedViewName: `${resourceName} View`,
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                    slug: {
-                        slugDisplayName: slugDisplay,
-                        slug_path: slugPath,
-                        keyOfMappedPage: '',
-                        email: email,
-                        password: password,
-                    },
-                    homePageButton: { toAdd: true, slugDisplayName: slugDisplay },
-                });
-            });
-            it('30. Visit Flow Steps', async function () {
-                const resourceName = 'VisitFlowSteps';
-                await e2eUiService.configureResourceE2E(client, {
-                    view: {
-                        viewDetails: {
-                            nameOfView: `${resourceName} View`,
-                            descriptionOfView: '',
-                            nameOfResource: resourceName,
-                        },
-                        viewConfiguration: {
-                            matchingEditorName: '',
-                            viewKey: '',
-                            fieldsToConfigureInView: [
-                                {
-                                    fieldName: '',
-                                    dataViewType: udcService.resolveUIType('Integer') || 'TextBox',
-                                    mandatory: false,
-                                    readonly: false,
-                                },
-                            ],
-                            fieldsToConfigureInViewMenu: [{ fieldName: '' }],
-                            fieldsToConfigureInViewLineMenu: [{ fieldName: '' }],
-                            fieldsToConfigureInViewSmartSearch: [{ fieldName: '' }],
-                            fieldsToConfigureInViewSearch: [{ fieldName: '' }],
-                        },
-                    },
-                    page: {
-                        pageDetails: { nameOfPage: '', descriptionOfPage: '', extraSection: false },
-                        pageBlocks: [
-                            {
-                                blockType: 'Viewer',
-                                selectedViews: [
-                                    {
-                                        collectionName: '',
-                                        collectionID: '',
-                                        selectedViewUUID: '',
-                                        selectedViewName: '',
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                    slug: {
-                        slugDisplayName: '',
-                        slug_path: '',
-                        keyOfMappedPage: '',
-                        email: email,
-                        password: password,
-                    },
-                    homePageButton: { toAdd: true, slugDisplayName: '' },
-                });
-            });
-            it('31. Visit Flow Groups', async function () {
-                const resourceName = 'VisitFlowGroups';
-                await e2eUiService.configureResourceE2E(client, {
-                    editor: {
-                        editorDetails: {
-                            nameOfEditor: `${resourceName} Editor`,
-                            descriptionOfEditor: 'Generated with Automation',
-                            nameOfResource: resourceName,
-                        },
-                        editorConfiguration: {
-                            editorKey: '',
-                            fieldsToConfigureInEditor: [
-                                {
-                                    FieldID: '',
-                                    Type: udcService.resolveUIType('Integer') || 'TextBox',
-                                    Title: '',
-                                    Mandatory: false,
-                                    ReadOnly: false,
-                                },
-                            ],
-                        },
-                    },
-                    view: {
-                        viewDetails: {
-                            nameOfView: `${resourceName} View`,
-                            descriptionOfView: 'Generated with Automation',
-                            nameOfResource: resourceName,
-                        },
-                        viewConfiguration: {
-                            matchingEditorName: '',
-                            viewKey: '',
-                            fieldsToConfigureInView: [
-                                {
-                                    fieldName: '',
-                                    dataViewType: udcService.resolveUIType('Integer') || 'TextBox',
-                                    mandatory: false,
-                                    readonly: false,
-                                },
-                            ],
-                            fieldsToConfigureInViewMenu: [{ fieldName: '' }],
-                            fieldsToConfigureInViewLineMenu: [{ fieldName: '' }],
-                            fieldsToConfigureInViewSmartSearch: [{ fieldName: '' }],
-                            fieldsToConfigureInViewSearch: [{ fieldName: '' }],
-                        },
-                    },
-                    page: {
-                        pageDetails: { nameOfPage: '', descriptionOfPage: '', extraSection: false },
-                        pageBlocks: [
-                            {
-                                blockType: 'Viewer',
-                                selectedViews: [
-                                    {
-                                        collectionName: '',
-                                        collectionID: '',
-                                        selectedViewUUID: '',
-                                        selectedViewName: '',
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                    slug: {
-                        slugDisplayName: '',
-                        slug_path: '',
-                        keyOfMappedPage: '',
-                        email: email,
-                        password: password,
-                    },
-                    homePageButton: { toAdd: true, slugDisplayName: '' },
-                });
-            });
-            it('32. Visit Flows', async function () {
-                const resourceName = 'VisitFlows';
-                await e2eUiService.configureResourceE2E(client, {
-                    view: {
-                        viewDetails: {
-                            nameOfView: `${resourceName} View`,
-                            descriptionOfView: '',
-                            nameOfResource: resourceName,
-                        },
-                        viewConfiguration: {
-                            matchingEditorName: '',
-                            viewKey: '',
-                            fieldsToConfigureInView: [
-                                {
-                                    fieldName: '',
-                                    dataViewType: udcService.resolveUIType('Integer') || 'TextBox',
-                                    mandatory: false,
-                                    readonly: false,
-                                },
-                            ],
-                            fieldsToConfigureInViewMenu: [{ fieldName: '' }],
-                            fieldsToConfigureInViewLineMenu: [{ fieldName: '' }],
-                            fieldsToConfigureInViewSmartSearch: [{ fieldName: '' }],
-                            fieldsToConfigureInViewSearch: [{ fieldName: '' }],
-                        },
-                    },
-                    page: {
-                        pageDetails: { nameOfPage: '', descriptionOfPage: '', extraSection: false },
-                        pageBlocks: [
-                            {
-                                blockType: 'Viewer',
-                                selectedViews: [
-                                    {
-                                        collectionName: '',
-                                        collectionID: '',
-                                        selectedViewUUID: '',
-                                        selectedViewName: '',
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                    slug: {
-                        slugDisplayName: '',
-                        slug_path: '',
-                        keyOfMappedPage: '',
-                        email: email,
-                        password: password,
-                    },
-                    homePageButton: { toAdd: true, slugDisplayName: '' },
-                });
-            });
+            //     it('21. Reference Account collection E2E', async function () {
+            //         const resourceName = 'ReferenceAccountAuto';
+            //         const slugDisplay = 'Ref Account Auto';
+            //         const slugPath = 'ref_account_auto';
+            //         const acc01UUID = '5737a507-fa00-4c32-a26a-8bc32572e24d';
+            //         const acc02UUID = '56363496-f8ce-42e8-9305-de5d28737e66';
+            //         const acc03UUID = '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb';
+            //         await e2eUiService.configureResourceE2E(client, {
+            //             collection: {
+            //                 createUDC: {
+            //                     nameOfCollection: resourceName,
+            //                     descriptionOfCollection: 'Created with Automation',
+            //                     fieldsOfCollection: [
+            //                         {
+            //                             classType: 'Resource',
+            //                             fieldName: 'of_account',
+            //                             fieldTitle: '',
+            //                             field: {
+            //                                 Type: 'Resource',
+            //                                 Resource: 'accounts',
+            //                                 Description: '',
+            //                                 Mandatory: false,
+            //                                 Indexed: true,
+            //                                 IndexedFields: {
+            //                                     Email: { Indexed: true, Type: 'String' },
+            //                                     Name: { Indexed: true, Type: 'String' },
+            //                                     UUID: { Indexed: true, Type: 'String' },
+            //                                 },
+            //                                 Items: { Description: '', Mandatory: false, Type: 'String' },
+            //                                 OptionalValues: [],
+            //                                 AddonUUID: coreResourcesUUID,
+            //                             },
+            //                         },
+            //                         {
+            //                             classType: 'Primitive',
+            //                             fieldName: 'best_seller_item',
+            //                             fieldTitle: '',
+            //                             field: {
+            //                                 Type: 'String',
+            //                                 Description: '',
+            //                                 AddonUUID: '',
+            //                                 ApplySystemFilter: false,
+            //                                 Mandatory: false,
+            //                                 Indexed: false,
+            //                                 IndexedFields: {},
+            //                                 OptionalValues: [
+            //                                     'A',
+            //                                     'B',
+            //                                     'C',
+            //                                     'D',
+            //                                     'Hair dryer',
+            //                                     'Roller',
+            //                                     'Cart',
+            //                                     'Mask',
+            //                                     'Shirt',
+            //                                     '',
+            //                                 ],
+            //                             },
+            //                         },
+            //                         {
+            //                             classType: 'Primitive',
+            //                             fieldName: 'max_quantity',
+            //                             fieldTitle: '',
+            //                             field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
+            //                         },
+            //                         {
+            //                             classType: 'Primitive',
+            //                             fieldName: 'discount_rate',
+            //                             fieldTitle: '',
+            //                             field: { Type: 'Double', Mandatory: false, Indexed: false, Description: '' },
+            //                         },
+            //                         {
+            //                             classType: 'Array',
+            //                             fieldName: 'offered_discount_location',
+            //                             fieldTitle: '',
+            //                             field: {
+            //                                 Type: 'String',
+            //                                 Mandatory: false,
+            //                                 Indexed: false,
+            //                                 Description: '',
+            //                                 OptionalValues: ['store', 'on-line', 'rep'],
+            //                             },
+            //                         },
+            //                     ],
+            //                 },
+            //                 addValuesToCollection: {
+            //                     collectionName: resourceName,
+            //                     values: [
+            //                         {
+            //                             of_account: acc03UUID,
+            //                             best_seller_item: 'Cart',
+            //                             max_quantity: 1500,
+            //                         },
+            //                         {
+            //                             of_account: '',
+            //                             best_seller_item: '',
+            //                             max_quantity: 100000,
+            //                             discount_rate: 0.1,
+            //                             offered_discount_location: [],
+            //                         },
+            //                         {
+            //                             of_account: acc02UUID,
+            //                             best_seller_item: '',
+            //                             max_quantity: 1,
+            //                             discount_rate: 0.1,
+            //                             offered_discount_location: ['rep'],
+            //                         },
+            //                         {
+            //                             of_account: acc01UUID,
+            //                             best_seller_item: 'Hair dryer',
+            //                             max_quantity: 0,
+            //                             discount_rate: 0.4,
+            //                             offered_discount_location: ['store', 'on-line', 'rep'],
+            //                         },
+            //                         {
+            //                             of_account: acc02UUID,
+            //                             best_seller_item: 'Mask',
+            //                             max_quantity: 40000,
+            //                             discount_rate: 0.15,
+            //                             offered_discount_location: ['store', 'on-line'],
+            //                         },
+            //                         {
+            //                             of_account: acc03UUID,
+            //                             max_quantity: 600,
+            //                             discount_rate: 0.1,
+            //                             offered_discount_location: [],
+            //                         },
+            //                         {
+            //                             of_account: acc01UUID,
+            //                             best_seller_item: 'Shirt',
+            //                             max_quantity: 55,
+            //                             discount_rate: 0.22,
+            //                         },
+            //                         {
+            //                             of_account: acc03UUID,
+            //                             best_seller_item: 'item2',
+            //                             discount_rate: 0.3,
+            //                             offered_discount_location: ['store'],
+            //                         },
+            //                         {
+            //                             best_seller_item: 'A',
+            //                             max_quantity: 111,
+            //                             discount_rate: 0.35,
+            //                             offered_discount_location: ['on-line'],
+            //                         },
+            //                     ],
+            //                 },
+            //             },
+            //             view: {
+            //                 viewDetails: {
+            //                     nameOfView: `${resourceName} View`,
+            //                     descriptionOfView: 'Generated with Automation',
+            //                     nameOfResource: resourceName,
+            //                 },
+            //                 viewConfiguration: {
+            //                     matchingEditorName: ``,
+            //                     viewKey: '',
+            //                     fieldsToConfigureInView: [
+            //                         {
+            //                             fieldName: 'of_account',
+            //                             dataViewType: udcService.resolveUIType('Resource') || 'TextBox',
+            //                             mandatory: false,
+            //                             readonly: true,
+            //                         },
+            //                         {
+            //                             fieldName: 'of_account.Name',
+            //                             dataViewType: udcService.resolveUIType('String') || 'TextBox',
+            //                             mandatory: false,
+            //                             readonly: true,
+            //                         },
+            //                         {
+            //                             fieldName: 'of_account.Email',
+            //                             dataViewType: udcService.resolveUIType('String') || 'TextBox',
+            //                             mandatory: false,
+            //                             readonly: true,
+            //                         },
+            //                         {
+            //                             fieldName: 'best_seller_item',
+            //                             dataViewType: udcService.resolveUIType('String') || 'TextBox',
+            //                             mandatory: false,
+            //                             readonly: true,
+            //                         },
+            //                         {
+            //                             fieldName: 'max_quantity',
+            //                             dataViewType: udcService.resolveUIType('Integer') || 'TextBox',
+            //                             mandatory: false,
+            //                             readonly: true,
+            //                         },
+            //                         {
+            //                             fieldName: 'discount_rate',
+            //                             dataViewType: udcService.resolveUIType('Double') || 'TextBox',
+            //                             mandatory: false,
+            //                             readonly: true,
+            //                         },
+            //                         {
+            //                             fieldName: 'offered_discount_location',
+            //                             dataViewType: udcService.resolveUIType('Array') || 'TextBox',
+            //                             mandatory: false,
+            //                             readonly: true,
+            //                         },
+            //                     ],
+            //                 },
+            //             },
+            //             page: {
+            //                 pageDetails: {
+            //                     nameOfPage: `${resourceName} Page`,
+            //                     descriptionOfPage: 'Automated testing',
+            //                     extraSection: false,
+            //                 },
+            //                 pageBlocks: [
+            //                     {
+            //                         blockType: 'Viewer',
+            //                         selectedViews: [
+            //                             {
+            //                                 collectionName: resourceName,
+            //                                 collectionID: '',
+            //                                 selectedViewUUID: '',
+            //                                 selectedViewName: `${resourceName} View`,
+            //                             },
+            //                         ],
+            //                     },
+            //                 ],
+            //             },
+            //             slug: {
+            //                 slugDisplayName: slugDisplay,
+            //                 slug_path: slugPath,
+            //                 keyOfMappedPage: '',
+            //                 email: email,
+            //                 password: password,
+            //             },
+            //             homePageButton: { toAdd: true, slugDisplayName: slugDisplay },
+            //         });
+            //     });
+            //     it('30. Visit Flow Steps', async function () {
+            //         const resourceName = 'VisitFlowSteps';
+            //         await e2eUiService.configureResourceE2E(client, {
+            //             view: {
+            //                 viewDetails: {
+            //                     nameOfView: `${resourceName} View`,
+            //                     descriptionOfView: '',
+            //                     nameOfResource: resourceName,
+            //                 },
+            //                 viewConfiguration: {
+            //                     matchingEditorName: '',
+            //                     viewKey: '',
+            //                     fieldsToConfigureInView: [
+            //                         {
+            //                             fieldName: '',
+            //                             dataViewType: udcService.resolveUIType('Integer') || 'TextBox',
+            //                             mandatory: false,
+            //                             readonly: false,
+            //                         },
+            //                     ],
+            //                     fieldsToConfigureInViewMenu: [{ fieldName: '' }],
+            //                     fieldsToConfigureInViewLineMenu: [{ fieldName: '' }],
+            //                     fieldsToConfigureInViewSmartSearch: [{ fieldName: '' }],
+            //                     fieldsToConfigureInViewSearch: [{ fieldName: '' }],
+            //                 },
+            //             },
+            //             page: {
+            //                 pageDetails: { nameOfPage: '', descriptionOfPage: '', extraSection: false },
+            //                 pageBlocks: [
+            //                     {
+            //                         blockType: 'Viewer',
+            //                         selectedViews: [
+            //                             {
+            //                                 collectionName: '',
+            //                                 collectionID: '',
+            //                                 selectedViewUUID: '',
+            //                                 selectedViewName: '',
+            //                             },
+            //                         ],
+            //                     },
+            //                 ],
+            //             },
+            //             slug: {
+            //                 slugDisplayName: '',
+            //                 slug_path: '',
+            //                 keyOfMappedPage: '',
+            //                 email: email,
+            //                 password: password,
+            //             },
+            //             homePageButton: { toAdd: true, slugDisplayName: '' },
+            //         });
+            //     });
+            //     it('31. Visit Flow Groups', async function () {
+            //         const resourceName = 'VisitFlowGroups';
+            //         await e2eUiService.configureResourceE2E(client, {
+            //             editor: {
+            //                 editorDetails: {
+            //                     nameOfEditor: `${resourceName} Editor`,
+            //                     descriptionOfEditor: 'Generated with Automation',
+            //                     nameOfResource: resourceName,
+            //                 },
+            //                 editorConfiguration: {
+            //                     editorKey: '',
+            //                     fieldsToConfigureInEditor: [
+            //                         {
+            //                             FieldID: '',
+            //                             Type: udcService.resolveUIType('Integer') || 'TextBox',
+            //                             Title: '',
+            //                             Mandatory: false,
+            //                             ReadOnly: false,
+            //                         },
+            //                     ],
+            //                 },
+            //             },
+            //             view: {
+            //                 viewDetails: {
+            //                     nameOfView: `${resourceName} View`,
+            //                     descriptionOfView: 'Generated with Automation',
+            //                     nameOfResource: resourceName,
+            //                 },
+            //                 viewConfiguration: {
+            //                     matchingEditorName: '',
+            //                     viewKey: '',
+            //                     fieldsToConfigureInView: [
+            //                         {
+            //                             fieldName: '',
+            //                             dataViewType: udcService.resolveUIType('Integer') || 'TextBox',
+            //                             mandatory: false,
+            //                             readonly: false,
+            //                         },
+            //                     ],
+            //                     fieldsToConfigureInViewMenu: [{ fieldName: '' }],
+            //                     fieldsToConfigureInViewLineMenu: [{ fieldName: '' }],
+            //                     fieldsToConfigureInViewSmartSearch: [{ fieldName: '' }],
+            //                     fieldsToConfigureInViewSearch: [{ fieldName: '' }],
+            //                 },
+            //             },
+            //             page: {
+            //                 pageDetails: { nameOfPage: '', descriptionOfPage: '', extraSection: false },
+            //                 pageBlocks: [
+            //                     {
+            //                         blockType: 'Viewer',
+            //                         selectedViews: [
+            //                             {
+            //                                 collectionName: '',
+            //                                 collectionID: '',
+            //                                 selectedViewUUID: '',
+            //                                 selectedViewName: '',
+            //                             },
+            //                         ],
+            //                     },
+            //                 ],
+            //             },
+            //             slug: {
+            //                 slugDisplayName: '',
+            //                 slug_path: '',
+            //                 keyOfMappedPage: '',
+            //                 email: email,
+            //                 password: password,
+            //             },
+            //             homePageButton: { toAdd: true, slugDisplayName: '' },
+            //         });
+            //     });
+            //     it('32. Visit Flows', async function () {
+            //         const resourceName = 'VisitFlows';
+            //         await e2eUiService.configureResourceE2E(client, {
+            //             view: {
+            //                 viewDetails: {
+            //                     nameOfView: `${resourceName} View`,
+            //                     descriptionOfView: '',
+            //                     nameOfResource: resourceName,
+            //                 },
+            //                 viewConfiguration: {
+            //                     matchingEditorName: '',
+            //                     viewKey: '',
+            //                     fieldsToConfigureInView: [
+            //                         {
+            //                             fieldName: '',
+            //                             dataViewType: udcService.resolveUIType('Integer') || 'TextBox',
+            //                             mandatory: false,
+            //                             readonly: false,
+            //                         },
+            //                     ],
+            //                     fieldsToConfigureInViewMenu: [{ fieldName: '' }],
+            //                     fieldsToConfigureInViewLineMenu: [{ fieldName: '' }],
+            //                     fieldsToConfigureInViewSmartSearch: [{ fieldName: '' }],
+            //                     fieldsToConfigureInViewSearch: [{ fieldName: '' }],
+            //                 },
+            //             },
+            //             page: {
+            //                 pageDetails: { nameOfPage: '', descriptionOfPage: '', extraSection: false },
+            //                 pageBlocks: [
+            //                     {
+            //                         blockType: 'Viewer',
+            //                         selectedViews: [
+            //                             {
+            //                                 collectionName: '',
+            //                                 collectionID: '',
+            //                                 selectedViewUUID: '',
+            //                                 selectedViewName: '',
+            //                             },
+            //                         ],
+            //                     },
+            //                 ],
+            //             },
+            //             slug: {
+            //                 slugDisplayName: '',
+            //                 slug_path: '',
+            //                 keyOfMappedPage: '',
+            //                 email: email,
+            //                 password: password,
+            //             },
+            //             homePageButton: { toAdd: true, slugDisplayName: '' },
+            //         });
+            //     });
 
             describe('TearDown', () => {
                 it('Deleting the Documents of the UDC "ReferenceAccountAuto" with API', async () => {
