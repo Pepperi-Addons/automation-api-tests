@@ -1042,6 +1042,8 @@ export default class GeneralService {
                 addonName == 'Export and Import Framework (DIMX)' || // evgeny 15/1/23: to get newest DIMX
                 addonName == 'Nebula' || //
                 addonName == 'sync' || //
+                addonName == 'Core Data Source Interface' || //
+                addonName == 'Core Resources' || //
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
