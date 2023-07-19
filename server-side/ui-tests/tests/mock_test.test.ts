@@ -869,11 +869,131 @@ export async function MockTest(email: string, password: string, client: Client) 
                 await webAppLoginPage.login(email, password);
             });
 
-            it('1. Configure Resource View For the Resource "ReferenceAccountAuto"', async function () {
+            // it('1. Configure Resource View For the Resource "ReferenceAccountAuto"', async function () {
+            //     await resourceListUtils.addView({
+            //         nameOfView: 'ReferenceAccountAuto View',
+            //         descriptionOfView: 'Generated with Automation',
+            //         nameOfResource: 'ReferenceAccountAuto',
+            //     });
+            //     referenceAccountAutoViewUUID = await resourceListUtils.getUUIDfromURL();
+            //     const viewFields: {
+            //         fieldName: string;
+            //         dataViewType: DataViewFieldType;
+            //         mandatory: boolean;
+            //         readonly: boolean;
+            //     }[] = [
+            //         {
+            //             fieldName: 'of_account',
+            //             dataViewType: udcService.resolveUIType('Resource') || 'TextBox',
+            //             mandatory: false,
+            //             readonly: false,
+            //         },
+            //         {
+            //             fieldName: 'of_account.Name',
+            //             dataViewType: udcService.resolveUIType('String') || 'TextBox',
+            //             mandatory: false,
+            //             readonly: false,
+            //         },
+            //         {
+            //             fieldName: 'of_account.Email',
+            //             dataViewType: udcService.resolveUIType('String') || 'TextBox',
+            //             mandatory: false,
+            //             readonly: false,
+            //         },
+            //         {
+            //             fieldName: 'best_seller_item',
+            //             dataViewType: udcService.resolveUIType('String') || 'TextBox',
+            //             mandatory: false,
+            //             readonly: false,
+            //         },
+            //         {
+            //             fieldName: 'max_quantity',
+            //             dataViewType: udcService.resolveUIType('Integer') || 'TextBox',
+            //             mandatory: false,
+            //             readonly: false,
+            //         },
+            //         {
+            //             fieldName: 'discount_rate',
+            //             dataViewType: udcService.resolveUIType('Double') || 'TextBox',
+            //             mandatory: false,
+            //             readonly: false,
+            //         },
+            //         {
+            //             fieldName: 'offered_discount_location',
+            //             dataViewType: udcService.resolveUIType('Array') || 'TextBox',
+            //             mandatory: false,
+            //             readonly: false,
+            //         },
+            //     ];
+            //     await resourceViews.customViewConfig(client, {
+            //         matchingEditorName: '',
+            //         viewKey: referenceAccountAutoViewUUID,
+            //         fieldsToConfigureInView: viewFields,
+            //         fieldsToConfigureInViewSmartSearch: [
+            //             { fieldName: 'of_account' },
+            //             { fieldName: 'of_account.Name' },
+            //             { fieldName: 'of_account.Email' },
+            //             { fieldName: 'best_seller_item' },
+            //             { fieldName: 'max_quantity' },
+            //         ],
+            //     });
+            //     await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
+            //     await webAppHeader.goHome();
+            // });
+            // it('2. Create Page With Viewer Block Inside It', async function () {
+            //     referenceAccountPageName = 'ReferenceAccountAuto Page';
+            //     referenceAccountAutoPageUUID = await e2eUiService.addPage(referenceAccountPageName, 'tests');
+
+            //     const createdPage = await pageBuilder.getPageByUUID(referenceAccountAutoPageUUID, client);
+            //     const viewerBlockInstance = new ViewerBlock([
+            //         {
+            //             collectionName: 'ReferenceAccountAuto',
+            //             collectionID: '',
+            //             selectedViewUUID: referenceAccountAutoViewUUID,
+            //             selectedViewName: 'ReferenceAccountAuto View',
+            //         },
+            //     ]);
+            //     createdPage.Blocks.push(viewerBlockInstance);
+            //     createdPage.Layout.Sections[0].Columns[0] = new BasePageLayoutSectionColumn(viewerBlockInstance.Key);
+            //     createdPage.Name = referenceAccountPageName;
+            //     console.info('createdPage: ', JSON.stringify(createdPage, null, 2));
+            //     const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
+            //     console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 2));
+            //     await webAppHeader.goHome();
+            // });
+            // it('3. Create A Slug For The Viewer Page And Set It To Show On Homepage', async function () {
+            //     referenceAccountSlugDisplayName = `Ref Account`;
+            //     referenceAccountSlugPath = 'ref_account_auto';
+            //     // referenceAccountSlugUUID = await e2eUiService.createSlug(
+            //     await e2eUiService.createSlug(
+            //         referenceAccountSlugDisplayName,
+            //         referenceAccountSlugPath,
+            //         referenceAccountAutoPageUUID,
+            //         email,
+            //         password,
+            //         client,
+            //     );
+            //     driver.sleep(0.5 * 1000);
+            //     await brandedApp.addAdminHomePageButtons(referenceAccountSlugDisplayName);
+            //     await e2eUiService.performManualSync(client);
+            //     await webAppHomePage.validateATDIsApearingOnHomeScreen(referenceAccountSlugDisplayName);
+            // });
+            // it('4. Click On "Ref Account" Button at Homepage', async function () {
+            //     resourceListBlock = new ResourceListBlock(
+            //         driver,
+            //         `https://app.pepperi.com/${referenceAccountSlugPath}`,
+            //     );
+            //     await webAppHeader.goHome();
+            //     await webAppHomePage.isSpinnerDone();
+            //     await webAppHomePage.clickOnBtn(referenceAccountSlugDisplayName);
+            //     await resourceListBlock.isSpinnerDone();
+            //     driver.sleep(8 * 1000);
+            // });
+            it('1. Configure Resource View For the Resource "AccountFilterReferenceAccountAuto"', async function () {
                 await resourceListUtils.addView({
-                    nameOfView: 'ReferenceAccountAuto View',
+                    nameOfView: 'AccountFilterReferenceAccountAuto View',
                     descriptionOfView: 'Generated with Automation',
-                    nameOfResource: 'ReferenceAccountAuto',
+                    nameOfResource: 'AccountFilterReferenceAccountAuto',
                 });
                 referenceAccountAutoViewUUID = await resourceListUtils.getUUIDfromURL();
                 const viewFields: {
@@ -883,19 +1003,19 @@ export async function MockTest(email: string, password: string, client: Client) 
                     readonly: boolean;
                 }[] = [
                     {
-                        fieldName: 'of_account',
+                        fieldName: 'an_account',
                         dataViewType: udcService.resolveUIType('Resource') || 'TextBox',
                         mandatory: false,
                         readonly: false,
                     },
                     {
-                        fieldName: 'of_account.Name',
+                        fieldName: 'an_account.Name',
                         dataViewType: udcService.resolveUIType('String') || 'TextBox',
                         mandatory: false,
                         readonly: false,
                     },
                     {
-                        fieldName: 'of_account.Email',
+                        fieldName: 'an_account.Email',
                         dataViewType: udcService.resolveUIType('String') || 'TextBox',
                         mandatory: false,
                         readonly: false,
@@ -930,9 +1050,9 @@ export async function MockTest(email: string, password: string, client: Client) 
                     viewKey: referenceAccountAutoViewUUID,
                     fieldsToConfigureInView: viewFields,
                     fieldsToConfigureInViewSmartSearch: [
-                        { fieldName: 'of_account' },
-                        { fieldName: 'of_account.Name' },
-                        { fieldName: 'of_account.Email' },
+                        { fieldName: 'an_account' },
+                        { fieldName: 'an_account.Name' },
+                        { fieldName: 'an_account.Email' },
                         { fieldName: 'best_seller_item' },
                         { fieldName: 'max_quantity' },
                     ],
@@ -941,16 +1061,16 @@ export async function MockTest(email: string, password: string, client: Client) 
                 await webAppHeader.goHome();
             });
             it('2. Create Page With Viewer Block Inside It', async function () {
-                referenceAccountPageName = 'ReferenceAccountAuto Page';
+                referenceAccountPageName = 'AccountFilterReferenceAccountAuto Page';
                 referenceAccountAutoPageUUID = await e2eUiService.addPage(referenceAccountPageName, 'tests');
 
                 const createdPage = await pageBuilder.getPageByUUID(referenceAccountAutoPageUUID, client);
                 const viewerBlockInstance = new ViewerBlock([
                     {
-                        collectionName: 'ReferenceAccountAuto',
+                        collectionName: 'AccountFilterReferenceAccountAuto',
                         collectionID: '',
                         selectedViewUUID: referenceAccountAutoViewUUID,
-                        selectedViewName: 'ReferenceAccountAuto View',
+                        selectedViewName: 'AccountFilterReferenceAccountAuto View',
                     },
                 ]);
                 createdPage.Blocks.push(viewerBlockInstance);
@@ -962,8 +1082,8 @@ export async function MockTest(email: string, password: string, client: Client) 
                 await webAppHeader.goHome();
             });
             it('3. Create A Slug For The Viewer Page And Set It To Show On Homepage', async function () {
-                referenceAccountSlugDisplayName = `Ref Account`;
-                referenceAccountSlugPath = 'ref_account_auto';
+                referenceAccountSlugDisplayName = `Account Filter`;
+                referenceAccountSlugPath = 'account_filter_auto';
                 // referenceAccountSlugUUID = await e2eUiService.createSlug(
                 await e2eUiService.createSlug(
                     referenceAccountSlugDisplayName,
@@ -978,7 +1098,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                 await e2eUiService.performManualSync(client);
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(referenceAccountSlugDisplayName);
             });
-            it('4. Click On "Ref Account" Button at Homepage', async function () {
+            it('4. Click On "Account Filter" Button at Homepage', async function () {
                 resourceListBlock = new ResourceListBlock(
                     driver,
                     `https://app.pepperi.com/${referenceAccountSlugPath}`,
