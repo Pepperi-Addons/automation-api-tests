@@ -49,7 +49,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     console.info('changedVersionsResponses: ', JSON.stringify(changedVersionsResponses, null, 2));
 
     describe('Prerequisites Addons for Resource List Tests', async () => {
-        debugger;
+        // debugger;
         // const installedAddonsList = await generalService.getInstalledAddons();
         // console.info('Installed Addons Length: ', installedAddonsList.length);
         changedVersionsResponses.forEach((changeResponse) => {
@@ -207,8 +207,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
 
     const items = await openCatalogService.getItems('?page_size=-1');
     const accounts = await objectsService.getAccounts({ page_size: -1 });
-    console.info('items: ', JSON.stringify(items, null, 2));
-    console.info('accounts: ', JSON.stringify(accounts, null, 2));
+    // console.info('items: ', JSON.stringify(items, null, 2));
+    // console.info('accounts: ', JSON.stringify(accounts, null, 2));
 
     const items_filtered_MaNa = items?.filter((item) => {
         if (item.ExternalID.includes('MaNa')) {
