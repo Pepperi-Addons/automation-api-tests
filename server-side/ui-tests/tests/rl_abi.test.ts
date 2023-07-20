@@ -29,6 +29,72 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const objectsService = new ObjectsService(generalService);
     const openCatalogService = new OpenCatalogService(generalService);
 
+    // const setOfAddonsForTheTest = [
+    //     // Hagit, July 2023
+    //     // { addonName: string, addonUUID: string, setToVersion?: string, setToLatestAvailable?: boolean, setToLatestPhased?: boolean, }
+    //     // { addonName: 'API Testing Framework', addonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', setToLatestAvailable: true, },
+    //     { addonName: 'Resource List', addonUUID: '0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', setToLatestAvailable: true },
+    //     {
+    //         addonName: 'ResourceListABI_Addon',
+    //         addonUUID: 'cd3ba412-66a4-42f4-8abc-65768c5dc606',
+    //         setToLatestAvailable: true,
+    //     },
+    //     { addonName: 'sync', addonUUID: '5122dc6d-745b-4f46-bb8e-bd25225d350a', setToLatestAvailable: true },
+    // ];
+
+    // const changedVersionsResponses = await generalService.changeSetOfAddonsToRequestedVersions(
+    //     setOfAddonsForTheTest,
+    //     varPass,
+    // );
+    // console.info('changedVersionsResponses: ', JSON.stringify(changedVersionsResponses, null, 2));
+
+    // describe('Prerequisites Addons for Resource List Tests', async () => {
+    //     // debugger;
+    //     // const installedAddonsList = await generalService.getInstalledAddons();
+    //     // console.info('Installed Addons Length: ', installedAddonsList.length);
+    //     changedVersionsResponses.forEach((changeResponse) => {
+    //         it(`Validate That The Needed Addon: ${changeResponse.addonName} - Is Installed.`, () => {
+    //             expect(generalService.papiClient.addons.installedAddons.addonUUID(changeResponse.addonUUID).get()).to.be
+    //                 .true;
+    //         });
+    //         describe(`"${changeResponse.addonName}"`, () => {
+    //             it(`${changeResponse.auditLogResponseChangeType} To ${changeResponse.setToLatestPhased ? 'Latest Phased Version' : ''
+    //                 }${changeResponse.setToLatestAvailable ? 'Latest Available Version' : ''}${changeResponse.setToVersion ? `Latest Version That Start With: ${changeResponse.setToVersion}` : ''
+    //                 }`, () => {
+    //                     if (changeResponse.auditLogResponseStatusName == 'Failure') {
+    //                         expect(changeResponse.auditLogResponseErrorMessage).to.include('is already working on version');
+    //                     } else {
+    //                         expect(changeResponse.auditLogResponseStatusName).to.include('Success');
+    //                     }
+    //                 });
+    //             it(`${changeResponse.setToLatestPhased
+    //                     ? `Latest Phased Version: "${changeResponse.latestPhasedVersion}"`
+    //                     : ''
+    //                 }${changeResponse.setToLatestAvailable
+    //                     ? `Latest Available Version: "${changeResponse.latestAvailableVersion}"`
+    //                     : ''
+    //                 }${changeResponse.setToVersion
+    //                     ? `Latest Version That Start With: "${changeResponse.setToVersion}"`
+    //                     : ''
+    //                 } Is Installed`, async () => {
+    //                     const expectedVersion = changeResponse.setToLatestPhased
+    //                         ? changeResponse.latestPhasedVersion
+    //                         : changeResponse.setToLatestAvailable
+    //                             ? changeResponse.latestAvailableVersion
+    //                             : changeResponse.setToVersion
+    //                                 ? changeResponse.setToVersion
+    //                                 : '';
+    //                     await expect(
+    //                         generalService.papiClient.addons.installedAddons.addonUUID(changeResponse.addonUUID).get(),
+    //                     )
+    //                         .eventually.to.have.property('Version')
+    //                         .a('string')
+    //                         .that.is.equal(expectedVersion);
+    //                 });
+    //         });
+    //     });
+    // });
+
     /* Addons Installation */
     // TO USE FOR PHASED LEVELING:
     // const areBaseAddonsPhased = await generalService.setBaseAddonsToPhasedForE2E(varPass);
@@ -134,10 +200,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         // }
     });
 
-    const items = await openCatalogService.getItems();
-    const accounts = await objectsService.getAccounts();
-    console.info('items: ', JSON.stringify(items, null, 2));
-    console.info('accounts: ', JSON.stringify(accounts, null, 2));
+    const items = await openCatalogService.getItems('?page_size=-1');
+    const accounts = await objectsService.getAccounts({ page_size: -1 });
+    // console.info('items: ', JSON.stringify(items, null, 2));
+    // console.info('accounts: ', JSON.stringify(accounts, null, 2));
 
     const items_filtered_MaNa = items?.filter((item) => {
         if (item.ExternalID.includes('MaNa')) {
@@ -509,6 +575,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 // test the content on the list cells - that it is displayed correctly
                                 break;
                             case '36. ContainedArray - Scheme Only: Name, Age':
+                                // test the content on the list cells - that it is displayed correctly
+                                break;
+                            case '37. ':
                                 // test the content on the list cells - that it is displayed correctly
                                 break;
 

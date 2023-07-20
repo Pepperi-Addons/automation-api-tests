@@ -90,6 +90,7 @@ export async function FlowTests(email: string, password: string, client: Client)
         Steps: newFlowSteps,
         Name: newFlowName,
     };
+    const expectedResult = 'evgenyosXXX';
     // await generalService.baseAddonVersionsInstallation(varPass);
     // #region Upgrade survey dependencies
 
@@ -249,8 +250,8 @@ export async function FlowTests(email: string, password: string, client: Client)
                 const isRunFlowPresentedCorrectly = await flowService.enterRunFlowPageByIndex(1, positiveFlow);
                 expect(isRunFlowPresentedCorrectly).to.equal(true);
                 await flowService.runFlow();
-                const returnedValue = await flowService.validateRunResult();
-                expect(returnedValue).to.equal('evgenyosXXX');
+                const returnedValue = await flowService.validateRunResult(expectedResult);
+                expect(returnedValue).to.equal(expectedResult);
                 debugger;
                 //->see logs (todo)
                 // //add step via API

@@ -26,7 +26,7 @@ export const testData = {
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.%'], //CPAS
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.3.%'], //cpi-node (Cross Platform Engine)
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-    'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''], //evgeny: has to stay like this currently
+    'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
     'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '1.0.132'],
@@ -115,6 +115,139 @@ export const testDataForInitUser = {
     'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
     'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', ''],
 };
+
+const setOfAddonsForCpiNodeTesting = [
+    // Hagit, July 2023
+    // { addonName: string, addonUUID: string, setToVersion?: string, setToLatestAvailable?: boolean, setToLatestPhased?: boolean, }
+    {
+        addonName: 'API Testing Framework',
+        addonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+        setToLatestAvailable: true,
+    },
+    { addonName: 'Services Framework', addonUUID: '00000000-0000-0000-0000-000000000a91', setToVersion: '9.6.%' },
+    { addonName: 'Cross Platforms API', addonUUID: '00000000-0000-0000-0000-000000abcdef', setToVersion: '9.6.%' },
+    { addonName: 'WebApp API Framework', addonUUID: '00000000-0000-0000-0000-0000003eba91', setToLatestPhased: true },
+    { addonName: 'Cross Platform Engine', addonUUID: 'bb6ee826-1c6b-4a11-9758-40a46acb69c5', setToLatestPhased: true },
+    {
+        addonName: 'Cross Platform Engine Data',
+        addonUUID: 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b',
+        setToLatestPhased: true,
+    },
+    { addonName: 'Async Task Execution', addonUUID: '00000000-0000-0000-0000-0000000a594c', setToLatestPhased: true },
+    {
+        addonName: 'Core Data Source Interface',
+        addonUUID: '00000000-0000-0000-0000-00000000c07e',
+        setToLatestAvailable: true,
+    },
+    { addonName: 'Core Resources', addonUUID: 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f', setToLatestPhased: true },
+    { addonName: 'Generic Resource', addonUUID: 'df90dba6-e7cc-477b-95cf-2c70114e44e0', setToLatestAvailable: true },
+    {
+        addonName: 'File Service Framework',
+        addonUUID: '00000000-0000-0000-0000-0000000f11e5',
+        setToLatestAvailable: true,
+    },
+    { addonName: 'WebApp Platform', addonUUID: '00000000-0000-0000-1234-000000000b2b', setToLatestPhased: true },
+    { addonName: 'System Health', addonUUID: 'f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', setToLatestPhased: true },
+    { addonName: 'Settings Framework', addonUUID: '354c5123-a7d0-4f52-8fce-3cf1ebc95314', setToLatestPhased: true },
+    { addonName: 'Addons Manager', addonUUID: 'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', setToLatestPhased: true },
+    { addonName: 'Data Views API', addonUUID: '484e7f22-796a-45f8-9082-12a734bac4e8', setToLatestAvailable: true },
+    {
+        addonName: 'Data Index Framework',
+        addonUUID: '00000000-0000-0000-0000-00000e1a571c',
+        setToLatestAvailable: true,
+    },
+    { addonName: 'Activity Data Index', addonUUID: '10979a11-d7f4-41df-8993-f06bfd778304', setToLatestAvailable: true },
+    { addonName: 'ADAL', addonUUID: '00000000-0000-0000-0000-00000000ada1', setToLatestAvailable: true },
+    {
+        addonName: 'User Defined Collections',
+        addonUUID: '122c0e9d-c240-4865-b446-f37ece866c22',
+        setToLatestAvailable: true,
+    },
+    { addonName: 'Automated Jobs', addonUUID: 'fcb7ced2-4c81-4705-9f2b-89310d45e6c7', setToLatestAvailable: true },
+    { addonName: 'Relations Framework', addonUUID: '5ac7d8c3-0249-4805-8ce9-af4aecd77794', setToLatestPhased: true },
+    { addonName: 'Object Types Editor', addonUUID: '04de9428-8658-4bf7-8171-b59f6327bbf1', setToLatestPhased: true },
+    {
+        addonName: 'Notification Service',
+        addonUUID: '00000000-0000-0000-0000-000000040fa9',
+        setToLatestAvailable: true,
+    },
+    {
+        addonName: 'Item Trade Promotions',
+        addonUUID: 'b5c00007-0941-44ab-9f0e-5da2773f2f04',
+        setToLatestAvailable: true,
+    },
+    {
+        addonName: 'Order Trade Promotions',
+        addonUUID: '375425f5-cd2f-4372-bb88-6ff878f40630',
+        setToLatestAvailable: true,
+    },
+    {
+        addonName: 'Package Trade Promotions',
+        addonUUID: '90b11a55-b36d-48f1-88dc-6d8e06d08286',
+        setToLatestAvailable: true,
+    },
+    { addonName: 'Audit Log', addonUUID: '00000000-0000-0000-0000-00000da1a109', setToLatestPhased: true },
+    {
+        addonName: 'Export and Import Framework (DIMX)',
+        addonUUID: '44c97115-6d14-4626-91dc-83f176e9a0fc',
+        setToLatestAvailable: true,
+    },
+    { addonName: 'Nebula', addonUUID: '00000000-0000-0000-0000-000000006a91', setToLatestAvailable: true },
+    { addonName: 'sync', addonUUID: '5122dc6d-745b-4f46-bb8e-bd25225d350a', setToVersion: '0.7.%' },
+    { addonName: 'cpi-node-automation', addonUUID: '2b39d63e-0982-4ada-8cbb-737b03b9ee58', setToVersion: '%' },
+];
+
+const setOfAddonsForE2EusersWithNewSync = [
+    // Hagit, July 2023
+    // { addonName: string, addonUUID: string, setToVersion?: string, setToLatestAvailable?: boolean, setToLatestPhased?: boolean, }
+    // { addonName: 'API Testing Framework', addonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', setToLatestAvailable: true, },
+    { addonName: 'Services Framework', addonUUID: '00000000-0000-0000-0000-000000000a91', setToLatestPhased: true },
+    { addonName: 'Cross Platforms API', addonUUID: '00000000-0000-0000-0000-000000abcdef', setToLatestPhased: true },
+    { addonName: 'WebApp API Framework', addonUUID: '00000000-0000-0000-0000-0000003eba91', setToLatestPhased: true },
+    { addonName: 'Cross Platform Engine', addonUUID: 'bb6ee826-1c6b-4a11-9758-40a46acb69c5', setToLatestPhased: true },
+    {
+        addonName: 'Cross Platform Engine Data',
+        addonUUID: 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b',
+        setToLatestPhased: true,
+    },
+    { addonName: 'Async Task Execution', addonUUID: '00000000-0000-0000-0000-0000000a594c', setToLatestPhased: true },
+    {
+        addonName: 'Core Data Source Interface',
+        addonUUID: '00000000-0000-0000-0000-00000000c07e',
+        setToLatestPhased: true,
+    },
+    { addonName: 'Core Resources', addonUUID: 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f', setToLatestPhased: true },
+    { addonName: 'Generic Resource', addonUUID: 'df90dba6-e7cc-477b-95cf-2c70114e44e0', setToLatestPhased: true },
+    { addonName: 'File Service Framework', addonUUID: '00000000-0000-0000-0000-0000000f11e5', setToLatestPhased: true },
+    { addonName: 'WebApp Platform', addonUUID: '00000000-0000-0000-1234-000000000b2b', setToLatestPhased: true },
+    { addonName: 'System Health', addonUUID: 'f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', setToLatestPhased: true },
+    { addonName: 'Settings Framework', addonUUID: '354c5123-a7d0-4f52-8fce-3cf1ebc95314', setToLatestPhased: true },
+    { addonName: 'Addons Manager', addonUUID: 'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', setToLatestPhased: true },
+    { addonName: 'Data Views API', addonUUID: '484e7f22-796a-45f8-9082-12a734bac4e8', setToLatestPhased: true },
+    { addonName: 'Data Index Framework', addonUUID: '00000000-0000-0000-0000-00000e1a571c', setToLatestPhased: true },
+    { addonName: 'Activity Data Index', addonUUID: '10979a11-d7f4-41df-8993-f06bfd778304', setToLatestPhased: true },
+    { addonName: 'ADAL', addonUUID: '00000000-0000-0000-0000-00000000ada1', setToLatestPhased: true },
+    {
+        addonName: 'User Defined Collections',
+        addonUUID: '122c0e9d-c240-4865-b446-f37ece866c22',
+        setToLatestPhased: true,
+    },
+    // { addonName: 'Automated Jobs', addonUUID: 'fcb7ced2-4c81-4705-9f2b-89310d45e6c7', setToLatestPhased: true, },
+    { addonName: 'Relations Framework', addonUUID: '5ac7d8c3-0249-4805-8ce9-af4aecd77794', setToLatestPhased: true },
+    { addonName: 'Object Types Editor', addonUUID: '04de9428-8658-4bf7-8171-b59f6327bbf1', setToLatestPhased: true },
+    // { addonName: 'Notification Service', addonUUID: '00000000-0000-0000-0000-000000040fa9', setToLatestPhased: true, },
+    // { addonName: 'Item Trade Promotions', addonUUID: 'b5c00007-0941-44ab-9f0e-5da2773f2f04', setToLatestPhased: true, },
+    // { addonName: 'Order Trade Promotions', addonUUID: '375425f5-cd2f-4372-bb88-6ff878f40630', setToLatestPhased: true, },
+    // { addonName: 'Package Trade Promotions', addonUUID: '90b11a55-b36d-48f1-88dc-6d8e06d08286', setToLatestPhased: true, },
+    { addonName: 'Audit Log', addonUUID: '00000000-0000-0000-0000-00000da1a109', setToLatestPhased: true },
+    {
+        addonName: 'Export and Import Framework (DIMX)',
+        addonUUID: '44c97115-6d14-4626-91dc-83f176e9a0fc',
+        setToLatestPhased: true,
+    },
+    { addonName: 'Nebula', addonUUID: '00000000-0000-0000-0000-000000006a91', setToLatestPhased: true },
+    { addonName: 'sync', addonUUID: '5122dc6d-745b-4f46-bb8e-bd25225d350a', setToLatestAvailable: true },
+];
 
 export const ConsoleColors = {
     MenuHeader: 'color: #FFFF00',
@@ -247,11 +380,15 @@ export default class GeneralService {
         });
         this.adalService = new ADALService(this.papiClient);
         this.assetsBaseUrl = client.AssetsBaseUrl;
+        this.setOfAddonsForE2EusersWithNewSync = setOfAddonsForE2EusersWithNewSync;
+        this.setOfAddonsForCpiNodeTesting = setOfAddonsForCpiNodeTesting;
         this.testData = testData;
         this.testDataWithNewSync = testDataWithNewSync;
         this.testDataForInitUser = testDataForInitUser;
         this.ConsoleColors = ConsoleColors;
     }
+    public setOfAddonsForE2EusersWithNewSync;
+    public setOfAddonsForCpiNodeTesting;
     public testData;
     public testDataWithNewSync;
     public testDataForInitUser;
@@ -1042,6 +1179,8 @@ export default class GeneralService {
                 addonName == 'Export and Import Framework (DIMX)' || // evgeny 15/1/23: to get newest DIMX
                 addonName == 'Nebula' || //
                 addonName == 'sync' || //
+                addonName == 'Core Data Source Interface' || //
+                addonName == 'Core Resources' || //
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
@@ -1149,24 +1288,87 @@ export default class GeneralService {
         return testData;
     }
 
-    async getAddonLatestPhasedVersion(addonUUID: string, varKey: string) {
-        const fetchVarResponse = (
-            await this.fetchStatus(
-                `${this.client.BaseURL.replace(
-                    'papi-eu',
-                    'papi',
-                )}/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 AND Phased=1 &order_by=CreationDateTime DESC`,
-                {
-                    method: `GET`,
-                    headers: {
-                        Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
-                    },
+    async getAddonLatestPhasedVersion(
+        addonUUID: string,
+        varKey: string,
+    ): Promise<{ latestPhasedVersion: string; message: string }> {
+        let latestPhasedVersion = '';
+        let informativeMessage = `Latest phased version retrieved successfully`;
+        const fetchVarResponse = await this.fetchStatus(
+            `${this.client.BaseURL.replace(
+                'papi-eu',
+                'papi',
+            )}/var/addons/versions?where=AddonUUID='${addonUUID}' AND Available=1 AND Phased=1 &order_by=CreationDateTime DESC`,
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
                 },
-            )
-        ).Body;
-        const res = fetchVarResponse[0]?.Version;
-        console.info(`Addon ${addonUUID} Latest Phased Version: `, JSON.stringify(res, null, 2));
-        return res || '';
+            },
+        );
+        if (fetchVarResponse.Body.length > 0 && fetchVarResponse.Status == 200) {
+            try {
+                latestPhasedVersion = fetchVarResponse.Body[0].Version;
+            } catch (error) {
+                console.error(error);
+                informativeMessage = `Get latest phased version failed, Status: ${
+                    fetchVarResponse.Status
+                }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `;
+            }
+        } else if (fetchVarResponse.Body.length > 0 && fetchVarResponse.Status == 401) {
+            informativeMessage = `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.title} `;
+        } else if (fetchVarResponse.Body.length > 0) {
+            informativeMessage = `Get latest phased version failed, Status: ${
+                fetchVarResponse.Status
+            }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `;
+        }
+        console.info(`Addon ${addonUUID} Latest Phased Version: `, JSON.stringify(latestPhasedVersion, null, 2));
+        return { latestPhasedVersion: latestPhasedVersion || '', message: informativeMessage };
+    }
+
+    async getAddonLatestAvailableVersion(
+        addonUUID: string,
+        varKey: string,
+        version?: string,
+    ): Promise<{ latestVersion: string; message: string }> {
+        let latestVersion = '';
+        let informativeMessage = `Latest available version ${
+            version ? `that starts with ${version} ` : ''
+        }retrieved successfully`;
+        const searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
+        const fetchVarResponse = await this.fetchStatus(
+            `${this.client.BaseURL.replace(
+                'papi-eu',
+                'papi',
+            )}/var/addons/versions?where=AddonUUID='${addonUUID}'${searchString}&order_by=CreationDateTime DESC`,
+            {
+                method: `GET`,
+                headers: {
+                    Authorization: `Basic ${Buffer.from(varKey).toString('base64')}`,
+                },
+            },
+        );
+        if (fetchVarResponse.Body.length > 0 && fetchVarResponse.Status == 200) {
+            try {
+                latestVersion = fetchVarResponse.Body[0].Version;
+            } catch (error) {
+                console.error(error);
+                informativeMessage = `Get latest addon version that starts with: ${version} failed, Status: ${
+                    fetchVarResponse.Status
+                }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `;
+            }
+        } else if (fetchVarResponse.Body.length > 0 && fetchVarResponse.Status == 401) {
+            informativeMessage = `Fetch Error - Verify The varKey, Status: ${fetchVarResponse.Status}, Error Message: ${fetchVarResponse.Error.title} `;
+        } else if (fetchVarResponse.Body.length > 0) {
+            informativeMessage = `Get latest addon version that starts with: ${version} failed, Status: ${
+                fetchVarResponse.Status
+            }, Error Message: ${JSON.stringify(fetchVarResponse.Error)} `;
+        }
+        console.info(
+            `Addon ${addonUUID} Latest Available Version${version ? `that starts with ${version} ` : ''}: `,
+            JSON.stringify(latestVersion, null, 2),
+        );
+        return { latestVersion: latestVersion, message: informativeMessage };
     }
 
     //currently immplemented only for dev-tests: will get better with time
@@ -1277,6 +1479,128 @@ export default class GeneralService {
             }
         }
         return testData;
+    }
+
+    async changeToRequestedVersion(
+        requested: {
+            addonName: string;
+            addonUUID: string;
+            setToVersion?: string;
+            setToLatestAvailable?: boolean;
+            setToLatestPhased?: boolean;
+        },
+        varKey: string,
+    ): Promise<{
+        addonName: string;
+        addonUUID: string;
+        setToVersion?: string;
+        setToLatestAvailable?: boolean;
+        setToLatestPhased?: boolean;
+        latestAvailableVersion?: string;
+        latestPhasedVersion?: string;
+        auditLogResponseChangeType?: string;
+        auditLogResponseStatusName: string;
+        auditLogResponseErrorMessage?: string;
+    }> {
+        const changeResponseObject = {
+            ...requested,
+            auditLogResponseStatusName: '',
+        };
+        if (requested.setToLatestPhased) {
+            const phasedVersionResponse = await this.getAddonLatestPhasedVersion(requested.addonUUID, varKey);
+            if (phasedVersionResponse.message === 'Latest phased version retrieved successfully') {
+                changeResponseObject['latestPhasedVersion'] = phasedVersionResponse.latestPhasedVersion;
+                const setToPhasedResponse = await this.setAddonToVersion(
+                    requested.addonUUID,
+                    phasedVersionResponse.latestPhasedVersion,
+                );
+                if (setToPhasedResponse.hasOwnProperty('changeType')) {
+                    changeResponseObject['auditLogResponseChangeType'] = setToPhasedResponse['changeType'];
+                }
+                if (setToPhasedResponse.hasOwnProperty('status')) {
+                    changeResponseObject.auditLogResponseStatusName = setToPhasedResponse['status'];
+                }
+                if (setToPhasedResponse.hasOwnProperty('errorMessage')) {
+                    changeResponseObject['auditLogResponseErrorMessage'] = setToPhasedResponse['errorMessage'];
+                }
+            }
+        } else if (requested.setToLatestAvailable) {
+            const availableVersionResponse = await this.getAddonLatestAvailableVersion(requested.addonUUID, varKey);
+            if (availableVersionResponse.message.includes('retrieved successfully')) {
+                changeResponseObject['latestAvailableVersion'] = availableVersionResponse.latestVersion;
+                const setToLatestAvailableResponse = await this.setAddonToVersion(
+                    requested.addonUUID,
+                    availableVersionResponse.latestVersion,
+                );
+                if (setToLatestAvailableResponse.hasOwnProperty('changeType')) {
+                    changeResponseObject['auditLogResponseChangeType'] = setToLatestAvailableResponse['changeType'];
+                }
+                if (setToLatestAvailableResponse.hasOwnProperty('status')) {
+                    changeResponseObject.auditLogResponseStatusName = setToLatestAvailableResponse['status'];
+                }
+                if (setToLatestAvailableResponse.hasOwnProperty('errorMessage')) {
+                    changeResponseObject['auditLogResponseErrorMessage'] = setToLatestAvailableResponse['errorMessage'];
+                }
+            }
+        } else if (requested.setToVersion) {
+            const setToVersionResponse = await this.setAddonToVersion(requested.addonUUID, requested.setToVersion);
+            if (setToVersionResponse.hasOwnProperty('changeType')) {
+                changeResponseObject['auditLogResponseChangeType'] = setToVersionResponse['changeType'];
+            }
+            if (setToVersionResponse.hasOwnProperty('status')) {
+                changeResponseObject.auditLogResponseStatusName = setToVersionResponse['status'];
+            }
+            if (setToVersionResponse.hasOwnProperty('errorMessage')) {
+                changeResponseObject['auditLogResponseErrorMessage'] = setToVersionResponse['errorMessage'];
+            }
+        }
+        return changeResponseObject;
+    }
+
+    async changeSetOfAddonsToRequestedVersions(
+        requestedArr: {
+            addonName: string;
+            addonUUID: string;
+            setToVersion?: string;
+            setToLatestAvailable?: boolean;
+            setToLatestPhased?: boolean;
+        }[],
+        varKey: string,
+    ): Promise<
+        {
+            addonName: string;
+            addonUUID: string;
+            setToVersion?: string;
+            setToLatestAvailable?: boolean;
+            setToLatestPhased?: boolean;
+            latestAvailableVersion?: string;
+            latestPhasedVersion?: string;
+            auditLogResponseChangeType?: string;
+            auditLogResponseStatusName: string;
+            auditLogResponseErrorMessage?: string;
+        }[]
+    > {
+        const changeSetResponse: {
+            addonName: string;
+            addonUUID: string;
+            setToVersion?: string;
+            setToLatestAvailable?: boolean;
+            setToLatestPhased?: boolean;
+            latestAvailableVersion?: string;
+            latestPhasedVersion?: string;
+            auditLogResponseChangeType?: string;
+            auditLogResponseStatusName: string;
+            auditLogResponseErrorMessage?: string;
+        }[] = [];
+        // const changeSetResponse = await Promise.all(requestedArr.map(async requested => {
+        //     return await this.changeToRequestedVersion(requested, varKey)
+        // }));
+        for (let index = 0; index < requestedArr.length; index++) {
+            const requested = requestedArr[index];
+            const requestedChangeToRequestedVersionResponse = await this.changeToRequestedVersion(requested, varKey);
+            changeSetResponse.push(requestedChangeToRequestedVersionResponse);
+        }
+        return changeSetResponse;
     }
 
     fetchStatus(uri: string, requestInit?: FetchRequestInit): Promise<FetchStatusResponse> {
@@ -1435,6 +1759,157 @@ export default class GeneralService {
         );
         const chnageVersionResponseArr = await this.changeVersion(varPass, addonsToSwitchToPhased, true);
         return chnageVersionResponseArr;
+    }
+
+    async setAddonToVersion(addonUUID: string, toVersion: string) {
+        let changeType = '';
+        const chnageVersionResponse = {};
+        const theAddon = await this.papiClient.addons.installedAddons.addonUUID(addonUUID).get();
+        if (theAddon.Version) {
+            if (theAddon.Version < toVersion) {
+                changeType = 'Upgrade';
+                let upgradeResponse;
+                let upgrade_AuditLogResponse;
+                try {
+                    upgradeResponse = await this.papiClient.addons.installedAddons
+                        .addonUUID(addonUUID)
+                        .upgrade(toVersion);
+                    upgrade_AuditLogResponse = await this.getAuditLogResultObjectIfValid(
+                        upgradeResponse.URI as string,
+                        40,
+                    );
+                } catch (error) {
+                    console.error(error);
+                    const theError = error as Error;
+                    chnageVersionResponse['changeType'] = changeType;
+                    chnageVersionResponse['status'] = 'Failure';
+                    chnageVersionResponse['errorMessage'] = theError.message;
+                }
+                if (upgrade_AuditLogResponse?.Status?.Name == 'Failure') {
+                    if (
+                        upgrade_AuditLogResponse.AuditInfo.ErrorMessage.includes(
+                            `is already working on version ${toVersion}`,
+                        )
+                    ) {
+                        chnageVersionResponse['changeType'] = changeType;
+                        chnageVersionResponse['status'] = 'Success';
+                        chnageVersionResponse['errorMessage'] = upgrade_AuditLogResponse.AuditInfo.ErrorMessage;
+                    } else if (
+                        !upgrade_AuditLogResponse.AuditInfo.ErrorMessage.includes('is already working on newer version')
+                    ) {
+                        chnageVersionResponse['changeType'] = changeType;
+                        chnageVersionResponse['status'] = upgrade_AuditLogResponse.Status.Name;
+                        chnageVersionResponse['errorMessage'] = upgrade_AuditLogResponse.AuditInfo.ErrorMessage;
+                    } else if (upgrade_AuditLogResponse.AuditInfo.ErrorMessage.includes('does not installed!')) {
+                        let installResponse;
+                        let auditLogResponse;
+                        try {
+                            installResponse = await this.papiClient.addons.installedAddons
+                                .addonUUID(`${addonUUID}`)
+                                .install(toVersion);
+                            auditLogResponse = await this.getAuditLogResultObjectIfValid(
+                                installResponse.URI as string,
+                                40,
+                            );
+                        } catch (error) {
+                            console.error(error);
+                            const theError = error as Error;
+                            chnageVersionResponse['changeType'] = changeType;
+                            chnageVersionResponse['status'] = 'Failure';
+                            chnageVersionResponse['errorMessage'] = theError.message;
+                        }
+                        if (auditLogResponse.Status?.Name == 'Failure') {
+                            chnageVersionResponse['changeType'] = changeType;
+                            chnageVersionResponse['status'] = auditLogResponse.Status.Name;
+                            chnageVersionResponse['errorMessage'] = auditLogResponse.AuditInfo.ErrorMessage;
+                        } else {
+                            chnageVersionResponse['changeType'] = changeType;
+                            chnageVersionResponse['status'] = auditLogResponse.Status?.Name;
+                        }
+                    }
+                }
+            } else {
+                changeType = 'Downgrade';
+                let downgradeResponse;
+                let downgrade_auditLogResponse;
+                try {
+                    downgradeResponse = await this.papiClient.addons.installedAddons
+                        .addonUUID(addonUUID)
+                        .downgrade(toVersion);
+                    downgrade_auditLogResponse = await this.getAuditLogResultObjectIfValid(
+                        downgradeResponse.URI as string,
+                        40,
+                    );
+                } catch (error) {
+                    console.error(error);
+                    const theError = error as Error;
+                    chnageVersionResponse['changeType'] = changeType;
+                    chnageVersionResponse['status'] = 'Failure';
+                    chnageVersionResponse['errorMessage'] = theError.message;
+                }
+                if (downgrade_auditLogResponse?.Status?.Name == 'Failure') {
+                    if (
+                        downgrade_auditLogResponse.AuditInfo.ErrorMessage.includes(
+                            `is already working on version ${toVersion}`,
+                        )
+                    ) {
+                        chnageVersionResponse['changeType'] = changeType;
+                        chnageVersionResponse['status'] = 'Success';
+                        chnageVersionResponse['errorMessage'] = downgrade_auditLogResponse.AuditInfo.ErrorMessage;
+                    } else if (downgrade_auditLogResponse.AuditInfo.ErrorMessage.includes('does not installed!')) {
+                        let installResponse;
+                        let auditLogResponse;
+                        try {
+                            installResponse = await this.papiClient.addons.installedAddons
+                                .addonUUID(`${addonUUID}`)
+                                .install(toVersion);
+                            auditLogResponse = await this.getAuditLogResultObjectIfValid(
+                                installResponse.URI as string,
+                                40,
+                            );
+                        } catch (error) {
+                            console.error(error);
+                            const theError = error as Error;
+                            chnageVersionResponse['changeType'] = changeType;
+                            chnageVersionResponse['status'] = 'Failure';
+                            chnageVersionResponse['errorMessage'] = theError.message;
+                        }
+                        if (auditLogResponse.Status?.Name == 'Failure') {
+                            chnageVersionResponse['changeType'] = changeType;
+                            chnageVersionResponse['status'] = auditLogResponse.Status.Name;
+                            chnageVersionResponse['errorMessage'] = auditLogResponse.AuditInfo.ErrorMessage;
+                        } else {
+                            chnageVersionResponse['changeType'] = changeType;
+                            chnageVersionResponse['status'] = auditLogResponse.Status?.Name;
+                        }
+                    }
+                }
+            }
+        } else {
+            let installResponse;
+            let install_auditLogResponse;
+            try {
+                installResponse = await this.papiClient.addons.installedAddons
+                    .addonUUID(`${addonUUID}`)
+                    .install(toVersion);
+                install_auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI as string, 40);
+            } catch (error) {
+                console.error(error);
+                const theError = error as Error;
+                chnageVersionResponse['changeType'] = changeType;
+                chnageVersionResponse['status'] = 'Failure';
+                chnageVersionResponse['errorMessage'] = theError.message;
+            }
+            if (install_auditLogResponse?.Status?.Name == 'Failure') {
+                chnageVersionResponse['changeType'] = changeType;
+                chnageVersionResponse['status'] = install_auditLogResponse.Status.Name;
+                chnageVersionResponse['errorMessage'] = install_auditLogResponse.AuditInfo.ErrorMessage;
+            } else {
+                chnageVersionResponse['changeType'] = changeType;
+                chnageVersionResponse['status'] = install_auditLogResponse.Status?.Name;
+            }
+        }
+        return chnageVersionResponse;
     }
 
     // async setTestDataWithNewSyncToLatestPhasedVersion(varPass: string) {
@@ -1706,6 +2181,8 @@ export default class GeneralService {
                 return 'cebb251f-1c80-4d80-b62c-442e48e678e8';
             case 'SYNC':
                 return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
+            case 'CORE':
+                return 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
             default:
                 return 'none';
         }

@@ -294,11 +294,10 @@ export class FlowService extends AddonPage {
         await this.browser.switchToOtherTab(0);
     }
 
-    async validateRunResult() {
+    async validateRunResult(expectedResult: string) {
         debugger;
-        const allRelevantElements = await this.browser.findElements(this.RunResultValues);
         let totValue = '';
-        for (let index = 4; index < allRelevantElements.length; index++) {
+        for (let index = 4; index < 4 + expectedResult.length; index++) {
             const valueToRead: string = this.RunResultValues.valueOf()['value'].replace('|PLACEHOLDER|', index);
             const value = await this.browser.findElement(By.xpath(valueToRead));
             totValue += await value.getText();
