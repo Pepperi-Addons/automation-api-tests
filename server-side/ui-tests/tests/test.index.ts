@@ -739,6 +739,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             console.log(
                 `####################### ${addonName} Version: ${latestVersionOfTestedAddonProd} #######################`,
             );
+
             debugger;
             const isInstalled = await Promise.all([
                 validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddonEu, 'prod'),
@@ -866,13 +867,13 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     debugger;
                     let errorString = '';
                     if (!devTestResutsEu.AuditInfo.ResultObject) {
-                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage},\n`;
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
                     }
                     if (!devTestResultsProd.AuditInfo.ResultObject) {
-                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage},\n`;
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
                     }
                     if (!devTestResultsSb.AuditInfo.ResultObject) {
-                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage},\n`;
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
                     await reportToTeamsMessage(
                         addonName,
