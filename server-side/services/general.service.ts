@@ -29,7 +29,7 @@ export const testData = {
     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
-    'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', '1.0.132'],
+    'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''],
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.16.%'], //NG14 latest webapp
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
@@ -74,7 +74,7 @@ export const testDataForInitUser = {
     ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
-    'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.0.134'],
+    'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
     'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     // 'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
