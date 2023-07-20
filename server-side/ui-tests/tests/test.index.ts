@@ -739,6 +739,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             console.log(
                 `####################### ${addonName} Version: ${latestVersionOfTestedAddonProd} #######################`,
             );
+
             debugger;
             const isInstalled = await Promise.all([
                 validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddonEu, 'prod'),
@@ -866,13 +867,13 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     debugger;
                     let errorString = '';
                     if (!devTestResutsEu.AuditInfo.ResultObject) {
-                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage},\n`;
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
                     }
                     if (!devTestResultsProd.AuditInfo.ResultObject) {
-                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage},\n`;
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
                     }
                     if (!devTestResultsSb.AuditInfo.ResultObject) {
-                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage},\n`;
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
                     await reportToTeamsMessage(
                         addonName,
@@ -917,6 +918,55 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 let objectToPrintProd;
                 let objectToPrintSB;
                 let shouldAlsoPrintVer = false;
+                if (
+                    testResultArrayProd.results === undefined &&
+                    testResultArraySB.results === undefined &&
+                    testResultArrayEu.results === undefined &&
+                    testResultArrayProd.tests === undefined &&
+                    testResultArraySB.tests === undefined &&
+                    testResultArrayEu.tests === undefined
+                ) {
+                    const errorString = `Cannot Parse Result Object, Recieved: Prod: ${JSON.stringify(
+                        testResultArrayProd,
+                    )}, EU: ${JSON.stringify(testResultArrayEu)}, SB: ${JSON.stringify(
+                        testResultArraySB,
+                    )}, On: ${currentTestName} Test`;
+                    debugger;
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEU,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                }
                 if (
                     testResultArrayProd.results &&
                     testResultArrayProd.results[0].suites[0].suites &&
@@ -2184,6 +2234,7 @@ export async function reportToTeams(
 ) {
     let message;
     let message2;
+    await reportBuildEnded(addonName, addonUUID, addonVersion, generalService);
     if (isDev) {
         const stringUsers = users?.join(',');
         const uniqFailingEnvs = [...new Set(failingEnvs)];
@@ -2241,6 +2292,7 @@ export async function reportToTeams(
 }
 
 export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, error, service: GeneralService) {
+    await reportBuildEnded(addonName, addonUUID, addonVersion, service);
     const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Failed On: ${error}`;
     const bodyToSend = {
         Name: `${addonName} Approvment Tests Status: Failed Due CI/CD Process Exception`,
@@ -2274,6 +2326,34 @@ export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, e
 
 export async function reportBuildStarted(addonName, addonUUID, addonVersion, service: GeneralService) {
     const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Started Building`;
+    const bodyToSend = {
+        Name: `${addonName}, ${addonUUID}, ${addonVersion}`,
+        Description: message,
+        Status: 'INFO',
+        Message: message,
+        UserWebhook: await handleTeamsURL('QA', service, email, pass),
+    };
+    const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
+        method: 'POST',
+        headers: {
+            'X-Pepperi-SecretKey': await service.getSecret()[1],
+            'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+        },
+        body: JSON.stringify(bodyToSend),
+    });
+    if (monitoringResponse.Ok !== true) {
+        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+    }
+    if (monitoringResponse.Status !== 200) {
+        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+    }
+    if (Object.keys(monitoringResponse.Error).length !== 0) {
+        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+    }
+}
+
+export async function reportBuildEnded(addonName, addonUUID, addonVersion, service: GeneralService) {
+    const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Ended Testing`;
     const bodyToSend = {
         Name: `${addonName}, ${addonUUID}, ${addonVersion}`,
         Description: message,
