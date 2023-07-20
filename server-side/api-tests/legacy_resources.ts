@@ -576,6 +576,24 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         delete object['TSADateTime'];
                         delete object['TSAContactBirthday'];
                         delete object['ModificationDateTime'];
+                        delete object['TSAAttachmentAPI'];
+                        delete object['TSACheckboxAPI'];
+                        delete object['TSACurrencyAPI'];
+                        delete object['TSADateAPI'];
+                        delete object['TSADateTimeAPI'];
+                        delete object['TSADecimalNumberAPI'];
+                        delete object['TSADropdownAPI'];
+                        delete object['TSAEmailAPI'];
+                        delete object['TSAHtmlAPI'];
+                        delete object['TSAImageAPI'];
+                        delete object['TSALimitedLineAPI'];
+                        delete object['TSALinkAPI'];
+                        delete object['TSAMultiChoiceAPI'];
+                        delete object['TSANumberAPI'];
+                        delete object['TSAParagraphAPI'];
+                        delete object['TSASignatureAPI'];
+                        delete object['TSAPhoneNumberAPI'];
+                        delete object['TSASingleLineAPI'];
                     });
                     accountsForComparison.forEach((object) => {
                         object['CreationDateTime'] = object['CreationDateTime'].replace('Z', '.000Z');
