@@ -43,6 +43,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''], // current phased version 1.0.23 | dependency > 1.0.23
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // current phased version 0.5.10 | dependency > 0.5.7
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''], // current phased version 0.6.26 | dependency > 0.6.3
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.16.132'],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
