@@ -1344,13 +1344,13 @@ export async function handleDevTestInstallation(
             addonUUID === '00000000-0000-0000-0000-000000006a91' //Nebula
         ) {
             const depObj = {};
-            depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.41'];
+            depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''];
             addonDep.push(depObj);
         }
         if (addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
             //Sync
             const depObj = {};
-            depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.41'];
+            depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''];
             addonDep.push(depObj);
         }
         if (

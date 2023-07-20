@@ -587,9 +587,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         const service = new GeneralService(client);
         const addonName = addon.toUpperCase();
         let addonUUID;
-        const failedSuitesProd: string[] = [];
-        const failedSuitesEU: string[] = [];
-        const failedSuitesSB: string[] = [];
+        const failedSuitesProd: any[] = [];
+        const failedSuitesEU: any[] = [];
+        const failedSuitesSB: any[] = [];
+        const arrayOfFailedTests: any[] = [];
         // const passedTests: string[] = [];
         // const passedTestsEnv: string[] = [];
         // const failingTestsEnv: string[] = [];
@@ -822,6 +823,12 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 console.log(
                     `####################### ${currentTestName}: EXECUTION UUIDS:\nEU - ${devTestResponseEu.Body.URI}\nPROD - ${devTestResponseProd.Body.URI}\nSB - ${devTestResponseSb.Body.URI}`,
                 );
+                const testObject = {
+                    name: currentTestName,
+                    prodExecution: devTestResponseProd.Body.URI,
+                    sbExecution: devTestResponseSb.Body.URI,
+                    euExecution: devTestResponseEu.Body.URI,
+                };
                 if (
                     devTestResponseEu === undefined ||
                     devTestResponseProd === undefined ||
@@ -995,19 +1002,19 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     devPassingEnvs.push('Eu');
                 } else {
                     devFailedEnvs.push('Eu');
-                    failedSuitesEU.push(currentTestName);
+                    failedSuitesEU.push({ testName: currentTestName, executionUUID: testObject.euExecution });
                 }
                 if (prodResults.didSucceed) {
                     devPassingEnvs.push('Production');
                 } else {
                     devFailedEnvs.push('Production');
-                    failedSuitesProd.push(currentTestName);
+                    failedSuitesProd.push({ testName: currentTestName, executionUUID: testObject.prodExecution });
                 }
                 if (sbResults.didSucceed) {
                     devPassingEnvs.push('Stage');
                 } else {
                     devFailedEnvs.push('Stage');
-                    failedSuitesSB.push(currentTestName);
+                    failedSuitesSB.push({ testName: currentTestName, executionUUID: testObject.sbExecution });
                 }
             }
             // debugger;
@@ -1105,6 +1112,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     devPassingEnvs2,
                     devFailedEnvs2,
                     true,
+                    arrayOfFailedTests,
                     [euUser, prodUser, sbUser],
                     failedSuitesProd,
                     failedSuitesEU,
@@ -2179,12 +2187,24 @@ export async function reportToTeams(
     if (isDev) {
         const stringUsers = users?.join(',');
         const uniqFailingEnvs = [...new Set(failingEnvs)];
-        message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion}, Users:${stringUsers} ||| ${
+        debugger;
+        message = `Dev Test: ${addonName} - (${addonUUID}), Version:${addonVersion}, Test Users:<br>${stringUsers}<br>${
             passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ') + ' |||'
         } ${failingEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')},<br>Link: ${jenkinsLink}`;
-        message2 = `${failedSuitesProd.length === 0 ? '' : 'FAILED TESTS:<br>PROD:' + failedSuitesProd.join(', ')}${
-            failedSuitesEU.length === 0 ? '' : ',<br>EU:' + failedSuitesEU.join(', ')
-        }${failedSuitesSB.length === 0 ? '' : ',<br>SB:' + failedSuitesSB.join(', ')} `;
+        message2 = `${
+            failedSuitesProd.length === 0
+                ? ''
+                : 'FAILED TESTS AND EXECUTION UUIDS:<br>PROD:' +
+                  failedSuitesProd.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+        }${
+            failedSuitesEU.length === 0
+                ? ''
+                : ',<br>EU:' + failedSuitesEU.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+        }${
+            failedSuitesSB.length === 0
+                ? ''
+                : ',<br>SB:' + failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+        }`;
     } else {
         message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| ${
             passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ') + '|||'
