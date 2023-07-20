@@ -11,6 +11,16 @@ export class StoryBookPage extends Page {
     );
     public ViewStoryBookButton: By = By.xpath(`//span[contains(text(),'View Storybook')]`);
     public GenericComponentButton: By = By.xpath(`//button[contains(@data-item-id,"{placeholder}")]`);
+    public GenericAbstractButton: By = By.xpath(`//a[contains(@data-item-id,"{placeholder}")]`);
+
+    public CanvasTab: By = By.xpath(`//button[contains(text(),"Canvas")]`);
+    public BorderRadiusContainer: By = By.xpath(`//storybook-border-radius`);
+    public BorderRadiusInnerContainer: By = By.xpath(`//storybook-border-radius/div/div`);
+    public BorderRadiusSM: By = By.xpath(`//storybook-border-radius/div/div/div[1]`);
+    public BorderRadiusMD: By = By.xpath(`//storybook-border-radius/div/div/div[2]`);
+    public BorderRadiusL: By = By.xpath(`//storybook-border-radius/div/div/div[3]`);
+    public BorderRadiusXL: By = By.xpath(`//storybook-border-radius/div/div/div[4]`);
+    public StorybookIframe: By = By.css('iframe#storybook-preview-iframe');
 
     constructor(browser: Browser) {
         super(browser, 'https://www.chromatic.com/library?appId=60ae3e9eff8e4c003b2f90d4&branch=master');
@@ -30,15 +40,67 @@ export class StoryBookPage extends Page {
         this.browser.sleep(5000);
     }
 
-    public async chooseComponent(componentName: 'color-picker' | 'border-radius'): Promise<void> {
-        //1. enter storybook
+    public async enterTableOfContents() {
+        // enter storybook
         await this.browser.click(this.ViewStoryBookButton);
         await this.browser.switchToOtherTab(1);
-        this.browser.sleep(10000);
-        //2. choose component by name
+        this.browser.sleep(2 * 1000);
+    }
+
+    public async chooseComponent(
+        componentName:
+            | 'attachment'
+            | 'button'
+            | 'checkbox'
+            | 'chips'
+            | 'color-picker'
+            | 'date-time'
+            | 'draggable-items'
+            | 'group-buttons'
+            | 'icon'
+            | 'image'
+            | 'image-filmstrip'
+            | 'link'
+            | 'menu'
+            | 'quantity-selector'
+            | 'rich-html-textarea'
+            | 'search'
+            | 'elect-panel'
+            | 'select'
+            | 'separator'
+            | 'signature'
+            | 'skeleton-loader'
+            | 'slider'
+            | 'textarea'
+            | 'textbox'
+            | 'colors'
+            | 'typography',
+    ): Promise<void> {
+        // choose component by name
         const xpathQueryForComponent: string = this.GenericComponentButton.valueOf()['value'].replace(
             '{placeholder}',
             componentName,
+        );
+        await this.browser.click(By.xpath(xpathQueryForComponent));
+        this.browser.sleep(5000);
+    }
+
+    public async chooseAbstract(
+        abstractName:
+            | 'border-radius'
+            | 'breakpoints'
+            | 'shadows'
+            | 'spacing'
+            | 'states'
+            | 'z-index'
+            | 'query-builder'
+            | 'smart-filters'
+            | 'dialog',
+    ): Promise<void> {
+        // choose abstract by name
+        const xpathQueryForComponent: string = this.GenericAbstractButton.valueOf()['value'].replace(
+            '{placeholder}',
+            abstractName,
         );
         await this.browser.click(By.xpath(xpathQueryForComponent));
         this.browser.sleep(5000);
