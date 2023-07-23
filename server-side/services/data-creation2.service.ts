@@ -106,7 +106,7 @@ export class DataCreation2 {
 
     async createData() {
         const resourceCreator = new ResourceCreation(this);
-        await resourceCreator.execute();
+        await resourceCreator.execute(this.generalService);
     }
 }
 class ResourceCreation {
@@ -121,7 +121,7 @@ class ResourceCreation {
     constructor(mgr) {
         this.mgr = mgr;
     }
-    async execute(): Promise<void> {
+    async execute(generalService): Promise<void> {
         // this.createUsers(this.users);
         // this.createAccounts(this.accounts);
         // this.createItems(this.items);
@@ -136,7 +136,7 @@ class ResourceCreation {
         // this.createListItems(this.lists * this.items);
         // this.createAccountLists(this.divisions * this.companies * this.accounts * 15);
         // this.createListsValueNum(100, 30000);
-        this.createAccountDataNEW(500000);
+        this.createNEW(150000, generalService);
     }
 
     // private async genrateTempFile(tempFileName, data) {
@@ -215,6 +215,31 @@ class ResourceCreation {
             strData += `${runningDataExID.replace('index', index.toString())}\n`;
         }
         this.genrateFile("Items", strData);
+    }
+
+    private createNEW(howManyDataRows: number, generalService) {
+        const headers = "Value1,Value2,Value3";
+        const firstVal = generalService.generateRandomString(50) + ",";
+        const secVal = generalService.generateRandomString(50) + ",";
+        const thirdVal = generalService.generateRandomString(50) + "\n";
+        let strData = "";
+        let counter = 0;
+        let index2 = 1;
+        strData += headers + "\n";
+        for (let index = 0; index < howManyDataRows; index++) {
+            strData += firstVal;
+            strData += secVal;
+            strData += thirdVal;
+            if (counter >= 50000) {
+                this.genrateFile(`NEW_Data_NEW_SPLIT_${index2}`, strData);
+                index2++;
+                strData = headers + "\n";
+                counter = 1;
+            } else {
+                counter++;
+            }
+        }
+        this.genrateFile(`NEW_Data_NEW_SPLIT_${index2}`, strData);
     }
 
     private createDivisons(howManyDataRows: number) {
@@ -299,12 +324,12 @@ class ResourceCreation {
                 tenIndex++;
             }
             strData += `${runningDataBasicValue.replace('index', index.toString())}\n`;
-            if(counter>=50000){
+            if (counter >= 50000) {
                 this.genrateFile(`AccountData_NEW_SPLIT_${index2}`, strData);
                 index2++;
-                strData = "accountRef#ExternalID,value1"+ "\n";        
+                strData = "accountRef#ExternalID,value1" + "\n";
                 counter = 1;
-            }else{
+            } else {
                 counter++;
             }
         }
