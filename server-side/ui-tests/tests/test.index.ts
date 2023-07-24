@@ -59,7 +59,7 @@ import { NgxLibPOC } from './NgxLibPOC.test';
 import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
 import { CiCdFlow } from '../../services/cicd-flow.service copy';
 import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon_from_all_auto_users';
-import { FlowAPITest } from '../../api-tests/flows_api_part';
+// import { FlowAPITest } from '../../api-tests/flows_api_part';
 import { FlowTests } from './flows_builder.test';
 
 /**
@@ -244,20 +244,19 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await FlowTests(email, pass, client);
     }
 
-    if (tests.includes('evgeny')) {
-        await FlowAPITest(
-            generalService,
-            {
-                body: {
-                    varKeyStage: varPass,
-                    varKeyPro: varPass,
-                    varKeyEU: varPassEU,
-                },
-            },
-            { describe, expect, it } as TesterFunctions,
-        ); //
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
+    // if (tests.includes('evgeny')) {
+    //     await PfsFileUploadToAdalUsingDimx(
+    //         client,
+    //         {
+    //             body: {
+    //                 varKeyStage: varPass,
+    //                 varKeyPro: varPass,
+    //                 varKeyEU: varPassEU,
+    //             },
+    //         },
+    //     ); //
+    //     await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    // }
 
     if (tests.includes('Scheduler')) {
         const testerFunctions = generalService.initiateTesterFunctions(client, 'Scheduler');
@@ -506,7 +505,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('Survey')) {
-        await SurveyTests(email, pass, client, varPass); //, varPass, client
+        await SurveyTests(email, pass, client); //, varPass, client
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('NGX_POC')) {
@@ -848,6 +847,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     );
                     throw new Error(`${errorString}`);
                 }
+                debugger;
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
                     prodUser,

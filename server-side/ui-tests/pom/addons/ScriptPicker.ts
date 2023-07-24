@@ -259,7 +259,7 @@ export class ScriptEditor extends AddonPage {
         //2. give desc
         await this.browser.sendKeys(scriptEditor.DescInput, 'script for survey');
         //3. push code of script instead of the code found in the UI
-        const selectAll = Key.chord(Key.CONTROL, 'a');
+        const selectAll = Key.chord(Key.CONTROL, 'a'); //
         await this.browser.sendKeys(scriptEditor.CodeTextArea, selectAll);
         await this.browser.sendKeys(scriptEditor.CodeTextArea, Key.DELETE);
         await this.browser.sendKeys(scriptEditor.CodeTextArea, sciptText);
