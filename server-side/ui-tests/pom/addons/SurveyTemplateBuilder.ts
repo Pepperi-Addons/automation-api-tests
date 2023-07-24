@@ -121,10 +121,8 @@ export class SurveyTemplateBuilder extends AddonPage {
     public SaveSurveyButton: By = By.css(`[data-qa="Save"]`);
     public PublishSurveyButton: By = By.css(`[data-qa="Publish"]`);
     public GoBackButton: By = By.xpath(`//pep-button[@iconname='arrow_left_alt']`);
-    public MakeQuestionMandatoryCheckBox: By = By.xpath(
-        `//mat-checkbox[contains(@title,'Make Mandatory')]//span//input`,
-    );
-    public ShowIfCheckBox: By = By.xpath(`//mat-checkbox[contains(@title,'Show If')]//span//input`);
+    public MakeQuestionMandatoryCheckBox: By = By.xpath(`//span[text()='Make Mandatory']/../..//input`);
+    public ShowIfCheckBox: By = By.xpath(`//span[text()='Show If']/../..//input`);
     public AddLogicButton: By = By.css(`[data-qa="Add Logic"]`);
 
     //key text box inside selection

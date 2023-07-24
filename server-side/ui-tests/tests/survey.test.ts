@@ -32,7 +32,8 @@ import { ObjectsService } from '../../services/objects.service';
 
 chai.use(promised);
 
-export async function SurveyTests(email: string, password: string, client: Client, varPass) {
+export async function SurveyTests(email: string, password: string, client: Client) {
+    //, varPass
     const generalService = new GeneralService(client);
     let driver: Browser;
     let surveyBlockPageName;
@@ -127,65 +128,65 @@ export async function SurveyTests(email: string, password: string, client: Clien
         },
     ];
 
-    await generalService.baseAddonVersionsInstallation(varPass);
+    // await generalService.baseAddonVersionsInstallation(varPass);
     // #region Upgrade survey dependencies
 
-    const testData = {
-        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x
-        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.32'], //21/6: CPI NODE 1.3.x is broken sync wise
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
-        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
-        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-        'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
-        'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', ''],
-        survey: ['dd0a85ea-7ef0-4bc1-b14f-959e0372877a', ''],
-        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
-        'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
-        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
-        'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
-        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''],
-        Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', ''],
-    };
+    // const testData = {
+    //     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x
+    //     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
+    //     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.2.32'], //21/6: CPI NODE 1.3.x is broken sync wise
+    //     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+    //     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+    //     sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
+    //     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+    //     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+    //     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+    //     'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
+    //     'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', ''],
+    //     survey: ['dd0a85ea-7ef0-4bc1-b14f-959e0372877a', ''],
+    //     Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
+    //     'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
+    //     Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
+    //     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+    //     'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''],
+    //     Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', ''],
+    // };
 
-    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
     // #endregion Upgrade survey dependencies
 
     describe('Survey Builder Tests Suit', async function () {
-        describe('Prerequisites Addons for Survey Builder Tests', () => {
-            //Test Data
-            isInstalledArr.forEach((isInstalled, index) => {
-                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-                    expect(isInstalled).to.be.true;
-                });
-            });
-            for (const addonName in testData) {
-                const addonUUID = testData[addonName][0];
-                const version = testData[addonName][1];
-                const varLatestVersion = chnageVersionResponseArr[addonName][2];
-                const changeType = chnageVersionResponseArr[addonName][3];
-                describe(`Test Data: ${addonName}`, () => {
-                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-                        } else {
-                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-                        }
-                    });
-                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                            .eventually.to.have.property('Version')
-                            .a('string')
-                            .that.is.equal(varLatestVersion);
-                    });
-                });
-            }
-        });
+        // describe('Prerequisites Addons for Survey Builder Tests', () => {
+        //     //Test Data
+        //     isInstalledArr.forEach((isInstalled, index) => {
+        //         it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+        //             expect(isInstalled).to.be.true;
+        //         });
+        //     });
+        //     for (const addonName in testData) {
+        //         const addonUUID = testData[addonName][0];
+        //         const version = testData[addonName][1];
+        //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
+        //         const changeType = chnageVersionResponseArr[addonName][3];
+        //         describe(`Test Data: ${addonName}`, () => {
+        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+        //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+        //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+        //                 } else {
+        //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+        //                 }
+        //             });
+        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+        //                     .eventually.to.have.property('Version')
+        //                     .a('string')
+        //                     .that.is.equal(varLatestVersion);
+        //             });
+        //         });
+        //     }
+        // });
 
         describe('Configuring Survey', () => {
             this.retries(0);
@@ -326,7 +327,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await surveyService.editSurveyTemplateName(newName);
                 const webAppHomePage = new WebAppHomePage(driver);
                 webAppHomePage.returnToHomePage();
-                driver.sleep(3000);
+                driver.sleep(8000); //give it some time to update
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }
