@@ -252,6 +252,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 );
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
+                driver.sleep(8000);
                 const webAppHomePage = new WebAppHomePage(driver);
                 //- sync
                 for (let index = 0; index < 2; index++) {
