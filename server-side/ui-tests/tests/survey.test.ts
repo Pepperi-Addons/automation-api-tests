@@ -33,6 +33,7 @@ import { ObjectsService } from '../../services/objects.service';
 chai.use(promised);
 
 export async function SurveyTests(email: string, password: string, client: Client, varPass) {
+    //
     const generalService = new GeneralService(client);
     let driver: Browser;
     let surveyBlockPageName;
@@ -251,6 +252,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 );
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
+                driver.sleep(8000);
                 const webAppHomePage = new WebAppHomePage(driver);
                 //- sync
                 for (let index = 0; index < 2; index++) {
@@ -326,7 +328,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await surveyService.editSurveyTemplateName(newName);
                 const webAppHomePage = new WebAppHomePage(driver);
                 webAppHomePage.returnToHomePage();
-                driver.sleep(3000);
+                driver.sleep(8000); //give it some time to update
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }

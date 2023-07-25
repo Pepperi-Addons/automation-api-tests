@@ -1360,6 +1360,13 @@ export async function handleDevTestInstallation(
             depObj['Generic Resource'] = ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '%'];
             addonDep.push(depObj);
         }
+        if (
+            addonUUID === 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f' //Core
+        ) {
+            const depObj = {};
+            depObj['User Defined Collections'] = ['122c0e9d-c240-4865-b446-f37ece866c22', ''];
+            addonDep.push(depObj);
+        }
         for (let index = 0; index < addonDep.length; index++) {
             const addonToInstall = addonDep[index];
             const currentAddonName = Object.entries(addonToInstall)[0][0];
