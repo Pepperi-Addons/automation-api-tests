@@ -55,12 +55,12 @@ import { UDCTestser } from '../../api-tests/user_defined_collections';
 import { maintenance3APITestser } from '../../api-tests/addons';
 import { handleDevTestInstallation } from '../../tests';
 import { NgxLibPOC } from './NgxLibPOC.test';
-// import { PfsFileUploadToAdalUsingDimx } from './purge_all_udcs_script.test copy';
 import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
 import { CiCdFlow } from '../../services/cicd-flow.service copy';
 import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon_from_all_auto_users';
 // import { FlowAPITest } from '../../api-tests/flows_api_part';
 import { FlowTests } from './flows_builder.test';
+import { Import250KDimx } from './import_250k_DIMX.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -244,19 +244,27 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await FlowTests(email, pass, client);
     }
 
-    // if (tests.includes('evgeny')) {
-    //     await PfsFileUploadToAdalUsingDimx(
-    //         client,
-    //         {
-    //             body: {
-    //                 varKeyStage: varPass,
-    //                 varKeyPro: varPass,
-    //                 varKeyEU: varPassEU,
-    //             },
-    //         },
-    //     ); //
-    //     await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    // }
+    if (tests.includes('evgeny')) {
+        await Import250KDimx(client, {
+            body: {
+                varKeyStage: varPass,
+                varKeyPro: varPass,
+                varKeyEU: varPassEU,
+            },
+        }); //
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('Dimx250KUpload')) {
+        await Import250KDimx(client, {
+            body: {
+                varKeyStage: varPass,
+                varKeyPro: varPass,
+                varKeyEU: varPassEU,
+            },
+        }); //
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
 
     if (tests.includes('Scheduler')) {
         const testerFunctions = generalService.initiateTesterFunctions(client, 'Scheduler');
@@ -1788,6 +1796,9 @@ export async function handleTeamsURL(addonName, service, email, pass) {
         case 'RESOURCE-LIST': //new teams
         case 'RESOURCE LIST':
             return await service.getSecretfromKMS(email, pass, 'ResourceListTeamsWebHook');
+        case 'UDB':
+        case 'USER DEFINED BLOCKS':
+            return await service.getSecretfromKMS(email, pass, 'UDBTeamsWebHook');
     }
 }
 
@@ -2397,6 +2408,13 @@ function resolveUserPerTest(addonName): any[] {
             return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com']; //'syncTestEU@pepperitest.com',
         case 'CORE':
             return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
+        case 'UDB':
+        case 'USER DEFINED BLOCKS':
+            return [
+                'UserDefinedBlocksEUApp2@pepperitest.com',
+                'UserDefinedBlocksEUApp5@pepperitest.com',
+                'UserDefinedBlocksSBApp2@pepperitest.com',
+            ];
         default:
             return [];
     }
@@ -2479,6 +2497,19 @@ async function getCoreTests(userName, env) {
     return toReturn;
 }
 
+async function getUDBTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/9abbb634-9df5-49ab-91d1-41ad7a2632a6/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function runDevTestOnCertainEnv(
     userName,
     env,
@@ -2506,6 +2537,8 @@ async function runDevTestOnCertainEnv(
             'x-pepperi-secretkey': addonSk,
             Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
         };
+    } else if (addonName === 'UDB' || addonName === 'USER DEFINED BLOCKS') {
+        urlToCall = '/addons/api/async/9abbb634-9df5-49ab-91d1-41ad7a2632a6/tests/tests';
     } else {
         urlToCall = `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`;
     }
@@ -2548,6 +2581,8 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getDataIndexTests(user, 'prod');
     } else if (addonName === 'CORE') {
         return await getCoreTests(user, 'prod');
+    } else if (addonName === 'USER DEFINED BLOCKS' || addonName === 'UDB') {
+        return await getUDBTests(user, 'prod');
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
         const service = new GeneralService(client);
@@ -2575,7 +2610,9 @@ function prepareTestBody(addonName, currentTestName, addonUUID) {
         addonName === 'SYNC' ||
         addonName === 'DATA INDEX' ||
         addonName === 'DATA-INDEX' ||
-        addonName === 'CORE'
+        addonName === 'CORE' ||
+        addonName === 'UDB' ||
+        addonName === 'USER DEFINED BLOCKS'
     ) {
         body = {
             Name: currentTestName,

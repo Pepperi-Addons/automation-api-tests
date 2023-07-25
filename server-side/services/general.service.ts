@@ -2144,6 +2144,9 @@ export default class GeneralService {
 
     convertNameToUUIDForDevTests(addonName: string) {
         switch (addonName) {
+            case 'UDB':
+            case 'USER DEFINED BLOCKS':
+                return '9abbb634-9df5-49ab-91d1-41ad7a2632a6';
             case 'ADAL':
                 return '00000000-0000-0000-0000-00000000ada1';
             case 'DATA INDEX':
