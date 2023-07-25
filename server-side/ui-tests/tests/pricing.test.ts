@@ -1,8 +1,9 @@
-import { describe, it, before, after } from 'mocha';
+import { describe, it, before, after, Context } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
+import addContext from 'mochawesome/addContext';
 import { Browser } from '../utilities/browser';
 import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../pom';
 import { ObjectsService } from '../../services';
@@ -64,6 +65,7 @@ export async function PricingTests(email: string, password: string, client: Clie
     let ToBr55priceTSAs_OC: PriceTsaFields;
     let Drug0002priceTSAs_OC: PriceTsaFields;
     let Drug0004priceTSAs_OC: PriceTsaFields;
+    let base64ImageComponent;
 
     // const testAccounts = ['Acc01'];
     const testAccounts = ['Acc01', 'OtherAcc'];
@@ -146,22 +148,38 @@ export async function PricingTests(email: string, password: string, client: Clie
                 testStates.forEach((state) => {
                     describe(`ORDER CENTER "${state}"`, () => {
                         testItems.forEach((item) => {
-                            it(`checking item "${item}"`, async () => {
-                                await searchInOrderCenter(item);
+                            it(`checking item "${item}"`, async function () {
+                                await searchInOrderCenter.bind(this)(item);
                                 switch (
                                     state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
                                 ) {
                                     case '1unit':
-                                        await changeSelectedQuantityOfSpecificItemInOrderCenter('Each', item, 1);
+                                        await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                            'Each',
+                                            item,
+                                            1,
+                                        );
                                         break;
                                     case '3units':
-                                        await changeSelectedQuantityOfSpecificItemInOrderCenter('Each', item, 3);
+                                        await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                            'Each',
+                                            item,
+                                            3,
+                                        );
                                         break;
                                     case '1case(6units)':
-                                        await changeSelectedQuantityOfSpecificItemInOrderCenter('Case', item, 1);
+                                        await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                            'Case',
+                                            item,
+                                            1,
+                                        );
                                         break;
                                     case '4cases(24units)':
-                                        await changeSelectedQuantityOfSpecificItemInOrderCenter('Case', item, 4);
+                                        await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                            'Case',
+                                            item,
+                                            4,
+                                        );
                                         break;
 
                                     default:
@@ -212,9 +230,14 @@ export async function PricingTests(email: string, password: string, client: Clie
 
                         default:
                             describe(`CART "${state}"`, () => {
-                                it('entering and verifying being in cart', async () => {
+                                it('entering and verifying being in cart', async function () {
                                     await driver.click(orderPage.Cart_Button);
                                     driver.sleep(1 * 1000);
+                                    base64ImageComponent = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `Component Page We Got Into`,
+                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                    });
                                     await driver.untilIsVisible(orderPage.Cart_Total_Header);
                                 });
                                 it('verify that the sum total of items in the cart is correct', async () => {
@@ -254,15 +277,15 @@ export async function PricingTests(email: string, password: string, client: Clie
                     // 'ToBr55', 'Drug0002', 'Drug0004'
                     describe('ORDER CENTER', () => {
                         describe('item "ToBr55" - quantity that gets 1 item of "ToBr10" for free (from 5 units "Each") (only on "My store")', () => {
-                            ['4 Each', '5 Each', '20 Each'].forEach((unitAmount, index) => {
-                                it(`${unitAmount}`, async () => {
+                            ['4 Each', '5 Each', '20 Each'].forEach(function (unitAmount, index) {
+                                it(`${unitAmount}`, async function () {
                                     item_forFreeGoods = 'ToBr55';
                                     const states = ['baseline', '5units', '20units'];
                                     switch (unitAmount) {
                                         case '4 Each':
                                             driver.sleep(1 * 1000);
-                                            await searchInOrderCenter(item_forFreeGoods);
-                                            await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                            await searchInOrderCenter.bind(this)(item_forFreeGoods);
+                                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                                 'Each',
                                                 item_forFreeGoods,
                                                 4,
@@ -279,7 +302,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             break;
 
                                         case '20 Each':
-                                            await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                                 'Each',
                                                 item_forFreeGoods,
                                                 20,
@@ -320,8 +343,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 });
                             });
 
-                            it('Back to 4 Each', async () => {
-                                await changeSelectedQuantityOfSpecificItemInOrderCenter('Each', item_forFreeGoods, 4);
+                            it('Back to 4 Each', async function () {
+                                await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                    'Each',
+                                    item_forFreeGoods,
+                                    4,
+                                );
                                 driver.sleep(0.5 * 1000);
                                 ToBr55priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
                                 console.info('ToBr55priceTSAs_OC (4 Each): ', ToBr55priceTSAs_OC);
@@ -350,14 +377,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                         });
                         describe('item "Drug0002" - quantity that gets 2 "Cases" of items for free (from 10 in "Case")', () => {
-                            ['9 Cases', '10 Cases'].forEach((unitAmount, index) => {
-                                it(`${unitAmount}`, async () => {
+                            ['9 Cases', '10 Cases'].forEach(function (unitAmount, index) {
+                                it(`${unitAmount}`, async function () {
                                     item_forFreeGoods = 'Drug0002';
                                     const states = ['9case(54units)', '10cases(60units)'];
                                     switch (unitAmount) {
                                         case '9 Cases':
-                                            await searchInOrderCenter(item_forFreeGoods);
-                                            await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                            await searchInOrderCenter.bind(this)(item_forFreeGoods);
+                                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                                 'Case',
                                                 item_forFreeGoods,
                                                 9,
@@ -371,6 +398,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 ),
                                             );
                                             driver.sleep(0.5 * 1000);
+                                            base64ImageComponent = await driver.saveScreenshots();
+                                            addContext(this, {
+                                                title: `Component Page We Got Into`,
+                                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                            });
                                             break;
 
                                         default:
@@ -441,15 +473,15 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                         });
                         describe('item "Drug0004" - quantity that gets 2 items (in "Each") of "Drug0002" for free (from 3 in "Case")', () => {
-                            ['2 Cases', '3 Cases'].forEach((unitAmount, index) => {
-                                it(`${unitAmount}`, async () => {
+                            ['2 Cases', '3 Cases'].forEach(function (unitAmount, index) {
+                                it(`${unitAmount}`, async function () {
                                     item_forFreeGoods = 'Drug0004';
                                     const states = ['2case(12units)', '3cases(18units)'];
                                     switch (unitAmount) {
                                         case '2 Cases':
                                             driver.sleep(1 * 1000);
-                                            await searchInOrderCenter(item_forFreeGoods);
-                                            await changeSelectedQuantityOfSpecificItemInOrderCenter(
+                                            await searchInOrderCenter.bind(this)(item_forFreeGoods);
+                                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                                 'Case',
                                                 item_forFreeGoods,
                                                 2,
@@ -463,6 +495,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 ),
                                             );
                                             driver.sleep(0.5 * 1000);
+                                            base64ImageComponent = await driver.saveScreenshots();
+                                            addContext(this, {
+                                                title: `Component Page We Got Into`,
+                                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                            });
                                             break;
 
                                         default:
@@ -592,7 +629,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                             expect(latestActivityStatus).to.equal('In Creation');
                             expect(Number(latestActivityID)).to.equal(transactionInternalID);
                         });
-                        it('entering the same transaction through activity list', async () => {
+                        it('entering the same transaction through activity list', async function () {
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Component Page We Got Into`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                             await webAppList.clickOnLinkFromListRowWebElement();
                             await webAppList.isSpinnerDone();
                             await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
@@ -609,22 +651,22 @@ export async function PricingTests(email: string, password: string, client: Clie
                             expect(Number(itemsInCart)).to.equal(testItems.length + itemsAddedToGetFreeGoods.length);
                             driver.sleep(1 * 1000);
                         });
-                        it('changing the amount of "ToBr55" to produce free goods', async () => {
+                        it('changing the amount of "ToBr55" to produce free goods', async function () {
                             const item = 'ToBr55';
-                            await changeSelectedQuantityOfSpecificItemInCart('Each', item, 5);
+                            await changeSelectedQuantityOfSpecificItemInCart.bind(this)('Each', item, 5);
                             driver.sleep(0.2 * 1000);
                         });
-                        it('changing the amount of "Drug0002" to produce free goods', async () => {
+                        it('changing the amount of "Drug0002" to produce free goods', async function () {
                             const item = 'Drug0002';
-                            await changeSelectedQuantityOfSpecificItemInCart('Case', item, 10);
+                            await changeSelectedQuantityOfSpecificItemInCart.bind(this)('Case', item, 10);
                             driver.sleep(0.2 * 1000);
                         });
-                        it('changing the amount of "Drug0004" to produce free goods', async () => {
+                        it('changing the amount of "Drug0004" to produce free goods', async function () {
                             const item = 'Drug0004';
-                            await changeSelectedQuantityOfSpecificItemInCart('Case', item, 3);
+                            await changeSelectedQuantityOfSpecificItemInCart.bind(this)('Case', item, 3);
                             driver.sleep(0.2 * 1000);
                         });
-                        it('verifying that the sum total of items after the free goods were received is correct', async () => {
+                        it('verifying that the sum total of items after the free goods were received is correct', async function () {
                             const itemsInCart = await (
                                 await driver.findElement(orderPage.Cart_Headline_Results_Number)
                             ).getText();
@@ -754,9 +796,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 );
                                 expect(ToBr10_freeItem_numberOfAOQM).equals(1);
                             });
-                            it('increase quantity of item "ToBr55" over 20 units (Each) and see the additional item change to 1 case of "ToBr55"', async () => {
+                            it('increase quantity of item "ToBr55" over 20 units (Each) and see the additional item change to 1 case of "ToBr55"', async function () {
                                 const item = 'ToBr55';
-                                await changeSelectedQuantityOfSpecificItemInCart('Case', item, 4);
+                                await changeSelectedQuantityOfSpecificItemInCart.bind(this)('Case', item, 4);
                             });
                             it('verify additional item type have changed', async () => {
                                 let item = 'ToBr55';
@@ -836,9 +878,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             driver.sleep(0.1 * 1000);
                         });
 
-                        ['MakeUp001', 'MakeUp002'].forEach((item) => {
+                        ['MakeUp001', 'MakeUp002'].forEach(function (item) {
                             it(`Checking ${item} at Baseline`, async () => {
-                                await searchInOrderCenter(item);
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Component Page We Got Into`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
+                                await searchInOrderCenter.bind(this)(item);
                                 driver.sleep(0.1 * 1000);
                                 const MakeUpItem_priceTSAsCart = await getItemTSAs('OrderCenter', item);
                                 driver.sleep(0.1 * 1000);
@@ -846,12 +893,22 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 driver.sleep(0.1 * 1000);
                                 await clearOrderCenterSearch();
                                 driver.sleep(0.5 * 1000);
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Component Page We Got Into`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
                             });
                         });
 
-                        ['MakeUp001', 'MakeUp002'].forEach((item) => {
+                        ['MakeUp001', 'MakeUp002'].forEach(function (item) {
                             it(`Adding ${item} at quantity of 1 Each and Checking at Order Center`, async () => {
-                                await searchInOrderCenter(item);
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Component Page We Got Into`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
+                                await searchInOrderCenter.bind(this)(item);
                                 driver.sleep(0.1 * 1000);
                                 const itemContainer = await driver.findElement(
                                     orderPage.getSelectorOfItemInOrderCenterByName(item),
@@ -871,6 +928,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 await driver.click(
                                     orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(item),
                                 );
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Component Page We Got Into`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
                                 const uomXnumber = await driver.findElement(
                                     orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
                                         'ItemQuantity_byUOM_InteractableNumber',
@@ -893,10 +955,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                         });
 
-                        it('Adding "MakeUp003" at quantity of 1 Each and Checking at Order Center (3 units in group)', async () => {
+                        it('Adding "MakeUp003" at quantity of 1 Each and Checking at Order Center (3 units in group)', async function () {
                             item_forGroupRules = 'MakeUp003';
-                            await searchInOrderCenter(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter('Each', item_forGroupRules, 1);
+                            await searchInOrderCenter.bind(this)(item_forGroupRules);
+                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                'Each',
+                                item_forGroupRules,
+                                1,
+                            );
                             const MakeUp003_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
                             driver.sleep(0.1 * 1000);
                             switch (account) {
@@ -943,7 +1009,7 @@ export async function PricingTests(email: string, password: string, client: Clie
 
                         ['MakeUp001', 'MakeUp002'].forEach((item) => {
                             it(`Checking ${item} after amount of 3 in the group at Order Center`, async () => {
-                                await searchInOrderCenter(item);
+                                await searchInOrderCenter.bind(this)(item);
                                 const MakeUpItem_priceTSAsCart = await getItemTSAs('OrderCenter', item);
                                 driver.sleep(0.1 * 1000);
                                 switch (account) {
@@ -990,10 +1056,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                         });
 
-                        it('Adding "MakeUp018" at quantity of 1 Each and Checking at Order Center (4 units in group)', async () => {
+                        it('Adding "MakeUp018" at quantity of 1 Each and Checking at Order Center (4 units in group)', async function () {
                             item_forGroupRules = 'MakeUp018';
-                            await searchInOrderCenter(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter('Each', item_forGroupRules, 1);
+                            await searchInOrderCenter.bind(this)(item_forGroupRules);
+                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                'Each',
+                                item_forGroupRules,
+                                1,
+                            );
                             const MakeUp018_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
                             driver.sleep(0.1 * 1000);
                             switch (account) {
@@ -1038,10 +1108,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             driver.sleep(0.5 * 1000);
                         });
 
-                        it('Changing "MakeUp018" value to 2 Each and Checking at Order Center (5 units in group)', async () => {
+                        it('Changing "MakeUp018" value to 2 Each and Checking at Order Center (5 units in group)', async function () {
                             item_forGroupRules = 'MakeUp018';
-                            await searchInOrderCenter(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter('Each', item_forGroupRules, 2);
+                            await searchInOrderCenter.bind(this)(item_forGroupRules);
+                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                'Each',
+                                item_forGroupRules,
+                                2,
+                            );
                             const MakeUp018_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
                             driver.sleep(0.1 * 1000);
                             switch (account) {
@@ -1086,10 +1160,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             driver.sleep(0.5 * 1000);
                         });
 
-                        it('Changing "MakeUp001" value to 2 Each and Checking at Order Center (6 units in group)', async () => {
+                        it('Changing "MakeUp001" value to 2 Each and Checking at Order Center (6 units in group)', async function () {
                             item_forGroupRules = 'MakeUp001';
-                            await searchInOrderCenter(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter('Each', item_forGroupRules, 2);
+                            await searchInOrderCenter.bind(this)(item_forGroupRules);
+                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                'Each',
+                                item_forGroupRules,
+                                2,
+                            );
                             const MakeUp001_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
                             driver.sleep(0.1 * 1000);
                             switch (account) {
@@ -1134,10 +1212,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             driver.sleep(0.5 * 1000);
                         });
 
-                        it('Changing "MakeUp002" value to 2 Each and Checking at Order Center (7 units in group)', async () => {
+                        it('Changing "MakeUp002" value to 2 Each and Checking at Order Center (7 units in group)', async function () {
                             item_forGroupRules = 'MakeUp002';
-                            await searchInOrderCenter(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter('Each', item_forGroupRules, 2);
+                            await searchInOrderCenter.bind(this)(item_forGroupRules);
+                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                'Each',
+                                item_forGroupRules,
+                                2,
+                            );
                             const MakeUp002_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
                             driver.sleep(0.1 * 1000);
                             switch (account) {
@@ -1182,10 +1264,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             driver.sleep(0.5 * 1000);
                         });
 
-                        it('Changing "MakeUp003" value to 5 Each and Checking at Order Center (11 units in group)', async () => {
+                        it('Changing "MakeUp003" value to 5 Each and Checking at Order Center (11 units in group)', async function () {
                             item_forGroupRules = 'MakeUp003';
-                            await searchInOrderCenter(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter('Each', item_forGroupRules, 5);
+                            await searchInOrderCenter.bind(this)(item_forGroupRules);
+                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                'Each',
+                                item_forGroupRules,
+                                5,
+                            );
                             const MakeUp003_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
                             driver.sleep(0.1 * 1000);
                             switch (account) {
@@ -1231,10 +1317,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             driver.sleep(0.5 * 1000);
                         });
 
-                        it('Adding "MakeUp006" at quantity of 1 Each and Checking at Order Center (12 units in group)', async () => {
+                        it('Adding "MakeUp006" at quantity of 1 Each and Checking at Order Center (12 units in group)', async function () {
                             item_forGroupRules = 'MakeUp006';
-                            await searchInOrderCenter(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter('Each', item_forGroupRules, 1);
+                            await searchInOrderCenter.bind(this)(item_forGroupRules);
+                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                'Each',
+                                item_forGroupRules,
+                                1,
+                            );
                             const MakeUp006_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
                             driver.sleep(0.1 * 1000);
                             switch (account) {
@@ -1284,10 +1374,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             driver.sleep(0.5 * 1000);
                         });
 
-                        it('Changing "MakeUp003" value to 10 Each and Checking at Order Center (additional item from singular rule)', async () => {
+                        it('Changing "MakeUp003" value to 10 Each and Checking at Order Center (additional item from singular rule)', async function () {
                             item_forGroupRules = 'MakeUp003';
-                            await searchInOrderCenter(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter('Each', item_forGroupRules, 10);
+                            await searchInOrderCenter.bind(this)(item_forGroupRules);
+                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                'Each',
+                                item_forGroupRules,
+                                10,
+                            );
                             const MakeUp003_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
                             driver.sleep(0.1 * 1000);
                             switch (account) {
@@ -1344,7 +1438,7 @@ export async function PricingTests(email: string, password: string, client: Clie
 
                         it('Checking "MakeUp002" at Order Center (7 units in group)', async () => {
                             item_forGroupRules = 'MakeUp002';
-                            await searchInOrderCenter(item_forGroupRules);
+                            await searchInOrderCenter.bind(this)(item_forGroupRules);
                             const MakeUp002_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
                             driver.sleep(0.1 * 1000);
                             switch (account) {
@@ -1385,10 +1479,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             driver.sleep(0.5 * 1000);
                         });
 
-                        it('Adding "MakeUp019" at quantity of 5 Each and Checking at Order Center (12 units in group)', async () => {
+                        it('Adding "MakeUp019" at quantity of 5 Each and Checking at Order Center (12 units in group)', async function () {
                             item_forGroupRules = 'MakeUp019';
-                            await searchInOrderCenter(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter('Each', item_forGroupRules, 5);
+                            await searchInOrderCenter.bind(this)(item_forGroupRules);
+                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                'Each',
+                                item_forGroupRules,
+                                5,
+                            );
                             const MakeUp019_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
                             driver.sleep(0.1 * 1000);
                             switch (account) {
@@ -1455,7 +1553,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                 });
 
                 describe('Read Only', () => {
-                    it('entering the same transaction post submission, checking the latest activity - ID', async () => {
+                    it('entering the same transaction post submission, checking the latest activity - ID', async function () {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Component Page We Got Into`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
                         await webAppList.isSpinnerDone();
                         await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
                         const latestActivityID = await (
@@ -1464,7 +1567,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                         await driver.click(webAppList.HtmlBody);
                         expect(Number(latestActivityID)).to.equal(transactionInternalID);
                     });
-                    it('checking the latest activity - type: Sales Order', async () => {
+                    it('checking the latest activity - type: Sales Order', async function () {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Component Page We Got Into`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
                         await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Type);
                         const latestActivityType = await (
                             await driver.findElement(webAppList.Activities_TopActivityInList_Type)
@@ -1488,7 +1596,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                             MainKey: 'ZDS3@A001@Drug0004',
                             SecondaryKey: '',
                             Values: [
-                                '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"EA"]]',
+                                '[[true,"1555891200000","2534022144999","1","","additionalItem",[[6,"D",100,"%","",1,"EA","Drug0002",0]],"EA"]]',
                             ],
                         });
                         expect(updatedUDTRowPOST).to.deep.include({
@@ -1496,7 +1604,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                             MainKey: 'ZDS3@A001@Drug0004',
                             SecondaryKey: null,
                             Values: [
-                                '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"EA"]]',
+                                '[[true,"1555891200000","2534022144999","1","","additionalItem",[[6,"D",100,"%","",1,"EA","Drug0002",0]],"EA"]]',
                             ],
                         });
                         expect(updatedUDTRowPOST).to.have.property('CreationDateTime').that.contains('Z');
@@ -1526,7 +1634,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                     });
                     it(`navigating to the account "${
                         account == 'Acc01' ? 'My Store' : 'Account for order scenarios'
-                    }"`, async () => {
+                    }"`, async function () {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Component Page We Got Into`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
                         await webAppHomePage.clickOnBtn('Accounts');
                         await webAppHeader.isSpinnerDone();
                         driver.sleep(0.1 * 1000);
@@ -1535,7 +1648,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                         await webAppList.clickOnLinkFromListRowWebElementByText(`${accountName}`);
                         await webAppList.isSpinnerDone();
                     });
-                    it('entering the same transaction through activity list', async () => {
+                    it('entering the same transaction through activity list', async function () {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Component Page We Got Into`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
                         await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
                         await webAppList.clickOnLinkFromListRowWebElement();
                         await webAppList.isSpinnerDone();
@@ -1557,6 +1675,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                             );
                         }
                         driver.sleep(0.1 * 1000);
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Component Page We Got Into`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
                     });
                     it('reverting values in "PPM_Values" UDT to the original values', async () => {
                         const tableName = 'PPM_Values';
@@ -1607,6 +1730,11 @@ export async function PricingTests(email: string, password: string, client: Clie
             it('Go Home', async () => {
                 await webAppHeader.goHome();
                 driver.sleep(1 * 1000);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Component Page We Got Into`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
             });
         });
 
@@ -1745,21 +1873,33 @@ export async function PricingTests(email: string, password: string, client: Clie
         };
     }
 
-    async function searchInOrderCenter(nameOfItem: string): Promise<void> {
+    async function searchInOrderCenter(this: Context, nameOfItem: string): Promise<void> {
         await orderPage.isSpinnerDone();
+        let base64ImageComponent = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Component Page We Got Into`,
+            value: 'data:image/png;base64,' + base64ImageComponent,
+        });
         const searchInput = await driver.findElement(orderPage.Search_Input);
         await searchInput.clear();
         driver.sleep(0.1 * 1000);
-        await searchInput.sendKeys(nameOfItem);
+        await searchInput.sendKeys(nameOfItem + '\n');
         driver.sleep(0.5 * 1000);
         await driver.click(orderPage.HtmlBody);
+        driver.sleep(0.1 * 1000);
         await driver.click(orderPage.Search_Magnifier_Button);
         driver.sleep(0.1 * 1000);
         await orderPage.isSpinnerDone();
         await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(nameOfItem));
+        base64ImageComponent = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Component Page We Got Into`,
+            value: 'data:image/png;base64,' + base64ImageComponent,
+        });
     }
 
     async function changeSelectedQuantityOfSpecificItemInOrderCenter(
+        this: Context,
         uomValue: 'Each' | 'Case',
         nameOfItem: string,
         quantityOfItem: number,
@@ -1767,6 +1907,11 @@ export async function PricingTests(email: string, password: string, client: Clie
         const itemContainer = await driver.findElement(orderPage.getSelectorOfItemInOrderCenterByName(nameOfItem));
         driver.sleep(0.05 * 1000);
         let itemUomValue = await driver.findElement(orderPage.UnitOfMeasure_Selector_Value);
+        base64ImageComponent = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Component Page We Got Into`,
+            value: 'data:image/png;base64,' + base64ImageComponent,
+        });
         if ((await itemUomValue.getText()) !== uomValue) {
             await driver.click(orderPage.UnitOfMeasure_Selector_Value);
             driver.sleep(0.05 * 1000);
@@ -1775,6 +1920,11 @@ export async function PricingTests(email: string, password: string, client: Clie
             await itemContainer.click();
             driver.sleep(0.1 * 1000);
             itemUomValue = await driver.findElement(orderPage.UnitOfMeasure_Selector_Value);
+            base64ImageComponent = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Component Page We Got Into`,
+                value: 'data:image/png;base64,' + base64ImageComponent,
+            });
         }
         driver.sleep(0.05 * 1000);
         await orderPage.isSpinnerDone();
@@ -1818,16 +1968,26 @@ export async function PricingTests(email: string, password: string, client: Clie
         }
         driver.sleep(0.05 * 1000);
         await itemContainer.click();
+        base64ImageComponent = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Component Page We Got Into`,
+            value: 'data:image/png;base64,' + base64ImageComponent,
+        });
     }
 
     async function changeSelectedQuantityOfSpecificItemInCart(
+        this: Context,
         uomValue: 'Each' | 'Case',
         nameOfItem: string,
         quantityOfItem: number,
     ): Promise<void> {
         driver.sleep(0.05 * 1000);
-        // debugger
         let itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
+        base64ImageComponent = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Component Page We Got Into`,
+            value: 'data:image/png;base64,' + base64ImageComponent,
+        });
         if ((await itemUomValue.getText()) !== uomValue) {
             await itemUomValue.click();
             driver.sleep(0.05 * 1000);
@@ -1836,6 +1996,11 @@ export async function PricingTests(email: string, password: string, client: Clie
             await driver.click(orderPage.HtmlBody);
             driver.sleep(0.1 * 1000);
             itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
+            base64ImageComponent = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Component Page We Got Into`,
+                value: 'data:image/png;base64,' + base64ImageComponent,
+            });
         }
         driver.sleep(0.05 * 1000);
         await orderPage.isSpinnerDone();
@@ -1880,6 +2045,11 @@ export async function PricingTests(email: string, password: string, client: Clie
         }
         await orderPage.isSpinnerDone();
         driver.sleep(0.1 * 1000);
+        base64ImageComponent = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Component Page We Got Into`,
+            value: 'data:image/png;base64,' + base64ImageComponent,
+        });
     }
 
     async function clearOrderCenterSearch(): Promise<void> {
@@ -1888,20 +2058,4 @@ export async function PricingTests(email: string, password: string, client: Clie
         driver.sleep(0.1 * 1000);
         await orderPage.isSpinnerDone();
     }
-
-    // async function getUnitItemsPricingData(args: { item: string, field: string, account: string, state: string }) {
-    //     switch (installedPricingVersion) {
-    //         case "5":
-    //             return pricingData.testItemsValues[args.item][args.field][args.account][args.state];
-    //             break;
-
-    //         default:
-    //             return pricingData.testItemsValues[args.item][args.field][args.account][args.state];
-    //             break;
-    //     }
-    // }
-
-    // async function getAdditionalItemsPricingData() { }
-
-    // async function getGroupItemsPricingData() { }
 }
