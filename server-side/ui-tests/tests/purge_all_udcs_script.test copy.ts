@@ -188,7 +188,6 @@
 //             // 1.1 test the table is indeed new => empty
 //             const addonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
 //             const secretKey = '1a3cbde5-1afb-412b-a7a0-5f314b1cc9e8';
-//             debugger;
 //             const getAdalTablenResponse = await generalService.fetchStatus(
 //                 `/addons/data/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${schemaName_create}`,
 //                 {
@@ -266,7 +265,6 @@
 //             const buf1 = fs.readFileSync('./Data_0.csv');
 //             const buf2 = fs.readFileSync('./Data_1.csv');
 //             const buf3 = fs.readFileSync('./Data_2.csv');
-//             debugger;
 //             //4. upload the file to PFS Temp
 //             const putResponsePart1 = await pfsService.putPresignedURL(tempFileResponse1.PutURL, buf1);
 //             expect(putResponsePart1.ok).to.equal(true);
@@ -297,7 +295,6 @@
 //                 240,
 //                 7000,
 //             );
-//             debugger;
 //             expect((auditLogResponseForImporting1 as any).Status.ID).to.equal(1);
 //             expect((auditLogResponseForImporting1 as any).Status.Name).to.equal('Success');
 //             expect(JSON.parse(auditLogResponseForImporting1.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
@@ -323,7 +320,6 @@
 //                 240,
 //                 7000,
 //             );
-//             debugger;
 //             expect((auditLogResponseForImporting2 as any).Status.ID).to.equal(1);
 //             expect((auditLogResponseForImporting2 as any).Status.Name).to.equal('Success');
 //             expect(JSON.parse(auditLogResponseForImporting2.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
@@ -349,7 +345,6 @@
 //                 240,
 //                 7000,
 //             );
-//             debugger;
 //             expect((auditLogResponseForImporting3 as any).Status.ID).to.equal(1);
 //             expect((auditLogResponseForImporting3 as any).Status.Name).to.equal('Success');
 //             expect(JSON.parse(auditLogResponseForImporting3.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
@@ -361,6 +356,24 @@
 //             const duration3 = Date.now() - start3;
 //             const durationInSec3 = (duration3 / 1000).toFixed(3);
 //             console.log(`±±±±TOOK: seconds: ${durationInSec3}, which are: ${Number(durationInSec3) / 60} minutes±±±±`);
+//             const bodyToSendExport = {
+//                 Format: 'csv',
+//                 IncludeDeleted: false,
+//                 Fields: 'Value1,Value2,Value3',
+//                 Delimiter: ',',
+//             };
+//             const importResponse4 = await generalService.fetchStatus(
+//                 `/addons/data/export/file/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${schemaName_create}`,
+//                 { method: 'POST', body: JSON.stringify(bodyToSendExport) },
+//             );
+//             const executionURI4 = importResponse4.Body.URI;
+//             const auditLogResponseForImporting4 = await generalService.getAuditLogResultObjectIfValid(
+//                 executionURI4 as string,
+//                 240,
+//                 7000,
+//             );
+//             expect((auditLogResponseForImporting4 as any).Status.ID).to.equal(1);
+//             expect((auditLogResponseForImporting4 as any).Status.Name).to.equal('Success');
 //             debugger;
 //             //6. delete the ADAL table
 //             // const newUUID = newUuid();
