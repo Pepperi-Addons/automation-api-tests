@@ -24,8 +24,24 @@ export async function Import250KDimx(client: Client, varPass) {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
+    if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
+        const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, varKey);
+        generalService['client'].AddonSecretKey = addonSecretKey;
+        generalService.papiClient['options'].addonSecretKey = addonSecretKey;
+    }
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const howManyRows_create = 250000; //QTY! -- this is here so we can print it in the log (report)
+    const schemaName_create = 'AdalTable' + Math.floor(Math.random() * 1000000).toString(); //-- this is here so we can print it in the log (report)
+    const scheme_create: AddonDataScheme = {
+        Name: schemaName_create,
+        Type: 'data',
+        Fields: {
+            Value1: { Type: 'String' },
+            Value2: { Type: 'String' },
+            Value3: { Type: 'String' },
+        },
+    };
     describe('ADAL CREATE SCHEME - IMPORT 250K ROWS USING PFS AND DIMX - EXPORT', async function () {
         describe('Prerequisites Addon for relation Tests', () => {
             //Test Data
@@ -59,17 +75,6 @@ export async function Import250KDimx(client: Client, varPass) {
                 });
             }
         });
-        const howManyRows_create = 250000; //QTY! -- this is here so we can print it in the log (report)
-        const schemaName_create = 'AdalTable' + Math.floor(Math.random() * 1000000).toString(); //-- this is here so we can print it in the log (report)
-        const scheme_create: AddonDataScheme = {
-            Name: schemaName_create,
-            Type: 'data',
-            Fields: {
-                Value1: { Type: 'String' },
-                Value2: { Type: 'String' },
-                Value3: { Type: 'String' },
-            },
-        };
         it(`TEST IMPORT: RUNNING ON ${howManyRows_create} ROWS!, TABLE NAME: ${schemaName_create}, SCHEME: ${JSON.stringify(
             scheme_create,
         )}`, async function () {
