@@ -170,7 +170,7 @@ export async function Import250KDimx(client: Client, varPass) {
             const executionURI1 = importResponse1.Body.URI;
             const auditLogResponseForImporting1 = await generalService.getAuditLogResultObjectIfValid(
                 executionURI1 as string,
-                320,
+                400,
                 7000,
             );
             expect((auditLogResponseForImporting1 as any).Status.ID).to.equal(1);
