@@ -117,7 +117,7 @@ export async function PricingTests(email: string, password: string, client: Clie
             await driver.quit();
         });
 
-        it('Login', async () => {
+        it('Login', async function () {
             await webAppLoginPage.login(email, password);
             // base64ImageComponent = await driver.saveScreenshots();
             // addContext(this, {
@@ -132,7 +132,7 @@ export async function PricingTests(email: string, password: string, client: Clie
 
         testAccounts.forEach((account) => {
             describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, () => {
-                it('Creating new transaction', async () => {
+                it('Creating new transaction', async function () {
                     switch (account) {
                         case 'Acc01':
                             accountName = 'My Store';
@@ -251,7 +251,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     // });
                                     await driver.untilIsVisible(orderPage.Cart_Total_Header);
                                 });
-                                it('verify that the sum total of items in the cart is correct', async () => {
+                                it('verify that the sum total of items in the cart is correct', async function () {
                                     base64ImageComponent = await driver.saveScreenshots();
                                     addContext(this, {
                                         title: `At Cart`,
@@ -277,7 +277,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     });
                                 });
                                 describe('back to Order Center', () => {
-                                    it('Click "Continue ordering" button', async () => {
+                                    it('Click "Continue ordering" button', async function () {
                                         await driver.click(orderPage.Cart_ContinueOrdering_Button);
                                         await orderPage.isSpinnerDone();
                                         await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
@@ -890,7 +890,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
 
                         ['MakeUp001', 'MakeUp002'].forEach(function (item) {
-                            it(`Checking ${item} at Baseline`, async () => {
+                            it(`Checking ${item} at Baseline`, async function () {
                                 await searchInOrderCenter.bind(this)(item);
                                 driver.sleep(0.1 * 1000);
                                 const MakeUpItem_priceTSAsCart = await getItemTSAs('OrderCenter', item);
@@ -908,7 +908,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
 
                         ['MakeUp001', 'MakeUp002'].forEach(function (item) {
-                            it(`Adding ${item} at quantity of 1 Each and Checking at Order Center`, async () => {
+                            it(`Adding ${item} at quantity of 1 Each and Checking at Order Center`, async function () {
                                 base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `Group Rules item - before adding`,
@@ -1733,7 +1733,7 @@ export async function PricingTests(email: string, password: string, client: Clie
             });
         });
         describe('Return to HomePage', () => {
-            it('Go Home', async () => {
+            it('Go Home', async function () {
                 await webAppHeader.goHome();
                 driver.sleep(1 * 1000);
                 // base64ImageComponent = await driver.saveScreenshots();
