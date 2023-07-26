@@ -173,6 +173,10 @@ export async function Import250KDimx(client: Client, varPass) {
                 400,
                 7000,
             );
+            const duration1 = Date.now() - start1;
+            const durationInSec1 = (duration1 / 1000).toFixed(3);
+            console.log(`±±±±TOOK: seconds: ${durationInSec1}, which are: ${Number(durationInSec1) / 60} minutes±±±±`);
+            console.log(`Result From Dimx:  ${JSON.stringify(auditLogResponseForImporting1)}`);
             expect((auditLogResponseForImporting1 as any).Status.ID).to.equal(1);
             expect((auditLogResponseForImporting1 as any).Status.Name).to.equal('Success');
             expect(JSON.parse(auditLogResponseForImporting1.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
@@ -181,9 +185,7 @@ export async function Import250KDimx(client: Client, varPass) {
             expect(JSON.parse(auditLogResponseForImporting1.AuditInfo.ResultObject).LinesStatistics.Inserted).to.equal(
                 howManyRows_create,
             );
-            const duration1 = Date.now() - start1;
-            const durationInSec1 = (duration1 / 1000).toFixed(3);
-            console.log(`±±±±TOOK: seconds: ${durationInSec1}, which are: ${Number(durationInSec1) / 60} minutes±±±±`);
+
             //TODO: export
             // const bodyToSendExport = {
             //     Format: 'csv',
