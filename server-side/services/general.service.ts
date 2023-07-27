@@ -2110,6 +2110,7 @@ export default class GeneralService {
     }
 
     async createCSVFile(
+        fileName: string,
         howManyDataRows: number,
         headers: string,
         keyData: string,
@@ -2117,16 +2118,16 @@ export default class GeneralService {
         isHidden: string,
     ) {
         let strData = '';
-        strData += headers + '\n';
+        strData += headers + ',Hidden' + '\n';
         for (let index = 0; index < howManyDataRows; index++) {
-            strData += `${keyData.replace('index', index.toString())},`;
+            if (keyData !== '') strData += `${keyData.replace('index', index.toString())},`;
             for (let index1 = 0; index1 < valueData.length; index1++) {
                 const value = valueData[index1];
-                strData += `${value.replace('index', index.toString())},`;
+                strData += `${value.includes('index') ? value.replace('index', index.toString()) : value},`;
             }
-            strData += `${isHidden.replace('index', index.toString())}\n`;
+            strData += `${isHidden}\n`;
         }
-        await this.genrateFile('Data', strData);
+        await this.genrateFile(fileName, strData);
     }
 
     generateRandomString(length: number): string {
