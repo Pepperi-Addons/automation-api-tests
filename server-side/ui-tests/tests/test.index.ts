@@ -60,7 +60,7 @@ import { CiCdFlow } from '../../services/cicd-flow.service copy';
 import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon_from_all_auto_users';
 // import { FlowAPITest } from '../../api-tests/flows_api_part';
 import { FlowTests } from './flows_builder.test';
-import { Import250KDimx } from './import_250k_DIMX.test';
+import { Import250KToAdalFromDimx } from './import_250k_DIMX.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -245,7 +245,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     }
 
     if (tests.includes('evgeny')) {
-        await Import250KDimx(client, {
+        await Import250KToAdalFromDimx(client, {
             body: {
                 varKeyStage: varPass,
                 varKeyPro: varPass,
@@ -256,7 +256,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     }
 
     if (tests.includes('Dimx250KUpload')) {
-        await Import250KDimx(client, {
+        await Import250KToAdalFromDimx(client, {
             body: {
                 varKeyStage: varPass,
                 varKeyPro: varPass,
