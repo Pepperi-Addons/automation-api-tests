@@ -867,8 +867,8 @@ export class PricingData06 {
                     baseline: 22 * 6,
                     '1unit': 22,
                     '3units': 17.6,
-                    '1case(6units)': 17.6 * 6,
-                    '4cases(24units)': 17.6 * 6,
+                    '1case(6units)': 105.6,
+                    '4cases(24units)': 105.6,
                 },
                 OtherAcc: {
                     baseline: 50 * 6,
