@@ -117,13 +117,13 @@ export async function PricingTests(email: string, password: string, client: Clie
             await driver.quit();
         });
 
-        it('Login', async () => {
+        it('Login', async function () {
             await webAppLoginPage.login(email, password);
-            base64ImageComponent = await driver.saveScreenshots();
-            addContext(this, {
-                title: `At Home Page`,
-                value: 'data:image/png;base64,' + base64ImageComponent,
-            });
+            // base64ImageComponent = await driver.saveScreenshots();
+            // addContext(this, {
+            //     title: `At Home Page`,
+            //     value: 'data:image/png;base64,' + base64ImageComponent,
+            // });
         });
 
         it('Manual Sync', async () => {
@@ -132,7 +132,7 @@ export async function PricingTests(email: string, password: string, client: Clie
 
         testAccounts.forEach((account) => {
             describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, () => {
-                it('Creating new transaction', async () => {
+                it('Creating new transaction', async function () {
                     switch (account) {
                         case 'Acc01':
                             accountName = 'My Store';
@@ -148,11 +148,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                             transactionUUID = transactionUUID_OtherAcc;
                             break;
                     }
-                    base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `New Slaes Order trasaction started`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
+                    // base64ImageComponent = await driver.saveScreenshots();
+                    // addContext(this, {
+                    //     title: `New Slaes Order trasaction started`,
+                    //     value: 'data:image/png;base64,' + base64ImageComponent,
+                    // });
                 });
 
                 testStates.forEach((state) => {
@@ -244,25 +244,25 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     await driver.click(orderPage.Cart_Button);
                                     await orderPage.isSpinnerDone();
                                     driver.sleep(1 * 1000);
-                                    base64ImageComponent = await driver.saveScreenshots();
-                                    addContext(this, {
-                                        title: `Entered Cart`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
-                                    });
+                                    // base64ImageComponent = await driver.saveScreenshots();
+                                    // addContext(this, {
+                                    //     title: `Entered Cart`,
+                                    //     value: 'data:image/png;base64,' + base64ImageComponent,
+                                    // });
                                     await driver.untilIsVisible(orderPage.Cart_Total_Header);
                                 });
-                                it('verify that the sum total of items in the cart is correct', async () => {
+                                it('verify that the sum total of items in the cart is correct', async function () {
+                                    base64ImageComponent = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `At Cart`,
+                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                    });
                                     const itemsInCart = await (
                                         await driver.findElement(orderPage.Cart_Headline_Results_Number)
                                     ).getText();
                                     driver.sleep(0.2 * 1000);
                                     expect(Number(itemsInCart)).to.equal(testItems.length);
                                     driver.sleep(1 * 1000);
-                                    base64ImageComponent = await driver.saveScreenshots();
-                                    addContext(this, {
-                                        title: `At Cart`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
-                                    });
                                 });
                                 testItems.forEach(async (item) => {
                                     it(`checking item "${item}"`, async () => {
@@ -277,7 +277,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     });
                                 });
                                 describe('back to Order Center', () => {
-                                    it('Click "Continue ordering" button', async () => {
+                                    it('Click "Continue ordering" button', async function () {
                                         await driver.click(orderPage.Cart_ContinueOrdering_Button);
                                         await orderPage.isSpinnerDone();
                                         await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
@@ -890,7 +890,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
 
                         ['MakeUp001', 'MakeUp002'].forEach(function (item) {
-                            it(`Checking ${item} at Baseline`, async () => {
+                            it(`Checking ${item} at Baseline`, async function () {
                                 await searchInOrderCenter.bind(this)(item);
                                 driver.sleep(0.1 * 1000);
                                 const MakeUpItem_priceTSAsCart = await getItemTSAs('OrderCenter', item);
@@ -908,7 +908,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
 
                         ['MakeUp001', 'MakeUp002'].forEach(function (item) {
-                            it(`Adding ${item} at quantity of 1 Each and Checking at Order Center`, async () => {
+                            it(`Adding ${item} at quantity of 1 Each and Checking at Order Center`, async function () {
                                 base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `Group Rules item - before adding`,
@@ -1560,11 +1560,11 @@ export async function PricingTests(email: string, password: string, client: Clie
 
                 describe('Read Only', () => {
                     it('entering the same transaction post submission, checking the latest activity - ID', async function () {
-                        base64ImageComponent = await driver.saveScreenshots();
-                        addContext(this, {
-                            title: `At activity List - about to choose the latest transaction`,
-                            value: 'data:image/png;base64,' + base64ImageComponent,
-                        });
+                        // base64ImageComponent = await driver.saveScreenshots();
+                        // addContext(this, {
+                        //     title: `At activity List - about to choose the latest transaction`,
+                        //     value: 'data:image/png;base64,' + base64ImageComponent,
+                        // });
                         await webAppList.isSpinnerDone();
                         await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
                         const latestActivityID = await (
@@ -1733,14 +1733,14 @@ export async function PricingTests(email: string, password: string, client: Clie
             });
         });
         describe('Return to HomePage', () => {
-            it('Go Home', async () => {
+            it('Go Home', async function () {
                 await webAppHeader.goHome();
                 driver.sleep(1 * 1000);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Returned to Home Page`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
+                // base64ImageComponent = await driver.saveScreenshots();
+                // addContext(this, {
+                //     title: `Returned to Home Page`,
+                //     value: 'data:image/png;base64,' + base64ImageComponent,
+                // });
             });
         });
 
@@ -1881,11 +1881,11 @@ export async function PricingTests(email: string, password: string, client: Clie
 
     async function searchInOrderCenter(this: Context, nameOfItem: string): Promise<void> {
         await orderPage.isSpinnerDone();
-        let base64ImageComponent = await driver.saveScreenshots();
-        addContext(this, {
-            title: `At Order Center - before Search`,
-            value: 'data:image/png;base64,' + base64ImageComponent,
-        });
+        // let base64ImageComponent = await driver.saveScreenshots();
+        // addContext(this, {
+        //     title: `At Order Center - before Search`,
+        //     value: 'data:image/png;base64,' + base64ImageComponent,
+        // });
         const searchInput = await driver.findElement(orderPage.Search_Input);
         await searchInput.clear();
         driver.sleep(0.1 * 1000);
@@ -1913,11 +1913,11 @@ export async function PricingTests(email: string, password: string, client: Clie
         const itemContainer = await driver.findElement(orderPage.getSelectorOfItemInOrderCenterByName(nameOfItem));
         driver.sleep(0.05 * 1000);
         let itemUomValue = await driver.findElement(orderPage.UnitOfMeasure_Selector_Value);
-        base64ImageComponent = await driver.saveScreenshots();
-        addContext(this, {
-            title: `At Order Center - before Quantity change`,
-            value: 'data:image/png;base64,' + base64ImageComponent,
-        });
+        // base64ImageComponent = await driver.saveScreenshots();
+        // addContext(this, {
+        //     title: `At Order Center - before Quantity change`,
+        //     value: 'data:image/png;base64,' + base64ImageComponent,
+        // });
         if ((await itemUomValue.getText()) !== uomValue) {
             await driver.click(orderPage.UnitOfMeasure_Selector_Value);
             driver.sleep(0.05 * 1000);
@@ -1926,11 +1926,11 @@ export async function PricingTests(email: string, password: string, client: Clie
             await itemContainer.click();
             driver.sleep(0.1 * 1000);
             itemUomValue = await driver.findElement(orderPage.UnitOfMeasure_Selector_Value);
-            base64ImageComponent = await driver.saveScreenshots();
-            addContext(this, {
-                title: `O.C. after UOM change`,
-                value: 'data:image/png;base64,' + base64ImageComponent,
-            });
+            // base64ImageComponent = await driver.saveScreenshots();
+            // addContext(this, {
+            //     title: `O.C. after UOM change`,
+            //     value: 'data:image/png;base64,' + base64ImageComponent,
+            // });
         }
         driver.sleep(0.05 * 1000);
         await orderPage.isSpinnerDone();
@@ -1989,11 +1989,11 @@ export async function PricingTests(email: string, password: string, client: Clie
     ): Promise<void> {
         driver.sleep(0.05 * 1000);
         let itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
-        base64ImageComponent = await driver.saveScreenshots();
-        addContext(this, {
-            title: `At Cart - before Quantity change`,
-            value: 'data:image/png;base64,' + base64ImageComponent,
-        });
+        // base64ImageComponent = await driver.saveScreenshots();
+        // addContext(this, {
+        //     title: `At Cart - before Quantity change`,
+        //     value: 'data:image/png;base64,' + base64ImageComponent,
+        // });
         if ((await itemUomValue.getText()) !== uomValue) {
             await itemUomValue.click();
             driver.sleep(0.05 * 1000);
@@ -2002,11 +2002,11 @@ export async function PricingTests(email: string, password: string, client: Clie
             await driver.click(orderPage.HtmlBody);
             driver.sleep(0.1 * 1000);
             itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
-            base64ImageComponent = await driver.saveScreenshots();
-            addContext(this, {
-                title: `Cart after UOM change`,
-                value: 'data:image/png;base64,' + base64ImageComponent,
-            });
+            // base64ImageComponent = await driver.saveScreenshots();
+            // addContext(this, {
+            //     title: `Cart after UOM change`,
+            //     value: 'data:image/png;base64,' + base64ImageComponent,
+            // });
         }
         driver.sleep(0.05 * 1000);
         await orderPage.isSpinnerDone();
