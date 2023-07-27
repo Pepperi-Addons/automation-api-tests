@@ -102,6 +102,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     // const areAddonsPhased = await generalService.setToLatestPhasedVersion(varPass, generalService.testDataWithNewSync);
     // console.info('Are Addons Phased: ', JSON.stringify(areAddonsPhased, null, 2));
 
+    await generalService.baseAddonVersionsInstallation(varPass);
+
     const testData = {
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         ResourceListABI_Addon: ['cd3ba412-66a4-42f4-8abc-65768c5dc606', ''],
