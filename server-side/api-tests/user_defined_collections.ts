@@ -541,7 +541,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
                 }
                 generalService.sleep(5000);
-                const allObjects = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 130);
+                const allObjects = await udcService.getAllObjectFromCollectionCount(indexedCollectionName, 1, 130);
                 expect(allObjects.objects.length).to.equal(arrayOfValues.length);
                 expect(allObjects.count).to.equal(arrayOfValues.length);
                 for (let index = 0; index < allObjects.objects.length; index++) {
@@ -570,22 +570,46 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body.Objects[0]).to.deep.equal(document);
             });
             it('Positive Test: getting indexed data from UDC - using paganation + count field', async () => {
-                const allObjects50page1 = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 50);
+                const allObjects50page1 = await udcService.getAllObjectFromCollectionCount(
+                    indexedCollectionName,
+                    1,
+                    50,
+                );
                 expect(allObjects50page1.objects.length).to.equal(50);
                 expect(allObjects50page1.count).to.equal(130);
-                const allObjects50page2 = await udcService.getAllObjectFromCollection(indexedCollectionName, 2, 50);
+                const allObjects50page2 = await udcService.getAllObjectFromCollectionCount(
+                    indexedCollectionName,
+                    2,
+                    50,
+                );
                 expect(allObjects50page2.objects.length).to.equal(50);
                 expect(allObjects50page2.count).to.equal(130);
-                const allObjects50page3 = await udcService.getAllObjectFromCollection(indexedCollectionName, 3, 50);
+                const allObjects50page3 = await udcService.getAllObjectFromCollectionCount(
+                    indexedCollectionName,
+                    3,
+                    50,
+                );
                 expect(allObjects50page3.objects.length).to.equal(30);
                 expect(allObjects50page3.count).to.equal(130);
-                const allObjects50page4 = await udcService.getAllObjectFromCollection(indexedCollectionName, 4, 50);
+                const allObjects50page4 = await udcService.getAllObjectFromCollectionCount(
+                    indexedCollectionName,
+                    4,
+                    50,
+                );
                 expect(allObjects50page4.objects.length).to.equal(0);
                 expect(allObjects50page4.count).to.equal(130);
-                const allObjects100page1 = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 100);
+                const allObjects100page1 = await udcService.getAllObjectFromCollectionCount(
+                    indexedCollectionName,
+                    1,
+                    100,
+                );
                 expect(allObjects100page1.objects.length).to.equal(100);
                 expect(allObjects100page1.count).to.equal(130);
-                const allObjects100page2 = await udcService.getAllObjectFromCollection(indexedCollectionName, 2, 100);
+                const allObjects100page2 = await udcService.getAllObjectFromCollectionCount(
+                    indexedCollectionName,
+                    2,
+                    100,
+                );
                 expect(allObjects100page2.objects.length).to.equal(30);
                 expect(allObjects100page2.count).to.equal(130);
                 //hide an object and see the count changing
@@ -597,7 +621,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(hideResponse.Body.ModificationDateTime).to.include(parsedTodayDate);
                 expect(hideResponse.Body.Hidden).to.equal(true);
                 generalService.sleep(5000);
-                const allObjects = await udcService.getAllObjectFromCollection(indexedCollectionName, 1, 130);
+                const allObjects = await udcService.getAllObjectFromCollectionCount(indexedCollectionName, 1, 130);
                 expect(allObjects.count).to.equal(129);
             });
             it('Positive Test: creating a "Scheme - Only" UDC', async () => {
@@ -1250,7 +1274,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 let runningNum = toHideCollections.length;
                 for (let index = 0; index < toHideCollections.length; index++) {
                     const collectionToHide = toHideCollections[index];
-                    const collectionsObjcts = await udcService.getAllObjectFromCollection(collectionToHide.Name);
+                    const collectionsObjcts = await udcService.getAllObjectFromCollectionCount(collectionToHide.Name);
                     if (collectionsObjcts.objects && collectionsObjcts.objects.length > 0) {
                         for (let index = 0; index < collectionsObjcts.objects.length; index++) {
                             const obj = collectionsObjcts.objects[index];

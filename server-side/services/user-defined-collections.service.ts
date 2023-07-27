@@ -234,13 +234,23 @@ export class UDCService {
         return udcCreateResponse;
     }
 
-    async getAllObjectFromCollection(collectionName, page?, maxPageSize?) {
+    async getAllObjectFromCollectionCount(collectionName, page?, maxPageSize?) {
         const body = { Page: page ? page : 1, MaxPageSize: maxPageSize ? maxPageSize : 100, IncludeCount: true };
         const response = await this.generalService.fetchStatus(
             `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${collectionName}`,
             {
                 method: 'POST',
                 body: JSON.stringify(body),
+            },
+        );
+        return { objects: response.Body.Objects, count: response.Body.Count };
+    }
+
+    async getAllObjectFromCollection(collectionName) {
+        const response = await this.generalService.fetchStatus(
+            `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${collectionName}?page_size=-1`,
+            {
+                method: 'GET',
             },
         );
         return { objects: response.Body.Objects, count: response.Body.Count };

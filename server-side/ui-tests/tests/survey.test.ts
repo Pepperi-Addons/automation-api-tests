@@ -670,7 +670,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const toHideCollections = documents.filter((doc) => doc.Name.includes('NewSurveyCollection'));
                 for (let index = 0; index < toHideCollections.length; index++) {
                     const collectionToHide = toHideCollections[index];
-                    const collectionsObjcts = await udcService.getAllObjectFromCollection(collectionToHide.Name);
+                    const collectionsObjcts = await udcService.getAllObjectFromCollectionCount(collectionToHide.Name);
                     if (collectionsObjcts.objects && collectionsObjcts.objects.length > 0) {
                         for (let index = 0; index < collectionsObjcts.objects.length; index++) {
                             const obj = collectionsObjcts.objects[index];

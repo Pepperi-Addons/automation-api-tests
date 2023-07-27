@@ -167,7 +167,6 @@ export async function Import250KToAdalFromDimx(client: Client, varPass) {
 
                 { method: 'POST', body: JSON.stringify(bodyToImport1) },
             );
-
             const start1 = Date.now();
             const executionURI1 = importResponse1.Body.URI;
             console.log('uploading started - this is a big file, may take up to ~40 minutes');

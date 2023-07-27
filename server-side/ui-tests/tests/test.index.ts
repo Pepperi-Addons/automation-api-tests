@@ -61,6 +61,7 @@ import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon
 // import { FlowAPITest } from '../../api-tests/flows_api_part';
 import { FlowTests } from './flows_builder.test';
 import { Import250KToAdalFromDimx } from './import_250k_DIMX.test';
+import { UDCImportExportTests } from '../../api-tests/user_defined_collections_import_export';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -252,6 +253,21 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 varKeyEU: varPassEU,
             },
         }); //
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('UDCImportExport')) {
+        await UDCImportExportTests(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        ); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
