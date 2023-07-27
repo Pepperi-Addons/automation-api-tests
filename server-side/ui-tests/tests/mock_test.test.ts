@@ -449,6 +449,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                     expect(upsertingValues_Response.Error).to.eql({});
                 });
                 await generalService.createCSVFile(
+                    'Data',
                     25,
                     'an_account,best_seller_item,max_quantity,discount_rate,offered_discount_location,Hidden',
                     acc01UUID,
@@ -2571,7 +2572,9 @@ export async function MockTest(email: string, password: string, client: Client) 
 
             describe('TearDown', () => {
                 it('Deleting the Documents of the UDC "ReferenceAccountAuto" with API', async () => {
-                    const getReferenceAccountAuto = await udcService.getAllObjectFromCollection('ReferenceAccountAuto');
+                    const getReferenceAccountAuto = await udcService.getAllObjectFromCollectionCount(
+                        'ReferenceAccountAuto',
+                    );
                     console.info(`getReferenceAccountAuto: ${JSON.stringify(getReferenceAccountAuto, null, 2)}`);
                     getReferenceAccountAuto.objects.forEach(async (document) => {
                         const deleteDocument = await udcService.hideObjectInACollection(

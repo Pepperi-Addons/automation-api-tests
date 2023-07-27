@@ -11,7 +11,7 @@ import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
 chai.use(promised);
 
-export async function Import250KDimx(client: Client, varPass) {
+export async function Import250KToAdalFromDimx(client: Client, varPass) {
     //
     const generalService = new GeneralService(client);
     let varKey;
@@ -75,7 +75,7 @@ export async function Import250KDimx(client: Client, varPass) {
                 });
             }
         });
-        it(`TEST IMPORT: RUNNING ON ${howManyRows_create} ROWS!, TABLE NAME: ${schemaName_create}, SCHEME: ${JSON.stringify(
+        it(`TEST IMPORT TO ADAL: RUNNING ON FILE WITH ${howManyRows_create} ROWS, ADAL TABLE NAME: ${schemaName_create}, SCHEME: ${JSON.stringify(
             scheme_create,
         )}`, async function () {
             const pfsService = new PFSService(generalService);
@@ -139,7 +139,7 @@ export async function Import250KDimx(client: Client, varPass) {
             expect(relationResponse_yoni.Status).to.equal(200);
             expect(relationResponse_yoni.Ok).to.equal(true);
             // 2. create PFS Temp file
-            const fileName1 = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
+            const fileName1 = 'TempFile' + generalService.generateRandomString(8) + '.csv';
             const mime = 'text/csv';
             const tempFileResponse1 = await pfsService.postTempFile({
                 FileName: fileName1,
@@ -155,7 +155,9 @@ export async function Import250KDimx(client: Client, varPass) {
             const putResponsePart1 = await pfsService.putPresignedURL(tempFileResponse1.PutURL, buf1);
             expect(putResponsePart1.ok).to.equal(true);
             expect(putResponsePart1.status).to.equal(200);
-            console.log(tempFileResponse1.TemporaryFileURL);
+            console.log(
+                `CSV File That Is About To Be Uploaded To ${schemaName_create} Is Found In: ${tempFileResponse1.TemporaryFileURL}`,
+            );
             //5. import the Temp File to ADAL
             const bodyToImport1 = {
                 URI: tempFileResponse1.TemporaryFileURL,
@@ -165,9 +167,9 @@ export async function Import250KDimx(client: Client, varPass) {
 
                 { method: 'POST', body: JSON.stringify(bodyToImport1) },
             );
-
             const start1 = Date.now();
             const executionURI1 = importResponse1.Body.URI;
+            console.log('uploading started - this is a big file, may take up to ~40 minutes');
             const auditLogResponseForImporting1 = await generalService.getAuditLogResultObjectIfValid(
                 executionURI1 as string,
                 400,
@@ -175,8 +177,20 @@ export async function Import250KDimx(client: Client, varPass) {
             );
             const duration1 = Date.now() - start1;
             const durationInSec1 = (duration1 / 1000).toFixed(3);
-            console.log(`±±±±TOOK: seconds: ${durationInSec1}, which are: ${Number(durationInSec1) / 60} minutes±±±±`);
-            console.log(`Result From Dimx:  ${JSON.stringify(auditLogResponseForImporting1)}`);
+            console.log(
+                `~~~~~~Upload To Adal Table TOOK: seconds: ${durationInSec1}, which are: ${
+                    Number(durationInSec1) / 60
+                } minutes~~~~~~`,
+            );
+            console.log(`1. Full Result From Dimx:\n${JSON.stringify(auditLogResponseForImporting1)}`);
+            console.log(
+                `2. Result Object From Dimx:\n${JSON.stringify(auditLogResponseForImporting1.AuditInfo.ResultObject)}`,
+            );
+            console.log(
+                `3. Error Message Object From Dimx:\n${JSON.stringify(
+                    auditLogResponseForImporting1.AuditInfo.ErrorMessage,
+                )}`,
+            );
             expect((auditLogResponseForImporting1 as any).Status.ID).to.equal(1);
             expect((auditLogResponseForImporting1 as any).Status.Name).to.equal('Success');
             expect(JSON.parse(auditLogResponseForImporting1.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
@@ -185,7 +199,6 @@ export async function Import250KDimx(client: Client, varPass) {
             expect(JSON.parse(auditLogResponseForImporting1.AuditInfo.ResultObject).LinesStatistics.Inserted).to.equal(
                 howManyRows_create,
             );
-
             //TODO: export
             // const bodyToSendExport = {
             //     Format: 'csv',

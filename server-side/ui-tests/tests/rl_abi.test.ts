@@ -222,10 +222,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             return account;
         }
     });
-    const referenceAccountAuto = await udcService.getAllObjectFromCollection('ReferenceAccountAuto');
-    const filtersAccRefAuto = await udcService.getAllObjectFromCollection('FiltersAccRefAuto');
-    const arraysOfPrimitivesAuto = await udcService.getAllObjectFromCollection('ArraysOfPrimitivesAuto');
-    const containedArray = await udcService.getAllObjectFromCollection('ContainedArray');
+    const referenceAccountAuto = await udcService.getAllObjectFromCollectionCount('ReferenceAccountAuto');
+    const filtersAccRefAuto = await udcService.getAllObjectFromCollectionCount('FiltersAccRefAuto');
+    const arraysOfPrimitivesAuto = await udcService.getAllObjectFromCollectionCount('ArraysOfPrimitivesAuto');
+    const containedArray = await udcService.getAllObjectFromCollectionCount('ContainedArray');
 
     const numOfListingsIn_items: number = items?.length;
     const numOfListingsIn_accounts: number = accounts?.length;
