@@ -189,7 +189,7 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                 const duration = Date.now() - start;
                 const durationInSec = (duration / 1000).toFixed(3);
                 console.log(
-                    `~~~~~~Upload To Adal Table TOOK: seconds: ${durationInSec}, which are: ${
+                    `~~~~~~Upload To UDC TOOK: seconds: ${durationInSec}, which are: ${
                         Number(durationInSec) / 60
                     } minutes~~~~~~`,
                 );
@@ -242,7 +242,7 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                 const exportedFileURI = resultObject.URI;
                 const exportedFileResponse = await generalService.fetchStatus(exportedFileURI, { method: 'GET' });
                 const allUDCRowsInArray = exportedFileResponse.Body.Text.split('\n');
-                // expect(allUDCRowsInArray.length).to.equal(10001);
+                expect(allUDCRowsInArray.length).to.equal(10001); //10,000 + header row
                 expect(allUDCRowsInArray[0]).to.equal('myAcc,val1,val2');
                 for (let index = 1; index < allUDCRowsInArray.length; index++) {
                     const fileRow = allUDCRowsInArray[index];
