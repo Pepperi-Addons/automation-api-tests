@@ -90,7 +90,7 @@ import { DataIndexDor } from './api-tests/dor_data_index_tests';
 import SurveyBuilderTest from './cpi-tester/addonsTests/surveyBuilder';
 import { UpgradeDependenciesTestsWithNewSync } from './api-tests/test-service/upgrade_dependencies_with_new_sync';
 import { OldLegacyResourcesTests } from './api-tests/old_legacy_resources';
-import { Adal40KImportAndPurgeTest } from './api-tests/adal_40k_import_and_purge';
+import { Adal40KImportAndPurgeTest } from './api-tests/adal_40k_import_export_and_purge';
 import { UnistallAddonFromAllUsers } from './api-tests/uninstall_addon_from_all_auto_users';
 // import { PapiClient } from '@pepperi-addons/papi-sdk'; WIP - dev tests
 // import { checkVersionsTest } from './api-tests/check_versions';
