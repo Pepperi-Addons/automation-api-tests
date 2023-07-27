@@ -242,7 +242,7 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                 const exportedFileURI = resultObject.URI;
                 const exportedFileResponse = await generalService.fetchStatus(exportedFileURI, { method: 'GET' });
                 const allUDCRowsInArray = exportedFileResponse.Body.Text.split('\n');
-                expect(allUDCRowsInArray.length).to.equal(10001);//10,000 + header row
+                expect(allUDCRowsInArray.length).to.equal(10001); //10,000 + header row
                 expect(allUDCRowsInArray[0]).to.equal('myAcc,val1,val2');
                 for (let index = 1; index < allUDCRowsInArray.length; index++) {
                     const fileRow = allUDCRowsInArray[index];
