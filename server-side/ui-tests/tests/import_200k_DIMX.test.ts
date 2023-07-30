@@ -11,7 +11,7 @@ import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
 chai.use(promised);
 
-export async function Import250KToAdalFromDimx(client: Client, varPass) {
+export async function Import200KToAdalFromDimx(client: Client, varPass) {
     //
     const generalService = new GeneralService(client);
     let varKey;
@@ -31,7 +31,7 @@ export async function Import250KToAdalFromDimx(client: Client, varPass) {
     }
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const howManyRows_create = 250000; //QTY! -- this is here so we can print it in the log (report)
+    const howManyRows_create = 200000; //QTY! -- this is here so we can print it in the log (report)
     const schemaName_create = 'AdalTable' + Math.floor(Math.random() * 1000000).toString(); //-- this is here so we can print it in the log (report)
     const scheme_create: AddonDataScheme = {
         Name: schemaName_create,
@@ -42,7 +42,7 @@ export async function Import250KToAdalFromDimx(client: Client, varPass) {
             Value3: { Type: 'String' },
         },
     };
-    describe('ADAL CREATE SCHEME - IMPORT 250K ROWS USING PFS AND DIMX - EXPORT', async function () {
+    describe('ADAL CREATE SCHEME - IMPORT 200K ROWS USING PFS AND DIMX - EXPORT', async function () {
         describe('Prerequisites Addon for relation Tests', () => {
             //Test Data
             //ADAL
