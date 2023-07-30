@@ -62,6 +62,7 @@ import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon
 import { FlowTests } from './flows_builder.test';
 import { Import250KToAdalFromDimx } from './import_250k_DIMX.test';
 import { UDCImportExportTests } from '../../api-tests/user_defined_collections_import_export';
+import { Import200KToAdalFromDimx } from './import_200k_DIMX.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -273,6 +274,17 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
     if (tests.includes('Dimx250KUpload')) {
         await Import250KToAdalFromDimx(client, {
+            body: {
+                varKeyStage: varPass,
+                varKeyPro: varPass,
+                varKeyEU: varPassEU,
+            },
+        }); //
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('Dimx200KUpload')) {
+        await Import200KToAdalFromDimx(client, {
             body: {
                 varKeyStage: varPass,
                 varKeyPro: varPass,
