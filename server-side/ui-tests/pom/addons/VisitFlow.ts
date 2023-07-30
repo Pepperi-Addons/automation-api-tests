@@ -55,8 +55,13 @@ export class VisitFlow extends AddonPage {
     public VisitFlowMainActivity_FormPage_FormContent: By = By.xpath(
         '//div[contains(@class,"pep-page-main-layout")]//div[contains(@class,"pep-main-area")]//div[contains(@class,"form-view")]',
     );
-    public VisitFlowMainActivity_FormPage_SubjectInput: By = By.xpath('//pep-textbox[@data-qa="TSADescription"]//input');
-    public VisitFlowMainActivity_FormPage_VisitSummaryInput: By = By.xpath('//pep-textbox[@data-qa="TSADescription"]//input');
+    // public VisitFlowMainActivity_FormPage_SubjectInput: By = By.xpath('//pep-textbox[@data-qa="TSADescription"]//input');  // Irrelevant
+    // public VisitFlowMainActivity_FormPage_VisitSummaryInput: By = By.xpath('//pep-textbox[@data-qa="TSADescription"]//input');  // Irrelevant
+    // public VisitFlowMainActivity_FormPage_DescriptionInput: By = By.xpath('//pep-textbox[@data-qa="TSADescription"]//input');
+    public VisitFlowMainActivity_FormPage_TitleInput: By = By.xpath('//pep-textbox[@data-qa="Title"]//input');
+    public VisitFlowMainActivity_FormPage_VisitSelectedGroupInput: By = By.xpath(
+        '//pep-textbox[@data-qa="TSAVisitSelectedGroup"]//input',
+    );
 
     // Main Activity "Cancel" Popup Dialog
     public VisitFlowMainActivity_CancelDialog_Notice_Headline: By = By.xpath(
