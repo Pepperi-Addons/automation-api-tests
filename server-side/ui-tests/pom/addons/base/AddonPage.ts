@@ -9,6 +9,8 @@ import promised from 'chai-as-promised';
 import { OrderPageItem } from '../../Pages/OrderPage';
 import { ConsoleColors } from '../../../../services/general.service';
 import { PepperiStatus } from '../../Enumerations/PepperiStatus';
+// import { Context } from 'mocha';
+// import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
@@ -301,6 +303,11 @@ export class AddonPage extends Page {
         } catch (error) {
             console.info(`Element: ${element} - IS NOT LOCATED!!!`);
             console.error(error);
+            // const base64ImageComponent = await this.browser.saveScreenshots();
+            // addContext(this, {
+            //     title: `At Cart`,
+            //     value: 'data:image/png;base64,' + base64ImageComponent,
+            // });
             expect(`Element: ${element} - IS NOT LOCATED!!!`).to.be.null;
         }
     }
