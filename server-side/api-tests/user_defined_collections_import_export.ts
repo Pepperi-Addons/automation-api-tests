@@ -210,9 +210,17 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                         250,
                     );
                     expect(allObjectsFromCollection.count).to.equal(10000);
+                    let accUUID;
+                    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+                        accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
+                    } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
+                        accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
+                    } else {
+                        accUUID = '257cd6cc-3e90-450b-bc16-1dc8f67a2ec8';
+                    }
                     for (let index1 = 0; index1 < allObjectsFromCollection.objects.length; index1++) {
                         const row = allObjectsFromCollection.objects[index1];
-                        expect(row.myAcc).to.equal('dbc958f7-e0cd-4014-a5cb-1b1764d4381e');
+                        expect(row.myAcc).to.equal(accUUID);
                         expect(row.val1).to.contain('val1_');
                         expect(row.val2).to.contain('val2_');
                     }
