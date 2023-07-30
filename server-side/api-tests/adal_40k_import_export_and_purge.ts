@@ -203,7 +203,8 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
                     const fileRowSplit = fileRow.split(',');
                     for (let index1 = 0; index1 < fileRowSplit.length; index1++) {
                         const value = fileRowSplit[index1];
-                        expect(value).to.be.a('number');
+                        expect(Number(value)).to.be.a('number');
+                        expect(Number(value) % 1).to.equal(0);
                     }
                 }
             });
