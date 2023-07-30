@@ -26,6 +26,9 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
     const pfsService = new PFSService(generalService);
     const adalService = new ADALService(generalService.papiClient);
     const relationService = new AddonRelationService(generalService);
+    const addonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
+    const secretKey = await generalService.getSecretKey(addonUUID, varKey);
+    let tempFileResponse;
     //#endregion Upgrade ADAL
 
     describe('Addon Relation Tests Suites', () => {
@@ -61,19 +64,19 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
                 });
             }
         });
-        describe(`Create ADAL Table, Import 40K File From PFS Then Purge`, () => {
-            const howManyRows = 40 * 1000; //QTY! -- this is here so we can print it in the log (report)
-            const schemaName = 'AdalTable' + Math.floor(Math.random() * 1000000).toString(); //-- this is here so we can print it in the log (report)
-            const schemeData: AddonDataScheme = {
-                Name: schemaName,
-                Type: 'data',
-                Fields: {
-                    Value: { Type: 'String' },
-                },
-            };
-            it(`Test Is Running On: ${
-                howManyRows > 1000 ? howManyRows / 1000 + 'K' : howManyRows
-            } Rows, Table Name: ${schemaName}, Scheme: ${JSON.stringify(schemeData)}`, async function () {
+        const howManyRows = 40 * 1000; //QTY! -- this is here so we can print it in the log (report)
+        const schemaName = 'AdalTable' + Math.floor(Math.random() * 1000000).toString(); //-- this is here so we can print it in the log (report)
+        const schemeData: AddonDataScheme = {
+            Name: schemaName,
+            Type: 'data',
+            Fields: {
+                Value: { Type: 'String' },
+            },
+        };
+        describe(`Create ADAL Table, Import 40K File From PFS Then Purge, Running On: ${
+            howManyRows > 1000 ? howManyRows / 1000 + 'K' : howManyRows
+        } Rows, Table Name: ${schemaName}, Scheme: ${JSON.stringify(schemeData)}`, () => {
+            it(`1. Create ADAL Scheme ${schemaName} And Add Export And Import Relations`, async function () {
                 //1. create new ADALTable to import to
                 console.log(`new ADAL table will be called: ${schemaName}`);
                 const createSchemaResponse = await adalService.postSchema(schemeData);
@@ -82,30 +85,46 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
                 expect(createSchemaResponse.Type).to.equal('data');
                 expect(createSchemaResponse.Fields?.Value.Type).to.equal('String');
                 //1.1 test the table is indeed new => empty
-                const addonUUID = 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe';
-                const secretKey = await generalService.getSecretKey(addonUUID, varKey);
                 const getAdalTablenResponse = await adalService.getDataFromSchema(addonUUID, schemaName);
                 expect(getAdalTablenResponse).to.deep.equal([]);
                 //1.2 create relation to import
-                const bodyForRelation = {
+                const bodyForRelationImport = {
                     Name: schemaName,
                     AddonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                     RelationName: 'DataImportResource',
                     Type: 'AddonAPI',
                     AddonRelativeURL: '',
                 };
-                const relationResponse = await relationService.postRelationStatus(
+                const relationResponseImport = await relationService.postRelationStatus(
                     {
                         'X-Pepperi-OwnerID': addonUUID,
                         'X-Pepperi-SecretKey': secretKey,
                     },
-                    bodyForRelation,
+                    bodyForRelationImport,
                 );
-                expect(relationResponse).to.equal(200);
+                expect(relationResponseImport).to.equal(200);
+                //1.3 create relation to export
+                const bodyForRelationExport = {
+                    Name: schemaName,
+                    AddonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+                    RelationName: 'DataExportResource',
+                    Type: 'AddonAPI',
+                    AddonRelativeURL: '',
+                };
+                const relationResponseExport = await relationService.postRelationStatus(
+                    {
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': secretKey,
+                    },
+                    bodyForRelationExport,
+                );
+                expect(relationResponseExport).to.equal(200);
+            });
+            it(`2. Create The Data CSV File, Which Size Is ${howManyRows} Rows And Upload To PFS`, async function () {
                 //2. create PFS Temp file
                 const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
                 const mime = 'text/csv';
-                const tempFileResponse = await pfsService.postTempFile({
+                tempFileResponse = await pfsService.postTempFile({
                     FileName: fileName,
                     MIME: mime,
                 });
@@ -113,13 +132,16 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
                 expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
                 expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
                 //3. create the data file
-                // await generalService.createCSVFile(howManyRows, 'Key,Value,Hidden', 'key_index', [`"index"`], 'false');
                 const buf = Buffer.from(fileForAdal40KImportAndPurgeTest);
                 //4. upload the file to PFS Temp
                 const putResponsePart1 = await pfsService.putPresignedURL(tempFileResponse.PutURL, buf);
                 expect(putResponsePart1.ok).to.equal(true);
                 expect(putResponsePart1.status).to.equal(200);
-                console.log(tempFileResponse.TemporaryFileURL);
+                console.log(
+                    `The File About To Be Imported To ADAL Table ${schemeData}, Is Found Here: ${tempFileResponse.TemporaryFileURL}`,
+                );
+            });
+            it(`3. Import CSV File To ADAL Table ${schemaName}`, async function () {
                 //5. import the Temp File to ADAL
                 const bodyToImport = {
                     URI: tempFileResponse.TemporaryFileURL,
@@ -148,7 +170,46 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
                 console.log(`TOOK: seconds: ${durationInSec}, which are: ${Number(durationInSec) / 60} minutes±±±±`);
                 //shouldnt take more than 5 mins
                 expect(Number(durationInSec) / 60).to.be.lessThan(5);
-                //6. delete the ADAL table
+            });
+            it(`4. Export Data From ${schemaName} To CSV File - And See File Is Correct`, async function () {
+                //6. export the file
+                const bodyToSendExport = {
+                    Format: 'csv',
+                    IncludeDeleted: false,
+                    Fields: 'Value',
+                    Delimiter: ',',
+                };
+                const exportResponse = await generalService.fetchStatus(
+                    `/addons/data/export/file/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${schemaName}`,
+                    { method: 'POST', body: JSON.stringify(bodyToSendExport) },
+                );
+                const executionURI4 = exportResponse.Body.URI;
+                const auditLogResponseForExport = await generalService.getAuditLogResultObjectIfValid(
+                    executionURI4 as string,
+                    300,
+                    7000,
+                );
+                expect(auditLogResponseForExport.Status?.ID).to.equal(1);
+                expect(auditLogResponseForExport.Status?.Name).to.equal('Success');
+                const resultObject = JSON.parse(auditLogResponseForExport.AuditInfo.ResultObject);
+                expect(resultObject).to.haveOwnProperty('URI');
+                const exportedFileURI = resultObject.URI;
+                const exportedFileResponse = await generalService.fetchStatus(exportedFileURI, { method: 'GET' });
+                const allUDCRowsInArray = exportedFileResponse.Body.Text.split('\n');
+                expect(allUDCRowsInArray.length).to.equal(howManyRows + 1); //40,000 + header row
+                expect(allUDCRowsInArray[0]).to.equal('Value');
+                for (let index = 1; index < allUDCRowsInArray.length; index++) {
+                    const fileRow = allUDCRowsInArray[index];
+                    const fileRowSplit = fileRow.split(',');
+                    for (let index1 = 0; index1 < fileRowSplit.length; index1++) {
+                        const value = fileRowSplit[index1];
+                        expect(Number(value)).to.be.a('number');
+                        expect(Number(value) % 1).to.equal(0);
+                    }
+                }
+            });
+            it(`5. Delete ${schemaName} - And See All Data Is Correct`, async function () {
+                //7. delete the ADAL table
                 const newUUID = newUuid();
                 console.log(`PURGE actionID: ${newUUID}`);
                 const deleteSchemaResponse = await generalService.fetchStatus(
