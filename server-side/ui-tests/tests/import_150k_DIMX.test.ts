@@ -200,25 +200,6 @@ export async function Import150KToAdalFromDimx(client: Client, varPass) {
             expect(JSON.parse(auditLogResponseForImporting1.AuditInfo.ResultObject).LinesStatistics.Inserted).to.equal(
                 howManyRows_create,
             );
-            //TODO: export
-            // const bodyToSendExport = {
-            //     Format: 'csv',
-            //     IncludeDeleted: false,
-            //     Fields: 'Value1,Value2,Value3',
-            //     Delimiter: ',',
-            // };
-            // const exportResponse = await generalService.fetchStatus(
-            //     `/addons/data/export/file/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${schemaName_create}`,
-            //     { method: 'POST', body: JSON.stringify(bodyToSendExport) },
-            // );
-            // const executionURI4 = exportResponse.Body.URI;
-            // const auditLogResponseForExport = await generalService.getAuditLogResultObjectIfValid(
-            //     executionURI4 as string,
-            //     300,
-            //     7000,
-            // );
-            // expect((auditLogResponseForExport as any).Status.ID).to.equal(1);
-            // expect((auditLogResponseForExport as any).Status.Name).to.equal('Success');
         });
     });
 }
