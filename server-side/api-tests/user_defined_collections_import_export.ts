@@ -48,6 +48,14 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
     }
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    let accUUID;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
+    } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
+        accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
+    } else {
+        accUUID = '257cd6cc-3e90-450b-bc16-1dc8f67a2ec8';
+    }
     //#endregion Upgrade UDC
 
     describe('UDC Tests Suites', () => {
@@ -189,8 +197,7 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                 const duration = Date.now() - start;
                 const durationInSec = (duration / 1000).toFixed(3);
                 console.log(
-                    `~~~~~~Upload To UDC TOOK: seconds: ${durationInSec}, which are: ${
-                        Number(durationInSec) / 60
+                    `~~~~~~Upload To UDC TOOK: seconds: ${durationInSec}, which are: ${Number(durationInSec) / 60
                     } minutes~~~~~~`,
                 );
                 expect((auditLogResponseForImporting as any).Status.ID).to.equal(1);
@@ -210,14 +217,6 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                         250,
                     );
                     expect(allObjectsFromCollection.count).to.equal(10000);
-                    let accUUID;
-                    if (generalService.papiClient['options'].baseURL.includes('staging')) {
-                        accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
-                    } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
-                        accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
-                    } else {
-                        accUUID = '257cd6cc-3e90-450b-bc16-1dc8f67a2ec8';
-                    }
                     for (let index1 = 0; index1 < allObjectsFromCollection.objects.length; index1++) {
                         const row = allObjectsFromCollection.objects[index1];
                         expect(row.myAcc).to.equal(accUUID);
@@ -257,7 +256,7 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                     const fileRowSplit = fileRow.split(',');
                     for (let index1 = 0; index1 < fileRowSplit.length; index1++) {
                         const value = fileRowSplit[index1];
-                        expect(value).to.contain.oneOf(['val1', 'val2', 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e']);
+                        expect(value).to.contain.oneOf(['val1', 'val2', accUUID]);
                     }
                 }
             });
