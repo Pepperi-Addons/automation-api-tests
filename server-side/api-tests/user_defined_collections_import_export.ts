@@ -197,7 +197,8 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                 const duration = Date.now() - start;
                 const durationInSec = (duration / 1000).toFixed(3);
                 console.log(
-                    `~~~~~~Upload To UDC TOOK: seconds: ${durationInSec}, which are: ${Number(durationInSec) / 60
+                    `~~~~~~Upload To UDC TOOK: seconds: ${durationInSec}, which are: ${
+                        Number(durationInSec) / 60
                     } minutes~~~~~~`,
                 );
                 expect((auditLogResponseForImporting as any).Status.ID).to.equal(1);
