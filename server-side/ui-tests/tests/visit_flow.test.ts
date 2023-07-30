@@ -215,24 +215,24 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     const collectionName = 'VisitFlows';
                     const group_Start = upsertedListingsToVisitFlowGroups.length
                         ? upsertedListingsToVisitFlowGroups.find((group) => {
-                              if (group.Title.includes('Start')) {
-                                  return group.Key;
-                              }
-                          })
+                            if (group.Title.includes('Start')) {
+                                return group.Key;
+                            }
+                        })
                         : '';
                     const group_Orders = upsertedListingsToVisitFlowGroups.length
                         ? upsertedListingsToVisitFlowGroups.find((group) => {
-                              if (group.Title.includes('Orders')) {
-                                  return group.Key;
-                              }
-                          })
+                            if (group.Title.includes('Orders')) {
+                                return group.Key;
+                            }
+                        })
                         : '';
                     const group_End = upsertedListingsToVisitFlowGroups.length
                         ? upsertedListingsToVisitFlowGroups.find((group) => {
-                              if (group.Title.includes('End')) {
-                                  return group.Key;
-                              }
-                          })
+                            if (group.Title.includes('End')) {
+                                return group.Key;
+                            }
+                        })
                         : '';
                     const visitsDocumentsToUpsert = [
                         {
@@ -299,7 +299,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     expect(slugUUID).to.not.be.undefined;
                 });
 
-                it('Dragging the created slug to the mapped fields section and Posting via API', async () => {
+                it('Dragging the created slug to the mapped fields section and Posting via API', async function () {
                     const mappedSlugsUpsertResponse = await e2eUtils.addToMappedSlugs(
                         [{ slug_path: slug_path, pageUUID: pageUUID }],
                         client,
@@ -347,7 +347,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             });
 
             describe('Going Through a Basic Visit Flow', () => {
-                it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async () => {
+                it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');
@@ -367,7 +367,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlow.pause(1 * 1000);
                 });
 
-                it('If more than one visit - Choosing a Visit Flow', async () => {
+                it('If more than one visit - Choosing a Visit Flow', async function () {
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
                         await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
@@ -377,7 +377,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlow.pause(1 * 1000);
                 });
 
-                it('Checking off "Start"', async () => {
+                it('Checking off "Start"', async function () {
+                    debugger
                     await visitFlow.clickElement('VisitFlow_GroupButton_Start');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_StartVisit, 15000);
                     visitFlow.pause(0.5 * 1000);
@@ -391,12 +392,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     );
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
-                    await visitFlow.waitTillVisible(
-                        visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
                         15000,
                     );
-                    await visitFlow.waitTillVisible(
-                        visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
                         15000,
                     );
                     await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
@@ -405,7 +404,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlow.pause(0.5 * 1000);
                 });
 
-                it('Checking off "Orders"', async () => {
+                it('Checking off "Orders"', async function () {
                     await visitFlow.clickElement('VisitFlow_GroupButton_Orders');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_SalesOrder, 15000);
                     visitFlow.pause(0.5 * 1000);
@@ -414,8 +413,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_OrdersChooseCatalogDialog_Content, 15000);
                     await visitFlow.clickElement('VisitFlow_OrdersChooseCatalogDialog_FirstCatalogInList_RadioButton');
-                    await visitFlow.waitTillVisible(
-                        visitFlow.VisitFlow_OrdersChooseCatalogDialog_SelectedCatalog_RadioButton,
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlow_OrdersChooseCatalogDialog_SelectedCatalog_RadioButton,
                         15000,
                     );
                     await visitFlow.clickElement('VisitFlow_OrdersChooseCatalogDialog_DoneButton');
@@ -437,7 +435,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlow.pause(0.5 * 1000);
                 });
 
-                it('Checking off "End"', async () => {
+                it('Checking off "End"', async function () {
                     await visitFlow.clickElement('VisitFlow_GroupButton_End');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_EndVisit, 15000);
                     visitFlow.pause(0.5 * 1000);
@@ -482,10 +480,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     const collectionName = 'VisitFlows';
                     const group_Surveys = upsertedListingsToVisitFlowGroups.length
                         ? upsertedListingsToVisitFlowGroups.find((group) => {
-                              if (group.Title.includes('Surveys')) {
-                                  return group.Key;
-                              }
-                          })
+                            if (group.Title.includes('Surveys')) {
+                                return group.Key;
+                            }
+                        })
                         : '';
                     console.info('group_Surveys: ', group_Surveys);
                     const visitFlowDocumentResponse = await udcService.getDocuments(collectionName, {
@@ -526,7 +524,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
                 });
-                it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async () => {
+                it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');
@@ -545,7 +543,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     );
                     visitFlow.pause(1 * 1000);
                 });
-                it('If more than one visit - Choosing a Visit Flow', async () => {
+                it('If more than one visit - Choosing a Visit Flow', async function () {
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
                         await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
@@ -554,7 +552,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     }
                     visitFlow.pause(1 * 1000);
                 });
-                it('Checking off "Start"', async () => {
+                it('Checking off "Start"', async function () {
                     await visitFlow.clickElement('VisitFlow_GroupButton_Start');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_StartVisit, 15000);
                     visitFlow.pause(0.5 * 1000);
@@ -568,12 +566,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     );
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
-                    await visitFlow.waitTillVisible(
-                        visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
                         15000,
                     );
-                    await visitFlow.waitTillVisible(
-                        visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
                         15000,
                     );
                     await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
@@ -581,7 +577,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     visitFlow.pause(0.5 * 1000);
                 });
-                it('Checking off "Survey"', async () => {
+                it('Checking off "Survey"', async function () {
                     await visitFlow.clickElement('VisitFlow_GroupButton_Surveys');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_Survey, 15000);
                     visitFlow.pause(0.5 * 1000);
@@ -590,10 +586,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlow.pause(0.5 * 1000);
                     await webAppDialog.isErrorDialogShown(this); // There is an open Bug DI-23784
                     // await webAppDialog.selectDialogBox('Ok');
-                    // await visitFlow.waitTillVisible(visitFlow.VisitFlow_OrdersChooseCatalogDialog_Content, 15000); // change to survey
+                    // await visitFlow.waitTillVisible(isitFlow.VisitFlow_OrdersChooseCatalogDialog_Content, 15000); // change to survey
                     visitFlow.pause(5 * 1000);
                 });
-                it('Checking off "End"', async () => {
+                it('Checking off "End"', async function () {
                     await visitFlow.clickElement('VisitFlow_GroupButton_End');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_EndVisit, 15000);
                     visitFlow.pause(0.5 * 1000);
@@ -616,7 +612,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     }
                     visitFlow.pause(0.5 * 1000);
                 });
-                it('Deleting Activities', async () => {
+                it('Deleting Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');
@@ -634,8 +630,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_UnderPencilButton_Delete, 15000);
                     await visitFlow.clickElement('AccountHomePage_List_UnderPencilButton_Delete');
                     driver.sleep(0.5 * 1000);
-                    await visitFlow.waitTillVisible(
-                        visitFlow.AccountHomePage_List_DeletePopUpDialog_RedDeleteButton,
+                    await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_DeletePopUpDialog_RedDeleteButton,
                         15000,
                     );
                     await visitFlow.clickElement('AccountHomePage_List_DeletePopUpDialog_RedDeleteButton');
@@ -684,7 +679,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     // console.info(`existingMappedSlugs: ${JSON.stringify(clearMappedSlugsUpsertResponse, null, 4)}`);
                 });
 
-                it('Deleting Page via UI', async () => {
+                it('Deleting Page via UI', async function () {
                     await e2eUtils.navigateTo('Page Builder');
                     await pageBuilder.isSpinnerDone();
                     await pageBuilder.waitTillVisible(pageBuilder.PagesList_Title, 15000);
@@ -731,21 +726,21 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 //     }
                 // });
 
-                // it('Verifying Mapped Slugs were cleared', async () => {
+                // it('Verifying Mapped Slugs were cleared', async function () {
                 //     await e2eUtils.logOutLogIn(email, password);
                 //     await e2eUtils.navigateTo('Slugs');
                 //     await slugs.clickTab('Mapping_Tab');
                 //     await pageBuilder.isSpinnerDone();
-                //     await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_Rep_EmptyContent, 15000);
+                //     await slugs.waitTillVisible(lugs.EditPage_ConfigProfileCard_Rep_EmptyContent, 15000);
                 //     const repCard_editButton = await driver.findElement(
                 //         slugs.EditPage_ConfigProfileCard_EditButton_Rep,
                 //         15000,
                 //     );
                 //     await repCard_editButton.click();
                 //     await slugs.isSpinnerDone();
-                //     await slugs.waitTillVisible(slugs.MappedSlugs_Title, 15000);
-                //     await slugs.waitTillVisible(slugs.MappedSlugs_Container, 15000);
-                //     await slugs.waitTillVisible(slugs.MappedSlugs_Empty, 15000);
+                //     await slugs.waitTillVisible(lugs.MappedSlugs_Title, 15000);
+                //     await slugs.waitTillVisible(lugs.MappedSlugs_Container, 15000);
+                //     await slugs.waitTillVisible(lugs.MappedSlugs_Empty, 15000);
                 // });
 
                 it('Verifying VF_VisitFlowMainActivity activity was formed', async () => {
@@ -846,7 +841,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     expect(visitFlowsDocuments).to.be.an('array').with.lengthOf(0);
                 });
 
-                it('Deleting Activities', async () => {
+                it('Deleting Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');
@@ -864,8 +859,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_UnderPencilButton_Delete, 15000);
                     await visitFlow.clickElement('AccountHomePage_List_UnderPencilButton_Delete');
                     driver.sleep(0.5 * 1000);
-                    await visitFlow.waitTillVisible(
-                        visitFlow.AccountHomePage_List_DeletePopUpDialog_RedDeleteButton,
+                    await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_DeletePopUpDialog_RedDeleteButton,
                         15000,
                     );
                     await visitFlow.clickElement('AccountHomePage_List_DeletePopUpDialog_RedDeleteButton');

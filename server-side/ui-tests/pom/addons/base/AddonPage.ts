@@ -9,6 +9,8 @@ import promised from 'chai-as-promised';
 import { OrderPageItem } from '../../Pages/OrderPage';
 import { ConsoleColors } from '../../../../services/general.service';
 import { PepperiStatus } from '../../Enumerations/PepperiStatus';
+import { Context } from 'mocha';
+import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
@@ -184,7 +186,7 @@ export class AddonPage extends Page {
         }
         this.browser.sleep(3000);
         const matOptionWithStringInjected: string = this.MatOptionDropBox.valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', option);
         await this.browser.click(By.xpath(matOptionWithStringInjected));
         // this.browser.sleep(3000);
@@ -212,7 +214,7 @@ export class AddonPage extends Page {
         await this.browser.click(this.CategoryExpender);
         for (let i = 0; i < itemKesyUomItems.length; i++) {
             const itemCheckBox: string = this.CategoryListItemCheckBox.valueOf()
-                ['value'].slice()
+            ['value'].slice()
                 .replace('|textToFill|', itemKesyUomItems[i]);
             const itemCheckBoxElement = await this.browser.findElement(By.xpath(itemCheckBox));
             const checkBoxClassAtt = await itemCheckBoxElement.getAttribute('class');
@@ -278,7 +280,7 @@ export class AddonPage extends Page {
         await webAppList.isSpinnerDone();
         await webAppList.validateListRowElements();
         const xpathQueryForATDId: string = this.OrderIdTextElement.valueOf()
-            ['value'].slice()
+        ['value'].slice()
             .replace('|textToFill|', nameOfATD);
         const orderId: string = (await (await this.browser.findElement(By.xpath(xpathQueryForATDId))).getText()).trim();
         const webAppHome = new WebAppHomePage(this.browser);
@@ -301,6 +303,11 @@ export class AddonPage extends Page {
         } catch (error) {
             console.info(`Element: ${element} - IS NOT LOCATED!!!`);
             console.error(error);
+            // const base64ImageComponent = await this.browser.saveScreenshots();
+            // addContext(this, {
+            //     title: `At Cart`,
+            //     value: 'data:image/png;base64,' + base64ImageComponent,
+            // });
             expect(`Element: ${element} - IS NOT LOCATED!!!`).to.be.null;
         }
     }
