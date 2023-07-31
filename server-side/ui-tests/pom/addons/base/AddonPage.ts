@@ -303,11 +303,6 @@ export class AddonPage extends Page {
         } catch (error) {
             console.info(`Element: ${element} - IS NOT LOCATED!!!`);
             console.error(error);
-            // const base64ImageComponent = await this.browser.saveScreenshots();
-            // addContext(this, {
-            //     title: `At Cart`,
-            //     value: 'data:image/png;base64,' + base64ImageComponent,
-            // });
             expect(`Element: ${element} - IS NOT LOCATED!!!`).to.be.null;
         }
     }

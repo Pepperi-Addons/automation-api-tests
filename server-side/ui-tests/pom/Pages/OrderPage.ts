@@ -142,7 +142,7 @@ export class OrderPage extends WebAppList {
         const searchInput = await this.browser.findElement(this.Search_Input);
         await searchInput.clear();
         this.browser.sleep(0.1 * 1000);
-        await searchInput.sendKeys(nameOfItem);
+        await searchInput.sendKeys(nameOfItem + '\n');
         this.browser.sleep(0.5 * 1000);
         await this.browser.click(this.HtmlBody);
         await this.browser.click(this.Search_Magnifier_Button);
