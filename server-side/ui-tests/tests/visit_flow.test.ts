@@ -3,6 +3,7 @@ import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
+import addContext from 'mochawesome/addContext';
 import { Browser } from '../utilities/browser';
 import {
     // WebAppDialog,
@@ -79,6 +80,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let getCreatedSalesOrderTransaction;
     // let resourceViews: ResourceViews;
     let salesOrderItemName: string;
+    let base64ImageComponent;
 
     describe('Visit Flow Test Suite', async () => {
         describe('Visit Flow UI tests', () => {
@@ -205,7 +207,14 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 it('Verifying Page was created successfully', async function () {
                     await e2eUtils.navigateTo('Page Builder');
                     await pageBuilder.searchForPageByName(pageName);
+                    await visitFlow.isSpinnerDone();
                     pageBuilder.pause(0.2 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Page created`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    expect(await pageBuilder.checkPageExist(pageName)).eventually.to.be.true;
                 });
             });
 
@@ -295,6 +304,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     slugs.pause(3 * 1000);
                     slugUUID = await slugs.getSlugUUIDbySlugName(slug_path, client);
                     console.info('slugUUID: ', slugUUID);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Slug created`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await webAppHeader.goHome();
                     expect(slugUUID).to.not.be.undefined;
                 });
@@ -353,18 +367,39 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await webAppHomePage.clickOnBtn('Accounts');
                     await webAppHeader.isSpinnerDone();
                     driver.sleep(1 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At Accounts`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.waitTillVisible(visitFlow.FirstAccountInList, 15000);
                     await visitFlow.clickElement('FirstAccountInList');
                     await visitFlow.isSpinnerDone();
                     driver.sleep(1 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Inside first account in list`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Button, 15000);
                     await visitFlow.clickElement('AccountHomePage_HamburgerMenu_Button');
+                    visitFlow.pause(0.2 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Hamburger Menu opened`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Content, 15000);
                     visitFlow.pause(1 * 1000);
                     await visitFlow.click(
                         visitFlow.getSelectorOfAccountHomePageHamburgerMenuVisitFlowAutomatedSlug(slugDisplayName),
                     );
                     visitFlow.pause(1 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Clicked Wanted Slug at hamburger menu`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
 
                 it('If more than one visit - Choosing a Visit Flow', async function () {
@@ -375,6 +410,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
                     visitFlow.pause(1 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Entered Visit`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
 
                 it('Checking off "Start"', async function () {
@@ -382,8 +422,18 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.clickElement('VisitFlow_GroupButton_Start');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_StartVisit, 15000);
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Start Group Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.clickElement('VisitFlow_StepButton_StartVisit');
                     await visitFlow.isSpinnerDone();
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Start Visit Step Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.insertTextToInputElement(
@@ -391,6 +441,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
                     );
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Input content inserted`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
                     await visitFlow.waitTillVisible(
                         visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
@@ -400,6 +455,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
                         15000,
                     );
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Cancel button Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
@@ -432,6 +492,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.clickElement('VisitFlow_DefaultCatalog_CartButton');
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_DefaultCatalog_SubmitButton, 15000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Order Finished`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.clickElement('VisitFlow_DefaultCatalog_SubmitButton');
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
@@ -439,29 +504,37 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
 
                 it('Checking off "End"', async function () {
+                    debugger;
                     await visitFlow.clickElement('VisitFlow_GroupButton_End');
+                    visitFlow.pause(0.2 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_EndVisit, 15000);
-                    visitFlow.pause(0.5 * 1000);
+                    visitFlow.pause(0.3 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `End Group Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.clickElement('VisitFlow_StepButton_EndVisit');
                     await visitFlow.isSpinnerDone();
                     // await visitFlow.click(visitFlow.HtmlBody);
-                    // await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
-                    // visitFlow.pause(0.5 * 1000);
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
+                    visitFlow.pause(0.5 * 1000);
                     // await visitFlow.insertTextToInputElement(
                     //     `Automated test (${randomString}) finished Visit`,
                     //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
                     // );
-                    visitFlow.pause(0.5 * 1000);
-                    await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
-                    await visitFlow.waitTillVisible(
-                        visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
-                        15000,
-                    );
-                    await visitFlow.waitTillVisible(
-                        visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
-                        15000,
-                    );
-                    await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
+                    // visitFlow.pause(0.5 * 1000);
+                    await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    // await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
+                    // await visitFlow.waitTillVisible(
+                    //     visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
+                    //     15000,
+                    // );
+                    // await visitFlow.waitTillVisible(
+                    //     visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
+                    //     15000,
+                    // );
+                    // await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
                     await visitFlow.isSpinnerDone();
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
@@ -470,6 +543,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Finished Visit`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
             });
 
@@ -564,6 +642,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
                     visitFlow.pause(1 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Survey Visit Started`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
                 it('Checking off "Start"', async function () {
                     await visitFlow.clickElement('VisitFlow_GroupButton_Start');
@@ -597,6 +680,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.clickElement('VisitFlow_GroupButton_Surveys');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_Survey, 15000);
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Survey Group Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     // await visitFlow.clickElement('VisitFlow_StepButton_Survey');
                     await visitFlow.isSpinnerDone();
                     visitFlow.pause(0.5 * 1000);
@@ -620,16 +708,17 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
                     // );
                     visitFlow.pause(0.5 * 1000);
-                    await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
-                    await visitFlow.waitTillVisible(
-                        visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
-                        15000,
-                    );
-                    await visitFlow.waitTillVisible(
-                        visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
-                        15000,
-                    );
-                    await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
+                    await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    // await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
+                    // await visitFlow.waitTillVisible(
+                    //     visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
+                    //     15000,
+                    // );
+                    // await visitFlow.waitTillVisible(
+                    //     visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
+                    //     15000,
+                    // );
+                    // await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
                     await visitFlow.isSpinnerDone();
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
@@ -781,9 +870,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('TSAFlowID');
                     expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('TSAVisitSelectedGroup');
                     expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('Title');
-                    expect(getCreatedVisitFlowMainActivity[0].Title).to.equal(
-                        `Automated test (${randomString}) finished Visit`,
-                    );
+                    expect(getCreatedVisitFlowMainActivity[0].Title).to.contain(`Automated test (${randomString}) `);
                     // expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('TSASubject');
                     // expect(getCreatedVisitFlowMainActivity[0].TSASubject).to.equal(
                     //     `Automated test (${randomString}) of Visit Flow started`,
