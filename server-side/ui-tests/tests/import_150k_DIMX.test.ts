@@ -11,7 +11,7 @@ import { AddonDataScheme } from '@pepperi-addons/papi-sdk';
 
 chai.use(promised);
 
-export async function Import250KToAdalFromDimx(client: Client, varPass) {
+export async function Import150KToAdalFromDimx(client: Client, varPass) {
     //
     const generalService = new GeneralService(client);
     let varKey;
@@ -31,7 +31,7 @@ export async function Import250KToAdalFromDimx(client: Client, varPass) {
     }
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
-    const howManyRows_create = 250000; //QTY! -- this is here so we can print it in the log (report)
+    const howManyRows_create = 150000; //QTY! -- this is here so we can print it in the log (report)
     const schemaName_create = 'AdalTable' + Math.floor(Math.random() * 1000000).toString(); //-- this is here so we can print it in the log (report)
     const scheme_create: AddonDataScheme = {
         Name: schemaName_create,
@@ -42,7 +42,7 @@ export async function Import250KToAdalFromDimx(client: Client, varPass) {
             Value3: { Type: 'String' },
         },
     };
-    describe('ADAL CREATE SCHEME - IMPORT 250K ROWS USING PFS AND DIMX - EXPORT', async function () {
+    describe('ADAL CREATE SCHEME - IMPORT 150K ROWS USING PFS AND DIMX - EXPORT', async function () {
         describe('Prerequisites Addon for relation Tests', () => {
             //Test Data
             //ADAL
@@ -183,7 +183,6 @@ export async function Import250KToAdalFromDimx(client: Client, varPass) {
                     Number(durationInSec1) / 60
                 } minutes~~~~~~`,
             );
-            debugger;
             console.log(`1. Full Result From Dimx:\n${JSON.stringify(auditLogResponseForImporting1)}`);
             console.log(
                 `2. Result Object From Dimx:\n${JSON.stringify(auditLogResponseForImporting1.AuditInfo.ResultObject)}`,
@@ -201,25 +200,6 @@ export async function Import250KToAdalFromDimx(client: Client, varPass) {
             expect(JSON.parse(auditLogResponseForImporting1.AuditInfo.ResultObject).LinesStatistics.Inserted).to.equal(
                 howManyRows_create,
             );
-            //TODO: export
-            // const bodyToSendExport = {
-            //     Format: 'csv',
-            //     IncludeDeleted: false,
-            //     Fields: 'Value1,Value2,Value3',
-            //     Delimiter: ',',
-            // };
-            // const exportResponse = await generalService.fetchStatus(
-            //     `/addons/data/export/file/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${schemaName_create}`,
-            //     { method: 'POST', body: JSON.stringify(bodyToSendExport) },
-            // );
-            // const executionURI4 = exportResponse.Body.URI;
-            // const auditLogResponseForExport = await generalService.getAuditLogResultObjectIfValid(
-            //     executionURI4 as string,
-            //     300,
-            //     7000,
-            // );
-            // expect((auditLogResponseForExport as any).Status.ID).to.equal(1);
-            // expect((auditLogResponseForExport as any).Status.Name).to.equal('Success');
         });
     });
 }

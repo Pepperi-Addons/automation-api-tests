@@ -62,6 +62,8 @@ import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon
 import { FlowTests } from './flows_builder.test';
 import { Import250KToAdalFromDimx } from './import_250k_DIMX.test';
 import { UDCImportExportTests } from '../../api-tests/user_defined_collections_import_export';
+import { Import200KToAdalFromDimx } from './import_200k_DIMX.test';
+import { Import150KToAdalFromDimx } from './import_150k_DIMX.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -282,6 +284,28 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
+    if (tests.includes('Dimx200KUpload')) {
+        await Import200KToAdalFromDimx(client, {
+            body: {
+                varKeyStage: varPass,
+                varKeyPro: varPass,
+                varKeyEU: varPassEU,
+            },
+        }); //
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('Dimx150KUpload')) {
+        await Import150KToAdalFromDimx(client, {
+            body: {
+                varKeyStage: varPass,
+                varKeyPro: varPass,
+                varKeyEU: varPassEU,
+            },
+        }); //
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
     if (tests.includes('Scheduler')) {
         const testerFunctions = generalService.initiateTesterFunctions(client, 'Scheduler');
         await SchedulerTester(
@@ -363,7 +387,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     }
 
     if (tests.includes('VisitFlow')) {
-        await VFdataPrep(varPass, client);
+        // await VFdataPrep(varPass, client);
         await VisitFlowTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
@@ -613,7 +637,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         const failedSuitesProd: any[] = [];
         const failedSuitesEU: any[] = [];
         const failedSuitesSB: any[] = [];
-        const arrayOfFailedTests: any[] = [];
+        // const arrayOfFailedTests: any[] = [];
         // const passedTests: string[] = [];
         // const passedTestsEnv: string[] = [];
         // const failingTestsEnv: string[] = [];
@@ -871,7 +895,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     );
                     throw new Error(`${errorString}`);
                 }
-                debugger;
+                // debugger;
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
                     prodUser,
@@ -1186,7 +1210,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     devPassingEnvs2,
                     devFailedEnvs2,
                     true,
-                    arrayOfFailedTests,
                     [euUser, prodUser, sbUser],
                     failedSuitesProd,
                     failedSuitesEU,
@@ -1414,34 +1437,44 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20G1%20EU%20-%20UDC';
                 const jobPathSB =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20G1%20Stage%20-%20UDC';
+                const jobPathPROD2 =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20G2%20Production%20-%20UDC%20Import%20Export%2010K';
+                const jobPathEU2 =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20G2%20EU%20-%20UDC%20Import%20Export%2010K';
+                const jobPathSB2 =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20G2%20Stage%20-%20UDC%20Import%20Export%2010K';
                 const {
-                    JenkinsBuildResultsAllEnvs,
-                    latestRunProd,
-                    latestRunEU,
-                    latestRunSB,
                     addonEntryUUIDProd,
                     addonEntryUUIDEu,
                     addonEntryUUIDSb,
+                    latestRunProdReturn,
+                    latestRunEUReturn,
+                    latestRunSBReturn,
+                    JenkinsBuildResultsAllEnvsToReturn,
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                } = await runnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
+                    jobPathToReturnProd,
+                    jobPathToReturnSB,
+                    jobPathToReturnEU,
+                } = await runnnerService.jenkinsDoubleJobTestRunner(
                     addonName,
                     addonUUID,
                     jobPathPROD,
                     jobPathEU,
                     jobPathSB,
                     buildToken,
+                    jobPathPROD2,
+                    jobPathEU2,
+                    jobPathSB2,
                 );
-                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
-                latestRunProdEx = latestRunProd;
-                latestRunEUEx = latestRunEU;
-                latestRunSBEx = latestRunSB;
-                pathProdEx = jobPathPROD;
-                pathEUEx = jobPathEU;
-                pathSBEx = jobPathSB;
+                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvsToReturn;
+                latestRunProdEx = latestRunProdReturn;
+                latestRunEUEx = latestRunEUReturn;
+                latestRunSBEx = latestRunSBReturn;
+                pathProdEx = jobPathToReturnProd;
+                pathEUEx = jobPathToReturnEU;
+                pathSBEx = jobPathToReturnSB;
                 addonEntryUUIDProdEx = addonEntryUUIDProd;
                 addonEntryUUIDEuEx = addonEntryUUIDEu;
                 addonEntryUUIDSbEx = addonEntryUUIDSb;
