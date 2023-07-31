@@ -71,6 +71,7 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
             Type: 'data',
             Fields: {
                 Value: { Type: 'String' },
+                Value1: { Type: 'Bool' },
             },
         };
         describe(`Create ADAL Table, Import 40K File From PFS Then Purge, Running On: ${
@@ -138,7 +139,7 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
                 expect(putResponsePart1.ok).to.equal(true);
                 expect(putResponsePart1.status).to.equal(200);
                 console.log(
-                    `The File About To Be Imported To ADAL Table ${schemeData}, Is Found Here: ${tempFileResponse.TemporaryFileURL}`,
+                    `The File About To Be Imported To ADAL Table ${schemeData.Name}, Is Found Here: ${tempFileResponse.TemporaryFileURL}`,
                 );
             });
             it(`3. Import CSV File To ADAL Table ${schemaName}`, async function () {
@@ -171,12 +172,19 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
                 //shouldnt take more than 5 mins
                 expect(Number(durationInSec) / 60).to.be.lessThan(5);
             });
-            it(`4. Export Data From ${schemaName} To CSV File - And See File Is Correct`, async function () {
+            it(`4. Testing ${schemaName} Is Not Empty After Import And That Boolean And Number Values Have The Right Type`, async function () {
+                const getAdalTablenResponse = await adalService.getDataFromSchema(addonUUID, schemaName);
+                expect(getAdalTablenResponse).to.not.deep.equal([]);
+                const firstVaFromAdal = getAdalTablenResponse[0];
+                expect(firstVaFromAdal.Value).to.be.a('number');
+                expect(firstVaFromAdal.Value1).to.be.a('boolean'); // this wont currently work
+            });
+            it(`5. Export Data From ${schemaName} To CSV File - And See File Is Correct`, async function () {
                 //6. export the file
                 const bodyToSendExport = {
                     Format: 'csv',
                     IncludeDeleted: false,
-                    Fields: 'Value',
+                    Fields: 'Value,Value1',
                     Delimiter: ',',
                 };
                 const exportResponse = await generalService.fetchStatus(
@@ -197,18 +205,16 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
                 const exportedFileResponse = await generalService.fetchStatus(exportedFileURI, { method: 'GET' });
                 const allUDCRowsInArray = exportedFileResponse.Body.Text.split('\n');
                 expect(allUDCRowsInArray.length).to.equal(howManyRows + 1); //40,000 + header row
-                expect(allUDCRowsInArray[0]).to.equal('Value');
+                expect(allUDCRowsInArray[0]).to.equal('Value,Value1');
                 for (let index = 1; index < allUDCRowsInArray.length; index++) {
                     const fileRow = allUDCRowsInArray[index];
                     const fileRowSplit = fileRow.split(',');
-                    for (let index1 = 0; index1 < fileRowSplit.length; index1++) {
-                        const value = fileRowSplit[index1];
-                        expect(Number(value)).to.be.a('number');
-                        expect(Number(value) % 1).to.equal(0);
-                    }
+                    expect(Number(fileRowSplit[0])).to.be.a('number');
+                    expect(Number(fileRowSplit[0]) % 1).to.equal(0);
+                    expect(fileRowSplit[1]).to.equal('true');
                 }
             });
-            it(`5. Delete ${schemaName} - And See All Data Is Correct`, async function () {
+            it(`6. Delete ${schemaName} - And See All Data Is Correct`, async function () {
                 //7. delete the ADAL table
                 const newUUID = newUuid();
                 console.log(`PURGE actionID: ${newUUID}`);
