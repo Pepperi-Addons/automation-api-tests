@@ -1439,33 +1439,37 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 const jobPathSB =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20G1%20Stage%20-%20UDC';
                 const {
-                    JenkinsBuildResultsAllEnvs,
-                    latestRunProd,
-                    latestRunEU,
-                    latestRunSB,
                     addonEntryUUIDProd,
                     addonEntryUUIDEu,
                     addonEntryUUIDSb,
+                    latestRunProdReturn,
+                    latestRunEUReturn,
+                    latestRunSBReturn,
+                    JenkinsBuildResultsAllEnvsToReturn,
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                } = await runnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
+                    jobPathToReturnProd,
+                    jobPathToReturnSB,
+                    jobPathToReturnEU,
+                } = await runnnerService.jenkinsDoubleJobTestRunner(
                     addonName,
                     addonUUID,
                     jobPathPROD,
                     jobPathEU,
                     jobPathSB,
                     buildToken,
+                    '',
+                    '',
+                    '',
                 );
-                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
-                latestRunProdEx = latestRunProd;
-                latestRunEUEx = latestRunEU;
-                latestRunSBEx = latestRunSB;
-                pathProdEx = jobPathPROD;
-                pathEUEx = jobPathEU;
-                pathSBEx = jobPathSB;
+                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvsToReturn;
+                latestRunProdEx = latestRunProdReturn;
+                latestRunEUEx = latestRunEUReturn;
+                latestRunSBEx = latestRunSBReturn;
+                pathProdEx = jobPathToReturnProd;
+                pathEUEx = jobPathToReturnEU;
+                pathSBEx = jobPathToReturnSB;
                 addonEntryUUIDProdEx = addonEntryUUIDProd;
                 addonEntryUUIDEuEx = addonEntryUUIDEu;
                 addonEntryUUIDSbEx = addonEntryUUIDSb;
