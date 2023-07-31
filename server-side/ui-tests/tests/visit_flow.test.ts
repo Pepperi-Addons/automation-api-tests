@@ -469,6 +469,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
 
                 it('Checking off "Orders"', async function () {
+                    visitFlow.pause(0.5 * 1000);
                     await visitFlow.clickElement('VisitFlow_GroupButton_Orders');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_SalesOrder, 15000);
                     visitFlow.pause(0.5 * 1000);
