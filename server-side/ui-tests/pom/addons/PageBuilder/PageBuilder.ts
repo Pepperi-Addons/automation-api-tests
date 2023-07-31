@@ -263,6 +263,15 @@ export class PageBuilder extends AddonPage {
         await (await this.browser.findElement(this.PageBuilder_Search_Submit)).click();
     }
 
+    public async checkPageExist(name: string) {
+        await this.isSpinnerDone();
+        this.browser.sleep(0.5 * 1000);
+        const existingPages = await this.browser.findElements(this.Page_Listing_aLink);
+        this.browser.sleep(0.2 * 1000);
+        const desiredPage = existingPages.find(async (page) => (await page.getText()) === name);
+        return desiredPage ? true : false;
+    }
+
     public async publishPage(pageObj, client: Client) {
         return await this.upsertPage('publish_page', pageObj, client);
     }
