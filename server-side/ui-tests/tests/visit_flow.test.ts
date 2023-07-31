@@ -614,7 +614,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await e2eUtils.performManualSync(client);
                 });
                 it('Loging Out and Loging In as Rep', async () => {
-                    await e2eUtils.logOutLogIn('visit.flow.rep@pepperitest.com', password);
+                    await e2eUtils.logOutLogIn(`${email.split('@')[0]}.rep@pepperitest.com`, password);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
                 });
