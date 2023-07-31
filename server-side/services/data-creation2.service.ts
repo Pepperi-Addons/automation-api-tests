@@ -232,17 +232,17 @@ class ResourceCreation {
             const cItem = `${item.replace('index', index.toString())}`;
             strData += `${item.replace('index', index.toString())},`;
             const allOtherItems = allItems.filter((el) => ![cItem].includes(el));
-            strData += '['
-            for (let index = 0; index < allOtherItems.length; index++) {
+            strData += '"['
+            for (let index = 0; index < 100; index++) {
                 const element = allOtherItems[index];
                 strData += `'${element}'`;
                 if (index !== allOtherItems.length - 2){
                     strData += `,`;
                 }
             }
-            strData += ']\n'
+            strData += ']"\n'
         }
-        this.genrateFile(`DataForYoni`, strData);
+        this.genrateFile(`DataForYoni_100`, strData);
     }
 
     private createDivisons(howManyDataRows: number) {
