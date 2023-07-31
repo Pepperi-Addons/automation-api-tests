@@ -2,6 +2,7 @@ import GeneralService, { TesterFunctions } from '../services/general.service';
 import { PFSService } from '../services/pfs.service';
 import fs from 'fs';
 import { UdcField, UDCService } from '../services/user-defined-collections.service';
+import jwt_decode from 'jwt-decode';
 
 export async function UDCImportExportTestser(generalService: GeneralService, request, tester: TesterFunctions) {
     await UDCImportExportTests(generalService, request, tester);
@@ -48,13 +49,27 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
     }
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const parsedToken = jwt_decode(generalService.papiClient['options'].token);
+    const userName = parsedToken.email;
     let accUUID;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
-        accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
+        if (userName === 'udcTestingSB@pepperitest.com') {
+            accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
+        } else {
+            accUUID = 'b69d4c17-8f68-465b-9d44-f2c3b5b9a1e6';
+        }
     } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
-        accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
+        if (userName === 'udcTesting@pepperitest.com') {
+            accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
+        } else {
+            accUUID = '33b6922e-0ab1-49b1-ae3f-6981f0a9e324';
+        }
     } else {
-        accUUID = '257cd6cc-3e90-450b-bc16-1dc8f67a2ec8';
+        if (userName === 'udcTestingEU2@pepperitest.com') {
+            accUUID = '257cd6cc-3e90-450b-bc16-1dc8f67a2ec8';
+        } else {
+            accUUID = '44b7e8cb-0b7f-4e33-96da-c9fbe7714400';
+        }
     }
     //#endregion Upgrade UDC
 
