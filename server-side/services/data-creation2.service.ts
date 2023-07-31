@@ -112,7 +112,7 @@ export class DataCreation2 {
 class ResourceCreation {
     users = 5;
     accounts = 30000;
-    items = 3000;
+    items = 4000;
     divisions = 2;
     companies = 2;
     userInfo = 5;
@@ -136,7 +136,7 @@ class ResourceCreation {
         // this.createListItems(this.lists * this.items);
         // this.createAccountLists(this.divisions * this.companies * this.accounts * 15);
         // this.createListsValueNum(100, 30000);
-        this.createNEW(150000, generalService);
+        this.createNEW(4000);
     }
 
     // private async genrateTempFile(tempFileName, data) {
@@ -205,6 +205,7 @@ class ResourceCreation {
     }
 
     private createItems(howManyDataRows: number) {
+        const itemArray: string[] = [];
         const headers = "MainCategoryID,ExternalID";
         const runningDataMainCat = "items_0";
         const runningDataExID = "items_index";
@@ -213,33 +214,35 @@ class ResourceCreation {
         for (let index = 0; index < howManyDataRows; index++) {
             strData += `${runningDataMainCat},`;
             strData += `${runningDataExID.replace('index', index.toString())}\n`;
+            itemArray.push(`${runningDataExID.replace('index', index.toString())}`);
         }
         this.genrateFile("Items", strData);
+        return itemArray;
     }
 
-    private createNEW(howManyDataRows: number, generalService) {
-        const headers = "Value1,Value2,Value3";
-        const firstVal = generalService.generateRandomString(50) + ",";
-        const secVal = generalService.generateRandomString(50) + ",";
-        const thirdVal = generalService.generateRandomString(50) + "\n";
+    private createNEW(howManyDataRows: number) {
+        const allItems = this.createItems(4000);
+        const headers = "CollectionName,ItemExternalID,RelatedItems";
+        const collectionName = 'YoniTest';
+        const item = 'items_index';
         let strData = "";
-        let counter = 0;
-        let index2 = 1;
         strData += headers + "\n";
         for (let index = 0; index < howManyDataRows; index++) {
-            strData += firstVal;
-            strData += secVal;
-            strData += thirdVal;
-            if (counter >= 50000) {
-                this.genrateFile(`NEW_Data_NEW_SPLIT_${index2}`, strData);
-                index2++;
-                strData = headers + "\n";
-                counter = 1;
-            } else {
-                counter++;
+            strData += `${collectionName},`;
+            const cItem = `${item.replace('index', index.toString())}`;
+            strData += `${item.replace('index', index.toString())},`;
+            const allOtherItems = allItems.filter((el) => ![cItem].includes(el));
+            strData += '['
+            for (let index = 0; index < allOtherItems.length; index++) {
+                const element = allOtherItems[index];
+                strData += `'${element}'`;
+                if (index !== allOtherItems.length - 2){
+                    strData += `,`;
+                }
             }
+            strData += ']\n'
         }
-        this.genrateFile(`NEW_Data_NEW_SPLIT_${index2}`, strData);
+        this.genrateFile(`DataForYoni`, strData);
     }
 
     private createDivisons(howManyDataRows: number) {
