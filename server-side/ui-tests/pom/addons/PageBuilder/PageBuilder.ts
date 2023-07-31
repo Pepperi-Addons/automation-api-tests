@@ -269,7 +269,8 @@ export class PageBuilder extends AddonPage {
         const existingPages = await this.browser.findElements(this.Page_Listing_aLink);
         this.browser.sleep(0.2 * 1000);
         const desiredPage = existingPages.find(async (page) => (await page.getText()) === name);
-        return desiredPage ? true : false;
+        this.browser.sleep(0.2 * 1000);
+        return desiredPage !== undefined ? true : false;
     }
 
     public async publishPage(pageObj, client: Client) {
