@@ -2326,7 +2326,7 @@ export async function reportToTeams(
         Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
         Description: message,
         Status: passingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
-        Message: message2,
+        Message: message2 === '' ? '~' : message2,
         UserWebhook: await handleTeamsURL(addonName, generalService, email, pass),
     };
     const monitoringResponse = await generalService.fetchStatus(
