@@ -2,7 +2,7 @@ import promised from 'chai-as-promised';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { Browser } from '../utilities/browser';
 import { WebAppLoginPage, WebAppHomePage, WebAppHeader, WebAppList } from '../pom';
-import { describe, it, afterEach, before, after } from 'mocha';
+import { describe, it, afterEach, before, after, Context } from 'mocha';
 import chai, { expect } from 'chai';
 import { ResourceListABI } from '../pom/addons/ResourceListABI';
 import { By } from 'selenium-webdriver';
@@ -372,7 +372,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 case '34. Accounts - Propagated Error':
                                     const errorMessage =
                                         "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files";
-                                    await listPickAndVerify(
+                                    await listPickAndVerify.bind(this)(
                                         list,
                                         expectedTitle,
                                         expectedNumOfResults,
@@ -384,16 +384,21 @@ export async function ResourceListAbiTests(email: string, password: string, clie
 
                                 default:
                                     const listDefaultView = lists[listTitle].views[0];
-                                    await listPickAndVerify(list, expectedTitle, expectedNumOfResults, listDefaultView);
+                                    await listPickAndVerify.bind(this)(
+                                        list,
+                                        expectedTitle,
+                                        expectedNumOfResults,
+                                        listDefaultView,
+                                    );
                                     break;
                             }
                             resourceListABI.pause(0.1 * 1000);
                             await resourceListABI.isSpinnerDone();
-                            const base64ImageBuild = await driver.saveScreenshots();
-                            addContext(this, {
-                                title: `Current List ABI`,
-                                value: 'data:image/png;base64,' + base64ImageBuild,
-                            });
+                            // const base64ImageBuild = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `Current List ABI`,
+                            //     value: 'data:image/png;base64,' + base64ImageBuild,
+                            // });
                         });
                         switch (listTitle) {
                             case '34. Accounts - Propagated Error':
@@ -593,6 +598,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     });
 
     async function listPickAndVerify(
+        this: Context,
         listToSelect: string,
         expectedTitle: string,
         expectedNumOfResults: number,
@@ -606,6 +612,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             await resourceListABI.isSpinnerDone();
         }
         driver.sleep(1 * 1000);
+        let base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `List Selected from Dropdown`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await resourceListABI.clickElement('TestsAddon_openABI_button');
         driver.sleep(2.5 * 1000);
         await resourceListABI.isSpinnerDone();
@@ -635,6 +646,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         }
         const listAbiResultsNumber = await (await driver.findElement(resourceListABI.ListAbi_results_number)).getText();
         expect(Number(listAbiResultsNumber.trim())).to.equal(expectedNumOfResults);
+        base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Current List ABI`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
     }
 
     async function getSelector(
