@@ -735,7 +735,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
                     // );
                     visitFlow.pause(1 * 1000);
-                    if (email.startsWith('visit.flow.eu')) {
+                    if (email.includes('.eu@')) {
                         await visitFlow.waitTillVisible(
                             visitFlow.VisitFlowMainActivity_FormPage_Header_SubmitButton,
                             15000,
