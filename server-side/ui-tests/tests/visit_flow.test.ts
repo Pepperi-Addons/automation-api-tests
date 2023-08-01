@@ -522,12 +522,22 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     // await visitFlow.click(visitFlow.HtmlBody);
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `End Visit Step Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    await visitFlow.click(visitFlow.HtmlBody);
                     visitFlow.pause(1 * 1000);
                     // await visitFlow.insertTextToInputElement(
                     //     `Automated test (${randomString}) finished Visit`,
                     //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
                     // );
                     // visitFlow.pause(0.5 * 1000);
+                    await visitFlow.waitTillVisible(
+                        visitFlow.VisitFlowMainActivity_FormPage_Header_SubmitButton,
+                        15000,
+                    );
                     await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
                     // await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
                     // await visitFlow.waitTillVisible(
@@ -709,14 +719,18 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         title: `End Step at Survey Visit Clicked`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
-                    // await visitFlow.click(visitFlow.HtmlBody);
-                    // await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
-                    // visitFlow.pause(0.5 * 1000);
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
+                    visitFlow.pause(0.5 * 1000);
+                    await visitFlow.click(visitFlow.HtmlBody);
                     // await visitFlow.insertTextToInputElement(
                     //     'Automated test finished Visit',
                     //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
                     // );
                     visitFlow.pause(1 * 1000);
+                    await visitFlow.waitTillVisible(
+                        visitFlow.VisitFlowMainActivity_FormPage_Header_SubmitButton,
+                        15000,
+                    );
                     await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
                     // await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
                     // await visitFlow.waitTillVisible(
