@@ -2341,13 +2341,25 @@ export async function reportToTeams(
         },
     );
     if (monitoringResponse.Ok !== true) {
-        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+        throw new Error(
+            `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
+                monitoringResponse,
+            )}`,
+        );
     }
     if (monitoringResponse.Status !== 200) {
-        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+        throw new Error(
+            `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
+                monitoringResponse,
+            )}`,
+        );
     }
     if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+        throw new Error(
+            `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
+                monitoringResponse,
+            )}`,
+        );
     }
 }
 
