@@ -972,7 +972,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlowGroupsDocuments.forEach(async (visitFlowGroupsDocument) => {
                         await udcService.hideObjectInACollection('VisitFlowGroups', visitFlowGroupsDocument.Key);
                     });
-                    driver.sleep(2.5 * 1000);
+                    driver.sleep(3.5 * 1000);
                     visitFlowGroupsDocuments = await udcService.getDocuments('VisitFlowGroups', {
                         where: 'Title like "%Auto%"',
                     });
@@ -985,7 +985,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlowsDocuments.forEach(async (visitFlowsDocument) => {
                         await udcService.hideObjectInACollection('VisitFlows', visitFlowsDocument.Key);
                     });
-                    driver.sleep(2.5 * 1000);
+                    driver.sleep(3.5 * 1000);
                     visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
                         where: 'Name like "Auto%"',
                     });
@@ -998,7 +998,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlowsDocuments.forEach(async (visitFlowsDocument) => {
                         await udcService.hideObjectInACollection('VisitFlows', visitFlowsDocument.Key);
                     });
-                    driver.sleep(2.5 * 1000);
+                    driver.sleep(3.5 * 1000);
                     visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
                         where: 'Name="MockVisit"',
                     });
