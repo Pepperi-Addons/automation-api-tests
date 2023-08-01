@@ -534,11 +534,19 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
                     // );
                     // visitFlow.pause(0.5 * 1000);
-                    await visitFlow.waitTillVisible(
-                        visitFlow.VisitFlowMainActivity_FormPage_Header_SubmitButton,
-                        15000,
-                    );
-                    await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    if (email.startsWith('visit.flow.eu')) {
+                        await visitFlow.waitTillVisible(
+                            visitFlow.VisitFlowMainActivity_FormPage_Header_SubmitButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    } else {
+                        await visitFlow.waitTillVisible(
+                            visitFlow.VisitFlowMainActivity_FormPage_Header_DoneButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_DoneButton');
+                    }
                     // await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
                     // await visitFlow.waitTillVisible(
                     //     visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
@@ -727,11 +735,19 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
                     // );
                     visitFlow.pause(1 * 1000);
-                    await visitFlow.waitTillVisible(
-                        visitFlow.VisitFlowMainActivity_FormPage_Header_SubmitButton,
-                        15000,
-                    );
-                    await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    if (email.startsWith('visit.flow.eu')) {
+                        await visitFlow.waitTillVisible(
+                            visitFlow.VisitFlowMainActivity_FormPage_Header_SubmitButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    } else {
+                        await visitFlow.waitTillVisible(
+                            visitFlow.VisitFlowMainActivity_FormPage_Header_DoneButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_DoneButton');
+                    }
                     // await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
                     // await visitFlow.waitTillVisible(
                     //     visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,

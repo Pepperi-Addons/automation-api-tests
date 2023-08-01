@@ -51,7 +51,8 @@ export class VisitFlow extends AddonPage {
 
     // Visit Flow Main Activity
     public VisitFlowMainActivity_FormPage_Header_CancelButton: By = By.xpath('//button[@data-qa="cancelButton"]');
-    public VisitFlowMainActivity_FormPage_Header_SubmitButton: By = By.xpath('//button[@data-qa="Done"]');
+    public VisitFlowMainActivity_FormPage_Header_DoneButton: By = By.xpath('//button[@data-qa="Done"]');
+    public VisitFlowMainActivity_FormPage_Header_SubmitButton: By = By.xpath('//button[@data-qa="Submit"]');
     public VisitFlowMainActivity_FormPage_FormContent: By = By.xpath(
         '//div[contains(@class,"pep-page-main-layout")]//div[contains(@class,"pep-main-area")]//div[contains(@class,"form-view")]',
     );
