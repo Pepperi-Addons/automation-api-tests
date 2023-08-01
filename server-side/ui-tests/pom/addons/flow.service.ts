@@ -52,7 +52,7 @@ export interface Flow {
 
 export class FlowService extends AddonPage {
     //temp
-    public tempCongifTab: By = By.xpath(`(//span[@id='Configuration'][1])[2]`);
+    // public tempCongifTab: By = By.xpath(`(//span[@id='Configuration'][1])[2]`);
     //flow settings page
     public FlowBuilderMainTitle: By = By.xpath(`//*[@title='Flows List']`);
     public ResultsHeader: By = By.xpath(`//span[@class='bold number']`);
@@ -124,25 +124,38 @@ export class FlowService extends AddonPage {
     public FlowRadioButton: By = By.xpath('(//mat-radio-button)[|PLACEHOLDER|]');
     public FlowPencilButton: By = By.xpath('//pep-list-actions//pep-menu//button');
     public PencilTestButton: By = By.xpath("//button[@title='Test']");
+    public PencilLogsButton: By = By.xpath("//button[@title='Logs']");
     public RunScreenTtile: By = By.xpath('//flow-page-title//span');
+    public LogsScreenTtile: By = By.xpath("//span[contains(@title,'Logs')]");
+    public NumberOfResultsLogs: By = By.xpath('//pep-list-total//span');
+    public UserEmailLogsEntry: By = By.xpath("(//span[@id='UserEmail'])[|PLACEHOLDER|]");
+    public DatelLogsEntry: By = By.xpath("(//span[@id='DateTimeStamp'])[|PLACEHOLDER|]");
+    public LevelLogsEntry: By = By.xpath("(//span[@id='Level'])[|PLACEHOLDER|]");
     public RunScreenParamValueType: By = By.xpath('//mat-select');
     public RunScreenParamValue: By = By.xpath('//mat-form-field//input');
     public RunScreenParamName: By = By.xpath('//pep-select//pep-field-title//mat-label');
     public RunFlowButton: By = By.css('[data-qa="Run Flow"]');
-    public RunResultValues: By = By.xpath(
-        '(//ngx-json-viewer//section//span[@class="segment-value ng-star-inserted"])[|PLACEHOLDER|]',
-    );
-    //->(//ngx-json-viewer//section//span[@class="segment-value ng-star-inserted"])[14]
+    public RunResultValues: By = By.xpath('((//ngx-json-viewer)[4]//span)[|PLACEHOLDER|]');
+    public FlowKeyTitle: By = By.xpath('((//ngx-json-viewer)[1]//span)[1]');
+    public FlowKeyData: By = By.xpath('((//ngx-json-viewer)[1]//span)[3]');
+    public RunParamInput: By = By.xpath(`//input[@name='test']`);
+    public BackToListButton: By = By.css(`[data-qa="Back to list"]`);
+    public refreshLogsButton: By = By.xpath('//button[@data-qa="Refresh"]');
+    //->
 
     public async enterFlowBuilderSettingsPage(): Promise<boolean> {
         const webAppHeader = new WebAppHeader(this.browser);
         await webAppHeader.openSettings();
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
-        //->
-        await this.browser.click(this.tempCongifTab);
+        await webAppSettingsSidePanel.selectSettingsByID('Configuration');
         await this.browser.click(webAppSettingsSidePanel.FlowEditor);
         this.browser.sleep(2000);
         return await this.validateSettingsPageIsOpened();
+    }
+
+    public async backToList() {
+        await this.browser.click(this.BackToListButton);
+        this.browser.sleep(5000);
     }
 
     public async enterNewFlowPage(flowBuilder: Flow): Promise<any> {
@@ -264,7 +277,7 @@ export class FlowService extends AddonPage {
         await this.browser.click(By.xpath(radioButtonByIndex));
     }
 
-    async enterRunFlowPageByIndex(flowIndex, flow: Flow) {
+    async getToRunPageOfFlowByIndex(flowIndex, flow: Flow) {
         await this.selectRadioButtonOfFlowByIndexFromList(flowIndex);
         await this.browser.untilIsVisible(this.FlowPencilButton);
         await this.browser.click(this.FlowPencilButton);
@@ -285,25 +298,86 @@ export class FlowService extends AddonPage {
         return isNamesSimilar && isTypeCorrect && isValueCorrect && isParamNameCorrect;
     }
 
+    async getToLogsPageOfFlowByIndex(flowIndex, flow: Flow) {
+        await this.selectRadioButtonOfFlowByIndexFromList(flowIndex);
+        await this.browser.untilIsVisible(this.FlowPencilButton);
+        await this.browser.click(this.FlowPencilButton);
+        await this.browser.untilIsVisible(this.PencilLogsButton);
+        await this.browser.click(this.PencilLogsButton);
+        this.browser.sleep(3000);
+        await this.browser.untilIsVisible(this.LogsScreenTtile);
+        const isNamesSimilar = (await (await this.browser.findElement(this.LogsScreenTtile)).getText()).includes(
+            flow.Name,
+        );
+        this.browser.sleep(1000 * 5);
+        return isNamesSimilar;
+    }
+
+    async validateLogs() {
+        //get number of logs
+        const numberOfLogsInList = Number(await (await this.browser.findElement(this.NumberOfResultsLogs)).getText());
+        const arrayOfMails: string[] = [];
+        const arrayOfDates: string[] = [];
+        const arrayOfLevels: string[] = [];
+        //see all logs are from the correct user
+        for (let index = 0; index < numberOfLogsInList; index++) {
+            const userMailByIndex: string = this.UserEmailLogsEntry.valueOf()['value'].replace(
+                '|PLACEHOLDER|',
+                index + 1,
+            );
+            const textEmail = await (await this.browser.findElement(By.xpath(userMailByIndex))).getText();
+            arrayOfMails.push(textEmail);
+        }
+        //see all logs have correct date
+        for (let index = 0; index < numberOfLogsInList; index++) {
+            const userMailByIndex: string = this.DatelLogsEntry.valueOf()['value'].replace('|PLACEHOLDER|', index + 1);
+            const dateText = await (await this.browser.findElement(By.xpath(userMailByIndex))).getText();
+            arrayOfDates.push(dateText);
+        }
+        //see all logs have correct level
+        for (let index = 0; index < numberOfLogsInList; index++) {
+            const logLevelByIndex: string = this.LevelLogsEntry.valueOf()['value'].replace('|PLACEHOLDER|', index + 1);
+            const levelText = await (await this.browser.findElement(By.xpath(logLevelByIndex))).getText();
+            arrayOfLevels.push(levelText);
+        }
+        return { number: numberOfLogsInList, mails: arrayOfMails, dates: arrayOfDates, levels: arrayOfLevels };
+    }
+
     async runFlow() {
         //press button
         await this.browser.click(this.RunFlowButton);
         //wait for 7 seconds
         this.browser.sleep(1000 * 7);
-        debugger;
         await this.browser.switchToOtherTab(0);
     }
 
+    async refreshLogs() {
+        //press button
+        await this.browser.click(this.refreshLogsButton);
+        //wait for 7 seconds
+        this.browser.sleep(1000 * 12);
+    }
+
     async validateRunResult(expectedResult: string) {
-        debugger;
         let totValue = '';
-        for (let index = 4; index < 4 + expectedResult.length; index++) {
+        for (let index = 3; index < 3 + expectedResult.length * 3; index = index + 3) {
             const valueToRead: string = this.RunResultValues.valueOf()['value'].replace('|PLACEHOLDER|', index);
             const value = await this.browser.findElement(By.xpath(valueToRead));
-            totValue += await value.getText();
+            totValue += (await value.getText()).replace(/"/g, '');
         }
-        debugger;
         return totValue;
+    }
+
+    async validateRunData() {
+        const flowKeyTitle = await (await this.browser.findElement(this.FlowKeyTitle)).getText();
+        const flowKeyData = (await (await this.browser.findElement(this.FlowKeyData)).getText()).replace(/"/g, '');
+        const totValue = `${flowKeyTitle}:${flowKeyData}`;
+        return totValue;
+    }
+
+    async validateRunParam() {
+        const runFlowParam = await (await this.browser.findElement(this.RunParamInput)).getAttribute('title');
+        return runFlowParam;
     }
 
     async saveFlow() {

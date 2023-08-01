@@ -11,7 +11,14 @@ import { ScriptEditor } from '../pom/addons/ScriptPicker';
 chai.use(promised);
 
 export async function FlowTests(email: string, password: string, client: Client) {
+    //, varPass
     const generalService = new GeneralService(client);
+    // let varKey;
+    // if (generalService.papiClient['options'].baseURL.includes('staging')) {
+    //     varKey = varPass.body.varKeyStage;
+    // } else {
+    //     varKey = varPass.body.varKeyPro;
+    // }
     let driver: Browser;
     let firstScriptUUID = '';
     let secondScriptUUID = '';
@@ -91,17 +98,19 @@ export async function FlowTests(email: string, password: string, client: Client)
         Name: newFlowName,
     };
     const expectedResult = 'evgenyosXXX';
-    // await generalService.baseAddonVersionsInstallation(varPass);
+    // await generalService.baseAddonVersionsInstallation(varKey);
     // #region Upgrade survey dependencies
 
-    // const testData = {};
+    // const testData = {
+    //     'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''],
+    // };
 
-    // const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
+    // const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     // const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
     // #endregion Upgrade survey dependencies
 
-    describe('Survey Builder Tests Suit', async function () {
+    describe('Flow Builder Tests Suit', async function () {
         // describe('Prerequisites Addons for Survey Builder Tests', () => {
         //     //Test Data
         //     isInstalledArr.forEach((isInstalled, index) => {
@@ -132,7 +141,7 @@ export async function FlowTests(email: string, password: string, client: Client)
         //     }
         // });
 
-        describe('Configuring Survey', () => {
+        describe('Configuring Flow', () => {
             this.retries(0);
 
             before(async function () {
@@ -226,7 +235,7 @@ export async function FlowTests(email: string, password: string, client: Client)
                     const isCreatedSecsefully = await flowService.validateStepCreatedByApi(step.Name, index + 1);
                     expect(isCreatedSecsefully).to.equal(true);
                 }
-                //-> validate the script inside the stepand its params
+                //-> validate the script inside the step and its params
                 for (let index = 0; index < newFlowSteps.length; index++) {
                     const step = newFlowSteps[index];
                     const isCreatedSuccessfully = await flowService.validateStepScript(index + 1, step, generalService);
@@ -247,49 +256,44 @@ export async function FlowTests(email: string, password: string, client: Client)
                 expect(stepsResponse.Body.Params).to.deep.equal(positiveFlow.Params);
                 expect(stepsResponse.Body.Steps).to.deep.equal(positiveFlow.Steps);
                 //->run flow and see result
-                const isRunFlowPresentedCorrectly = await flowService.enterRunFlowPageByIndex(1, positiveFlow);
+                const isRunFlowPresentedCorrectly = await flowService.getToRunPageOfFlowByIndex(1, positiveFlow);
                 expect(isRunFlowPresentedCorrectly).to.equal(true);
                 await flowService.runFlow();
+                const runDParamShown = await flowService.validateRunParam();
+                expect(runDParamShown).to.equal('evgenyos');
+                const runDataShown = await flowService.validateRunData();
+                expect(runDataShown).to.equal('FlowKey:' + flowKey);
                 const returnedValue = await flowService.validateRunResult(expectedResult);
                 expect(returnedValue).to.equal(expectedResult);
+                await flowService.backToList();
+                //enter Logs For The Same Flow
+                const isLogsPagePresentedCorrectly = await flowService.getToLogsPageOfFlowByIndex(1, positiveFlow);
+                expect(isLogsPagePresentedCorrectly).to.equal(true);
+                driver.sleep(1000 * 60 * 5); //wait 5 minutes for the logs to load
+                await flowService.refreshLogs(); //refresh logs by pressing button
+                const logsDataPresented = await flowService.validateLogs();
+                expect(logsDataPresented.number).to.equal(6);
+                for (let index = 0; index < Object.values(logsDataPresented.mails).length; index++) {
+                    const mail = Object.values(logsDataPresented.mails)[index];
+                    expect(mail).to.equal('FlowBuilderProd@pepperitest.com');
+                }
+                for (let index = 0; index < Object.values(logsDataPresented.levels).length; index++) {
+                    const level = Object.values(logsDataPresented.levels)[index];
+                    expect(level).to.equal('INFO');
+                }
+                for (let index = 0; index < Object.values(logsDataPresented.dates).length; index++) {
+                    const date = Object.values(logsDataPresented.dates)[index];
+                    const today = new Date();
+                    const todaysDateUsFormat = today.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                    });
+                    expect(date).to.include(todaysDateUsFormat);
+                }
                 debugger;
-                //->see logs (todo)
-                // //add step via API
-                // const stepsResponse = await flowService.addEmptyStepViaAPI(
-                //     generalService,
-                //     flowKey,
-                //     positiveFlow.Name,
-                //     emptyStep,
-                // );
-                // //test everything is good from server
-                // expect(stepsResponse.Ok).to.equal(true);
-                // expect(stepsResponse.Status).to.equal(200);
-                // expect(stepsResponse.Body.Description).to.equal(positiveFlow.Description);
-                // expect(stepsResponse.Body.Hidden).to.equal(false);
-                // expect(stepsResponse.Body.Key).to.equal(flowKey);
-                // expect(stepsResponse.Body.Name).to.equal(positiveFlow.Name);
-                // expect(stepsResponse.Body.Params).to.deep.equal(positiveFlow.Params);
-                // expect(stepsResponse.Body.Steps.length).to.equal(1);
-                // expect(stepsResponse.Body.Steps[0]).to.deep.equal(emptyStep[0]);
-                // //- search for flow in search input
-                // await flowService.enterFlowBySearchingName(positiveFlow.Name);
-                // //3. add steps by given flow
-                // //3.1. validate first step has all correct data
-                // const isCreatedSecsefully = await flowService.validateStepCreatedByApi(emptyStep[0].Name, 1);
-                // expect(isCreatedSecsefully).to.equal(true);
-                // //3.2. edit the first step to be similar to given object
-                // const isEditeSuccessfully = await flowService.editStep(1, positiveFlow.Steps[0], generalService);
-                // expect(isEditeSuccessfully).to.equal(true);
-                // //3.3. duplicate it by the number of steps - not including first
-                // for (let index = 1; index < (positiveFlow.Steps as any).length; index++) {
-                //     const step = positiveFlow.Steps[index];
-                //     const isDuplicatedCorrectly = await flowService.duplicateAndValidateStep(1, generalService, step);
-                //     expect(isDuplicatedCorrectly).to.equal(true);
-                // }
-                //4. save everything
-                //5. call API to see everything is similar
-                //other it: -> run "test" and validate
-                //other it: -> run "log" and validate
+                //2. Duplicate The Flow & run it - see everything is good
+                //3. delete the duplicate - see only the first one is left
             });
             it('Data Cleansing: 1. script', async function () {
                 //delete the script
