@@ -31,8 +31,8 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
     let tempFileResponse;
     //#endregion Upgrade ADAL
 
-    describe('Addon Relation Tests Suites', () => {
-        describe('Prerequisites Addon for relation Tests', () => {
+    describe('Adal 40K Import Export Tests Suites', () => {
+        describe('Prerequisites For Adal 40K Import Export Tests', () => {
             //Test Data
             //ADAL
             isInstalledArr.forEach((isInstalled, index) => {
@@ -70,7 +70,7 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
             Name: schemaName,
             Type: 'data',
             Fields: {
-                Value: { Type: 'String' },
+                Value: { Type: 'Integer' },
                 Value1: { Type: 'Bool' },
             },
         };
@@ -84,7 +84,8 @@ export async function Adal40KImportAndPurgeTest(generalService: GeneralService, 
                 expect(createSchemaResponse.Name).to.equal(schemaName);
                 expect(createSchemaResponse.Hidden).to.be.false;
                 expect(createSchemaResponse.Type).to.equal('data');
-                expect(createSchemaResponse.Fields?.Value.Type).to.equal('String');
+                expect(createSchemaResponse.Fields?.Value.Type).to.equal('Integer');
+                expect(createSchemaResponse.Fields?.Value1.Type).to.equal('Bool');
                 //1.1 test the table is indeed new => empty
                 const getAdalTablenResponse = await adalService.getDataFromSchema(addonUUID, schemaName);
                 expect(getAdalTablenResponse).to.deep.equal([]);
