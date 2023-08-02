@@ -157,7 +157,7 @@ export async function FlowTests(email: string, password: string, client: Client,
 
             afterEach(async function () {
                 const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.collectEndTestData2(this);
+                await webAppHomePage.collectEndTestData(this);
             });
             it('1. Create Two Scripts To Use As Flow Steps', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
