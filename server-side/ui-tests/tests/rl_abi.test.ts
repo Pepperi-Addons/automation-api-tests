@@ -508,6 +508,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                                 case '6. Accounts - Selection - None':
                                                     await webAppList.clickOnRowByIndex();
                                                     await webAppList.isSpinnerDone();
+                                                    const base64ImageBuild = await driver.saveScreenshots();
+                                                    addContext(this, {
+                                                        title: `After row of type "None" was clicked (not really selected)`,
+                                                        value: 'data:image/png;base64,' + base64ImageBuild,
+                                                    });
                                                     await elemntDoNotExist('LineMenu');
                                                     resourceListABI.pause(0.2 * 1000);
                                                     break;
