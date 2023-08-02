@@ -122,9 +122,11 @@ export class FlowService extends AddonPage {
         '(//addon-script-picker//pep-generic-form//mat-select//div//span//span)[2]',
     );
     public FlowRadioButton: By = By.xpath('(//mat-radio-button)[|PLACEHOLDER|]');
+    public FlowLink: By = By.xpath("//pep-form//pep-link//a[@title='|PLACEHOLDER|_copy']");
     public FlowPencilButton: By = By.xpath('//pep-list-actions//pep-menu//button');
     public PencilTestButton: By = By.xpath("//button[@title='Test']");
     public PencilLogsButton: By = By.xpath("//button[@title='Logs']");
+    public PencilDuplicateButton: By = By.xpath("//button[@title='Duplicate']");
     public RunScreenTtile: By = By.xpath('//flow-page-title//span');
     public LogsScreenTtile: By = By.xpath("//span[contains(@title,'Logs')]");
     public NumberOfResultsLogs: By = By.xpath('//pep-list-total//span');
@@ -313,6 +315,21 @@ export class FlowService extends AddonPage {
         return isNamesSimilar;
     }
 
+    async duplicateFlowByIndex(flowIndex, flow: Flow) {
+        const copyFlowElement = this.FlowLink.valueOf()['value'].replace('|PLACEHOLDER|', flow.Name);
+        await this.selectRadioButtonOfFlowByIndexFromList(flowIndex);
+        await this.browser.untilIsVisible(this.FlowPencilButton);
+        await this.browser.click(this.FlowPencilButton);
+        await this.browser.untilIsVisible(this.PencilDuplicateButton);
+        await this.browser.click(this.PencilDuplicateButton);
+        this.browser.sleep(7000);
+        await this.browser.untilIsVisible(By.xpath(copyFlowElement));
+        const isNamesSimilar = (await (await this.browser.findElement(By.xpath(copyFlowElement))).getText()).includes(
+            flow.Name + '_copy',
+        );
+        return isNamesSimilar;
+    }
+
     async validateLogs() {
         //get number of logs
         const numberOfLogsInList = Number(await (await this.browser.findElement(this.NumberOfResultsLogs)).getText());
@@ -428,12 +445,17 @@ export class FlowService extends AddonPage {
     }
 
     async enterFlowBySearchingName(flowName) {
+        const paramNameInList: string = await this.searchFlowByName(flowName);
+        await this.browser.click(By.xpath(paramNameInList));
+        await this.browser.untilIsVisible(this.FlowTabList, 6000);
+    }
+
+    async searchFlowByName(flowName) {
         await this.browser.click(this.SearchInput);
         await this.browser.sendKeys(this.SearchInput, flowName + Key.ENTER);
         const paramNameInList: string = this.ListParamLinks.valueOf()['value'].replace('|PLACEHOLDER|', flowName);
         await this.browser.untilIsVisible(By.xpath(paramNameInList));
-        await this.browser.click(By.xpath(paramNameInList));
-        await this.browser.untilIsVisible(this.FlowTabList, 6000);
+        return paramNameInList;
     }
 
     async validateStepCreatedByApi(stepName: string, index: number) {

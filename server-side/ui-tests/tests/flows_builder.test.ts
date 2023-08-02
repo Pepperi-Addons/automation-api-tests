@@ -291,9 +291,28 @@ export async function FlowTests(email: string, password: string, client: Client)
                     });
                     expect(date).to.include(todaysDateUsFormat);
                 }
-                debugger;
+                await flowService.backToList();
                 //2. Duplicate The Flow & run it - see everything is good
-                //3. delete the duplicate - see only the first one is left
+                const isDuplicateShown = await flowService.duplicateFlowByIndex(1, positiveFlow);
+                expect(isDuplicateShown).to.equal(true);
+                const duplicatedFlow: Flow = {
+                    Name: positiveFlow.Name + "_copy",
+                    Params: positiveFlow.Params,
+                    Steps: positiveFlow.Steps,
+                    Hidden: false
+                };
+                await flowService.searchFlowByName(duplicatedFlow.Name);
+                const isRunFlowPresentedCorrectlyCopyFlow = await flowService.getToRunPageOfFlowByIndex(1, duplicatedFlow);
+                expect(isRunFlowPresentedCorrectlyCopyFlow).to.equal(true);
+                await flowService.runFlow();
+                const runParamShownCopyFlow = await flowService.validateRunParam();
+                expect(runParamShownCopyFlow).to.equal('evgenyos');
+                const returnedValueCopyFlow = await flowService.validateRunResult(expectedResult);
+                expect(returnedValueCopyFlow).to.equal(expectedResult);
+                await flowService.backToList();
+                debugger;
+                //3. delete the duplicate using pencil menu - see only the first one is left
+                //->Get all flow by API - see only the original is left
             });
             it('Data Cleansing: 1. script', async function () {
                 //delete the script
