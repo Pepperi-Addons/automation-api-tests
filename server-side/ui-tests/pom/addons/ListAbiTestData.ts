@@ -355,7 +355,7 @@ export class ListAbiTestData {
                 'Line Menu': true,
             },
         };
-        this['30. Items - Full - 2 Views'] = {
+        this['30. Items - Full - with 2 Views'] = {
             listToSelect: '30. Items View - Full with 2 Views',
             expectedTitle: 'Items Full - 2 Views',
             expectedNumOfResults: num_of_items_filtered_a,
