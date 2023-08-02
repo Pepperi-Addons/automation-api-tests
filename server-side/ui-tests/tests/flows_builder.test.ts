@@ -10,15 +10,16 @@ import { ScriptEditor } from '../pom/addons/ScriptPicker';
 
 chai.use(promised);
 
-export async function FlowTests(email: string, password: string, client: Client) {
+export async function FlowTests(email: string, password: string, client: Client, varPass) {
     //, varPass
     const generalService = new GeneralService(client);
-    // let varKey;
-    // if (generalService.papiClient['options'].baseURL.includes('staging')) {
-    //     varKey = varPass.body.varKeyStage;
-    // } else {
-    //     varKey = varPass.body.varKeyPro;
-    // }
+
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = varPass.body.varKeyStage;
+    } else {
+        varKey = varPass.body.varKeyPro;
+    }
     let driver: Browser;
     let firstScriptUUID = '';
     let secondScriptUUID = '';
@@ -98,52 +99,54 @@ export async function FlowTests(email: string, password: string, client: Client)
         Name: newFlowName,
     };
     const expectedResult = 'evgenyosXXX';
-    // await generalService.baseAddonVersionsInstallation(varKey);
+    await generalService.baseAddonVersionsInstallation(varKey);
     // #region Upgrade survey dependencies
 
-    // const testData = {
-    //     'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''],
-    // };
+    const testData = {
+        'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''],
+    };
 
-    // const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
-    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
     // #endregion Upgrade survey dependencies
 
     describe('Flow Builder Tests Suit', async function () {
-        // describe('Prerequisites Addons for Survey Builder Tests', () => {
-        //     //Test Data
-        //     isInstalledArr.forEach((isInstalled, index) => {
-        //         it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-        //             expect(isInstalled).to.be.true;
-        //         });
-        //     });
-        //     for (const addonName in testData) {
-        //         const addonUUID = testData[addonName][0];
-        //         const version = testData[addonName][1];
-        //         const varLatestVersion = chnageVersionResponseArr[addonName][2];
-        //         const changeType = chnageVersionResponseArr[addonName][3];
-        //         describe(`Test Data: ${addonName}`, () => {
-        //             it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-        //                 if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-        //                     expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-        //                 } else {
-        //                     expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-        //                 }
-        //             });
-        //             it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-        //                     .eventually.to.have.property('Version')
-        //                     .a('string')
-        //                     .that.is.equal(varLatestVersion);
-        //             });
-        //         });
-        //     }
-        // });
+        describe('Prerequisites Addons for Flows Builder Tests', () => {
+            //Test Data
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
+        });
 
-        describe('Configuring Flow', () => {
+        describe('Flow Builder E2E Addon Tests', () => {
             this.retries(0);
-
+            let flowKey;
+            let stepsResponse;
+            let duplicatedFlow;
             before(async function () {
                 driver = await Browser.initiateChrome();
             });
@@ -154,7 +157,7 @@ export async function FlowTests(email: string, password: string, client: Client)
 
             afterEach(async function () {
                 const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.collectEndTestData2(this);
+                await webAppHomePage.collectEndTestData(this);
             });
             it('1. Create Two Scripts To Use As Flow Steps', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
@@ -180,8 +183,7 @@ export async function FlowTests(email: string, password: string, client: Client)
                 newFlowSteps[1].Configuration.runScriptData.ScriptKey = secondScriptUUID;
                 await webAppHomePage.returnToHomePage();
             });
-            it(`Create Flow Using UI - Call It From Api And See Everything Is Correct`, async function () {
-                //TODO: split this it lol
+            it('2. Enter Flows Main Page, Validate Everything Is Shown, Create Flow', async function () {
                 const flowService = new FlowService(driver);
                 //enter flows from settings
                 const isFlowBuilderMainPageShown = await flowService.enterFlowBuilderSettingsPage();
@@ -189,13 +191,16 @@ export async function FlowTests(email: string, password: string, client: Client)
                 //add flow modal
                 const isAddFlowModalOpened = await flowService.openAddFlowPage();
                 expect(isAddFlowModalOpened).to.equal(true);
-                const [isIternalPageOfFlowShown, flowKey] = await flowService.enterNewFlowPage(positiveFlow);
+                const [isIternalPageOfFlowShown, flowKey_] = await flowService.enterNewFlowPage(positiveFlow);
+                flowKey = flowKey_;
                 expect(isIternalPageOfFlowShown).to.equal(true);
                 expect(flowKey).to.be.a.string;
                 expect(flowKey.length).to.equal(36);
-                //1. inside flow: validate name + Description in General Tab
                 const isGeneralDataShownCorrectly = await flowService.enterGeneralTabAndSeeValues(positiveFlow);
                 expect(isGeneralDataShownCorrectly).to.equal(true);
+            });
+            it('3. Add Parameter To The Flow', async function () {
+                const flowService = new FlowService(driver);
                 //2. add parameters by given flow
                 const isParamTabShown = await flowService.enterParamTab();
                 expect(isParamTabShown).to.equal(true);
@@ -207,8 +212,11 @@ export async function FlowTests(email: string, password: string, client: Client)
                 expect(areValuesSimilar).to.equal(true);
                 const isFlowPagePresentedAfterSaving = await flowService.saveFlow();
                 expect(isFlowPagePresentedAfterSaving).to.equal(true);
+            });
+            it('4. Add Steps Using API And Validate By UI All Is Shown', async function () {
+                const flowService = new FlowService(driver);
                 //->add steps via API
-                const stepsResponse = await flowService.addStepViaAPI(
+                stepsResponse = await flowService.addStepViaAPI(
                     generalService,
                     flowKey,
                     positiveFlow.Name,
@@ -244,17 +252,23 @@ export async function FlowTests(email: string, password: string, client: Client)
                 }
                 //->save
                 await flowService.saveFlow();
+            });
+            it('5. Get All Flows By API And See We Got Only One Which Is Setup Correcly', async function () {
+                const flowService = new FlowService(driver);
                 //->get flow via api
                 const newFlow = await flowService.getFlowByKeyViaAPI(generalService, flowKey);
                 //->validate flow from api
                 expect(newFlow.Ok).to.be.true;
                 expect(newFlow.Status).to.equal(200);
-                expect(stepsResponse.Body.Description).to.equal(positiveFlow.Description);
-                expect(stepsResponse.Body.Hidden).to.equal(false);
-                expect(stepsResponse.Body.Key).to.equal(flowKey);
-                expect(stepsResponse.Body.Name).to.equal(positiveFlow.Name);
-                expect(stepsResponse.Body.Params).to.deep.equal(positiveFlow.Params);
-                expect(stepsResponse.Body.Steps).to.deep.equal(positiveFlow.Steps);
+                expect(newFlow.Body.Description).to.equal(positiveFlow.Description);
+                expect(newFlow.Body.Hidden).to.equal(false);
+                expect(newFlow.Body.Key).to.equal(flowKey);
+                expect(newFlow.Body.Name).to.equal(positiveFlow.Name);
+                expect(newFlow.Body.Params).to.deep.equal(positiveFlow.Params);
+                expect(newFlow.Body.Steps).to.deep.equal(positiveFlow.Steps);
+            });
+            it('6. Run Flow And See Result', async function () {
+                const flowService = new FlowService(driver);
                 //->run flow and see result
                 const isRunFlowPresentedCorrectly = await flowService.getToRunPageOfFlowByIndex(1, positiveFlow);
                 expect(isRunFlowPresentedCorrectly).to.equal(true);
@@ -266,6 +280,9 @@ export async function FlowTests(email: string, password: string, client: Client)
                 const returnedValue = await flowService.validateRunResult(expectedResult);
                 expect(returnedValue).to.equal(expectedResult);
                 await flowService.backToList();
+            });
+            it('7. Enter Flows Logs And See Everything Was Recoreded', async function () {
+                const flowService = new FlowService(driver);
                 //enter Logs For The Same Flow
                 const isLogsPagePresentedCorrectly = await flowService.getToLogsPageOfFlowByIndex(1, positiveFlow);
                 expect(isLogsPagePresentedCorrectly).to.equal(true);
@@ -292,10 +309,13 @@ export async function FlowTests(email: string, password: string, client: Client)
                     expect(date).to.include(todaysDateUsFormat);
                 }
                 await flowService.backToList();
+            });
+            it('8. Duplicate The Flow - Run The Copy - See Everything Was Created Correctly', async function () {
+                const flowService = new FlowService(driver);
                 //2. Duplicate The Flow & run it - see everything is good
                 const isDuplicateShown = await flowService.duplicateFlowByIndex(1, positiveFlow);
                 expect(isDuplicateShown).to.equal(true);
-                const duplicatedFlow: Flow = {
+                duplicatedFlow = {
                     Name: positiveFlow.Name + '_copy',
                     Params: positiveFlow.Params,
                     Steps: positiveFlow.Steps,
@@ -313,9 +333,18 @@ export async function FlowTests(email: string, password: string, client: Client)
                 const returnedValueCopyFlow = await flowService.validateRunResult(expectedResult);
                 expect(returnedValueCopyFlow).to.equal(expectedResult);
                 await flowService.backToList();
-                debugger;
+            });
+            it('9. Delete The Copy - See It Dosnet Show In The List, Call API See It Was Deleted', async function () {
+                const flowService = new FlowService(driver);
                 //3. delete the duplicate using pencil menu - see only the first one is left
+                await flowService.searchFlowByName(duplicatedFlow.Name);
+                await flowService.deleteFlowByIndex(1);
+                const allFlowInMainList = await flowService.getAllFlowsFromMainList();
+                expect(allFlowInMainList.length).to.equal(1);
                 //->Get all flow by API - see only the original is left
+                const flowResponse = await flowService.getAllFlowsViaAPI(generalService);
+                const allFlows = flowResponse.Body;
+                expect(allFlows.length).to.equal(1);
             });
             it('Data Cleansing: 1. script', async function () {
                 //delete the script

@@ -335,7 +335,7 @@ export class ScriptEditor extends AddonPage {
         //3. push code of script instead of the code found in the UI
         this.browser.sleep(1500);
         await this.browser.click(scriptEditor.CodeTextArea);
-        const selectAll = Key.chord(Key.COMMAND, 'a'); //CONTROL
+        const selectAll = Key.chord(Key.CONTROL, 'a'); //CONTROL
         await this.browser.sendKeysNoClear(scriptEditor.CodeTextArea, selectAll);
         await this.browser.sendKeysNoClear(scriptEditor.CodeTextArea, Key.DELETE); //DELETE
         await this.browser.sendKeysNoClear(scriptEditor.CodeTextArea, actualScriptCode);
