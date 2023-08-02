@@ -406,11 +406,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             }
                             resourceListABI.pause(0.1 * 1000);
                             await resourceListABI.isSpinnerDone();
-                            // const base64ImageBuild = await driver.saveScreenshots();
-                            // addContext(this, {
-                            //     title: `Current List ABI`,
-                            //     value: 'data:image/png;base64,' + base64ImageBuild,
-                            // });
                         });
                         switch (listTitle) {
                             case '34. Accounts - Propagated Error':
@@ -488,7 +483,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                         case 'Line Menu':
                                             switch (listTitle) {
                                                 case '10. Accounts - Line Menu':
-                                                case '30. Items - Full - 2 Views':
+                                                case '30. Items View - Full with 2 Views':
                                                     await lineMenuSingleExist.bind(this)();
                                                     break;
 
@@ -513,6 +508,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                                 case '6. Accounts - Selection - None':
                                                     await webAppList.clickOnRowByIndex();
                                                     await webAppList.isSpinnerDone();
+                                                    const base64ImageBuild = await driver.saveScreenshots();
+                                                    addContext(this, {
+                                                        title: `After row of type "None" was clicked (not really selected)`,
+                                                        value: 'data:image/png;base64,' + base64ImageBuild,
+                                                    });
                                                     await elemntDoNotExist('LineMenu');
                                                     resourceListABI.pause(0.2 * 1000);
                                                     break;
@@ -534,7 +534,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 lists[listTitle].elements['Line Menu'] &&
                                 lists[listTitle].elements['Select All Checkbox']
                             ) {
-                                it('Line Menu - Disappear', async () => {
+                                it('Line Menu - Disappear', async function () {
                                     await lineMenuMultiDisappear.bind(this)();
                                 });
                             }
@@ -604,7 +604,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             case '29. Accounts - Full':
                                 // click "Test" button in Menu and check that "Hello World" appear in search input and search response
                                 break;
-                            case '30. Items - Full - 2 Views':
+                            case '30. Items View - Full with 2 Views':
                                 break;
                             case '31. Accounts - Draw Grid Relation':
                                 // DI-22735
