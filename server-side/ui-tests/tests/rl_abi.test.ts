@@ -406,11 +406,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             }
                             resourceListABI.pause(0.1 * 1000);
                             await resourceListABI.isSpinnerDone();
-                            // const base64ImageBuild = await driver.saveScreenshots();
-                            // addContext(this, {
-                            //     title: `Current List ABI`,
-                            //     value: 'data:image/png;base64,' + base64ImageBuild,
-                            // });
                         });
                         switch (listTitle) {
                             case '34. Accounts - Propagated Error':
