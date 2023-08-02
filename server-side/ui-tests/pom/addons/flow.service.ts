@@ -123,9 +123,12 @@ export class FlowService extends AddonPage {
     );
     public FlowRadioButton: By = By.xpath('(//mat-radio-button)[|PLACEHOLDER|]');
     public FlowLink: By = By.xpath("//pep-form//pep-link//a[@title='|PLACEHOLDER|_copy']");
+    public AllFlowsInList: By = By.xpath("//a[@id='Name']");
     public FlowPencilButton: By = By.xpath('//pep-list-actions//pep-menu//button');
     public PencilTestButton: By = By.xpath("//button[@title='Test']");
     public PencilLogsButton: By = By.xpath("//button[@title='Logs']");
+    public PenciDeleteButton: By = By.xpath("//button[@title='Delete']");
+    public ModalButtonDeleteFlow: By = By.xpath("//button//span[contains(text(),'Delete')]");
     public PencilDuplicateButton: By = By.xpath("//button[@title='Duplicate']");
     public RunScreenTtile: By = By.xpath('//flow-page-title//span');
     public LogsScreenTtile: By = By.xpath("//span[contains(@title,'Logs')]");
@@ -328,6 +331,23 @@ export class FlowService extends AddonPage {
             flow.Name + '_copy',
         );
         return isNamesSimilar;
+    }
+
+    async getAllFlowsFromMainList() {
+        const allFlowsInMailList = await this.browser.findElements(this.AllFlowsInList);
+        return allFlowsInMailList;
+    }
+
+    async deleteFlowByIndex(flowIndex) {
+        await this.selectRadioButtonOfFlowByIndexFromList(flowIndex);
+        await this.browser.untilIsVisible(this.FlowPencilButton);
+        await this.browser.click(this.FlowPencilButton);
+        await this.browser.untilIsVisible(this.PenciDeleteButton);
+        await this.browser.click(this.PenciDeleteButton);
+        this.browser.sleep(3000);
+        await this.browser.untilIsVisible(this.ModalButtonDeleteFlow);
+        await this.browser.click(this.ModalButtonDeleteFlow);
+        this.browser.sleep(1000 * 15);
     }
 
     async validateLogs() {

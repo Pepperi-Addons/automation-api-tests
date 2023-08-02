@@ -245,7 +245,13 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     }
 
     if (tests.includes('FlowBuilder')) {
-        await FlowTests(email, pass, client);
+        await FlowTests(email, pass, client, {
+            body: {
+                varKeyStage: varPass,
+                varKeyPro: varPass,
+                varKeyEU: varPassEU,
+            },
+        });
     }
 
     if (tests.includes('evgeny')) {
