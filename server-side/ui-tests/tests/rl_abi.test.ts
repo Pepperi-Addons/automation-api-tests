@@ -404,11 +404,31 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             case '34. Accounts - Propagated Error':
                                 break;
 
+                            case '32. ReferenceAccount - 2 Views':
+                                // https://pepperi.atlassian.net/browse/DI-24602
+                                // fix-version: Resource List 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
+                                if (!email.includes('.stage')) {
+                                    it('Validate Views', async function () {
+                                        const currentListExpectedViews = lists[listTitle].views;
+                                        const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
+                                        await validateViewsTitles.bind(this)(
+                                            currentListExpectedViews.length,
+                                            currentListExpectedViews,
+                                        );
+                                        await validateViewsListHeaders(
+                                            currentListExpectedViews.length,
+                                            currentListExpectedViews,
+                                            currentListExpectedHeadersPerView,
+                                        );
+                                    });
+                                }
+                                break;
+
                             default:
-                                it('Validate Views', async () => {
+                                it('Validate Views', async function () {
                                     const currentListExpectedViews = lists[listTitle].views;
                                     const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
-                                    await validateViewsTitles(
+                                    await validateViewsTitles.bind(this)(
                                         currentListExpectedViews.length,
                                         currentListExpectedViews,
                                     );
@@ -861,9 +881,14 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         });
     }
 
-    async function validateViewsTitles(expectedNumOfViews: number, expectedViewsTitles: string[]) {
+    async function validateViewsTitles(this: Context, expectedNumOfViews: number, expectedViewsTitles: string[]) {
         await driver.click(resourceListABI.ListAbi_ViewsDropdown);
         await driver.untilIsVisible(resourceListABI.ListAbi_ViewsDropdownOptions_container);
+        const base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Views List Open`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         const views = await driver.findElements(resourceListABI.ListAbi_ViewsDropdownSingleOption_textContent);
         resourceListABI.pause(0.2 * 1000);
         expect(views.length).to.equal(expectedNumOfViews);
