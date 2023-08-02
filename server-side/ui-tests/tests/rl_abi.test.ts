@@ -489,25 +489,25 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                             switch (listTitle) {
                                                 case '10. Accounts - Line Menu':
                                                 case '30. Items - Full - 2 Views':
-                                                    await lineMenuSingleExist();
+                                                    await lineMenuSingleExist.bind(this)();
                                                     break;
 
                                                 case '11. Items - Line Menu - Selection Type Multi':
                                                 case '29. Accounts - Full':
                                                 case '32. ReferenceAccount - 2 Views':
                                                 case '33. FiltersAccRef - 2 Views':
-                                                    await lineMenuMultiExist();
+                                                    await lineMenuMultiExist.bind(this)();
                                                     break;
 
                                                 case '1. Items - Basic':
                                                 case '2. Accounts - Basic':
                                                 case '5. Accounts - Selection - Single':
-                                                    await lineMenuSingleDoNotExist();
+                                                    await lineMenuSingleDoNotExist.bind(this)();
                                                     break;
 
                                                 case '4. Accounts - Selection - Multi':
                                                 case '31. Accounts - Draw Grid Relation':
-                                                    await lineMenuMultiDoNotExist();
+                                                    await lineMenuMultiDoNotExist.bind(this)();
                                                     break;
 
                                                 case '6. Accounts - Selection - None':
@@ -535,7 +535,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 lists[listTitle].elements['Select All Checkbox']
                             ) {
                                 it('Line Menu - Disappear', async () => {
-                                    await lineMenuMultiDisappear();
+                                    await lineMenuMultiDisappear.bind(this)();
                                 });
                             }
                         }
@@ -822,55 +822,95 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         }
     }
 
-    async function lineMenuMultiDoNotExist() {
+    async function lineMenuMultiDoNotExist(this: Context) {
         await elemntDoNotExist('CheckboxSelected');
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
         await webAppList.untilIsVisible(webAppList.RowElementCheckBoxSelected);
+        let base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After row of type "Multi" was selected`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
         await elemntDoNotExist('CheckboxSelected');
+        base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After row of type "Multi" was un-selected`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(2 * 1000);
     }
 
-    async function lineMenuSingleDoNotExist() {
+    async function lineMenuSingleDoNotExist(this: Context) {
         await elemntDoNotExist('RadioButtonSelected');
         await webAppList.clickOnRadioButtonByElementIndex();
         await webAppList.isSpinnerDone();
         await webAppList.untilIsVisible(webAppList.RadioButtonSelected);
+        let base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After row of type "Single" was selected`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
         await webAppList.clickOnRadioButtonByElementIndex();
         await webAppList.isSpinnerDone();
+        base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After row of type "Single" was suppose to be un-selected (it doesn't have the ability to be unselected)`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(2 * 1000);
     }
 
-    async function lineMenuSingleExist() {
+    async function lineMenuSingleExist(this: Context) {
         await elemntDoNotExist('RadioButtonSelected');
         await webAppList.clickOnRadioButtonByElementIndex();
         await webAppList.isSpinnerDone();
         await webAppList.untilIsVisible(webAppList.RadioButtonSelected);
+        const base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After row of type "Single" was selected`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
     }
 
-    async function lineMenuMultiExist() {
+    async function lineMenuMultiExist(this: Context) {
         await elemntDoNotExist('CheckboxSelected');
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
         await webAppList.untilIsVisible(webAppList.RowElementCheckBoxSelected);
+        const base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After row of type "Multi" was selected`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
     }
 
-    async function lineMenuMultiDisappear() {
+    async function lineMenuMultiDisappear(this: Context) {
         await elemntExist('CheckboxSelected');
+        let base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Line Menu should be visible`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
+        base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After selected line was un-selected, Line Menu should not be visible`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntDoNotExist('CheckboxSelected');
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(2 * 1000);
