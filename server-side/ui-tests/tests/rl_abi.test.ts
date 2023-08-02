@@ -529,7 +529,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 lists[listTitle].elements['Line Menu'] &&
                                 lists[listTitle].elements['Select All Checkbox']
                             ) {
-                                it('Line Menu - Disappear', async () => {
+                                it('Line Menu - Disappear', async function () {
                                     await lineMenuMultiDisappear.bind(this)();
                                 });
                             }
