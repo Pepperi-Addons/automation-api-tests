@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../pom';
 import { StoryBookPage } from '../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { ColorPicker } from '../pom/Pages/StorybookComponents/ColorPicker';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -14,22 +15,30 @@ export async function StorybookColorPickerTests() {
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let colorPicker: ColorPicker;
+    let allStories: WebElement[];
+    // let storiesIndex: number;
+    // let currentStory: WebElement | undefined;
 
-    describe('NGX_LIB POC Tests Suit', function () {
+    describe('Storybook "Color Picker" Tests Suit', function () {
+        this.retries(0);
+
+        before(async function () {
+            driver = await Browser.initiateChrome();
+            webAppHomePage = new WebAppHomePage(driver);
+            storyBookPage = new StoryBookPage(driver);
+            colorPicker = new ColorPicker(driver);
+            allStories = [];
+        });
+
+        after(async function () {
+            await driver.quit();
+        });
+
+        // afterEach(async function () {
+        //     await webAppHomePage.collectEndTestData(this);
+        // });
+
         describe('Color Picker Component Testing', () => {
-            this.retries(0);
-
-            before(async function () {
-                driver = await Browser.initiateChrome();
-                webAppHomePage = new WebAppHomePage(driver);
-                storyBookPage = new StoryBookPage(driver);
-                colorPicker = new ColorPicker(driver);
-            });
-
-            after(async function () {
-                await driver.quit();
-            });
-
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -136,6 +145,54 @@ export async function StorybookColorPickerTests() {
                     await colorPicker.okModal();
                 }
             });
+            // it(`5. Get All Color-Picker Stories`, async function () {
+            //     //5. test all stories
+            //     debugger
+            //     allStories = await colorPicker.getAllStories();
+            //     currentStory = allStories.shift();
+            // })
+            // it(`Test ${currentStory} Color-Picker Stories`, async function () {
+            //     const storyComponent = allStories[storiesIndex];
+            //     await storyComponent.click();
+            //     const isComponentModalFullyShown = await colorPicker.isModalFullyShown();
+            //     const story64ImageComponent = await driver.saveScreenshots();
+            //     addContext(this, {
+            //         title: `Story Modal As Presented In StoryBook`,
+            //         value: 'data:image/png;base64,' + story64ImageComponent,
+            //     });
+            //     expect(isComponentModalFullyShown).to.equal(true);
+            //     await colorPicker.okModal();
+            //     storiesIndex++;
+            // });
+        });
+        describe('Testing All Color-Picker Stories', () => {
+            afterEach(async function () {
+                await webAppHomePage.collectEndTestData(this);
+            });
+            // let allStories: WebElement[] = [];
+
+            before(async function () {
+                allStories = await colorPicker.getAllStories();
+            });
+            // it(`5. Get All Color-Picker Stories`, async function () {
+            //     debugger
+            //     allStories = await colorPicker.getAllStories();
+            // })
+            if (allStories) {
+                allStories.forEach(async (storyComponent) => {
+                    it(`Test ${await storyComponent.getText()} Color-Picker Story`, async function () {
+                        await storyComponent.click();
+                        const isComponentModalFullyShown = await colorPicker.isModalFullyShown();
+                        const story64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Story Modal As Presented In StoryBook`,
+                            value: 'data:image/png;base64,' + story64ImageComponent,
+                        });
+                        expect(isComponentModalFullyShown).to.equal(true);
+                        await colorPicker.okModal();
+                    });
+                });
+            }
         });
     });
 }

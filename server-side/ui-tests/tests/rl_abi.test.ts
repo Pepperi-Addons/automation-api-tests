@@ -2,7 +2,7 @@ import promised from 'chai-as-promised';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { Browser } from '../utilities/browser';
 import { WebAppLoginPage, WebAppHomePage, WebAppHeader, WebAppList } from '../pom';
-import { describe, it, afterEach, before, after } from 'mocha';
+import { describe, it, afterEach, before, after, Context } from 'mocha';
 import chai, { expect } from 'chai';
 import { ResourceListABI } from '../pom/addons/ResourceListABI';
 import { By } from 'selenium-webdriver';
@@ -372,7 +372,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 case '34. Accounts - Propagated Error':
                                     const errorMessage =
                                         "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files";
-                                    await listPickAndVerify(
+                                    await listPickAndVerify.bind(this)(
                                         list,
                                         expectedTitle,
                                         expectedNumOfResults,
@@ -381,29 +381,66 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                         errorMessage,
                                     );
                                     break;
-
+                                case '32. ReferenceAccount - 2 Views':
+                                    // https://pepperi.atlassian.net/browse/DI-24602
+                                    // fix-version: Resource List 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
+                                    if (email.includes('.stage') === false) {
+                                        const listDefaultView = lists[listTitle].views[0];
+                                        await listPickAndVerify.bind(this)(
+                                            list,
+                                            expectedTitle,
+                                            expectedNumOfResults,
+                                            listDefaultView,
+                                        );
+                                    }
+                                    break;
                                 default:
                                     const listDefaultView = lists[listTitle].views[0];
-                                    await listPickAndVerify(list, expectedTitle, expectedNumOfResults, listDefaultView);
+                                    await listPickAndVerify.bind(this)(
+                                        list,
+                                        expectedTitle,
+                                        expectedNumOfResults,
+                                        listDefaultView,
+                                    );
                                     break;
                             }
                             resourceListABI.pause(0.1 * 1000);
                             await resourceListABI.isSpinnerDone();
-                            const base64ImageBuild = await driver.saveScreenshots();
-                            addContext(this, {
-                                title: `Current List ABI`,
-                                value: 'data:image/png;base64,' + base64ImageBuild,
-                            });
+                            // const base64ImageBuild = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `Current List ABI`,
+                            //     value: 'data:image/png;base64,' + base64ImageBuild,
+                            // });
                         });
                         switch (listTitle) {
                             case '34. Accounts - Propagated Error':
                                 break;
 
+                            case '32. ReferenceAccount - 2 Views':
+                                // https://pepperi.atlassian.net/browse/DI-24602
+                                // fix-version: Resource List 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
+                                if (email.includes('.stage') === false) {
+                                    it('Validate Views', async function () {
+                                        const currentListExpectedViews = lists[listTitle].views;
+                                        const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
+                                        await validateViewsTitles.bind(this)(
+                                            currentListExpectedViews.length,
+                                            currentListExpectedViews,
+                                        );
+                                        await validateViewsListHeaders(
+                                            currentListExpectedViews.length,
+                                            currentListExpectedViews,
+                                            currentListExpectedHeadersPerView,
+                                        );
+                                    });
+                                }
+                                break;
+
                             default:
-                                it('Validate Views', async () => {
+                                it('Validate Views', async function () {
                                     const currentListExpectedViews = lists[listTitle].views;
                                     const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
-                                    await validateViewsTitles(
+                                    await validateViewsTitles.bind(this)(
                                         currentListExpectedViews.length,
                                         currentListExpectedViews,
                                     );
@@ -416,86 +453,91 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                 break;
                         }
 
-                        Object.keys(lists[listTitle].elements).forEach((element) => {
-                            const isDisplayed = lists[listTitle].elements[element];
-                            it(`${element} - ${isDisplayed ? 'DISPLAYED' : 'NOT Displayed'}`, async function () {
-                                switch (element) {
-                                    case 'Menu':
-                                        isDisplayed ? await elemntExist('Menu') : await elemntDoNotExist('Menu');
-                                        break;
-                                    case 'Search Input':
-                                        isDisplayed ? await elemntExist('Search') : await elemntDoNotExist('Search');
-                                        break;
-                                    case 'Smart Search':
-                                        isDisplayed
-                                            ? await elemntExist('SmartSearch')
-                                            : await elemntDoNotExist('SmartSearch');
-                                        break;
-                                    case 'Single Radio Button':
-                                        isDisplayed
-                                            ? await elemntExist('SingleRadioButton')
-                                            : await elemntDoNotExist('SingleRadioButton');
-                                        break;
-                                    case 'Select All Checkbox':
-                                        isDisplayed
-                                            ? await elemntExist('MultiCheckbox')
-                                            : await elemntDoNotExist('MultiCheckbox');
-                                        break;
-                                    case 'Pager':
-                                        isDisplayed ? await elemntExist('Pager') : await elemntDoNotExist('Pager');
-                                        break;
-                                    case 'Line Menu':
-                                        switch (listTitle) {
-                                            case '10. Accounts - Line Menu':
-                                            case '30. Items - Full - 2 Views':
-                                                await lineMenuSingleExist();
-                                                break;
+                        if (!email.includes('.stage') || listTitle !== '32. ReferenceAccount - 2 Views') {
+                            // DI-24602
+                            Object.keys(lists[listTitle].elements).forEach((element) => {
+                                const isDisplayed = lists[listTitle].elements[element];
+                                it(`${element} - ${isDisplayed ? 'DISPLAYED' : 'NOT Displayed'}`, async function () {
+                                    switch (element) {
+                                        case 'Menu':
+                                            isDisplayed ? await elemntExist('Menu') : await elemntDoNotExist('Menu');
+                                            break;
+                                        case 'Search Input':
+                                            isDisplayed
+                                                ? await elemntExist('Search')
+                                                : await elemntDoNotExist('Search');
+                                            break;
+                                        case 'Smart Search':
+                                            isDisplayed
+                                                ? await elemntExist('SmartSearch')
+                                                : await elemntDoNotExist('SmartSearch');
+                                            break;
+                                        case 'Single Radio Button':
+                                            isDisplayed
+                                                ? await elemntExist('SingleRadioButton')
+                                                : await elemntDoNotExist('SingleRadioButton');
+                                            break;
+                                        case 'Select All Checkbox':
+                                            isDisplayed
+                                                ? await elemntExist('MultiCheckbox')
+                                                : await elemntDoNotExist('MultiCheckbox');
+                                            break;
+                                        case 'Pager':
+                                            isDisplayed ? await elemntExist('Pager') : await elemntDoNotExist('Pager');
+                                            break;
+                                        case 'Line Menu':
+                                            switch (listTitle) {
+                                                case '10. Accounts - Line Menu':
+                                                case '30. Items - Full - 2 Views':
+                                                    await lineMenuSingleExist.bind(this)();
+                                                    break;
 
-                                            case '11. Items - Line Menu - Selection Type Multi':
-                                            case '29. Accounts - Full':
-                                            case '32. ReferenceAccount - 2 Views':
-                                            case '33. FiltersAccRef - 2 Views':
-                                                await lineMenuMultiExist();
-                                                break;
+                                                case '11. Items - Line Menu - Selection Type Multi':
+                                                case '29. Accounts - Full':
+                                                case '32. ReferenceAccount - 2 Views':
+                                                case '33. FiltersAccRef - 2 Views':
+                                                    await lineMenuMultiExist.bind(this)();
+                                                    break;
 
-                                            case '1. Items - Basic':
-                                            case '2. Accounts - Basic':
-                                            case '5. Accounts - Selection - Single':
-                                                await lineMenuSingleDoNotExist();
-                                                break;
+                                                case '1. Items - Basic':
+                                                case '2. Accounts - Basic':
+                                                case '5. Accounts - Selection - Single':
+                                                    await lineMenuSingleDoNotExist.bind(this)();
+                                                    break;
 
-                                            case '4. Accounts - Selection - Multi':
-                                            case '31. Accounts - Draw Grid Relation':
-                                                await lineMenuMultiDoNotExist();
-                                                break;
+                                                case '4. Accounts - Selection - Multi':
+                                                case '31. Accounts - Draw Grid Relation':
+                                                    await lineMenuMultiDoNotExist.bind(this)();
+                                                    break;
 
-                                            case '6. Accounts - Selection - None':
-                                                await webAppList.clickOnRowByIndex();
-                                                await webAppList.isSpinnerDone();
-                                                await elemntDoNotExist('LineMenu');
-                                                resourceListABI.pause(0.2 * 1000);
-                                                break;
+                                                case '6. Accounts - Selection - None':
+                                                    await webAppList.clickOnRowByIndex();
+                                                    await webAppList.isSpinnerDone();
+                                                    await elemntDoNotExist('LineMenu');
+                                                    resourceListABI.pause(0.2 * 1000);
+                                                    break;
 
-                                            default:
-                                                isDisplayed
-                                                    ? await elemntExist('LineMenu')
-                                                    : await elemntDoNotExist('LineMenu');
-                                                break;
-                                        }
-                                        break;
+                                                default:
+                                                    isDisplayed
+                                                        ? await elemntExist('LineMenu')
+                                                        : await elemntDoNotExist('LineMenu');
+                                                    break;
+                                            }
+                                            break;
 
-                                    default:
-                                        break;
-                                }
+                                        default:
+                                            break;
+                                    }
+                                });
                             });
-                        });
-                        if (
-                            lists[listTitle].elements['Line Menu'] &&
-                            lists[listTitle].elements['Select All Checkbox']
-                        ) {
-                            it('Line Menu - Disappear', async () => {
-                                await lineMenuMultiDisappear();
-                            });
+                            if (
+                                lists[listTitle].elements['Line Menu'] &&
+                                lists[listTitle].elements['Select All Checkbox']
+                            ) {
+                                it('Line Menu - Disappear', async () => {
+                                    await lineMenuMultiDisappear.bind(this)();
+                                });
+                            }
                         }
                         switch (listTitle) {
                             case '1. Items - Basic':
@@ -593,6 +635,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     });
 
     async function listPickAndVerify(
+        this: Context,
         listToSelect: string,
         expectedTitle: string,
         expectedNumOfResults: number,
@@ -606,6 +649,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             await resourceListABI.isSpinnerDone();
         }
         driver.sleep(1 * 1000);
+        let base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `List Selected from Dropdown`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await resourceListABI.clickElement('TestsAddon_openABI_button');
         driver.sleep(2.5 * 1000);
         await resourceListABI.isSpinnerDone();
@@ -635,6 +683,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         }
         const listAbiResultsNumber = await (await driver.findElement(resourceListABI.ListAbi_results_number)).getText();
         expect(Number(listAbiResultsNumber.trim())).to.equal(expectedNumOfResults);
+        base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Current List ABI`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
     }
 
     async function getSelector(
@@ -769,55 +822,95 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         }
     }
 
-    async function lineMenuMultiDoNotExist() {
+    async function lineMenuMultiDoNotExist(this: Context) {
         await elemntDoNotExist('CheckboxSelected');
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
         await webAppList.untilIsVisible(webAppList.RowElementCheckBoxSelected);
+        let base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After row of type "Multi" was selected`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
         await elemntDoNotExist('CheckboxSelected');
+        base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After row of type "Multi" was un-selected`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(2 * 1000);
     }
 
-    async function lineMenuSingleDoNotExist() {
+    async function lineMenuSingleDoNotExist(this: Context) {
         await elemntDoNotExist('RadioButtonSelected');
         await webAppList.clickOnRadioButtonByElementIndex();
         await webAppList.isSpinnerDone();
         await webAppList.untilIsVisible(webAppList.RadioButtonSelected);
+        let base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After row of type "Single" was selected`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
         await webAppList.clickOnRadioButtonByElementIndex();
         await webAppList.isSpinnerDone();
+        base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After row of type "Single" was suppose to be un-selected (it doesn't have the ability to be unselected)`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(2 * 1000);
     }
 
-    async function lineMenuSingleExist() {
+    async function lineMenuSingleExist(this: Context) {
         await elemntDoNotExist('RadioButtonSelected');
         await webAppList.clickOnRadioButtonByElementIndex();
         await webAppList.isSpinnerDone();
         await webAppList.untilIsVisible(webAppList.RadioButtonSelected);
+        const base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After row of type "Single" was selected`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
     }
 
-    async function lineMenuMultiExist() {
+    async function lineMenuMultiExist(this: Context) {
         await elemntDoNotExist('CheckboxSelected');
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
         await webAppList.untilIsVisible(webAppList.RowElementCheckBoxSelected);
+        const base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After row of type "Multi" was selected`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntExist('LineMenu');
         resourceListABI.pause(0.2 * 1000);
     }
 
-    async function lineMenuMultiDisappear() {
+    async function lineMenuMultiDisappear(this: Context) {
         await elemntExist('CheckboxSelected');
+        let base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Line Menu should be visible`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
+        base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After selected line was un-selected, Line Menu should not be visible`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         await elemntDoNotExist('CheckboxSelected');
         await elemntDoNotExist('LineMenu');
         resourceListABI.pause(2 * 1000);
@@ -845,9 +938,14 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         });
     }
 
-    async function validateViewsTitles(expectedNumOfViews: number, expectedViewsTitles: string[]) {
+    async function validateViewsTitles(this: Context, expectedNumOfViews: number, expectedViewsTitles: string[]) {
         await driver.click(resourceListABI.ListAbi_ViewsDropdown);
         await driver.untilIsVisible(resourceListABI.ListAbi_ViewsDropdownOptions_container);
+        const base64ImageBuild = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Views List Open`,
+            value: 'data:image/png;base64,' + base64ImageBuild,
+        });
         const views = await driver.findElements(resourceListABI.ListAbi_ViewsDropdownSingleOption_textContent);
         resourceListABI.pause(0.2 * 1000);
         expect(views.length).to.equal(expectedNumOfViews);
