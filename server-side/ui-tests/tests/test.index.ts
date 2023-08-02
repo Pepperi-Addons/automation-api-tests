@@ -41,6 +41,7 @@ import {
     PricingDataPrep,
     ResourceListAbiTests,
     InstallationsTest,
+    StorybookColorPickerTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -400,6 +401,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await PricingDataPrep(varPass, client);
         await PricingTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('StorybookColorPicker')) {
+        await StorybookColorPickerTests();
     }
 
     if (tests.includes('MockTest')) {
