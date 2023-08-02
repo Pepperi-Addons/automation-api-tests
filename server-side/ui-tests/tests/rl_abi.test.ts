@@ -381,7 +381,19 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                         errorMessage,
                                     );
                                     break;
-
+                                case '32. ReferenceAccount - 2 Views':
+                                    // https://pepperi.atlassian.net/browse/DI-24602
+                                    // fix-version: Resource List 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
+                                    if (email.includes('.stage') === false) {
+                                        const listDefaultView = lists[listTitle].views[0];
+                                        await listPickAndVerify.bind(this)(
+                                            list,
+                                            expectedTitle,
+                                            expectedNumOfResults,
+                                            listDefaultView,
+                                        );
+                                    }
+                                    break;
                                 default:
                                     const listDefaultView = lists[listTitle].views[0];
                                     await listPickAndVerify.bind(this)(
@@ -407,7 +419,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             case '32. ReferenceAccount - 2 Views':
                                 // https://pepperi.atlassian.net/browse/DI-24602
                                 // fix-version: Resource List 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
-                                if (!email.includes('.stage')) {
+                                if (email.includes('.stage') === false) {
                                     it('Validate Views', async function () {
                                         const currentListExpectedViews = lists[listTitle].views;
                                         const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
