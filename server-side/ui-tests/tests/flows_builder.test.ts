@@ -296,13 +296,16 @@ export async function FlowTests(email: string, password: string, client: Client)
                 const isDuplicateShown = await flowService.duplicateFlowByIndex(1, positiveFlow);
                 expect(isDuplicateShown).to.equal(true);
                 const duplicatedFlow: Flow = {
-                    Name: positiveFlow.Name + "_copy",
+                    Name: positiveFlow.Name + '_copy',
                     Params: positiveFlow.Params,
                     Steps: positiveFlow.Steps,
-                    Hidden: false
+                    Hidden: false,
                 };
                 await flowService.searchFlowByName(duplicatedFlow.Name);
-                const isRunFlowPresentedCorrectlyCopyFlow = await flowService.getToRunPageOfFlowByIndex(1, duplicatedFlow);
+                const isRunFlowPresentedCorrectlyCopyFlow = await flowService.getToRunPageOfFlowByIndex(
+                    1,
+                    duplicatedFlow,
+                );
                 expect(isRunFlowPresentedCorrectlyCopyFlow).to.equal(true);
                 await flowService.runFlow();
                 const runParamShownCopyFlow = await flowService.validateRunParam();
