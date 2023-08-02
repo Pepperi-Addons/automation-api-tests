@@ -483,7 +483,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                         case 'Line Menu':
                                             switch (listTitle) {
                                                 case '10. Accounts - Line Menu':
-                                                case '30. Items - Full - 2 Views':
+                                                case '30. Items View - Full with 2 Views':
                                                     await lineMenuSingleExist.bind(this)();
                                                     break;
 
@@ -604,7 +604,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             case '29. Accounts - Full':
                                 // click "Test" button in Menu and check that "Hello World" appear in search input and search response
                                 break;
-                            case '30. Items - Full - 2 Views':
+                            case '30. Items View - Full with 2 Views':
                                 break;
                             case '31. Accounts - Draw Grid Relation':
                                 // DI-22735
