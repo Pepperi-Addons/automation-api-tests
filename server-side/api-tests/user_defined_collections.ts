@@ -271,7 +271,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     Name: 'str',
                     Mandatory: true,
                     Type: 'String',
-                    OptionalValues: ['a', 'b', 'c']
+                    OptionalValues: ['a', 'b', 'c'],
                 };
                 const fieldsArray = [fieldStr];
                 const response = await udcService.createUDCWithFields(
@@ -411,12 +411,12 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             });
             it('Negative Test: trying to upsert Without The Mandatory Field', async () => {
                 const valueToPost = {
-                    "str": 115
+                    str: 115,
                 };
                 try {
                     await udcService.postDocument(mandatoryScheme, { valueToPost });
                 } catch (error) {
-                    expect((error as any).message).to.include("Failed due to exception: str_mand is required");
+                    expect((error as any).message).to.include('Failed due to exception: str_mand is required');
                 }
             });
             it('Positive Test: adding basic data to just created UDC - all basic types', async () => {
@@ -1131,12 +1131,12 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                             collectionName === basicOnlineCollectionName
                                 ? 'str1,int1,dou1,Key'
                                 : collectionName === accResourceCollectionName
-                                    ? 'myAcc,Key'
-                                    : collectionName === basicArrayCollectionName
-                                        ? 'Key,dou2,int2,str2'
-                                        : collectionName === baseedOnSchemeOnlyCollectionName
-                                            ? 'basedOn,Key'
-                                            : 'str,bool,int,dou,Key',
+                                ? 'myAcc,Key'
+                                : collectionName === basicArrayCollectionName
+                                ? 'Key,dou2,int2,str2'
+                                : collectionName === baseedOnSchemeOnlyCollectionName
+                                ? 'basedOn,Key'
+                                : 'str,bool,int,dou,Key',
                         Delimiter: ',',
                     };
                     console.log(`Running The Test On:${collectionName},fields:${bodyToSend.Fields}`);
@@ -1513,8 +1513,8 @@ async function getAllUDCsForDelete(udcService) {
             doc.Name.includes('SchemeBasedOnOnlySchemeTesting') ||
             doc.Name.includes('AccResource') ||
             doc.Name.includes('KeyBasicTesting') ||
-            doc.Name.includes('OptionalTesting')||
-            doc.Name.includes('MandTesting')
+            doc.Name.includes('OptionalTesting') ||
+            doc.Name.includes('MandTesting'),
         // ||(doc.Name.includes('DimxOverwrite') && !doc.Name.includes('DimxOverwriteinphssnloizjvgc')), // to no delete the collection of DI-23772
     );
     return toHideCollections;
