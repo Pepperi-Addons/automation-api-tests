@@ -104,6 +104,7 @@ export async function FlowTests(email: string, password: string, client: Client,
 
     const testData = {
         'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''],
+        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
@@ -253,7 +254,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                 //->save
                 await flowService.saveFlow();
             });
-            it('5. Get All Flows By API And See We Got Only One Which Is Setup Correcly', async function () {
+            it('5. Get All Flows By API And See We Got Only One Which Is Setup Correctly', async function () {
                 const flowService = new FlowService(driver);
                 //->get flow via api
                 const newFlow = await flowService.getFlowByKeyViaAPI(generalService, flowKey);
@@ -346,7 +347,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                 const allFlows = flowResponse.Body;
                 expect(allFlows.length).to.equal(1);
             });
-            it('Data Cleansing: 1. script', async function () {
+            it('Data Cleansing: 1. Scripts', async function () {
                 //delete the script
                 let bodyForSctips = { Keys: [`${firstScriptUUID}`] };
                 let deleteScriptResponse = await generalService.fetchStatus(
@@ -371,7 +372,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                 expect(deleteScriptResponse.Status).to.equal(200);
                 expect(deleteScriptResponse.Body[0].Key).to.equal(secondScriptUUID);
             });
-            it('Data Cleansing: 2. flows', async function () {
+            it('Data Cleansing: 2. Flows', async function () {
                 //delete the script
                 const flowService = new FlowService(driver);
                 const flowResponse = await flowService.getAllFlowsViaAPI(generalService);
