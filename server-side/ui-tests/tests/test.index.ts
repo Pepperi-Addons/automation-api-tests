@@ -1350,7 +1350,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     );
                     throw new Error(`${errorString}`);
                 }
-                // debugger;
+                debugger;
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
                     prodUser,
