@@ -7,6 +7,7 @@ import GeneralService from '../../services/general.service';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { Flow, FlowParam, FlowService, FlowStep } from '../pom/addons/flow.service';
 import { ScriptEditor } from '../pom/addons/ScriptPicker';
+import jwt_decode from 'jwt-decode';
 
 chai.use(promised);
 
@@ -20,6 +21,8 @@ export async function FlowTests(email: string, password: string, client: Client,
     } else {
         varKey = varPass.body.varKeyPro;
     }
+    const parsedToken = jwt_decode(generalService.papiClient['options'].token);
+    const userName = parsedToken.email;
     let driver: Browser;
     let firstScriptUUID = '';
     let secondScriptUUID = '';
@@ -293,7 +296,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                 expect(logsDataPresented.number).to.equal(6);
                 for (let index = 0; index < Object.values(logsDataPresented.mails).length; index++) {
                     const mail = Object.values(logsDataPresented.mails)[index];
-                    expect(mail).to.equal('FlowBuilderProd@pepperitest.com');
+                    expect(mail).to.equal(userName);
                 }
                 for (let index = 0; index < Object.values(logsDataPresented.levels).length; index++) {
                     const level = Object.values(logsDataPresented.levels)[index];
