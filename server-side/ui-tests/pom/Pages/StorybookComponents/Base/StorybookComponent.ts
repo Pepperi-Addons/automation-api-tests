@@ -1,38 +1,50 @@
 import { By } from 'selenium-webdriver';
 import { AddonPage } from '../../..';
+import { expect } from 'chai';
 
 export class StorybookComponent extends AddonPage {
-    public Component: By = By.xpath(`//div[contains(@id,'color-picker')]//div[contains(@id,'color-picker')]`);
-    public ComponentLabel: By = By.xpath(`(//div[contains(@id,'color-picker')]//pep-field-title//mat-label)[1]`);
-    public ComponentLabelTxtAlign: By = By.xpath(`//div[contains(@id,'color-picker')]//pep-field-title//div`);
     public IframeElement: By = By.xpath(`//iframe`);
+    public MainExample_content: By = By.xpath(`//div[contains(@id,'#placeholder')]//div[contains(@id,'#placeholder')]`);
+    public MainHeader: By = By.xpath(`//h1[contains(@class,'title')]`);
+    public InputsRow: By = By.xpath(
+        `//div[contains(@class,"css")]//table//tbody//span[text()="inputs"]/ancestor::tr/following-sibling::tr`,
+    );
+    public InputTitle: By = By.xpath(`${this.InputsRow.value}/td[1]/span`);
 
-    public async isComponentFound(): Promise<boolean> {
-        await this.browser.switchTo(this.IframeElement);
+    public async getMainExampleContentSelecor(componentText: string): Promise<By> {
+        return By.xpath(`//div[contains(@id,'anchor')]//div[contains(@id,'${componentText}')]`);
+    }
+
+    public async getInputRowSelectorByName(inputTitle: string): Promise<By> {
+        return By.xpath(`${this.InputTitle.value}[text()='${inputTitle}']`);
+    }
+
+    public async isCorrectMainExampleShown(componentText: string): Promise<boolean> {
         return (
-            (await this.browser.isElementLocated(this.Component)) &&
-            (await this.browser.isElementVisible(this.Component))
+            (await this.browser.isElementLocated(await this.getMainExampleContentSelecor(componentText))) &&
+            (await this.browser.isElementVisible(await this.getMainExampleContentSelecor(componentText)))
         );
     }
 
-    public async openComonentModal(): Promise<void> {
-        await this.browser.click(this.Component);
-        this.browser.sleep(4000);
+    public async getHeaderText(): Promise<string> {
+        const header = await this.browser.findElement(this.MainHeader);
+        return (await header.getText()).trim();
     }
 
-    public async getLabel(): Promise<string> {
-        const label = await this.browser.findElement(this.ComponentLabel);
-        return await label.getText();
+    public async isComponentFound(componentString: string, expectedHeader: string): Promise<void> {
+        await this.browser.switchTo(this.IframeElement);
+        const header = await this.getHeaderText();
+        const correctMainExample = await this.isCorrectMainExampleShown(componentString);
+        expect(header).equals(expectedHeader);
+        expect(correctMainExample).to.be.true;
     }
 
-    public async getComponentTxtAlignment() {
-        const txtAlignComp = await this.browser.findElement(this.ComponentLabelTxtAlign);
-        const txtAlignVal = (await txtAlignComp.getAttribute('style')).split(':')[1];
-        return txtAlignVal;
-    }
-
-    public async getAllStories() {
-        const allStories = await this.browser.findElements(this.Component);
-        return allStories.slice(1);
+    public async getInputsTitles(): Promise<string[]> {
+        const inputTitles: string[] = [];
+        const inputTitlesElements = await this.browser.findElements(this.InputTitle);
+        inputTitlesElements.forEach(async (element) => {
+            inputTitles.push(await element.getText());
+        });
+        return inputTitles;
     }
 }

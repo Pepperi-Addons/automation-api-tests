@@ -105,7 +105,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                 if (itemList.length === 5) {
                     for (let i = 0; i < itemList.length; i++) {
                         if (
-                            itemList[i].MainCategoryID.toLowerCase().trim() === 'NOT uom item' ||
+                            itemList[i].MainCategoryID.toLowerCase().trim() === 'NOT uom item'.toLowerCase() ||
                             itemList[i].MainCategoryID.toLowerCase().trim() === 'uom item'
                         ) {
                             numOfGoodItems++;
@@ -187,7 +187,9 @@ export async function UomTests(email: string, password: string, varPass: string,
                 //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
                 //3.2. add fields to UI control of ATD
                 const uom = new Uom(driver);
+                // debugger
                 await uom.configUomATD();
+                // debugger
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.returnToHomePage();
                 const webAppHeader = new WebAppHeader(driver);
@@ -255,6 +257,7 @@ export async function UomTests(email: string, password: string, varPass: string,
             });
             describe('Data Cleansing', () => {
                 it('Delete test ATD from dist + home screen using UI', async function () {
+                    debugger;
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.loginWithImage(email, password);
                     const webAppHeader = new WebAppHeader(driver);

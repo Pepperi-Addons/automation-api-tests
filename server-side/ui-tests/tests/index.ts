@@ -24,6 +24,7 @@ import { PricingDataPrep } from './pricing_data.test';
 import { ResourceListAbiTests } from './rl_abi.test';
 import { InstallationsTest } from './installations.test';
 import { StorybookColorPickerTests } from './storybook_color_picker.test';
+import { StorybookIconTests } from './storybook_icon.test';
 
 export {
     LoginTests,
@@ -52,4 +53,5 @@ export {
     ResourceListAbiTests,
     InstallationsTest,
     StorybookColorPickerTests,
+    StorybookIconTests,
 };
