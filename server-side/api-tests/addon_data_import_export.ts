@@ -325,7 +325,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `{ Type: 'String' }
                                 Column1: {
                                     Type: 'Array',
                                     Items: {
@@ -734,7 +734,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `${relation
                                 Column1: {
                                     Type: 'Array',
                                     Items: {
@@ -1069,7 +1069,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `${relation
                                 Column1: {
                                     Type: 'Array',
                                     Items: {
@@ -1182,7 +1182,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `${relation
                                 Column1: {
                                     Type: 'Array',
                                     Items: {
@@ -1366,7 +1366,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Fields: {
                                         Name: { Type: 'String' },
                                         Description: { Type: 'String' },
-                                        Key: { Type: 'String' },
+                                        //Key: `${relation
                                         Column1: {
                                             Type: 'Array',
                                             Items: {
@@ -1914,7 +1914,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Fields: {
                                         Name: { Type: 'String' },
                                         Description: { Type: 'String' },
-                                        Key: { Type: 'String' },
+                                        //Key: `${relation
                                         Column1: {
                                             Type: 'Array',
                                             Items: {
@@ -2150,7 +2150,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `${relation
                                 Column1: {
                                     Type: 'Array',
                                     Items: {
@@ -2371,7 +2371,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Fields: {
                                     Name: { Type: 'String' },
                                     Description: { Type: 'String' },
-                                    Key: { Type: 'String' },
+                                    //Key: `${relation
                                     Column1: {
                                         Type: 'Array',
                                         Items: {
@@ -2794,7 +2794,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Fields: {
                                     Name: { Type: 'String' },
                                     Description: { Type: 'String' },
-                                    Key: { Type: 'String' },
+                                    //Key: `${relation
                                 },
                             });
                             expect(purgedSchema).to.have.property('Done').that.is.true;
@@ -3013,7 +3013,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Fields: {
                                         Name: { Type: 'String' },
                                         Description: { Type: 'String' },
-                                        Key: { Type: 'String' },
+                                        //Key: `${relation
                                         Column1: {
                                             Type: 'Array',
                                             Items: {
@@ -3381,7 +3381,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 //             Fields: {
                 //                 Name: { Type: 'String' },
                 //                 Description: { Type: 'String' },
-                //                 Key: { Type: 'String' },
+                //                 //Key: `${relation
                 //                 Column1: {
                 //                     Type: 'Array',
                 //                     Items: {
@@ -3638,7 +3638,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `${relation
                                 Column1: {
                                     Type: 'Array',
                                     Items: {
@@ -3788,7 +3788,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `${relation
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
@@ -4290,7 +4290,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //                 Fields: {
             //                     Name: { Type: 'String' },
             //                     Description: { Type: 'String' },
-            //                     Key: { Type: 'String' },
+            //                     //Key: `${relation
             //                     Column1: {
             //                         Type: 'Array',
             //                         Items: {
@@ -4440,7 +4440,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //                 Fields: {
             //                     Name: { Type: 'String' },
             //                     Description: { Type: 'String' },
-            //                     Key: { Type: 'String' },
+            //                     //Key: `${relation
             //                 },
             //             });
             //             expect(purgedSchema).to.have.property('Done').that.is.true;
@@ -4898,7 +4898,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Fields: {
                                     Name: { Type: 'String' },
                                     Description: { Type: 'String' },
-                                    Key: { Type: 'String' },
+                                    //Key: `${relation
                                     Column1: {
                                         Type: 'Array',
                                         Items: {
