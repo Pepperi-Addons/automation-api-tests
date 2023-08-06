@@ -69,12 +69,15 @@ export async function StorybookCheckboxTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(checkboxInputsTitles).to.eql([
-                    'rowSpan',
                     'label',
-                    'src',
+                    'value',
+                    'additionalValue',
                     'disabled',
                     'mandatory',
+                    'renderTitle',
                     'showTitle',
+                    'type',
+                    'visible',
                     'xAlignment',
                 ]);
                 driver.sleep(5 * 1000);

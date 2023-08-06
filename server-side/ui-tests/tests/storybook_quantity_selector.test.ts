@@ -69,12 +69,16 @@ export async function StorybookQuantitySelectorTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(quantitySelectorInputsTitles).to.eql([
-                    'rowSpan',
                     'label',
-                    'src',
+                    'value',
+                    'allowDecimal',
                     'disabled',
                     'mandatory',
+                    'readonly',
                     'showTitle',
+                    'styleType',
+                    'textColor',
+                    'visible',
                     'xAlignment',
                 ]);
                 driver.sleep(5 * 1000);

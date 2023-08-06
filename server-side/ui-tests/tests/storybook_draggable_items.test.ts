@@ -69,13 +69,13 @@ export async function StorybookDraggableItemsTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(draggableItemsInputsTitles).to.eql([
-                    'rowSpan',
-                    'label',
-                    'src',
-                    'disabled',
-                    'mandatory',
-                    'showTitle',
-                    'xAlignment',
+                    'containerId',
+                    'dropAreaIds',
+                    'items',
+                    'showSearch',
+                    'title',
+                    'titleSizeType',
+                    'titleType',
                 ]);
                 driver.sleep(5 * 1000);
             });

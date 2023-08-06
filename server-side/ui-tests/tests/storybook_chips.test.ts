@@ -69,12 +69,18 @@ export async function StorybookChipsTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(chipsInputsTitles).to.eql([
-                    'rowSpan',
                     'label',
-                    'src',
+                    'chips',
+                    'classNames',
                     'disabled',
+                    'inline',
                     'mandatory',
+                    'orientation',
+                    'placeholder',
+                    'renderTitle',
                     'showTitle',
+                    'styleType',
+                    'type',
                     'xAlignment',
                 ]);
                 driver.sleep(5 * 1000);

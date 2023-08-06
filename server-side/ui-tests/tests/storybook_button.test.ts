@@ -69,13 +69,15 @@ export async function StorybookButtonTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(buttonInputsTitles).to.eql([
-                    'rowSpan',
-                    'label',
-                    'src',
+                    'value',
+                    'classNames',
                     'disabled',
-                    'mandatory',
-                    'showTitle',
-                    'xAlignment',
+                    'iconName',
+                    'iconPosition',
+                    'sizeType',
+                    'styleStateType',
+                    'styleType',
+                    'visible',
                 ]);
                 driver.sleep(5 * 1000);
             });

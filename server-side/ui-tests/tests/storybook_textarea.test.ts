@@ -71,10 +71,13 @@ export async function StorybookTextareaTests() {
                 expect(textareaInputsTitles).to.eql([
                     'rowSpan',
                     'label',
-                    'src',
+                    'value',
                     'disabled',
                     'mandatory',
+                    'maxFieldCharacters',
                     'showTitle',
+                    'textColor',
+                    'visible',
                     'xAlignment',
                 ]);
                 driver.sleep(5 * 1000);

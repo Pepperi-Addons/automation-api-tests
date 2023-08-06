@@ -70,10 +70,11 @@ export async function StorybookSignatureTests() {
                 });
                 expect(signatureInputsTitles).to.eql([
                     'rowSpan',
-                    'label',
                     'src',
+                    'label',
                     'disabled',
                     'mandatory',
+                    'readonly',
                     'showTitle',
                     'xAlignment',
                 ]);

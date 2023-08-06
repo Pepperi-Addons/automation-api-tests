@@ -69,12 +69,12 @@ export async function StorybookColorPickerTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(colorPickerInputsTitles).to.eql([
-                    'rowSpan',
                     'label',
-                    'src',
                     'disabled',
-                    'mandatory',
+                    'showAAComplient',
                     'showTitle',
+                    'type',
+                    'value',
                     'xAlignment',
                 ]);
                 driver.sleep(5 * 1000);

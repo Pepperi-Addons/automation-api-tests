@@ -71,9 +71,9 @@ export async function StorybookImageFilmstripTests() {
                 expect(imageFilmstripInputsTitles).to.eql([
                     'rowSpan',
                     'label',
-                    'src',
-                    'disabled',
-                    'mandatory',
+                    'value',
+                    'renderTitle',
+                    'showThumbnails',
                     'showTitle',
                     'xAlignment',
                 ]);
