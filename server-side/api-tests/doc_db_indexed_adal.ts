@@ -2514,7 +2514,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
         //debugger;
         await truncateTestTableLast();
     }
-    
+
     //truncate table
     async function truncateTestTableLast() {
         const res6 = await generalService.fetchStatus(
@@ -2565,10 +2565,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             )
             .then((res) => res.Body);
         //debugger;
-        if (
-            logcash.getFromElasticTable4[0] == undefined
-
-        ) {
+        if (logcash.getFromElasticTable4[0] == undefined) {
             logcash.getFromElasticTable4Status = true;
         } else {
             logcash.getFromElasticTable4Status = false;
@@ -2579,25 +2576,20 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
     }
     async function getDataFromDinamoLast() {
         logcash.getDataFromDinamoLast = await generalService
-            .fetchStatus(
-                baseURL + '/addons/data/search/' + whaitOwnerUUID + '/' + logcash.createSchemaDI24110.Name,
-                {
-                    method: 'POST',
-                    headers: {
-                        Authorization: 'Bearer ' + token,
-                        //'X-Pepperi-OwnerID': addonUUID,
-                        //'X-Pepperi-SecretKey': logcash.secretKey,
-                    },
-                    body: JSON.stringify({
-                        PageSize: 10,
-                    }),
+            .fetchStatus(baseURL + '/addons/data/search/' + whaitOwnerUUID + '/' + logcash.createSchemaDI24110.Name, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    //'X-Pepperi-OwnerID': addonUUID,
+                    //'X-Pepperi-SecretKey': logcash.secretKey,
                 },
-            )
+                body: JSON.stringify({
+                    PageSize: 10,
+                }),
+            })
             .then((res) => res.Body);
         //debugger;
-        if (
-            logcash.getDataFromDinamoLast.Objects[0] == undefined
-        ) {
+        if (logcash.getDataFromDinamoLast.Objects[0] == undefined) {
             logcash.getDataFromDinamoLastStatus = true;
         } else {
             logcash.getDataFromDinamoLastStatus = false;
@@ -2606,7 +2598,6 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
         //debugger;
         await dropTestTableLast();
     }
-
 
     async function dropTestTableLast() {
         const res5 = await generalService.fetchStatus(
