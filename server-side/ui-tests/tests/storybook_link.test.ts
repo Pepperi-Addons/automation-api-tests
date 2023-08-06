@@ -69,12 +69,17 @@ export async function StorybookLinkTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(linkInputsTitles).to.eql([
-                    'rowSpan',
                     'label',
-                    'src',
+                    'value',
+                    'displayValue',
                     'disabled',
                     'mandatory',
+                    'maxFieldCharacters',
+                    'renderError',
+                    'renderSymbol',
+                    'renderTitle',
                     'showTitle',
+                    'textColor',
                     'xAlignment',
                 ]);
                 driver.sleep(5 * 1000);

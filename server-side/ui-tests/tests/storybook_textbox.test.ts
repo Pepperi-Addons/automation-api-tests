@@ -69,12 +69,19 @@ export async function StorybookTextboxTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(textboxInputsTitles).to.eql([
-                    'rowSpan',
                     'label',
-                    'src',
+                    'value',
                     'disabled',
                     'mandatory',
+                    'maxFieldCharacters',
+                    'regex',
+                    'regexError',
+                    'renderError',
+                    'renderSymbol',
+                    'renderTitle',
                     'showTitle',
+                    'textColor',
+                    'type',
                     'xAlignment',
                 ]);
                 driver.sleep(5 * 1000);

@@ -69,12 +69,15 @@ export async function StorybookRichHtmlTextareaTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(richHtmlTextareaInputsTitles).to.eql([
-                    'rowSpan',
                     'label',
-                    'src',
+                    'rowSpan',
+                    'value',
                     'disabled',
+                    'inlineMode',
                     'mandatory',
+                    'maxFieldCharacters',
                     'showTitle',
+                    'visible',
                     'xAlignment',
                 ]);
                 driver.sleep(5 * 1000);

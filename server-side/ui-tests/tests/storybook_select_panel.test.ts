@@ -69,11 +69,14 @@ export async function StorybookSelectPanelTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(selectPanelInputsTitles).to.eql([
-                    'rowSpan',
                     'label',
-                    'src',
+                    'value',
+                    'options',
+                    'isMultiSelect',
+                    'classNames',
                     'disabled',
                     'mandatory',
+                    'numOfCol',
                     'showTitle',
                     'xAlignment',
                 ]);

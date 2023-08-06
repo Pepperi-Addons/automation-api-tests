@@ -69,12 +69,14 @@ export async function StorybookSelectTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(selectInputsTitles).to.eql([
-                    'rowSpan',
                     'label',
-                    'src',
+                    'options',
                     'disabled',
                     'mandatory',
+                    'readonly',
                     'showTitle',
+                    'type',
+                    'value',
                     'xAlignment',
                 ]);
                 driver.sleep(5 * 1000);

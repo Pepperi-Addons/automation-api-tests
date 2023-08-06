@@ -69,12 +69,16 @@ export async function StorybookDateTimeTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(dateTimeInputsTitles).to.eql([
-                    'rowSpan',
                     'label',
-                    'src',
+                    'value',
                     'disabled',
                     'mandatory',
+                    'renderError',
+                    'renderSymbol',
+                    'renderTitle',
                     'showTitle',
+                    'textColor',
+                    'type',
                     'xAlignment',
                 ]);
                 driver.sleep(5 * 1000);

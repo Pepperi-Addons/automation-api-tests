@@ -69,13 +69,15 @@ export async function StorybookMenuTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(menuInputsTitles).to.eql([
-                    'rowSpan',
-                    'label',
-                    'src',
+                    'iconName',
+                    'items',
+                    'classNames',
                     'disabled',
-                    'mandatory',
-                    'showTitle',
-                    'xAlignment',
+                    'selectedItem',
+                    'sizeType',
+                    'styleType',
+                    'text',
+                    'type',
                 ]);
                 driver.sleep(5 * 1000);
             });

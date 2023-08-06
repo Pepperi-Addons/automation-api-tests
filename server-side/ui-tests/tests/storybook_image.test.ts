@@ -70,9 +70,9 @@ export async function StorybookImageTests() {
                 });
                 expect(imageInputsTitles).to.eql([
                     'rowSpan',
-                    'label',
                     'src',
                     'disabled',
+                    'label',
                     'mandatory',
                     'showTitle',
                     'xAlignment',

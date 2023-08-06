@@ -69,13 +69,13 @@ export async function StorybookSliderTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(sliderInputsTitles).to.eql([
-                    'rowSpan',
                     'label',
-                    'src',
+                    'value',
+                    'hint',
+                    'minValue',
+                    'maxValue',
                     'disabled',
-                    'mandatory',
-                    'showTitle',
-                    'xAlignment',
+                    'step',
                 ]);
                 driver.sleep(5 * 1000);
             });

@@ -68,15 +68,7 @@ export async function StorybookSeparatorTests() {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(separatorInputsTitles).to.eql([
-                    'rowSpan',
-                    'label',
-                    'src',
-                    'disabled',
-                    'mandatory',
-                    'showTitle',
-                    'xAlignment',
-                ]);
+                expect(separatorInputsTitles).to.eql(['label', 'layoutType', 'visible', 'xAlignment']);
                 driver.sleep(5 * 1000);
             });
         });

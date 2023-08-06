@@ -68,15 +68,7 @@ export async function StorybookSkeletonLoaderTests() {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(skeletonLoaderInputsTitles).to.eql([
-                    'rowSpan',
-                    'label',
-                    'src',
-                    'disabled',
-                    'mandatory',
-                    'showTitle',
-                    'xAlignment',
-                ]);
+                expect(skeletonLoaderInputsTitles).to.eql(['lastRowOffset', 'rowHeightType', 'rowsNumber']);
                 driver.sleep(5 * 1000);
             });
         });
