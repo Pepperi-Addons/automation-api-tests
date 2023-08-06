@@ -114,7 +114,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
     //#regression Upgrade visit flow dependencies
 
     const testData = {
-        // VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
+        VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
         // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], // PAPI
         // 'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.26'], // CPAPI
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.5'], // CPAS

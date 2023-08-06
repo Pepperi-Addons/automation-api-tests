@@ -335,6 +335,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await slugs.clickTab('Mapping_Tab');
                     await webAppHomePage.isSpinnerDone();
                     await slugs.waitTillVisible(slugs.MappingTab_RepCard_InnerListOfMappedSlugs, 15000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Slug Mapped`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     const slugNameAtMappedSlugsSmallDisplayInRepCard = await driver.findElement(
                         slugs.getSelectorOfMappedSlugInRepCardSmallDisplayByText(slug_path),
                         10000,
@@ -520,14 +525,33 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.clickElement('VisitFlow_StepButton_EndVisit');
                     await visitFlow.isSpinnerDone();
                     // await visitFlow.click(visitFlow.HtmlBody);
-                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
                     visitFlow.pause(0.5 * 1000);
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `End Visit Step Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    await visitFlow.click(visitFlow.HtmlBody);
+                    visitFlow.pause(1 * 1000);
                     // await visitFlow.insertTextToInputElement(
                     //     `Automated test (${randomString}) finished Visit`,
                     //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
                     // );
                     // visitFlow.pause(0.5 * 1000);
-                    await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    if (email.startsWith('visit.flow.eu')) {
+                        await visitFlow.waitTillVisible(
+                            visitFlow.VisitFlowMainActivity_FormPage_Header_SubmitButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    } else {
+                        await visitFlow.waitTillVisible(
+                            visitFlow.VisitFlowMainActivity_FormPage_Header_DoneButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_DoneButton');
+                    }
                     // await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
                     // await visitFlow.waitTillVisible(
                     //     visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
@@ -655,8 +679,18 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.clickElement('VisitFlow_GroupButton_Start');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_StartVisit, 15000);
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Start Group Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.clickElement('VisitFlow_StepButton_StartVisit');
                     await visitFlow.isSpinnerDone();
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Start Visit Step Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.insertTextToInputElement(
@@ -677,6 +711,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Start Finished`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
                 it('Checking off "Survey"', async function () {
                     // debugger
@@ -703,15 +742,32 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.clickElement('VisitFlow_StepButton_EndVisit');
                     await visitFlow.isSpinnerDone();
-                    // await visitFlow.click(visitFlow.HtmlBody);
-                    // await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
-                    // visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `End Step at Survey Visit Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
+                    visitFlow.pause(0.5 * 1000);
+                    await visitFlow.click(visitFlow.HtmlBody);
                     // await visitFlow.insertTextToInputElement(
                     //     'Automated test finished Visit',
                     //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
                     // );
-                    visitFlow.pause(0.5 * 1000);
-                    await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    visitFlow.pause(1 * 1000);
+                    if (email.includes('.eu@')) {
+                        await visitFlow.waitTillVisible(
+                            visitFlow.VisitFlowMainActivity_FormPage_Header_SubmitButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    } else {
+                        await visitFlow.waitTillVisible(
+                            visitFlow.VisitFlowMainActivity_FormPage_Header_DoneButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_DoneButton');
+                    }
                     // await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
                     // await visitFlow.waitTillVisible(
                     //     visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
@@ -730,6 +786,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Survey Visit Finished`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
                 it('Deleting Activities', async function () {
                     await webAppHeader.goHome();
@@ -931,7 +992,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlowGroupsDocuments.forEach(async (visitFlowGroupsDocument) => {
                         await udcService.hideObjectInACollection('VisitFlowGroups', visitFlowGroupsDocument.Key);
                     });
-                    driver.sleep(2.5 * 1000);
+                    driver.sleep(5 * 1000);
                     visitFlowGroupsDocuments = await udcService.getDocuments('VisitFlowGroups', {
                         where: 'Title like "%Auto%"',
                     });
@@ -944,7 +1005,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlowsDocuments.forEach(async (visitFlowsDocument) => {
                         await udcService.hideObjectInACollection('VisitFlows', visitFlowsDocument.Key);
                     });
-                    driver.sleep(2.5 * 1000);
+                    driver.sleep(5 * 1000);
                     visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
                         where: 'Name like "Auto%"',
                     });
@@ -957,7 +1018,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlowsDocuments.forEach(async (visitFlowsDocument) => {
                         await udcService.hideObjectInACollection('VisitFlows', visitFlowsDocument.Key);
                     });
-                    driver.sleep(2.5 * 1000);
+                    driver.sleep(5 * 1000);
                     visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
                         where: 'Name="MockVisit"',
                     });
