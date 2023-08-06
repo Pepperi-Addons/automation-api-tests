@@ -1,6 +1,6 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
-import chai from 'chai';
+import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { WebAppHomePage } from '../pom';
 import { StoryBookPage } from '../pom/Pages/StoryBookPage';
@@ -15,7 +15,7 @@ export async function StorybookIconTests() {
     let storyBookPage: StoryBookPage;
     let icon: Icon;
 
-    describe('Storybook "Color Picker" Tests Suite', function () {
+    describe('Storybook "Icon" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
@@ -33,7 +33,7 @@ export async function StorybookIconTests() {
         //     await webAppHomePage.collectEndTestData(this);
         // });
 
-        describe('Icon Component Testing', () => {
+        describe('* Icon * Component Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -55,7 +55,7 @@ export async function StorybookIconTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter Icon Component StoryBook`, async function () {
+            it(`Enter ** Icon ** Component StoryBook`, async function () {
                 await storyBookPage.chooseComponent('icon');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -63,8 +63,7 @@ export async function StorybookIconTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Test Icon Component`, async function () {
-                // await driver.switchTo(icon.IframeElement);
+            it(`Overview Test of ** Icon ** Component`, async function () {
                 await icon.doesIconComponentFound();
                 const iconInputsTitles = await icon.getInputsTitles();
                 console.info('iconInputsTitles:', JSON.stringify(iconInputsTitles, null, 2));
@@ -73,6 +72,7 @@ export async function StorybookIconTests() {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
+                expect(iconInputsTitles).to.eql(['name', 'fill', 'spin']);
                 driver.sleep(5 * 1000);
             });
         });

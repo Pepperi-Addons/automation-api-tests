@@ -43,6 +43,28 @@ import {
     InstallationsTest,
     StorybookColorPickerTests,
     StorybookIconTests,
+    StorybookAttachmentTests,
+    StorybookButtonTests,
+    StorybookCheckboxTests,
+    StorybookChipsTests,
+    StorybookDateTimeTests,
+    StorybookDraggableItemsTests,
+    StorybookGroupButtonsTests,
+    StorybookImageFilmstripTests,
+    StorybookImageTests,
+    StorybookLinkTests,
+    StorybookMenuTests,
+    StorybookQuantitySelectorTests,
+    StorybookRichHtmlTextareaTests,
+    StorybookSearchTests,
+    StorybookSelectTests,
+    StorybookSelectPanelTests,
+    StorybookSeparatorTests,
+    StorybookSignatureTests,
+    StorybookSkeletonLoaderTests,
+    StorybookSliderTests,
+    StorybookTextareaTests,
+    StorybookTextboxTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -410,12 +432,100 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
+    if (tests.includes('StorybookAttachment')) {
+        await StorybookAttachmentTests();
+    }
+
+    if (tests.includes('StorybookButton')) {
+        await StorybookButtonTests();
+    }
+
+    if (tests.includes('StorybookCheckbox')) {
+        await StorybookCheckboxTests();
+    }
+
+    if (tests.includes('StorybookChips')) {
+        await StorybookChipsTests();
+    }
+
     if (tests.includes('StorybookColorPicker')) {
         await StorybookColorPickerTests();
     }
 
+    if (tests.includes('StorybookDateTime')) {
+        await StorybookDateTimeTests();
+    }
+
+    if (tests.includes('StorybookDraggableItems')) {
+        await StorybookDraggableItemsTests();
+    }
+
+    if (tests.includes('StorybookGroupButtons')) {
+        await StorybookGroupButtonsTests();
+    }
+
     if (tests.includes('StorybookIcon')) {
         await StorybookIconTests();
+    }
+
+    if (tests.includes('StorybookImageFilmstrip')) {
+        await StorybookImageFilmstripTests();
+    }
+
+    if (tests.includes('StorybookImage')) {
+        await StorybookImageTests();
+    }
+
+    if (tests.includes('StorybookLink')) {
+        await StorybookLinkTests();
+    }
+
+    if (tests.includes('StorybookMenu')) {
+        await StorybookMenuTests();
+    }
+
+    if (tests.includes('StorybookQuantitySelector')) {
+        await StorybookQuantitySelectorTests();
+    }
+
+    if (tests.includes('StorybookRichHtmlTextarea')) {
+        await StorybookRichHtmlTextareaTests();
+    }
+
+    if (tests.includes('StorybookSearch')) {
+        await StorybookSearchTests();
+    }
+
+    if (tests.includes('StorybookSelect')) {
+        await StorybookSelectTests();
+    }
+
+    if (tests.includes('StorybookSelectPanel')) {
+        await StorybookSelectPanelTests();
+    }
+
+    if (tests.includes('StorybookSeparator')) {
+        await StorybookSeparatorTests();
+    }
+
+    if (tests.includes('StorybookSignature')) {
+        await StorybookSignatureTests();
+    }
+
+    if (tests.includes('StorybookSkeletonLoader')) {
+        await StorybookSkeletonLoaderTests();
+    }
+
+    if (tests.includes('StorybookSlider')) {
+        await StorybookSliderTests();
+    }
+
+    if (tests.includes('StorybookTextarea')) {
+        await StorybookTextareaTests();
+    }
+
+    if (tests.includes('StorybookTextbox')) {
+        await StorybookTextboxTests();
     }
 
     if (tests.includes('MockTest')) {
