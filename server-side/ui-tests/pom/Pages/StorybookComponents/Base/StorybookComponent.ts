@@ -9,7 +9,11 @@ export class StorybookComponent extends AddonPage {
     public InputsRow: By = By.xpath(
         `//div[contains(@class,"css")]//table//tbody//span[text()="inputs"]/ancestor::tr/following-sibling::tr`,
     );
+    public OutputRow: By = By.xpath(
+        `//div[contains(@class,"css")]//table//tbody//span[text()="outputs"]/ancestor::tr/following-sibling::tr`,
+    );
     public InputTitle: By = By.xpath(`${this.InputsRow.value}/td[1]/span`);
+    public OutputTitle: By = By.xpath(`${this.OutputRow.value}/td[1]/span`);
 
     public async getMainExampleContentSelecor(componentText: string): Promise<By> {
         return By.xpath(`//div[contains(@id,'anchor')]//div[contains(@id,'${componentText}')]`);
@@ -31,7 +35,7 @@ export class StorybookComponent extends AddonPage {
         return (await header.getText()).trim();
     }
 
-    public async isComponentFound(componentString: string, expectedHeader: string): Promise<void> {
+    public async doesComponentFound(componentString: string, expectedHeader: string): Promise<void> {
         await this.browser.switchTo(this.IframeElement);
         const header = await this.getHeaderText();
         const correctMainExample = await this.isCorrectMainExampleShown(componentString);
@@ -46,6 +50,22 @@ export class StorybookComponent extends AddonPage {
                 return await titleElement.getText();
             }),
         );
-        return inputTitles;
+        const outputsIndex = inputTitles.findIndex((element) => {
+            return element === 'OUTPUTS';
+        });
+        console.info('outputsIndex: ', outputsIndex);
+        // debugger
+        const cleanedFronOutputs_inputTitles = outputsIndex !== -1 ? inputTitles.splice(0, outputsIndex) : inputTitles;
+        return cleanedFronOutputs_inputTitles;
+    }
+
+    public async getOutputsTitles(): Promise<string[]> {
+        const outputTitlesElements = await this.browser.findElements(this.OutputTitle);
+        const outputTitles = await Promise.all(
+            outputTitlesElements.map(async (titleElement) => {
+                return await titleElement.getText();
+            }),
+        );
+        return outputTitles;
     }
 }

@@ -5,31 +5,31 @@ import promised from 'chai-as-promised';
 import { WebAppHomePage } from '../pom';
 import { StoryBookPage } from '../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { Button } from '../pom/Pages/StorybookComponents/Button';
+import { DateTime } from '../pom/Pages/StorybookComponents/DateTime';
 
 chai.use(promised);
 
-export async function StorybookButtonTests() {
+export async function StorybookDateTimeTests() {
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let button: Button;
+    let dateTime: DateTime;
 
-    describe('Storybook "Button" Tests Suite', function () {
+    describe('Storybook "DateTime" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            button = new Button(driver);
+            dateTime = new DateTime(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* Button * Component Testing', () => {
+        describe('* DateTime * Component Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -51,24 +51,24 @@ export async function StorybookButtonTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Button ** Component StoryBook`, async function () {
-                await storyBookPage.chooseComponent('button');
+            it(`Enter ** DateTime ** Component StoryBook`, async function () {
+                await storyBookPage.chooseComponent('date-time');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Button ** Component`, async function () {
-                await button.doesButtonComponentFound();
-                const buttonInputsTitles = await button.getInputsTitles();
-                console.info('buttonInputsTitles:', JSON.stringify(buttonInputsTitles, null, 2));
+            it(`Overview Test of ** DateTime ** Component`, async function () {
+                await dateTime.doesDateTimeComponentFound();
+                const dateTimeInputsTitles = await dateTime.getInputsTitles();
+                console.info('dateTimeInputsTitles:', JSON.stringify(dateTimeInputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(buttonInputsTitles).to.eql([
+                expect(dateTimeInputsTitles).to.eql([
                     'rowSpan',
                     'label',
                     'src',

@@ -5,31 +5,31 @@ import promised from 'chai-as-promised';
 import { WebAppHomePage } from '../pom';
 import { StoryBookPage } from '../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { Button } from '../pom/Pages/StorybookComponents/Button';
+import { Select } from '../pom/Pages/StorybookComponents/Select';
 
 chai.use(promised);
 
-export async function StorybookButtonTests() {
+export async function StorybookSelectTests() {
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let button: Button;
+    let select: Select;
 
-    describe('Storybook "Button" Tests Suite', function () {
+    describe('Storybook "Select" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            button = new Button(driver);
+            select = new Select(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* Button * Component Testing', () => {
+        describe('* Select * Component Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -51,24 +51,24 @@ export async function StorybookButtonTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Button ** Component StoryBook`, async function () {
-                await storyBookPage.chooseComponent('button');
+            it(`Enter ** Select ** Component StoryBook`, async function () {
+                await storyBookPage.chooseComponent('select');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Button ** Component`, async function () {
-                await button.doesButtonComponentFound();
-                const buttonInputsTitles = await button.getInputsTitles();
-                console.info('buttonInputsTitles:', JSON.stringify(buttonInputsTitles, null, 2));
+            it(`Overview Test of ** Select ** Component`, async function () {
+                await select.doesSelectComponentFound();
+                const selectInputsTitles = await select.getInputsTitles();
+                console.info('selectInputsTitles:', JSON.stringify(selectInputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(buttonInputsTitles).to.eql([
+                expect(selectInputsTitles).to.eql([
                     'rowSpan',
                     'label',
                     'src',

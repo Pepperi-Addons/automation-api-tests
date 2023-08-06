@@ -1,7 +1,7 @@
 import { By } from 'selenium-webdriver';
-import { AddonPage } from '../../addons/base/AddonPage';
+import { StorybookComponent } from './Base/StorybookComponent';
 
-export class ColorPicker extends AddonPage {
+export class ColorPicker extends StorybookComponent {
     public Component: By = By.xpath(`//div[contains(@id,'color-picker')]//div[contains(@id,'color-picker')]`);
     public ComponentLabel: By = By.xpath(`(//div[contains(@id,'color-picker')]//pep-field-title//mat-label)[1]`);
     public ComponentLabelTxtAlign: By = By.xpath(`//div[contains(@id,'color-picker')]//pep-field-title//div`);
@@ -107,5 +107,9 @@ export class ColorPicker extends AddonPage {
         const indexOfP1 = componentStyle.indexOf('(');
         const indexOfP2 = componentStyle.indexOf(')');
         return componentStyle.substring(indexOfP1, indexOfP2 + 1);
+    }
+
+    public async doesColorPickerComponentFound(): Promise<void> {
+        await this.doesComponentFound('color-picker', 'Color picker');
     }
 }
