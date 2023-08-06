@@ -105,7 +105,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                 if (itemList.length === 5) {
                     for (let i = 0; i < itemList.length; i++) {
                         if (
-                            itemList[i].MainCategoryID.toLowerCase().trim() === 'NOT uom item' ||
+                            itemList[i].MainCategoryID.toLowerCase().trim() === 'NOT uom item'.toLowerCase() ||
                             itemList[i].MainCategoryID.toLowerCase().trim() === 'uom item'
                         ) {
                             numOfGoodItems++;
@@ -187,7 +187,9 @@ export async function UomTests(email: string, password: string, varPass: string,
                 //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
                 //3.2. add fields to UI control of ATD
                 const uom = new Uom(driver);
+                // debugger
                 await uom.configUomATD();
+                // debugger
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.returnToHomePage();
                 const webAppHeader = new WebAppHeader(driver);
@@ -198,8 +200,8 @@ export async function UomTests(email: string, password: string, varPass: string,
                 await webAppHomePage.manualResync(client);
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(_TEST_DATA_ATD_NAME);
             });
-
             describe('UI Test UOM ATD', async function () {
+                // commented out by Hagit Aug 23
                 it("Replacing UI Controls Of All ATD's Before Stating Test", async function () {
                     await replaceUIControls(this, generalService);
                 });
@@ -253,8 +255,66 @@ export async function UomTests(email: string, password: string, varPass: string,
                     validateServerResponseOfOrderTransLines(orderResponse, expectedResultItemCondfig);
                 });
             });
+            // describe('UI Test UOM ATD', async function () {  // TODO - split expectedOrderNoConfigItems into different ITs
+            //     it("Replacing UI Controls Of All ATD's Before Stating Test", async function () {
+            //         await replaceUIControls(this, generalService);
+            //     });
+            //     it('UI UOM Test: basic ATD order', async () => {
+            //         const webAppLoginPage = new WebAppLoginPage(driver);
+            //         await webAppLoginPage.loginWithImage(email, password);
+            //         const webAppHomePage = new WebAppHomePage(driver);
+            //         await webAppHomePage.manualResync(client);
+            //         const uom = new Uom(driver);
+            //         await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
+            //         await uom.testUomAtdUI();
+            //         const addonPage = new AddonPage(driver);
+            //         // await addonPage.testCartItems('$ 181.00', ...expectedOrderNoConfigItems);  // Hagit Aug 23
+            //         expectedOrderNoConfigItems.forEach(async expectedOrderNoConfigItem => {  // Hagit Aug 23
+            //             await addonPage.testCartItem('$ 181.00', expectedOrderNoConfigItem);
+            //         })
+            //         await addonPage.submitOrder();
+            //         await webAppHomePage.manualResync(client);
+            //         const orderId: string = (
+            //             await generalService.fetchStatus(
+            //                 `/transactions?where=Type='${_TEST_DATA_ATD_NAME}'&order_by=CreationDateTime DESC`,
+            //             )
+            //         ).Body[0].InternalID;
+            //         const orderResponse: TransactionLines[] = await objectsService.getTransactionLines({
+            //             where: `TransactionInternalID=${orderId}`,
+            //         });
+            //         expect(orderResponse).to.be.an('array').with.lengthOf(4);
+            //         validateServerResponseOfOrderTransLines(orderResponse, expectedResultNoItemCondfig);
+            //     });
+
+            //     it('UI UOM Test: item configuration field ATD order', async function () {
+            //         const webAppLoginPage = new WebAppLoginPage(driver);
+            //         await webAppLoginPage.loginWithImage(email, password);
+            //         const uom = new Uom(driver);
+            //         await uom.editItemConfigField(_TEST_DATA_ATD_NAME);
+            //         const webAppHomePage = new WebAppHomePage(driver);
+            //         await webAppHomePage.returnToHomePage();
+            //         await webAppHomePage.manualResync(client);
+            //         await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
+            //         await uom.testUomAtdUIWithItemConfig();
+            //         const addonPage = new AddonPage(driver);
+            //         await addonPage.testCartItems('$ 36.00', ...expectedOrderConfigItems);
+            //         await addonPage.submitOrder();
+            //         await webAppHomePage.manualResync(client);
+            //         const orderId: string = (
+            //             await generalService.fetchStatus(
+            //                 `/transactions?where=Type='${_TEST_DATA_ATD_NAME}'&order_by=CreationDateTime DESC`,
+            //             )
+            //         ).Body[0].InternalID;
+            //         const orderResponse = await objectsService.getTransactionLines({
+            //             where: `TransactionInternalID=${orderId}`,
+            //         });
+            //         expect(orderResponse).to.be.an('array').with.lengthOf(3);
+            //         validateServerResponseOfOrderTransLines(orderResponse, expectedResultItemCondfig);
+            //     });
+            // });
             describe('Data Cleansing', () => {
                 it('Delete test ATD from dist + home screen using UI', async function () {
+                    debugger;
                     const webAppLoginPage = new WebAppLoginPage(driver);
                     await webAppLoginPage.loginWithImage(email, password);
                     const webAppHeader = new WebAppHeader(driver);

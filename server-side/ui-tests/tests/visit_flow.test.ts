@@ -1,6 +1,6 @@
 import { describe, it, before, after, afterEach } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../services/general.service';
+import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
@@ -115,6 +115,48 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await driver.quit();
             });
 
+            it('Pages Leftovers Cleanup', async () => {
+                const deleteAutoPagesResponse: FetchStatusResponse[] = [];
+                const deleteBlankPagesResponse: FetchStatusResponse[] = [];
+                const allPages = await pageBuilder.getAllPages(client);
+                const pagesOfAutoTest = allPages?.Body.filter((page) => {
+                    if (page.Name.includes('VisitFlow Page Auto_')) {
+                        return page.Key;
+                    }
+                });
+                const blankPages = allPages?.Body.filter((page) => {
+                    if (page.Name.includes('Blank ')) {
+                        return page.Key;
+                    }
+                });
+                console.info(`allPages: ${JSON.stringify(allPages.Body, null, 4)}`);
+                console.info(`pagesOfAutoTest: ${JSON.stringify(pagesOfAutoTest, null, 4)}`);
+                console.info(`blankPages: ${JSON.stringify(blankPages, null, 4)}`);
+                pagesOfAutoTest.forEach(async (page) => {
+                    const deleteAutoPageResponse = await pageBuilder.removePageByKey(page.Key, client);
+                    console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                    deleteAutoPagesResponse.push(deleteAutoPageResponse);
+                });
+                blankPages.forEach(async (page) => {
+                    // debugger
+                    const deleteBlankPageResponse = await pageBuilder.removePageByKey(page.Key, client);
+                    console.info(`deleteBlankPageResponse: ${JSON.stringify(deleteBlankPageResponse, null, 4)}`);
+                    deleteBlankPagesResponse.push(deleteBlankPageResponse);
+                });
+                console.info(`deleteAutoPagesResponse: ${JSON.stringify(deleteAutoPagesResponse, null, 4)}`);
+                console.info(`deleteBlankPagesResponse: ${JSON.stringify(deleteBlankPagesResponse, null, 4)}`);
+                generalService.sleep(5 * 1000);
+                const allPagesAfterCleanup = await pageBuilder.getAllPages(client);
+                const findAutoPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) => page.Name.includes('Auto_'));
+                const findBlankPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) =>
+                    page.Name.includes('Blank'),
+                );
+                console.info(`findAutoPageAfterCleanup: ${JSON.stringify(findAutoPageAfterCleanup, null, 4)}`);
+                console.info(`findBlankPageAfterCleanup: ${JSON.stringify(findBlankPageAfterCleanup, null, 4)}`);
+                expect(findAutoPageAfterCleanup).to.be.undefined;
+                expect(findBlankPageAfterCleanup).to.be.undefined;
+            });
+
             it('Making sure UDCs custom (manually inserted) fields are NOT removed upon version upgrade', async () => {
                 // custom field "manuallyAddedField" was added to "VisitFlows" collection, and needs to be there after version upgrade
                 const visitFlowsSchemes = await udcService.getSchemes({
@@ -123,7 +165,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 expect(visitFlowsSchemes).to.be.an('array').with.lengthOf(1);
                 expect(visitFlowsSchemes[0]).to.haveOwnProperty('Fields');
                 expect(visitFlowsSchemes[0].Fields).to.haveOwnProperty('manuallyAddedField');
-                console.info('visitFlowsSchemes: ', visitFlowsSchemes[0].Fields);
+                console.info('visitFlowsSchemes: ', JSON.stringify(visitFlowsSchemes[0].Fields, null, 2));
                 // custom field "manuallyAddedStepField" was added to "VisitFlowSteps" collection, and needs to be there after version upgrade
                 const visitFlowStepsSchemes = await udcService.getSchemes({
                     where: 'Name="VisitFlowSteps"',
@@ -131,7 +173,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 expect(visitFlowStepsSchemes).to.be.an('array').with.lengthOf(1);
                 expect(visitFlowStepsSchemes[0]).to.haveOwnProperty('Fields');
                 expect(visitFlowStepsSchemes[0].Fields).to.haveOwnProperty('manuallyAddedStepField');
-                console.info('visitFlowStepsSchemes: ', visitFlowStepsSchemes[0].Fields);
+                console.info('visitFlowStepsSchemes: ', JSON.stringify(visitFlowStepsSchemes[0].Fields, null, 2));
                 // custom field "manuallyAddedGroupField" was added to "VisitFlowSteps" collection, and needs to be there after version upgrade
                 const visitFlowGroupsSchemes = await udcService.getSchemes({
                     where: 'Name="VisitFlowGroups"',
@@ -139,7 +181,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 expect(visitFlowGroupsSchemes).to.be.an('array').with.lengthOf(1);
                 expect(visitFlowGroupsSchemes[0]).to.haveOwnProperty('Fields');
                 expect(visitFlowGroupsSchemes[0].Fields).to.haveOwnProperty('manuallyAddedGroupField');
-                console.info('visitFlowGroupsSchemes: ', visitFlowGroupsSchemes[0].Fields);
+                console.info('visitFlowGroupsSchemes: ', JSON.stringify(visitFlowGroupsSchemes[0].Fields, null, 2));
             });
 
             it('Login', async () => {

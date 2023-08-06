@@ -132,6 +132,7 @@ export class Uom extends AddonPage {
             'ItemConfig',
             'Item ID',
             'Unit Quantity',
+            // 'Item Allow Decimal', // Hagit, August 2023
         );
         this.browser.sleep(2000);
         await this.browser.click(this.SaveUIControlBtn);
@@ -651,6 +652,7 @@ export class Uom extends AddonPage {
         this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 0, 0, 0, 56, 56);
         // debugger;
+        // workingUomObject = new UomUIObject('1234');  // Hagit Aug 23
         for (let i = 1; i < 9; i++) {
             await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
             this.browser.sleep(1500);

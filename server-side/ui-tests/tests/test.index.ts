@@ -42,6 +42,7 @@ import {
     ResourceListAbiTests,
     InstallationsTest,
     StorybookColorPickerTests,
+    StorybookIconTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -411,6 +412,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
     if (tests.includes('StorybookColorPicker')) {
         await StorybookColorPickerTests();
+    }
+
+    if (tests.includes('StorybookIcon')) {
+        await StorybookIconTests();
     }
 
     if (tests.includes('MockTest')) {
