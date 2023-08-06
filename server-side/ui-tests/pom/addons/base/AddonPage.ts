@@ -272,6 +272,30 @@ export class AddonPage extends Page {
         }
     }
 
+    public async testCartItem(wholePageExpectedPrice: string, itemToValidate: OrderPageItem): Promise<void> {
+        // Hagit Aug 23
+        const wholeOrderPrice = await (await this.browser.findElement(this.WholeOrderPrice)).getAttribute('title');
+        console.info(
+            'wholeOrderPrice: ',
+            wholeOrderPrice,
+            'wholeOrderPrice after split and trim: ',
+            wholeOrderPrice.split('$')[1].trim(),
+        );
+        // debugger
+        expect(wholeOrderPrice).to.equal(wholePageExpectedPrice);
+
+        const itemQuantity = await (await this.browser.findElement(itemToValidate.qty)).getAttribute('title');
+        console.info('itemQuantity: ', itemQuantity);
+        // debugger
+        const itemTotalUnitPrice = await (
+            await this.browser.findElement(itemToValidate.totalUnitPrice)
+        ).getAttribute('title');
+        console.info('itemTotalUnitPrice: ', itemTotalUnitPrice);
+        // debugger
+        expect(itemQuantity).to.equal(itemToValidate.expectedQty);
+        expect(itemTotalUnitPrice).to.equal(itemToValidate.expectedUnitPrice);
+    }
+
     public async getLastOrderIdFromActivitiesByATDName(nameOfATD: string): Promise<string> {
         const webAppHomePage = new WebAppHomePage(this.browser);
         await webAppHomePage.clickOnBtn('Activities');
