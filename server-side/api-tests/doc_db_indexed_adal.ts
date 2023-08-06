@@ -2512,8 +2512,101 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.getFromElasticTable3Error = 'Wrong value in elastic table';
         }
         //debugger;
+        await truncateTestTableLast();
+    }
+    
+    //truncate table
+    async function truncateTestTableLast() {
+        const res6 = await generalService.fetchStatus(
+            baseURL + '/addons/data/schemes/' + logcash.createSchemaDI24110.Name + '/truncate',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': whaitOwnerUUID,
+                    'X-Pepperi-SecretKey': whaitSecretKey,
+                },
+            },
+        );
+        //debugger;
+        if (res6.Ok && res6.Body.ProcessedCounter == 25 && res6.Ok && res6.Body.Done == true) {
+            logcash.truncateTestTableLastStatus = true;
+        } else {
+            logcash.truncateTestTableLastStatus = false;
+            logcash.truncateTestTableLastError = 'Truncate table failed.';
+        }
+        await getFromElasticTable4();
+    }
+
+    async function getFromElasticTable4() {
+        // get data from elastic
+        //logcash.getDataDedicatedStatus = true;
+        logcash.getFromElasticTable4 = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/shared_index/index/' +
+                    logcash.createSchemaDI24110.DataSourceData.IndexName +
+                    '/' +
+                    adalOwnerId +
+                    '/' +
+                    whaitOwnerUUID +
+                    '~' +
+                    logcash.createSchemaDI24110.Name +
+                    '?where=Key="0"',
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                        'x-pepperi-await-indexing': 'true',
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getFromElasticTable4[0] == undefined
+
+        ) {
+            logcash.getFromElasticTable4Status = true;
+        } else {
+            logcash.getFromElasticTable4Status = false;
+            logcash.getFromElasticTable4Error = 'Wrong value in elastic table';
+        }
+        //debugger;
+        await getDataFromDinamoLast();
+    }
+    async function getDataFromDinamoLast() {
+        logcash.getDataFromDinamoLast = await generalService
+            .fetchStatus(
+                baseURL + '/addons/data/search/' + whaitOwnerUUID + '/' + logcash.createSchemaDI24110.Name,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        //'X-Pepperi-OwnerID': addonUUID,
+                        //'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                    body: JSON.stringify({
+                        PageSize: 10,
+                    }),
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataFromDinamoLast.Objects[0] == undefined
+        ) {
+            logcash.getDataFromDinamoLastStatus = true;
+        } else {
+            logcash.getDataFromDinamoLastStatus = false;
+            logcash.getDataFromDinamoLastError = 'The doc will be removed';
+        }
+        //debugger;
         await dropTestTableLast();
     }
+
 
     async function dropTestTableLast() {
         const res5 = await generalService.fetchStatus(

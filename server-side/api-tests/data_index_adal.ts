@@ -17,6 +17,7 @@ export async function DataIndexADALTests(generalService: GeneralService, request
     const testData = {
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.5'],
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
 
