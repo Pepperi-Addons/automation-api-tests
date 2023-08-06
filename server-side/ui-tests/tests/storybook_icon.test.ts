@@ -15,7 +15,7 @@ export async function StorybookIconTests() {
     let storyBookPage: StoryBookPage;
     let icon: Icon;
 
-    describe('Storybook "Color Picker" Tests Suit', function () {
+    describe('Storybook "Color Picker" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
@@ -66,8 +66,8 @@ export async function StorybookIconTests() {
             it(`Test Icon Component`, async function () {
                 // await driver.switchTo(icon.IframeElement);
                 await icon.doesIconComponentFound();
-                const iconInputsTitles = icon.getInputsTitles();
-                console.info('iconInputsTitles', JSON.stringify(iconInputsTitles, null, 2));
+                const iconInputsTitles = await icon.getInputsTitles();
+                console.info('iconInputsTitles:', JSON.stringify(iconInputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,

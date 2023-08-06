@@ -116,8 +116,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             });
 
             it('Pages Leftovers Cleanup', async () => {
-                const deleteAutoPagesResponse: FetchStatusResponse[] = [];
-                const deleteBlankPagesResponse: FetchStatusResponse[] = [];
                 const allPages = await pageBuilder.getAllPages(client);
                 const pagesOfAutoTest = allPages?.Body.filter((page) => {
                     if (page.Name.includes('VisitFlow Page Auto_')) {
@@ -132,17 +130,31 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 console.info(`allPages: ${JSON.stringify(allPages.Body, null, 4)}`);
                 console.info(`pagesOfAutoTest: ${JSON.stringify(pagesOfAutoTest, null, 4)}`);
                 console.info(`blankPages: ${JSON.stringify(blankPages, null, 4)}`);
-                pagesOfAutoTest.forEach(async (page) => {
-                    const deleteAutoPageResponse = await pageBuilder.removePageByKey(page.Key, client);
-                    console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
-                    deleteAutoPagesResponse.push(deleteAutoPageResponse);
-                });
-                blankPages.forEach(async (page) => {
-                    // debugger
-                    const deleteBlankPageResponse = await pageBuilder.removePageByKey(page.Key, client);
-                    console.info(`deleteBlankPageResponse: ${JSON.stringify(deleteBlankPageResponse, null, 4)}`);
-                    deleteBlankPagesResponse.push(deleteBlankPageResponse);
-                });
+                const deleteAutoPagesResponse: FetchStatusResponse[] = await Promise.all(
+                    pagesOfAutoTest.map(async (autoPage) => {
+                        const deleteAutoPageResponse = await pageBuilder.removePageByKey(autoPage.Key, client);
+                        console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                        return deleteAutoPageResponse;
+                    }),
+                );
+                // pagesOfAutoTest.forEach(async (page) => {
+                //     const deleteAutoPageResponse = await pageBuilder.removePageByKey(page.Key, client);
+                //     console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                //     deleteAutoPagesResponse.push(deleteAutoPageResponse);
+                // });
+                const deleteBlankPagesResponse: FetchStatusResponse[] = await Promise.all(
+                    blankPages.map(async (blankPage) => {
+                        const deleteAutoPageResponse = await pageBuilder.removePageByKey(blankPage.Key, client);
+                        console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                        return deleteAutoPageResponse;
+                    }),
+                );
+                // blankPages.forEach(async (page) => {
+                //     // debugger
+                //     const deleteBlankPageResponse = await pageBuilder.removePageByKey(page.Key, client);
+                //     console.info(`deleteBlankPageResponse: ${JSON.stringify(deleteBlankPageResponse, null, 4)}`);
+                //     deleteBlankPagesResponse.push(deleteBlankPageResponse);
+                // });
                 console.info(`deleteAutoPagesResponse: ${JSON.stringify(deleteAutoPagesResponse, null, 4)}`);
                 console.info(`deleteBlankPagesResponse: ${JSON.stringify(deleteBlankPagesResponse, null, 4)}`);
                 generalService.sleep(5 * 1000);

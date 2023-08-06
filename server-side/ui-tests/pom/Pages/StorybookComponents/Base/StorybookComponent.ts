@@ -40,11 +40,12 @@ export class StorybookComponent extends AddonPage {
     }
 
     public async getInputsTitles(): Promise<string[]> {
-        const inputTitles: string[] = [];
         const inputTitlesElements = await this.browser.findElements(this.InputTitle);
-        inputTitlesElements.forEach(async (element) => {
-            inputTitles.push(await element.getText());
-        });
+        const inputTitles = await Promise.all(
+            inputTitlesElements.map(async (titleElement) => {
+                return await titleElement.getText();
+            }),
+        );
         return inputTitles;
     }
 }
