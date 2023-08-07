@@ -11,6 +11,7 @@ export class StoryBookPage extends Page {
     );
     public ViewStoryBookButton: By = By.xpath(`//span[contains(text(),'View Storybook')]`);
     public GenericComponentButton: By = By.xpath(`//button[contains(@data-item-id,"{placeholder}")]`);
+    public GenericFolderById: By = By.xpath(`//button[@id="components-{placeholder}"]`);
     public GenericAbstractButton: By = By.xpath(`//a[contains(@data-item-id,"{placeholder}")]`);
 
     public CanvasTab: By = By.xpath(`//button[contains(text(),"Canvas")]`);
@@ -77,10 +78,15 @@ export class StoryBookPage extends Page {
             | 'typography',
     ): Promise<void> {
         // choose component by name
-        const xpathQueryForComponent: string = this.GenericComponentButton.valueOf()['value'].replace(
-            '{placeholder}',
-            componentName,
-        );
+        let xpathQueryForComponent: string;
+        if (componentName === 'textarea' || componentName === 'select') {
+            xpathQueryForComponent = this.GenericFolderById.valueOf()['value'].replace('{placeholder}', componentName);
+        } else {
+            xpathQueryForComponent = this.GenericComponentButton.valueOf()['value'].replace(
+                '{placeholder}',
+                componentName,
+            );
+        }
         await this.browser.click(By.xpath(xpathQueryForComponent));
         this.browser.sleep(5000);
     }
