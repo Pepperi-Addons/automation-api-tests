@@ -54,14 +54,18 @@ export class StorybookComponent extends AddonPage {
             return element === 'OUTPUTS';
         });
         console.info('outputsIndex: ', outputsIndex);
-        const propertiesIndex = inputTitles.findIndex((element) => {
+        const cleanedFromOutputs_inputTitles = outputsIndex !== -1 ? inputTitles.splice(0, outputsIndex) : inputTitles;
+        // debugger
+        const propertiesIndex = cleanedFromOutputs_inputTitles.findIndex((element) => {
             return element === 'properties';
         });
         console.info('propertiesIndex: ', propertiesIndex);
         // debugger
-        let cleanedFronOutputs_inputTitles = outputsIndex !== -1 ? inputTitles.splice(0, outputsIndex) : inputTitles;
-        cleanedFronOutputs_inputTitles = propertiesIndex !== -1 ? inputTitles.splice(0, propertiesIndex) : inputTitles;
-        return cleanedFronOutputs_inputTitles;
+        const cleanedFromProperties_inputTitles =
+            propertiesIndex !== -1
+                ? cleanedFromOutputs_inputTitles.splice(0, propertiesIndex)
+                : cleanedFromOutputs_inputTitles;
+        return cleanedFromProperties_inputTitles;
     }
 
     public async getOutputsTitles(): Promise<string[]> {
