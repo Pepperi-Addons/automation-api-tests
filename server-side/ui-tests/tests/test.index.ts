@@ -496,7 +496,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await StorybookSearchTests();
     }
 
-    if (tests.includes('StorybookSelect')) {
+    if (tests === 'StorybookSelect') {
         await StorybookSelectTests();
     }
 

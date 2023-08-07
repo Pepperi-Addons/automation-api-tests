@@ -55,12 +55,10 @@ export class StorybookComponent extends AddonPage {
         });
         console.info('outputsIndex: ', outputsIndex);
         const cleanedFromOutputs_inputTitles = outputsIndex !== -1 ? inputTitles.splice(0, outputsIndex) : inputTitles;
-        // debugger
         const propertiesIndex = cleanedFromOutputs_inputTitles.findIndex((element) => {
-            return element === 'properties';
+            return element === 'PROPERTIES';
         });
         console.info('propertiesIndex: ', propertiesIndex);
-        // debugger
         const cleanedFromProperties_inputTitles =
             propertiesIndex !== -1
                 ? cleanedFromOutputs_inputTitles.splice(0, propertiesIndex)
