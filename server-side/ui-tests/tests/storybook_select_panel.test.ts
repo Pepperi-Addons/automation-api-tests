@@ -52,7 +52,7 @@ export async function StorybookSelectPanelTests() {
                 });
             });
             it(`Enter ** SelectPanel ** Component StoryBook`, async function () {
-                await storyBookPage.chooseComponent('elect-panel');
+                await storyBookPage.chooseComponent('select-panel');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
