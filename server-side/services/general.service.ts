@@ -24,7 +24,7 @@ export const testData = {
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version --
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi --
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.%'], //CPAS --
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.3.%'], //cpi-node (Cross Platform Engine) --
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.4.%'], //cpi-node (Cross Platform Engine) --
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
