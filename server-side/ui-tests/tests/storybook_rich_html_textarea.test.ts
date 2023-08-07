@@ -52,7 +52,7 @@ export async function StorybookRichHtmlTextareaTests() {
                 });
             });
             it(`Enter ** RichHtmlTextarea ** Component StoryBook`, async function () {
-                await storyBookPage.chooseComponent('rich-html-text');
+                await storyBookPage.chooseComponent('rich-html-textarea');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,

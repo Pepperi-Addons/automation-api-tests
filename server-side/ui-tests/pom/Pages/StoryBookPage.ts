@@ -63,10 +63,10 @@ export class StoryBookPage extends Page {
             | 'image-filmstrip'
             | 'link'
             | 'menu'
-            | 'quantity-selec' // written like that so 'select' won't be chosen (DO NOT change to 'quantity-selector'!)
-            | 'rich-html-text' // written like that so 'textarea' won't be chosen (DO NOT change to 'rich-html-textarea'!)
+            | 'quantity-selector' // written like that so 'select' won't be chosen (DO NOT change to 'quantity-selector'!)
+            | 'rich-html-textarea' // written like that so 'textarea' won't be chosen (DO NOT change to 'rich-html-textarea'!)
             | 'search'
-            | 'elect-panel' // written like that so 'select' won't be chosen (DO NOT change to 'select-panel'!)
+            | 'select-panel' // written like that so 'select' won't be chosen (DO NOT change to 'select-panel'!)
             | 'select'
             | 'separator'
             | 'signature'
