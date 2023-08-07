@@ -80,10 +80,7 @@ export class StoryBookPage extends Page {
         // choose component by name
         let xpathQueryForComponent: string;
         if (componentName === 'textarea' || componentName === 'select') {
-            xpathQueryForComponent = this.GenericFolderById.valueOf()['value'].replace(
-                '{placeholder}',
-                componentName,
-            );
+            xpathQueryForComponent = this.GenericFolderById.valueOf()['value'].replace('{placeholder}', componentName);
         } else {
             xpathQueryForComponent = this.GenericComponentButton.valueOf()['value'].replace(
                 '{placeholder}',
