@@ -2161,6 +2161,8 @@ export default class GeneralService {
                 return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
             case 'CORE':
                 return 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
+            case 'CONFIGURATIONS':
+                return '84c999c3-84b7-454e-9a86-71b7abc96554';
             default:
                 return 'none';
         }

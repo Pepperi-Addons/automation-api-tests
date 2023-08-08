@@ -2418,6 +2418,8 @@ export async function handleTeamsURL(addonName, service, email, pass) {
         case 'UDB':
         case 'USER DEFINED BLOCKS':
             return await service.getSecretfromKMS(email, pass, 'UDBTeamsWebHook');
+        case 'CONFIGURATIONS':
+            return await service.getSecretfromKMS(email, pass, 'CONFIGURATIONSTeamsWebHook');
     }
 }
 
@@ -3039,6 +3041,8 @@ function resolveUserPerTest(addonName): any[] {
             return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JSB@pepperitest.com']; //'syncNeo4JProd@pepperitest.com',
         case 'CORE':
             return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
+        case 'CONFIGURATIONS':
+            return ['configEU@pepperitest.com', 'configProd@pepperitest.com', 'configSB@pepperitest.com'];
         case 'UDB':
         case 'USER DEFINED BLOCKS':
             return [
@@ -3128,6 +3132,19 @@ async function getCoreTests(userName, env) {
     return toReturn;
 }
 
+async function getConfifurationsTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function getUDBTests(userName, env) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
@@ -3161,6 +3178,8 @@ async function runDevTestOnCertainEnv(
         urlToCall = '/addons/api/async/5122dc6d-745b-4f46-bb8e-bd25225d350a/tests/tests';
     } else if (addonName === 'CORE') {
         urlToCall = '/addons/api/async/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/tests/tests';
+    } else if (addonName === 'CONFIGURATIONS') {
+        urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
     } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests';
         headers = {
@@ -3214,6 +3233,8 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getCoreTests(user, 'prod');
     } else if (addonName === 'USER DEFINED BLOCKS' || addonName === 'UDB') {
         return await getUDBTests(user, 'prod');
+    } else if (addonName === 'CONFIGURATIONS') {
+        return await getConfifurationsTests(user, 'prod');
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
         const service = new GeneralService(client);
@@ -3243,6 +3264,7 @@ function prepareTestBody(addonName, currentTestName, addonUUID) {
         addonName === 'DATA-INDEX' ||
         addonName === 'CORE' ||
         addonName === 'UDB' ||
+        addonName === 'CONFIGURATIONS' ||
         addonName === 'USER DEFINED BLOCKS'
     ) {
         body = {
