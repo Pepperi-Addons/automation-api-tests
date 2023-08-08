@@ -52,7 +52,7 @@ export async function StorybookQuantitySelectorTests() {
                 });
             });
             it(`Enter ** QuantitySelector ** Component StoryBook`, async function () {
-                await storyBookPage.chooseComponent('quantity-selec');
+                await storyBookPage.chooseComponent('quantity-selector');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,

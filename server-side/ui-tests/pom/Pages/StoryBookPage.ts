@@ -11,6 +11,7 @@ export class StoryBookPage extends Page {
     );
     public ViewStoryBookButton: By = By.xpath(`//span[contains(text(),'View Storybook')]`);
     public GenericComponentButton: By = By.xpath(`//button[contains(@data-item-id,"{placeholder}")]`);
+    public GenericFolderById: By = By.xpath(`//button[@id="components-{placeholder}"]`);
     public GenericAbstractButton: By = By.xpath(`//a[contains(@data-item-id,"{placeholder}")]`);
 
     public CanvasTab: By = By.xpath(`//button[contains(text(),"Canvas")]`);
@@ -62,10 +63,10 @@ export class StoryBookPage extends Page {
             | 'image-filmstrip'
             | 'link'
             | 'menu'
-            | 'quantity-selec' // written like that so 'select' won't be chosen (DO NOT change to 'quantity-selector'!)
-            | 'rich-html-text' // written like that so 'textarea' won't be chosen (DO NOT change to 'rich-html-textarea'!)
+            | 'quantity-selector' // written like that so 'select' won't be chosen (DO NOT change to 'quantity-selector'!)
+            | 'rich-html-textarea' // written like that so 'textarea' won't be chosen (DO NOT change to 'rich-html-textarea'!)
             | 'search'
-            | 'elect-panel' // written like that so 'select' won't be chosen (DO NOT change to 'select-panel'!)
+            | 'select-panel' // written like that so 'select' won't be chosen (DO NOT change to 'select-panel'!)
             | 'select'
             | 'separator'
             | 'signature'
@@ -77,10 +78,15 @@ export class StoryBookPage extends Page {
             | 'typography',
     ): Promise<void> {
         // choose component by name
-        const xpathQueryForComponent: string = this.GenericComponentButton.valueOf()['value'].replace(
-            '{placeholder}',
-            componentName,
-        );
+        let xpathQueryForComponent: string;
+        if (componentName === 'textarea' || componentName === 'select') {
+            xpathQueryForComponent = this.GenericFolderById.valueOf()['value'].replace('{placeholder}', componentName);
+        } else {
+            xpathQueryForComponent = this.GenericComponentButton.valueOf()['value'].replace(
+                '{placeholder}',
+                componentName,
+            );
+        }
         await this.browser.click(By.xpath(xpathQueryForComponent));
         this.browser.sleep(5000);
     }
