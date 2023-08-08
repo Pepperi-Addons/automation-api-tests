@@ -25,9 +25,9 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
     const secretKey = await generalService.getSecretKey(addonUUID, varKey);
     const version = '0.0.5';
 
-    // const dimxName = generalService.papiClient['options'].baseURL.includes('staging')
-    //     ? 'Export and Import Framework'
-    //     : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
+    const dimxName = generalService.papiClient['options'].baseURL.includes('staging')
+        ? 'Export and Import Framework'
+        : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
@@ -35,7 +35,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
     };
-    // testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
 
@@ -755,6 +755,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                         method: 'GET',
                     })
                     .then((res) => res.Body);
+                generalService.sleep(2000);
                 const recursiveImportResourceCDN: any[] = await generalService
                     .fetchStatus(recursiveImportResponse.Resources[0].URI, {
                         method: 'GET',
