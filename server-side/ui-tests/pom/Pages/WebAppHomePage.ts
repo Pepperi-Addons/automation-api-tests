@@ -181,6 +181,13 @@ export class WebAppHomePage extends WebAppPage {
         await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 10000);
     }
 
+    // public async validateATDIsApearingOnHomeScreen(driver: Browser, ATDname: string): Promise<void> {
+    //     const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
+    //         ['value'].slice()
+    //         .replace('|textToFill|', ATDname);
+    //     await driver.untilIsVisible(By.xpath(specificATDInjectedBtn), 10000);
+    // }
+
     public async validateATDIsNOTApearingOnHomeScreen(ATDname: string): Promise<boolean> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
             ['value'].slice()

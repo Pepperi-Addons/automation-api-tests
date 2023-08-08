@@ -1,17 +1,18 @@
 import { Browser } from '../utilities/browser';
-import { describe, it, afterEach, beforeEach } from 'mocha';
-import { AddonPage, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom/index';
+import { describe, it, afterEach, before, after } from 'mocha';
+import { WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { ObjectsService } from '../../services/objects.service';
 import { Item, TransactionLines } from '@pepperi-addons/papi-sdk';
-import { OrderPageItem } from '../pom/Pages/OrderPage';
-import { Uom } from '../pom/addons/Uom';
+import { OrderPage, OrderPageItem } from '../pom/Pages/OrderPage';
+import { Uom, UomUIObject } from '../pom/addons/Uom';
 import { ObjectTypeEditor } from '../pom/addons/ObjectTypeEditor';
 import { BrandedApp } from '../pom/addons/BrandedApp';
 import { replaceUIControls } from './test.index';
+import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
@@ -20,6 +21,15 @@ export async function UomTests(email: string, password: string, varPass: string,
     const objectsService = new ObjectsService(generalService);
 
     let driver: Browser;
+    let webAppLoginPage: WebAppLoginPage;
+    let webAppHomePage: WebAppHomePage;
+    let webAppHeader: WebAppHeader;
+    let webAppList: WebAppList;
+    let brandedApp: BrandedApp;
+    let objectTypeEditor: ObjectTypeEditor;
+    let uom: Uom;
+    let workingUomObject: UomUIObject;
+    let orderPage: OrderPage;
 
     const _TEST_DATA_ATD_NAME = `UOM_${generalService.generateRandomString(15)}`;
     const _TEST_DATA_ATD_DESCRIPTION = 'ATD for uom automation testing';
@@ -159,63 +169,533 @@ export async function UomTests(email: string, password: string, varPass: string,
         describe('UOM UI Related', () => {
             this.retries(1);
 
-            beforeEach(async function () {
+            before(async function () {
                 driver = await Browser.initiateChrome();
+                webAppLoginPage = new WebAppLoginPage(driver);
+                webAppHomePage = new WebAppHomePage(driver);
+                webAppHeader = new WebAppHeader(driver);
+                webAppList = new WebAppList(this.browser);
+                brandedApp = new BrandedApp(driver);
+                objectTypeEditor = new ObjectTypeEditor(driver);
+                orderPage = new OrderPage(this.browser);
+                uom = new Uom(driver);
             });
 
             afterEach(async function () {
-                const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.collectEndTestData(this);
+            });
+
+            after(async function () {
                 await driver.quit();
             });
 
-            it('Setting Up UOM ATD Using UI', async function () {
-                const webAppLoginPage = new WebAppLoginPage(driver);
+            it('Login, Select Catalog, Create ATD', async function () {
                 await webAppLoginPage.loginWithImage(email, password);
                 //1. validating all items are added to the main catalog
-                const addonPage = new AddonPage(driver);
-                await addonPage.selectCatalogItemsByCategory('uom item', 'NOT uom item');
+                await uom.selectCatalogItemsByCategory('uom item', 'NOT uom item');
                 //2. goto ATD editor - create new 'ATD UOM_{random string}'
-                const objectTypeEditor = new ObjectTypeEditor(driver);
                 await objectTypeEditor.createNewATD(
                     this,
                     generalService,
                     _TEST_DATA_ATD_NAME,
                     _TEST_DATA_ATD_DESCRIPTION,
                 );
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `ATD created`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Setting Up UOM ATD Using UI', async function () {
                 //3. goto new ATD and configure everything needed for the test - 3 calculated fields
                 //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
                 //3.2. add fields to UI control of ATD
-                const uom = new Uom(driver);
-                // debugger
                 await uom.configUomATD();
-                // debugger
-                const webAppHomePage = new WebAppHomePage(driver);
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `ATD configured`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Validating ATD Created on Home Page', async function () {
                 await webAppHomePage.returnToHomePage();
-                const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.openSettings();
                 //4. add the ATD to home screen
-                const brandedApp = new BrandedApp(driver);
                 await brandedApp.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
                 await webAppHomePage.manualResync(client);
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(_TEST_DATA_ATD_NAME);
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `ATD added to Home Page`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
             });
             describe('UI Test UOM ATD', async function () {
-                // commented out by Hagit Aug 23
-                it("Replacing UI Controls Of All ATD's Before Stating Test", async function () {
+                it('Go Home & Sync', async function () {
+                    await webAppHeader.goHome();
+                    await webAppHomePage.manualResync(client);
+                });
+                it("Replacing UI Controls Of All ATD's Before Starting Test", async function () {
                     await replaceUIControls(this, generalService);
                 });
-                it('UI UOM Test: basic ATD order', async () => {
-                    const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.loginWithImage(email, password);
-                    const webAppHomePage = new WebAppHomePage(driver);
-                    await webAppHomePage.manualResync(client);
-                    const uom = new Uom(driver);
-                    await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
-                    await uom.testUomAtdUI();
-                    const addonPage = new AddonPage(driver);
-                    await addonPage.testCartItems('$ 181.00', ...expectedOrderNoConfigItems);
-                    await addonPage.submitOrder();
+                it('Initiating UOM Activity', async function () {
+                    await uom.initiateUOMActivity(driver, _TEST_DATA_ATD_NAME, 'uom');
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM Activity initiated`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                // it("Testing UOM ATD", async function () {
+                //     await uom.testUomAtdUI();
+                // });
+                it('Add 48 items of regular qty - see 48 items are shown', async function () {
+                    //1. regular item testing
+                    //1.1 add 48 items of regular qty - see 48 items are shown + correct price is presented
+                    workingUomObject = new UomUIObject('1230');
+                    await driver.click(workingUomObject.aoqmUom1Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom1Qty, '40');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom1Qty set to 40`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('48 items of regular qty - see that correct price is presented', async function () {
+                    await uom.testQtysOfItem(workingUomObject, 40, undefined, 40, 20, 20);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Test Quantity of Item`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                for (let i = 1; i < 9; i++) {
+                    it(`Plus button clicks (click number ${i})`, async function () {
+                        await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                        driver.sleep(1500);
+                        await uom.isSpinnerDone();
+                        await uom.testQtysOfItem(
+                            workingUomObject,
+                            40 + i,
+                            undefined,
+                            40 + i,
+                            20 + i * 0.5,
+                            20 + i * 0.5,
+                        );
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `UOM1 Plus button - click number ${i}`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                }
+                it('Try to add one more regular item - nothing should change', async function () {
+                    //1.2. try to add one more regular item - nothing should change
+                    await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 48, undefined, 48, 48 / 2, 48 / 2);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 Plus button click`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                //1.3. lower qty back to 40 - see price + amount changed everywhere correctly
+                for (let i = 1; i < 9; i++) {
+                    it(`Minus button clicks - lower qty back to 40 [see price + amount changed everywhere correctly] (click number ${i})`, async function () {
+                        await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
+                        driver.sleep(1500);
+                        await uom.isSpinnerDone();
+                        await uom.testQtysOfItem(
+                            workingUomObject,
+                            48 - i,
+                            undefined,
+                            48 - i,
+                            (48 - i) * 0.5,
+                            (48 - i) * 0.5,
+                        );
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `UOM1 Minus button - click number ${i}`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                }
+                it('Zero the amount of the regular item - see everythins changed correctly', async function () {
+                    //1.4. zero the amount of the regular item - see everythins changed correctly
+                    await driver.click(workingUomObject.aoqmUom1Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom1Qty, '0');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    await uom.testQtysOfItem(workingUomObject, 0, undefined, 0, 0, 0);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom1Qty set to 0`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                //2. UOM item testing
+                it('UOM item testing - Box & single', async function () {
+                    //2.1. Box & single
+                    workingUomObject = new UomUIObject('1231');
+                    //set uom types to double in the upper field and single in lower
+                    await uom.selectDropBoxByString(workingUomObject.aoqmUom1, 'Box');
+                    driver.sleep(1500);
+                    await uom.selectDropBoxByString(workingUomObject.aoqmUom2, 'Single');
+                    driver.sleep(1500);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 - Box , UOM2 - Single`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                //2.1.2. fill the order with boxes - the rest in singel items
+                for (let i = 1; i < 4; i++) {
+                    it(`Plus button clicks - fill the order with boxes [the rest in single items] (click number ${i})`, async function () {
+                        await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                        driver.sleep(1500);
+                        await uom.isSpinnerDone();
+                        await uom.testQtysOfItem(workingUomObject, i, undefined, i * 13, i * 13, i * 13);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Plus button - click number ${i}`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                }
+                it('Nothing changes as qty bigger than inventory', async function () {
+                    //2.1.3. nothing changes as qty bigger than inventory
+                    await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 3, undefined, 39, 39, 39);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Expected NO Change (After UOM1 Plus button clicked)`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Filling the rest with single elements', async function () {
+                    //2.1.4. filling the rest with single elements
+                    await driver.click(workingUomObject.aoqmUom2Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom2Qty, '9');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    await uom.testQtysOfItem(workingUomObject, 3, 9, 48, 48, 48);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom2Qty set to 9`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Nothing changes as qty bigger than inventory', async function () {
+                    //2.1.5. nothing changes as qty bigger than inventory
+                    await driver.click(workingUomObject.aoqmUom2PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 3, 9, 48, 48, 48);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Expected NO Change (After UOM2 Plus button clicked)`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Lowering box by 1 and adding 13 singles', async function () {
+                    //2.1.6. lowering box by 1 and adding 13 singles
+                    await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 2, 9, 35, 35, 35);
+                    let base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 Minus button click`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    await driver.click(workingUomObject.aoqmUom2Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom2Qty, '22');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    await uom.testQtysOfItem(workingUomObject, 2, 22, 48, 48, 48);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom2Qty set to 22`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Nothing changes as qty bigger than inventory', async function () {
+                    //2.1.7. nothing changes as qty bigger than inventory
+                    await driver.click(workingUomObject.aoqmUom2PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 2, 22, 48, 48, 48);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Expected NO Change (After UOM2 Plus button clicked)`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                //2.2. Double & Single
+                it('UOM item testing - Double & single', async function () {
+                    workingUomObject = new UomUIObject('1232');
+                    //set uom types to double in the upper field and single in lower
+                    await uom.selectDropBoxByString(workingUomObject.aoqmUom1, 'double');
+                    driver.sleep(1500);
+                    await uom.selectDropBoxByString(workingUomObject.aoqmUom2, 'Single');
+                    driver.sleep(1500);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 - Double , UOM2 - Single`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Fill the qty with double values', async function () {
+                    //2.2.1 fill the qty with double values
+                    await driver.click(workingUomObject.aoqmUom1Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom1Qty, '24');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    await uom.testQtysOfItem(workingUomObject, 24, 0, 48, 48 + 24 * 2, 48 + 24 * 2);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom1Qty set to 24`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Nothing changes as qty bigger than inventory', async function () {
+                    //2.2.2 nothing changes as qty bigger than inventory
+                    await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 24, 0, 48, 48 + 24 * 2, 48 + 24 * 2);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Expected NO Change (After UOM1 Plus button clicked)`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Lowering the double qty by half', async function () {
+                    //2.2.3 lowering the double qty by half
+                    await driver.click(workingUomObject.aoqmUom1Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom1Qty, '12');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    await uom.testQtysOfItem(workingUomObject, 12, 0, 48 - 12 * 2, 96 - 12 * 2, 96 - 12 * 2);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom1Qty set to 12`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Filling the rest with single', async function () {
+                    //2.2.4 filling the rest with single
+                    await driver.click(workingUomObject.aoqmUom2Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom2Qty, '24');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    await uom.testQtysOfItem(workingUomObject, 12, 24, 48, 72 + 24, 72 + 24);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom2Qty set to 24`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Clicking Plus on UOM1 - Nothing changes as qty bigger than inventory', async function () {
+                    //2.2.5 nothing changes as qty bigger than inventory
+                    await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 12, 24, 48, 72 + 24, 72 + 24);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Expected NO Change (After UOM1 Plus button clicked)`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Clicking Plus on UOM2 - Nothing changes as qty bigger than inventory', async function () {
+                    //2.2.6 nothing changes as qty bigger than inventory
+                    await driver.click(workingUomObject.aoqmUom2PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 12, 24, 48, 72 + 24, 72 + 24);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Expected NO Change (After UOM2 Plus button clicked)`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                //2.3. Pack & Double
+                it('UOM item testing - Pack & Double', async function () {
+                    workingUomObject = new UomUIObject('1233');
+                    //set uom types to double in the upper field and single in lower
+                    await uom.selectDropBoxByString(workingUomObject.aoqmUom1, 'Pack');
+                    driver.sleep(1500);
+                    await uom.selectDropBoxByString(workingUomObject.aoqmUom2, 'double');
+                    driver.sleep(1500);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 - Pack , UOM2 - Double`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Filling the amount by sending keys with bigger qty then inventory permits - expecting to get 8 packs', async function () {
+                    //2.3.1 filling the amount by sending keys with bigger qty then inventory permits - expecting to get 8 packs
+                    await driver.click(workingUomObject.aoqmUom1Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom1Qty, '20');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    await uom.testQtysOfItem(workingUomObject, 8, 0, 48, 144, 144);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom1Qty set to 20`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                //2.3.2 lowering pack amount by 3
+                for (let i = 1; i < 4; i++) {
+                    it(`Minus button clicks - lowering pack amount by 3 (click number ${i})`, async function () {
+                        await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
+                        driver.sleep(1500);
+                        await uom.isSpinnerDone();
+                        await uom.testQtysOfItem(workingUomObject, 8 - i, 0, 48 - i * 6, 144 - i * 6, 144 - i * 6);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `UOM1 Minus button - click number ${i}`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                }
+                it("Filling the amount by sending keys with bigger qty than inventory permits - expecting to get 9 double's", async function () {
+                    //2.3.3 filling the amount by sending keys with bigger qty then inventory permits - expecting to get 9 double's
+                    await driver.click(workingUomObject.aoqmUom2Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom2Qty, '20');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom2Qty set to 20`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Validating all values', async function () {
+                    //2.3.4 validating all values
+                    await uom.testQtysOfItem(workingUomObject, 5, 9, 48, 144, 144);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `All`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                //2.4. Case & Box
+                it('UOM item testing - Case & Box', async function () {
+                    workingUomObject = new UomUIObject('1234');
+                    //set uom types to case in the upper field and box in lower
+                    await uom.selectDropBoxByString(workingUomObject.aoqmUom1, 'Case');
+                    driver.sleep(1500);
+                    await uom.selectDropBoxByString(workingUomObject.aoqmUom2, 'Box');
+                    driver.sleep(1500);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 - Case , UOM2 - Box`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Raise the case qty by 1 and check all values', async function () {
+                    //2.4.1 raise the case qty by 1 and check all values
+                    await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                    await driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 1, 0, 24, 168, 168);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 Plus button clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Filling the amount by sending keys with bigger qty then inventory permits - expecting to get 1 box', async function () {
+                    //2.4.2 filling the amount by sending keys with bigger qty then inventory permits - expecting to get 1 box
+                    await driver.click(workingUomObject.aoqmUom2Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom2Qty, '20');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom2Qty set to 20`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                //2.4.3 valdating all values
+                it('Valdating all values', async function () {
+                    await uom.testQtysOfItem(workingUomObject, 1, 1, 37, 181, 181);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `All`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                //3. UOM order test ended - submiting to cart
+                it('Entering Cart', async function () {
+                    await driver.click(orderPage.SubmitToCart);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Cart`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Validating Cart', async function () {
+                    // await uom.gotoCart(orderPage);
+                    await webAppList.isSpinnerDone();
+                    try {
+                        await orderPage.changeOrderCenterPageView('GridLine');
+                    } catch (Error) {
+                        await orderPage.clickViewMenu(); //to close the menu first
+                        await orderPage.changeOrderCenterPageView('Grid');
+                    }
+                    await webAppList.validateListRowElements();
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Cart`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                expectedOrderNoConfigItems.forEach(async (expectedOrderNoConfigItem) => {
+                    // Hagit Aug 23
+                    it(`UI UOM Test: basic ATD order (testing: ${
+                        expectedOrderNoConfigItem.qty.value.split('title=')[1].split(']')[0]
+                    })`, async function () {
+                        await uom.testCartItem('$ 181.00', expectedOrderNoConfigItem);
+                        const itemName = expectedOrderNoConfigItem.qty.value.split('title=')[1].split(']')[0];
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Testing Item: ${itemName}`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                });
+                it('Submit Order, Sync & Verify', async () => {
+                    await uom.submitOrder();
                     await webAppHomePage.manualResync(client);
                     const orderId: string = (
                         await generalService.fetchStatus(
@@ -227,21 +707,339 @@ export async function UomTests(email: string, password: string, varPass: string,
                     });
                     expect(orderResponse).to.be.an('array').with.lengthOf(4);
                     validateServerResponseOfOrderTransLines(orderResponse, expectedResultNoItemCondfig);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Order Submitted`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
-
-                it('UI UOM Test: item configuration field ATD order', async function () {
-                    const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.loginWithImage(email, password);
-                    const uom = new Uom(driver);
+                it('Go Home & Edit Item Config', async function () {
+                    await driver.switchToDefaultContent();
+                    await webAppHeader.goHome();
                     await uom.editItemConfigField(_TEST_DATA_ATD_NAME);
-                    const webAppHomePage = new WebAppHomePage(driver);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Item Configuration Edited`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Return to Home & Sync', async function () {
                     await webAppHomePage.returnToHomePage();
                     await webAppHomePage.manualResync(client);
-                    await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
-                    await uom.testUomAtdUIWithItemConfig();
-                    const addonPage = new AddonPage(driver);
-                    await addonPage.testCartItems('$ 36.00', ...expectedOrderConfigItems);
-                    await addonPage.submitOrder();
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Home`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Initiating UOM Activity', async function () {
+                    await uom.initiateUOMActivity(driver, _TEST_DATA_ATD_NAME, 'uom');
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM Activity Initiated`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                // it("Testing UOM ATD with Item Config", async function () {
+                //     await uom.testUomAtdUIWithItemConfig(driver);
+                // });
+                it('Testing UOM ATD with Item Config - Changing UOM1 to Single', async function () {
+                    //1. single -> factor:3, minimum:2, case:1, decimal:0, negative:true
+                    //set uom type to single
+                    await uom.selectDropBoxByString(workingUomObject.aoqmUom1, 'Single');
+                    driver.sleep(1500);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 - Single`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Trying to add one single item - by clicking the Plus button', async function () {
+                    //1.1. try to add one single item
+                    await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 2, 0, 6, 6, 6);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 Plus button clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Click on plus again - this time qty is bigger than minimum', async function () {
+                    //1.2 click on plus again - this time qty is bigger than minimum
+                    await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 3, 0, 9, 9, 9);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Uom1 Plus button clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it("Zero the amount and set qty of single items to '-8'", async function () {
+                    //1.3 zero the amount and set qty of single items to '-8'
+                    await driver.click(workingUomObject.aoqmUom1Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom1Qty, '0');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    await uom.testQtysOfItem(workingUomObject, 0, 0, 0, 0, 0);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom1Qty set to 0`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                for (let i = 1; i < 9; i++) {
+                    it(`Minus button clicks (click number ${i})`, async function () {
+                        await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
+                        driver.sleep(1500);
+                        await uom.isSpinnerDone();
+                        await uom.testQtysOfItem(workingUomObject, -1 * i, 0, -3 * i, i * -3, i * -3);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Minus button - click number ${i}`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                }
+                it("Set qty of single items as '3.5'", async function () {
+                    //1.4 set qty of single items as '3.5'
+                    await driver.click(workingUomObject.aoqmUom1Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom1Qty, '3.5');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    await uom.testQtysOfItem(workingUomObject, 16, 0, 48, 48, 48);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom1Qty set to 3.5`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Box -> factor:2, min:1, case:2, negative:false, decimal: 3', async function () {
+                    //2. Box -> factor:2, min:1, case:2, negative:false, decimal: 3
+                    workingUomObject = new UomUIObject('1232');
+                    //set uom type to Box
+                    await uom.selectDropBoxByString(workingUomObject.aoqmUom1, 'Box');
+                    driver.sleep(1500);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 - Box`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Try to add one box item', async function () {
+                    //2.1. try to add one box item
+                    await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 2, 0, 4, 52, 52);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 Plus button clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Click on plus again - to see how many qtys of box are added', async function () {
+                    //2.2 click on plus again - to see how many qtys of box are added
+                    await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 4, 0, 8, 56, 56);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 Plus button clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Zero the qty and try to set it to negative couple of times - shouldnt work', async function () {
+                    //2.3 zero the qty and try to set it to negative couple of times - shouldnt work
+                    await driver.click(workingUomObject.aoqmUom1Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom1Qty, '0');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    await uom.testQtysOfItem(workingUomObject, 0, 0, 0, 48, 48);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom1Qty set to 0`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                for (let i = 1; i < 4; i++) {
+                    it(`Minus button clicks (click number ${i})`, async function () {
+                        await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
+                        await driver.sleep(1500);
+                        await uom.isSpinnerDone();
+                        await uom.testQtysOfItem(workingUomObject, 0, 0, 0, 48, 48);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Minus button - click number ${i}`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                }
+                it("Set qty of single items to '3.5'", async function () {
+                    //2.4 set qty of single items to '3.5'
+                    await driver.click(workingUomObject.aoqmUom1Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom1Qty, '3.5');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    await uom.testQtysOfItem(workingUomObject, 4, 0, 8, 56, 56);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom1Qty set to 3.5`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Double -> factor:2.5, min:10, case:5, negative:true, decimal:1', async function () {
+                    //3. Double -> factor:2.5, min:10, case:5, negative:true, decimal:1
+                    workingUomObject = new UomUIObject('1233');
+                    //set uom type to double
+                    await uom.selectDropBoxByString(workingUomObject.aoqmUom1, 'double');
+                    driver.sleep(1500);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 - Double`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Trying to add one double item', async function () {
+                    //3.1. try to add one double item
+                    await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 8, 0, 20, 76, 76);
+                    let base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 Plus button clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+                    driver.sleep(1500);
+                    await uom.isSpinnerDone();
+                    await uom.testQtysOfItem(workingUomObject, 12, 0, 30, 86, 86);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM1 Plus button clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it("Zero qty of double and set it to '-8'", async function () {
+                    //3.3 zero qty of double and set it to '-8'
+                    await driver.click(workingUomObject.aoqmUom1Qty);
+                    await driver.sendKeys(workingUomObject.aoqmUom1Qty, '0');
+                    driver.sleep(1000);
+                    await driver.click(orderPage.blankSpaceOnScreenToClick);
+                    await uom.isSpinnerDone();
+                    driver.sleep(2500);
+                    await uom.testQtysOfItem(workingUomObject, 0, 0, 0, 56, 56);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `aoqmUom1Qty set to 0`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                for (let i = 1; i < 9; i++) {
+                    it(`Minus button clicks - to reach Zero (click number ${i})`, async function () {
+                        await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
+                        driver.sleep(1500);
+                        await uom.isSpinnerDone();
+                        await uom.testQtysOfItem(workingUomObject, -i, 0, -(i * 2.5), 56 + i * -2.5, 56 + i * -2.5);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Minus button - click number ${i}`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                }
+                //set lower uom type to Box
+                it('Set lower uom type to Box', async function () {
+                    await uom.selectDropBoxByString(workingUomObject.aoqmUom2, 'Box');
+                    driver.sleep(1500);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM2 - Box`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                //3.4. add three more boxes - untill there are 0 items
+                for (let i = 1; i < 3; i++) {
+                    it(`Plus button clicks - add three more boxes untill there are 0 items (click number ${i})`, async function () {
+                        await driver.click(workingUomObject.aoqmUom2PlusQtyButton);
+                        await driver.sleep(1500);
+                        await uom.isSpinnerDone();
+                        await uom.testQtysOfItem(workingUomObject, -8, i * 2, -20 + i * 4, 36 + i * 4, 36 + i * 4);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `UOM2 Plus button - click number ${i}`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                }
+                //3.5. click minus untill there are no more boxes
+                for (let i = 1; i < 3; i++) {
+                    it(`Minus button clicks - untill there are no more boxes (click number ${i})`, async function () {
+                        await driver.click(workingUomObject.aoqmUom2MinusQtyButton);
+                        driver.sleep(1500);
+                        await uom.isSpinnerDone();
+                        await uom.testQtysOfItem(workingUomObject, -8, 4 - i * 2, -12 - i * 4, 44 - i * 4, 44 - i * 4);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `UOM2 Minus button - click number ${i}`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                }
+                //4. UOM order test ended - submiting to cart
+                it('Entering Cart', async function () {
+                    await driver.click(orderPage.SubmitToCart);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Cart`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it('Validating Cart', async function () {
+                    // await uom.gotoCart(orderPage);
+                    await webAppList.isSpinnerDone();
+                    try {
+                        await orderPage.changeOrderCenterPageView('GridLine');
+                    } catch (Error) {
+                        await orderPage.clickViewMenu(); //to close the menu first
+                        await orderPage.changeOrderCenterPageView('Grid');
+                    }
+                    await webAppList.validateListRowElements();
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Cart`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                expectedOrderConfigItems.forEach(async (expectedOrderConfigItem) => {
+                    // Hagit Aug 23
+                    it(`UI UOM Test: item configuration field ATD order (testing: ${
+                        expectedOrderConfigItem.qty.value.split('title=')[1].split(']')[0]
+                    })`, async function () {
+                        await uom.testCartItem('$ 36.00', expectedOrderConfigItem);
+                        const itemName = expectedOrderConfigItem.qty.value.split('title=')[1].split(']')[0];
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Testing Item: ${itemName}`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                });
+                it('Submit Order, Sync & Verify', async () => {
+                    await uom.submitOrder();
                     await webAppHomePage.manualResync(client);
                     const orderId: string = (
                         await generalService.fetchStatus(
@@ -253,75 +1051,18 @@ export async function UomTests(email: string, password: string, varPass: string,
                     });
                     expect(orderResponse).to.be.an('array').with.lengthOf(3);
                     validateServerResponseOfOrderTransLines(orderResponse, expectedResultItemCondfig);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Order Submitted`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
             });
-            // describe('UI Test UOM ATD', async function () {  // TODO - split expectedOrderNoConfigItems into different ITs
-            //     it("Replacing UI Controls Of All ATD's Before Stating Test", async function () {
-            //         await replaceUIControls(this, generalService);
-            //     });
-            //     it('UI UOM Test: basic ATD order', async () => {
-            //         const webAppLoginPage = new WebAppLoginPage(driver);
-            //         await webAppLoginPage.loginWithImage(email, password);
-            //         const webAppHomePage = new WebAppHomePage(driver);
-            //         await webAppHomePage.manualResync(client);
-            //         const uom = new Uom(driver);
-            //         await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
-            //         await uom.testUomAtdUI();
-            //         const addonPage = new AddonPage(driver);
-            //         // await addonPage.testCartItems('$ 181.00', ...expectedOrderNoConfigItems);  // Hagit Aug 23
-            //         expectedOrderNoConfigItems.forEach(async expectedOrderNoConfigItem => {  // Hagit Aug 23
-            //             await addonPage.testCartItem('$ 181.00', expectedOrderNoConfigItem);
-            //         })
-            //         await addonPage.submitOrder();
-            //         await webAppHomePage.manualResync(client);
-            //         const orderId: string = (
-            //             await generalService.fetchStatus(
-            //                 `/transactions?where=Type='${_TEST_DATA_ATD_NAME}'&order_by=CreationDateTime DESC`,
-            //             )
-            //         ).Body[0].InternalID;
-            //         const orderResponse: TransactionLines[] = await objectsService.getTransactionLines({
-            //             where: `TransactionInternalID=${orderId}`,
-            //         });
-            //         expect(orderResponse).to.be.an('array').with.lengthOf(4);
-            //         validateServerResponseOfOrderTransLines(orderResponse, expectedResultNoItemCondfig);
-            //     });
-
-            //     it('UI UOM Test: item configuration field ATD order', async function () {
-            //         const webAppLoginPage = new WebAppLoginPage(driver);
-            //         await webAppLoginPage.loginWithImage(email, password);
-            //         const uom = new Uom(driver);
-            //         await uom.editItemConfigField(_TEST_DATA_ATD_NAME);
-            //         const webAppHomePage = new WebAppHomePage(driver);
-            //         await webAppHomePage.returnToHomePage();
-            //         await webAppHomePage.manualResync(client);
-            //         await uom.initiateUOMActivity(_TEST_DATA_ATD_NAME, 'uom');
-            //         await uom.testUomAtdUIWithItemConfig();
-            //         const addonPage = new AddonPage(driver);
-            //         await addonPage.testCartItems('$ 36.00', ...expectedOrderConfigItems);
-            //         await addonPage.submitOrder();
-            //         await webAppHomePage.manualResync(client);
-            //         const orderId: string = (
-            //             await generalService.fetchStatus(
-            //                 `/transactions?where=Type='${_TEST_DATA_ATD_NAME}'&order_by=CreationDateTime DESC`,
-            //             )
-            //         ).Body[0].InternalID;
-            //         const orderResponse = await objectsService.getTransactionLines({
-            //             where: `TransactionInternalID=${orderId}`,
-            //         });
-            //         expect(orderResponse).to.be.an('array').with.lengthOf(3);
-            //         validateServerResponseOfOrderTransLines(orderResponse, expectedResultItemCondfig);
-            //     });
-            // });
             describe('Data Cleansing', () => {
                 it('Delete test ATD from dist + home screen using UI', async function () {
-                    debugger;
-                    const webAppLoginPage = new WebAppLoginPage(driver);
-                    await webAppLoginPage.loginWithImage(email, password);
-                    const webAppHeader = new WebAppHeader(driver);
+                    await webAppHeader.goHome();
                     await webAppHeader.openSettings();
-                    const brandedApp = new BrandedApp(driver);
                     await brandedApp.removeAdminHomePageButtons(_TEST_DATA_ATD_NAME);
-                    const objectTypeEditor = new ObjectTypeEditor(driver);
                     await objectTypeEditor.removeATD(generalService, _TEST_DATA_ATD_NAME, _TEST_DATA_ATD_DESCRIPTION);
                 });
                 it('Reset Existing Items', async function () {
