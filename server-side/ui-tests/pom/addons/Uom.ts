@@ -5,8 +5,12 @@ import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppSettingsS
 import { OrderPage } from '../Pages/OrderPage';
 import { AddonLoadCondition } from './base/AddonPage';
 import { ObjectTypeEditor } from './ObjectTypeEditor';
+import { Browser } from '../../utilities/browser';
 
 export class Uom extends AddonPage {
+    constructor(protected browser: Browser) {
+        super(browser);
+    }
     //UOM Addon Locators
     public UomHeader: By = By.xpath("//h1[contains(text(),'UOM')]");
     public UomInstalledHeader: By = By.xpath("//b[contains(text(),'Configuration Field')]");
@@ -91,6 +95,8 @@ export class Uom extends AddonPage {
             'Number',
         );
         await this.configUomFieldsAndMediumView();
+        await this.browser.switchToDefaultContent();
+        await this.browser.click(objectTypeEditor.BackArrowButton); // Hagit, Aug 23 - back to list from transaction
         return;
     }
 
@@ -178,6 +184,9 @@ export class Uom extends AddonPage {
             this.TransLineField,
             'ItemConfig',
         );
+        await this.browser.switchToDefaultContent();
+        const objectTypeEditor = new ObjectTypeEditor(this.browser);
+        await this.browser.click(objectTypeEditor.BackArrowButton); // Hagit, Aug 23 - back to list from transaction
     }
 
     public async configureUomDataFields(...dataFieldNames: string[]): Promise<void> {
@@ -201,7 +210,7 @@ export class Uom extends AddonPage {
         await this.selectTabByText('General');
     }
 
-    private async testQtysOfItem(
+    public async testQtysOfItem(
         workingUomObject: UomUIObject,
         aoqmUom1Qty?: number,
         aoqmUom2Qty?: number,
@@ -316,7 +325,7 @@ export class Uom extends AddonPage {
             '40',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
         this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 40, undefined, 40, 20, 20);
@@ -346,7 +355,7 @@ export class Uom extends AddonPage {
             '0',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
         this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 0, undefined, 0, 0, 0);
@@ -378,7 +387,7 @@ export class Uom extends AddonPage {
             '9',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
         this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 3, 9, 48, 48, 48);
@@ -399,7 +408,7 @@ export class Uom extends AddonPage {
             (9 + 13).toString(),
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
         this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 2, 22, 48, 48, 48);
@@ -424,7 +433,7 @@ export class Uom extends AddonPage {
             '24',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
         this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 24, 0, 48, 48 + 24 * 2, 48 + 24 * 2);
@@ -441,7 +450,7 @@ export class Uom extends AddonPage {
             '12',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
         this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 12, 0, 48 - 12 * 2, 96 - 12 * 2, 96 - 12 * 2);
@@ -452,7 +461,7 @@ export class Uom extends AddonPage {
             '24',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
         this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 12, 24, 48, 72 + 24, 72 + 24);
@@ -483,7 +492,7 @@ export class Uom extends AddonPage {
             '20',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
         this.browser.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 8, 0, 48, 144, 144);
@@ -501,7 +510,7 @@ export class Uom extends AddonPage {
             '20',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
         this.browser.sleep(2500);
         //2.3.4 validating all values
@@ -527,7 +536,7 @@ export class Uom extends AddonPage {
             '20',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
         this.browser.sleep(2500);
         //2.4.3 valdating all values
@@ -537,125 +546,271 @@ export class Uom extends AddonPage {
         await this.gotoCart(orderPage);
     }
 
-    public async testUomAtdUIWithItemConfig(): Promise<void> {
+    // public async testUomAtdUIWithItemConfig(): Promise<void> {
+    //     //1. single -> factor:3, minimum:2, case:1, decimal:0, negative:true
+    //     let workingUomObject = new UomUIObject('1231');
+    //     const orderPage = new OrderPage(this.browser);
+    //     //set uom type to single
+    //     await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'Single');
+    //     this.browser.sleep(1500);
+    //     //1.1. try to add one single item
+    //     await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
+    //     this.browser.sleep(1500);
+    //     await this.isSpinnerDone();
+    //     await this.testQtysOfItem(workingUomObject, 2, 0, 6, 6, 6);
+    //     //1.2 click on plus again - this time qty is bigger than minimum
+    //     await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
+    //     this.browser.sleep(1500);
+    //     await this.isSpinnerDone();
+    //     await this.testQtysOfItem(workingUomObject, 3, 0, 9, 9, 9);
+    //     //1.3 zero the amount and set qty of single items to '-8'
+    //     await this.browser.activateTextInputFieldAndWaitUntillFunction(
+    //         workingUomObject.aoqmUom1Qty,
+    //         workingUomObject.aoqmUom1Qty,
+    //         '0',
+    //         orderPage.blankSpaceOnScreenToClick,
+    //         this.isSpinnerDone,
+    //         this,
+    //     );
+    //     this.browser.sleep(2500);
+    //     await this.testQtysOfItem(workingUomObject, 0, 0, 0, 0, 0);
+    //     for (let i = 1; i < 9; i++) {
+    //         await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
+    //         this.browser.sleep(1500);
+    //         await this.isSpinnerDone();
+    //         await this.testQtysOfItem(workingUomObject, -1 * i, 0, -3 * i, i * -3, i * -3);
+    //     }
+    //     //1.4 set qty of single items as '3.5'
+    //     await this.browser.activateTextInputFieldAndWaitUntillFunction(
+    //         workingUomObject.aoqmUom1Qty,
+    //         workingUomObject.aoqmUom1Qty,
+    //         '3.5',
+    //         orderPage.blankSpaceOnScreenToClick,
+    //         this.isSpinnerDone,
+    //         this,
+    //     );
+    //     this.browser.sleep(2500);
+    //     await this.testQtysOfItem(workingUomObject, 16, 0, 48, 48, 48);
+
+    //     //2. Box -> factor:2, min:1, case:2, negative:false, decimal: 3
+    //     workingUomObject = new UomUIObject('1232');
+    //     //set uom type to Box
+    //     await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'Box');
+    //     this.browser.sleep(1500);
+    //     //2.1. try to add one box item
+    //     await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
+    //     this.browser.sleep(1500);
+    //     await this.isSpinnerDone();
+    //     await this.testQtysOfItem(workingUomObject, 2, 0, 4, 52, 52);
+    //     //2.2 click on plus again - to see how many qtys of box are added
+    //     await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
+    //     this.browser.sleep(1500);
+    //     await this.isSpinnerDone();
+    //     await this.testQtysOfItem(workingUomObject, 4, 0, 8, 56, 56);
+    //     //2.3 zero the qty and try to set it to negative couple of times - shouldnt work
+    //     await this.browser.activateTextInputFieldAndWaitUntillFunction(
+    //         workingUomObject.aoqmUom1Qty,
+    //         workingUomObject.aoqmUom1Qty,
+    //         '0',
+    //         orderPage.blankSpaceOnScreenToClick,
+    //         this.isSpinnerDone,
+    //         this,
+    //     );
+    //     this.browser.sleep(2500);
+    //     await this.testQtysOfItem(workingUomObject, 0, 0, 0, 48, 48);
+    //     for (let i = 1; i < 4; i++) {
+    //         await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
+    //         await this.browser.sleep(1500);
+    //         await this.isSpinnerDone();
+    //         await this.testQtysOfItem(workingUomObject, 0, 0, 0, 48, 48);
+    //     }
+    //     //2.4 set qty of single items to '3.5'
+    //     await this.browser.activateTextInputFieldAndWaitUntillFunction(
+    //         workingUomObject.aoqmUom1Qty,
+    //         workingUomObject.aoqmUom1Qty,
+    //         '3.5',
+    //         orderPage.blankSpaceOnScreenToClick,
+    //         this.isSpinnerDone,
+    //         this,
+    //     );
+    //     this.browser.sleep(2500);
+    //     await this.testQtysOfItem(workingUomObject, 4, 0, 8, 56, 56);
+    //     //3. Double -> factor:2.5, min:10, case:5, negative:true, decimal:1
+    //     workingUomObject = new UomUIObject('1233');
+    //     //set uom type to double
+    //     await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'double');
+    //     this.browser.sleep(1500);
+    //     //3.1. try to add one double item
+    //     await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
+    //     this.browser.sleep(1500);
+    //     await this.isSpinnerDone();
+    //     await this.testQtysOfItem(workingUomObject, 8, 0, 20, 76, 76);
+    //     await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
+    //     this.browser.sleep(1500);
+    //     await this.isSpinnerDone();
+    //     await this.testQtysOfItem(workingUomObject, 12, 0, 30, 86, 86);
+    //     //3.3 zero qty of double and set it to '-8'
+    //     await this.browser.activateTextInputFieldAndWaitUntillFunction(
+    //         workingUomObject.aoqmUom1Qty,
+    //         workingUomObject.aoqmUom1Qty,
+    //         '0',
+    //         orderPage.blankSpaceOnScreenToClick,
+    //         this.isSpinnerDone,
+    //         this,
+    //     );
+    //     this.browser.sleep(2500);
+    //     await this.testQtysOfItem(workingUomObject, 0, 0, 0, 56, 56);
+    //     // debugger;
+    //     // workingUomObject = new UomUIObject('1234');  // Hagit Aug 23
+    //     for (let i = 1; i < 9; i++) {
+    //         await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
+    //         this.browser.sleep(1500);
+    //         await this.isSpinnerDone();
+    //         await this.testQtysOfItem(workingUomObject, -i, 0, -(i * 2.5), 56 + i * -2.5, 56 + i * -2.5);
+    //         // await this.testQtysOfItem(workingUomObject, -i, 0, -(i * 3), 56 + i * -3, 56 + i * -3); // Hagit June 23 - has to be verifyed!
+    //     }
+
+    //     //set lower uom type to Box
+    //     await this.selectDropBoxByString(workingUomObject.aoqmUom2, 'Box');
+    //     this.browser.sleep(1500);
+    //     //3.4. add three more boxes - untill there are 0 items
+    //     for (let i = 1; i < 3; i++) {
+    //         await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
+    //         await this.browser.sleep(1500);
+    //         await this.isSpinnerDone();
+    //         await this.testQtysOfItem(workingUomObject, -8, i * 2, -20 + i * 4, 36 + i * 4, 36 + i * 4);
+    //     }
+    //     //3.5. click minus untill there are no more boxes
+    //     for (let i = 1; i < 3; i++) {
+    //         await this.browser.click(workingUomObject.aoqmUom2MinusQtyButton);
+    //         this.browser.sleep(1500);
+    //         await this.isSpinnerDone();
+    //         await this.testQtysOfItem(workingUomObject, -8, 4 - i * 2, -12 - i * 4, 44 - i * 4, 44 - i * 4);
+    //     }
+
+    //     //3. UOM order test ended - submiting to cart
+    //     await this.gotoCart(orderPage);
+    // }
+
+    public async testUomAtdUIWithItemConfig(driver: Browser): Promise<void> {
         //1. single -> factor:3, minimum:2, case:1, decimal:0, negative:true
         let workingUomObject = new UomUIObject('1231');
-        const orderPage = new OrderPage(this.browser);
+        const orderPage = new OrderPage(driver);
         //set uom type to single
         await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'Single');
-        this.browser.sleep(1500);
+        driver.sleep(1500);
         //1.1. try to add one single item
-        await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        this.browser.sleep(1500);
+        await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+        driver.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 2, 0, 6, 6, 6);
         //1.2 click on plus again - this time qty is bigger than minimum
-        await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        this.browser.sleep(1500);
+        await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+        driver.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 3, 0, 9, 9, 9);
         //1.3 zero the amount and set qty of single items to '-8'
-        await this.browser.activateTextInputFieldAndWaitUntillFunction(
+        await driver.activateTextInputFieldAndWaitUntillFunction(
             workingUomObject.aoqmUom1Qty,
             workingUomObject.aoqmUom1Qty,
             '0',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
-        this.browser.sleep(2500);
+        driver.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 0, 0, 0, 0, 0);
         for (let i = 1; i < 9; i++) {
-            await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
-            this.browser.sleep(1500);
+            await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
+            driver.sleep(1500);
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, -1 * i, 0, -3 * i, i * -3, i * -3);
         }
         //1.4 set qty of single items as '3.5'
-        await this.browser.activateTextInputFieldAndWaitUntillFunction(
+        await driver.activateTextInputFieldAndWaitUntillFunction(
             workingUomObject.aoqmUom1Qty,
             workingUomObject.aoqmUom1Qty,
             '3.5',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
-        this.browser.sleep(2500);
+        driver.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 16, 0, 48, 48, 48);
 
         //2. Box -> factor:2, min:1, case:2, negative:false, decimal: 3
         workingUomObject = new UomUIObject('1232');
         //set uom type to Box
         await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'Box');
-        this.browser.sleep(1500);
+        driver.sleep(1500);
         //2.1. try to add one box item
-        await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        this.browser.sleep(1500);
+        await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+        driver.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 2, 0, 4, 52, 52);
         //2.2 click on plus again - to see how many qtys of box are added
-        await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        this.browser.sleep(1500);
+        await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+        driver.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 4, 0, 8, 56, 56);
         //2.3 zero the qty and try to set it to negative couple of times - shouldnt work
-        await this.browser.activateTextInputFieldAndWaitUntillFunction(
+        await driver.activateTextInputFieldAndWaitUntillFunction(
             workingUomObject.aoqmUom1Qty,
             workingUomObject.aoqmUom1Qty,
             '0',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
-        this.browser.sleep(2500);
+        driver.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 0, 0, 0, 48, 48);
         for (let i = 1; i < 4; i++) {
-            await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
-            await this.browser.sleep(1500);
+            await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
+            await driver.sleep(1500);
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, 0, 0, 0, 48, 48);
         }
         //2.4 set qty of single items to '3.5'
-        await this.browser.activateTextInputFieldAndWaitUntillFunction(
+        await driver.activateTextInputFieldAndWaitUntillFunction(
             workingUomObject.aoqmUom1Qty,
             workingUomObject.aoqmUom1Qty,
             '3.5',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
-        this.browser.sleep(2500);
+        driver.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 4, 0, 8, 56, 56);
         //3. Double -> factor:2.5, min:10, case:5, negative:true, decimal:1
         workingUomObject = new UomUIObject('1233');
         //set uom type to double
         await this.selectDropBoxByString(workingUomObject.aoqmUom1, 'double');
-        this.browser.sleep(1500);
+        driver.sleep(1500);
         //3.1. try to add one double item
-        await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        this.browser.sleep(1500);
+        await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+        driver.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 8, 0, 20, 76, 76);
-        await this.browser.click(workingUomObject.aoqmUom1PlusQtyButton);
-        this.browser.sleep(1500);
+        await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
+        driver.sleep(1500);
         await this.isSpinnerDone();
         await this.testQtysOfItem(workingUomObject, 12, 0, 30, 86, 86);
         //3.3 zero qty of double and set it to '-8'
-        await this.browser.activateTextInputFieldAndWaitUntillFunction(
+        await driver.activateTextInputFieldAndWaitUntillFunction(
             workingUomObject.aoqmUom1Qty,
             workingUomObject.aoqmUom1Qty,
             '0',
             orderPage.blankSpaceOnScreenToClick,
             this.isSpinnerDone,
-            this,
+            // this,
         );
-        this.browser.sleep(2500);
+        driver.sleep(2500);
         await this.testQtysOfItem(workingUomObject, 0, 0, 0, 56, 56);
         // debugger;
         // workingUomObject = new UomUIObject('1234');  // Hagit Aug 23
         for (let i = 1; i < 9; i++) {
-            await this.browser.click(workingUomObject.aoqmUom1MinusQtyButton);
-            this.browser.sleep(1500);
+            await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
+            driver.sleep(1500);
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, -i, 0, -(i * 2.5), 56 + i * -2.5, 56 + i * -2.5);
             // await this.testQtysOfItem(workingUomObject, -i, 0, -(i * 3), 56 + i * -3, 56 + i * -3); // Hagit June 23 - has to be verifyed!
@@ -663,18 +818,18 @@ export class Uom extends AddonPage {
 
         //set lower uom type to Box
         await this.selectDropBoxByString(workingUomObject.aoqmUom2, 'Box');
-        this.browser.sleep(1500);
+        driver.sleep(1500);
         //3.4. add three more boxes - untill there are 0 items
         for (let i = 1; i < 3; i++) {
-            await this.browser.click(workingUomObject.aoqmUom2PlusQtyButton);
-            await this.browser.sleep(1500);
+            await driver.click(workingUomObject.aoqmUom2PlusQtyButton);
+            await driver.sleep(1500);
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, -8, i * 2, -20 + i * 4, 36 + i * 4, 36 + i * 4);
         }
         //3.5. click minus untill there are no more boxes
         for (let i = 1; i < 3; i++) {
-            await this.browser.click(workingUomObject.aoqmUom2MinusQtyButton);
-            this.browser.sleep(1500);
+            await driver.click(workingUomObject.aoqmUom2MinusQtyButton);
+            driver.sleep(1500);
             await this.isSpinnerDone();
             await this.testQtysOfItem(workingUomObject, -8, 4 - i * 2, -12 - i * 4, 44 - i * 4, 44 - i * 4);
         }
@@ -683,7 +838,7 @@ export class Uom extends AddonPage {
         await this.gotoCart(orderPage);
     }
 
-    private async gotoCart(orderPage: OrderPage) {
+    public async gotoCart(orderPage: OrderPage) {
         await this.browser.click(orderPage.SubmitToCart);
         const webAppList = new WebAppList(this.browser);
         await webAppList.isSpinnerDone();
@@ -696,19 +851,44 @@ export class Uom extends AddonPage {
         await webAppList.validateListRowElements();
     }
 
-    public async initiateUOMActivity(ATDname: string, accountName: string, viewType = 'Medium'): Promise<void> {
-        const webAppHomePage = new WebAppHomePage(this.browser);
+    // public async initiateUOMActivity(ATDname: string, accountName: string, viewType = 'Medium'): Promise<void> { // commented out by Hagit, Aug 23
+    //     const webAppHomePage = new WebAppHomePage(this.browser);
+    //     await webAppHomePage.initiateSalesActivity(ATDname, accountName);
+    //     const orderPage = new OrderPage(this.browser);
+    //     await orderPage.changeOrderCenterPageView(viewType);
+    //     //validate there are 5 items on screen
+    //     const allItemPresented: WebElement[] = await this.browser.findElements(this.NonUomTypeItemInOrder);
+    //     expect(allItemPresented.length).to.equal(5);
+    //     //validate 4 are UOM items
+    //     let allUOMItemPresented: WebElement[] = [];
+    //     try {
+    //         //DI-19257 - https://pepperi.atlassian.net/browse/DI-19257
+    //         allUOMItemPresented = await this.browser.findElements(this.UomTypeItemInOrder);
+    //     } catch (Error) {
+    //         console.log('cannot find UOM type items - probably related to: DI-19257');
+    //         process.exit(1);
+    //     }
+    //     expect(allUOMItemPresented.length).to.equal(4);
+    // }
+
+    public async initiateUOMActivity(
+        driver: Browser,
+        ATDname: string,
+        accountName: string,
+        viewType = 'Medium',
+    ): Promise<void> {
+        const webAppHomePage = new WebAppHomePage(driver);
         await webAppHomePage.initiateSalesActivity(ATDname, accountName);
-        const orderPage = new OrderPage(this.browser);
+        const orderPage = new OrderPage(driver);
         await orderPage.changeOrderCenterPageView(viewType);
         //validate there are 5 items on screen
-        const allItemPresented: WebElement[] = await this.browser.findElements(this.NonUomTypeItemInOrder);
+        const allItemPresented: WebElement[] = await driver.findElements(this.NonUomTypeItemInOrder);
         expect(allItemPresented.length).to.equal(5);
         //validate 4 are UOM items
         let allUOMItemPresented: WebElement[] = [];
         try {
             //DI-19257 - https://pepperi.atlassian.net/browse/DI-19257
-            allUOMItemPresented = await this.browser.findElements(this.UomTypeItemInOrder);
+            allUOMItemPresented = await driver.findElements(this.UomTypeItemInOrder);
         } catch (Error) {
             console.log('cannot find UOM type items - probably related to: DI-19257');
             process.exit(1);
@@ -717,7 +897,7 @@ export class Uom extends AddonPage {
     }
 }
 
-class UomUIObject {
+export class UomUIObject {
     public readonly everyItemXpathPrefix: string = "//span[@title='|textToFill|']/../../../../../../..";
     public aoqmUom1: By = By.xpath(`${this.everyItemXpathPrefix}//span[@title='AOQM_UOM1']`);
     public aoqmUom1PlusQtyButton: By = By.xpath(`${this.everyItemXpathPrefix}//pep-icon[@name='number_plus']`);
