@@ -251,9 +251,9 @@ export async function UomTests(email: string, password: string, varPass: string,
                     //     await uom.testUomAtdUI();
                     // });
                     describe('Item [1230]', () => {
-                        it('Add 48 items of regular qty - see 48 items are shown', async function () {
+                        it('Add 40 items of regular qty - see 40 items are shown (then getting up to 48 by plus clicks)', async function () {
                             //1. regular item testing
-                            //1.1 add 48 items of regular qty - see 48 items are shown + correct price is presented
+                            //1.1 add 40 items of regular qty - see 40 items are shown + correct price is presented
                             workingUomObject = new UomUIObject('1230');
                             await driver.click(workingUomObject.aoqmUom1Qty);
                             await driver.sendKeys(workingUomObject.aoqmUom1Qty, '40');
@@ -267,7 +267,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('48 items of regular qty - see that correct price is presented', async function () {
+                        it('40 items of regular qty - see that correct price is presented', async function () {
                             await uom.testQtysOfItem(workingUomObject, 40, undefined, 40, 20, 20);
                             const base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
@@ -295,7 +295,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 });
                             });
                         }
-                        it('Try to add one more regular item - nothing should change', async function () {
+                        it('Try to add one more regular item - nothing should change (then lowering back to 40 by minus clicks)', async function () {
                             //1.2. try to add one more regular item - nothing should change
                             await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
                             driver.sleep(1500);
@@ -374,7 +374,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 });
                             });
                         }
-                        it('Nothing changes as qty bigger than inventory', async function () {
+                        it('Nothing changes after plus click on UOM1 - as qty bigger than inventory', async function () {
                             //2.1.3. nothing changes as qty bigger than inventory
                             await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
                             driver.sleep(1500);
@@ -401,7 +401,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('Nothing changes as qty bigger than inventory', async function () {
+                        it('Nothing changes after plus click on UOM2 - as qty bigger than inventory', async function () {
                             //2.1.5. nothing changes as qty bigger than inventory
                             await driver.click(workingUomObject.aoqmUom2PlusQtyButton);
                             driver.sleep(1500);
@@ -437,7 +437,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('Nothing changes as qty bigger than inventory', async function () {
+                        it('Nothing changes after plus click on UOM2 - as qty bigger than inventory', async function () {
                             //2.1.7. nothing changes as qty bigger than inventory
                             await driver.click(workingUomObject.aoqmUom2PlusQtyButton);
                             driver.sleep(1500);
@@ -465,7 +465,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('Fill the qty with double values', async function () {
+                        it('Fill the qty (24) with double values', async function () {
                             //2.2.1 fill the qty with double values
                             await driver.click(workingUomObject.aoqmUom1Qty);
                             await driver.sendKeys(workingUomObject.aoqmUom1Qty, '24');
@@ -480,7 +480,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('Nothing changes as qty bigger than inventory', async function () {
+                        it('Nothing changes after plus click on UOM1 - as qty bigger than inventory', async function () {
                             //2.2.2 nothing changes as qty bigger than inventory
                             await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
                             driver.sleep(1500);
@@ -492,7 +492,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('Lowering the double qty by half', async function () {
+                        it('Lowering the double qty by half (to 12)', async function () {
                             //2.2.3 lowering the double qty by half
                             await driver.click(workingUomObject.aoqmUom1Qty);
                             await driver.sendKeys(workingUomObject.aoqmUom1Qty, '12');
@@ -579,7 +579,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         });
                         //2.3.2 lowering pack amount by 3
                         for (let i = 1; i < 4; i++) {
-                            it(`Minus button clicks - lowering pack amount by 3 (click number ${i})`, async function () {
+                            it(`Minus button clicks - lowering pack amount by 3 in total (click number ${i})`, async function () {
                                 await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
                                 driver.sleep(1500);
                                 await uom.isSpinnerDone();
