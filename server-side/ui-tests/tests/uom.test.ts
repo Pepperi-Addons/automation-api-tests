@@ -174,10 +174,10 @@ export async function UomTests(email: string, password: string, varPass: string,
                 webAppLoginPage = new WebAppLoginPage(driver);
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
-                webAppList = new WebAppList(this.browser);
+                webAppList = new WebAppList(driver);
                 brandedApp = new BrandedApp(driver);
                 objectTypeEditor = new ObjectTypeEditor(driver);
-                orderPage = new OrderPage(this.browser);
+                orderPage = new OrderPage(driver);
                 uom = new Uom(driver);
             });
 
@@ -238,7 +238,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                 it("Replacing UI Controls Of All ATD's Before Starting Test", async function () {
                     await replaceUIControls(this, generalService);
                 });
-                describe("NO Config Items ['1230', '12331', '1232', '1233', '1234']", () => {
+                describe("NO Config Items ['1230', '1231', '1232', '1233', '1234']", () => {
                     it('Initiating UOM Activity', async function () {
                         await uom.initiateUOMActivity(driver, _TEST_DATA_ATD_NAME, 'uom');
                         const base64ImageComponent = await driver.saveScreenshots();
@@ -683,7 +683,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('Validating Cart', async function () {
+                        it('Validating Being in Cart', async function () {
                             // await uom.gotoCart(orderPage);
                             await webAppList.isSpinnerDone();
                             try {
@@ -713,7 +713,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 });
                             });
                         });
-                        it('Submit Order, Sync & Verify', async () => {
+                        it('Submit Order, Sync & Verify Via API', async () => {
                             await uom.submitOrder();
                             await webAppHomePage.manualResync(client);
                             const orderId: string = (
@@ -1059,7 +1059,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('Validating Cart', async function () {
+                        it('Validating Being in Cart', async function () {
                             // await uom.gotoCart(orderPage);
                             await webAppList.isSpinnerDone();
                             try {
@@ -1089,7 +1089,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 });
                             });
                         });
-                        it('Submit Order, Sync & Verify', async () => {
+                        it('Submit Order, Sync & Verify Via API', async () => {
                             await uom.submitOrder();
                             await webAppHomePage.manualResync(client);
                             const orderId: string = (

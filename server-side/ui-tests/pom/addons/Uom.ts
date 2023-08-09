@@ -8,6 +8,9 @@ import { ObjectTypeEditor } from './ObjectTypeEditor';
 import { Browser } from '../../utilities/browser';
 
 export class Uom extends AddonPage {
+    constructor(protected browser: Browser) {
+        super(browser);
+    }
     //UOM Addon Locators
     public UomHeader: By = By.xpath("//h1[contains(text(),'UOM')]");
     public UomInstalledHeader: By = By.xpath("//b[contains(text(),'Configuration Field')]");
@@ -836,7 +839,7 @@ export class Uom extends AddonPage {
     }
 
     public async gotoCart(orderPage: OrderPage) {
-        // await driver.click(orderPage.SubmitToCart);
+        await this.browser.click(orderPage.SubmitToCart);
         const webAppList = new WebAppList(this.browser);
         await webAppList.isSpinnerDone();
         try {
