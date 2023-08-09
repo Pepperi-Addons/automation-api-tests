@@ -496,7 +496,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(newCollection.Hidden).to.equal(false);
                 expect(newCollection.GenericResource).to.equal(true);
             });
-            it('Positive Test: adding data to just created User Defined Key Collection - testing the ket is indeed composed of included values', async () => {
+            it('Positive Test: adding data to just created User Defined Key Collection - testing the key is indeed composed of included values', async () => {
                 const intVal = 14;
                 const strVal = 'testing';
                 const fieldValues = {
@@ -1136,6 +1136,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                                 ? 'Key,dou2,int2,str2'
                                 : collectionName === baseedOnSchemeOnlyCollectionName
                                 ? 'basedOn,Key'
+                                : collectionName === containedCollectionName
+                                ? 'Key,containedRes'
                                 : 'str,bool,int,dou,Key',
                         Delimiter: ',',
                     };
@@ -1195,8 +1197,10 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         expect(c.Ok).to.equal(true);
                         expect(c.Status).to.equal(200);
                         if (collectionName.includes('ContainedTesting')) {
-                            expect(c.Body.Text).to.include('Key');
-                            expect(numOfVals).to.equal(1);
+                            expect(c.Body.Text).to.include(
+                                'Key,containedRes.str,containedRes.dou,containedRes.bool,containedRes.int',
+                            );
+                            expect(numOfVals).to.equal(5);
                         } else {
                             if (collectionName.includes('KeyBasicTesting')) {
                                 expect(c.Body.Text).to.include('Key');
@@ -1219,6 +1223,13 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                                 } else if (collectionName.includes('AccResource')) {
                                     expect(c.Body.Text).to.include('Key');
                                     expect(numOfVals).to.equal(2);
+                                } else if (collectionName.includes('SchemeBasedOnOnlySchemeTesting')) {
+                                    expect(c.Body.Text).to.include('Key');
+                                    expect(c.Body.Text).to.include('basedOn.dou');
+                                    expect(c.Body.Text).to.include('basedOn.str');
+                                    expect(c.Body.Text).to.include('basedOn.int');
+                                    expect(c.Body.Text).to.include('basedOn.bool');
+                                    expect(numOfVals).to.equal(5);
                                 } else if (collectionName.includes('SchemeBasedOnOnlySchemeTesting')) {
                                     expect(c.Body.Text).to.include('Key');
                                     expect(c.Body.Text).to.include('basedOn.dou');
@@ -1275,7 +1286,6 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             });
             //TODO: this is not working - DI-23772 in DIMX 0.9.x
             // it('Positive Test: DIMX overwrite test: 100K rows API import to new UDC then overwriting the data using DIMX', async () => {
-
             //     dimxOverWriteCollectionName = 'DimxOverwrite' + generalService.generateRandomString(15);
             //     const pfsService = new PFSService(generalService);
             //     const howManyRows = 100000;
