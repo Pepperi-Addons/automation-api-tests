@@ -169,7 +169,7 @@ export async function StorybookChipsTests() {
             });
         });
 
-        describe(`Stories`, async function () {
+        describe(`***STORIES`, async function () {
             chipsSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`'${header}'`, async function () {
                     it(`Navigate to story`, async function () {

@@ -125,7 +125,7 @@ export async function StorybookAttachmentTests() {
             });
         });
 
-        describe(`Stories`, async function () {
+        describe(`***STORIES`, async function () {
             attachmentSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`'${header}'`, async function () {
                     it(`Navigate to story`, async function () {
