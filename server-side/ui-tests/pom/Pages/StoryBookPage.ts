@@ -14,6 +14,9 @@ export class StoryBookPage extends Page {
     public GenericFolder: By = By.xpath(`//button[contains(@data-item-id,"{placeholder}")]`);
     public GenericFolderById: By = By.xpath(`//button[@id="components-{placeholder}"]`);
     public GenericSubFolder: By = By.xpath(`//a[contains(@data-item-id,"{placeholder}")]`);
+    public GenericSubFolderById: By = By.xpath(`//a[contains(@id,"{placeholder}")]`);
+    public GenericStoryHeaderDiv: By = By.xpath(`//div[contains(@id,"{placeholder}")]`);
+    public GenericStoryHeaderById: By = By.xpath(`//h3[contains(@id,"{placeholder}")]`);
 
     public CanvasTab: By = By.xpath(`//button[contains(text(),"Canvas")]`);
     public BorderRadiusContainer: By = By.xpath(`//storybook-border-radius`);
@@ -61,10 +64,11 @@ export class StoryBookPage extends Page {
 
     public async chooseSubFolder(subFolderName: string): Promise<void> {
         // choose abstract by name
-        const xpathQueryForComponent: string = this.GenericSubFolder.valueOf()['value'].replace(
+        const xpathQueryForComponent: string = this.GenericSubFolderById.valueOf()['value'].replace(
             '{placeholder}',
             subFolderName,
         );
+        // console.info('at chooseSubFolder -> xpathQueryForComponent: ', xpathQueryForComponent);
         await this.browser.click(By.xpath(xpathQueryForComponent));
         this.browser.sleep(5000);
     }
@@ -152,5 +156,13 @@ export class StoryBookPage extends Page {
                 await this.chooseSubFolder(abstractName);
                 break;
         }
+    }
+
+    public async getStorySelectorByText(storyIndex: number, txt: string) {
+        const selector =
+            this.GenericStoryHeaderDiv.value.replace('{placeholder}', `--story-${storyIndex}`) +
+            this.GenericStoryHeaderById.value.replace('{placeholder}', txt);
+        console.info('at getStorySelectorByText -> selector: ', selector);
+        return By.xpath(selector);
     }
 }

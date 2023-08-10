@@ -10,6 +10,14 @@ import { ColorPicker } from '../pom/Pages/StorybookComponents/ColorPicker';
 chai.use(promised);
 
 export async function StorybookColorPickerTests() {
+    const colorPickerInputs = ['label', 'disabled', 'showAAComplient', 'showTitle', 'type', 'value', 'xAlignment'];
+    const colorPickerSubFoldersHeaders = [
+        'Type is main',
+        'Type is success',
+        'Type is caution',
+        "Isn't AA compliant",
+        'Set stating color',
+    ];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
@@ -29,7 +37,7 @@ export async function StorybookColorPickerTests() {
             await driver.quit();
         });
 
-        describe('* ColorPicker * Component Testing', () => {
+        describe('* ColorPicker Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -68,16 +76,95 @@ export async function StorybookColorPickerTests() {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(colorPickerInputsTitles).to.eql([
-                    'label',
-                    'disabled',
-                    'showAAComplient',
-                    'showTitle',
-                    'type',
-                    'value',
-                    'xAlignment',
-                ]);
+                expect(colorPickerInputsTitles).to.eql(colorPickerInputs);
                 driver.sleep(5 * 1000);
+            });
+        });
+        colorPickerInputs.forEach(async (input) => {
+            describe(`'${input}' Input`, async function () {
+                switch (input) {
+                    case 'label':
+                        it(`it '${input}'`, async function () {
+                            expect(colorPickerInputs.includes('label')).to.be.true;
+                        });
+                        break;
+                    case 'disabled':
+                        it(`it '${input}'`, async function () {
+                            expect(colorPickerInputs.includes('disabled')).to.be.true;
+                        });
+                        break;
+                    case 'showAAComplient':
+                        it(`it '${input}'`, async function () {
+                            expect(colorPickerInputs.includes('showAAComplient')).to.be.true;
+                        });
+                        break;
+                    case 'showTitle':
+                        it(`it '${input}'`, async function () {
+                            expect(colorPickerInputs.includes('showTitle')).to.be.true;
+                        });
+                        break;
+                    case 'type':
+                        it(`it '${input}'`, async function () {
+                            expect(colorPickerInputs.includes('type')).to.be.true;
+                        });
+                        break;
+                    case 'value':
+                        it(`it '${input}'`, async function () {
+                            expect(colorPickerInputs.includes('value')).to.be.true;
+                        });
+                        break;
+                    case 'xAlignment':
+                        it(`it '${input}'`, async function () {
+                            expect(colorPickerInputs.includes('xAlignment')).to.be.true;
+                        });
+                        break;
+
+                    default:
+                        break;
+                }
+            });
+        });
+
+        describe(`Stories`, async function () {
+            colorPickerSubFoldersHeaders.forEach(async (header, index) => {
+                describe(`'${header}'`, async function () {
+                    it(`Navigate to story`, async function () {
+                        await driver.switchToDefaultContent();
+                        await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
+                        driver.sleep(0.1 * 1000);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Story: '${header}'`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        // await driver.switchTo(attachment.IframeElement);
+                    });
+                    it(`validate story header`, async function () {
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                        let headerText = '';
+                        switch (header) {
+                            case 'Type is main':
+                            case 'Type is success':
+                            case 'Type is caution':
+                            case 'Set stating color':
+                                headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
+                                break;
+                            case "Isn't AA compliant":
+                                headerText = header.toLowerCase().replace("'", '-').replace(' ', '-').replace(' ', '-');
+                                break;
+
+                            default:
+                                throw new Error(`Header: "${header}" is not covered in switch!`);
+                            // break;
+                        }
+                        console.info('at validate story header -> headerText: ', headerText);
+                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
+                        const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
+                        expect(storyHeader.trim()).equals(header);
+                    });
+                    // add test
+                    // it(`it '${header}'`, async function () { });
+                });
             });
         });
     });
