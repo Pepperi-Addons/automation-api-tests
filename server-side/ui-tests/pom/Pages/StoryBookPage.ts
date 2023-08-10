@@ -11,8 +11,12 @@ export class StoryBookPage extends Page {
     );
     public ViewStoryBookButton: By = By.xpath(`//span[contains(text(),'View Storybook')]`);
     public GenericComponentButton: By = By.xpath(`//button[contains(@data-item-id,"{placeholder}")]`);
+    public GenericFolder: By = By.xpath(`//button[contains(@data-item-id,"{placeholder}")]`);
     public GenericFolderById: By = By.xpath(`//button[@id="components-{placeholder}"]`);
-    public GenericAbstractButton: By = By.xpath(`//a[contains(@data-item-id,"{placeholder}")]`);
+    public GenericSubFolder: By = By.xpath(`//a[contains(@data-item-id,"{placeholder}")]`);
+    public GenericSubFolderById: By = By.xpath(`//a[contains(@id,"{placeholder}")]`);
+    public GenericStoryHeaderDiv: By = By.xpath(`//div[contains(@id,"{placeholder}")]`);
+    public GenericStoryHeaderById: By = By.xpath(`//h3[contains(@id,"{placeholder}")]`);
 
     public CanvasTab: By = By.xpath(`//button[contains(text(),"Canvas")]`);
     public BorderRadiusContainer: By = By.xpath(`//storybook-border-radius`);
@@ -48,6 +52,27 @@ export class StoryBookPage extends Page {
         this.browser.sleep(2 * 1000);
     }
 
+    public async chooseFolder(folderName: string): Promise<void> {
+        // choose abstract by name
+        const xpathQueryForComponent: string = this.GenericFolderById.valueOf()['value'].replace(
+            '{placeholder}',
+            folderName,
+        );
+        await this.browser.click(By.xpath(xpathQueryForComponent));
+        this.browser.sleep(5000);
+    }
+
+    public async chooseSubFolder(subFolderName: string): Promise<void> {
+        // choose abstract by name
+        const xpathQueryForComponent: string = this.GenericSubFolderById.valueOf()['value'].replace(
+            '{placeholder}',
+            subFolderName,
+        );
+        // console.info('at chooseSubFolder -> xpathQueryForComponent: ', xpathQueryForComponent);
+        await this.browser.click(By.xpath(xpathQueryForComponent));
+        this.browser.sleep(5000);
+    }
+
     public async chooseComponent(
         componentName:
             | 'attachment'
@@ -63,52 +88,81 @@ export class StoryBookPage extends Page {
             | 'image-filmstrip'
             | 'link'
             | 'menu'
-            | 'quantity-selector' // written like that so 'select' won't be chosen (DO NOT change to 'quantity-selector'!)
-            | 'rich-html-textarea' // written like that so 'textarea' won't be chosen (DO NOT change to 'rich-html-textarea'!)
+            | 'quantity-selector'
+            | 'query-builder'
+            | 'rich-html-textarea'
             | 'search'
-            | 'select-panel' // written like that so 'select' won't be chosen (DO NOT change to 'select-panel'!)
+            | 'select-panel'
             | 'select'
             | 'separator'
             | 'signature'
             | 'skeleton-loader'
             | 'slider'
+            | 'smart-filters'
             | 'textarea'
-            | 'textbox'
-            | 'colors'
-            | 'typography',
+            | 'textbox',
     ): Promise<void> {
         // choose component by name
-        let xpathQueryForComponent: string;
-        if (componentName === 'textarea' || componentName === 'select') {
-            xpathQueryForComponent = this.GenericFolderById.valueOf()['value'].replace('{placeholder}', componentName);
-        } else {
-            xpathQueryForComponent = this.GenericComponentButton.valueOf()['value'].replace(
-                '{placeholder}',
-                componentName,
-            );
+        // let xpathQueryForComponent: string;
+        // if (componentName === 'textarea' || componentName === 'select') {
+        //     xpathQueryForComponent = this.GenericFolderById.valueOf()['value'].replace('{placeholder}', componentName);
+        // } else {
+        //     xpathQueryForComponent = this.GenericComponentButton.valueOf()['value'].replace(
+        //         '{placeholder}',
+        //         componentName,
+        //     );
+        // }
+        // await this.browser.click(By.xpath(xpathQueryForComponent));
+        // this.browser.sleep(5000);
+        switch (componentName) {
+            case 'query-builder':
+            case 'smart-filters':
+                await this.chooseSubFolder(componentName);
+                break;
+
+            default:
+                await this.chooseFolder(componentName);
+                break;
         }
-        await this.browser.click(By.xpath(xpathQueryForComponent));
-        this.browser.sleep(5000);
     }
 
     public async chooseAbstract(
         abstractName:
+            | 'intro'
             | 'border-radius'
             | 'breakpoints'
+            | 'colors'
             | 'shadows'
             | 'spacing'
             | 'states'
-            | 'z-index'
-            | 'query-builder'
-            | 'smart-filters'
-            | 'dialog',
+            | 'typography'
+            | 'z-index',
     ): Promise<void> {
         // choose abstract by name
-        const xpathQueryForComponent: string = this.GenericAbstractButton.valueOf()['value'].replace(
-            '{placeholder}',
-            abstractName,
-        );
-        await this.browser.click(By.xpath(xpathQueryForComponent));
-        this.browser.sleep(5000);
+        // const xpathQueryForComponent: string = this.GenericSubFolder.valueOf()['value'].replace(
+        //     '{placeholder}',
+        //     abstractName,
+        // );
+        // await this.browser.click(By.xpath(xpathQueryForComponent));
+        // this.browser.sleep(5000);
+        switch (abstractName) {
+            case 'intro':
+            case 'colors':
+            case 'typography':
+                await this.chooseFolder(abstractName);
+                break;
+
+            default:
+                await this.chooseSubFolder(abstractName);
+                break;
+        }
+    }
+
+    public async getStorySelectorByText(storyIndex: number, txt: string) {
+        const selector =
+            this.GenericStoryHeaderDiv.value.replace('{placeholder}', `--story-${storyIndex}`) +
+            this.GenericStoryHeaderById.value.replace('{placeholder}', txt);
+        console.info('at getStorySelectorByText -> selector: ', selector);
+        return By.xpath(selector);
     }
 }
