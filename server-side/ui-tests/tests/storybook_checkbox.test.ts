@@ -151,7 +151,7 @@ export async function StorybookCheckboxTests() {
             });
         });
 
-        describe(`Stories`, async function () {
+        describe(`***STORIES`, async function () {
             checkboxStoriesHeaders.forEach(async (header, index) => {
                 describe(`'${header}'`, async function () {
                     it(`Navigate to story`, async function () {
