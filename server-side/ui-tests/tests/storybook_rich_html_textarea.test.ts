@@ -83,14 +83,17 @@ export async function StorybookRichHtmlTextareaTests() {
             });
             it(`Overview Test of ** RichHtmlTextarea ** Component`, async function () {
                 await richHtmlTextarea.doesRichHtmlTextareaComponentFound();
-                const richHtmlTextareaInputsTitles = await richHtmlTextarea.getInputsTitles();
+                richHtmlTextareaInputsTitles = await richHtmlTextarea.getInputsTitles();
                 console.info('richHtmlTextareaInputsTitles:', JSON.stringify(richHtmlTextareaInputsTitles, null, 2));
+                richHtmlTextareaOutputsTitles = await richHtmlTextarea.getOutputsTitles();
+                console.info('richHtmlTextareaOutputsTitles:', JSON.stringify(richHtmlTextareaOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(richHtmlTextareaInputsTitles).to.eql(richHtmlTextareaInputs);
+                expect(richHtmlTextareaOutputsTitles).to.eql(richHtmlTextareaOutputs);
                 driver.sleep(5 * 1000);
             });
         });
