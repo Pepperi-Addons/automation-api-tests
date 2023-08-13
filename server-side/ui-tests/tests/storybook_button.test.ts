@@ -21,11 +21,14 @@ export async function StorybookButtonTests() {
         'styleType',
         'visible',
     ];
+    const buttonOutputs = ['buttonClick'];
     const buttonStoriesHeaders = ['Disabled', 'Icon on start', 'Icon on end', 'Icon only', 'Styles, options and sizes'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let button: Button;
+    let buttonInputsTitles;
+    let buttonOutputsTitles;
 
     describe('Storybook "Button" Tests Suite', function () {
         this.retries(0);
@@ -73,75 +76,103 @@ export async function StorybookButtonTests() {
             });
             it(`Overview Test of ** Button ** Component`, async function () {
                 await button.doesButtonComponentFound();
-                const buttonInputsTitles = await button.getInputsTitles();
+                buttonInputsTitles = await button.getInputsTitles();
                 console.info('buttonInputsTitles:', JSON.stringify(buttonInputsTitles, null, 2));
+                buttonOutputsTitles = await button.getOutputsTitles();
+                console.info('buttonOutputsTitles:', JSON.stringify(buttonOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(buttonInputsTitles).to.eql(buttonInputs);
+                expect(buttonOutputsTitles).to.eql(buttonOutputs);
                 driver.sleep(5 * 1000);
             });
         });
         buttonInputs.forEach(async (input) => {
-            describe(`'${input}' Input`, async function () {
+            describe(`INPUT: '${input}'`, async function () {
                 switch (input) {
                     case 'value':
                         it(`it '${input}'`, async function () {
-                            expect(buttonInputs.includes('value')).to.be.true;
+                            expect(buttonInputsTitles.includes('value')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'classNames':
                         it(`it '${input}'`, async function () {
-                            expect(buttonInputs.includes('classNames')).to.be.true;
+                            expect(buttonInputsTitles.includes('classNames')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'disabled':
                         it(`it '${input}'`, async function () {
-                            expect(buttonInputs.includes('disabled')).to.be.true;
+                            expect(buttonInputsTitles.includes('disabled')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'iconName':
                         it(`it '${input}'`, async function () {
-                            expect(buttonInputs.includes('iconName')).to.be.true;
+                            expect(buttonInputsTitles.includes('iconName')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'iconPosition':
                         it(`it '${input}'`, async function () {
-                            expect(buttonInputs.includes('iconPosition')).to.be.true;
+                            expect(buttonInputsTitles.includes('iconPosition')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'sizeType':
                         it(`it '${input}'`, async function () {
-                            expect(buttonInputs.includes('sizeType')).to.be.true;
+                            expect(buttonInputsTitles.includes('sizeType')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'styleStateType':
                         it(`it '${input}'`, async function () {
-                            expect(buttonInputs.includes('styleStateType')).to.be.true;
+                            expect(buttonInputsTitles.includes('styleStateType')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'styleType':
                         it(`it '${input}'`, async function () {
-                            expect(buttonInputs.includes('styleType')).to.be.true;
+                            expect(buttonInputsTitles.includes('styleType')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'visible':
                         it(`it '${input}'`, async function () {
-                            expect(buttonInputs.includes('visible')).to.be.true;
+                            expect(buttonInputsTitles.includes('visible')).to.be.true;
                         });
+                        // TODO
                         break;
 
                     default:
-                        break;
+                        throw new Error(`Input: "${input}" is not covered in switch!`);
+                    // break;
                 }
             });
         });
+        buttonOutputs.forEach(async (output) => {
+            describe(`OUTPUT: '${output}'`, async function () {
+                switch (output) {
+                    case 'buttonClick':
+                        it(`it '${output}'`, async function () {
+                            expect(buttonOutputsTitles.includes('buttonClick')).to.be.true;
+                        });
+                        // TODO
+                        break;
 
-        describe(`***STORIES`, async function () {
+                    default:
+                        throw new Error(`Output: "${output}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        describe(`**STORIES`, async function () {
             buttonStoriesHeaders.forEach(async (header, index) => {
-                describe(`'${header}'`, async function () {
+                describe(`"${header}"`, async function () {
                     it(`Navigate to story`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
@@ -154,32 +185,38 @@ export async function StorybookButtonTests() {
                     });
                     it(`validate story header`, async function () {
                         await driver.switchTo(storyBookPage.StorybookIframe);
-                        let headerText = '';
-                        switch (header) {
-                            case 'Disabled':
-                                headerText = header.toLowerCase();
-                                break;
-                            case 'Icon on start':
-                            case 'Icon on end':
-                                headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
-                                break;
-                            case 'Icon only':
-                                headerText = header.toLowerCase().replace(' ', '-');
-                                break;
-                            case 'Styles, options and sizes':
-                                headerText = header.split(', ')[1].replace(' ', '-').replace(' ', '-');
-                                // headerText = 'options-and-sizes';
-                                break;
+                        const headerText = header
+                            .toLowerCase()
+                            .replace(/\s/g, '-')
+                            .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
+                        // let headerText = '';
+                        // switch (header) {
+                        //     case 'Disabled':
+                        //         headerText = header.toLowerCase();
+                        //         break;
+                        //     case 'Icon on start':
+                        //     case 'Icon on end':
+                        //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
+                        //         break;
+                        //     case 'Icon only':
+                        //         headerText = header.toLowerCase().replace(' ', '-');
+                        //         break;
+                        //     case 'Styles, options and sizes':
+                        //         headerText = header.split(', ')[1].replace(' ', '-').replace(' ', '-');
+                        //         // headerText = 'options-and-sizes';
+                        //         break;
 
-                            default:
-                                break;
-                        }
+                        //     default:
+                        //         throw new Error(`Header: "${header}" is not covered in switch!`);
+                        //         // break;
+                        // }
                         console.info('at validate story header -> headerText: ', headerText);
                         const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
-                    // add test
+                    // TODO: add tests
+                    // it(`it '${header}'`, async function () { });
                 });
             });
         });

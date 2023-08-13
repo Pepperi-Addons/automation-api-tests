@@ -10,10 +10,17 @@ import { Search } from '../pom/Pages/StorybookComponents/Search';
 chai.use(promised);
 
 export async function StorybookSearchTests() {
+    const searchInputs = ['value', 'shrink', 'sizeType', 'triggerOn'];
+    const searchProperties = ['fadeState'];
+    const searchOutputs = ['search'];
+    const searchSubFoldersHeaders = ['Shrink', 'Shrink on small screens', 'Keydown'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let search: Search;
+    let searchInputsTitles;
+    let searchPropertiesTitles;
+    let searchOutputsTitles;
 
     describe('Storybook "Search" Tests Suite', function () {
         this.retries(0);
@@ -29,7 +36,7 @@ export async function StorybookSearchTests() {
             await driver.quit();
         });
 
-        describe('* Search * Component Testing', () => {
+        describe('* Search Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -61,15 +68,151 @@ export async function StorybookSearchTests() {
             });
             it(`Overview Test of ** Search ** Component`, async function () {
                 await search.doesSearchComponentFound();
-                const searchInputsTitles = await search.getInputsTitles();
+                searchInputsTitles = await search.getInputsTitles();
                 console.info('searchInputsTitles:', JSON.stringify(searchInputsTitles, null, 2));
+                searchPropertiesTitles = await search.getPropertiesTitles();
+                console.info('searchPropertiesTitles:', JSON.stringify(searchPropertiesTitles, null, 2));
+                searchOutputsTitles = await search.getOutputsTitles();
+                console.info('searchOutputsTitles:', JSON.stringify(searchOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(searchInputsTitles).to.eql(['value', 'shrink', 'sizeType', 'triggerOn']);
+                expect(searchInputsTitles).to.eql(searchInputs);
+                expect(searchOutputsTitles).to.eql(searchOutputs);
                 driver.sleep(5 * 1000);
+            });
+        });
+        searchInputs.forEach(async (input) => {
+            describe(`INPUT: '${input}'`, async function () {
+                switch (input) {
+                    case 'label':
+                        it(`it '${input}'`, async function () {
+                            expect(searchInputsTitles.includes('label')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'rowSpan':
+                        it(`it '${input}'`, async function () {
+                            expect(searchInputsTitles.includes('rowSpan')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'value':
+                        it(`it '${input}'`, async function () {
+                            expect(searchInputsTitles.includes('value')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'disabled':
+                        it(`it '${input}'`, async function () {
+                            expect(searchInputsTitles.includes('disabled')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'inlineMode':
+                        it(`it '${input}'`, async function () {
+                            expect(searchInputsTitles.includes('inlineMode')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'mandatory':
+                        it(`it '${input}'`, async function () {
+                            expect(searchInputsTitles.includes('mandatory')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'maxFieldCharacters':
+                        it(`it '${input}'`, async function () {
+                            expect(searchInputsTitles.includes('maxFieldCharacters')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'showTitle':
+                        it(`it '${input}'`, async function () {
+                            expect(searchInputsTitles.includes('showTitle')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'visible':
+                        it(`it '${input}'`, async function () {
+                            expect(searchInputsTitles.includes('visible')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'xAlignment':
+                        it(`it '${input}'`, async function () {
+                            expect(searchInputsTitles.includes('xAlignment')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Input: "${input}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        searchProperties.forEach(async (property) => {
+            describe(`PROPERTY: '${property}'`, async function () {
+                switch (property) {
+                    case 'fadeState':
+                        it(`it '${property}'`, async function () {
+                            expect(searchPropertiesTitles.includes('fadeState')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Property: "${property}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        searchOutputs.forEach(async (output) => {
+            describe(`OUTPUT: '${output}'`, async function () {
+                switch (output) {
+                    case 'valueChange':
+                        it(`it '${output}'`, async function () {
+                            expect(searchOutputsTitles.includes('valueChange')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Output: "${output}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        describe(`**STORIES`, async function () {
+            searchSubFoldersHeaders.forEach(async (header, index) => {
+                describe(`"${header}"`, async function () {
+                    it(`Navigate to story`, async function () {
+                        await driver.switchToDefaultContent();
+                        await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
+                        driver.sleep(0.1 * 1000);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Story: '${header}'`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                    it(`validate story header`, async function () {
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                        const headerText = header
+                            .toLowerCase()
+                            .replace(/\s/g, '-')
+                            .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
+                        console.info('at validate story header -> headerText: ', headerText);
+                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
+                        const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
+                        expect(storyHeader.trim()).equals(header);
+                    });
+                    // TODO: add tests
+                    // it(`it '${header}'`, async function () { });
+                });
             });
         });
     });
