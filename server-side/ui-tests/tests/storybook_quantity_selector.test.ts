@@ -23,7 +23,7 @@ export async function StorybookQuantitySelectorTests() {
         'visible',
         'xAlignment',
     ];
-    const quantitySelectorOutputs = [];
+    const quantitySelectorOutputs = ['elementClick', 'valueChange'];
     const quantitySelectorSubFoldersHeaders = ['Twist and shake', 'Shake and twist'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
