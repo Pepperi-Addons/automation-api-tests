@@ -10,10 +10,21 @@ import { ImageFilmstrip } from '../pom/Pages/StorybookComponents/ImageFilmstrip'
 chai.use(promised);
 
 export async function StorybookImageFilmstripTests() {
+    const imageFilmstripInputs = [
+        'rowSpan',
+        'label',
+        'value',
+        'renderTitle',
+        'showThumbnails',
+        'showTitle',
+        'xAlignment',
+    ];
+    const imageFilmstripSubFoldersHeaders = ['No title & missing image', 'With thumbnails'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let imageFilmstrip: ImageFilmstrip;
+    let imageFilmstripInputsTitles;
 
     describe('Storybook "ImageFilmstrip" Tests Suite', function () {
         this.retries(0);
@@ -29,7 +40,7 @@ export async function StorybookImageFilmstripTests() {
             await driver.quit();
         });
 
-        describe('* ImageFilmstrip * Component Testing', () => {
+        describe('* ImageFilmstrip Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -61,23 +72,96 @@ export async function StorybookImageFilmstripTests() {
             });
             it(`Overview Test of ** ImageFilmstrip ** Component`, async function () {
                 await imageFilmstrip.doesImageFilmstripComponentFound();
-                const imageFilmstripInputsTitles = await imageFilmstrip.getInputsTitles();
+                imageFilmstripInputsTitles = await imageFilmstrip.getInputsTitles();
                 console.info('imageFilmstripInputsTitles:', JSON.stringify(imageFilmstripInputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(imageFilmstripInputsTitles).to.eql([
-                    'rowSpan',
-                    'label',
-                    'value',
-                    'renderTitle',
-                    'showThumbnails',
-                    'showTitle',
-                    'xAlignment',
-                ]);
+                expect(imageFilmstripInputsTitles).to.eql(imageFilmstripInputs);
                 driver.sleep(5 * 1000);
+            });
+        });
+        imageFilmstripInputs.forEach(async (input) => {
+            describe(`INPUT: '${input}'`, async function () {
+                switch (input) {
+                    case 'rowSpan':
+                        it(`it '${input}'`, async function () {
+                            expect(imageFilmstripInputsTitles.includes('rowSpan')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'label':
+                        it(`it '${input}'`, async function () {
+                            expect(imageFilmstripInputsTitles.includes('label')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'value':
+                        it(`it '${input}'`, async function () {
+                            expect(imageFilmstripInputsTitles.includes('value')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'renderTitle':
+                        it(`it '${input}'`, async function () {
+                            expect(imageFilmstripInputsTitles.includes('renderTitle')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'showThumbnails':
+                        it(`it '${input}'`, async function () {
+                            expect(imageFilmstripInputsTitles.includes('showThumbnails')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'showTitle':
+                        it(`it '${input}'`, async function () {
+                            expect(imageFilmstripInputsTitles.includes('showTitle')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'xAlignment':
+                        it(`it '${input}'`, async function () {
+                            expect(imageFilmstripInputsTitles.includes('xAlignment')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Input: "${input}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        describe(`**STORIES`, async function () {
+            imageFilmstripSubFoldersHeaders.forEach(async (header, index) => {
+                describe(`"${header}"`, async function () {
+                    it(`Navigate to story`, async function () {
+                        await driver.switchToDefaultContent();
+                        await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
+                        driver.sleep(0.1 * 1000);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Story: '${header}'`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                    it(`validate story header`, async function () {
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                        const headerText = header
+                            .toLowerCase()
+                            .replace(/\s/g, '-')
+                            .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
+                        console.info('at validate story header -> headerText: ', headerText);
+                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
+                        const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
+                        expect(storyHeader.trim()).equals(header);
+                    });
+                    // TODO: add tests
+                    // it(`it '${header}'`, async function () { });
+                });
             });
         });
     });

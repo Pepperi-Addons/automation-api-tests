@@ -25,6 +25,8 @@ export async function StorybookChipsTests() {
         'type',
         'xAlignment',
     ];
+    const chipsOutputs = ['fieldClick', 'selectionChange'];
+    const chipsMethods = ['addChipsToList'];
     const chipsSubFoldersHeaders = [
         'Without content',
         'With content',
@@ -36,6 +38,9 @@ export async function StorybookChipsTests() {
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let chips: Chips;
+    let chipsInputsTitles;
+    let chipsOutputsTitles;
+    let chipsMethodsTitles;
 
     describe('Storybook "Chips" Tests Suite', function () {
         this.retries(0);
@@ -83,95 +88,152 @@ export async function StorybookChipsTests() {
             });
             it(`Overview Test of ** Chips ** Component`, async function () {
                 await chips.doesChipsComponentFound();
-                const chipsInputsTitles = await chips.getInputsTitles();
+                chipsInputsTitles = await chips.getInputsTitles();
                 console.info('chipsInputsTitles:', JSON.stringify(chipsInputsTitles, null, 2));
+                chipsOutputsTitles = await chips.getOutputsTitles();
+                console.info('chipsOutputsTitles:', JSON.stringify(chipsOutputsTitles, null, 2));
+                chipsMethodsTitles = await chips.getMethodsTitles();
+                console.info('chipsMethodsTitles:', JSON.stringify(chipsMethodsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(chipsInputsTitles).to.eql(chipsInputs);
+                expect(chipsOutputsTitles).to.eql(chipsOutputs);
+                expect(chipsMethodsTitles).to.eql(chipsMethods);
                 driver.sleep(5 * 1000);
             });
         });
         chipsInputs.forEach(async (input) => {
-            describe(`'${input}' Input`, async function () {
+            describe(`INPUT: '${input}'`, async function () {
                 switch (input) {
                     case 'label':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('label')).to.be.true;
+                            expect(chipsInputsTitles.includes('label')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'chips':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('chips')).to.be.true;
+                            expect(chipsInputsTitles.includes('chips')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'classNames':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('classNames')).to.be.true;
+                            expect(chipsInputsTitles.includes('classNames')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'disabled':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('disabled')).to.be.true;
+                            expect(chipsInputsTitles.includes('disabled')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'inline':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('inline')).to.be.true;
+                            expect(chipsInputsTitles.includes('inline')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('mandatory')).to.be.true;
+                            expect(chipsInputsTitles.includes('mandatory')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'orientation':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('orientation')).to.be.true;
+                            expect(chipsInputsTitles.includes('orientation')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'placeholder':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('placeholder')).to.be.true;
+                            expect(chipsInputsTitles.includes('placeholder')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'renderTitle':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('renderTitle')).to.be.true;
+                            expect(chipsInputsTitles.includes('renderTitle')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'showTitle':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('showTitle')).to.be.true;
+                            expect(chipsInputsTitles.includes('showTitle')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'styleType':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('styleType')).to.be.true;
+                            expect(chipsInputsTitles.includes('styleType')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'type':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('type')).to.be.true;
+                            expect(chipsInputsTitles.includes('type')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'xAlignment':
                         it(`it '${input}'`, async function () {
-                            expect(chipsInputs.includes('xAlignment')).to.be.true;
+                            expect(chipsInputsTitles.includes('xAlignment')).to.be.true;
                         });
+                        // TODO
                         break;
 
                     default:
-                        break;
+                        throw new Error(`Input: "${input}" is not covered in switch!`);
+                    // break;
                 }
             });
         });
+        chipsOutputs.forEach(async (output) => {
+            describe(`OUTPUT: '${output}'`, async function () {
+                switch (output) {
+                    case 'fieldClick':
+                        it(`it '${output}'`, async function () {
+                            expect(chipsOutputsTitles.includes('fieldClick')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'selectionChange':
+                        it(`it '${output}'`, async function () {
+                            expect(chipsOutputsTitles.includes('selectionChange')).to.be.true;
+                        });
+                        // TODO
+                        break;
 
-        describe(`***STORIES`, async function () {
+                    default:
+                        throw new Error(`Output: "${output}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        chipsMethods.forEach(async (method) => {
+            describe(`METHOD: '${method}'`, async function () {
+                switch (method) {
+                    case 'addChipsToList':
+                        it(`it '${method}'`, async function () {
+                            expect(chipsMethodsTitles.includes('addChipsToList')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Method: "${method}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        describe(`**STORIES`, async function () {
             chipsSubFoldersHeaders.forEach(async (header, index) => {
-                describe(`'${header}'`, async function () {
+                describe(`"${header}"`, async function () {
                     it(`Navigate to story`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
@@ -181,31 +243,35 @@ export async function StorybookChipsTests() {
                             title: `Story: '${header}'`,
                             value: 'data:image/png;base64,' + base64ImageComponent,
                         });
-                        // await driver.switchTo(attachment.IframeElement);
                     });
                     it(`validate story header`, async function () {
                         await driver.switchTo(storyBookPage.StorybookIframe);
-                        let headerText = '';
-                        switch (header) {
-                            case 'Without content':
-                            case 'With content':
-                                headerText = header.toLowerCase().replace(' ', '-');
-                                break;
-                            case 'Inline is true':
-                            case 'Type is select':
-                            case 'Orientation is vertical':
-                                headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
-                                break;
+                        const headerText = header
+                            .toLowerCase()
+                            .replace(/\s/g, '-')
+                            .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
+                        // let headerText = '';
+                        // switch (header) {
+                        //     case 'Without content':
+                        //     case 'With content':
+                        //         headerText = header.toLowerCase().replace(' ', '-');
+                        //         break;
+                        //     case 'Inline is true':
+                        //     case 'Type is select':
+                        //     case 'Orientation is vertical':
+                        //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
+                        //         break;
 
-                            default:
-                                break;
-                        }
+                        //     default:
+                        //         throw new Error(`Header: "${header}" is not covered in switch!`);
+                        //         // break;
+                        // }
                         console.info('at validate story header -> headerText: ', headerText);
                         const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
-                    // add test
+                    // TODO: add tests
                     // it(`it '${header}'`, async function () { });
                 });
             });

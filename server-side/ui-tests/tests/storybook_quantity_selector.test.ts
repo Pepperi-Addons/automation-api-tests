@@ -10,10 +10,27 @@ import { QuantitySelector } from '../pom/Pages/StorybookComponents/QuantitySelec
 chai.use(promised);
 
 export async function StorybookQuantitySelectorTests() {
+    const quantitySelectorInputs = [
+        'label',
+        'value',
+        'allowDecimal',
+        'disabled',
+        'mandatory',
+        'readonly',
+        'showTitle',
+        'styleType',
+        'textColor',
+        'visible',
+        'xAlignment',
+    ];
+    const quantitySelectorOutputs = [];
+    const quantitySelectorSubFoldersHeaders = ['Twist and shake', 'Shake and twist'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let quantitySelector: QuantitySelector;
+    let quantitySelectorInputsTitles;
+    let quantitySelectorOutputsTitles;
 
     describe('Storybook "QuantitySelector" Tests Suite', function () {
         this.retries(0);
@@ -29,7 +46,7 @@ export async function StorybookQuantitySelectorTests() {
             await driver.quit();
         });
 
-        describe('* QuantitySelector * Component Testing', () => {
+        describe('* QuantitySelector Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -61,27 +78,139 @@ export async function StorybookQuantitySelectorTests() {
             });
             it(`Overview Test of ** QuantitySelector ** Component`, async function () {
                 await quantitySelector.doesQuantitySelectorComponentFound();
-                const quantitySelectorInputsTitles = await quantitySelector.getInputsTitles();
+                quantitySelectorInputsTitles = await quantitySelector.getInputsTitles();
                 console.info('quantitySelectorInputsTitles:', JSON.stringify(quantitySelectorInputsTitles, null, 2));
+                quantitySelectorOutputsTitles = await quantitySelector.getOutputsTitles();
+                console.info('quantitySelectorOutputsTitles:', JSON.stringify(quantitySelectorOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(quantitySelectorInputsTitles).to.eql([
-                    'label',
-                    'value',
-                    'allowDecimal',
-                    'disabled',
-                    'mandatory',
-                    'readonly',
-                    'showTitle',
-                    'styleType',
-                    'textColor',
-                    'visible',
-                    'xAlignment',
-                ]);
+                expect(quantitySelectorInputsTitles).to.eql(quantitySelectorInputs);
+                expect(quantitySelectorOutputsTitles).to.eql(quantitySelectorOutputs);
                 driver.sleep(5 * 1000);
+            });
+        });
+        quantitySelectorInputs.forEach(async (input) => {
+            describe(`INPUT: '${input}'`, async function () {
+                switch (input) {
+                    case 'label':
+                        it(`it '${input}'`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('label')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'value':
+                        it(`it '${input}'`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('value')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'allowDecimal':
+                        it(`it '${input}'`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('allowDecimal')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'disabled':
+                        it(`it '${input}'`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('disabled')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'mandatory':
+                        it(`it '${input}'`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('mandatory')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'showTitle':
+                        it(`it '${input}'`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('showTitle')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'styleType':
+                        it(`it '${input}'`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('styleType')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'textColor':
+                        it(`it '${input}'`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('textColor')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'visible':
+                        it(`it '${input}'`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('visible')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'xAlignment':
+                        it(`it '${input}'`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('xAlignment')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Input: "${input}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        quantitySelectorOutputs.forEach(async (output) => {
+            describe(`OUTPUT: '${output}'`, async function () {
+                switch (output) {
+                    case 'elementClick':
+                        it(`it '${output}'`, async function () {
+                            expect(quantitySelectorOutputsTitles.includes('elementClick')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'valueChange':
+                        it(`it '${output}'`, async function () {
+                            expect(quantitySelectorOutputsTitles.includes('valueChange')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Output: "${output}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        describe(`**STORIES`, async function () {
+            quantitySelectorSubFoldersHeaders.forEach(async (header, index) => {
+                describe(`"${header}"`, async function () {
+                    it(`Navigate to story`, async function () {
+                        await driver.switchToDefaultContent();
+                        await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
+                        driver.sleep(0.1 * 1000);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Story: '${header}'`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                    it(`validate story header`, async function () {
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                        const headerText = header
+                            .toLowerCase()
+                            .replace(/\s/g, '-')
+                            .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
+                        console.info('at validate story header -> headerText: ', headerText);
+                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
+                        const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
+                        expect(storyHeader.trim()).equals(header);
+                    });
+                    // TODO: add tests
+                    // it(`it '${header}'`, async function () { });
+                });
             });
         });
     });

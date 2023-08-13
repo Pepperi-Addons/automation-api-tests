@@ -12,8 +12,16 @@ export class StorybookComponent extends AddonPage {
     public OutputRow: By = By.xpath(
         `//div[contains(@class,"css")]//table//tbody//span[text()="outputs"]/ancestor::tr/following-sibling::tr`,
     );
+    public MethodRow: By = By.xpath(
+        `//div[contains(@class,"css")]//table//tbody//span[text()="methods"]/ancestor::tr/following-sibling::tr`,
+    );
+    public PropertyRow: By = By.xpath(
+        `//div[contains(@class,"css")]//table//tbody//span[text()="properties"]/ancestor::tr/following-sibling::tr`,
+    );
     public InputTitle: By = By.xpath(`${this.InputsRow.value}/td[1]/span`);
     public OutputTitle: By = By.xpath(`${this.OutputRow.value}/td[1]/span`);
+    public MethodTitle: By = By.xpath(`${this.MethodRow.value}/td[1]/span`);
+    public PropertyTitle: By = By.xpath(`${this.PropertyRow.value}/td[1]/span`);
 
     public async getMainExampleContentSelecor(componentText: string): Promise<By> {
         return By.xpath(`//div[contains(@id,'anchor')]//div[contains(@id,'${componentText}')]`);
@@ -73,6 +81,37 @@ export class StorybookComponent extends AddonPage {
                 return await titleElement.getText();
             }),
         );
-        return outputTitles;
+        const methodsIndex = outputTitles.findIndex((element) => {
+            return element === 'METHODS';
+        });
+        const cleanedFromMethods_outputTitles =
+            methodsIndex !== -1 ? outputTitles.splice(0, methodsIndex) : outputTitles;
+        return cleanedFromMethods_outputTitles;
+    }
+
+    public async getMethodsTitles(): Promise<string[]> {
+        const methodsTitlesElements = await this.browser.findElements(this.MethodTitle);
+        const methodsTitles = await Promise.all(
+            methodsTitlesElements.map(async (titleElement) => {
+                return await titleElement.getText();
+            }),
+        );
+        return methodsTitles;
+    }
+
+    public async getPropertiesTitles(): Promise<string[]> {
+        const propertiesTitlesElements = await this.browser.findElements(this.PropertyTitle);
+        const propertiesTitles = await Promise.all(
+            propertiesTitlesElements.map(async (titleElement) => {
+                return await titleElement.getText();
+            }),
+        );
+        const outputsIndex = propertiesTitles.findIndex((element) => {
+            return element === 'OUTPUTS';
+        });
+        console.info('outputsIndex: ', outputsIndex);
+        const cleanedFromOutputs_propertiesTitles =
+            outputsIndex !== -1 ? propertiesTitles.splice(0, outputsIndex) : propertiesTitles;
+        return cleanedFromOutputs_propertiesTitles;
     }
 }

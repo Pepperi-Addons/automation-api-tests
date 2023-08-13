@@ -11,6 +11,7 @@ chai.use(promised);
 
 export async function StorybookColorPickerTests() {
     const colorPickerInputs = ['label', 'disabled', 'showAAComplient', 'showTitle', 'type', 'value', 'xAlignment'];
+    const colorPickerOutputs = ['valueChange'];
     const colorPickerSubFoldersHeaders = [
         'Type is main',
         'Type is success',
@@ -22,6 +23,8 @@ export async function StorybookColorPickerTests() {
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let colorPicker: ColorPicker;
+    let colorPickerInputsTitles;
+    let colorPickerOutputsTitles;
 
     describe('Storybook "ColorPicker" Tests Suite', function () {
         this.retries(0);
@@ -69,65 +72,91 @@ export async function StorybookColorPickerTests() {
             });
             it(`Overview Test of ** ColorPicker ** Component`, async function () {
                 await colorPicker.doesColorPickerComponentFound();
-                const colorPickerInputsTitles = await colorPicker.getInputsTitles();
+                colorPickerInputsTitles = await colorPicker.getInputsTitles();
                 console.info('colorPickerInputsTitles:', JSON.stringify(colorPickerInputsTitles, null, 2));
+                colorPickerOutputsTitles = await colorPicker.getOutputsTitles();
+                console.info('colorPickerOutputsTitles:', JSON.stringify(colorPickerOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 expect(colorPickerInputsTitles).to.eql(colorPickerInputs);
+                expect(colorPickerOutputsTitles).to.eql(colorPickerOutputs);
                 driver.sleep(5 * 1000);
             });
         });
         colorPickerInputs.forEach(async (input) => {
-            describe(`'${input}' Input`, async function () {
+            describe(`INPUT: '${input}'`, async function () {
                 switch (input) {
                     case 'label':
                         it(`it '${input}'`, async function () {
                             expect(colorPickerInputs.includes('label')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'disabled':
                         it(`it '${input}'`, async function () {
                             expect(colorPickerInputs.includes('disabled')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'showAAComplient':
                         it(`it '${input}'`, async function () {
                             expect(colorPickerInputs.includes('showAAComplient')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'showTitle':
                         it(`it '${input}'`, async function () {
                             expect(colorPickerInputs.includes('showTitle')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'type':
                         it(`it '${input}'`, async function () {
                             expect(colorPickerInputs.includes('type')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {
                             expect(colorPickerInputs.includes('value')).to.be.true;
                         });
+                        // TODO
                         break;
                     case 'xAlignment':
                         it(`it '${input}'`, async function () {
                             expect(colorPickerInputs.includes('xAlignment')).to.be.true;
                         });
+                        // TODO
                         break;
 
                     default:
-                        break;
+                        throw new Error(`Input: "${input}" is not covered in switch!`);
+                    // break;
                 }
             });
         });
+        colorPickerOutputs.forEach(async (output) => {
+            describe(`OUTPUT: '${output}'`, async function () {
+                switch (output) {
+                    case 'valueChange':
+                        it(`it '${output}'`, async function () {
+                            expect(colorPickerOutputsTitles.includes('valueChange')).to.be.true;
+                        });
+                        // TODO
+                        break;
 
-        describe(`***STORIES`, async function () {
+                    default:
+                        throw new Error(`Output: "${output}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        describe(`**STORIES`, async function () {
             colorPickerSubFoldersHeaders.forEach(async (header, index) => {
-                describe(`'${header}'`, async function () {
+                describe(`"${header}"`, async function () {
                     it(`Navigate to story`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
@@ -137,32 +166,35 @@ export async function StorybookColorPickerTests() {
                             title: `Story: '${header}'`,
                             value: 'data:image/png;base64,' + base64ImageComponent,
                         });
-                        // await driver.switchTo(attachment.IframeElement);
                     });
                     it(`validate story header`, async function () {
                         await driver.switchTo(storyBookPage.StorybookIframe);
-                        let headerText = '';
-                        switch (header) {
-                            case 'Type is main':
-                            case 'Type is success':
-                            case 'Type is caution':
-                            case 'Set stating color':
-                                headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
-                                break;
-                            case "Isn't AA compliant":
-                                headerText = header.toLowerCase().replace("'", '-').replace(' ', '-').replace(' ', '-');
-                                break;
+                        const headerText = header
+                            .toLowerCase()
+                            .replace(/\s/g, '-')
+                            .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
+                        // let headerText = '';
+                        // switch (header) {
+                        //     case 'Type is main':
+                        //     case 'Type is success':
+                        //     case 'Type is caution':
+                        //     case 'Set stating color':
+                        //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
+                        //         break;
+                        //     case "Isn't AA compliant":
+                        //         headerText = header.toLowerCase().replace("'", '-').replace(' ', '-').replace(' ', '-');
+                        //         break;
 
-                            default:
-                                throw new Error(`Header: "${header}" is not covered in switch!`);
-                            // break;
-                        }
+                        //     default:
+                        //         throw new Error(`Header: "${header}" is not covered in switch!`);
+                        //     // break;
+                        // }
                         console.info('at validate story header -> headerText: ', headerText);
                         const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
-                    // add test
+                    // TODO: add tests
                     // it(`it '${header}'`, async function () { });
                 });
             });

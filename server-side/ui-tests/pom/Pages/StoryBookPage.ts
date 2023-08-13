@@ -15,6 +15,7 @@ export class StoryBookPage extends Page {
     public GenericFolderById: By = By.xpath(`//button[@id="components-{placeholder}"]`);
     public GenericSubFolder: By = By.xpath(`//a[contains(@data-item-id,"{placeholder}")]`);
     public GenericSubFolderById: By = By.xpath(`//a[contains(@id,"{placeholder}")]`);
+    public GenericStoryBase: By = By.xpath(`//div[contains(@id,"base-")]`);
     public GenericStoryHeaderDiv: By = By.xpath(`//div[contains(@id,"{placeholder}")]`);
     public GenericStoryHeaderById: By = By.xpath(`//h3[contains(@id,"{placeholder}")]`);
 
@@ -159,9 +160,14 @@ export class StoryBookPage extends Page {
     }
 
     public async getStorySelectorByText(storyIndex: number, txt: string) {
-        const selector =
-            this.GenericStoryHeaderDiv.value.replace('{placeholder}', `--story-${storyIndex}`) +
-            this.GenericStoryHeaderById.value.replace('{placeholder}', txt);
+        let selector;
+        if (storyIndex !== 0) {
+            selector =
+                this.GenericStoryHeaderDiv.value.replace('{placeholder}', `--story-${storyIndex}`) +
+                this.GenericStoryHeaderById.value.replace('{placeholder}', txt);
+        } else {
+            selector = this.GenericStoryBase.value + this.GenericStoryHeaderById.value.replace('{placeholder}', txt);
+        }
         console.info('at getStorySelectorByText -> selector: ', selector);
         return By.xpath(selector);
     }
