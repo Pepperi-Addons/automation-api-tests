@@ -80,7 +80,7 @@ export class StoryBookPage extends Page {
             | 'checkbox'
             | 'chips'
             | 'color-picker'
-            | 'date-time'
+            | 'date-date-time'
             | 'draggable-items'
             | 'group-buttons'
             | 'icon'

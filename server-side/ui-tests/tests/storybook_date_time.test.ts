@@ -66,7 +66,7 @@ export async function StorybookDateTimeTests() {
                 });
             });
             it(`Enter ** DateTime ** Component StoryBook`, async function () {
-                await storyBookPage.chooseComponent('date-time');
+                await storyBookPage.chooseComponent('date-date-time');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
