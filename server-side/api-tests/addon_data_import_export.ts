@@ -67,13 +67,15 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const addonFunctionsFileName = 'dimx24.js';
     const addonExportFunctionName = 'RemoveObject';
     const addonImportFunctionName = 'RemoveColumn1';
+    let adalCreationDate;
+    let adalCreationDateAfterOverwrite;
 
     //#region Upgrade Relations Framework, ADAL And Pepperitest (Jenkins Special Addon) - Code Jobs
     const dimxName = generalService.papiClient['options'].baseURL.includes('staging')
         ? 'Export and Import Framework'
         : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.6.11'],
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
@@ -520,6 +522,13 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     });
 
                     it(`Import Content`, async () => {
+                        const adalService = new ADALService(generalService.papiClient);
+                        adalService.papiClient['options'].addonUUID = addonUUID;
+                        adalService.papiClient['options'].addonSecretKey = secretKey;
+                        adalCreationDate = await adalService.getDataFromSchema(addonUUID, schemaName, {
+                            where: `Key like 'testKeyDIMX%'`,
+                            fields: ['CreationDateTime']
+                        });
                         const relationResponse = await generalService.fetchStatus(
                             JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
                         );
@@ -562,18 +571,27 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     });
 
                     it(`Import Content`, async () => {
+                        debugger;
+                        const adalService = new ADALService(generalService.papiClient);
+                        adalService.papiClient['options'].addonUUID = addonUUID;
+                        adalService.papiClient['options'].addonSecretKey = secretKey;
+                        adalCreationDateAfterOverwrite = await adalService.getDataFromSchema(addonUUID, schemaName, {
+                            where: `Key like 'testKeyDIMX%'`,
+                            fields: ['CreationDateTime']
+                        });
                         const relationResponse = await generalService.fetchStatus(
                             JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
                         );
                         console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI });
                         expect(relationResponse.Body).to.deep.equal([
-                            { Key: 'testKeyDIMX0', Status: 'Insert' },
-                            { Key: 'testKeyDIMX1', Status: 'Insert' },
-                            { Key: 'testKeyDIMX2', Status: 'Insert' },
-                            { Key: 'testKeyDIMX3', Status: 'Insert' },
-                            { Key: 'testKeyDIMX4', Status: 'Insert' },
-                            { Key: 'testKeyDIMX5', Status: 'Insert' },
+                            { Key: 'testKeyDIMX0', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX1', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX2', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX3', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX4', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX5', Status: 'Overwrite' },
                         ]);
+                        expect(adalCreationDate).to.deep.equal(adalCreationDateAfterOverwrite);
                     });
 
                     it(`Post File in JSON Format`, async () => {
@@ -662,6 +680,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     });
 
                     it(`Export the Imported Content`, async () => {
+                        debugger;
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
                         const newDimxExport = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
@@ -968,12 +987,12 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         );
                         console.log({ URL: JSON.parse(dimxExportCsv.AuditInfo.ResultObject).URI });
                         expect(relationResponse.Body).to.deep.equal([
-                            { Key: 'testKeyDIMX0', Status: 'Insert' },
-                            { Key: 'testKeyDIMX1', Status: 'Insert' },
-                            { Key: 'testKeyDIMX2', Status: 'Insert' },
-                            { Key: 'testKeyDIMX3', Status: 'Insert' },
-                            { Key: 'testKeyDIMX4', Status: 'Insert' },
-                            { Key: 'testKeyDIMX5', Status: 'Insert' },
+                            { Key: 'testKeyDIMX0', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX1', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX2', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX3', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX4', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX5', Status: 'Overwrite' },
                         ]);
                     });
 
@@ -3252,14 +3271,14 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     relationResponse.Body[0],
                                     JSON.stringify(dimxImportAfterNoChange.AuditInfo.ResultObject),
                                 ).to.deep.equal({
-                                    Status: 'Insert',
+                                    Status: 'Overwrite',
                                     Key: `testKey${delimiterArr[i]}DIMX0`,
                                 });
                                 expect(
                                     relationResponse.Body[9],
                                     JSON.stringify(dimxImportAfterNoChange.AuditInfo.ResultObject),
                                 ).to.deep.equal({
-                                    Status: 'Insert',
+                                    Status: 'Overwrite',
                                     Key: `testKey${delimiterArr[i]}DIMX9`,
                                 });
                             });
