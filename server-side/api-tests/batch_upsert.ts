@@ -388,7 +388,7 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
         //debugger;
         if (
             logcash.updateDataToTableOverwriteTrue[0].Key == 'testKey2' &&
-            logcash.updateDataToTableOverwriteTrue[0].Status == 'Insert'
+            logcash.updateDataToTableOverwriteTrue[0].Status == 'Overwrite' //'Insert' changed on 14.08.23 - overwrite type
         ) {
             logcash.updateDataToTableOverwriteTrueStatus = true;
         } else {
@@ -479,7 +479,7 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
         const num = 49;
         let tst = 0;
         let tst1 = 0;
-        const object = createObjects(num); // add 9 unique inserts
+        const object = createObjects(num); // add 49 unique inserts
         object[num] = object[num - 1]; // + 1 duplicated key
         //debugger;
         logcash.add50InsertsToTableOverwriteTrue = await generalService
@@ -505,7 +505,8 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
         for (let index = 0; index <= num; index++) {
             if (logcash.add50InsertsToTableOverwriteTrue[index].Status == 'Error') {
                 tst++;
-            } else if (logcash.add50InsertsToTableOverwriteTrue[index].Status == 'Insert') {
+            } else if (logcash.add50InsertsToTableOverwriteTrue[index].Status == 'Ovewrite') {
+                // 'Insert' chnged to overwrite
                 tst1++;
             }
         }
