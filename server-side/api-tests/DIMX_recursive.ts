@@ -755,7 +755,6 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
                         method: 'GET',
                     })
                     .then((res) => res.Body);
-                generalService.sleep(2000);
                 const recursiveImportResourceCDN: any[] = await generalService
                     .fetchStatus(recursiveImportResponse.Resources[0].URI, {
                         method: 'GET',
