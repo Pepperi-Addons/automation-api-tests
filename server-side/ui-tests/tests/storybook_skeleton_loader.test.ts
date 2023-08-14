@@ -10,10 +10,13 @@ import { SkeletonLoader } from '../pom/Pages/StorybookComponents/SkeletonLoader'
 chai.use(promised);
 
 export async function StorybookSkeletonLoaderTests() {
+    const skeletonLoaderInputs = ['lastRowOffset', 'rowHeightType', 'rowsNumber'];
+    const skeletonLoaderSubFoldersHeaders = ['Bigger loader'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let skeletonLoader: SkeletonLoader;
+    let skeletonLoaderInputsTitles;
 
     describe('Storybook "SkeletonLoader" Tests Suite', function () {
         this.retries(0);
@@ -61,15 +64,72 @@ export async function StorybookSkeletonLoaderTests() {
             });
             it(`Overview Test of ** SkeletonLoader ** Component`, async function () {
                 await skeletonLoader.doesSkeletonLoaderComponentFound();
-                const skeletonLoaderInputsTitles = await skeletonLoader.getInputsTitles();
+                skeletonLoaderInputsTitles = await skeletonLoader.getInputsTitles();
                 console.info('skeletonLoaderInputsTitles:', JSON.stringify(skeletonLoaderInputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(skeletonLoaderInputsTitles).to.eql(['lastRowOffset', 'rowHeightType', 'rowsNumber']);
+                expect(skeletonLoaderInputsTitles).to.eql(skeletonLoaderInputs);
                 driver.sleep(5 * 1000);
+            });
+        });
+        skeletonLoaderInputs.forEach(async (input) => {
+            describe(`INPUT: '${input}'`, async function () {
+                switch (input) {
+                    case 'lastRowOffset':
+                        it(`it '${input}'`, async function () {
+                            expect(skeletonLoaderInputsTitles.includes('lastRowOffset')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'rowHeightType':
+                        it(`it '${input}'`, async function () {
+                            expect(skeletonLoaderInputsTitles.includes('rowHeightType')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'rowsNumber':
+                        it(`it '${input}'`, async function () {
+                            expect(skeletonLoaderInputsTitles.includes('rowsNumber')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Input: "${input}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        describe(`**STORIES`, async function () {
+            skeletonLoaderSubFoldersHeaders.forEach(async (header, index) => {
+                describe(`"${header}"`, async function () {
+                    it(`Navigate to story`, async function () {
+                        await driver.switchToDefaultContent();
+                        await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
+                        driver.sleep(0.1 * 1000);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Story: '${header}'`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                    it(`validate story header`, async function () {
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                        const headerText = header
+                            .toLowerCase()
+                            .replace(/\s/g, '-')
+                            .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
+                        console.info('at validate story header -> headerText: ', headerText);
+                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
+                        const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
+                        expect(storyHeader.trim()).equals(header);
+                    });
+                    // TODO: add tests
+                    // it(`it '${header}'`, async function () { });
+                });
             });
         });
     });

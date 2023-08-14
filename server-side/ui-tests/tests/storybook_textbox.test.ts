@@ -10,10 +10,38 @@ import { Textbox } from '../pom/Pages/StorybookComponents/Textbox';
 chai.use(promised);
 
 export async function StorybookTextboxTests() {
+    const textboxInputs = [
+        'label',
+        'value',
+        'disabled',
+        'mandatory',
+        'maxFieldCharacters',
+        'regex',
+        'regexError',
+        'renderError',
+        'renderSymbol',
+        'renderTitle',
+        'showTitle',
+        'textColor',
+        'type',
+        'xAlignment',
+    ];
+    const textboxOutputs = ['valueChange'];
+    const textboxSubFoldersHeaders = [
+        'Currency',
+        'Email',
+        'Max field characters',
+        'Number Decimal',
+        'Number Integer',
+        'Percentage',
+        'Phone',
+    ];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let textbox: Textbox;
+    let textboxInputsTitles;
+    let textboxOutputsTitles;
 
     describe('Storybook "Textbox" Tests Suite', function () {
         this.retries(0);
@@ -29,7 +57,7 @@ export async function StorybookTextboxTests() {
             await driver.quit();
         });
 
-        describe('* Textbox * Component Testing', () => {
+        describe('* Textbox Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -61,30 +89,157 @@ export async function StorybookTextboxTests() {
             });
             it(`Overview Test of ** Textbox ** Component`, async function () {
                 await textbox.doesTextboxComponentFound();
-                const textboxInputsTitles = await textbox.getInputsTitles();
+                textboxInputsTitles = await textbox.getInputsTitles();
                 console.info('textboxInputsTitles:', JSON.stringify(textboxInputsTitles, null, 2));
+                textboxOutputsTitles = await textbox.getOutputsTitles();
+                console.info('textboxOutputsTitles:', JSON.stringify(textboxOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(textboxInputsTitles).to.eql([
-                    'label',
-                    'value',
-                    'disabled',
-                    'mandatory',
-                    'maxFieldCharacters',
-                    'regex',
-                    'regexError',
-                    'renderError',
-                    'renderSymbol',
-                    'renderTitle',
-                    'showTitle',
-                    'textColor',
-                    'type',
-                    'xAlignment',
-                ]);
+                expect(textboxInputsTitles).to.eql(textboxInputs);
+                expect(textboxOutputsTitles).to.eql(textboxOutputs);
                 driver.sleep(5 * 1000);
+            });
+        });
+        textboxInputs.forEach(async (input) => {
+            describe(`INPUT: '${input}'`, async function () {
+                switch (input) {
+                    case 'label':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('label')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'value':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('value')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'disabled':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('disabled')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'mandatory':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('mandatory')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'maxFieldCharacters':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('maxFieldCharacters')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'regex':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('regex')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'regexError':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('regexError')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'renderError':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('renderError')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'renderSymbol':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('renderSymbol')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'renderTitle':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('renderTitle')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'showTitle':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('showTitle')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'textColor':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('textColor')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'type':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('type')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'xAlignment':
+                        it(`it '${input}'`, async function () {
+                            expect(textboxInputsTitles.includes('xAlignment')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Input: "${input}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        textboxOutputs.forEach(async (output) => {
+            describe(`OUTPUT: '${output}'`, async function () {
+                switch (output) {
+                    case 'valueChange':
+                        it(`it '${output}'`, async function () {
+                            expect(textboxOutputsTitles.includes('valueChange')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Output: "${output}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        describe(`**STORIES`, async function () {
+            textboxSubFoldersHeaders.forEach(async (header, index) => {
+                describe(`"${header}"`, async function () {
+                    it(`Navigate to story`, async function () {
+                        await driver.switchToDefaultContent();
+                        await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
+                        driver.sleep(0.1 * 1000);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Story: '${header}'`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                    it(`validate story header`, async function () {
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                        const headerText = header
+                            .toLowerCase()
+                            .replace(/\s/g, '-')
+                            .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
+                        console.info('at validate story header -> headerText: ', headerText);
+                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
+                        const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
+                        expect(storyHeader.trim()).equals(header);
+                    });
+                    // TODO: add tests
+                    // it(`it '${header}'`, async function () { });
+                });
             });
         });
     });

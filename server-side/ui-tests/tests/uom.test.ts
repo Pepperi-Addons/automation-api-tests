@@ -276,7 +276,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                         for (let i = 1; i < 9; i++) {
-                            it(`Plus button clicks (click number ${i})`, async function () {
+                            it(`Plus button (click number ${i})`, async function () {
                                 await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
                                 driver.sleep(1500);
                                 await uom.isSpinnerDone();
@@ -309,7 +309,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         });
                         //1.3. lower qty back to 40 - see price + amount changed everywhere correctly
                         for (let i = 1; i < 9; i++) {
-                            it(`Minus button clicks - lower qty back to 40 [see price + amount changed everywhere correctly] (click number ${i})`, async function () {
+                            it(`Minus button (click number ${i})`, async function () {
                                 await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
                                 driver.sleep(1500);
                                 await uom.isSpinnerDone();
@@ -344,9 +344,9 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                     });
-                    describe('Item [1231]', () => {
+                    describe('Item [1231] - fill the order with boxes & singles', () => {
                         //2. UOM item testing
-                        it('UOM item testing - Box & single', async function () {
+                        it('UOM item testing - UOM1: [Box] & UOM2: [Single]', async function () {
                             //2.1. Box & single
                             workingUomObject = new UomUIObject('1231');
                             //set uom types to double in the upper field and single in lower
@@ -362,7 +362,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         });
                         //2.1.2. fill the order with boxes - the rest in singel items
                         for (let i = 1; i < 4; i++) {
-                            it(`Plus button clicks - fill the order with boxes [the rest in single items] (click number ${i})`, async function () {
+                            it(`Plus button (click number ${i}) [add Box]`, async function () {
                                 await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
                                 driver.sleep(1500);
                                 await uom.isSpinnerDone();
@@ -374,7 +374,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 });
                             });
                         }
-                        it('Nothing changes after plus click on UOM1 - as qty bigger than inventory', async function () {
+                        it('Nothing changes after plus click on UOM1 [Box] - as qty bigger than inventory', async function () {
                             //2.1.3. nothing changes as qty bigger than inventory
                             await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
                             driver.sleep(1500);
@@ -382,11 +382,11 @@ export async function UomTests(email: string, password: string, varPass: string,
                             await uom.testQtysOfItem(workingUomObject, 3, undefined, 39, 39, 39);
                             const base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Expected NO Change (After UOM1 Plus button clicked)`,
+                                title: `Expected NO Change (After UOM1 [Box] Plus button clicked)`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('Filling the rest with single elements', async function () {
+                        it('Filling the rest with Single elements (9)', async function () {
                             //2.1.4. filling the rest with single elements
                             await driver.click(workingUomObject.aoqmUom2Qty);
                             await driver.sendKeys(workingUomObject.aoqmUom2Qty, '9');
@@ -401,7 +401,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('Nothing changes after plus click on UOM2 - as qty bigger than inventory', async function () {
+                        it('Nothing changes after plus click on UOM2 [Single] - as qty bigger than inventory', async function () {
                             //2.1.5. nothing changes as qty bigger than inventory
                             await driver.click(workingUomObject.aoqmUom2PlusQtyButton);
                             driver.sleep(1500);
@@ -409,11 +409,11 @@ export async function UomTests(email: string, password: string, varPass: string,
                             await uom.testQtysOfItem(workingUomObject, 3, 9, 48, 48, 48);
                             const base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Expected NO Change (After UOM2 Plus button clicked)`,
+                                title: `Expected NO Change (After UOM2 [Single] Plus button clicked)`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('Lowering box by 1 and adding 13 singles', async function () {
+                        it('Lowering Box by 1 and adding 13 Singles', async function () {
                             //2.1.6. lowering box by 1 and adding 13 singles
                             await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
                             driver.sleep(1500);
@@ -437,7 +437,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('Nothing changes after plus click on UOM2 - as qty bigger than inventory', async function () {
+                        it('Nothing changes after plus click on UOM2 [Single] - as qty bigger than inventory', async function () {
                             //2.1.7. nothing changes as qty bigger than inventory
                             await driver.click(workingUomObject.aoqmUom2PlusQtyButton);
                             driver.sleep(1500);
@@ -445,14 +445,14 @@ export async function UomTests(email: string, password: string, varPass: string,
                             await uom.testQtysOfItem(workingUomObject, 2, 22, 48, 48, 48);
                             const base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Expected NO Change (After UOM2 Plus button clicked)`,
+                                title: `Expected NO Change (After UOM2 [Single] Plus button clicked)`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
                     });
-                    describe('Item [1232]', () => {
+                    describe('Item [1232] - fill the order with Double & Singles', () => {
                         //2.2. Double & Single
-                        it('UOM item testing - Double & single', async function () {
+                        it('UOM item testing - UOM1: [Double] & UOM2: [Single]', async function () {
                             workingUomObject = new UomUIObject('1232');
                             //set uom types to double in the upper field and single in lower
                             await uom.selectDropBoxByString(workingUomObject.aoqmUom1, 'double');
@@ -465,7 +465,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        it('Fill the qty (24) with double values', async function () {
+                        it('Fill the qty with Doubles (24)', async function () {
                             //2.2.1 fill the qty with double values
                             await driver.click(workingUomObject.aoqmUom1Qty);
                             await driver.sendKeys(workingUomObject.aoqmUom1Qty, '24');
@@ -476,7 +476,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             await uom.testQtysOfItem(workingUomObject, 24, 0, 48, 48 + 24 * 2, 48 + 24 * 2);
                             const base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `aoqmUom1Qty set to 24`,
+                                title: `aoqmUom1Qty [Double] set to 24`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
