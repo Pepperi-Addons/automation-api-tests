@@ -527,7 +527,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         adalService.papiClient['options'].addonSecretKey = secretKey;
                         adalCreationDate = await adalService.getDataFromSchema(addonUUID, schemaName, {
                             where: `Key like 'testKeyDIMX%'`,
-                            fields: ['CreationDateTime']
+                            fields: ['CreationDateTime'],
                         });
                         const relationResponse = await generalService.fetchStatus(
                             JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
@@ -577,7 +577,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         adalService.papiClient['options'].addonSecretKey = secretKey;
                         adalCreationDateAfterOverwrite = await adalService.getDataFromSchema(addonUUID, schemaName, {
                             where: `Key like 'testKeyDIMX%'`,
-                            fields: ['CreationDateTime']
+                            fields: ['CreationDateTime'],
                         });
                         const relationResponse = await generalService.fetchStatus(
                             JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
