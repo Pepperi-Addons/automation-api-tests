@@ -10,10 +10,13 @@ import { Separator } from '../pom/Pages/StorybookComponents/Separator';
 chai.use(promised);
 
 export async function StorybookSeparatorTests() {
+    const separatorInputs = ['label', 'layoutType', 'visible', 'xAlignment'];
+    const separatorSubFoldersHeaders = ['RTL'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let separator: Separator;
+    let separatorInputsTitles;
 
     describe('Storybook "Separator" Tests Suite', function () {
         this.retries(0);
@@ -29,7 +32,7 @@ export async function StorybookSeparatorTests() {
             await driver.quit();
         });
 
-        describe('* Separator * Component Testing', () => {
+        describe('* Separator Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -61,15 +64,78 @@ export async function StorybookSeparatorTests() {
             });
             it(`Overview Test of ** Separator ** Component`, async function () {
                 await separator.doesSeparatorComponentFound();
-                const separatorInputsTitles = await separator.getInputsTitles();
+                separatorInputsTitles = await separator.getInputsTitles();
                 console.info('separatorInputsTitles:', JSON.stringify(separatorInputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(separatorInputsTitles).to.eql(['label', 'layoutType', 'visible', 'xAlignment']);
+                expect(separatorInputsTitles).to.eql(separatorInputs);
                 driver.sleep(5 * 1000);
+            });
+        });
+        separatorInputs.forEach(async (input) => {
+            describe(`INPUT: '${input}'`, async function () {
+                switch (input) {
+                    case 'label':
+                        it(`it '${input}'`, async function () {
+                            expect(separatorInputsTitles.includes('label')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'layoutType':
+                        it(`it '${input}'`, async function () {
+                            expect(separatorInputsTitles.includes('layoutType')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'visible':
+                        it(`it '${input}'`, async function () {
+                            expect(separatorInputsTitles.includes('visible')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'xAlignment':
+                        it(`it '${input}'`, async function () {
+                            expect(separatorInputsTitles.includes('xAlignment')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Input: "${input}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        describe(`**STORIES`, async function () {
+            separatorSubFoldersHeaders.forEach(async (header, index) => {
+                describe(`"${header}"`, async function () {
+                    it(`Navigate to story`, async function () {
+                        await driver.switchToDefaultContent();
+                        await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
+                        driver.sleep(0.1 * 1000);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Story: '${header}'`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                    it(`validate story header`, async function () {
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                        const headerText = header
+                            .toLowerCase()
+                            .replace(/\s/g, '-')
+                            .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
+                        console.info('at validate story header -> headerText: ', headerText);
+                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
+                        const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
+                        expect(storyHeader.trim()).equals(header);
+                    });
+                    // TODO: add tests
+                    // it(`it '${header}'`, async function () { });
+                });
             });
         });
     });

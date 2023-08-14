@@ -10,10 +10,23 @@ import { DraggableItems } from '../pom/Pages/StorybookComponents/DraggableItems'
 chai.use(promised);
 
 export async function StorybookDraggableItemsTests() {
+    const draggableItemsInputs = [
+        'containerId',
+        'dropAreaIds',
+        'items',
+        'showSearch',
+        'title',
+        'titleSizeType',
+        'titleType',
+    ];
+    const draggableItemsOutputs = ['itemDragEnded', 'itemDragStarted'];
+    const draggableItemsSubFoldersHeaders = ['Drag into area', 'Show search box'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let draggableItems: DraggableItems;
+    let draggableItemsInputsTitles;
+    let draggableItemsOutputsTitles;
 
     describe('Storybook "DraggableItems" Tests Suite', function () {
         this.retries(0);
@@ -29,7 +42,7 @@ export async function StorybookDraggableItemsTests() {
             await driver.quit();
         });
 
-        describe('* DraggableItems * Component Testing', () => {
+        describe('* DraggableItems Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -61,23 +74,131 @@ export async function StorybookDraggableItemsTests() {
             });
             it(`Overview Test of ** DraggableItems ** Component`, async function () {
                 await draggableItems.doesDraggableItemsComponentFound();
-                const draggableItemsInputsTitles = await draggableItems.getInputsTitles();
+                draggableItemsInputsTitles = await draggableItems.getInputsTitles();
                 console.info('draggableItemsInputsTitles:', JSON.stringify(draggableItemsInputsTitles, null, 2));
+                draggableItemsOutputsTitles = await draggableItems.getOutputsTitles();
+                console.info('draggableItemsOutputsTitles:', JSON.stringify(draggableItemsOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(draggableItemsInputsTitles).to.eql([
-                    'containerId',
-                    'dropAreaIds',
-                    'items',
-                    'showSearch',
-                    'title',
-                    'titleSizeType',
-                    'titleType',
-                ]);
+                expect(draggableItemsInputsTitles).to.eql(draggableItemsInputs);
+                expect(draggableItemsOutputsTitles).to.eql(draggableItemsOutputs);
                 driver.sleep(5 * 1000);
+            });
+        });
+        draggableItemsInputs.forEach(async (input) => {
+            describe(`INPUT: '${input}'`, async function () {
+                switch (input) {
+                    case 'containerId':
+                        it(`it '${input}'`, async function () {
+                            expect(draggableItemsInputsTitles.includes('containerId')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'dropAreaIds':
+                        it(`it '${input}'`, async function () {
+                            expect(draggableItemsInputsTitles.includes('dropAreaIds')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'items':
+                        it(`it '${input}'`, async function () {
+                            expect(draggableItemsInputsTitles.includes('items')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'showSearch':
+                        it(`it '${input}'`, async function () {
+                            expect(draggableItemsInputsTitles.includes('showSearch')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'title':
+                        it(`it '${input}'`, async function () {
+                            expect(draggableItemsInputsTitles.includes('title')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'titleSizeType':
+                        it(`it '${input}'`, async function () {
+                            expect(draggableItemsInputsTitles.includes('titleSizeType')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'titleType':
+                        it(`it '${input}'`, async function () {
+                            expect(draggableItemsInputsTitles.includes('titleType')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Input: "${input}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        draggableItemsOutputs.forEach(async (output) => {
+            describe(`OUTPUT: '${output}'`, async function () {
+                switch (output) {
+                    case 'itemDragEnded':
+                        it(`it '${output}'`, async function () {
+                            expect(draggableItemsOutputsTitles.includes('itemDragEnded')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'itemDragStarted':
+                        it(`it '${output}'`, async function () {
+                            expect(draggableItemsOutputsTitles.includes('itemDragStarted')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Output: "${output}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
+        describe(`**STORIES`, async function () {
+            draggableItemsSubFoldersHeaders.forEach(async (header, index) => {
+                describe(`"${header}"`, async function () {
+                    it(`Navigate to story`, async function () {
+                        await driver.switchToDefaultContent();
+                        await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
+                        driver.sleep(0.1 * 1000);
+                        const base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Story: '${header}'`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                    });
+                    it(`validate story header`, async function () {
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                        const headerText = header
+                            .toLowerCase()
+                            .replace(/\s/g, '-')
+                            .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
+                        // let headerText = '';
+                        // switch (header) {
+                        //     case 'Empty date-time':
+                        //         headerText = header.toLowerCase().replace(' ', '-');
+                        //         break;
+
+                        //     default:
+                        //         throw new Error(`Header: "${header}" is not covered in switch!`);
+                        //     // break;
+                        // }
+                        console.info('at validate story header -> headerText: ', headerText);
+                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
+                        const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
+                        expect(storyHeader.trim()).equals(header);
+                    });
+                    // TODO: add tests
+                    // it(`it '${header}'`, async function () { });
+                });
             });
         });
     });

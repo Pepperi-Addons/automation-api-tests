@@ -260,6 +260,7 @@ export class Browser {
         this.sleep(1000);
         if (afterClickLocator) await this.click(afterClickLocator);
         if (waitFunction && that) await waitFunction.call(that);
+        // if (waitFunction && this) await waitFunction.call(this);
     }
 
     public async sendKeys(selector: By, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {

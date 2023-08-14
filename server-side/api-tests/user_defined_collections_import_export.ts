@@ -53,20 +53,20 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
     const userName = parsedToken.email;
     let accUUID;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
-        if (userName === 'udcTestingSB@pepperitest.com') {
-            accUUID = '56ea7184-c79d-496c-bb36-912f06f8c297';
+        if (userName === 'UdcImportExportSB@pepperitest.com') {
+            accUUID = 'ed5342d3-76a1-4624-bd6a-618c1cfd34bc';
         } else {
             accUUID = 'b69d4c17-8f68-465b-9d44-f2c3b5b9a1e6';
         }
     } else if (generalService.papiClient['options'].baseURL.includes('/papi.pepperi.com/V1.0')) {
-        if (userName === 'udcTesting@pepperitest.com') {
-            accUUID = 'dbc958f7-e0cd-4014-a5cb-1b1764d4381e';
+        if (userName === 'UdcImportExportProd@pepperitest.com') {
+            accUUID = '866b0e6c-b80b-4390-ac66-280da51a2d84';
         } else {
             accUUID = '33b6922e-0ab1-49b1-ae3f-6981f0a9e324';
         }
     } else {
-        if (userName === 'udcTestingEU2@pepperitest.com') {
-            accUUID = '257cd6cc-3e90-450b-bc16-1dc8f67a2ec8';
+        if (userName === 'UdcImportExportEU@pepperitest.com') {
+            accUUID = 'ac5834eb-6134-409c-9a8f-72e1a0b6e0dc';
         } else {
             accUUID = '44b7e8cb-0b7f-4e33-96da-c9fbe7714400';
         }
@@ -266,7 +266,7 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                 const exportedFileResponse = await generalService.fetchStatus(exportedFileURI, { method: 'GET' });
                 const allUDCRowsInArray = exportedFileResponse.Body.Text.split('\n');
                 expect(allUDCRowsInArray.length).to.equal(10001); //10,000 + header row
-                expect(allUDCRowsInArray[0]).to.equal('myAcc,val1,val2');
+                expect(allUDCRowsInArray[0]).to.equal(bodyToSendExport.Fields);
                 for (let index = 1; index < allUDCRowsInArray.length; index++) {
                     const fileRow = allUDCRowsInArray[index];
                     const fileRowSplit = fileRow.split(',');

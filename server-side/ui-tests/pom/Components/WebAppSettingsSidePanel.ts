@@ -86,7 +86,7 @@ export class WebAppSettingsSidePanel extends Component {
     public async selectSettingsByID(settingsButtonID: string): Promise<void> {
         try {
             const expanded = this.isCategoryExpanded(settingsButtonID);
-            console.info(`this.isCategoryExpanded(settingsButtonID) : ${expanded}`);
+            console.info(`this.isCategoryExpanded(settingsButtonID) : ${JSON.stringify(expanded, null, 2)}`);
             const mat_expansion_panel_header_selector = `//*[@id="${settingsButtonID}"]/ancestor::mat-expansion-panel-header[@aria-expanded="false"]`;
             const isNotExpanded = await this.browser.isElementVisible(By.xpath(mat_expansion_panel_header_selector));
             if (isNotExpanded) {
