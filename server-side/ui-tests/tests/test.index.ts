@@ -920,8 +920,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 throw new Error(`Error: got exception trying to get test Names: ${(error as any).message} `);
             }
             //4. iterate on all test names and call each
-            for (let index = 0; index < 1; index++) {
-                //testsList.length
+            for (let index = 0; index < testsList.length; index++) {
                 const currentTestName = testsList[index];
                 const body = prepareTestBody(addonName, currentTestName, addonUUID);
                 console.log(
