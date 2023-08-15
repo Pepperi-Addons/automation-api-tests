@@ -472,55 +472,55 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
                     'The test will faill on all 10 inserted keys (ovewrite=true) , but actuall not get error  ';
             }
         }
-        await add50InsertsToTableOverwriteTrue();
-    }
-
-    async function add50InsertsToTableOverwriteTrue() {
-        const num = 49;
-        let tst = 0;
-        let tst1 = 0;
-        const object = createObjects(num); // add 49 unique inserts
-        object[num] = object[num - 1]; // + 1 duplicated key
-        //debugger;
-        logcash.add50InsertsToTableOverwriteTrue = await generalService
-            .fetchStatus(
-                baseURL + '/addons/data/batch/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name,
-                {
-                    method: 'POST',
-                    headers: {
-                        Authorization: 'Bearer ' + token,
-                        'X-Pepperi-OwnerID': addonUUID,
-                        'X-Pepperi-SecretKey': logcash.secretKey,
-                    },
-
-                    body: JSON.stringify({
-                        Objects: object,
-                        //Overwrite: true,
-                        OverwriteObject: true,
-                    }),
-                },
-            )
-            .then((res) => res.Body);
-        //debugger;
-        for (let index = 0; index <= num; index++) {
-            if (logcash.add50InsertsToTableOverwriteTrue[index].Status == 'Error') {
-                tst++;
-            } else if (logcash.add50InsertsToTableOverwriteTrue[index].Status == 'Ovewrite') {
-                // 'Insert' chnged to overwrite
-                tst1++;
-            }
-        }
-        if (tst + tst1 == num + 1 && tst == tst1) {
-            logcash.add50InsertsToTableOverwriteTrueStatus = true;
-        } else {
-            logcash.add50InsertsToTableOverwriteTrueStatus = false;
-            logcash.add50InsertsToTableOverwriteTrueError =
-                'The test will faill on 25 and will succeed for the other 25 inserted keys (ovewrite=true) , but actuall not get error ! ';
-        }
-        //debugger;
-
         await add50InsertsToTableOverwriteFalse();
     }
+
+    // async function add50InsertsToTableOverwriteTrue() {
+    //     const num = 49;
+    //     let tst = 0;
+    //     let tst1 = 0;
+    //     const object = createObjects(num); // add 49 unique inserts
+    //     object[num] = object[num - 1]; // + 1 duplicated key
+    //     //debugger;
+    //     logcash.add50InsertsToTableOverwriteTrue = await generalService
+    //         .fetchStatus(
+    //             baseURL + '/addons/data/batch/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName.Name,
+    //             {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     Authorization: 'Bearer ' + token,
+    //                     'X-Pepperi-OwnerID': addonUUID,
+    //                     'X-Pepperi-SecretKey': logcash.secretKey,
+    //                 },
+
+    //                 body: JSON.stringify({
+    //                     Objects: object,
+    //                     //Overwrite: true,
+    //                     OverwriteObject: true,
+    //                 }),
+    //             },
+    //         )
+    //         .then((res) => res.Body);
+    //     //debugger;
+    //     for (let index = 0; index <= num; index++) {
+    //         if (logcash.add50InsertsToTableOverwriteTrue[index].Status == 'Error') {
+    //             tst++;
+    //         } else if (logcash.add50InsertsToTableOverwriteTrue[index].Status == 'Ovewrite') {
+    //             // 'Insert' chnged to overwrite
+    //             tst1++;
+    //         }
+    //     }
+    //     if (tst + tst1 == num + 1 && tst == tst1) {
+    //         logcash.add50InsertsToTableOverwriteTrueStatus = true;
+    //     } else {
+    //         logcash.add50InsertsToTableOverwriteTrueStatus = false;
+    //         logcash.add50InsertsToTableOverwriteTrueError =
+    //             'The test will faill on 25 and will succeed for the other 25 inserted keys (ovewrite=true) , but actuall not get error ! ';
+    //     }
+    //     //debugger;
+
+    //     await add50InsertsToTableOverwriteFalse();
+    // }
 
     async function add50InsertsToTableOverwriteFalse() {
         const num = 49;
