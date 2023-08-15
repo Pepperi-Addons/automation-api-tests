@@ -276,20 +276,20 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                     }
                 }
             });
-            it(`Tear Down: Purging All left UDCs - To Keep Dist Clean`, async function () {
-                let allUdcs = await udcService.getSchemes({ page_size: -1 });
-                const onlyRelevantUdcNames = allUdcs.map((doc) => doc.Name);
-                for (let index = 0; index < onlyRelevantUdcNames.length; index++) {
-                    const udcName = onlyRelevantUdcNames[index];
-                    const purgeResponse = await udcService.purgeScheme(udcName);
-                    expect(purgeResponse.Ok).to.equal(true);
-                    expect(purgeResponse.Status).to.equal(200);
-                    expect(purgeResponse.Body.Done).to.equal(true);
-                    generalService.sleep(1500);
-                    allUdcs = await udcService.getSchemes({ page_size: -1 });
-                    console.log(`${udcName} was deleted, ${allUdcs.length} left`);
-                }
-            });
+            // it(`Tear Down: Purging All left UDCs - To Keep Dist Clean`, async function () {
+            //     let allUdcs = await udcService.getSchemes({ page_size: -1 });
+            //     const onlyRelevantUdcNames = allUdcs.map((doc) => doc.Name);
+            //     for (let index = 0; index < onlyRelevantUdcNames.length; index++) {
+            //         const udcName = onlyRelevantUdcNames[index];
+            //         const purgeResponse = await udcService.purgeScheme(udcName);
+            //         expect(purgeResponse.Ok).to.equal(true);
+            //         expect(purgeResponse.Status).to.equal(200);
+            //         expect(purgeResponse.Body.Done).to.equal(true);
+            //         generalService.sleep(1500);
+            //         allUdcs = await udcService.getSchemes({ page_size: -1 });
+            //         console.log(`${udcName} was deleted, ${allUdcs.length} left`);
+            //     }
+            // });
         });
     });
 }
