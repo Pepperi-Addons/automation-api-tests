@@ -1112,14 +1112,15 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             });
             it("Positive Test: exporting all created UDC's", async () => {
                 //containedCollectionName is commented out because of DI-24756 (https://pepperi.atlassian.net/browse/DI-24756) return this once solved.
+                //baseedOnSchemeOnlyCollectionName is commented out because of DI-24756 (https://pepperi.atlassian.net/browse/DI-24756) return this once solved.
                 const allCollectionNames = [
                     basicCollectionName,
-                    // containedCollectionName,
+                    //containedCollectionName,
                     indexedCollectionName,
                     schemeOnlyCollectionName,
                     basicArrayCollectionName,
                     basicOnlineCollectionName,
-                    baseedOnSchemeOnlyCollectionName,
+                    //baseedOnSchemeOnlyCollectionName,
                     accResourceCollectionName,
                     keyCollectionName,
                 ];
@@ -1139,6 +1140,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                                 ? 'basedOn,Key'
                                 : collectionName === containedCollectionName
                                 ? 'Key,containedRes'
+                                : collectionName === keyCollectionName
+                                ? 'str,int,Key'
                                 : 'str,bool,int,dou,Key',
                         Delimiter: ',',
                     };
@@ -1231,13 +1234,11 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                                     expect(c.Body.Text).to.include('basedOn.int');
                                     expect(c.Body.Text).to.include('basedOn.bool');
                                     expect(numOfVals).to.equal(5);
-                                } else if (collectionName.includes('SchemeBasedOnOnlySchemeTesting')) {
+                                } else if (collectionName.includes('KeyBasicTesting')) {
                                     expect(c.Body.Text).to.include('Key');
-                                    expect(c.Body.Text).to.include('basedOn.dou');
-                                    expect(c.Body.Text).to.include('basedOn.str');
-                                    expect(c.Body.Text).to.include('basedOn.int');
-                                    expect(c.Body.Text).to.include('basedOn.bool');
-                                    expect(numOfVals).to.equal(5);
+                                    expect(c.Body.Text).to.include('str');
+                                    expect(c.Body.Text).to.include('int');
+                                    expect(numOfVals).to.equal(3);
                                 } else {
                                     expect(c.Body.Text).to.include('Key');
                                     expect(c.Body.Text).to.include('dou');

@@ -87,63 +87,27 @@ export async function StorybookSearchTests() {
         searchInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 switch (input) {
-                    case 'label':
-                        it(`it '${input}'`, async function () {
-                            expect(searchInputsTitles.includes('label')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'rowSpan':
-                        it(`it '${input}'`, async function () {
-                            expect(searchInputsTitles.includes('rowSpan')).to.be.true;
-                        });
-                        // TODO
-                        break;
                     case 'value':
                         it(`it '${input}'`, async function () {
                             expect(searchInputsTitles.includes('value')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'disabled':
+                    case 'shrink':
                         it(`it '${input}'`, async function () {
-                            expect(searchInputsTitles.includes('disabled')).to.be.true;
+                            expect(searchInputsTitles.includes('shrink')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'inlineMode':
+                    case 'sizeType':
                         it(`it '${input}'`, async function () {
-                            expect(searchInputsTitles.includes('inlineMode')).to.be.true;
+                            expect(searchInputsTitles.includes('sizeType')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'mandatory':
+                    case 'triggerOn':
                         it(`it '${input}'`, async function () {
-                            expect(searchInputsTitles.includes('mandatory')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'maxFieldCharacters':
-                        it(`it '${input}'`, async function () {
-                            expect(searchInputsTitles.includes('maxFieldCharacters')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'showTitle':
-                        it(`it '${input}'`, async function () {
-                            expect(searchInputsTitles.includes('showTitle')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'visible':
-                        it(`it '${input}'`, async function () {
-                            expect(searchInputsTitles.includes('visible')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'xAlignment':
-                        it(`it '${input}'`, async function () {
-                            expect(searchInputsTitles.includes('xAlignment')).to.be.true;
+                            expect(searchInputsTitles.includes('triggerOn')).to.be.true;
                         });
                         // TODO
                         break;
@@ -173,9 +137,9 @@ export async function StorybookSearchTests() {
         searchOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
                 switch (output) {
-                    case 'valueChange':
+                    case 'search':
                         it(`it '${output}'`, async function () {
-                            expect(searchOutputsTitles.includes('valueChange')).to.be.true;
+                            expect(searchOutputsTitles.includes('search')).to.be.true;
                         });
                         // TODO
                         break;
