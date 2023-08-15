@@ -167,8 +167,7 @@ export class StoryBookPage extends Page {
             selector =
                 this.GenericStoryHeaderDiv.value.replace('{placeholder}', `--story-${storyIndex}`) +
                 this.GenericStoryHeaderById.value.replace('{placeholder}', txt);
-        }
-        if (storyIndex === 0) {
+        } else if (storyIndex === 0) {
             selector = this.GenericStoryBase.value + this.GenericStoryHeaderById.value.replace('{placeholder}', txt);
         } else {
             selector =
