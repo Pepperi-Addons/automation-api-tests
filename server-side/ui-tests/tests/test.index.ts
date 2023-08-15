@@ -472,7 +472,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await StorybookImageFilmstripTests();
     }
 
-    if (tests.includes('StorybookImage')) {
+    if (tests === 'StorybookImage') {
         await StorybookImageTests();
     }
 

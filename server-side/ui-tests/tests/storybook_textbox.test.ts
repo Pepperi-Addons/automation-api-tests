@@ -80,6 +80,7 @@ export async function StorybookTextboxTests() {
                 });
             });
             it(`Enter ** Textbox ** Component StoryBook`, async function () {
+                await driver.scrollToElement(storyBookPage.SidebarServicesHeader); // for the purpose of navigating to the area of 'textbox' at sidebar menu
                 await storyBookPage.chooseComponent('textbox');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -214,11 +215,15 @@ export async function StorybookTextboxTests() {
             });
         });
         describe(`**STORIES`, async function () {
-            textboxSubFoldersHeaders.forEach(async (header, index) => {
+            textboxSubFoldersHeaders.forEach(async (header) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story`, async function () {
                         await driver.switchToDefaultContent();
-                        await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
+                        const headerText = header
+                            .toLowerCase()
+                            .replace(/\s/g, '-')
+                            .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
+                        await storyBookPage.chooseSubFolder(headerText);
                         driver.sleep(0.1 * 1000);
                         const base64ImageComponent = await driver.saveScreenshots();
                         addContext(this, {
@@ -233,7 +238,7 @@ export async function StorybookTextboxTests() {
                             .replace(/\s/g, '-')
                             .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
                         console.info('at validate story header -> headerText: ', headerText);
-                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
+                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(-1, headerText);
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
