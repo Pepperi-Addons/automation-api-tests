@@ -173,7 +173,7 @@ export async function StorybookButtonTests() {
         describe(`**STORIES`, async function () {
             buttonStoriesHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);
@@ -189,34 +189,36 @@ export async function StorybookButtonTests() {
                             .toLowerCase()
                             .replace(/\s/g, '-')
                             .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
-                        // let headerText = '';
-                        // switch (header) {
-                        //     case 'Disabled':
-                        //         headerText = header.toLowerCase();
-                        //         break;
-                        //     case 'Icon on start':
-                        //     case 'Icon on end':
-                        //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
-                        //         break;
-                        //     case 'Icon only':
-                        //         headerText = header.toLowerCase().replace(' ', '-');
-                        //         break;
-                        //     case 'Styles, options and sizes':
-                        //         headerText = header.split(', ')[1].replace(' ', '-').replace(' ', '-');
-                        //         // headerText = 'options-and-sizes';
-                        //         break;
-
-                        //     default:
-                        //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                        //         // break;
-                        // }
                         console.info('at validate story header -> headerText: ', headerText);
                         const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
                     // TODO: add tests
-                    // it(`it '${header}'`, async function () { });
+                    // it(`it '${header}'`, async function () {
+                    // let headerText = '';
+                    // switch (header) {
+                    //     case 'Disabled':
+                    //         headerText = header.toLowerCase();
+                    //         break;
+                    //     case 'Icon on start':
+                    //     case 'Icon on end':
+                    //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
+                    //         break;
+                    //     case 'Icon only':
+                    //         headerText = header.toLowerCase().replace(' ', '-');
+                    //         break;
+                    //     case 'Styles, options and sizes':
+                    //         headerText = header.split(', ')[1].replace(' ', '-').replace(' ', '-');
+                    //         // headerText = 'options-and-sizes';
+                    //         break;
+
+                    //     default:
+                    //         throw new Error(`Header: "${header}" is not covered in switch!`);
+                    //         // break;
+                    // }
+
+                    //});
                 });
             });
         });
