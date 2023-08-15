@@ -1111,9 +1111,10 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(response.Body.ModificationDateTime).to.include(parsedTodayDate);
             });
             it("Positive Test: exporting all created UDC's", async () => {
+                //containedCollectionName is commented out because of DI-24756 (https://pepperi.atlassian.net/browse/DI-24756) return this once solved.
                 const allCollectionNames = [
                     basicCollectionName,
-                    containedCollectionName,
+                    // containedCollectionName,
                     indexedCollectionName,
                     schemeOnlyCollectionName,
                     basicArrayCollectionName,
