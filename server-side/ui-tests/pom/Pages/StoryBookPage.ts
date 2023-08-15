@@ -10,6 +10,8 @@ export class StoryBookPage extends Page {
         `(//span[@role='presentation']//span[contains(text(),'Build')])[1]`,
     );
     public ViewStoryBookButton: By = By.xpath(`//span[contains(text(),'View Storybook')]`);
+    public SidebarComponentsHeader: By = By.xpath(`//button[text()="Components"]`);
+    public SidebarServicesHeader: By = By.xpath(`//button[text()="Services"]`);
     public GenericComponentButton: By = By.xpath(`//button[contains(@data-item-id,"{placeholder}")]`);
     public GenericFolder: By = By.xpath(`//button[contains(@data-item-id,"{placeholder}")]`);
     public GenericFolderById: By = By.xpath(`//button[@id="components-{placeholder}"]`);
@@ -43,7 +45,7 @@ export class StoryBookPage extends Page {
         await this.browser.click(this.ChooseBuildDropDown);
         //2. choose latest build
         await this.browser.click(this.LatestBuildDropDownOption);
-        this.browser.sleep(5000);
+        this.browser.sleep(0.5 * 1000);
     }
 
     public async enterTableOfContents() {
@@ -60,7 +62,7 @@ export class StoryBookPage extends Page {
             folderName,
         );
         await this.browser.click(By.xpath(xpathQueryForComponent));
-        this.browser.sleep(5000);
+        this.browser.sleep(0.5 * 1000);
     }
 
     public async chooseSubFolder(subFolderName: string): Promise<void> {
@@ -71,7 +73,7 @@ export class StoryBookPage extends Page {
         );
         // console.info('at chooseSubFolder -> xpathQueryForComponent: ', xpathQueryForComponent);
         await this.browser.click(By.xpath(xpathQueryForComponent));
-        this.browser.sleep(5000);
+        this.browser.sleep(0.5 * 1000);
     }
 
     public async chooseComponent(
@@ -161,12 +163,16 @@ export class StoryBookPage extends Page {
 
     public async getStorySelectorByText(storyIndex: number, txt: string) {
         let selector;
-        if (storyIndex !== 0) {
+        if (storyIndex > 0) {
             selector =
                 this.GenericStoryHeaderDiv.value.replace('{placeholder}', `--story-${storyIndex}`) +
                 this.GenericStoryHeaderById.value.replace('{placeholder}', txt);
-        } else {
+        } else if (storyIndex === 0) {
             selector = this.GenericStoryBase.value + this.GenericStoryHeaderById.value.replace('{placeholder}', txt);
+        } else {
+            selector =
+                this.GenericStoryHeaderDiv.value.replace('{placeholder}', txt) +
+                this.GenericStoryHeaderById.value.replace('{placeholder}', txt);
         }
         console.info('at getStorySelectorByText -> selector: ', selector);
         return By.xpath(selector);
