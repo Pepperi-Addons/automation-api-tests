@@ -741,7 +741,479 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
+    if (tests.includes('Jenkins_Neptune')) {
+        let isLocal = true;
+        //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
+        if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
+            generalService['client'].AddonSecretKey = await generalService.getSecretKey(
+                generalService['client'].AddonUUID,
+                varPass,
+            );
+            isLocal = false;
+        }
+        let jenkinsLink;
+        // getting VAR credentials for all envs
+        // const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
+        // const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
+        // const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
+        const service = new GeneralService(client);
+        const addonName = addon.toUpperCase();
+        const failedSuitesProd: any[] = [];
+        const failedSuitesEU: any[] = [];
+        const failedSuitesSB: any[] = [];
+        // const arrayOfFailedTests: any[] = [];
+        // const passedTests: string[] = [];
+        // const passedTestsEnv: string[] = [];
+        // const failingTestsEnv: string[] = [];
+        let testsList: string[] = [];
+        const addonUUID = generalService.convertNameToUUIDForDevTests(addonName);
+        if (addonUUID === 'none') {
+            console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
+        } else {
+            const [euUser, prodUser, sbUser] = resolveUserPerTestNeptune(addonName); //
+            console.log(
+                `####################### Running For: ${addonName}(${addonUUID}) - NEPTUNE #######################`,
+            );
+            // 1. install all dependencys latest available versions on testing user + template addon latest available version
+            let latestVersionOfTestedAddonProd, latestVersionOfTestedAddonEu, latestVersionOfTestedAddonSb;
+            try {
+                [latestVersionOfTestedAddonProd] = await generalService.getLatestAvailableVersion(
+                    addonUUID,
+                    varPass,
+                    null,
+                    'prod',
+                );
+                [latestVersionOfTestedAddonEu] = await generalService.getLatestAvailableVersion(
+                    addonUUID,
+                    varPassEU,
+                    null,
+                    'prod',
+                );
+                [latestVersionOfTestedAddonSb] = await generalService.getLatestAvailableVersion(
+                    addonUUID,
+                    varPassSB,
+                    null,
+                    'stage',
+                );
+            } catch (error) {
+                debugger;
+                const errorString = `Error: Couldn't Get Latest Available Versions Of ${addonName}: ${
+                    (error as any).message
+                }`;
+                await reportToTeamsMessageNeptune(
+                    addonName,
+                    addonUUID,
+                    latestVersionOfTestedAddonProd,
+                    errorString,
+                    service,
+                );
+                throw new Error(errorString);
+            }
+            if (
+                latestVersionOfTestedAddonSb !== latestVersionOfTestedAddonEu ||
+                latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonEu ||
+                latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonSb
+            ) {
+                const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`;
+                debugger;
+                await reportToTeamsMessageNeptune(
+                    addonName,
+                    addonUUID,
+                    latestVersionOfTestedAddonProd,
+                    errorString,
+                    service,
+                );
+                throw new Error(errorString);
+            }
+            console.log(
+                `####################### Running For: ${addonName}(${addonUUID}) - NEPTUNE, version: ${latestVersionOfTestedAddonProd} #######################`,
+            );
+            debugger;
+            await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonProd, generalService);
+            // debugger;
+            try {
+                await Promise.all([
+                    handleDevTestInstallation(
+                        euUser,
+                        addonName,
+                        addonUUID,
+                        { describe, expect, it } as TesterFunctions,
+                        varPass,
+                        'prod',
+                    ),
+                    handleDevTestInstallation(
+                        prodUser,
+                        addonName,
+                        addonUUID,
+                        { describe, expect, it } as TesterFunctions,
+                        varPass,
+                        'prod',
+                    ),
+                    handleDevTestInstallation(
+                        sbUser,
+                        addonName,
+                        addonUUID,
+                        { describe, expect, it } as TesterFunctions,
+                        varPassSB,
+                        'stage',
+                    ),
+                ]);
+            } catch (error) {
+                debugger;
+                const errorString = (error as any).message;
+                await reportToTeamsMessageNeptune(
+                    addonName,
+                    addonUUID,
+                    latestVersionOfTestedAddonProd,
+                    errorString,
+                    service,
+                );
+                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            }
+            console.log(
+                `####################### ${addonName} Version: ${latestVersionOfTestedAddonProd} #######################`,
+            );
 
+            debugger;
+            const isInstalled = await Promise.all([
+                validateLatestVersionOfAddonIsInstalled(euUser, addonUUID, latestVersionOfTestedAddonEu, 'prod'),
+                validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddonProd, 'prod'),
+                validateLatestVersionOfAddonIsInstalled(sbUser, addonUUID, latestVersionOfTestedAddonSb, 'stage'),
+            ]);
+            const devPassingEnvs: any[] = [];
+            const devFailedEnvs: any[] = [];
+            for (let index = 0; index < isInstalled.length; index++) {
+                const isTestedAddonInstalled = isInstalled[index];
+                if (isTestedAddonInstalled === false) {
+                    throw new Error(
+                        `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddonProd}`,
+                    );
+                }
+            }
+            debugger;
+            //3. run the test on latest version of the template addon
+            const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
+                '02754342-e0b5-4300-b728-a94ea5e0e8f4',
+                varPass,
+            );
+            console.log(entryUUID);
+            // debugger;
+            //3.1 get test names
+            try {
+                testsList = await getTestNames(
+                    addonName,
+                    prodUser,
+                    'prod',
+                    latestVersionOfAutomationTemplateAddon,
+                    addonUUID,
+                );
+            } catch (error) {
+                debugger;
+                const errorString = `Error: got exception trying to get test Names: ${(error as any).message}`;
+                await reportToTeamsMessageNeptune(
+                    addonName,
+                    addonUUID,
+                    latestVersionOfTestedAddonProd,
+                    errorString,
+                    service,
+                );
+                throw new Error(`Error: got exception trying to get test Names: ${(error as any).message} `);
+            }
+            //4. iterate on all test names and call each
+            for (let index = 0; index < testsList.length; index++) {
+                const currentTestName = testsList[index];
+                const body = prepareTestBody(addonName, currentTestName, addonUUID);
+                console.log(
+                    `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
+                        testsList.length
+                    }  #######################`,
+                );
+                let addonSk = null;
+                if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+                    addonSk = await service.getSecretfromKMS(email, pass, 'AutomationAddonSecretKey');
+                }
+                //4.1. call current test async->
+                const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
+                    //devTestResponseEu,
+                    runDevTestOnCertainEnv(
+                        euUser,
+                        'prod',
+                        latestVersionOfAutomationTemplateAddon,
+                        body,
+                        addonName,
+                        addonSk,
+                    ),
+                    runDevTestOnCertainEnv(
+                        prodUser,
+                        'prod',
+                        latestVersionOfAutomationTemplateAddon,
+                        body,
+                        addonName,
+                        addonSk,
+                    ),
+                    runDevTestOnCertainEnv(
+                        sbUser,
+                        'stage',
+                        latestVersionOfAutomationTemplateAddon,
+                        body,
+                        addonName,
+                        addonSk,
+                    ),
+                ]);
+                //4.2. poll audit log response for each env
+                console.log(
+                    `####################### ${currentTestName}: EXECUTION UUIDS:\nEU - ${devTestResponseEu.Body.URI}\nPROD - ${devTestResponseProd.Body.URI}\nSB - ${devTestResponseSb.Body.URI}`,
+                );
+                const testObject = {
+                    name: currentTestName,
+                    prodExecution: devTestResponseProd.Body.URI,
+                    sbExecution: devTestResponseSb.Body.URI,
+                    euExecution: devTestResponseEu.Body.URI,
+                };
+                if (
+                    devTestResponseEu === undefined ||
+                    devTestResponseProd === undefined ||
+                    devTestResponseSb === undefined
+                ) {
+                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
+                    whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
+                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`${errorString}`);
+                }
+                // debugger;
+                const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
+                const devTestResultsProd = await getTestResponseFromAuditLog(
+                    prodUser,
+                    'prod',
+                    devTestResponseProd.Body.URI,
+                );
+                const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
+                //4.3. parse the response
+                let testResultArrayEu;
+                let testResultArrayProd;
+                let testResultArraySB;
+                try {
+                    testResultArrayEu = JSON.parse(devTestResutsEu.AuditInfo.ResultObject);
+                    testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
+                    testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
+                } catch (error) {
+                    debugger;
+                    let errorString = '';
+                    if (!devTestResutsEu.AuditInfo.ResultObject) {
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                    }
+                    if (!devTestResultsProd.AuditInfo.ResultObject) {
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                    }
+                    if (!devTestResultsSb.AuditInfo.ResultObject) {
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                    }
+                    await reportToTeamsMessageNeptune(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                }
+                // debugger;
+                // debugger;
+                //4.4. print results to log
+                //4.5. print the results
+                let objectToPrintEu;
+                let objectToPrintProd;
+                let objectToPrintSB;
+                let shouldAlsoPrintVer = false;
+                if (
+                    testResultArrayProd.results === undefined &&
+                    testResultArraySB.results === undefined &&
+                    testResultArrayEu.results === undefined &&
+                    testResultArrayProd.tests === undefined &&
+                    testResultArraySB.tests === undefined &&
+                    testResultArrayEu.tests === undefined
+                ) {
+                    const errorString = `Cannot Parse Result Object, Recieved: Prod: ${JSON.stringify(
+                        testResultArrayProd,
+                    )}, EU: ${JSON.stringify(testResultArrayEu)}, SB: ${JSON.stringify(
+                        testResultArraySB,
+                    )}, On: ${currentTestName} Test`;
+                    debugger;
+                    await reportToTeamsMessageNeptune(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                }
+                if (
+                    testResultArrayProd.results &&
+                    testResultArrayProd.results[0].suites[0].suites &&
+                    testResultArrayProd.results[0].suites[0].suites.length > 0
+                ) {
+                    shouldAlsoPrintVer = true;
+                    objectToPrintEu = testResultArrayEu.results[0].suites[0].suites;
+                    objectToPrintProd = testResultArrayProd.results[0].suites[0].suites;
+                    objectToPrintSB = testResultArraySB.results[0].suites[0].suites;
+                } else if (testResultArrayProd.results) {
+                    //add an if to catch the other result config also
+                    objectToPrintEu = testResultArrayEu.results[0].suites;
+                    objectToPrintProd = testResultArrayProd.results[0].suites;
+                    objectToPrintSB = testResultArraySB.results[0].suites;
+                } else {
+                    objectToPrintEu = testResultArrayEu.tests;
+                    objectToPrintProd = testResultArrayProd.tests;
+                    objectToPrintSB = testResultArraySB.tests;
+                }
+                for (let index = 0; index < objectToPrintProd.length; index++) {
+                    const result = objectToPrintProd[index];
+                    console.log(`\n***${currentTestName} PROD result object: ${JSON.stringify(result)}***\n`);
+                }
+                for (let index = 0; index < objectToPrintSB.length; index++) {
+                    const result = objectToPrintSB[index];
+                    console.log(`\n***${currentTestName} SB result object: ${JSON.stringify(result)}***\n`);
+                }
+                for (let index = 0; index < objectToPrintEu.length; index++) {
+                    const result = objectToPrintEu[index];
+                    console.log(`\n***${currentTestName} EU result object: ${JSON.stringify(result)}***\n`);
+                }
+                const euResults = await printResultsTestObject(
+                    objectToPrintEu,
+                    euUser,
+                    'prod',
+                    addonUUID,
+                    latestVersionOfTestedAddonProd,
+                );
+                const prodResults = await printResultsTestObject(
+                    objectToPrintProd,
+                    prodUser,
+                    'prod',
+                    addonUUID,
+                    latestVersionOfTestedAddonProd,
+                );
+                const sbResults = await printResultsTestObject(
+                    objectToPrintSB,
+                    sbUser,
+                    'stage',
+                    addonUUID,
+                    latestVersionOfTestedAddonProd,
+                );
+                if (shouldAlsoPrintVer) {
+                    objectToPrintEu = testResultArrayEu.results[0].suites[1].suites;
+                    objectToPrintProd = testResultArrayProd.results[0].suites[1].suites;
+                    objectToPrintSB = testResultArraySB.results[0].suites[1].suites;
+                    await printResultsTestObject(
+                        objectToPrintEu,
+                        euUser,
+                        'prod',
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                    );
+                    await printResultsTestObject(
+                        objectToPrintProd,
+                        prodUser,
+                        'prod',
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                    );
+                    await printResultsTestObject(
+                        objectToPrintSB,
+                        sbUser,
+                        'stage',
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                    );
+                }
+                // debugger;
+                //4.6. create the array of passing / failing tests
+                // debugger;
+                if (euResults.didSucceed) {
+                    devPassingEnvs.push('Eu');
+                } else {
+                    devFailedEnvs.push('Eu');
+                    failedSuitesEU.push({ testName: currentTestName, executionUUID: testObject.euExecution });
+                }
+                if (prodResults.didSucceed) {
+                    devPassingEnvs.push('Production');
+                } else {
+                    devFailedEnvs.push('Production');
+                    failedSuitesProd.push({ testName: currentTestName, executionUUID: testObject.prodExecution });
+                }
+                if (sbResults.didSucceed) {
+                    devPassingEnvs.push('Stage');
+                } else {
+                    devFailedEnvs.push('Stage');
+                    failedSuitesSB.push({ testName: currentTestName, executionUUID: testObject.sbExecution });
+                }
+            }
+            // debugger;
+            const devPassingEnvs2: string[] = [];
+            const devFailedEnvs2: string[] = [];
+            if (
+                devPassingEnvs.filter((v) => v === 'Eu').length === testsList.length &&
+                devFailedEnvs.filter((v) => v === 'Eu').length === 0
+            ) {
+                devPassingEnvs2.push('EU');
+            } else {
+                devFailedEnvs2.push('EU');
+            }
+            if (
+                devPassingEnvs.filter((v) => v === 'Production').length === testsList.length &&
+                devFailedEnvs.filter((v) => v === 'Production').length === 0
+            ) {
+                devPassingEnvs2.push('PROD');
+            } else {
+                devFailedEnvs2.push('PROD');
+            }
+            if (
+                devPassingEnvs.filter((v) => v === 'Stage').length === testsList.length &&
+                devFailedEnvs.filter((v) => v === 'Stage').length === 0
+            ) {
+                devPassingEnvs2.push('STAGING');
+            } else {
+                devFailedEnvs2.push('STAGING');
+            }
+            // debugger;
+            if (isLocal) {
+                jenkinsLink = 'none, running locally';
+            } else {
+                const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
+                const latestRun = await generalService.getLatestJenkinsJobExecutionId(
+                    kmsSecret,
+                    'API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons',
+                );
+                jenkinsLink = `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons/${latestRun}/console`;
+            }
+            debugger;
+            await reportToTeamsNeptune(
+                service,
+                email,
+                pass,
+                addonName,
+                addonUUID,
+                latestVersionOfTestedAddonProd,
+                devPassingEnvs2,
+                devFailedEnvs2,
+                true,
+                [euUser, prodUser, sbUser],
+                failedSuitesProd,
+                failedSuitesEU,
+                failedSuitesSB,
+                jenkinsLink,
+            );
+            console.log('Dev Test Didnt Pass - No Point In Running Approvment');
+        }
+    }
     if (tests.includes('Remote_Jenkins_Handler')) {
         let isLocal = true;
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
@@ -2409,9 +2881,9 @@ export async function handleTeamsURL(addonName, service, email, pass) {
         case 'CPI-DATA': //new teams
         case 'CPI DATA':
             return await service.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
-        case 'GENERIC-RESOURCE': //new teams
-        case 'GENERIC RESOURCE':
-            return await service.getSecretfromKMS(email, pass, 'GenericResourceTeamsWebHook');
+        case 'CORE': //new teams
+        case 'CORE-GENERIC-RESOURCES':
+            return await service.getSecretfromKMS(email, pass, 'CORETeamsWebHook');
         case 'RESOURCE-LIST': //new teams
         case 'RESOURCE LIST':
             return await service.getSecretfromKMS(email, pass, 'ResourceListTeamsWebHook');
@@ -2420,6 +2892,9 @@ export async function handleTeamsURL(addonName, service, email, pass) {
             return await service.getSecretfromKMS(email, pass, 'UDBTeamsWebHook');
         case 'CONFIGURATIONS':
             return await service.getSecretfromKMS(email, pass, 'CONFIGURATIONSTeamsWebHook');
+        case 'GENERIC-RESOURCE': //new teams
+        case 'GENERIC RESOURCE':
+            return await service.getSecretfromKMS(email, pass, 'GenericResourceTeamsWebHook');
     }
 }
 
@@ -2935,11 +3410,137 @@ export async function reportToTeams(
     }
 }
 
+export async function reportToTeamsNeptune(
+    generalService: GeneralService,
+    email,
+    pass,
+    addonName,
+    addonUUID,
+    addonVersion,
+    passingEnvs,
+    failingEnvs,
+    isDev,
+    users?: string[],
+    failedSuitesProd?,
+    failedSuitesEU?,
+    failedSuitesSB?,
+    jenkinsLink?,
+    jobPathPROD?,
+    latestRunProd?,
+    jobPathEU?,
+    latestRunEU?,
+    jobPathSB?,
+    latestRunSB?,
+) {
+    let message;
+    let message2;
+    await reportBuildEnded(addonName, addonUUID, addonVersion, generalService);
+    if (isDev) {
+        const stringUsers = users?.join(',');
+        const uniqFailingEnvs = [...new Set(failingEnvs)];
+        debugger;
+        message = `Dev Test: ${addonName} - (${addonUUID}) - NEPTUNE, Version:${addonVersion}, Test Users:<br>${stringUsers}<br>${
+            passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ') + ' |||'
+        } ${failingEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')},<br>Link: ${jenkinsLink}`;
+        message2 = `${
+            failedSuitesProd.length === 0
+                ? ''
+                : 'FAILED TESTS AND EXECUTION UUIDS:<br>PROD:' +
+                  failedSuitesProd.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+        }${
+            failedSuitesEU.length === 0
+                ? ''
+                : ',<br>EU:' + failedSuitesEU.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+        }${
+            failedSuitesSB.length === 0
+                ? ''
+                : ',<br>SB:' + failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+        }`;
+    } else {
+        message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| ${
+            passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ') + '|||'
+        }  ${failingEnvs.length === 0 ? '' : 'Failed On: ' + failingEnvs.join(', ')}`;
+        message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
+    }
+    const bodyToSend = {
+        Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
+        Description: message,
+        Status: passingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
+        Message: message2 === '' ? '~' : message2,
+        UserWebhook: await handleTeamsURL(addonName, generalService, email, pass),
+    };
+    const monitoringResponse = await generalService.fetchStatus(
+        'https://papi.pepperi.com/v1.0/system_health/notifications',
+        {
+            method: 'POST',
+            headers: {
+                'X-Pepperi-SecretKey': await generalService.getSecret()[1],
+                'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+            },
+            body: JSON.stringify(bodyToSend),
+        },
+    );
+    if (monitoringResponse.Ok !== true) {
+        throw new Error(
+            `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
+                monitoringResponse,
+            )}`,
+        );
+    }
+    if (monitoringResponse.Status !== 200) {
+        throw new Error(
+            `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
+                monitoringResponse,
+            )}`,
+        );
+    }
+    if (Object.keys(monitoringResponse.Error).length !== 0) {
+        throw new Error(
+            `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
+                monitoringResponse,
+            )}`,
+        );
+    }
+}
+
 export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, error, service: GeneralService) {
     await reportBuildEnded(addonName, addonUUID, addonVersion, service);
     const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Failed On: ${error}`;
     const bodyToSend = {
         Name: `${addonName} Approvment Tests Status: Failed Due CI/CD Process Exception`,
+        Description: message,
+        Status: 'ERROR',
+        Message: message,
+        UserWebhook: await handleTeamsURL(addonName, service, email, pass),
+    };
+    const testAddonSecretKey = await service.getSecret()[1];
+    const testAddonUUID = await service.getSecret()[0];
+    debugger;
+    const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
+        method: 'POST',
+        headers: {
+            'X-Pepperi-SecretKey': testAddonSecretKey,
+            'X-Pepperi-OwnerID': testAddonUUID,
+        },
+        body: JSON.stringify(bodyToSend),
+    });
+    debugger;
+    if (monitoringResponse.Ok !== true) {
+        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+    }
+    if (monitoringResponse.Status !== 200) {
+        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+    }
+    if (Object.keys(monitoringResponse.Error).length !== 0) {
+        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+    }
+}
+
+export async function reportToTeamsMessageNeptune(addonName, addonUUID, addonVersion, error, service: GeneralService) {
+    await reportBuildEnded(addonName, addonUUID, addonVersion, service);
+    const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Failed On: ${error}`;
+    const bodyToSend = {
+        Name: `${addonName} - NEPTUNE Approvment Tests Status: Failed Due CI/CD Process Exception`,
         Description: message,
         Status: 'ERROR',
         Message: message,
@@ -3040,6 +3641,7 @@ function resolveUserPerTest(addonName): any[] {
         case 'SYNC':
             return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JSB@pepperitest.com']; //'syncNeo4JProd@pepperitest.com',
         case 'CORE':
+        case 'CORE-GENERIC-RESOURCES':
             return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
         case 'CONFIGURATIONS':
             return ['configEU@pepperitest.com', 'configProd@pepperitest.com', 'configSB@pepperitest.com'];
@@ -3050,6 +3652,19 @@ function resolveUserPerTest(addonName): any[] {
                 'UserDefinedBlocksEUApp5@pepperitest.com',
                 'UserDefinedBlocksSBApp2@pepperitest.com',
             ];
+        default:
+            return [];
+    }
+}
+
+function resolveUserPerTestNeptune(addonName): any[] {
+    switch (addonName) {
+        case 'NEBULA': //0.7.x neo4j
+            return [
+                '⁠NebulaNeptuneEU@pepperitest.com',
+                '⁠NebulaNeptuneProd@pepperitest.com',
+                'NebulaNeptuneSB@pepperitest.com',
+            ]; //
         default:
             return [];
     }
@@ -3176,7 +3791,7 @@ async function runDevTestOnCertainEnv(
         urlToCall = '/addons/api/async/cebb251f-1c80-4d80-b62c-442e48e678e8/tests/tests';
     } else if (addonName === 'SYNC') {
         urlToCall = '/addons/api/async/5122dc6d-745b-4f46-bb8e-bd25225d350a/tests/tests';
-    } else if (addonName === 'CORE') {
+    } else if (addonName === 'CORE' || addonName === 'CORE-GENERIC-RESOURCES') {
         urlToCall = '/addons/api/async/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/tests/tests';
     } else if (addonName === 'CONFIGURATIONS') {
         urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
@@ -3229,7 +3844,7 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getSyncTests(user, 'prod');
     } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
         return await getDataIndexTests(user, 'prod');
-    } else if (addonName === 'CORE') {
+    } else if (addonName === 'CORE' || addonName === 'CORE-GENERIC-RESOURCES') {
         return await getCoreTests(user, 'prod');
     } else if (addonName === 'USER DEFINED BLOCKS' || addonName === 'UDB') {
         return await getUDBTests(user, 'prod');
@@ -3263,6 +3878,7 @@ function prepareTestBody(addonName, currentTestName, addonUUID) {
         addonName === 'DATA INDEX' ||
         addonName === 'DATA-INDEX' ||
         addonName === 'CORE' ||
+        addonName === 'CORE-GENERIC-RESOURCES' ||
         addonName === 'UDB' ||
         addonName === 'CONFIGURATIONS' ||
         addonName === 'USER DEFINED BLOCKS'
