@@ -62,7 +62,7 @@ export async function StorybookImageFilmstripTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** ImageFilmstrip ** Component StoryBook`, async function () {
+            it(`Enter ** ImageFilmstrip ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('image-filmstrip');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -70,7 +70,7 @@ export async function StorybookImageFilmstripTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** ImageFilmstrip ** Component`, async function () {
+            it(`Overview Test of ** ImageFilmstrip ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await imageFilmstrip.doesImageFilmstripComponentFound();
                 imageFilmstripInputsTitles = await imageFilmstrip.getInputsTitles();
                 console.info('imageFilmstripInputsTitles:', JSON.stringify(imageFilmstripInputsTitles, null, 2));
@@ -138,7 +138,7 @@ export async function StorybookImageFilmstripTests() {
         describe(`**STORIES`, async function () {
             imageFilmstripSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);

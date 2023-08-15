@@ -67,7 +67,7 @@ export async function StorybookSelectPanelTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** SelectPanel ** Component StoryBook`, async function () {
+            it(`Enter ** SelectPanel ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('select-panel');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -75,7 +75,7 @@ export async function StorybookSelectPanelTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** SelectPanel ** Component`, async function () {
+            it(`Overview Test of ** SelectPanel ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await selectPanel.doesSelectPanelComponentFound();
                 selectPanelInputsTitles = await selectPanel.getInputsTitles();
                 console.info('selectPanelInputsTitles:', JSON.stringify(selectPanelInputsTitles, null, 2));
@@ -180,7 +180,7 @@ export async function StorybookSelectPanelTests() {
         describe(`**STORIES`, async function () {
             selectPanelSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);

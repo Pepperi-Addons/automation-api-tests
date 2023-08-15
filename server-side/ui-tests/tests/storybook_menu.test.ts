@@ -66,7 +66,7 @@ export async function StorybookMenuTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Menu ** Component StoryBook`, async function () {
+            it(`Enter ** Menu ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('menu');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -74,7 +74,7 @@ export async function StorybookMenuTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Menu ** Component`, async function () {
+            it(`Overview Test of ** Menu ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await menu.doesMenuComponentFound();
                 menuInputsTitles = await menu.getInputsTitles();
                 console.info('menuInputsTitles:', JSON.stringify(menuInputsTitles, null, 2));
@@ -179,7 +179,7 @@ export async function StorybookMenuTests() {
         describe(`**STORIES`, async function () {
             menuSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);

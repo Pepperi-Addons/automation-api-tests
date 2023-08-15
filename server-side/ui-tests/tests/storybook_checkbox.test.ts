@@ -73,7 +73,7 @@ export async function StorybookCheckboxTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Checkbox ** Component StoryBook`, async function () {
+            it(`Enter ** Checkbox ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('checkbox');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -81,7 +81,7 @@ export async function StorybookCheckboxTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Checkbox ** Component`, async function () {
+            it(`Overview Test of ** Checkbox ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await checkbox.doesCheckboxComponentFound();
                 checkboxInputsTitles = await checkbox.getInputsTitles();
                 console.info('checkboxInputsTitles:', JSON.stringify(checkboxInputsTitles, null, 2));

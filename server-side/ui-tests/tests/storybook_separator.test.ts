@@ -54,7 +54,7 @@ export async function StorybookSeparatorTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Separator ** Component StoryBook`, async function () {
+            it(`Enter ** Separator ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('separator');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -62,7 +62,7 @@ export async function StorybookSeparatorTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Separator ** Component`, async function () {
+            it(`Overview Test of ** Separator ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await separator.doesSeparatorComponentFound();
                 separatorInputsTitles = await separator.getInputsTitles();
                 console.info('separatorInputsTitles:', JSON.stringify(separatorInputsTitles, null, 2));
@@ -112,7 +112,7 @@ export async function StorybookSeparatorTests() {
         describe(`**STORIES`, async function () {
             separatorSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);

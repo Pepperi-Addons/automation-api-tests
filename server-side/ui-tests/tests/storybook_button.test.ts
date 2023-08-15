@@ -66,7 +66,7 @@ export async function StorybookButtonTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Button ** Component StoryBook`, async function () {
+            it(`Enter ** Button ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('button');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -74,7 +74,7 @@ export async function StorybookButtonTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Button ** Component`, async function () {
+            it(`Overview Test of ** Button ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await button.doesButtonComponentFound();
                 buttonInputsTitles = await button.getInputsTitles();
                 console.info('buttonInputsTitles:', JSON.stringify(buttonInputsTitles, null, 2));
