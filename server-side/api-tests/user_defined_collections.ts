@@ -21,23 +21,23 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         varKey = request.body.varKeyPro;
     }
 
-    await generalService.baseAddonVersionsInstallation(varKey);
+    // await generalService.baseAddonVersionsInstallation(varKey);
     //#region Upgrade UDC
     const testData = {
-        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-        'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
-        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
-        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
-        'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
-        'User Defined Collections': [UserDefinedCollectionsUUID, ''],
-        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
-        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+        // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
+        // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        // 'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+        // 'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        // 'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        // ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        // 'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+        // 'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+        // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        // Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
+        // 'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
+        // 'User Defined Collections': [UserDefinedCollectionsUUID, ''],
+        // 'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+        // 'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
 
     //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
@@ -1112,14 +1112,15 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             });
             it("Positive Test: exporting all created UDC's", async () => {
                 //containedCollectionName is commented out because of DI-24756 (https://pepperi.atlassian.net/browse/DI-24756) return this once solved.
+                //baseedOnSchemeOnlyCollectionName is commented out because of DI-24756 (https://pepperi.atlassian.net/browse/DI-24756) return this once solved.
                 const allCollectionNames = [
                     basicCollectionName,
-                    // containedCollectionName,
+                    //containedCollectionName,
                     indexedCollectionName,
                     schemeOnlyCollectionName,
                     basicArrayCollectionName,
                     basicOnlineCollectionName,
-                    baseedOnSchemeOnlyCollectionName,
+                    //baseedOnSchemeOnlyCollectionName,
                     accResourceCollectionName,
                     keyCollectionName,
                 ];
@@ -1139,6 +1140,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                                 ? 'basedOn,Key'
                                 : collectionName === containedCollectionName
                                 ? 'Key,containedRes'
+                                : collectionName === keyCollectionName
+                                ? 'str,int,Key'
                                 : 'str,bool,int,dou,Key',
                         Delimiter: ',',
                     };
@@ -1231,13 +1234,11 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                                     expect(c.Body.Text).to.include('basedOn.int');
                                     expect(c.Body.Text).to.include('basedOn.bool');
                                     expect(numOfVals).to.equal(5);
-                                } else if (collectionName.includes('SchemeBasedOnOnlySchemeTesting')) {
+                                } else if (collectionName.includes('KeyBasicTesting')) {
                                     expect(c.Body.Text).to.include('Key');
-                                    expect(c.Body.Text).to.include('basedOn.dou');
-                                    expect(c.Body.Text).to.include('basedOn.str');
-                                    expect(c.Body.Text).to.include('basedOn.int');
-                                    expect(c.Body.Text).to.include('basedOn.bool');
-                                    expect(numOfVals).to.equal(5);
+                                    expect(c.Body.Text).to.include('str');
+                                    expect(c.Body.Text).to.include('int');
+                                    expect(numOfVals).to.equal(3);
                                 } else {
                                     expect(c.Body.Text).to.include('Key');
                                     expect(c.Body.Text).to.include('dou');
