@@ -54,7 +54,7 @@ export async function StorybookIconTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Icon ** Component StoryBook`, async function () {
+            it(`Enter ** Icon ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('icon');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -62,7 +62,7 @@ export async function StorybookIconTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Icon ** Component`, async function () {
+            it(`Overview Test of ** Icon ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await icon.doesIconComponentFound();
                 iconInputsTitles = await icon.getInputsTitles();
                 console.info('iconInputsTitles:', JSON.stringify(iconInputsTitles, null, 2));
@@ -106,7 +106,7 @@ export async function StorybookIconTests() {
         describe(`**STORIES`, async function () {
             iconSubFoldersHeaders.forEach(async (header) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`base-all-icons`);
                         driver.sleep(0.1 * 1000);

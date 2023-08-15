@@ -68,7 +68,7 @@ export async function StorybookQuantitySelectorTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** QuantitySelector ** Component StoryBook`, async function () {
+            it(`Enter ** QuantitySelector ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('quantity-selector');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -76,7 +76,7 @@ export async function StorybookQuantitySelectorTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** QuantitySelector ** Component`, async function () {
+            it(`Overview Test of ** QuantitySelector ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await quantitySelector.doesQuantitySelectorComponentFound();
                 quantitySelectorInputsTitles = await quantitySelector.getInputsTitles();
                 console.info('quantitySelectorInputsTitles:', JSON.stringify(quantitySelectorInputsTitles, null, 2));
@@ -187,7 +187,7 @@ export async function StorybookQuantitySelectorTests() {
         describe(`**STORIES`, async function () {
             quantitySelectorSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);

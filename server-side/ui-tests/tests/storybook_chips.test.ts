@@ -78,7 +78,7 @@ export async function StorybookChipsTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Chips ** Component StoryBook`, async function () {
+            it(`Enter ** Chips ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('chips');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -86,7 +86,7 @@ export async function StorybookChipsTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Chips ** Component`, async function () {
+            it(`Overview Test of ** Chips ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await chips.doesChipsComponentFound();
                 chipsInputsTitles = await chips.getInputsTitles();
                 console.info('chipsInputsTitles:', JSON.stringify(chipsInputsTitles, null, 2));
@@ -234,7 +234,7 @@ export async function StorybookChipsTests() {
         describe(`**STORIES`, async function () {
             chipsSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);
@@ -250,29 +250,31 @@ export async function StorybookChipsTests() {
                             .toLowerCase()
                             .replace(/\s/g, '-')
                             .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
-                        // let headerText = '';
-                        // switch (header) {
-                        //     case 'Without content':
-                        //     case 'With content':
-                        //         headerText = header.toLowerCase().replace(' ', '-');
-                        //         break;
-                        //     case 'Inline is true':
-                        //     case 'Type is select':
-                        //     case 'Orientation is vertical':
-                        //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
-                        //         break;
-
-                        //     default:
-                        //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                        //         // break;
-                        // }
                         console.info('at validate story header -> headerText: ', headerText);
                         const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
                     // TODO: add tests
-                    // it(`it '${header}'`, async function () { });
+                    // it(`it '${header}'`, async function () {
+                    // let headerText = '';
+                    // switch (header) {
+                    //     case 'Without content':
+                    //     case 'With content':
+                    //         headerText = header.toLowerCase().replace(' ', '-');
+                    //         break;
+                    //     case 'Inline is true':
+                    //     case 'Type is select':
+                    //     case 'Orientation is vertical':
+                    //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
+                    //         break;
+
+                    //     default:
+                    //         throw new Error(`Header: "${header}" is not covered in switch!`);
+                    //         // break;
+                    // }
+
+                    // });
                 });
             });
         });

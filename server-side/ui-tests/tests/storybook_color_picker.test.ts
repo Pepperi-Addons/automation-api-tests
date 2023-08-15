@@ -25,6 +25,7 @@ export async function StorybookColorPickerTests() {
     let colorPicker: ColorPicker;
     let colorPickerInputsTitles;
     let colorPickerOutputsTitles;
+    let storyHeaderSelector;
 
     describe('Storybook "ColorPicker" Tests Suite', function () {
         this.retries(0);
@@ -62,7 +63,7 @@ export async function StorybookColorPickerTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** ColorPicker ** Component StoryBook`, async function () {
+            it(`Enter ** ColorPicker ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('color-picker');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -70,7 +71,7 @@ export async function StorybookColorPickerTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** ColorPicker ** Component`, async function () {
+            it(`Overview Test of ** ColorPicker ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await colorPicker.doesColorPickerComponentFound();
                 colorPickerInputsTitles = await colorPicker.getInputsTitles();
                 console.info('colorPickerInputsTitles:', JSON.stringify(colorPickerInputsTitles, null, 2));
@@ -157,7 +158,7 @@ export async function StorybookColorPickerTests() {
         describe(`**STORIES`, async function () {
             colorPickerSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);
@@ -173,29 +174,41 @@ export async function StorybookColorPickerTests() {
                             .toLowerCase()
                             .replace(/\s/g, '-')
                             .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
-                        // let headerText = '';
-                        // switch (header) {
-                        //     case 'Type is main':
-                        //     case 'Type is success':
-                        //     case 'Type is caution':
-                        //     case 'Set stating color':
-                        //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
-                        //         break;
-                        //     case "Isn't AA compliant":
-                        //         headerText = header.toLowerCase().replace("'", '-').replace(' ', '-').replace(' ', '-');
-                        //         break;
-
-                        //     default:
-                        //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                        //     // break;
-                        // }
                         console.info('at validate story header -> headerText: ', headerText);
-                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
+                        storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
-                    // TODO: add tests
-                    // it(`it '${header}'`, async function () { });
+                    it(`validate color-picker story (+screenshot)`, async function () {
+                        const storyEditButtonSelector = await colorPicker.getStoryEditButtonSelector(
+                            storyHeaderSelector,
+                        );
+                        await storyBookPage.click(storyEditButtonSelector);
+                        const isComponentModalFullyShown = await colorPicker.isModalFullyShown();
+                        expect(isComponentModalFullyShown).to.be.true;
+                        switch (header) {
+                            case 'Type is main':
+                                break;
+                            case 'Type is success':
+                                break;
+                            case 'Type is caution':
+                                break;
+                            case 'Set stating color':
+                                break;
+                            case "Isn't AA compliant":
+                                break;
+
+                            default:
+                                throw new Error(`Header: "${header}" is not covered in switch!`);
+                            // break;
+                        }
+                        const story64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Story Modal As Presented In StoryBook`,
+                            value: 'data:image/png;base64,' + story64ImageComponent,
+                        });
+                        await colorPicker.okModal();
+                    });
                 });
             });
         });

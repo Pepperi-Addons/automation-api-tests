@@ -56,7 +56,7 @@ export async function StorybookSignatureTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Signature ** Component StoryBook`, async function () {
+            it(`Enter ** Signature ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('signature');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -64,7 +64,7 @@ export async function StorybookSignatureTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Signature ** Component`, async function () {
+            it(`Overview Test of ** Signature ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await signature.doesSignatureComponentFound();
                 signatureInputsTitles = await signature.getInputsTitles();
                 console.info('signatureInputsTitles:', JSON.stringify(signatureInputsTitles, null, 2));
@@ -157,7 +157,7 @@ export async function StorybookSignatureTests() {
         describe(`**STORIES`, async function () {
             signatureSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);

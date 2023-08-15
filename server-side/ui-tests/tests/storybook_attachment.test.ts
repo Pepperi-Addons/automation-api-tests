@@ -62,7 +62,7 @@ export async function StorybookAttachmentTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Attachment ** Component StoryBook`, async function () {
+            it(`Enter ** Attachment ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('attachment');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -70,7 +70,7 @@ export async function StorybookAttachmentTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Attachment ** Component`, async function () {
+            it(`Overview Test of ** Attachment ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await attachment.doesAttachmentComponentFound();
                 attachmentInputsTitles = await attachment.getInputsTitles();
                 console.info('attachmentInputsTitles:', JSON.stringify(attachmentInputsTitles, null, 2));
