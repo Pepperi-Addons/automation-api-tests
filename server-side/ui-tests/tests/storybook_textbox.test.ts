@@ -215,6 +215,10 @@ export async function StorybookTextboxTests() {
             });
         });
         describe(`**STORIES`, async function () {
+            it(`Navigate to place on sidebar menu`, async function () {
+                await driver.switchToDefaultContent();
+                await driver.scrollToElement(storyBookPage.SidebarServicesHeader); // for the purpose of navigating to the area of 'textbox' at sidebar menu
+            });
             textboxSubFoldersHeaders.forEach(async (header) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story`, async function () {
