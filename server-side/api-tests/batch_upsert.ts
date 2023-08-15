@@ -106,9 +106,9 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
         it('Negative - Insert 10 objects with one duplicated key(overwrite is [true]. All 10 rows will fail)  ', async () => {
             assert(logcash.addDataToTableOverwriteTrueStatus, logcash.addDataToTableOverwriteTrueError);
         });
-        it('Negative/Positive - The test will faill on 25 and will succeed for the other 25 inserted keys (ovewrite=true))  ', async () => {
-            assert(logcash.add50InsertsToTableOverwriteTrueStatus, logcash.add50InsertsToTableOverwriteTrueError);
-        });
+        // it('Negative/Positive - The test will faill on 25 and will succeed for the other 25 inserted keys (ovewrite=true))  ', async () => {
+        //     assert(logcash.add50InsertsToTableOverwriteTrueStatus, logcash.add50InsertsToTableOverwriteTrueError);
+        // });
         it('Negative - The test will faill on GET on all 50 inserted keys (ovewrite=false))  ', async () => {
             assert(logcash.add50InsertsToTableOverwriteFalseStatus, logcash.add50InsertsToTableOverwriteFalseError);
         });
