@@ -2164,6 +2164,8 @@ export default class GeneralService {
                 return 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
             case 'CONFIGURATIONS':
                 return '84c999c3-84b7-454e-9a86-71b7abc96554';
+            case 'RELATED-ITEMS':
+                return '4f9f10f3-cd7d-43f8-b969-5029dad9d02b';
             default:
                 return 'none';
         }
