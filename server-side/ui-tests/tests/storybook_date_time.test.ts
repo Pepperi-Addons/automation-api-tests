@@ -68,7 +68,7 @@ export async function StorybookDateTimeTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** DateTime ** Component StoryBook`, async function () {
+            it(`Enter ** DateTime ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('date-date-time');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -76,7 +76,7 @@ export async function StorybookDateTimeTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** DateTime ** Component`, async function () {
+            it(`Overview Test of ** DateTime ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await dateTime.doesDateTimeComponentFound();
                 dateTimeInputsTitles = await dateTime.getInputsTitles();
                 console.info('dateTimeInputsTitles:', JSON.stringify(dateTimeInputsTitles, null, 2));
@@ -187,7 +187,7 @@ export async function StorybookDateTimeTests() {
         describe(`**STORIES`, async function () {
             dateTimeSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`'${header}'`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);
@@ -203,23 +203,25 @@ export async function StorybookDateTimeTests() {
                             .toLowerCase()
                             .replace(/\s/g, '-')
                             .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
-                        // let headerText = '';
-                        // switch (header) {
-                        //     case 'Empty date-time':
-                        //         headerText = header.toLowerCase().replace(' ', '-');
-                        //         break;
-
-                        //     default:
-                        //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                        //         // break;
-                        // }
                         console.info('at validate story header -> headerText: ', headerText);
                         const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
                     // TODO: add tests
-                    // it(`it '${header}'`, async function () { });
+                    // it(`it '${header}'`, async function () {
+                    // let headerText = '';
+                    // switch (header) {
+                    //     case 'Empty date-time':
+                    //         headerText = header.toLowerCase().replace(' ', '-');
+                    //         break;
+
+                    //     default:
+                    //         throw new Error(`Header: "${header}" is not covered in switch!`);
+                    //         // break;
+                    // }
+
+                    // });
                 });
             });
         });

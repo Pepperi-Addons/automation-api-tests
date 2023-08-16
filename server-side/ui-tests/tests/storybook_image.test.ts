@@ -56,7 +56,7 @@ export async function StorybookImageTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Image ** Component StoryBook`, async function () {
+            it(`Enter ** Image ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('image');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -64,7 +64,7 @@ export async function StorybookImageTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Image ** Component`, async function () {
+            it(`Overview Test of ** Image ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await image.doesImageComponentFound();
                 imageInputsTitles = await image.getInputsTitles();
                 console.info('imageInputsTitles:', JSON.stringify(imageInputsTitles, null, 2));
@@ -157,7 +157,7 @@ export async function StorybookImageTests() {
         describe(`**STORIES`, async function () {
             imageSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);

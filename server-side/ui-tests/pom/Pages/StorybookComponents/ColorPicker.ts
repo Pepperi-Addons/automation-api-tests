@@ -8,6 +8,7 @@ export class ColorPicker extends StorybookComponent {
     public IframeElement: By = By.xpath(`//iframe`);
     public PenIcon: By = By.xpath(`//mat-icon//pep-icon[contains(@name,'system_edit')]`);
     public ComponentColor: By = By.xpath(`//div[contains(@class,'pep-color pep-input one-row')]`);
+    public StoryEditButton: By = By.xpath(`/following-sibling::div[2]//div[contains(@class,"pep-color")]/button`); // has to be concatenated to the story h3 selector
     //color picker modal
     public ChangeHueTitle: By = By.xpath(`//mat-label[@title="Change hue"]`);
     public HueSilder: By = By.xpath(`(//mat-slider)[1]`);
@@ -49,6 +50,10 @@ export class ColorPicker extends StorybookComponent {
     public async getAllStories() {
         const allStories = await this.browser.findElements(this.Component);
         return allStories.slice(1);
+    }
+
+    public async getStoryEditButtonSelector(storySelector: By) {
+        return By.xpath(`${storySelector.value}${this.StoryEditButton.value}`);
     }
 
     public async isModalFullyShown(): Promise<boolean> {

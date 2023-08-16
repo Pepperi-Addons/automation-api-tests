@@ -79,7 +79,7 @@ export async function StorybookTextboxTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Textbox ** Component StoryBook`, async function () {
+            it(`Enter ** Textbox ** Component StoryBook - SCREENSHOT`, async function () {
                 await driver.scrollToElement(storyBookPage.SidebarServicesHeader); // for the purpose of navigating to the area of 'textbox' at sidebar menu
                 await storyBookPage.chooseComponent('textbox');
                 const base64ImageComponent = await driver.saveScreenshots();
@@ -88,7 +88,7 @@ export async function StorybookTextboxTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Textbox ** Component`, async function () {
+            it(`Overview Test of ** Textbox ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await textbox.doesTextboxComponentFound();
                 textboxInputsTitles = await textbox.getInputsTitles();
                 console.info('textboxInputsTitles:', JSON.stringify(textboxInputsTitles, null, 2));
@@ -221,7 +221,7 @@ export async function StorybookTextboxTests() {
             });
             textboxSubFoldersHeaders.forEach(async (header) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         const headerText = header
                             .toLowerCase()

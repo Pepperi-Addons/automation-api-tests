@@ -73,7 +73,7 @@ export async function StorybookRichHtmlTextareaTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** RichHtmlTextarea ** Component StoryBook`, async function () {
+            it(`Enter ** RichHtmlTextarea ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('rich-html-textarea');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -81,7 +81,7 @@ export async function StorybookRichHtmlTextareaTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** RichHtmlTextarea ** Component`, async function () {
+            it(`Overview Test of ** RichHtmlTextarea ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await richHtmlTextarea.doesRichHtmlTextareaComponentFound();
                 richHtmlTextareaInputsTitles = await richHtmlTextarea.getInputsTitles();
                 console.info('richHtmlTextareaInputsTitles:', JSON.stringify(richHtmlTextareaInputsTitles, null, 2));
@@ -186,7 +186,7 @@ export async function StorybookRichHtmlTextareaTests() {
         describe(`**STORIES`, async function () {
             richHtmlTextareaSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);

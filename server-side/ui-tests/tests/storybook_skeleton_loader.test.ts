@@ -54,7 +54,7 @@ export async function StorybookSkeletonLoaderTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** SkeletonLoader ** Component StoryBook`, async function () {
+            it(`Enter ** SkeletonLoader ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('skeleton-loader');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -62,7 +62,7 @@ export async function StorybookSkeletonLoaderTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** SkeletonLoader ** Component`, async function () {
+            it(`Overview Test of ** SkeletonLoader ** Component - ASSERTIONS + SCREENSHOT`, async function () {
                 await skeletonLoader.doesSkeletonLoaderComponentFound();
                 skeletonLoaderInputsTitles = await skeletonLoader.getInputsTitles();
                 console.info('skeletonLoaderInputsTitles:', JSON.stringify(skeletonLoaderInputsTitles, null, 2));
@@ -106,7 +106,7 @@ export async function StorybookSkeletonLoaderTests() {
         describe(`**STORIES`, async function () {
             skeletonLoaderSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);

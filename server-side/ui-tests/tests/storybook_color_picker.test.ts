@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../pom';
 import { StoryBookPage } from '../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { ColorPicker } from '../pom/Pages/StorybookComponents/ColorPicker';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -19,12 +20,17 @@ export async function StorybookColorPickerTests() {
         "Isn't AA compliant",
         'Set stating color',
     ];
+    const typeExpectedValues = ['any', 'main', 'success', 'caution'];
+    const alignExpectedValues = ['center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let colorPicker: ColorPicker;
     let colorPickerInputsTitles;
     let colorPickerOutputsTitles;
+    let storyHeaderSelector;
+    let allTypes: WebElement[] = [];
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "ColorPicker" Tests Suite', function () {
         this.retries(0);
@@ -62,7 +68,7 @@ export async function StorybookColorPickerTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** ColorPicker ** Component StoryBook`, async function () {
+            it(`Enter ** ColorPicker ** Component StoryBook - SCREENSHOT`, async function () {
                 await storyBookPage.chooseComponent('color-picker');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -70,66 +76,157 @@ export async function StorybookColorPickerTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** ColorPicker ** Component`, async function () {
+            it(`Overview Test of ** ColorPicker ** Component - ASSERTIONS`, async function () {
                 await colorPicker.doesColorPickerComponentFound();
                 colorPickerInputsTitles = await colorPicker.getInputsTitles();
                 console.info('colorPickerInputsTitles:', JSON.stringify(colorPickerInputsTitles, null, 2));
                 colorPickerOutputsTitles = await colorPicker.getOutputsTitles();
                 console.info('colorPickerOutputsTitles:', JSON.stringify(colorPickerOutputsTitles, null, 2));
-                const base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Component Page We Got Into`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
                 expect(colorPickerInputsTitles).to.eql(colorPickerInputs);
                 expect(colorPickerOutputsTitles).to.eql(colorPickerOutputs);
                 driver.sleep(5 * 1000);
+            });
+            it('* ColorPicker Component * Initial Functional Test - SCREENSHOT', async function () {
+                await colorPicker.openComonentModal();
+                const base64ImageComponentModal = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Presented Component Modal`,
+                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                });
+                const isComponentModalFullyShown = await colorPicker.isModalFullyShown();
+                expect(isComponentModalFullyShown).to.be.true;
+                await colorPicker.okModal();
             });
         });
         colorPickerInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 switch (input) {
                     case 'label':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('label')).to.be.true;
                         });
-                        // TODO
+                        it(`Functional test (+screenshot)`, async function () {
+                            const newLabelToSet = 'Auto test';
+                            await storyBookPage.inputs.changeLabel(newLabelToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newLabelGotFromUi = await colorPicker.getLabel();
+                            expect(newLabelGotFromUi).to.equal(newLabelToSet);
+                        });
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`Functional test (+screenshot)`, async function () {
+                            await storyBookPage.inputs.toggleDissableComponent();
+                            const isPenIconFound = await colorPicker.isPenIconFound();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(isPenIconFound).to.equal(false);
+                            await storyBookPage.inputs.toggleDissableComponent();
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                        });
                         break;
                     case 'showAAComplient':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('showAAComplient')).to.be.true;
                         });
-                        // TODO
-                        break;
+                    // it(`Functional test (+screenshot)`, async function () {});
+                    // break;
                     case 'showTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('showTitle')).to.be.true;
                         });
-                        // TODO
+                        it(`Functional test (+screenshot)`, async function () {
+                            await storyBookPage.inputs.toggleShowTitle();
+                            const labelAfterDisabelingTitle = await colorPicker.getLabel();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Show Title Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(labelAfterDisabelingTitle).to.equal('Type is main'); // once there is no title - the next title is the one 'taken'
+                            await storyBookPage.inputs.toggleShowTitle();
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Show Title Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                        });
                         break;
                     case 'type':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('type')).to.be.true;
                         });
-                        // TODO
+                        it(`get all types`, async function () {
+                            allTypes = await storyBookPage.inputs.getAllTypes();
+                        });
+                        typeExpectedValues.forEach((title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const type = allTypes[index];
+                                await type.click();
+                                const isComponentModalFullyShown = await colorPicker.testComponentModal();
+                                driver.sleep(1 * 1000);
+                                const base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (type) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(isComponentModalFullyShown).to.be.true;
+                            });
+                        });
+                        it(`close`, async function () {
+                            await allTypes[0].click();
+                        });
                         break;
                     case 'value':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('value')).to.be.true;
                         });
-                        // TODO
+                        it(`Functional test (+screenshot)`, async function () {
+                            await storyBookPage.inputs.setColorValue('#1fbeb9');
+                            const currentColor = await colorPicker.getComponentColor();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(currentColor).to.equal('(31, 190, 185)'); // same as "#1fbeb9" in RGB
+                        });
                         break;
                     case 'xAlignment':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            const currentAlign = await colorPicker.getComponentTxtAlignment();
+                            expect(currentAlign).to.include('left');
+                            allAlignments = await storyBookPage.inputs.getAllAlignments();
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const alignment = allAlignments[index];
+                                await alignment.click();
+                                const currentAlign = await colorPicker.getComponentTxtAlignment();
+                                const base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (xAlignment) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(currentAlign).to.include(title);
+                            });
+                        });
                         break;
 
                     default:
@@ -157,7 +254,7 @@ export async function StorybookColorPickerTests() {
         describe(`**STORIES`, async function () {
             colorPickerSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
-                    it(`Navigate to story`, async function () {
+                    it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);
@@ -173,29 +270,41 @@ export async function StorybookColorPickerTests() {
                             .toLowerCase()
                             .replace(/\s/g, '-')
                             .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
-                        // let headerText = '';
-                        // switch (header) {
-                        //     case 'Type is main':
-                        //     case 'Type is success':
-                        //     case 'Type is caution':
-                        //     case 'Set stating color':
-                        //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
-                        //         break;
-                        //     case "Isn't AA compliant":
-                        //         headerText = header.toLowerCase().replace("'", '-').replace(' ', '-').replace(' ', '-');
-                        //         break;
-
-                        //     default:
-                        //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                        //     // break;
-                        // }
                         console.info('at validate story header -> headerText: ', headerText);
-                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
+                        storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
-                    // TODO: add tests
-                    // it(`it '${header}'`, async function () { });
+                    it(`validate color-picker story (+screenshot)`, async function () {
+                        const storyEditButtonSelector = await colorPicker.getStoryEditButtonSelector(
+                            storyHeaderSelector,
+                        );
+                        await storyBookPage.click(storyEditButtonSelector);
+                        const isComponentModalFullyShown = await colorPicker.isModalFullyShown();
+                        expect(isComponentModalFullyShown).to.be.true;
+                        switch (header) {
+                            case 'Type is main':
+                                break;
+                            case 'Type is success':
+                                break;
+                            case 'Type is caution':
+                                break;
+                            case 'Set stating color':
+                                break;
+                            case "Isn't AA compliant":
+                                break;
+
+                            default:
+                                throw new Error(`Header: "${header}" is not covered in switch!`);
+                            // break;
+                        }
+                        const story64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Story Modal As Presented In StoryBook`,
+                            value: 'data:image/png;base64,' + story64ImageComponent,
+                        });
+                        await colorPicker.okModal();
+                    });
                 });
             });
         });
