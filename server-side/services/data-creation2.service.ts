@@ -122,8 +122,8 @@ class ResourceCreation {
         this.mgr = mgr;
     }
     async execute(generalService): Promise<void> {
-        // this.createUsers(this.users);
-        // this.createAccounts(this.accounts);
+        // this.createUsers(10000);
+        this.createAccounts(1000);
         // this.createItems(this.items);
         // this.createDivisons(this.divisions);
         // this.createCompanies(this.companies);
@@ -136,7 +136,7 @@ class ResourceCreation {
         // this.createListItems(this.lists * this.items);
         // this.createAccountLists(this.divisions * this.companies * this.accounts * 15);
         // this.createListsValueNum(100, 30000);
-        this.createNEW(4000);
+        // this.createNEW(4000);
     }
 
     // private async genrateTempFile(tempFileName, data) {
