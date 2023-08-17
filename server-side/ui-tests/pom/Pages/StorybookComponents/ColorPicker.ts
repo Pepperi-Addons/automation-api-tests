@@ -7,6 +7,9 @@ export class ColorPicker extends StorybookComponent {
     public ComponentLabelTxtAlign: By = By.xpath(`//div[contains(@id,'color-picker')]//pep-field-title//div`);
     public IframeElement: By = By.xpath(`//iframe`);
     public PenIcon: By = By.xpath(`//mat-icon//pep-icon[contains(@name,'system_edit')]`);
+    public MainExampleColorEditButton: By = By.xpath(
+        `//div[@id="story--components-color-picker--story-1"]//div[contains(@class,"pep-color")]/button`,
+    );
     public ComponentColor: By = By.xpath(`//div[contains(@class,'pep-color pep-input one-row')]`);
     public StoryEditButton: By = By.xpath(`/following-sibling::div[2]//div[contains(@class,"pep-color")]/button`); // has to be concatenated to the story h3 selector
     //color picker modal
