@@ -1,5 +1,5 @@
 // import { Browser } from '../utilities/browser';
-import { describe, it} from 'mocha';
+import { describe, it } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import GeneralService from '../../services/general.service';
@@ -113,7 +113,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     documentKey = newCollection.DocumentKey;
                 }
                 expect(documentKey['Delimiter']).to.equal('@');
-                expect(documentKey['Fields']).to.deep.equal(['divisionCode','divisionName']);
+                expect(documentKey['Fields']).to.deep.equal(['divisionCode', 'divisionName']);
                 expect(documentKey['Type']).to.equal('Composite');
                 expect(newCollection.Type).to.equal('data');
                 expect(newCollection.Hidden).to.equal(false);
@@ -165,7 +165,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     documentKey = newCollection.DocumentKey;
                 }
                 expect(documentKey['Delimiter']).to.equal('@');
-                expect(documentKey['Fields']).to.deep.equal(['companyCode','companyName']);
+                expect(documentKey['Fields']).to.deep.equal(['companyCode', 'companyName']);
                 expect(documentKey['Type']).to.equal('Composite');
                 expect(newCollection.Type).to.equal('data');
                 expect(newCollection.Hidden).to.equal(false);
