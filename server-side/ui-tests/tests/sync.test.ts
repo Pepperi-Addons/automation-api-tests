@@ -7,11 +7,21 @@ import { Client } from '@pepperi-addons/debug-server/dist';
 import { UDCService, UdcField } from '../../services/user-defined-collections.service';
 import fs from 'fs';
 import { PFSService } from '../../services/pfs.service';
-import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
+import { BrandedApp, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 import E2EUtils from '../utilities/e2e_utils';
 import { ResourceViews } from '../pom/addons/ResourceList';
+import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
+import { Slugs } from '../pom/addons/Slugs';
+import { DataViewsService } from '../../services/data-views.service';
+import { MenuDataViewField } from '@pepperi-addons/papi-sdk';
+import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
+import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 
 chai.use(promised);
+let slugName;
+let userInfoPageUUID;
+let accountViewUUID;
+let accountViewName;
 
 export async function SyncTests(email: string, password: string, client: Client, varPass) {
     const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
@@ -40,7 +50,6 @@ export async function SyncTests(email: string, password: string, client: Client,
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
-        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
@@ -310,6 +319,12 @@ export async function SyncTests(email: string, password: string, client: Client,
                 );
                 expect((auditLogResponseForImporting as any).Status.ID).to.equal(1);
                 expect((auditLogResponseForImporting as any).Status.Name).to.equal('Success');
+                console.log(
+                    `Received Line Statistics From ${divisionsCollectionName}, Are: ${JSON.stringify(
+                        JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics,
+                    )}`,
+                );
+                debugger;
                 expect(JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
                     divisionCollectionSize,
                 );
@@ -369,6 +384,12 @@ export async function SyncTests(email: string, password: string, client: Client,
                 );
                 expect((auditLogResponseForImporting as any).Status.ID).to.equal(1);
                 expect((auditLogResponseForImporting as any).Status.Name).to.equal('Success');
+                console.log(
+                    `Received Line Statistics From ${companiesCollectionName}, Are: ${JSON.stringify(
+                        JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics,
+                    )}`,
+                );
+                debugger;
                 expect(JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
                     companiesCollectionSize,
                 );
@@ -430,13 +451,19 @@ export async function SyncTests(email: string, password: string, client: Client,
                 );
                 expect((auditLogResponseForImporting as any).Status.ID).to.equal(1);
                 expect((auditLogResponseForImporting as any).Status.Name).to.equal('Success');
+                console.log(
+                    `Received Line Statistics From ${userInfoCollectionName}, Are: ${JSON.stringify(
+                        JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics,
+                    )}`,
+                );
+                debugger;
                 expect(JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
                     userInfoCollectionSize,
                 );
                 expect(
                     JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Inserted,
                 ).to.equal(userInfoCollectionSize);
-                generalService.sleep(1000 * 5);
+                generalService.sleep(1000 * 15);
                 const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
                     userInfoCollectionName,
                     1,
@@ -446,8 +473,6 @@ export async function SyncTests(email: string, password: string, client: Client,
             });
         });
         describe('UI Set Up: Create A View To Show UserInfo UDC, Set It Inside A Page, Create Slug For The Page And Set It In Acc. Dashboard To See Filtering By User', () => {
-            let accountViewUUID;
-            let accountViewName;
             this.retries(0);
 
             before(async function () {
@@ -467,7 +492,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const resourceViews = new ResourceViews(driver);
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
-                // Configure View - Accounts
+                // Configure View - User Info UDC
                 accountViewName = 'UserInfoView';
                 await resourceListUtils.addView({
                     nameOfView: accountViewName,
@@ -490,13 +515,107 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            //TODO:
             it(`2. Create A Page For UserInfo Resource View`, async function () {
-                ///---> ask Hagit how to set a View RL Block Inside a Page
+                const e2eUtils = new E2EUtils(driver);
+                const pageName = 'UserInfoPage';
+                userInfoPageUUID = await e2eUtils.addPageNoSections(pageName, 'tests');
+                const pageBuilder = new PageBuilder(driver);
+                const createdPage = await pageBuilder.getPageByUUID(userInfoPageUUID, client);
+                const sectionUUID = createdPage.Layout.Sections[0].Key;
+                const pageResponse = await pageBuilder.publishPageWithResourceListDataViewerBlock(
+                    userInfoPageUUID,
+                    pageName,
+                    accountViewName,
+                    userInfoCollectionName,
+                    accountViewUUID,
+                    sectionUUID,
+                    client,
+                );
+                expect(pageResponse.Ok).to.equal(true);
+                expect(pageResponse.Status).to.equal(200);
+                const actualPage = pageResponse.Body;
+                expect(actualPage.Key).to.equal(userInfoPageUUID);
+                expect(actualPage.Name).to.equal(pageName);
+                expect(actualPage.Hidden).to.equal(false);
+                const pageBlock = actualPage.Blocks[0];
+                expect(pageBlock.Configuration.Resource).to.equal('DataViewerBlock');
+                expect(pageBlock.Configuration.AddonUUID).to.equal('0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3');
+                expect(pageBlock.Configuration.Data.viewsList[0].selectedResource).to.equal(userInfoCollectionName);
+                expect(pageBlock.Configuration.Data.viewsList[0].title).to.equal(accountViewName);
+            });
+            it(`3. Create A Slug For UserInfo Page And Add To HomePage`, async function () {
+                slugName = `userinfo_slug_${generalService.generateRandomString(4)}`;
+                const slugPath = slugName;
+                await CreateSlug(email, password, driver, generalService, slugName, slugPath, userInfoPageUUID);
+                driver.sleep(5000);
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.openSettings();
+                driver.sleep(6000);
+                const brandedApp = new BrandedApp(driver);
+                await brandedApp.addAdminHomePageButtons(slugName);
+                const webAppHomePage = new WebAppHomePage(driver);
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
+                await webAppHomePage.validateATDIsApearingOnHomeScreen(slugName);
+            });
+            it(`4. Set Slug To Be Shown In Acc. Dashboard`, async function () {
+                const accountDashboardLayout = new AccountDashboardLayout(driver);
+                await accountDashboardLayout.configureToAccountMenuRepCardEVGENY(driver, slugName, slugName);
             });
         });
-        describe('Tear Down', () => {
-            it(`Purging All left UDCs - To Keep Dist Clean`, async function () {
+        describe('UI Test - Admin: Enter 10 Account Dashboards And See Data Is Arriving', () => {
+            this.retries(0);
+
+            before(async function () {
+                driver = await Browser.initiateChrome();
+            });
+
+            after(async function () {
+                await driver.quit();
+            });
+
+            afterEach(async function () {
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.collectEndTestData2(this);
+            });
+        });
+        describe('Tear Down Via API', () => {
+            it('1. resource views', async function () {
+                const accBody = { Key: accountViewUUID, Hidden: true };
+                const deleteAccountRLResponse = await generalService.fetchStatus(
+                    `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(accBody),
+                    },
+                );
+                expect(deleteAccountRLResponse.Ok).to.equal(true);
+                expect(deleteAccountRLResponse.Status).to.equal(200);
+                expect(deleteAccountRLResponse.Body.Name).to.equal(accountViewName);
+                expect(deleteAccountRLResponse.Body.Hidden).to.equal(true);
+            });
+            it('2. pages', async function () {
+                //3. delete relevant pages
+                const deleteSurveyPageResponse = await generalService.fetchStatus(
+                    `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${userInfoPageUUID}`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify({}),
+                    },
+                );
+                expect(deleteSurveyPageResponse.Ok).to.equal(true);
+                expect(deleteSurveyPageResponse.Status).to.equal(200);
+                expect(deleteSurveyPageResponse.Body).to.equal(true);
+            });
+            it('3. slugs', async function () {
+                const slugs: Slugs = new Slugs(driver);
+                const slideShowSlugsResponse = await slugs.deleteSlugByName(slugName, client);
+                expect(slideShowSlugsResponse.Ok).to.equal(true);
+                expect(slideShowSlugsResponse.Status).to.equal(200);
+                expect(slideShowSlugsResponse.Body.success).to.equal(true);
+            });
+            it(`4. Purging All left UDCs - To Keep Dist Clean`, async function () {
                 const udcService = new UDCService(generalService);
                 let allUdcs = await udcService.getSchemes({ page_size: -1 });
                 const onlyRelevantUdcNames = allUdcs.map((doc) => doc.Name);
@@ -512,5 +631,83 @@ export async function SyncTests(email: string, password: string, client: Client,
                 }
             });
         });
+        describe('Tear Down Via UI', () => {
+            this.retries(0);
+
+            before(async function () {
+                driver = await Browser.initiateChrome();
+            });
+
+            after(async function () {
+                await driver.quit();
+            });
+
+            afterEach(async function () {
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.collectEndTestData2(this);
+            });
+            it('Delete ATD from home screen', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.openSettings();
+                driver.sleep(6000);
+                const brandedApp = new BrandedApp(driver);
+                await brandedApp.removeAdminHomePageButtons(slugName);
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.manualResync(client);
+                const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugName);
+                expect(isNotFound).to.equal(true);
+            });
+        });
     });
+}
+
+async function CreateSlug(
+    email: string,
+    password: string,
+    driver: Browser,
+    generalService: GeneralService,
+    slugDisplayName: string,
+    slug_path: string,
+    pageToMapToKey: string,
+) {
+    // const slugDisplayName = 'slideshow_slug';
+    // const slug_path = 'slideshow_slug';
+    const e2eUiService = new E2EUtils(driver);
+    await e2eUiService.navigateTo('Slugs');
+    const slugs: Slugs = new Slugs(driver);
+    driver.sleep(2000);
+    if (await driver.isElementVisible(slugs.SlugMappingScreenTitle)) {
+        await slugs.clickTab('Slugs_Tab');
+    }
+    driver.sleep(2000);
+    await slugs.createSlugEvgeny(slugDisplayName, slug_path, 'for testing');
+    driver.sleep(1000);
+    await slugs.clickTab('Mapping_Tab');
+    driver.sleep(1000);
+    await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
+    await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
+    await slugs.isSpinnerDone();
+    driver.sleep(2500);
+    const dataViewsService = new DataViewsService(generalService.papiClient);
+    const existingMappedSlugs = await slugs.getExistingMappedSlugsList(dataViewsService);
+    const slugsFields: MenuDataViewField[] = e2eUiService.prepareDataForDragAndDropAtSlugs(
+        [{ slug_path: slug_path, pageUUID: pageToMapToKey }],
+        existingMappedSlugs,
+    );
+    console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`);
+    const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
+    console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`);
+    const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
+    console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
+    driver.sleep(2 * 1000);
+    await e2eUiService.logOutLogIn(email, password);
+    const webAppHomePage = new WebAppHomePage(driver);
+    await webAppHomePage.isSpinnerDone();
+    await e2eUiService.navigateTo('Slugs');
+    await slugs.clickTab('Mapping_Tab');
+    driver.sleep(15 * 1000);
+    const webAppHeader = new WebAppHeader(driver);
+    await webAppHeader.goHome();
 }
