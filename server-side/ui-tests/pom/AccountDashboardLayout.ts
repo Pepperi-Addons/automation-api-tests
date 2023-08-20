@@ -38,6 +38,10 @@ export class AccountDashboardLayout extends AddonPage {
         return By.xpath(`//li[@data-id="SLUG_visit_flow_auto_${uniqueName}"]/div/div`);
     }
 
+    public getSelectorOfSearchResultListRowPlusButtonByUniqueNameEVGENY(uniqueName: string) {
+        return By.xpath(`//li[@data-id="SLUG_${uniqueName}"]/div/div`);
+    }
+
     public getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText(slugpath: string) {
         return By.xpath(`//div[text()="Layout"]/following-sibling::ul/li[contains(@data-id,"${slugpath}")]`);
     }
@@ -88,6 +92,63 @@ export class AccountDashboardLayout extends AddonPage {
                 await this.insertTextToInputElement(searchText, this.AccountDashboardLayout_Menu_RepCard_SearchBox);
                 const plusButton = await driver.findElement(
                     this.getSelectorOfSearchResultListRowPlusButtonByUniqueName(uniqueText || searchText),
+                );
+                await plusButton.click();
+                await this.waitTillVisible(
+                    this.getSelectorOfSlugConfiguredToAccountDashboardMenuLayoutByText(validationText || searchText),
+                    15000,
+                );
+                await this.clickElement('AccountDashboardLayout_Menu_RepCard_SaveButton');
+                driver.sleep(5 * 1000);
+                await this.waitTillVisible(this.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
+                await this.clickElement('AccountDashboardLayout_Menu_CancelButton');
+                await this.waitTillVisible(this.AccountDashboardLayout_MenuRow_Container, 15000);
+                driver.sleep(2 * 1000);
+                await driver.switchToDefaultContent();
+                driver.sleep(2 * 1000);
+                await webAppHeader.goHome();
+                break;
+            } catch (error) {
+                await driver.switchToDefaultContent();
+                console.error(error);
+                await webAppHeader.goHome();
+            }
+        }
+    }
+
+    public async configureToAccountMenuRepCardEVGENY(driver: Browser, searchText: string, validationText?: string) {
+        const webAppHomePage = new WebAppHomePage(driver);
+        const webAppHeader = new WebAppHeader(driver);
+        const settingsSidePanel = new WebAppSettingsSidePanel(driver);
+        for (let i = 0; i < 2; i++) {
+            try {
+                await webAppHeader.goHome();
+                await webAppHomePage.isSpinnerDone();
+                await webAppHeader.openSettings();
+                await webAppHeader.isSpinnerDone();
+                driver.sleep(0.5 * 1000);
+                await settingsSidePanel.selectSettingsByID('Accounts');
+                await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
+                await this.isSpinnerDone();
+                driver.sleep(20 * 1000);
+                await driver.switchTo(this.AddonContainerIframe);
+                await this.waitTillVisible(this.AccountDashboardLayout_Container, 15000);
+                await this.waitTillVisible(this.AccountDashboardLayout_Title, 15000);
+                await this.waitTillVisible(this.AccountDashboardLayout_ListContainer, 15000);
+                await this.waitTillVisible(this.AccountDashboardLayout_MenuRow_Container, 15000);
+                await this.clickElement('AccountDashboardLayout_MenuRow_Container');
+                await this.waitTillVisible(this.AccountDashboardLayout_MenuRow_PencilButton, 15000);
+                await this.clickElement('AccountDashboardLayout_MenuRow_PencilButton');
+                await this.waitTillVisible(this.AccountDashboardLayout_ConfigPage_Title, 15000);
+                expect(
+                    await (await driver.findElement(this.AccountDashboardLayout_ConfigPage_Title)).getText(),
+                ).to.equal('Menu');
+                await this.waitTillVisible(this.AccountDashboardLayout_Menu_RepCard_PencilButton, 15000);
+                await this.clickElement('AccountDashboardLayout_Menu_RepCard_PencilButton');
+                await this.waitTillVisible(this.AccountDashboardLayout_Menu_RepCard_SearchBox, 15000);
+                await this.insertTextToInputElement(searchText, this.AccountDashboardLayout_Menu_RepCard_SearchBox);
+                const plusButton = await driver.findElement(
+                    this.getSelectorOfSearchResultListRowPlusButtonByUniqueNameEVGENY(searchText),
                 );
                 await plusButton.click();
                 await this.waitTillVisible(
