@@ -8,7 +8,10 @@ export class StorybookComponent extends AddonPage {
     public MainExample_BigBoxDiv: By = By.xpath(`//div[@id="anchor--components-{placeholder}--story-1"]`);
     public MainExample_content: By = By.xpath(`//div[contains(@id,'#placeholder')]//div[contains(@id,'#placeholder')]`);
     public MainHeader: By = By.xpath(`//h1[contains(@class,'title')]`);
+    public MandatoryIcon: By = By.xpath(`//pep-icon[@name="system_must"]`);
     public ResetControlsButton: By = By.xpath(`//button[@title="Reset controls"]`);
+    public Inputs_mainTableRow: By = By.xpath('//tr[contains(@title," inputs items")]');
+    public Outputs_mainTableRow: By = By.xpath('//tr[contains(@title," outputs items")]');
     public InputsRow: By = By.xpath(
         `//div[contains(@class,"css")]//table//tbody//span[text()="inputs"]/ancestor::tr/following-sibling::tr`,
     );
@@ -25,6 +28,10 @@ export class StorybookComponent extends AddonPage {
     public OutputTitle: By = By.xpath(`${this.OutputRow.value}/td[1]/span`);
     public MethodTitle: By = By.xpath(`${this.MethodRow.value}/td[1]/span`);
     public PropertyTitle: By = By.xpath(`${this.PropertyRow.value}/td[1]/span`);
+    public LabelTxtAlign: By = By.xpath(`//div[contains(@id,'{placeholder}')]//pep-field-title//div`);
+    public OutputDefaultValue_byOutputName: By = By.xpath(
+        `//span[text()="{placeholder}"]/parent::td/following-sibling::td[2]/span`,
+    );
 
     public async getMainExampleContentSelecor(componentText: string): Promise<By> {
         return By.xpath(`//div[contains(@id,'anchor')]//div[contains(@id,'${componentText}')]`);
@@ -32,6 +39,10 @@ export class StorybookComponent extends AddonPage {
 
     public async getInputRowSelectorByName(inputTitle: string): Promise<By> {
         return By.xpath(`${this.InputTitle.value}[text()='${inputTitle}']`);
+    }
+
+    public async getSelectorOfOutputDefaultValueByName(outputName: string): Promise<By> {
+        return By.xpath(`//span[text()="${outputName}"]/parent::td/following-sibling::td[2]/span`);
     }
 
     public async isCorrectMainExampleShown(componentText: string): Promise<boolean> {
@@ -116,5 +127,13 @@ export class StorybookComponent extends AddonPage {
         const cleanedFromOutputs_propertiesTitles =
             outputsIndex !== -1 ? propertiesTitles.splice(0, outputsIndex) : propertiesTitles;
         return cleanedFromOutputs_propertiesTitles;
+    }
+
+    public async getTxtAlignmentByComponent(component: string) {
+        const txtAlignComp = await this.browser.findElement(
+            By.xpath(this.LabelTxtAlign.value.replace('{placeholder}', component)),
+        );
+        const txtAlignVal = (await txtAlignComp.getAttribute('style')).split(':')[1];
+        return txtAlignVal;
     }
 }
