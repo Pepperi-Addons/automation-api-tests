@@ -2130,6 +2130,59 @@ export default class GeneralService {
         await this.genrateFile(fileName, strData);
     }
 
+    async createCSVFileForUserInfo(
+        fileName: string,
+        howManyDataRows: number,
+        howManyComapnies: number,
+        howManyDivisions: number,
+        headers: string,
+        keyData: string,
+        valueData: string[],
+        isHidden: string,
+    ) {
+        let strData = '';
+        strData += headers + ',Hidden' + '\n';
+        let companyIndex = 0;
+        let divisionIndex = 0;
+        for (let index = 0; index < howManyDataRows; index++) {
+            if (keyData !== '') strData += `${keyData.replace('index', index.toString())},`;
+            for (let index1 = 0; index1 < valueData.length; index1++) {
+                const value = valueData[index1];
+                if (value.includes('company')) {
+                    if (companyIndex === howManyComapnies) {
+                        companyIndex = 0;
+                        strData += `${
+                            value.includes('index') ? value.replace('index', companyIndex.toString()) : value
+                        },`;
+                        companyIndex++;
+                    } else {
+                        strData += `${
+                            value.includes('index') ? value.replace('index', companyIndex.toString()) : value
+                        },`;
+                        companyIndex++;
+                    }
+                } else if (value.includes('division')) {
+                    if (divisionIndex === howManyDivisions) {
+                        divisionIndex = 0;
+                        strData += `${
+                            value.includes('index') ? value.replace('index', divisionIndex.toString()) : value
+                        },`;
+                        divisionIndex++;
+                    } else {
+                        strData += `${
+                            value.includes('index') ? value.replace('index', divisionIndex.toString()) : value
+                        },`;
+                        divisionIndex++;
+                    }
+                } else {
+                    strData += `${value.includes('index') ? value.replace('index', index.toString()) : value},`;
+                }
+            }
+            strData += `${isHidden}\n`;
+        }
+        await this.genrateFile(fileName, strData);
+    }
+
     generateRandomString(length: number): string {
         let result = '';
         for (let i = 0; i < length; i++) {

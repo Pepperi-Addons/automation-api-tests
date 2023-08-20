@@ -19,6 +19,7 @@ export interface UdcField {
     Resource?: string;
     AdddonUID?: string;
     isArray?: boolean;
+    ApplySystemFilter?: boolean;
 }
 
 export interface CollectionDefinition {
@@ -326,7 +327,9 @@ export class UDCService {
                 AddonUUID: field.AdddonUID ? field.AdddonUID : '',
                 Indexed: field.Indexed ? field.Indexed : false,
             };
-            // debugger;
+            if (field.ApplySystemFilter) {
+                Fields[field.Name].ApplySystemFilter = field.ApplySystemFilter;
+            }
         }
         const arrayOfViews: any[] = [];
         const arrayOfColumns: any[] = [];
