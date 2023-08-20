@@ -4,8 +4,11 @@ import { expect } from 'chai';
 
 export class StorybookComponent extends AddonPage {
     public IframeElement: By = By.xpath(`//iframe`);
+    public DocsDiv: By = By.xpath(`//div[contains(@class, 'sbdoc')]`);
+    public MainExample_BigBoxDiv: By = By.xpath(`//div[@id="anchor--components-{placeholder}--story-1"]`);
     public MainExample_content: By = By.xpath(`//div[contains(@id,'#placeholder')]//div[contains(@id,'#placeholder')]`);
     public MainHeader: By = By.xpath(`//h1[contains(@class,'title')]`);
+    public ResetControlsButton: By = By.xpath(`//button[@title="Reset controls"]`);
     public InputsRow: By = By.xpath(
         `//div[contains(@class,"css")]//table//tbody//span[text()="inputs"]/ancestor::tr/following-sibling::tr`,
     );

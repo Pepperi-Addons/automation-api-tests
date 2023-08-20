@@ -226,6 +226,7 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                 ).to.equal(10000);
             });
             it('Iterate Through All 10K Rows And See Values Are Okay', async function () {
+                generalService.sleep(1000 * 10); //10 seconds sleep before GETing the data - to allow PNS to update the collection
                 for (let index = 1; index <= 40; index++) {
                     const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
                         udcName,
@@ -276,20 +277,20 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                     }
                 }
             });
-            // it(`Tear Down: Purging All left UDCs - To Keep Dist Clean`, async function () {
-            //     let allUdcs = await udcService.getSchemes({ page_size: -1 });
-            //     const onlyRelevantUdcNames = allUdcs.map((doc) => doc.Name);
-            //     for (let index = 0; index < onlyRelevantUdcNames.length; index++) {
-            //         const udcName = onlyRelevantUdcNames[index];
-            //         const purgeResponse = await udcService.purgeScheme(udcName);
-            //         expect(purgeResponse.Ok).to.equal(true);
-            //         expect(purgeResponse.Status).to.equal(200);
-            //         expect(purgeResponse.Body.Done).to.equal(true);
-            //         generalService.sleep(1500);
-            //         allUdcs = await udcService.getSchemes({ page_size: -1 });
-            //         console.log(`${udcName} was deleted, ${allUdcs.length} left`);
-            //     }
-            // });
+            it(`Tear Down: Purging All left UDCs - To Keep Dist Clean`, async function () {
+                let allUdcs = await udcService.getSchemes({ page_size: -1 });
+                const onlyRelevantUdcNames = allUdcs.map((doc) => doc.Name);
+                for (let index = 0; index < onlyRelevantUdcNames.length; index++) {
+                    const udcName = onlyRelevantUdcNames[index];
+                    const purgeResponse = await udcService.purgeScheme(udcName);
+                    expect(purgeResponse.Ok).to.equal(true);
+                    expect(purgeResponse.Status).to.equal(200);
+                    expect(purgeResponse.Body.Done).to.equal(true);
+                    generalService.sleep(1500);
+                    allUdcs = await udcService.getSchemes({ page_size: -1 });
+                    console.log(`${udcName} was deleted, ${allUdcs.length} left`);
+                }
+            });
         });
     });
 }

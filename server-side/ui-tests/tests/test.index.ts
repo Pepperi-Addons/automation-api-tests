@@ -88,6 +88,7 @@ import { Import250KToAdalFromDimx } from './import_250k_DIMX.test';
 import { UDCImportExportTests } from '../../api-tests/user_defined_collections_import_export';
 import { Import200KToAdalFromDimx } from './import_200k_DIMX.test';
 import { Import150KToAdalFromDimx } from './import_150k_DIMX.test';
+import { SyncTests } from './sync.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -678,6 +679,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await UDCTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
+    if (tests.includes('SyncE2E')) {
+        await SyncTests(email, pass, client, varPass);
+    }
+
     if (tests.includes('Survey')) {
         await SurveyTests(email, pass, client, varPass); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
@@ -2892,6 +2897,8 @@ export async function handleTeamsURL(addonName, service, email, pass) {
             return await service.getSecretfromKMS(email, pass, 'UDBTeamsWebHook');
         case 'CONFIGURATIONS':
             return await service.getSecretfromKMS(email, pass, 'CONFIGURATIONSTeamsWebHook');
+        case 'RELATED-ITEMS':
+            return await service.getSecretfromKMS(email, pass, 'RelatedItemsTeamsWebHook');
         case 'GENERIC-RESOURCE': //new teams
         case 'GENERIC RESOURCE':
             return await service.getSecretfromKMS(email, pass, 'GenericResourceTeamsWebHook');
@@ -3645,6 +3652,12 @@ function resolveUserPerTest(addonName): any[] {
             return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
         case 'CONFIGURATIONS':
             return ['configEU@pepperitest.com', 'configProd@pepperitest.com', 'configSB@pepperitest.com'];
+        case 'RELATED-ITEMS':
+            return [
+                'relatedItemsTestEU@pepperitest.com',
+                'relatedItemsTestProd@pepperitest.com',
+                'relatedItemsTestSB@pepperitest.com',
+            ];
         case 'UDB':
         case 'USER DEFINED BLOCKS':
             return [
@@ -3760,6 +3773,19 @@ async function getConfifurationsTests(userName, env) {
     return toReturn;
 }
 
+async function getRelatedItemsTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/4f9f10f3-cd7d-43f8-b969-5029dad9d02b/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function getUDBTests(userName, env) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
@@ -3795,6 +3821,8 @@ async function runDevTestOnCertainEnv(
         urlToCall = '/addons/api/async/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/tests/tests';
     } else if (addonName === 'CONFIGURATIONS') {
         urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
+    } else if (addonName === 'RELATED-ITEMS') {
+        urlToCall = '/addons/api/async/4f9f10f3-cd7d-43f8-b969-5029dad9d02b/tests/tests';
     } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests';
         headers = {
@@ -3850,6 +3878,8 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getUDBTests(user, 'prod');
     } else if (addonName === 'CONFIGURATIONS') {
         return await getConfifurationsTests(user, 'prod');
+    } else if (addonName === 'RELATED-ITEMS') {
+        return await getRelatedItemsTests(user, 'prod');
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
         const service = new GeneralService(client);
@@ -3881,6 +3911,7 @@ function prepareTestBody(addonName, currentTestName, addonUUID) {
         addonName === 'CORE-GENERIC-RESOURCES' ||
         addonName === 'UDB' ||
         addonName === 'CONFIGURATIONS' ||
+        addonName === 'RELATED-ITEMS' ||
         addonName === 'USER DEFINED BLOCKS'
     ) {
         body = {

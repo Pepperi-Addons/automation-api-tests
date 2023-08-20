@@ -112,6 +112,11 @@ export class Browser {
         await this.driver.switchTo().window(allTabs[indexOfTab]);
     }
 
+    // public async switchToOtherTab(indexOfTab: number): Promise<any> {
+    //     const allTabs = await this.driver.getAllWindowHandles();
+    //     await this.driver.switchTo().window(allTabs[indexOfTab]);
+    // }
+
     //TODO: 19/04 By Oren:
     //Try with this code:
     // const draggable = await driver.findElement(By.css('[title="Chart"]'));
