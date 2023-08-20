@@ -2,6 +2,7 @@ import { Browser } from '../../utilities/browser';
 import { By } from 'selenium-webdriver';
 import { Page } from './base/Page';
 import { StoryBookInpus } from './StoryBookInputs';
+import { expect } from 'chai';
 
 export class StoryBookPage extends Page {
     public inputs: StoryBookInpus;
@@ -176,5 +177,15 @@ export class StoryBookPage extends Page {
         }
         console.info('at getStorySelectorByText -> selector: ', selector);
         return By.xpath(selector);
+    }
+
+    public async elemntDoNotExist(selector: By) {
+        try {
+            await this.browser.findElement(selector);
+            throw new Error(`The Element with selector: "${selector.value}" is Unexpectedly Shown on the Form!`);
+        } catch (error) {
+            const theError = error as Error;
+            expect(theError.message).to.contain('After wait time of: 15000, for selector');
+        }
     }
 }

@@ -63,6 +63,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
         });
 
         describe('Items', () => {
+            console.log('Saar: Items');
             let items;
             let legacyItemExternalID;
             let itemExternalID;
@@ -74,6 +75,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let legacyPageItems;
 
             it('Create Item', async () => {
+                console.log('Saar: Create item');
                 items = await objectsService.getItems();
                 mainCategoryID = items[0].MainCategoryID;
                 itemExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
@@ -117,6 +119,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Update Item', async () => {
+                console.log('Saar: Update Item');
                 updatedItem = await objectsService.postItem({
                     ExternalID: itemExternalID,
                     MainCategoryID: mainCategoryID,
@@ -151,12 +154,14 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Get Item by key', async () => {
+                console.log('Saar: Get Item by key');
                 const getByKeyItem = await service.getByKey('items', legacyCreatedItem.Key);
                 expect(getByKeyItem).to.deep.equal(legacyUpdatedItem);
                 await expect(service.getByKey('items', '1234')).eventually.to.be.rejected;
             });
 
             it('Get Item by Unique key', async () => {
+                console.log('Saar: Get Item by Unique key');
                 const getItemByInternalID = await service.getByUniqueKey(
                     'items',
                     'InternalID',
@@ -178,6 +183,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             describe('Items search', () => {
                 let legacyItems;
                 it('Where', async () => {
+                    console.log('Saar: Items search WHERE');
                     const whereItems = await objectsService.getItems({
                         where: `ExternalID like '%Automated API Item%'`,
                     });
@@ -188,6 +194,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Page and PageSize', async () => {
+                    console.log('Saar: Items search Page and PageSize');
                     legacyItems = await service.get('items?page_size=-1');
                     legacyPageItems;
                     legacyPageItems = await service.search('items', {
@@ -213,6 +220,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('KeyList', async () => {
+                    console.log('Saar: Items search Keylist');
                     legacyItems = await service.get(
                         `items?where=Key IN ('${items[0].UUID}','${items[1].UUID}','${items[2].UUID}','${items[3].UUID}')`,
                     );
@@ -224,6 +232,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('UniqueFieldList', async () => {
+                    console.log('Saar: Items search UniqueFieldList');
                     legacyItems = await service.get(
                         `items?where=InternalID IN ('${items[0].InternalID}','${items[1].InternalID}','${items[2].InternalID}','${items[3].InternalID}')`,
                     );
@@ -241,6 +250,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Fields', async () => {
+                    console.log('Saar: Items search Fields');
                     legacyItems = await service.get(`items?where=InternalID=${items[0].InternalID}`);
                     const legacyFieldsItems = await service.search(`items`, {
                         Where: `InternalID=${items[0].InternalID}`,
@@ -253,6 +263,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Include Count', async () => {
+                    console.log('Saar: Items search Include Count');
                     const legacyIncludeCountItems = await service.search('items', {
                         IncludeCount: true,
                     });
@@ -262,6 +273,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
             describe('DIMX + Delete', () => {
                 it('DIMX export', async () => {
+                    console.log('Saar: Items DIMX export');
                     const exportAudit = await service.dimxExport('items');
                     const dimxResult = await service.getDimxResult(exportAudit.URI);
                     legacyPageItems.Objects.sort((a, b) => {
@@ -275,6 +287,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('DIMX import insert + update', async () => {
+                    console.log('Saar: Items DIMX import');
                     const uuidForImport = newUuid();
                     let dimxImportResult = await service.dimxImport('items', {
                         Objects: [
@@ -311,6 +324,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Delete items', async () => {
+                    console.log('Saar: Items DELETE');
                     const deletedItem = await objectsService.postItem({
                         ExternalID: itemExternalID,
                         MainCategoryID: mainCategoryID,
@@ -336,6 +350,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
         });
 
         describe('Accounts', () => {
+            console.log('Saar: Accounts');
             let accounts;
             let legacyAccountExternalID;
             let accountExternalID;
@@ -346,6 +361,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let legacyPageAccounts;
 
             it('Create Account', async () => {
+                console.log('Saar: Create Account');
                 accounts = await objectsService.getAccounts();
                 accountExternalID = 'Automated API Account' + Math.floor(Math.random() * 1000000).toString();
                 legacyAccountExternalID = 'Automated API Account' + Math.floor(Math.random() * 1000000).toString();
@@ -383,6 +399,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Update account', async () => {
+                console.log('Saar: Update Account');
                 updatedAccount = await objectsService.createAccount({
                     ExternalID: accountExternalID,
                     City: 'Holon',
@@ -413,6 +430,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Get account by key', async () => {
+                console.log('Saar: Get Account by key');
                 const accountAfterUpdate = await objectsService.getAccountByID(legacyCreatedAccount.InternalID);
                 accountAfterUpdate.Key = legacyCreatedAccount.Key;
                 delete accountAfterUpdate['UUID'];
@@ -447,6 +465,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Get account by Unique key', async () => {
+                console.log('Saar: Get Account by unique key');
                 const getAccountByInternalID = await service.getByUniqueKey(
                     'accounts',
                     'InternalID',
@@ -481,6 +500,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             describe('Accounts search', () => {
                 let legacyAccounts;
                 it('Where', async () => {
+                    console.log('Saar: Account search WHERE');
                     const whereAccounts = await objectsService.getAccounts({
                         where: `ExternalID like '%Automated API Account%'`,
                     });
@@ -491,6 +511,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Page and PageSize', async () => {
+                    console.log('Saar: Account search Page and PageSize');
                     legacyAccounts = await service.get('accounts?page_size=-1');
                     legacyPageAccounts = await service.search('accounts', {
                         Page: 1,
@@ -515,6 +536,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('KeyList', async () => {
+                    console.log('Saar: Account search KeyList');
                     legacyAccounts = await service.get(
                         `accounts?where=Key IN ('${accounts[0].UUID}','${accounts[1].UUID}','${accounts[2].UUID}','${accounts[3].UUID}')`,
                     );
@@ -526,6 +548,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('UniqueFieldList', async () => {
+                    console.log('Saar: Account search UniqueFieldList');
                     legacyAccounts = await service.get(
                         `accounts?where=InternalID IN ('${accounts[0].InternalID}','${accounts[1].InternalID}','${accounts[2].InternalID}','${accounts[3].InternalID}')`,
                     );
@@ -543,6 +566,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Fields', async () => {
+                    console.log('Saar: Account search Fields');
                     legacyAccounts = await service.get(`accounts?where=InternalID=${accounts[0].InternalID}`);
                     const legacyFieldsAccounts = await service.search(`accounts`, {
                         Where: `InternalID=${accounts[0].InternalID}`,
@@ -559,6 +583,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Include Count', async () => {
+                    console.log('Saar: Account search Include Count');
                     const legacyIncludeCountAccounts = await service.search('accounts', {
                         IncludeCount: true,
                     });
@@ -568,6 +593,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
             describe('DIMX + Delete', () => {
                 it('DIMX export', async () => {
+                    console.log('Saar: Account DIMX export');
                     const accountsForComparison = await objectsService.getAccounts({ page_size: -1 });
                     const exportAudit = await service.dimxExport('accounts');
                     const dimxResult = await service.getDimxResult(exportAudit.URI);
@@ -630,6 +656,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('DIMX import insert + update', async () => {
+                    console.log('Saar: Account search DIMX Import');
                     const uuidForImport = newUuid();
                     let dimxImportResult = await service.dimxImport('accounts', {
                         Objects: [
@@ -664,6 +691,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Delete accounts', async () => {
+                    console.log('Saar: Delete Accounts');
                     const deletedAccount = await objectsService.createAccount({
                         ExternalID: accountExternalID,
                         Hidden: true,
@@ -886,6 +914,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
         // });
 
         describe('Contact', () => {
+            console.log('Saar: Contact');
             let contacts;
             let legacyContactExternalID;
             let contactExternalID;
@@ -897,6 +926,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let legacyUpdatedContact;
 
             it('Create Contact', async () => {
+                console.log('Saar: Create Contact');
                 contacts = await objectsService.getContacts();
                 contactExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
                 legacyContactExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
@@ -953,6 +983,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Update Contact', async () => {
+                console.log('Saar: Update Contact');
                 updatedContact = await objectsService.createContact({
                     ExternalID: contactExternalID,
                     Email: contactEmail,
@@ -990,12 +1021,14 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Get Contact by key', async () => {
+                console.log('Saar: Get Contact by key');
                 const getByKeyContact = await service.getByKey('contacts', legacyCreatedContact.Key);
                 expect(getByKeyContact).to.deep.equal(legacyUpdatedContact);
                 await expect(service.getByKey('contacts', '1234')).eventually.to.be.rejected;
             });
 
             it('Get Contact by Unique key', async () => {
+                console.log('Saar: GET Contact by unique key');
                 const getContactByInternalID = await service.getByUniqueKey(
                     'contacts',
                     'InternalID',
@@ -1017,6 +1050,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             describe('Contacts search', () => {
                 let legacyContacts;
                 it('Where', async () => {
+                    console.log('Saar: Contact Search WHERE');
                     const whereContacts = await objectsService.getContactsSDK({
                         where: `ExternalID like '%Automated API Item%'`,
                     });
@@ -1027,6 +1061,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Page and PageSize', async () => {
+                    console.log('Saar: Contact Search Page and PageSize');
                     legacyContacts = await service.get('contacts?page_size=-1');
                     let legacyPageContacts;
                     legacyPageContacts = await service.search('contacts', {
@@ -1052,6 +1087,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('KeyList', async () => {
+                    console.log('Saar: Contact Search KeyList');
                     legacyContacts = await service.get(
                         `contacts?where=Key IN ('${contacts[0].UUID}','${contacts[1].UUID}','${contacts[2].UUID}','${contacts[3].UUID}')`,
                     );
@@ -1063,6 +1099,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('UniqueFieldList', async () => {
+                    console.log('Saar: Contact Search UniqueFieldList');
                     legacyContacts = await service.get(
                         `contacts?where=InternalID IN ('${contacts[0].InternalID}','${contacts[1].InternalID}','${contacts[2].InternalID}','${contacts[3].InternalID}')`,
                     );
@@ -1080,6 +1117,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Fields', async () => {
+                    console.log('Saar: Contact Search Fields');
                     legacyContacts = await service.get(`contacts?where=InternalID=${contacts[0].InternalID}`);
                     const legacyFieldsContacts = await service.search(`contacts`, {
                         Where: `InternalID=${contacts[0].InternalID}`,
@@ -1096,6 +1134,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Include Count', async () => {
+                    console.log('Saar: Contact Search Include Count');
                     const legacyIncludeCountContacts = await service.search('contacts', {
                         IncludeCount: true,
                     });
@@ -1104,6 +1143,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Delete contacts', async () => {
+                console.log('Saar: Contact Delete');
                 const deletedContact = await objectsService.createContact({
                     ExternalID: contactExternalID,
                     Hidden: true,

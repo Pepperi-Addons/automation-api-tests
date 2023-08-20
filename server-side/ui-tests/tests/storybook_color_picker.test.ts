@@ -130,6 +130,7 @@ export async function StorybookColorPickerTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             expect(isPenIconFound).to.equal(false);
+                            await storyBookPage.elemntDoNotExist(colorPicker.MainExampleColorEditButton);
                             await storyBookPage.inputs.toggleDissableComponent();
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
