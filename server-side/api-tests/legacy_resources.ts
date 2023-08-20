@@ -8,8 +8,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
     const service = new LegacyResourcesService(generalService);
     const describe = tester.describe;
     const expect = tester.expect;
-    const it = tester.it;
-    
+    const it = tester.it;    
 
     //#region Upgrade Legacy Resources
     const testData = {
