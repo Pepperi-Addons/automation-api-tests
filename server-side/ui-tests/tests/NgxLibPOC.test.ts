@@ -112,7 +112,7 @@ export async function NgxLibPOC() {
                 //4.9. xAlignment
                 const currentAlign = await colorPicker.getComponentTxtAlignment();
                 expect(currentAlign).to.include('left');
-                const allAlignments = await storyBookPage.inputs.getAllAlignments();
+                const allAlignments = (await storyBookPage.inputs.getAllAlignments()).slice(5);
                 const alignExpectedValues = ['center', 'right'];
                 for (let index = 0; index < allAlignments.length; index++) {
                     const alignment = allAlignments[index];

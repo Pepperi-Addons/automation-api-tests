@@ -45,7 +45,9 @@ export class ColorPicker extends StorybookComponent {
     }
 
     public async getComponentTxtAlignment() {
-        const txtAlignComp = await this.browser.findElement(this.ComponentLabelTxtAlign);
+        const txtAlignComp = await this.browser.findElement(
+            By.xpath(this.ComponentLabelTxtAlign.value.replace('{placeholder}', 'color-picker')),
+        );
         const txtAlignVal = (await txtAlignComp.getAttribute('style')).split(':')[1];
         return txtAlignVal;
     }
