@@ -218,12 +218,6 @@ export async function StorybookButtonTests() {
                             expect(mainExampleButtonIconSvgValue).equals(
                                 'M18.2 14.713l-5.454-3.916a1.113 1.113 0 00-1.492 0L5.8 14.713a1.113 1.113 0 01-1.491 0 .93.93 0 010-1.384l6.2-5.756c.823-.764 2.159-.764 2.982 0l6.2 5.756a.93.93 0 010 1.384 1.113 1.113 0 01-1.491 0z',
                             );
-                            // driver.sleep(2.5 * 1000);
-                            // const base64ImageIconNameSelected = await driver.saveScreenshots();
-                            // addContext(this, {
-                            //     title: `After 2.5 sec sleep`,
-                            //     value: 'data:image/png;base64,' + base64ImageIconNameSelected,
-                            // });
                         });
                         it(`Functional test [ control = 'device_mobile' ](+screenshots)`, async function () {
                             const newIconNameToSelect = 'device_mobile';
