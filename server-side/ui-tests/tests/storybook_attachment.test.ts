@@ -97,6 +97,7 @@ export async function StorybookAttachmentTests() {
                     });
                 });
                 it(`open inputs if it's closed`, async function () {
+                    await driver.switchTo(storyBookPage.StorybookIframe);
                     const inputsMainTableRowElement = await driver.findElement(attachment.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
