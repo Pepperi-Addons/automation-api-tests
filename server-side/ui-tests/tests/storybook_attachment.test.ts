@@ -241,7 +241,6 @@ export async function StorybookAttachmentTests() {
                             expect(attachmentInputsTitles.includes('disabled')).to.be.true;
                             driver.sleep(1 * 1000);
                         });
-
                         it(`Functional test (+screenshots)`, async function () {
                             const base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
