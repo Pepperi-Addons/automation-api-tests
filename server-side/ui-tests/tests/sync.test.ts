@@ -17,6 +17,7 @@ import { MenuDataViewField } from '@pepperi-addons/papi-sdk';
 import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
 import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 import { ObjectsService } from '../../services';
+import { AccountsPage } from '../pom/Pages/AccountPage';
 
 chai.use(promised);
 let slugName;
@@ -325,7 +326,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                         JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics,
                     )}`,
                 );
-                debugger;
+                // debugger;
                 expect(JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
                     divisionCollectionSize,
                 );
@@ -390,7 +391,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                         JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics,
                     )}`,
                 );
-                debugger;
+                // debugger;
                 expect(JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
                     companiesCollectionSize,
                 );
@@ -457,7 +458,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                         JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics,
                     )}`,
                 );
-                debugger;
+                // debugger;
                 expect(JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
                     userInfoCollectionSize,
                 );
@@ -591,20 +592,45 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const allAccounts = await objectsService.getAccounts();
                 const accountArray = generalService.getNumberOfRandomElementsFromArray(allAccounts, 10);
                 const accountNamesArray = accountArray.map((account) => account.Name);
-                await webAppHomePage.clickOnBtn('Accounts');
-                generalService.sleep(1000 * 5);
                 const webAppList = new WebAppList(driver);
+                const accountPage = new AccountsPage(driver);
                 for (let index = 0; index < accountNamesArray.length; index++) {
+                    await webAppHomePage.clickOnBtn('Accounts');
+                    generalService.sleep(1000 * 5);
                     const accountName = accountNamesArray[index];
                     await webAppList.searchInList(accountName);
                     await webAppList.clickOnLinkFromListRowWebElement(0);
-
-                    debugger;
+                    const eseUtils = new E2EUtils(driver);
+                    const accUUID = await eseUtils.getUUIDfromURL();
+                    await accountPage.selectOptionFromBurgerMenu(slugName);
+                    const allListElements = await webAppList.getAllListElementsTextValue();
+                    const allDataAsArray = allListElements.map(element => element.split('\n'));
+                    for (let index = 0; index < allDataAsArray.length; index++) {
+                        const dataRow = allDataAsArray[index];
+                        //0 - key
+                        expect(dataRow[0]).to.equal(`${dataRow[2]}@${dataRow[3]}@${accUUID}`);
+                        //1 - accountRef
+                        expect(dataRow[1]).to.equal(accUUID);
+                        //get company and division data from UDC for this account
+                        const bodyToSend = {};
+                        bodyToSend['KeyList'] = [dataRow[0]];
+                        const response = await generalService.fetchStatus(
+                            `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${userInfoCollectionName}`,
+                            { method: 'POST', body: JSON.stringify(bodyToSend) },
+                        );
+                        expect(response.Ok).to.equal(true);
+                        expect(response.Status).to.equal(200);
+                        const division = response.Body.Objects[0].divisionRef;
+                        const company = response.Body.Objects[0].companyRef;
+                        //2 - companyRef
+                        expect(dataRow[2]).to.equal(company);
+                        //3 - divisionRef
+                        expect(dataRow[3]).to.equal(division);
+                        //4 - dasicVal
+                        expect(dataRow[4]).to.equal(`val_${accountName.split('_')[1]}`);
+                        await webAppHomePage.returnToHomePage();
+                    }
                 }
-                //searchInList
-                debugger;
-                //3. search for them in the account - list
-                //4. enter any of them and see data from userInfo page
             });
         });
         describe('Tear Down Via API', () => {
@@ -673,16 +699,24 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData2(this);
             });
-            it('Delete ATD from home screen', async function () {
+            it('Delete slug from acc. dashboard', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
+                const accountDashboardLayout = new AccountDashboardLayout(driver);
+                await accountDashboardLayout.unconfigureFromAccountMenuRepCardEVGENY(driver, slugName, slugName);
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.returnToHomePage();
+            });
+            it('Delete ATD from home screen', async function () {
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.removeAdminHomePageButtons(slugName);
                 const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.manualResync(client);
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);    
+                }
                 const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugName);
                 expect(isNotFound).to.equal(true);
             });
