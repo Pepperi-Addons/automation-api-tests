@@ -233,7 +233,7 @@ export async function StorybookAttachmentTests() {
                             await driver.switchTo(storyBookPage.StorybookIframe);
                             driver.sleep(1 * 1000);
                         });
-                        
+
                         it(`Functional test (+screenshots)`, async function () {
                             const base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
