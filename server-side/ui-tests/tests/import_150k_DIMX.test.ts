@@ -21,6 +21,7 @@ export async function Import150KToAdalFromDimx(client: Client, varPass) {
         varKey = varPass.body.varKeyPro;
     }
     const testData = {
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };

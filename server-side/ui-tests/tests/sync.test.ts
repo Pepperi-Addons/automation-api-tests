@@ -7,7 +7,7 @@ import { Client } from '@pepperi-addons/debug-server/dist';
 import { UDCService, UdcField } from '../../services/user-defined-collections.service';
 import fs from 'fs';
 import { PFSService } from '../../services/pfs.service';
-import { BrandedApp, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
+import { BrandedApp, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage } from '../pom';
 import E2EUtils from '../utilities/e2e_utils';
 import { ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
@@ -16,6 +16,7 @@ import { DataViewsService } from '../../services/data-views.service';
 import { MenuDataViewField } from '@pepperi-addons/papi-sdk';
 import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
 import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
+import { ObjectsService } from '../../services';
 
 chai.use(promised);
 let slugName;
@@ -35,21 +36,21 @@ export async function SyncTests(email: string, password: string, client: Client,
     const userInfoCollectionName = 'UserInfo';
     const userInfoCollectionSize = 1000;
     let driver: Browser;
-    await generalService.baseAddonVersionsInstallation(varPass);
+    // await generalService.baseAddonVersionsInstallation(varPass);
     // #region Upgrade survey dependencies
 
     const testData = {
-        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x
-        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
-        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
-        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-        'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
-        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
+        // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x
+        // 'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
+        // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        // 'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+        // Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+        // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
+        // 'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+        // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        // 'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+        // 'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
+        // Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
@@ -564,7 +565,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 await accountDashboardLayout.configureToAccountMenuRepCardEVGENY(driver, slugName, slugName);
             });
         });
-        describe('UI Test - Admin: Enter 10 Account Dashboards And See Data Is Arriving', () => {
+        describe('UI Tests - Enter 10 Account Dashboards And See Data Is Arriving', () => {
             this.retries(0);
 
             before(async function () {
@@ -578,6 +579,32 @@ export async function SyncTests(email: string, password: string, client: Client,
             afterEach(async function () {
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData2(this);
+            });
+            it(`1. Admin`, async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
+                //1. re-sync
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.reSyncApp();
+                //2. choose 10 random accounts
+                const objectsService = new ObjectsService(generalService);
+                const allAccounts = await objectsService.getAccounts();
+                const accountArray = generalService.getNumberOfRandomElementsFromArray(allAccounts, 10);
+                const accountNamesArray = accountArray.map((account) => account.Name);
+                await webAppHomePage.clickOnBtn('Accounts');
+                generalService.sleep(1000 * 5);
+                const webAppList = new WebAppList(driver);
+                for (let index = 0; index < accountNamesArray.length; index++) {
+                    const accountName = accountNamesArray[index];
+                    await webAppList.searchInList(accountName);
+                    await webAppList.clickOnLinkFromListRowWebElement(0);
+
+                    debugger;
+                }
+                //searchInList
+                debugger;
+                //3. search for them in the account - list
+                //4. enter any of them and see data from userInfo page
             });
         });
         describe('Tear Down Via API', () => {

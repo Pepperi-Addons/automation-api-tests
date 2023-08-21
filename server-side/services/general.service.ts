@@ -390,6 +390,19 @@ export default class GeneralService {
         return;
     }
 
+    getNumberOfRandomElementsFromArray(array, numberOfElements) {
+        const result = new Array(numberOfElements);
+        let len = array.length;
+        const taken = new Array(len);
+        if (numberOfElements > len) throw new RangeError('getRandom: more elements taken than available');
+        while (numberOfElements--) {
+            const x = Math.floor(Math.random() * len);
+            result[numberOfElements] = array[x in taken ? taken[x] : x];
+            taken[x] = --len in taken ? taken[len] : len;
+        }
+        return result;
+    }
+
     addQueryAndOptions(url: string, options: QueryOptions = {}) {
         const optionsArr: string[] = [];
         Object.keys(options).forEach((key) => {
