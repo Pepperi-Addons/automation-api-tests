@@ -117,6 +117,7 @@ export async function StorybookColorPickerTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('disabled')).to.be.true;
@@ -139,12 +140,14 @@ export async function StorybookColorPickerTests() {
                             });
                         });
                         break;
+
                     case 'showAAComplient':
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('showAAComplient')).to.be.true;
                         });
-                    // it(`Functional test (+screenshot)`, async function () {});
-                    // break;
+                        // it(`Functional test (+screenshot)`, async function () {});
+                        break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('showTitle')).to.be.true;
@@ -166,6 +169,7 @@ export async function StorybookColorPickerTests() {
                             });
                         });
                         break;
+
                     case 'type':
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('type')).to.be.true;
@@ -191,6 +195,7 @@ export async function StorybookColorPickerTests() {
                             await allTypes[0].click();
                         });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('value')).to.be.true;
@@ -206,20 +211,21 @@ export async function StorybookColorPickerTests() {
                             expect(currentColor).to.equal('(31, 190, 185)'); // same as "#1fbeb9" in RGB
                         });
                         break;
+
                     case 'xAlignment':
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('xAlignment')).to.be.true;
                         });
                         it(`get all xAlignments`, async function () {
-                            const currentAlign = await colorPicker.getComponentTxtAlignment();
+                            const currentAlign = await colorPicker.getTxtAlignmentByComponent('color-picker');
                             expect(currentAlign).to.include('left');
-                            allAlignments = await storyBookPage.inputs.getAllAlignments();
+                            allAlignments = (await storyBookPage.inputs.getAllAlignments()).slice(5);
                         });
                         alignExpectedValues.forEach(async (title, index) => {
                             it(`'${title}' -- functional test (+screenshot)`, async function () {
                                 const alignment = allAlignments[index];
                                 await alignment.click();
-                                const currentAlign = await colorPicker.getComponentTxtAlignment();
+                                const currentAlign = await colorPicker.getTxtAlignmentByComponent('color-picker');
                                 const base64ImageComponentModal = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `${title} (xAlignment) input change`,

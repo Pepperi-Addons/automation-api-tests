@@ -5,6 +5,7 @@ export class StoryBookInpus extends AddonPage {
     public LabelInput: By = By.xpath(`//textarea[contains(@name,'label')]`);
     public EmptySpaceToClick: By = By.xpath(`//h1[contains(@class,'title')]`);
     public DisableToggler: By = By.xpath(`//input[contains(@name,'disabled')]`);
+    public MandatoryToggler: By = By.xpath(`//input[contains(@name,'mandatory')]`);
     public ShowTitleToggler: By = By.xpath(`//input[contains(@name,'showTitle')]`);
     public CheckBoxElements: By = By.xpath(`//table//label//input[@type='radio']`);
     public ColorValue: By = By.xpath(`//input[contains(@id,'control-value')]`);
@@ -19,6 +20,10 @@ export class StoryBookInpus extends AddonPage {
         await this.browser.click(this.DisableToggler);
     }
 
+    public async toggleMandatoryComponent(): Promise<void> {
+        await this.browser.click(this.MandatoryToggler);
+    }
+
     public async toggleShowTitle(): Promise<void> {
         await this.browser.click(this.ShowTitleToggler);
     }
@@ -30,7 +35,8 @@ export class StoryBookInpus extends AddonPage {
 
     public async getAllAlignments() {
         const allTypes = await this.browser.findElements(this.CheckBoxElements);
-        return allTypes.slice(5);
+        // return allTypes.slice(5);
+        return allTypes;
     }
 
     public async setColorValue(color: string) {
