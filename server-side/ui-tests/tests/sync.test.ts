@@ -24,6 +24,10 @@ let slugName;
 let userInfoPageUUID;
 let accountViewUUID;
 let accountViewName;
+const repEmail = 'SyncE2ETestingSBRep@pepperitest.com';
+const repPass = '*5AX4m';
+const buyerEmail = 'SyncE2ETestingSBBuyer@pepperitest.com';
+const buyerPass = '2HT#bK';
 
 export async function SyncTests(email: string, password: string, client: Client, varPass) {
     const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
@@ -631,6 +635,97 @@ export async function SyncTests(email: string, password: string, client: Client,
                         await webAppHomePage.returnToHomePage();
                     }
                 }
+                await webAppLoginPage.logout();
+            });
+            it(`1. Sales Rep`, async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(repEmail, repPass);
+                //2. choose 10 random accounts
+                const objectsService = new ObjectsService(generalService);
+                const allAccounts = await objectsService.getAccounts();
+                const accountArray = generalService.getNumberOfRandomElementsFromArray(allAccounts, 10);
+                const accountNamesArray = accountArray.map((account) => account.Name);
+                const webAppHomePage = new WebAppHomePage(driver);
+                const webAppList = new WebAppList(driver);
+                const accountPage = new AccountsPage(driver);
+                for (let index = 0; index < accountNamesArray.length; index++) {
+                    await webAppHomePage.clickOnBtn('Accounts');
+                    generalService.sleep(1000 * 5);
+                    const accountName = accountNamesArray[index];
+                    await webAppList.searchInList(accountName);
+                    await webAppList.clickOnLinkFromListRowWebElement(0);
+                    const eseUtils = new E2EUtils(driver);
+                    const accUUID = await eseUtils.getUUIDfromURL();
+                    await accountPage.selectOptionFromBurgerMenu(slugName);
+                    const allListElements = await webAppList.getAllListElementsTextValue();
+                    const allDataAsArray = allListElements.map((element) => element.split('\n'));
+                    for (let index = 0; index < allDataAsArray.length; index++) {
+                        const dataRow = allDataAsArray[index];
+                        //0 - key
+                        expect(dataRow[0]).to.equal(`${dataRow[2]}@${dataRow[3]}@${accUUID}`);
+                        //1 - accountRef
+                        expect(dataRow[1]).to.equal(accUUID);
+                        //get company and division data from UDC for this account
+                        const bodyToSend = {};
+                        bodyToSend['KeyList'] = [dataRow[0]];
+                        const response = await generalService.fetchStatus(
+                            `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${userInfoCollectionName}`,
+                            { method: 'POST', body: JSON.stringify(bodyToSend) },
+                        );
+                        expect(response.Ok).to.equal(true);
+                        expect(response.Status).to.equal(200);
+                        const division = response.Body.Objects[0].divisionRef;
+                        const company = response.Body.Objects[0].companyRef;
+                        //2 - companyRef
+                        expect(dataRow[2]).to.equal(company);
+                        //3 - divisionRef
+                        expect(dataRow[3]).to.equal(division);
+                        //4 - dasicVal
+                        expect(dataRow[4]).to.equal(`val_${accountName.split('_')[1]}`);
+                        await webAppHomePage.returnToHomePage();
+                    }
+                }
+            });
+            it(`3. Buyer`, async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(buyerEmail, buyerPass);
+                const webAppHomePage = new WebAppHomePage(driver);
+                const webAppList = new WebAppList(driver);
+                const accountPage = new AccountsPage(driver);
+                await webAppHomePage.clickOnBtn('Accounts');
+                generalService.sleep(1000 * 5);
+                const accountName = 'accounts_0';
+                await webAppList.clickOnLinkFromListRowWebElement(0);
+                const eseUtils = new E2EUtils(driver);
+                const accUUID = await eseUtils.getUUIDfromURL();
+                await accountPage.selectOptionFromBurgerMenu(slugName);
+                const allListElements = await webAppList.getAllListElementsTextValue();
+                const allDataAsArray = allListElements.map((element) => element.split('\n'));
+                for (let index = 0; index < allDataAsArray.length; index++) {
+                    const dataRow = allDataAsArray[index];
+                    //0 - key
+                    expect(dataRow[0]).to.equal(`${dataRow[2]}@${dataRow[3]}@${accUUID}`);
+                    //1 - accountRef
+                    expect(dataRow[1]).to.equal(accUUID);
+                    //get company and division data from UDC for this account
+                    const bodyToSend = {};
+                    bodyToSend['KeyList'] = [dataRow[0]];
+                    const response = await generalService.fetchStatus(
+                        `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${userInfoCollectionName}`,
+                        { method: 'POST', body: JSON.stringify(bodyToSend) },
+                    );
+                    expect(response.Ok).to.equal(true);
+                    expect(response.Status).to.equal(200);
+                    const division = response.Body.Objects[0].divisionRef;
+                    const company = response.Body.Objects[0].companyRef;
+                    //2 - companyRef
+                    expect(dataRow[2]).to.equal(company);
+                    //3 - divisionRef
+                    expect(dataRow[3]).to.equal(division);
+                    //4 - dasicVal
+                    expect(dataRow[4]).to.equal(`val_${accountName.split('_')[1]}`);
+                }
+                await webAppHomePage.returnToHomePage();
             });
         });
         describe('Tear Down Via API', () => {
