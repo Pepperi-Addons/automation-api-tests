@@ -604,7 +604,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     const accUUID = await eseUtils.getUUIDfromURL();
                     await accountPage.selectOptionFromBurgerMenu(slugName);
                     const allListElements = await webAppList.getAllListElementsTextValue();
-                    const allDataAsArray = allListElements.map(element => element.split('\n'));
+                    const allDataAsArray = allListElements.map((element) => element.split('\n'));
                     for (let index = 0; index < allDataAsArray.length; index++) {
                         const dataRow = allDataAsArray[index];
                         //0 - key
@@ -715,7 +715,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 await brandedApp.removeAdminHomePageButtons(slugName);
                 const webAppHomePage = new WebAppHomePage(driver);
                 for (let index = 0; index < 2; index++) {
-                    await webAppHomePage.manualResync(client);    
+                    await webAppHomePage.manualResync(client);
                 }
                 const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugName);
                 expect(isNotFound).to.equal(true);
