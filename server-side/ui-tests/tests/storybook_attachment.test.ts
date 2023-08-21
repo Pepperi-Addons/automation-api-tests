@@ -96,8 +96,16 @@ export async function StorybookAttachmentTests() {
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
+                it(`switch to iframe`, async function () {
+                    try {
+                        await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                    } catch (error) {
+                        console.error(error);
+                        console.info('ALREADY ON IFRAME');
+                    }
+                });
                 it(`open inputs if it's closed`, async function () {
-                    await driver.switchTo(storyBookPage.StorybookIframe);
                     const inputsMainTableRowElement = await driver.findElement(attachment.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
@@ -231,7 +239,6 @@ export async function StorybookAttachmentTests() {
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(attachmentInputsTitles.includes('disabled')).to.be.true;
-                            await driver.switchTo(storyBookPage.StorybookIframe);
                             driver.sleep(1 * 1000);
                         });
 
@@ -298,9 +305,6 @@ export async function StorybookAttachmentTests() {
                             await attachment.changeSrcControl(expectedUrl);
                             driver.sleep(1 * 1000);
                         });
-                        // it(`open inputs`, async function () {
-                        //     await driver.click(attachment.Inputs_mainTableRow);
-                        // });
                         it(`Functional test (+screenshots)`, async function () {
                             const base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
