@@ -96,6 +96,17 @@ export async function StorybookAttachmentTests() {
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
+                it(`open inputs if it's closed`, async function () {
+                    const inputsMainTableRowElement = await driver.findElement(attachment.Inputs_mainTableRow);
+                    if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                        await inputsMainTableRowElement.click();
+                    }
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (input) {
                     case 'rowSpan':
                         it(`validate input`, async function () {
@@ -222,9 +233,7 @@ export async function StorybookAttachmentTests() {
                             await driver.switchTo(storyBookPage.StorybookIframe);
                             driver.sleep(1 * 1000);
                         });
-                        it(`open inputs`, async function () {
-                            await driver.click(attachment.Inputs_mainTableRow);
-                        });
+                        
                         it(`Functional test (+screenshots)`, async function () {
                             const base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
@@ -288,9 +297,9 @@ export async function StorybookAttachmentTests() {
                             await attachment.changeSrcControl(expectedUrl);
                             driver.sleep(1 * 1000);
                         });
-                        it(`open inputs`, async function () {
-                            await driver.click(attachment.Inputs_mainTableRow);
-                        });
+                        // it(`open inputs`, async function () {
+                        //     await driver.click(attachment.Inputs_mainTableRow);
+                        // });
                         it(`Functional test (+screenshots)`, async function () {
                             const base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
