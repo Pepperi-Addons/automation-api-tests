@@ -24,7 +24,7 @@ let slugName;
 let userInfoPageUUID;
 let accountViewUUID;
 let accountViewName;
-const repEmail = '⁠SyncE2ETestingSBRep@pepperitest.com';
+const repEmail = 'SyncE2ETestingSBRep@pepperitest.com'
 const repPass = '*5AX4m';
 
 export async function SyncTests(email: string, password: string, client: Client, varPass) {
