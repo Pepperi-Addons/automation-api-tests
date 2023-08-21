@@ -306,7 +306,16 @@ export async function StorybookAttachmentTests() {
                             driver.sleep(1 * 1000);
                         });
                         it(`Functional test (+screenshots)`, async function () {
-                            const base64ImageComponent = await driver.saveScreenshots();
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const inputsMainTableRowElement = await driver.findElement(attachment.Inputs_mainTableRow);
+                            if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                                await inputsMainTableRowElement.click();
+                            }
+                            base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `'${input}' input`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
