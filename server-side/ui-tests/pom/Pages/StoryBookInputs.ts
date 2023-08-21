@@ -5,6 +5,8 @@ export class StoryBookInpus extends AddonPage {
     public LabelInput: By = By.xpath(`//textarea[contains(@name,'label')]`);
     public ValueInput: By = By.xpath(`//textarea[contains(@name,'value')]`);
     public ClassNamesInput: By = By.xpath(`//textarea[contains(@name,'classNames')]`);
+    public IconNameInputControl: By = By.xpath(`//select[contains(@id,'control-iconName')]`);
+    public SelectOption_byText: By = By.xpath(`//option[text()="{placeholder}"]`);
     public EmptySpaceToClick: By = By.xpath(`//h1[contains(@class,'title')]`);
     public DisableToggler: By = By.xpath(`//input[contains(@name,'disabled')]`);
     public MandatoryToggler: By = By.xpath(`//input[contains(@name,'mandatory')]`);
@@ -34,6 +36,24 @@ export class StoryBookInpus extends AddonPage {
 
     public async toggleDissableComponent(): Promise<void> {
         await this.browser.click(this.DisableToggler);
+    }
+
+    public async selectIconName(toSelect: string): Promise<void> {
+        await this.selectByOption(this.IconNameInputControl, toSelect);
+    }
+
+    public async selectByOption(locator: By, option: string, index?: number): Promise<void> {
+        this.browser.sleep(0.1 * 1000);
+        this.browser.untilIsVisible(locator);
+        if (index !== undefined) {
+            await this.browser.click(locator, index);
+        } else {
+            await this.browser.click(locator);
+        }
+        this.browser.sleep(0.3 * 1000);
+        const matOptionWithStringInjected: string = this.SelectOption_byText.value.replace('{placeholder}', option);
+        await this.browser.click(By.xpath(matOptionWithStringInjected));
+        return;
     }
 
     public async toggleMandatoryComponent(): Promise<void> {
