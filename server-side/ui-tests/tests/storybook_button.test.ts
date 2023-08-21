@@ -92,57 +92,139 @@ export async function StorybookButtonTests() {
         });
         buttonInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it(`switch to iframe`, async function () {
+                    try {
+                        await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                    } catch (error) {
+                        console.error(error);
+                        console.info('ALREADY ON IFRAME');
+                    }
+                });
+                it(`open inputs if it's closed`, async function () {
+                    const inputsMainTableRowElement = await driver.findElement(button.Inputs_mainTableRow);
+                    if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                        await inputsMainTableRowElement.click();
+                    }
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (input) {
                     case 'value':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('value')).to.be.true;
                         });
-                        // TODO
+                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newValueToSet = 'Auto test';
+                            await storyBookPage.inputs.changeValue(newValueToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newValueGotFromUi = await button.getMainExampleButtonValue();
+                            expect(newValueGotFromUi).to.equal(newValueToSet);
+                        });
                         break;
+
                     case 'classNames':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('classNames')).to.be.true;
                         });
-                        // TODO
+                        it(`[ control = 'rotate3d' ] functional test (+screenshot)`, async function () {
+                            const newClassNamesToSet = 'rotate3d';
+                            await storyBookPage.inputs.changeClassNames(newClassNamesToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ClassNames Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newClassNamesGotFromUi = await (
+                                await driver.findElement(button.MainExampleButton)
+                            ).getAttribute('class');
+                            console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
+                            expect(newClassNamesGotFromUi).to.contain(newClassNamesToSet);
+                        });
                         break;
+
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`Functional test (+screenshots)`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.inputs.toggleDissableComponent();
+                            await driver.scrollToElement(button.MainHeader);
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            let mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            expect(await mainExampleButton.getAttribute('disabled')).to.equal('true');
+                            await storyBookPage.inputs.toggleDissableComponent();
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            const disabledAttribute = await mainExampleButton.getAttribute('disabled');
+                            expect(disabledAttribute).to.be.null;
+                        });
                         break;
+
                     case 'iconName':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('iconName')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'iconPosition':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('iconPosition')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'sizeType':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('sizeType')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'styleStateType':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('styleStateType')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'styleType':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('styleType')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'visible':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('visible')).to.be.true;
                         });
                         // TODO
