@@ -213,6 +213,7 @@ export async function StorybookAttachmentTests() {
                         it(`validate input`, async function () {
                             expect(attachmentInputsTitles.includes('disabled')).to.be.true;
                             await driver.switchTo(storyBookPage.StorybookIframe);
+                            driver.sleep(1 * 1000);
                         });
                         it(`Functional test (+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDissableComponent();
@@ -236,6 +237,7 @@ export async function StorybookAttachmentTests() {
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(attachmentInputsTitles.includes('mandatory')).to.be.true;
+                            driver.sleep(1 * 1000);
                         });
                         it(`Functional test (+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryComponent();
@@ -259,6 +261,7 @@ export async function StorybookAttachmentTests() {
                         it(`validate input`, async function () {
                             expect(attachmentInputsTitles.includes('showTitle')).to.be.true;
                             await attachment.changeSrcControl(expectedUrl);
+                            driver.sleep(1 * 1000);
                         });
                         it(`Functional test (+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleShowTitle();
@@ -290,6 +293,7 @@ export async function StorybookAttachmentTests() {
                         it(`validate input & get all xAlignments`, async function () {
                             expect(attachmentInputsTitles.includes('xAlignment')).to.be.true;
                             allAlignments = await storyBookPage.inputs.getAllAlignments();
+                            driver.sleep(1 * 1000);
                         });
                         it(`validate current xAlignment is "left"`, async function () {
                             const currentAlign = await attachment.getTxtAlignmentByComponent('attachment');
