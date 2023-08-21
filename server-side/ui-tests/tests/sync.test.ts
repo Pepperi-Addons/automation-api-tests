@@ -17,6 +17,7 @@ import { MenuDataViewField } from '@pepperi-addons/papi-sdk';
 import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
 import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 import { ObjectsService } from '../../services';
+import { AccountsPage } from '../pom/Pages/AccountPage';
 
 chai.use(promised);
 let slugName;
@@ -36,21 +37,21 @@ export async function SyncTests(email: string, password: string, client: Client,
     const userInfoCollectionName = 'UserInfo';
     const userInfoCollectionSize = 1000;
     let driver: Browser;
-    // await generalService.baseAddonVersionsInstallation(varPass);
+    await generalService.baseAddonVersionsInstallation(varPass);
     // #region Upgrade survey dependencies
 
     const testData = {
-        // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x
-        // 'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
-        // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
-        // 'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        // Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-        // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
-        // 'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-        // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
-        // 'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-        // 'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
-        // Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
+        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x
+        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
+        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+        'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
+        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
@@ -325,7 +326,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                         JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics,
                     )}`,
                 );
-                debugger;
+                // debugger;
                 expect(JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
                     divisionCollectionSize,
                 );
@@ -390,7 +391,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                         JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics,
                     )}`,
                 );
-                debugger;
+                // debugger;
                 expect(JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
                     companiesCollectionSize,
                 );
@@ -457,7 +458,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                         JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics,
                     )}`,
                 );
-                debugger;
+                // debugger;
                 expect(JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
                     userInfoCollectionSize,
                 );
@@ -486,7 +487,7 @@ export async function SyncTests(email: string, password: string, client: Client,
 
             afterEach(async function () {
                 const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.collectEndTestData2(this);
+                await webAppHomePage.collectEndTestData(this);
             });
             it(`1. Create A View To Show UserInfo UDC`, async function () {
                 const resourceListUtils = new E2EUtils(driver);
@@ -578,7 +579,7 @@ export async function SyncTests(email: string, password: string, client: Client,
 
             afterEach(async function () {
                 const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.collectEndTestData2(this);
+                await webAppHomePage.collectEndTestData(this);
             });
             it(`1. Admin`, async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
@@ -591,20 +592,45 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const allAccounts = await objectsService.getAccounts();
                 const accountArray = generalService.getNumberOfRandomElementsFromArray(allAccounts, 10);
                 const accountNamesArray = accountArray.map((account) => account.Name);
-                await webAppHomePage.clickOnBtn('Accounts');
-                generalService.sleep(1000 * 5);
                 const webAppList = new WebAppList(driver);
+                const accountPage = new AccountsPage(driver);
                 for (let index = 0; index < accountNamesArray.length; index++) {
+                    await webAppHomePage.clickOnBtn('Accounts');
+                    generalService.sleep(1000 * 5);
                     const accountName = accountNamesArray[index];
                     await webAppList.searchInList(accountName);
                     await webAppList.clickOnLinkFromListRowWebElement(0);
-
-                    debugger;
+                    const eseUtils = new E2EUtils(driver);
+                    const accUUID = await eseUtils.getUUIDfromURL();
+                    await accountPage.selectOptionFromBurgerMenu(slugName);
+                    const allListElements = await webAppList.getAllListElementsTextValue();
+                    const allDataAsArray = allListElements.map((element) => element.split('\n'));
+                    for (let index = 0; index < allDataAsArray.length; index++) {
+                        const dataRow = allDataAsArray[index];
+                        //0 - key
+                        expect(dataRow[0]).to.equal(`${dataRow[2]}@${dataRow[3]}@${accUUID}`);
+                        //1 - accountRef
+                        expect(dataRow[1]).to.equal(accUUID);
+                        //get company and division data from UDC for this account
+                        const bodyToSend = {};
+                        bodyToSend['KeyList'] = [dataRow[0]];
+                        const response = await generalService.fetchStatus(
+                            `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${userInfoCollectionName}`,
+                            { method: 'POST', body: JSON.stringify(bodyToSend) },
+                        );
+                        expect(response.Ok).to.equal(true);
+                        expect(response.Status).to.equal(200);
+                        const division = response.Body.Objects[0].divisionRef;
+                        const company = response.Body.Objects[0].companyRef;
+                        //2 - companyRef
+                        expect(dataRow[2]).to.equal(company);
+                        //3 - divisionRef
+                        expect(dataRow[3]).to.equal(division);
+                        //4 - dasicVal
+                        expect(dataRow[4]).to.equal(`val_${accountName.split('_')[1]}`);
+                        await webAppHomePage.returnToHomePage();
+                    }
                 }
-                //searchInList
-                debugger;
-                //3. search for them in the account - list
-                //4. enter any of them and see data from userInfo page
             });
         });
         describe('Tear Down Via API', () => {
@@ -671,18 +697,26 @@ export async function SyncTests(email: string, password: string, client: Client,
 
             afterEach(async function () {
                 const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.collectEndTestData2(this);
+                await webAppHomePage.collectEndTestData(this);
             });
-            it('Delete ATD from home screen', async function () {
+            it('Delete slug from acc. dashboard', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
+                const accountDashboardLayout = new AccountDashboardLayout(driver);
+                await accountDashboardLayout.unconfigureFromAccountMenuRepCardEVGENY(driver, slugName, slugName);
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.returnToHomePage();
+            });
+            it('Delete ATD from home screen', async function () {
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.removeAdminHomePageButtons(slugName);
                 const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.manualResync(client);
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
                 const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugName);
                 expect(isNotFound).to.equal(true);
             });
