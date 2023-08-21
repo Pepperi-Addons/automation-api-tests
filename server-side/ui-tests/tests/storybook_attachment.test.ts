@@ -201,7 +201,7 @@ export async function StorybookAttachmentTests() {
                                 title: `image of dfstudio`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
-                            driver.sleep(2 * 1000);
+                            driver.sleep(0.2 * 1000);
                             const newUrl = await attachment.openMainExampleSource(); // opens new tab
                             base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
@@ -287,6 +287,9 @@ export async function StorybookAttachmentTests() {
                             expect(attachmentInputsTitles.includes('showTitle')).to.be.true;
                             await attachment.changeSrcControl(expectedUrl);
                             driver.sleep(1 * 1000);
+                        });
+                        it(`open inputs`, async function () {
+                            await driver.click(attachment.Inputs_mainTableRow);
                         });
                         it(`Functional test (+screenshots)`, async function () {
                             const base64ImageComponent = await driver.saveScreenshots();
