@@ -192,7 +192,66 @@ export async function StorybookButtonTests() {
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('iconName')).to.be.true;
                         });
-                        // TODO
+                        it(`Functional test [ control = 'arrow_up' ](+screenshots)`, async function () {
+                            const newIconNameToSelect = 'arrow_up';
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.inputs.selectIconName(newIconNameToSelect);
+                            await driver.scrollToElement(button.MainHeader);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Icon Name Select Changed to "${newIconNameToSelect}"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const mainExampleButtonIcon = await driver.findElement(button.MainExampleButton_icon);
+                            const mainExampleButtonIconSvgValue = await (
+                                await driver.findElement(button.MainExampleButton_iconSvgValue)
+                            ).getAttribute('d');
+                            console.info(
+                                'mainExampleButtonIconSvgValue: ',
+                                JSON.stringify(mainExampleButtonIconSvgValue, null, 2),
+                            );
+                            expect(mainExampleButtonIcon).to.not.be.undefined.and.not.be.null;
+                            expect(mainExampleButtonIconSvgValue).equals(
+                                'M18.2 14.713l-5.454-3.916a1.113 1.113 0 00-1.492 0L5.8 14.713a1.113 1.113 0 01-1.491 0 .93.93 0 010-1.384l6.2-5.756c.823-.764 2.159-.764 2.982 0l6.2 5.756a.93.93 0 010 1.384 1.113 1.113 0 01-1.491 0z',
+                            );
+                            // driver.sleep(2.5 * 1000);
+                            // const base64ImageIconNameSelected = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `After 2.5 sec sleep`,
+                            //     value: 'data:image/png;base64,' + base64ImageIconNameSelected,
+                            // });
+                        });
+                        it(`Functional test [ control = 'device_mobile' ](+screenshots)`, async function () {
+                            const newIconNameToSelect = 'device_mobile';
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.inputs.selectIconName(newIconNameToSelect);
+                            await driver.scrollToElement(button.MainHeader);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Icon Name Select Changed to "${newIconNameToSelect}"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const mainExampleButtonIcon = await driver.findElement(button.MainExampleButton_icon);
+                            const mainExampleButtonIconSvgValue = await (
+                                await driver.findElement(button.MainExampleButton_iconSvgValue)
+                            ).getAttribute('d');
+                            console.info(
+                                'mainExampleButtonIconSvgValue: ',
+                                JSON.stringify(mainExampleButtonIconSvgValue, null, 2),
+                            );
+                            expect(mainExampleButtonIcon).to.not.be.undefined.and.not.be.null;
+                            expect(mainExampleButtonIconSvgValue).equals(
+                                'M16 3a2 2 0 012 2v14a2 2 0 01-2 2H8a2 2 0 01-2-2V5a2 2 0 012-2h8zm-1 2H9a1 1 0 00-1 1v12a1 1 0 001 1h6a1 1 0 001-1V6a1 1 0 00-1-1zm-1 11a1 1 0 010 2h-4a1 1 0 010-2h4z',
+                            );
+                        });
                         break;
 
                     case 'iconPosition':
