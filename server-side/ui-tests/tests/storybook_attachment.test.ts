@@ -89,6 +89,13 @@ export async function StorybookAttachmentTests() {
         });
         attachmentInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (input) {
                     case 'rowSpan':
                         it(`validate input`, async function () {
@@ -216,6 +223,11 @@ export async function StorybookAttachmentTests() {
                             driver.sleep(1 * 1000);
                         });
                         it(`Functional test (+screenshots)`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                             await storyBookPage.inputs.toggleDissableComponent();
                             await driver.scrollToElement(attachment.MainHeader);
                             let base64ImageComponentModal = await driver.saveScreenshots();
@@ -240,6 +252,11 @@ export async function StorybookAttachmentTests() {
                             driver.sleep(1 * 1000);
                         });
                         it(`Functional test (+screenshots)`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                             await storyBookPage.inputs.toggleMandatoryComponent();
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
@@ -259,11 +276,21 @@ export async function StorybookAttachmentTests() {
 
                     case 'showTitle':
                         it(`validate input`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                             expect(attachmentInputsTitles.includes('showTitle')).to.be.true;
                             await attachment.changeSrcControl(expectedUrl);
                             driver.sleep(1 * 1000);
                         });
                         it(`Functional test (+screenshots)`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                             await storyBookPage.inputs.toggleShowTitle();
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
@@ -291,6 +318,11 @@ export async function StorybookAttachmentTests() {
                             });
                         });
                         it(`validate input & get all xAlignments`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                             expect(attachmentInputsTitles.includes('xAlignment')).to.be.true;
                             allAlignments = await storyBookPage.inputs.getAllAlignments();
                             driver.sleep(1 * 1000);
