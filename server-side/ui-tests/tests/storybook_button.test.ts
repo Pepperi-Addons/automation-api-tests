@@ -25,6 +25,8 @@ export async function StorybookButtonTests() {
     const buttonStoriesHeaders = ['Disabled', 'Icon on start', 'Icon on end', 'Icon only', 'Styles, options and sizes'];
     const iconPositionsExpectedValues = ['start', 'end'];
     const sizeTypesExpectedValues = ['xs', 'sm', 'md', 'lg', 'xl'];
+    const styleStateTypeExpectedValues = ['system', 'caution', 'success'];
+    const styleTypeExpectedValues = ['weak', 'weak-invert', 'regular', 'strong'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
@@ -35,6 +37,8 @@ export async function StorybookButtonTests() {
     let allSizeTypes;
     let mainExampleButton;
     let mainExampleButtonHeight;
+    let allStyleStateTypes;
+    let allStyleTypes;
 
     describe('Storybook "Button" Tests Suite', function () {
         this.retries(0);
@@ -392,7 +396,7 @@ export async function StorybookButtonTests() {
                                 });
                             });
                         });
-                        it(`back to default size type = "md"`, async function () {
+                        it(`back to default [size type = "md"]`, async function () {
                             await allSizeTypes[2].click();
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
@@ -417,14 +421,155 @@ export async function StorybookButtonTests() {
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('styleStateType')).to.be.true;
                         });
-                        // TODO
+                        it(`get all style state types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allStyleStateTypes = await storyBookPage.inputs.getAllStyleStateTypes();
+                            driver.sleep(1 * 1000);
+                            console.info('allStyleStateTypes length: ', allStyleStateTypes.length);
+                            expect(allStyleStateTypes.length).equals(styleStateTypeExpectedValues.length);
+                        });
+                        // it(`validate current style state type is "system"`, async function () {
+                        // });
+                        styleStateTypeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const styleStateType = allStyleStateTypes[index];
+                                await styleStateType.click();
+                                // mainExampleButton = await driver.findElement(button.MainExampleButton);
+                                // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
+                                // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (styleStateType) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                // let expectedHeight;
+                                switch (title) {
+                                    case 'system':
+                                        console.info(`At SYSTEM style state type`);
+                                        break;
+                                    case 'caution':
+                                        console.info(`At CAUSION style state type`);
+                                        break;
+                                    case 'success':
+                                        console.info(`At SUCCESS style state type`);
+                                        break;
+
+                                    default:
+                                        console.info(`At DEFAULT style state type`);
+                                        break;
+                                }
+                                // expect(mainExampleButtonHeight).to.equal(expectedHeight);
+                                await driver.click(button.MainHeader);
+                                driver.sleep(0.1 * 1000);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: button with [style state type = '${title}']`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
+                        it(`back to default [style state type = "system"]`, async function () {
+                            await allStyleStateTypes[0].click();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `style state type changed to 'system'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
+                            // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                            await driver.click(button.MainHeader);
+                            driver.sleep(0.1 * 1000);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: button with [style state type = 'system']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // expect(mainExampleButtonHeight).to.equal('40px');
+                        });
                         break;
 
                     case 'styleType':
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('styleType')).to.be.true;
                         });
-                        // TODO
+                        it(`get all style types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allStyleTypes = await storyBookPage.inputs.getAllStyleTypes();
+                            driver.sleep(1 * 1000);
+                            console.info('allStyleTypes length: ', allStyleTypes.length);
+                            expect(allStyleTypes.length).equals(styleTypeExpectedValues.length);
+                        });
+                        // it(`validate current style type is "weak"`, async function () {
+                        // });
+                        styleTypeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const styleType = allStyleTypes[index];
+                                await styleType.click();
+                                // mainExampleButton = await driver.findElement(button.MainExampleButton);
+                                // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
+                                // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (styleType) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                // let expectedHeight;
+                                switch (title) {
+                                    case 'weak':
+                                        console.info(`At WEAK style type`);
+                                        break;
+                                    case 'weak-invert':
+                                        console.info(`At WEAK-INVERT style type`);
+                                        break;
+                                    case 'regular':
+                                        console.info(`At REGULAR style type`);
+                                        break;
+                                    case 'strong':
+                                        console.info(`At STRONG style type`);
+                                        break;
+
+                                    default:
+                                        console.info(`At DEFAULT style type`);
+                                        break;
+                                }
+                                // expect(mainExampleButtonHeight).to.equal(expectedHeight);
+                                await driver.click(button.MainHeader);
+                                driver.sleep(0.1 * 1000);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: button with [style type = '${title}']`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
+                        it(`back to default [style type = "weak"]`, async function () {
+                            await allStyleTypes[0].click();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `style type changed to 'weak'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
+                            // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                            await driver.click(button.MainHeader);
+                            driver.sleep(0.1 * 1000);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: button with [style type = 'weak']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // expect(mainExampleButtonHeight).to.equal('40px');
+                        });
                         break;
 
                     case 'visible':

@@ -94,30 +94,18 @@ export class StoryBookInpus extends AddonPage {
 
     public async getAllIconPositions() {
         return await this.getAllRadioButtons('iconPosition');
-        // const iconPositionRadioButtonSelector = By.xpath(`${(await this.getInputRowSelectorByName('iconPosition')).value}/ancestor::tr${this.CheckBoxElements.value}`);
-        // const allIconPositions = await this.browser.findElements(iconPositionRadioButtonSelector);
-        // return allIconPositions;
     }
 
     public async getAllSizeTypes() {
         return await this.getAllRadioButtons('sizeType');
-        // const sizeTypesRadioButtonSelector = By.xpath(`${(await this.getInputRowSelectorByName('sizeType')).value}/ancestor::tr${this.CheckBoxElements.value}`);
-        // const allSizeTypes = await this.browser.findElements(sizeTypesRadioButtonSelector);
-        // return allSizeTypes;
     }
 
-    public async getAllStyleStateType() {
+    public async getAllStyleStateTypes() {
         return await this.getAllRadioButtons('styleStateType');
-        // const sizeTypesRadioButtonSelector = By.xpath(`${(await this.getInputRowSelectorByName('styleStateType')).value}/ancestor::tr${this.CheckBoxElements.value}`);
-        // const allStyleStateType = await this.browser.findElements(sizeTypesRadioButtonSelector);
-        // return allStyleStateType;
     }
 
     public async getAllStyleTypes() {
         return await this.getAllRadioButtons('styleType');
-        // const sizeTypesRadioButtonSelector = By.xpath(`${(await this.getInputRowSelectorByName('styleType')).value}/ancestor::tr${this.CheckBoxElements.value}`);
-        // const allStyleTypes = await this.browser.findElements(sizeTypesRadioButtonSelector);
-        // return allStyleTypes;
     }
 
     public async setColorValue(color: string) {
