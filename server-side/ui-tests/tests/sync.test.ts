@@ -594,7 +594,8 @@ export async function SyncTests(email: string, password: string, client: Client,
                 //2. choose 10 random accounts
                 const objectsService = new ObjectsService(generalService);
                 const allAccounts = await objectsService.getAccounts();
-                const accountArray = generalService.getNumberOfRandomElementsFromArray(allAccounts, 10);
+                const filteredAccounts = allAccounts.filter((account) => account.Name?.includes('accounts_'));
+                const accountArray = generalService.getNumberOfRandomElementsFromArray(filteredAccounts, 10);
                 const accountNamesArray = accountArray.map((account) => account.Name);
                 const webAppList = new WebAppList(driver);
                 const accountPage = new AccountsPage(driver);
@@ -648,7 +649,8 @@ export async function SyncTests(email: string, password: string, client: Client,
                 //2. choose 10 random accounts
                 const objectsService = new ObjectsService(generalService);
                 const allAccounts = await objectsService.getAccounts();
-                const accountArray = generalService.getNumberOfRandomElementsFromArray(allAccounts, 10);
+                const filteredAccounts = allAccounts.filter((account) => account.Name?.includes('accounts_'));
+                const accountArray = generalService.getNumberOfRandomElementsFromArray(filteredAccounts, 10);
                 const accountNamesArray = accountArray.map((account) => account.Name);
                 const webAppList = new WebAppList(driver);
                 const accountPage = new AccountsPage(driver);
