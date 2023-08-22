@@ -356,7 +356,18 @@ export async function StorybookAttachmentTests() {
                             driver.sleep(1 * 1000);
                         });
                         it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
                             const currentAlign = await attachment.getTxtAlignmentByComponent('attachment');
+                            await driver.click(attachment.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: attachment with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
                             expect(currentAlign).to.include('left');
                         });
                         alignExpectedValues.forEach(async (title, index) => {
@@ -370,7 +381,7 @@ export async function StorybookAttachmentTests() {
                                     value: 'data:image/png;base64,' + base64ImageComponentModal,
                                 });
                                 expect(currentAlign).to.include(title);
-                                await driver.click(attachment.MainExampleDiv);
+                                await driver.click(attachment.MainHeader);
                                 base64ImageComponentModal = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `upper screenshot: attachment with x-alignment = '${title}'`,

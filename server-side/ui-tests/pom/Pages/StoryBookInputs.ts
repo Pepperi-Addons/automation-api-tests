@@ -2,6 +2,10 @@ import { By, Key } from 'selenium-webdriver';
 import { AddonPage } from '..';
 
 export class StoryBookInpus extends AddonPage {
+    public InputsRow: By = By.xpath(
+        `//div[contains(@class,"css")]//table//tbody//span[text()="inputs"]/ancestor::tr/following-sibling::tr`,
+    );
+    public InputTitle: By = By.xpath(`${this.InputsRow.value}/td[1]/span`);
     public LabelInput: By = By.xpath(`//textarea[contains(@name,'label')]`);
     public ValueInput: By = By.xpath(`//textarea[contains(@name,'value')]`);
     public ClassNamesInput: By = By.xpath(`//textarea[contains(@name,'classNames')]`);
@@ -12,7 +16,12 @@ export class StoryBookInpus extends AddonPage {
     public MandatoryToggler: By = By.xpath(`//input[contains(@name,'mandatory')]`);
     public ShowTitleToggler: By = By.xpath(`//input[contains(@name,'showTitle')]`);
     public CheckBoxElements: By = By.xpath(`//table//label//input[@type='radio']`);
+    public RadioButtonElements: By = By.xpath(`//label//input[@type='radio']`);
     public ColorValue: By = By.xpath(`//input[contains(@id,'control-value')]`);
+
+    public async getInputRowSelectorByName(inputTitle: string): Promise<By> {
+        return By.xpath(`${this.InputTitle.value}[text()='${inputTitle}']`);
+    }
 
     public async changeInput(selector: By, changeTo: string): Promise<void> {
         await this.browser.sendKeys(selector, Key.CONTROL + 'a' + Key.DELETE);
@@ -73,6 +82,42 @@ export class StoryBookInpus extends AddonPage {
         const allTypes = await this.browser.findElements(this.CheckBoxElements);
         // return allTypes.slice(5);
         return allTypes;
+    }
+
+    public async getAllRadioButtons(inputName: string) {
+        const iconPositionRadioButtonSelector = By.xpath(
+            `//span[text()='${inputName}']/ancestor::tr${this.RadioButtonElements.value}`,
+        );
+        const allIconPositions = await this.browser.findElements(iconPositionRadioButtonSelector);
+        return allIconPositions;
+    }
+
+    public async getAllIconPositions() {
+        return await this.getAllRadioButtons('iconPosition');
+        // const iconPositionRadioButtonSelector = By.xpath(`${(await this.getInputRowSelectorByName('iconPosition')).value}/ancestor::tr${this.CheckBoxElements.value}`);
+        // const allIconPositions = await this.browser.findElements(iconPositionRadioButtonSelector);
+        // return allIconPositions;
+    }
+
+    public async getAllSizeTypes() {
+        return await this.getAllRadioButtons('sizeType');
+        // const sizeTypesRadioButtonSelector = By.xpath(`${(await this.getInputRowSelectorByName('sizeType')).value}/ancestor::tr${this.CheckBoxElements.value}`);
+        // const allSizeTypes = await this.browser.findElements(sizeTypesRadioButtonSelector);
+        // return allSizeTypes;
+    }
+
+    public async getAllStyleStateType() {
+        return await this.getAllRadioButtons('styleStateType');
+        // const sizeTypesRadioButtonSelector = By.xpath(`${(await this.getInputRowSelectorByName('styleStateType')).value}/ancestor::tr${this.CheckBoxElements.value}`);
+        // const allStyleStateType = await this.browser.findElements(sizeTypesRadioButtonSelector);
+        // return allStyleStateType;
+    }
+
+    public async getAllStyleTypes() {
+        return await this.getAllRadioButtons('styleType');
+        // const sizeTypesRadioButtonSelector = By.xpath(`${(await this.getInputRowSelectorByName('styleType')).value}/ancestor::tr${this.CheckBoxElements.value}`);
+        // const allStyleTypes = await this.browser.findElements(sizeTypesRadioButtonSelector);
+        // return allStyleTypes;
     }
 
     public async setColorValue(color: string) {
