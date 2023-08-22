@@ -699,7 +699,7 @@ export async function SyncTests(email: string, password: string, client: Client,
             });
             it(`3. Buyer`, async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(buyerEmail, buyerPass);
+                await webAppLoginPage.longLoginForBuyer(buyerEmail, buyerPass);
                 const webAppHomePage = new WebAppHomePage(driver);
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);

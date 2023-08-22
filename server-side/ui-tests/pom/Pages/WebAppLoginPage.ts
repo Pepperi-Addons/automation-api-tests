@@ -62,6 +62,15 @@ export class WebAppLoginPage extends Page {
         return new WebAppHomePage(this.browser);
     }
 
+    public async longLoginForBuyer(email: string, password: string): Promise<WebAppHomePage> {
+        await this.navigate();
+        await this.signIn(email, password);
+        const homePage = new WebAppHomePage(this.browser);
+        await expect(this.untilIsVisible(homePage.MainHomePageBtn, 1000 * 25)).eventually.to.be.true;
+        console.log('Home Button Found -- HomePage Is Loaded');
+        return new WebAppHomePage(this.browser);
+    }
+
     public async loginDeepLink(url: string, email: string, password: string): Promise<void> {
         await this.browser.navigate(url);
         await this.signIn(email, password);
