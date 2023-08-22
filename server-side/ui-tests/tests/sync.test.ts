@@ -705,9 +705,9 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.longLoginForBuyer(buyerEmail, buyerPass);
                 const webAppHomePage = new WebAppHomePage(driver);
-                // for (let index = 0; index < 2; index++) {
-                //     await webAppHomePage.manualResync(client);
-                // }
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
                 const webAppList = new WebAppList(driver);
                 const accountPage = new AccountsPage(driver);
                 await webAppHomePage.clickOnBtn('Accounts');
