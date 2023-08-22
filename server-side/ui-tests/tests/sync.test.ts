@@ -602,6 +602,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     await webAppHomePage.clickOnBtn('Accounts');
                     generalService.sleep(1000 * 5);
                     const accountName = accountNamesArray[index];
+                    console.log(`Testing Account: ${accountName}, The ${index + 1} Out Of ${accountNamesArray.length}`);
                     await webAppList.searchInList(accountName);
                     await webAppList.clickOnLinkFromListRowWebElement(0);
                     const eseUtils = new E2EUtils(driver);
@@ -640,18 +641,22 @@ export async function SyncTests(email: string, password: string, client: Client,
             it(`1. Sales Rep`, async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(repEmail, repPass);
+                const webAppHomePage = new WebAppHomePage(driver);
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
                 //2. choose 10 random accounts
                 const objectsService = new ObjectsService(generalService);
                 const allAccounts = await objectsService.getAccounts();
                 const accountArray = generalService.getNumberOfRandomElementsFromArray(allAccounts, 10);
                 const accountNamesArray = accountArray.map((account) => account.Name);
-                const webAppHomePage = new WebAppHomePage(driver);
                 const webAppList = new WebAppList(driver);
                 const accountPage = new AccountsPage(driver);
                 for (let index = 0; index < accountNamesArray.length; index++) {
                     await webAppHomePage.clickOnBtn('Accounts');
                     generalService.sleep(1000 * 5);
                     const accountName = accountNamesArray[index];
+                    console.log(`Testing Account: ${accountName}, The ${index + 1} Out Of ${accountNamesArray.length}`);
                     await webAppList.searchInList(accountName);
                     await webAppList.clickOnLinkFromListRowWebElement(0);
                     const eseUtils = new E2EUtils(driver);
@@ -690,6 +695,9 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(buyerEmail, buyerPass);
                 const webAppHomePage = new WebAppHomePage(driver);
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
                 const webAppList = new WebAppList(driver);
                 const accountPage = new AccountsPage(driver);
                 await webAppHomePage.clickOnBtn('Accounts');
