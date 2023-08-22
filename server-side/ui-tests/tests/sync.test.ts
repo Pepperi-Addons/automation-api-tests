@@ -603,7 +603,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     await webAppHomePage.clickOnBtn('Accounts');
                     generalService.sleep(1000 * 5);
                     const accountName = accountNamesArray[index];
-                    console.log(`Testing Account: ${accountName}, The ${index + 1} Out Of ${accountNamesArray.length}`);
+                    console.log(`Testing Account: ${accountName}, Number ${index + 1} Out Of ${accountNamesArray.length}`);
                     await webAppList.searchInList(accountName);
                     await webAppList.clickOnLinkFromListRowWebElement(0);
                     const eseUtils = new E2EUtils(driver);
@@ -658,7 +658,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     await webAppHomePage.clickOnBtn('Accounts');
                     generalService.sleep(1000 * 5);
                     const accountName = accountNamesArray[index];
-                    console.log(`Testing Account: ${accountName}, The ${index + 1} Out Of ${accountNamesArray.length}`);
+                    console.log(`Testing Account: ${accountName}, Number ${index + 1} Out Of ${accountNamesArray.length}`);
                     await webAppList.searchInList(accountName);
                     await webAppList.clickOnLinkFromListRowWebElement(0);
                     const eseUtils = new E2EUtils(driver);
