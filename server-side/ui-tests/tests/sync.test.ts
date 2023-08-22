@@ -469,7 +469,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 expect(
                     JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Inserted,
                 ).to.equal(userInfoCollectionSize);
-                generalService.sleep(1000 * 15);
+                generalService.sleep(1000 * 30);
                 const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
                     userInfoCollectionName,
                     1,
@@ -611,6 +611,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     const eseUtils = new E2EUtils(driver);
                     const accUUID = await eseUtils.getUUIDfromURL();
                     await accountPage.selectOptionFromBurgerMenu(slugName);
+                    generalService.sleep(1000 * 5);
                     const allListElements = await webAppList.getAllListElementsTextValue();
                     const allDataAsArray = allListElements.map((element) => element.split('\n'));
                     for (let index = 0; index < allDataAsArray.length; index++) {
@@ -643,7 +644,7 @@ export async function SyncTests(email: string, password: string, client: Client,
             });
             it(`1. Sales Rep`, async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(repEmail, repPass);
+                await webAppLoginPage.longLoginForRep(repEmail, repPass);
                 const webAppHomePage = new WebAppHomePage(driver);
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
@@ -668,6 +669,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     const eseUtils = new E2EUtils(driver);
                     const accUUID = await eseUtils.getUUIDfromURL();
                     await accountPage.selectOptionFromBurgerMenu(slugName);
+                    generalService.sleep(1000 * 5);
                     const allListElements = await webAppList.getAllListElementsTextValue();
                     const allDataAsArray = allListElements.map((element) => element.split('\n'));
                     for (let index = 0; index < allDataAsArray.length; index++) {
@@ -713,6 +715,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const eseUtils = new E2EUtils(driver);
                 const accUUID = await eseUtils.getUUIDfromURL();
                 await accountPage.selectOptionFromBurgerMenu(slugName);
+                generalService.sleep(1000 * 5);
                 const allListElements = await webAppList.getAllListElementsTextValue();
                 const allDataAsArray = allListElements.map((element) => element.split('\n'));
                 for (let index = 0; index < allDataAsArray.length; index++) {
