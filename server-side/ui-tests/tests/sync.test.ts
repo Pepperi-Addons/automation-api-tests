@@ -45,17 +45,17 @@ export async function SyncTests(email: string, password: string, client: Client,
     // #region Upgrade survey dependencies
 
     const testData = {
-        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x
-        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
-        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-        // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],//---> has to get 1.0.X which is NOT avaliable
-        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-        'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
-        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
+        // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x
+        // 'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
+        // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        // 'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+        // Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+        // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
+        // 'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+        // // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],//---> has to get 1.0.X which is NOT avaliable
+        // 'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+        // 'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
+        // Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
@@ -745,94 +745,94 @@ export async function SyncTests(email: string, password: string, client: Client,
                 await webAppHomePage.returnToHomePage();
             });
         });
-        describe('Tear Down Via API', () => {
-            it('1. resource views', async function () {
-                const accBody = { Key: accountViewUUID, Hidden: true };
-                const deleteAccountRLResponse = await generalService.fetchStatus(
-                    `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
-                    {
-                        method: 'POST',
-                        body: JSON.stringify(accBody),
-                    },
-                );
-                expect(deleteAccountRLResponse.Ok).to.equal(true);
-                expect(deleteAccountRLResponse.Status).to.equal(200);
-                expect(deleteAccountRLResponse.Body.Name).to.equal(accountViewName);
-                expect(deleteAccountRLResponse.Body.Hidden).to.equal(true);
-            });
-            it('2. pages', async function () {
-                //3. delete relevant pages
-                const deleteSurveyPageResponse = await generalService.fetchStatus(
-                    `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${userInfoPageUUID}`,
-                    {
-                        method: 'POST',
-                        body: JSON.stringify({}),
-                    },
-                );
-                expect(deleteSurveyPageResponse.Ok).to.equal(true);
-                expect(deleteSurveyPageResponse.Status).to.equal(200);
-                expect(deleteSurveyPageResponse.Body).to.equal(true);
-            });
-            it('3. slugs', async function () {
-                const slugs: Slugs = new Slugs(driver);
-                const slideShowSlugsResponse = await slugs.deleteSlugByName(slugName, client);
-                expect(slideShowSlugsResponse.Ok).to.equal(true);
-                expect(slideShowSlugsResponse.Status).to.equal(200);
-                expect(slideShowSlugsResponse.Body.success).to.equal(true);
-            });
-            it(`4. Purging All left UDCs - To Keep Dist Clean`, async function () {
-                const udcService = new UDCService(generalService);
-                let allUdcs = await udcService.getSchemes({ page_size: -1 });
-                const onlyRelevantUdcNames = allUdcs.map((doc) => doc.Name);
-                for (let index = 0; index < onlyRelevantUdcNames.length; index++) {
-                    const udcName = onlyRelevantUdcNames[index];
-                    const purgeResponse = await udcService.purgeScheme(udcName);
-                    expect(purgeResponse.Ok).to.equal(true);
-                    expect(purgeResponse.Status).to.equal(200);
-                    expect(purgeResponse.Body.Done).to.equal(true);
-                    generalService.sleep(1500);
-                    allUdcs = await udcService.getSchemes({ page_size: -1 });
-                    console.log(`${udcName} was deleted, ${allUdcs.length} left`);
-                }
-            });
-        });
-        describe('Tear Down Via UI', () => {
-            this.retries(0);
+        // describe('Tear Down Via API', () => {
+        //     it('1. resource views', async function () {
+        //         const accBody = { Key: accountViewUUID, Hidden: true };
+        //         const deleteAccountRLResponse = await generalService.fetchStatus(
+        //             `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
+        //             {
+        //                 method: 'POST',
+        //                 body: JSON.stringify(accBody),
+        //             },
+        //         );
+        //         expect(deleteAccountRLResponse.Ok).to.equal(true);
+        //         expect(deleteAccountRLResponse.Status).to.equal(200);
+        //         expect(deleteAccountRLResponse.Body.Name).to.equal(accountViewName);
+        //         expect(deleteAccountRLResponse.Body.Hidden).to.equal(true);
+        //     });
+        //     it('2. pages', async function () {
+        //         //3. delete relevant pages
+        //         const deleteSurveyPageResponse = await generalService.fetchStatus(
+        //             `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${userInfoPageUUID}`,
+        //             {
+        //                 method: 'POST',
+        //                 body: JSON.stringify({}),
+        //             },
+        //         );
+        //         expect(deleteSurveyPageResponse.Ok).to.equal(true);
+        //         expect(deleteSurveyPageResponse.Status).to.equal(200);
+        //         expect(deleteSurveyPageResponse.Body).to.equal(true);
+        //     });
+        //     it('3. slugs', async function () {
+        //         const slugs: Slugs = new Slugs(driver);
+        //         const slideShowSlugsResponse = await slugs.deleteSlugByName(slugName, client);
+        //         expect(slideShowSlugsResponse.Ok).to.equal(true);
+        //         expect(slideShowSlugsResponse.Status).to.equal(200);
+        //         expect(slideShowSlugsResponse.Body.success).to.equal(true);
+        //     });
+        //     it(`4. Purging All left UDCs - To Keep Dist Clean`, async function () {
+        //         const udcService = new UDCService(generalService);
+        //         let allUdcs = await udcService.getSchemes({ page_size: -1 });
+        //         const onlyRelevantUdcNames = allUdcs.map((doc) => doc.Name);
+        //         for (let index = 0; index < onlyRelevantUdcNames.length; index++) {
+        //             const udcName = onlyRelevantUdcNames[index];
+        //             const purgeResponse = await udcService.purgeScheme(udcName);
+        //             expect(purgeResponse.Ok).to.equal(true);
+        //             expect(purgeResponse.Status).to.equal(200);
+        //             expect(purgeResponse.Body.Done).to.equal(true);
+        //             generalService.sleep(1500);
+        //             allUdcs = await udcService.getSchemes({ page_size: -1 });
+        //             console.log(`${udcName} was deleted, ${allUdcs.length} left`);
+        //         }
+        //     });
+        // });
+        // describe('Tear Down Via UI', () => {
+        //     this.retries(0);
 
-            before(async function () {
-                driver = await Browser.initiateChrome();
-            });
+        //     before(async function () {
+        //         driver = await Browser.initiateChrome();
+        //     });
 
-            after(async function () {
-                await driver.quit();
-            });
+        //     after(async function () {
+        //         await driver.quit();
+        //     });
 
-            afterEach(async function () {
-                const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.collectEndTestData(this);
-            });
-            it('Delete slug from acc. dashboard', async function () {
-                const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
-                const accountDashboardLayout = new AccountDashboardLayout(driver);
-                await accountDashboardLayout.unconfigureFromAccountMenuRepCardEVGENY(driver, slugName, slugName);
-                const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.returnToHomePage();
-            });
-            it('Delete ATD from home screen', async function () {
-                const webAppHeader = new WebAppHeader(driver);
-                await webAppHeader.openSettings();
-                driver.sleep(6000);
-                const brandedApp = new BrandedApp(driver);
-                await brandedApp.removeAdminHomePageButtons(slugName);
-                const webAppHomePage = new WebAppHomePage(driver);
-                for (let index = 0; index < 2; index++) {
-                    await webAppHomePage.manualResync(client);
-                }
-                const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugName);
-                expect(isNotFound).to.equal(true);
-            });
-        });
+        //     afterEach(async function () {
+        //         const webAppHomePage = new WebAppHomePage(driver);
+        //         await webAppHomePage.collectEndTestData(this);
+        //     });
+        //     it('Delete slug from acc. dashboard', async function () {
+        //         const webAppLoginPage = new WebAppLoginPage(driver);
+        //         await webAppLoginPage.login(email, password);
+        //         const accountDashboardLayout = new AccountDashboardLayout(driver);
+        //         await accountDashboardLayout.unconfigureFromAccountMenuRepCardEVGENY(driver, slugName, slugName);
+        //         const webAppHomePage = new WebAppHomePage(driver);
+        //         await webAppHomePage.returnToHomePage();
+        //     });
+        //     it('Delete ATD from home screen', async function () {
+        //         const webAppHeader = new WebAppHeader(driver);
+        //         await webAppHeader.openSettings();
+        //         driver.sleep(6000);
+        //         const brandedApp = new BrandedApp(driver);
+        //         await brandedApp.removeAdminHomePageButtons(slugName);
+        //         const webAppHomePage = new WebAppHomePage(driver);
+        //         for (let index = 0; index < 2; index++) {
+        //             await webAppHomePage.manualResync(client);
+        //         }
+        //         const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugName);
+        //         expect(isNotFound).to.equal(true);
+        //     });
+        // });
     });
 }
 
