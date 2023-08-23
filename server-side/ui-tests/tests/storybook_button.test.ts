@@ -23,12 +23,22 @@ export async function StorybookButtonTests() {
     ];
     const buttonOutputs = ['buttonClick'];
     const buttonStoriesHeaders = ['Disabled', 'Icon on start', 'Icon on end', 'Icon only', 'Styles, options and sizes'];
+    const iconPositionsExpectedValues = ['start', 'end'];
+    const sizeTypesExpectedValues = ['xs', 'sm', 'md', 'lg', 'xl'];
+    const styleStateTypeExpectedValues = ['system', 'caution', 'success'];
+    const styleTypeExpectedValues = ['weak', 'weak-invert', 'regular', 'strong'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let button: Button;
     let buttonInputsTitles;
     let buttonOutputsTitles;
+    let allIconPositions;
+    let allSizeTypes;
+    let mainExampleButton;
+    let mainExampleButtonHeight;
+    let allStyleStateTypes;
+    let allStyleTypes;
 
     describe('Storybook "Button" Tests Suite', function () {
         this.retries(0);
@@ -105,7 +115,7 @@ export async function StorybookButtonTests() {
                         await driver.switchTo(storyBookPage.StorybookIframe);
                     } catch (error) {
                         console.error(error);
-                        console.info('ALREADY ON IFRAME');
+                        console.info('Already on iFrame');
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
@@ -154,6 +164,20 @@ export async function StorybookButtonTests() {
                             ).getAttribute('class');
                             console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
                             expect(newClassNamesGotFromUi).to.contain(newClassNamesToSet);
+                        });
+                        it(`[ control = '' ] functional test (+screenshot)`, async function () {
+                            const newClassNamesToSet = '';
+                            await storyBookPage.inputs.changeClassNames(newClassNamesToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ClassNames Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newClassNamesGotFromUi = await (
+                                await driver.findElement(button.MainExampleButton)
+                            ).getAttribute('class');
+                            console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
+                            expect(newClassNamesGotFromUi).to.not.contain('rotate3d');
                         });
                         break;
 
@@ -252,28 +276,300 @@ export async function StorybookButtonTests() {
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('iconPosition')).to.be.true;
                         });
-                        // TODO
+                        it(`get all icon positions`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allIconPositions = await storyBookPage.inputs.getAllIconPositions();
+                            driver.sleep(1 * 1000);
+                            console.info('allIconPositions length: ', allIconPositions.length);
+                            expect(allIconPositions.length).equals(iconPositionsExpectedValues.length);
+                        });
+                        it(`validate current icon position is "end"`, async function () {
+                            const buttonFirstChild = await driver.findElement(button.MainExampleButton_firstChild);
+                            const buttonFirstChildHtmlTag = await buttonFirstChild.getTagName();
+                            const buttonSecondChild = await driver.findElement(button.MainExampleButton_secondChild);
+                            const buttonSecondChildHtmlTag = await buttonSecondChild.getTagName();
+                            console.info('buttonFirstChildHtmlTag: ', buttonFirstChildHtmlTag);
+                            console.info('buttonSecondChildHtmlTag: ', buttonSecondChildHtmlTag);
+                            expect(buttonFirstChildHtmlTag).to.equal('span');
+                            expect(buttonSecondChildHtmlTag).to.equal('mat-icon');
+                        });
+                        iconPositionsExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const iconPosition = allIconPositions[index];
+                                await iconPosition.click();
+                                const buttonFirstChild = await driver.findElement(button.MainExampleButton_firstChild);
+                                const buttonFirstChildHtmlTag = await buttonFirstChild.getTagName();
+                                const buttonSecondChild = await driver.findElement(
+                                    button.MainExampleButton_secondChild,
+                                );
+                                const buttonSecondChildHtmlTag = await buttonSecondChild.getTagName();
+                                console.info('buttonFirstChildHtmlTag: ', buttonFirstChildHtmlTag);
+                                console.info('buttonSecondChildHtmlTag: ', buttonSecondChildHtmlTag);
+                                const base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (iconPosition) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                switch (title) {
+                                    case 'start':
+                                        expect(buttonFirstChildHtmlTag).to.equal('mat-icon');
+                                        expect(buttonSecondChildHtmlTag).to.equal('span');
+                                        break;
+                                    case 'end':
+                                        expect(buttonFirstChildHtmlTag).to.equal('span');
+                                        expect(buttonSecondChildHtmlTag).to.equal('mat-icon');
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                            });
+                        });
                         break;
 
                     case 'sizeType':
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('sizeType')).to.be.true;
                         });
-                        // TODO
+                        it(`get all size types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allSizeTypes = await storyBookPage.inputs.getAllSizeTypes();
+                            driver.sleep(1 * 1000);
+                            console.info('allSizeTypes length: ', allSizeTypes.length);
+                            expect(allSizeTypes.length).equals(sizeTypesExpectedValues.length);
+                        });
+                        it(`validate current size type is "md"`, async function () {
+                            mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
+                            console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                            expect(mainExampleButtonHeight).to.equal('40px');
+                        });
+                        sizeTypesExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const sizeType = allSizeTypes[index];
+                                await sizeType.click();
+                                mainExampleButton = await driver.findElement(button.MainExampleButton);
+                                mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
+                                console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (sizeType) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                let expectedHeight;
+                                switch (title) {
+                                    case 'xs':
+                                        expectedHeight = '24px';
+                                        break;
+                                    case 'sm':
+                                        expectedHeight = '32px';
+                                        break;
+                                    case 'md':
+                                        expectedHeight = '40px';
+                                        break;
+                                    case 'lg':
+                                        expectedHeight = '48px';
+                                        break;
+                                    case 'xl':
+                                        expectedHeight = '64px';
+                                        break;
+
+                                    default:
+                                        expectedHeight = '';
+                                        break;
+                                }
+                                expect(mainExampleButtonHeight).to.equal(expectedHeight);
+                                await driver.click(button.MainHeader);
+                                driver.sleep(0.1 * 1000);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: button with [size type = '${title}']`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
+                        it(`back to default [size type = "md"]`, async function () {
+                            await allSizeTypes[2].click();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `size type changed to 'md'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
+                            console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                            await driver.click(button.MainHeader);
+                            driver.sleep(0.1 * 1000);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: button with [size type = 'md']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExampleButtonHeight).to.equal('40px');
+                        });
                         break;
 
                     case 'styleStateType':
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('styleStateType')).to.be.true;
                         });
-                        // TODO
+                        it(`get all style state types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allStyleStateTypes = await storyBookPage.inputs.getAllStyleStateTypes();
+                            driver.sleep(1 * 1000);
+                            console.info('allStyleStateTypes length: ', allStyleStateTypes.length);
+                            expect(allStyleStateTypes.length).equals(styleStateTypeExpectedValues.length);
+                        });
+                        // it(`validate current style state type is "system"`, async function () {
+                        // });
+                        styleStateTypeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const styleStateType = allStyleStateTypes[index];
+                                await styleStateType.click();
+                                // mainExampleButton = await driver.findElement(button.MainExampleButton);
+                                // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
+                                // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (styleStateType) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                // let expectedHeight;
+                                switch (title) {
+                                    case 'system':
+                                        console.info(`At SYSTEM style state type`);
+                                        break;
+                                    case 'caution':
+                                        console.info(`At CAUSION style state type`);
+                                        break;
+                                    case 'success':
+                                        console.info(`At SUCCESS style state type`);
+                                        break;
+
+                                    default:
+                                        console.info(`At DEFAULT style state type`);
+                                        break;
+                                }
+                                // expect(mainExampleButtonHeight).to.equal(expectedHeight);
+                                await driver.click(button.MainHeader);
+                                driver.sleep(0.1 * 1000);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: button with [style state type = '${title}']`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
+                        it(`back to default [style state type = "system"]`, async function () {
+                            await allStyleStateTypes[0].click();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `style state type changed to 'system'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
+                            // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                            await driver.click(button.MainHeader);
+                            driver.sleep(0.1 * 1000);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: button with [style state type = 'system']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // expect(mainExampleButtonHeight).to.equal('40px');
+                        });
                         break;
 
                     case 'styleType':
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('styleType')).to.be.true;
                         });
-                        // TODO
+                        it(`get all style types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allStyleTypes = await storyBookPage.inputs.getAllStyleTypes();
+                            driver.sleep(1 * 1000);
+                            console.info('allStyleTypes length: ', allStyleTypes.length);
+                            expect(allStyleTypes.length).equals(styleTypeExpectedValues.length);
+                        });
+                        // it(`validate current style type is "weak"`, async function () {
+                        // });
+                        styleTypeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const styleType = allStyleTypes[index];
+                                await styleType.click();
+                                // mainExampleButton = await driver.findElement(button.MainExampleButton);
+                                // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
+                                // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (styleType) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                // let expectedHeight;
+                                switch (title) {
+                                    case 'weak':
+                                        console.info(`At WEAK style type`);
+                                        break;
+                                    case 'weak-invert':
+                                        console.info(`At WEAK-INVERT style type`);
+                                        break;
+                                    case 'regular':
+                                        console.info(`At REGULAR style type`);
+                                        break;
+                                    case 'strong':
+                                        console.info(`At STRONG style type`);
+                                        break;
+
+                                    default:
+                                        console.info(`At DEFAULT style type`);
+                                        break;
+                                }
+                                // expect(mainExampleButtonHeight).to.equal(expectedHeight);
+                                await driver.click(button.MainHeader);
+                                driver.sleep(0.1 * 1000);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: button with [style type = '${title}']`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
+                        it(`back to default [style type = "weak"]`, async function () {
+                            await allStyleTypes[0].click();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `style type changed to 'weak'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
+                            // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                            await driver.click(button.MainHeader);
+                            driver.sleep(0.1 * 1000);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: button with [style type = 'weak']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // expect(mainExampleButtonHeight).to.equal('40px');
+                        });
                         break;
 
                     case 'visible':

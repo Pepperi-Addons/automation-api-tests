@@ -6,6 +6,8 @@ export class Button extends StorybookComponent {
     public MainExampleButton: By = By.xpath(`${this.MainExampleDiv.value}//button`);
     public MainExampleButton_value: By = By.xpath(`${this.MainExampleButton.value}/span/span`);
     public MainExampleButton_icon: By = By.xpath(`${this.MainExampleButton.value}/span/mat-icon`);
+    public MainExampleButton_firstChild: By = By.xpath(`${this.MainExampleButton.value}/span/*[1]`);
+    public MainExampleButton_secondChild: By = By.xpath(`${this.MainExampleButton.value}/span/*[2]`);
     public MainExampleButton_iconSvgValue: By = By.xpath(
         `${this.MainExampleButton_icon.value}/pep-icon/*[local-name()='svg']/*[local-name()='path']`,
     );
