@@ -611,7 +611,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     const eseUtils = new E2EUtils(driver);
                     const accUUID = await eseUtils.getUUIDfromURL();
                     await accountPage.selectOptionFromBurgerMenu(slugName);
-                    generalService.sleep(1000 * 5);
+                    generalService.sleep(1000 * 15);
                     await accountPage.clickOnEmptySpace();
                     const allListElements = await webAppList.getAllListElementsTextValue();
                     const allDataAsArray = allListElements.map((element) => element.split('\n'));
