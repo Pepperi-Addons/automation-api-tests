@@ -65,11 +65,13 @@ export async function UomTests(email: string, password: string, varPass: string,
     ];
 
     await generalService.baseAddonVersionsInstallation(varPass);
-    // //#region Upgrade cpi-node & UOM
+    //#region Upgrade cpi-node & UOM
     const testData = {
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.12'], //has to be hardcoded because upgrade dependencies cant handle this
         // 'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.7'],
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''], //latest
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
@@ -516,6 +518,15 @@ export async function UomTests(email: string, password: string, varPass: string,
             });
             it('Sync', async function () {
                 await webAppHomePage.manualResync(client);
+                for (let index = 0; index < 2; index++) {
+                    await webAppHeader.goHome();
+                    await webAppHomePage.isSpinnerDone();
+                    await webAppHomePage.clickOnBtn('Accounts');
+                    await webAppList.isSpinnerDone();
+                    await webAppList.validateListRowElements();
+                }
+                await webAppHeader.goHome();
+                await webAppHomePage.isSpinnerDone();
             });
             it('Validating ATD Created on Home Page', async function () {
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(_TEST_DATA_ATD_NAME);
