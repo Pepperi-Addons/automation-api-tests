@@ -77,6 +77,25 @@ export abstract class Page extends BasePomObject {
         return true;
     }
 
+    public async longerIsSpinnerDone(): Promise<boolean> {
+        const isHidden = [false, false];
+        console.log('%cVerify Spinner Status', ConsoleColors.PageMessage);
+        let loadingCounter = 0;
+        do {
+            const hiddenEl_1 = await this.browser.findElement(this.PepperiHiddenLoadingSpinner, 45000 * 3, false);
+            if (hiddenEl_1 instanceof WebElement) {
+                isHidden[0] = true;
+            }
+            this.browser.sleep(200 + loadingCounter);
+            const hiddenEl_2 = await this.browser.findElement(this.PepperiHiddenLoadingSpinner, 45000 * 3, false);
+            if (hiddenEl_2 instanceof WebElement) {
+                isHidden[1] = true;
+            }
+            loadingCounter++;
+        } while (!isHidden[0] || !isHidden[1]);
+        return true;
+    }
+
     // /**
     //  *
     //  * @param that Should be the "this" of the mocha test, this will help connect data from this function to test reports
