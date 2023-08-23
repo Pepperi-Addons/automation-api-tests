@@ -700,6 +700,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                         await webAppHomePage.returnToHomePage();
                     }
                 }
+                await webAppLoginPage.logout();
             });
             it(`3. Buyer`, async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
