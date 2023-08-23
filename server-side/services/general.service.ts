@@ -31,7 +31,7 @@ export const testData = {
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
     'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''],
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.16.%'], //NG14 latest webapp
-    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
+    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', ''],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
