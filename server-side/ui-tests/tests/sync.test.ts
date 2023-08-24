@@ -21,7 +21,7 @@ import { AccountsPage } from '../pom/Pages/AccountPage';
 
 chai.use(promised);
 let slugName;
-let userInfoPageUUID;
+let accountsInfoPageUUID;
 let accountViewUUID;
 let accountViewName;
 const repEmail = 'SyncE2ETestingSBRep@pepperitest.com';
@@ -38,8 +38,8 @@ export async function SyncTests(email: string, password: string, client: Client,
     const divisionCollectionSize = 10;
     const companiesCollectionName = 'Companies';
     const companiesCollectionSize = 2;
-    const userInfoCollectionName = 'UserInfo';
-    const userInfoCollectionSize = 1000;
+    const accountsInfoCollectionName = 'AccountsInfo';
+    const accpuntsInfoCollectionSize = 2000;
     let driver: Browser;
     // await generalService.baseAddonVersionsInstallation(varPass);//---> has to get 1.0.X which is NOT avaliable
     // #region Upgrade survey dependencies
@@ -200,7 +200,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 expect(newCollection.Hidden).to.equal(false);
                 expect(newCollection.GenericResource).to.equal(true);
             });
-            it(`3. Create User Info UDC `, async function () {
+            it(`3. Create AccountsInfo UDC `, async function () {
                 const companyRef: UdcField = {
                     Name: 'companyRef',
                     Mandatory: true,
@@ -234,7 +234,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const fieldsArray = [companyRef, divisionRef, accountRef, basicValue];
                 const keysArray = [companyRef, divisionRef, accountRef];
                 const response = await udcService.createUDCWithFields(
-                    userInfoCollectionName,
+                    accountsInfoCollectionName,
                     fieldsArray,
                     'automation testing UDC',
                     undefined,
@@ -255,7 +255,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 expect(response.accountRef.ApplySystemFilter).to.equal(true);
                 generalService.sleep(5000);
                 const documents = await udcService.getSchemes({ page_size: -1 });
-                const newCollection = documents.filter((doc) => doc.Name === userInfoCollectionName)[0];
+                const newCollection = documents.filter((doc) => doc.Name === accountsInfoCollectionName)[0];
                 expect(newCollection).to.not.equal(undefined);
                 expect(newCollection.AddonUUID).to.equal(UserDefinedCollectionsUUID);
                 expect(newCollection.Description).to.equal('automation testing UDC');
@@ -410,11 +410,11 @@ export async function SyncTests(email: string, password: string, client: Client,
                 );
                 expect(allObjectsFromCollection.count).to.equal(companiesCollectionSize);
             });
-            it(`6. Add Data To UserInfo UDC: Import Thousand Rows With: Division Reference, Company Reference, Account Reference And A Basic Value`, async function () {
+            it(`6. Add Data To AccountsInfo UDC: Import Thousand Rows With: Division Reference, Company Reference, Account Reference And A Basic Value`, async function () {
                 // 1. create the data file
-                await generalService.createCSVFileForUserInfo(
-                    'udc_file_for_userInfo',
-                    userInfoCollectionSize,
+                await generalService.createCSVFileForAccountsInfo(
+                    'udc_file_for_accountsInfo',
+                    accpuntsInfoCollectionSize,
                     companiesCollectionSize,
                     divisionCollectionSize,
                     'companyRef,divisionRef,accountRef#ExternalID,basicValue',
@@ -422,7 +422,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     ['company_code_index', 'division_code_index', 'accounts_index', 'val_index'],
                     'false',
                 );
-                const buf1 = fs.readFileSync('./udc_file_for_userInfo.csv');
+                const buf1 = fs.readFileSync('./udc_file_for_accountsInfo.csv');
                 // 2. create PFS Temp file
                 const fileName1 = 'TempFile' + generalService.generateRandomString(8) + '.csv';
                 const mime = 'text/csv';
@@ -438,14 +438,14 @@ export async function SyncTests(email: string, password: string, client: Client,
                 expect(putResponsePart1.ok).to.equal(true);
                 expect(putResponsePart1.status).to.equal(200);
                 console.log(
-                    `CSV File That Is About To Be Uploaded To ${userInfoCollectionName} Is Found In: ${tempFileResponse1.TemporaryFileURL}`,
+                    `CSV File That Is About To Be Uploaded To ${accountsInfoCollectionName} Is Found In: ${tempFileResponse1.TemporaryFileURL}`,
                 );
                 //5. import the Temp File to ADAL
                 const bodyToImport1 = {
                     URI: tempFileResponse1.TemporaryFileURL,
                 };
                 const importResponse = await generalService.fetchStatus(
-                    `/addons/data/import/file/122c0e9d-c240-4865-b446-f37ece866c22/${userInfoCollectionName}`,
+                    `/addons/data/import/file/122c0e9d-c240-4865-b446-f37ece866c22/${accountsInfoCollectionName}`,
 
                     { method: 'POST', body: JSON.stringify(bodyToImport1) },
                 );
@@ -458,27 +458,27 @@ export async function SyncTests(email: string, password: string, client: Client,
                 expect((auditLogResponseForImporting as any).Status.ID).to.equal(1);
                 expect((auditLogResponseForImporting as any).Status.Name).to.equal('Success');
                 console.log(
-                    `Received Line Statistics From ${userInfoCollectionName}, Are: ${JSON.stringify(
+                    `Received Line Statistics From ${accountsInfoCollectionName}, Are: ${JSON.stringify(
                         JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics,
                     )}`,
                 );
                 // debugger;
                 expect(JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Total).to.equal(
-                    userInfoCollectionSize,
+                    accpuntsInfoCollectionSize,
                 );
                 expect(
                     JSON.parse(auditLogResponseForImporting.AuditInfo.ResultObject).LinesStatistics.Inserted,
-                ).to.equal(userInfoCollectionSize);
+                ).to.equal(accpuntsInfoCollectionSize);
                 generalService.sleep(1000 * 30);
                 const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
-                    userInfoCollectionName,
+                    accountsInfoCollectionName,
                     1,
                     250,
                 );
-                expect(allObjectsFromCollection.count).to.equal(userInfoCollectionSize);
+                expect(allObjectsFromCollection.count).to.equal(accpuntsInfoCollectionSize);
             });
         });
-        describe('UI Set Up: Create A View To Show UserInfo UDC, Set It Inside A Page, Create Slug For The Page And Set It In Acc. Dashboard To See Filtering By User', () => {
+        describe('UI Set Up: Create A View To Show AccountsInfo UDC, Set It Inside A Page, Create Slug For The Page And Set It In Acc. Dashboard To See Filtering By User', () => {
             this.retries(0);
 
             before(async function () {
@@ -493,17 +493,17 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData(this);
             });
-            it(`1. Create A View To Show UserInfo UDC`, async function () {
+            it(`1. Create A View To Show AccountInfo UDC`, async function () {
                 const resourceListUtils = new E2EUtils(driver);
                 const resourceViews = new ResourceViews(driver);
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 // Configure View - User Info UDC
-                accountViewName = 'UserInfoView';
+                accountViewName = 'AccountsInfoView';
                 await resourceListUtils.addView({
                     nameOfView: accountViewName,
-                    descriptionOfView: 'User Info View',
-                    nameOfResource: userInfoCollectionName,
+                    descriptionOfView: 'Accounts Info View',
+                    nameOfResource: accountsInfoCollectionName,
                 });
                 accountViewUUID = await resourceListUtils.getUUIDfromURL();
                 await resourceViews.customViewConfig(client, {
@@ -521,18 +521,18 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            it(`2. Create A Page For UserInfo Resource View`, async function () {
+            it(`2. Create A Page For AccountsInfo Resource View`, async function () {
                 const e2eUtils = new E2EUtils(driver);
-                const pageName = 'UserInfoPage';
-                userInfoPageUUID = await e2eUtils.addPageNoSections(pageName, 'tests');
+                const pageName = 'AccountsInfoPage';
+                accountsInfoPageUUID = await e2eUtils.addPageNoSections(pageName, 'tests');
                 const pageBuilder = new PageBuilder(driver);
-                const createdPage = await pageBuilder.getPageByUUID(userInfoPageUUID, client);
+                const createdPage = await pageBuilder.getPageByUUID(accountsInfoPageUUID, client);
                 const sectionUUID = createdPage.Layout.Sections[0].Key;
                 const pageResponse = await pageBuilder.publishPageWithResourceListDataViewerBlock(
-                    userInfoPageUUID,
+                    accountsInfoPageUUID,
                     pageName,
                     accountViewName,
-                    userInfoCollectionName,
+                    accountsInfoCollectionName,
                     accountViewUUID,
                     sectionUUID,
                     client,
@@ -540,19 +540,19 @@ export async function SyncTests(email: string, password: string, client: Client,
                 expect(pageResponse.Ok).to.equal(true);
                 expect(pageResponse.Status).to.equal(200);
                 const actualPage = pageResponse.Body;
-                expect(actualPage.Key).to.equal(userInfoPageUUID);
+                expect(actualPage.Key).to.equal(accountsInfoPageUUID);
                 expect(actualPage.Name).to.equal(pageName);
                 expect(actualPage.Hidden).to.equal(false);
                 const pageBlock = actualPage.Blocks[0];
                 expect(pageBlock.Configuration.Resource).to.equal('DataViewerBlock');
                 expect(pageBlock.Configuration.AddonUUID).to.equal('0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3');
-                expect(pageBlock.Configuration.Data.viewsList[0].selectedResource).to.equal(userInfoCollectionName);
+                expect(pageBlock.Configuration.Data.viewsList[0].selectedResource).to.equal(accountsInfoCollectionName);
                 expect(pageBlock.Configuration.Data.viewsList[0].title).to.equal(accountViewName);
             });
-            it(`3. Create A Slug For UserInfo Page And Add To HomePage`, async function () {
-                slugName = `userinfo_slug_${generalService.generateRandomString(4)}`;
+            it(`3. Create A Slug For AccountsInfo Page And Add To HomePage`, async function () {
+                slugName = `accountsinfo_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = slugName;
-                await CreateSlug(email, password, driver, generalService, slugName, slugPath, userInfoPageUUID);
+                await CreateSlug(email, password, driver, generalService, slugName, slugPath, accountsInfoPageUUID);
                 driver.sleep(5000);
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.openSettings();
@@ -593,8 +593,10 @@ export async function SyncTests(email: string, password: string, client: Client,
                 await webAppHomePage.reSyncApp();
                 //2. choose 10 random accounts
                 const objectsService = new ObjectsService(generalService);
-                const allAccounts = await objectsService.getAccounts();
-                const filteredAccounts = allAccounts.filter((account) => account.Name?.includes('accounts_'));
+                const allAccounts = await objectsService.getAccounts({ page_size: -1 });
+                const filteredAccounts = allAccounts.filter(
+                    (account) => account.Name?.includes('accounts_') && Number(account.Name.split('_')[1]) <= 1000,
+                );
                 const accountArray = generalService.getNumberOfRandomElementsFromArray(filteredAccounts, 10);
                 const accountNamesArray = accountArray.map((account) => account.Name);
                 const webAppList = new WebAppList(driver);
@@ -612,7 +614,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     const accUUID = await eseUtils.getUUIDfromURL();
                     await accountPage.selectOptionFromBurgerMenu(slugName);
                     generalService.sleep(1000 * 15);
-                    await accountPage.clickOnEmptySpace();
+                    await accountPage.clickOnEmptySpace(accountViewName);
                     const allListElements = await webAppList.getAllListElementsTextValue();
                     const allDataAsArray = allListElements.map((element) => element.split('\n'));
                     for (let index = 0; index < allDataAsArray.length; index++) {
@@ -625,7 +627,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                         const bodyToSend = {};
                         bodyToSend['KeyList'] = [dataRow[0]];
                         const response = await generalService.fetchStatus(
-                            `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${userInfoCollectionName}`,
+                            `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${accountsInfoCollectionName}`,
                             { method: 'POST', body: JSON.stringify(bodyToSend) },
                         );
                         expect(response.Ok).to.equal(true);
@@ -652,8 +654,10 @@ export async function SyncTests(email: string, password: string, client: Client,
                 }
                 //2. choose 10 random accounts
                 const objectsService = new ObjectsService(generalService);
-                const allAccounts = await objectsService.getAccounts();
-                const filteredAccounts = allAccounts.filter((account) => account.Name?.includes('accounts_'));
+                const allAccounts = await objectsService.getAccounts({ page_size: -1 });
+                const filteredAccounts = allAccounts.filter(
+                    (account) => account.Name?.includes('accounts_') && Number(account.Name.split('_')[1]) < 1000,
+                );
                 const accountArray = generalService.getNumberOfRandomElementsFromArray(filteredAccounts, 10);
                 const accountNamesArray = accountArray.map((account) => account.Name);
                 const webAppList = new WebAppList(driver);
@@ -671,7 +675,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     const accUUID = await eseUtils.getUUIDfromURL();
                     await accountPage.selectOptionFromBurgerMenu(slugName);
                     generalService.sleep(1000 * 5);
-                    await accountPage.clickOnEmptySpace();
+                    await accountPage.clickOnEmptySpace(accountViewName);
                     const allListElements = await webAppList.getAllListElementsTextValue();
                     const allDataAsArray = allListElements.map((element) => element.split('\n'));
                     for (let index = 0; index < allDataAsArray.length; index++) {
@@ -684,7 +688,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                         const bodyToSend = {};
                         bodyToSend['KeyList'] = [dataRow[0]];
                         const response = await generalService.fetchStatus(
-                            `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${userInfoCollectionName}`,
+                            `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${accountsInfoCollectionName}`,
                             { method: 'POST', body: JSON.stringify(bodyToSend) },
                         );
                         expect(response.Ok).to.equal(true);
@@ -719,7 +723,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const accUUID = await eseUtils.getUUIDfromURL();
                 await accountPage.selectOptionFromBurgerMenu(slugName);
                 generalService.sleep(1000 * 8);
-                await accountPage.clickOnEmptySpace();
+                await accountPage.clickOnEmptySpace(accountViewName);
                 const allListElements = await webAppList.getAllListElementsTextValue();
                 const allDataAsArray = allListElements.map((element) => element.split('\n'));
                 for (let index = 0; index < allDataAsArray.length; index++) {
@@ -732,7 +736,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     const bodyToSend = {};
                     bodyToSend['KeyList'] = [dataRow[0]];
                     const response = await generalService.fetchStatus(
-                        `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${userInfoCollectionName}`,
+                        `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${accountsInfoCollectionName}`,
                         { method: 'POST', body: JSON.stringify(bodyToSend) },
                     );
                     expect(response.Ok).to.equal(true);
@@ -767,7 +771,7 @@ export async function SyncTests(email: string, password: string, client: Client,
             it('2. pages', async function () {
                 //3. delete relevant pages
                 const deleteSurveyPageResponse = await generalService.fetchStatus(
-                    `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${userInfoPageUUID}`,
+                    `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${accountsInfoPageUUID}`,
                     {
                         method: 'POST',
                         body: JSON.stringify({}),
