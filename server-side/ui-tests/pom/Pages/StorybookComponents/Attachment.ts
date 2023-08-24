@@ -22,8 +22,13 @@ export class Attachment extends StorybookComponent {
         this.browser.sleep(0.5 * 1000);
     }
 
-    public async getLabel(): Promise<string> {
+    public async getLabelControl(): Promise<string> {
         const label = await this.browser.findElement(this.LabelControlInput);
+        return await label.getText();
+    }
+
+    public async getLabel(): Promise<string> {
+        const label = await this.browser.findElement(this.LabelControlInput); // has to be changed to main example label
         return await label.getText();
     }
 

@@ -136,7 +136,7 @@ export async function StorybookButtonTests() {
                         });
                         it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
                             const newValueToSet = 'Auto test';
-                            await storyBookPage.inputs.changeValue(newValueToSet);
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Value Input Change`,
@@ -153,7 +153,7 @@ export async function StorybookButtonTests() {
                         });
                         it(`[ control = 'rotate3d' ] functional test (+screenshot)`, async function () {
                             const newClassNamesToSet = 'rotate3d';
-                            await storyBookPage.inputs.changeClassNames(newClassNamesToSet);
+                            await storyBookPage.inputs.changeClassNamesControl(newClassNamesToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `ClassNames Input Change`,
@@ -167,7 +167,7 @@ export async function StorybookButtonTests() {
                         });
                         it(`[ control = '' ] functional test (+screenshot)`, async function () {
                             const newClassNamesToSet = '';
-                            await storyBookPage.inputs.changeClassNames(newClassNamesToSet);
+                            await storyBookPage.inputs.changeClassNamesControl(newClassNamesToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `ClassNames Input Change`,
@@ -594,7 +594,7 @@ export async function StorybookButtonTests() {
                             expect(mainExamplePepButtonClasses).equals('');
                         });
                         it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleVisibleComponent();
+                            await storyBookPage.inputs.toggleVisibleControl();
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Visible Input Changed to "false"`,
@@ -625,7 +625,7 @@ export async function StorybookButtonTests() {
                             }
                         });
                         it(`back to default [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleVisibleComponent();
+                            await storyBookPage.inputs.toggleVisibleControl();
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Visible Input default value = "true"`,
