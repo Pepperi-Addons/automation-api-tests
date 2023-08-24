@@ -197,11 +197,11 @@ class ResourceCreation {
         const runningDataName = "accounts_index";
         let strData = "";
         strData += headers + "\n";
-        for (let index = 0; index < howManyDataRows; index++) {
+        for (let index = 1001; index < 2002; index++) {
             strData += `${runningDataExID.replace('index', index.toString())},`;
             strData += `${runningDataName.replace('index', index.toString())}\n`;
         }
-        this.genrateFile("Accounts", strData);
+        this.genrateFile("Accounts_2", strData);
     }
 
     private createItems(howManyDataRows: number) {
