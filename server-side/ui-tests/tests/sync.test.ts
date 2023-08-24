@@ -39,7 +39,7 @@ export async function SyncTests(email: string, password: string, client: Client,
     const companiesCollectionName = 'Companies';
     const companiesCollectionSize = 2;
     const userInfoCollectionName = 'AccountsInfo';
-    const userInfoCollectionSize = 1000;
+    const userInfoCollectionSize = 2000;
     let driver: Browser;
     // await generalService.baseAddonVersionsInstallation(varPass);//---> has to get 1.0.X which is NOT avaliable
     // #region Upgrade survey dependencies
@@ -593,8 +593,9 @@ export async function SyncTests(email: string, password: string, client: Client,
                 await webAppHomePage.reSyncApp();
                 //2. choose 10 random accounts
                 const objectsService = new ObjectsService(generalService);
-                const allAccounts = await objectsService.getAccounts();
-                const filteredAccounts = allAccounts.filter((account) => account.Name?.includes('accounts_'));
+                const allAccounts = await objectsService.getAccounts({ page_size: -1 });
+                debugger;
+                const filteredAccounts = allAccounts.filter((account) => account.Name?.includes('accounts_') && Number(account.Name.split('_')[1]) <= 1000);
                 const accountArray = generalService.getNumberOfRandomElementsFromArray(filteredAccounts, 10);
                 const accountNamesArray = accountArray.map((account) => account.Name);
                 const webAppList = new WebAppList(driver);
@@ -652,8 +653,8 @@ export async function SyncTests(email: string, password: string, client: Client,
                 }
                 //2. choose 10 random accounts
                 const objectsService = new ObjectsService(generalService);
-                const allAccounts = await objectsService.getAccounts();
-                const filteredAccounts = allAccounts.filter((account) => account.Name?.includes('accounts_'));
+                const allAccounts = await objectsService.getAccounts({ page_size: -1 });
+                const filteredAccounts = allAccounts.filter((account) => account.Name?.includes('accounts_') && Number(account.Name.split('_')[1]) <= 1000);
                 const accountArray = generalService.getNumberOfRandomElementsFromArray(filteredAccounts, 10);
                 const accountNamesArray = accountArray.map((account) => account.Name);
                 const webAppList = new WebAppList(driver);
