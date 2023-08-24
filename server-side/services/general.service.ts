@@ -2143,7 +2143,7 @@ export default class GeneralService {
         await this.genrateFile(fileName, strData);
     }
 
-    async createCSVFileForUserInfo(
+    async createCSVFileForAccountsInfo(
         fileName: string,
         howManyDataRows: number,
         howManyComapnies: number,
