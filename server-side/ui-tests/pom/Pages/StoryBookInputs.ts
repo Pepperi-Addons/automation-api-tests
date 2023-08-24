@@ -13,6 +13,7 @@ export class StoryBookInpus extends AddonPage {
     public SelectOption_byText: By = By.xpath(`//option[text()="{placeholder}"]`);
     public EmptySpaceToClick: By = By.xpath(`//h1[contains(@class,'title')]`);
     public DisableToggler: By = By.xpath(`//input[contains(@name,'disabled')]`);
+    public VisibleToggler: By = By.xpath(`//input[contains(@name,'visible')]`);
     public MandatoryToggler: By = By.xpath(`//input[contains(@name,'mandatory')]`);
     public ShowTitleToggler: By = By.xpath(`//input[contains(@name,'showTitle')]`);
     public CheckBoxElements: By = By.xpath(`//table//label//input[@type='radio']`);
@@ -45,6 +46,10 @@ export class StoryBookInpus extends AddonPage {
 
     public async toggleDissableComponent(): Promise<void> {
         await this.browser.click(this.DisableToggler);
+    }
+
+    public async toggleVisibleComponent(): Promise<void> {
+        await this.browser.click(this.VisibleToggler);
     }
 
     public async selectIconName(toSelect: string): Promise<void> {

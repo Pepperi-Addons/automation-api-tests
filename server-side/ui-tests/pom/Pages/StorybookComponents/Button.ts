@@ -4,6 +4,7 @@ import { StorybookComponent } from './Base/StorybookComponent';
 export class Button extends StorybookComponent {
     public MainExampleDiv: By = By.xpath('//div[@id="story--components-button--story-1"]');
     public MainExampleButton: By = By.xpath(`${this.MainExampleDiv.value}//button`);
+    public MainExamplePepButton: By = By.xpath(`${this.MainExampleDiv.value}//pep-button`);
     public MainExampleButton_value: By = By.xpath(`${this.MainExampleButton.value}/span/span`);
     public MainExampleButton_icon: By = By.xpath(`${this.MainExampleButton.value}/span/mat-icon`);
     public MainExampleButton_firstChild: By = By.xpath(`${this.MainExampleButton.value}/span/*[1]`);
