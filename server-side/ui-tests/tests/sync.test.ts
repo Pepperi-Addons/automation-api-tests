@@ -38,7 +38,7 @@ export async function SyncTests(email: string, password: string, client: Client,
     const divisionCollectionSize = 10;
     const companiesCollectionName = 'Companies';
     const companiesCollectionSize = 2;
-    const userInfoCollectionName = 'UserInfo';
+    const userInfoCollectionName = 'AccountInfo';
     const userInfoCollectionSize = 1000;
     let driver: Browser;
     // await generalService.baseAddonVersionsInstallation(varPass);//---> has to get 1.0.X which is NOT avaliable
