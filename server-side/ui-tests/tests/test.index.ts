@@ -276,6 +276,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 varKeyEU: varPassEU,
             },
         });
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('evgeny')) {
@@ -681,6 +682,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     }
     if (tests.includes('SyncE2E')) {
         await SyncTests(email, pass, client, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Survey')) {
