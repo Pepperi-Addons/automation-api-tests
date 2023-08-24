@@ -223,17 +223,6 @@ export async function UomTests(email: string, password: string, varPass: string,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            // it('Setting Up UOM ATD Using UI', async function () {
-            //     //3. goto new ATD and configure everything needed for the test - 3 calculated fields
-            //     //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
-            //     //3.2. add fields to UI control of ATD
-            //     await uom.configUomATD();
-            //     const base64ImageComponent = await driver.saveScreenshots();
-            //     addContext(this, {
-            //         title: `ATD configured`,
-            //         value: 'data:image/png;base64,' + base64ImageComponent,
-            //     });
-            // });
             it('Verifying UOM Transaction Type Content is Loaded', async function () {
                 //3. goto new ATD and configure everything needed for the test - 3 calculated fields
                 await driver.switchTo(uom.AddonContainerIframe);
@@ -353,21 +342,6 @@ export async function UomTests(email: string, password: string, varPass: string,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            // it('Configuring UOM Fields and Medium View', async function () {
-            //     await uom.configUomFieldsAndMediumView();
-            //     let base64ImageComponent = await driver.saveScreenshots();
-            //     addContext(this, {
-            //         title: `UOM Fields and Medium View configured`,
-            //         value: 'data:image/png;base64,' + base64ImageComponent,
-            //     });
-            //     await driver.switchToDefaultContent();
-            //     await driver.click(objectTypeEditor.BackArrowButton); // Hagit, Aug 23 - back to list from specific transaction
-            //     base64ImageComponent = await driver.saveScreenshots();
-            //     addContext(this, {
-            //         title: `Back to Transaction Types List`,
-            //         value: 'data:image/png;base64,' + base64ImageComponent,
-            //     });
-            // });
             it('Configuring UOM Fields and Medium View (at UOM Tab)', async function () {
                 try {
                     await uom.configureUomDataFields(
@@ -431,84 +405,6 @@ export async function UomTests(email: string, password: string, varPass: string,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            // it('Setting Up UOM ATD Using UI', async function () {
-            //     await driver.switchTo(uom.AddonContainerIframe);
-            //     await uom.isAddonFullyLoaded(AddonLoadCondition.Footer);
-            //     expect(await uom.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
-            //     expect(await uom.isEditorTabVisible('GeneralInfo')).to.be.true;
-            //     await driver.switchToDefaultContent();
-            //     await uom.selectTabByText('Uom');
-            //     //validate uom is loaded both if installed and if not
-            //     expect(await driver.untilIsVisible(uom.UomHeader, 15000)).to.be.true;
-            //     //testing whether already installed - after loading anyway
-            //     if (await (await driver.findElement(uom.UomInstallBtn)).isDisplayed()) {
-            //         await driver.click(uom.UomInstallBtn);
-            //         const webAppDialog = new WebAppDialog(driver);
-            //         // ****text not finalized yet - once will be the test is relevant****
-            //         // const isPupUP = await (await driver.findElement(webAppDialog.Content)).getText();
-            //         // expect(isPupUP).to.equal('Are you sure you want to apply the module on the transaction?');
-            //         await webAppDialog.selectDialogBox('ok');
-            //         await uom.isSpinnerDone();
-            //     }
-            //     expect(await driver.untilIsVisible(uom.UomInstalledHeader, 15000)).to.be.true;
-            //     await uom.selectTabByText('General');
-            //     const objectTypeEditor = new ObjectTypeEditor(driver);
-            //     await objectTypeEditor.addATDCalculatedField(
-            //         {
-            //             Label: 'AllowedUomFieldsForTest',
-            //             CalculatedRuleEngine: {
-            //                 JSFormula:
-            //                     "return ItemMainCategory==='uom item'?JSON.stringify(['Bx','SIN', 'DOU', 'TR', 'QU','PK','CS']):null;",
-            //             },
-            //         },
-            //         true,
-            //         'ItemMainCategory',
-            //     );
-            //     await driver.switchToDefaultContent();
-            //     await uom.selectTabByText('General');
-            //     //**first testing phase will be performed w/o this feature - second will test this only**
-            //     await objectTypeEditor.addATDCalculatedField(
-            //         {
-            //             Label: 'ItemConfig',
-            //             CalculatedRuleEngine: {
-            //                 JSFormula: `return null;`,
-            //             },
-            //         },
-            //         true,
-            //     );
-            //     await driver.switchToDefaultContent();
-            //     await uom.selectTabByText('General');
-            //     await objectTypeEditor.addATDCalculatedField(
-            //         {
-            //             Label: 'UomValues',
-            //             CalculatedRuleEngine: {
-            //                 JSFormula: `return JSON.stringify(["Bx","SIN", "DOU", "TR", "QU","PK","CS"]);`,
-            //             },
-            //         },
-            //         true,
-            //     );
-            //     await driver.switchToDefaultContent();
-            //     await uom.selectTabByText('General');
-            //     await objectTypeEditor.addATDCalculatedField(
-            //         {
-            //             Label: 'ConstInventory',
-            //             CalculatedRuleEngine: {
-            //                 JSFormula: `return 48;`,
-            //             },
-            //         },
-            //         true,
-            //         undefined,
-            //         'Number',
-            //     );
-            //     await uom.configUomFieldsAndMediumView();
-            //     await driver.switchToDefaultContent();
-            //     await driver.click(objectTypeEditor.BackArrowButton); // Hagit, Aug 23 - back to list from transaction
-            //     const base64ImageComponent = await driver.saveScreenshots();
-            //     addContext(this, {
-            //         title: `ATD configured`,
-            //         value: 'data:image/png;base64,' + base64ImageComponent,
-            //     });
-            // });
             it('Adding ATD to Home Page', async function () {
                 await webAppHomePage.returnToHomePage();
                 await webAppHeader.openSettings();
@@ -553,9 +449,6 @@ export async function UomTests(email: string, password: string, varPass: string,
                             value: 'data:image/png;base64,' + base64ImageComponent,
                         });
                     });
-                    // it("Testing UOM ATD", async function () {
-                    //     await uom.testUomAtdUI();
-                    // });
                     describe('Item [1230]', () => {
                         it('Add 40 items of regular qty - see 40 items are shown (then getting up to 48 by plus clicks)', async function () {
                             //1. regular item testing
@@ -990,7 +883,6 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                         it('Validating Being in Cart', async function () {
-                            // await uom.gotoCart(orderPage);
                             await webAppList.isSpinnerDone();
                             try {
                                 await orderPage.changeOrderCenterPageView('GridLine');
@@ -1068,9 +960,6 @@ export async function UomTests(email: string, password: string, varPass: string,
                             value: 'data:image/png;base64,' + base64ImageComponent,
                         });
                     });
-                    // it("Testing UOM ATD with Item Config", async function () {
-                    //     await uom.testUomAtdUIWithItemConfig(driver);
-                    // });
                     describe('Item [1231]', () => {
                         it('Testing UOM ATD with Item Config - Changing UOM1 to Single', async function () {
                             //1. single -> factor:3, minimum:2, case:1, decimal:0, negative:true
@@ -1282,7 +1171,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        // for (let i = 1; i < 9; i++) { // commented out dut to https://pepperi.atlassian.net/browse/DI-24705
+                        // for (let i = 1; i < 9; i++) { // commented out dut to https://pepperi.atlassian.net/browse/DI-24705 DO NOT DELETE!
                         //     it(`Minus button clicks - to reach Zero (click number ${i})`, async function () {
                         //         await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
                         //         driver.sleep(1500);
