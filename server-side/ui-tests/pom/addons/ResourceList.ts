@@ -112,15 +112,8 @@ export class ResourceList extends AddonPage {
     );
 
     //editor dialog
-    public DialogElement: By = By.xpath(
-        '//mat-dialog-container[@role="dialog"]',
-    );
-    public InputInsideDialogElement: By = By.xpath(
-        '//mat-label[contains(text(),"{placeholder}")]//..//..//..//input'
-    );
-
-
-
+    public DialogElement: By = By.xpath('//mat-dialog-container[@role="dialog"]');
+    public InputInsideDialogElement: By = By.xpath('//mat-label[contains(text(),"{placeholder}")]//..//..//..//input');
 
     public getSelectorOfResourceListSettingsTab(title: string) {
         return By.xpath(`//div[contains(@class,"mat-tab-labels")] //div[text()="${title}"]/parent::div[@role="tab"]`);
@@ -189,7 +182,7 @@ export class ResourceList extends AddonPage {
     public async editDataInsideRsourceListEditorPopup(valueLabelName: string, dataToInsert: string) {
         await this.browser.untilIsVisible(this.DialogElement);
         const inputElement = this.InputInsideDialogElement.valueOf()
-        ['value'].slice()
+            ['value'].slice()
             .replace('{placeholder}', valueLabelName);
         await this.browser.click(By.xpath(inputElement));
         await this.browser.sendKeys(By.xpath(inputElement), dataToInsert);
@@ -634,7 +627,7 @@ export class ResourceEditors extends ResourceList {
     public async customEditorConfig(
         generalService: GeneralService,
         editorData: { editorKey: string; fieldsToConfigureInView: BaseFormDataViewField[] },
-        editorName: string
+        editorName: string,
     ) {
         const resourceFieldsToAddToEditorObj = new UpsertResourceFieldsToEditor(
             editorData.editorKey,
@@ -644,7 +637,7 @@ export class ResourceEditors extends ResourceList {
         // const upsertFieldsToEditor = await dataViewsService.postDataView(resourceFieldsToAddToEditorObj);
         const upsertFieldsToEditor = await generalService.fetchStatus('/meta_data/data_views', {
             method: 'POST',
-            body: JSON.stringify(resourceFieldsToAddToEditorObj)
+            body: JSON.stringify(resourceFieldsToAddToEditorObj),
         });
         console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToEditor, null, 2)}`);
         this.pause(5 * 1000);
@@ -657,7 +650,7 @@ export class ResourceEditors extends ResourceList {
         await this.click(this.Form_Tab);
         await this.waitTillVisible(this.EditPage_ConfigProfileCard_Rep, 15000);
         await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
-        const allFieldsNames = editorData.fieldsToConfigureInView.map(view => view.FieldID);
+        const allFieldsNames = editorData.fieldsToConfigureInView.map((view) => view.FieldID);
         const allLabelElementsFromUI = await this.browser.findElements(this.TextLabelElements);
         expect(allLabelElementsFromUI.length).to.equal(allFieldsNames.length);
         for (let index = 0; index < allLabelElementsFromUI.length; index++) {
