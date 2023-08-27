@@ -83,6 +83,7 @@ export async function StorybookSliderTests() {
         sliderInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
+                    await driver.click(await slider.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -161,6 +162,14 @@ export async function StorybookSliderTests() {
         });
         sliderProperties.forEach(async (property) => {
             describe(`PROPERTY: '${property}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await slider.getPropertyRowSelectorByName(property));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${property}' property`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (property) {
                     case 'fadeState':
                         it(`it '${property}'`, async function () {

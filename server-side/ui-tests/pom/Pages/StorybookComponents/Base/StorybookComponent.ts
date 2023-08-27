@@ -41,6 +41,18 @@ export class StorybookComponent extends AddonPage {
         return By.xpath(`${this.InputTitle.value}[text()='${inputTitle}']`);
     }
 
+    public async getOutputRowSelectorByName(outputTitle: string): Promise<By> {
+        return By.xpath(`${this.OutputTitle.value}[text()='${outputTitle}']`);
+    }
+
+    public async getMethodRowSelectorByName(methodTitle: string): Promise<By> {
+        return By.xpath(`${this.MethodTitle.value}[text()='${methodTitle}']`);
+    }
+
+    public async getPropertyRowSelectorByName(propertyTitle: string): Promise<By> {
+        return By.xpath(`${this.PropertyTitle.value}[text()='${propertyTitle}']`);
+    }
+
     public async getSelectorOfOutputDefaultValueByName(outputName: string): Promise<By> {
         return By.xpath(`//span[text()="${outputName}"]/parent::td/following-sibling::td[2]/span`);
     }
