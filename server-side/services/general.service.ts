@@ -1709,6 +1709,16 @@ export default class GeneralService {
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
 
+    async baseAddonVersionsInstallationNewSync(varPass: string, otherTestData?: any) {
+        const isInstalledArr = await this.areAddonsInstalled(otherTestData ? otherTestData : testDataWithNewSync);
+        const chnageVersionResponseArr = await this.changeVersion(
+            varPass,
+            otherTestData ? otherTestData : testData,
+            false,
+        );
+        return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
+    }
+
     async setBaseAddonsToPhasedForE2E(varPass: string) {
         const addonsToSwitchToPhased = {};
         const systemAddons = await this.getSystemAddons();

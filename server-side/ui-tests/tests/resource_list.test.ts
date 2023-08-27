@@ -284,10 +284,15 @@ export async function ResourceListTests(email: string, password: string, varPass
                         { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
                         { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: false },
                     ]);
-                await resourceEditors.customEditorConfig(dataViewsService, {
-                    editorKey: editorKey,
-                    fieldsToConfigureInView: editorFields,
-                });
+                await resourceEditors.customEditorConfig(
+                    generalService,
+                    {
+                        //this was changed due to the function changing - EVGENY 27/8/23
+                        editorKey: editorKey,
+                        fieldsToConfigureInView: editorFields,
+                    },
+                    editorName,
+                );
                 resourceEditors.pause(5 * 1000);
             });
             it('Add & Configure View', async () => {
