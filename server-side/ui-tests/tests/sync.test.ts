@@ -20,18 +20,6 @@ import { ObjectsService } from '../../services';
 import { AccountsPage } from '../pom/Pages/AccountPage';
 
 chai.use(promised);
-let slugName;
-let accountsInfoPageUUID;
-let accountViewUUID;
-let accountViewName;
-let editorName;
-let editorKey;
-let changedAccountName;
-const updatedValue = 'val_evgeny_xyz123';
-const repEmail = 'SyncE2ETestingSBRep@pepperitest.com';
-const repPass = '*5AX4m';
-const buyerEmail = 'SyncE2ETestingSBBuyer@pepperitest.com';
-const buyerPass = '2HT#bK';
 
 export async function SyncTests(email: string, password: string, client: Client, varPass) {
     const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
@@ -44,6 +32,18 @@ export async function SyncTests(email: string, password: string, client: Client,
     const companiesCollectionSize = 2;
     const accountsInfoCollectionName = 'AccountsInfo';
     const accpuntsInfoCollectionSize = 2000;
+    let slugName;
+    let accountsInfoPageUUID;
+    let accountViewUUID;
+    let accountViewName;
+    let editorName;
+    let editorKey;
+    let changedAccountName;
+    const updatedValue = 'val_evgeny_xyz123';
+    const repEmail = 'SyncE2ETestingSBRep@pepperitest.com';
+    const repPass = '*5AX4m';
+    const buyerEmail = 'SyncE2ETestingSBBuyer@pepperitest.com';
+    const buyerPass = '2HT#bK';
     let driver: Browser;
     // await generalService.baseAddonVersionsInstallationNewSync(varPass);//---> has to get 1.0.X which is NOT avaliable
     // #region Upgrade survey dependencies
@@ -805,9 +805,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData(this);
             });
-            it(`1. Admin - Change The Basic Value Of Accounts_0 account`, async function () {
-                const slugName = 'accountsinfo_slug_fsip';
-                const accountViewName = 'AccountsInfoView';
+            it(`1. Admin - Change The Basic Value Of "Accounts_0" account`, async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
@@ -824,6 +822,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 await webAppList.clickOnRadioButtonByElementIndex(0);
                 await webAppList.clickOnPencilMenuButton();
                 await webAppList.clickOnPencilMenuButtonEdit();
+                generalService.sleep(1000 * 8);
                 const resourceListService = new ResourceList(driver);
                 await resourceListService.editDataInsideRsourceListEditorPopup('basicValue', updatedValue);
                 await webAppLoginPage.logout();
