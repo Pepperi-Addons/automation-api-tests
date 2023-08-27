@@ -128,7 +128,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         },
     ];
 
-    await generalService.baseAddonVersionsInstallation(varPass);
+    await generalService.baseAddonVersionsInstallationNewSync(varPass);
     // #region Upgrade survey dependencies
 
     const testData = {

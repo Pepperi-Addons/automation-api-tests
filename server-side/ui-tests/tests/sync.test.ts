@@ -9,25 +9,17 @@ import fs from 'fs';
 import { PFSService } from '../../services/pfs.service';
 import { BrandedApp, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage } from '../pom';
 import E2EUtils from '../utilities/e2e_utils';
-import { ResourceViews } from '../pom/addons/ResourceList';
+import { ResourceEditors, ResourceList, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
 import { DataViewsService } from '../../services/data-views.service';
-import { MenuDataViewField } from '@pepperi-addons/papi-sdk';
+import { BaseFormDataViewField, MenuDataViewField } from '@pepperi-addons/papi-sdk';
 import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
 import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 import { ObjectsService } from '../../services';
 import { AccountsPage } from '../pom/Pages/AccountPage';
 
 chai.use(promised);
-let slugName;
-let accountsInfoPageUUID;
-let accountViewUUID;
-let accountViewName;
-const repEmail = 'SyncE2ETestingSBRep@pepperitest.com';
-const repPass = '*5AX4m';
-const buyerEmail = 'SyncE2ETestingSBBuyer@pepperitest.com';
-const buyerPass = '2HT#bK';
 
 export async function SyncTests(email: string, password: string, client: Client, varPass) {
     const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
@@ -40,8 +32,20 @@ export async function SyncTests(email: string, password: string, client: Client,
     const companiesCollectionSize = 2;
     const accountsInfoCollectionName = 'AccountsInfo';
     const accpuntsInfoCollectionSize = 2000;
+    let slugName;
+    let accountsInfoPageUUID;
+    let accountViewUUID;
+    let accountViewName;
+    let editorName;
+    let editorKey;
+    let changedAccountName;
+    const updatedValue = 'val_evgeny_xyz123';
+    const repEmail = 'SyncE2ETestingSBRep@pepperitest.com';
+    const repPass = '*5AX4m';
+    const buyerEmail = 'SyncE2ETestingSBBuyer@pepperitest.com';
+    const buyerPass = '2HT#bK';
     let driver: Browser;
-    // await generalService.baseAddonVersionsInstallation(varPass);//---> has to get 1.0.X which is NOT avaliable
+    // await generalService.baseAddonVersionsInstallationNewSync(varPass);//---> has to get 1.0.X which is NOT avaliable
     // #region Upgrade survey dependencies
 
     const testData = {
@@ -493,11 +497,43 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData(this);
             });
-            it(`1. Create A View To Show AccountInfo UDC`, async function () {
+            it(`1. Create An Editor For AccountInfo View`, async function () {
                 const resourceListUtils = new E2EUtils(driver);
-                const resourceViews = new ResourceViews(driver);
+                const resourceEditors = new ResourceEditors(driver);
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
+                editorName = 'AccountsInfoEditor';
+                // Configure View - User Info UDC
+                await resourceListUtils.addEditor({
+                    nameOfEditor: editorName,
+                    descriptionOfEditor: 'for test',
+                    nameOfResource: accountsInfoCollectionName,
+                });
+                // Configure Editor
+                await resourceListUtils.gotoEditPageOfSelectedEditorByName(editorName);
+                editorKey = await resourceListUtils.getUUIDfromURL();
+                const editorFields: BaseFormDataViewField[] =
+                    resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
+                        { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                        { fieldName: 'accountRef', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                        { fieldName: 'companyRef', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                        { fieldName: 'divisionRef', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                        { fieldName: 'basicValue', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    ]);
+                await resourceEditors.customEditorConfig(
+                    generalService,
+                    {
+                        editorKey: editorKey,
+                        fieldsToConfigureInView: editorFields,
+                    },
+                    editorName,
+                );
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.goHome();
+            });
+            it(`2. Create A View To Show AccountInfo UDC`, async function () {
+                const resourceListUtils = new E2EUtils(driver);
+                const resourceViews = new ResourceViews(driver);
                 // Configure View - User Info UDC
                 accountViewName = 'AccountsInfoView';
                 await resourceListUtils.addView({
@@ -507,7 +543,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 });
                 accountViewUUID = await resourceListUtils.getUUIDfromURL();
                 await resourceViews.customViewConfig(client, {
-                    matchingEditorName: '',
+                    matchingEditorName: editorName,
                     viewKey: accountViewUUID,
                     fieldsToConfigureInView: [
                         { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
@@ -521,7 +557,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            it(`2. Create A Page For AccountsInfo Resource View`, async function () {
+            it(`3. Create A Page For AccountsInfo Resource View`, async function () {
                 const e2eUtils = new E2EUtils(driver);
                 const pageName = 'AccountsInfoPage';
                 accountsInfoPageUUID = await e2eUtils.addPageNoSections(pageName, 'tests');
@@ -549,7 +585,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 expect(pageBlock.Configuration.Data.viewsList[0].selectedResource).to.equal(accountsInfoCollectionName);
                 expect(pageBlock.Configuration.Data.viewsList[0].title).to.equal(accountViewName);
             });
-            it(`3. Create A Slug For AccountsInfo Page And Add To HomePage`, async function () {
+            it(`4. Create A Slug For AccountsInfo Page And Add To HomePage`, async function () {
                 slugName = `accountsinfo_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = slugName;
                 await CreateSlug(email, password, driver, generalService, slugName, slugPath, accountsInfoPageUUID);
@@ -565,7 +601,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 }
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slugName);
             });
-            it(`4. Set Slug To Be Shown In Acc. Dashboard`, async function () {
+            it(`5. Set Slug To Be Shown In Acc. Dashboard`, async function () {
                 const accountDashboardLayout = new AccountDashboardLayout(driver);
                 await accountDashboardLayout.configureToAccountMenuRepCardEVGENY(driver, slugName, slugName);
             });
@@ -586,6 +622,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 await webAppHomePage.collectEndTestData(this);
             });
             it(`1. Admin`, async function () {
+                debugger;
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 //1. re-sync
@@ -753,8 +790,152 @@ export async function SyncTests(email: string, password: string, client: Client,
                 await webAppHomePage.returnToHomePage();
             });
         });
+        describe('UI Tests - Change Certain UDC Row Via UI And See Data Was Updated In Admin, Buyer & Rep', () => {
+            this.retries(0);
+
+            before(async function () {
+                driver = await Browser.initiateChrome();
+            });
+
+            after(async function () {
+                await driver.quit();
+            });
+
+            afterEach(async function () {
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.collectEndTestData(this);
+            });
+            it(`1. Admin - Change The Basic Value Of "Accounts_0" account`, async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
+                const webAppHomePage = new WebAppHomePage(driver);
+                const webAppList = new WebAppList(driver);
+                const accountPage = new AccountsPage(driver);
+                await webAppHomePage.clickOnBtn('Accounts');
+                generalService.sleep(1000 * 5);
+                changedAccountName = 'accounts_0';
+                await webAppList.searchInList(changedAccountName);
+                await webAppList.clickOnLinkFromListRowWebElement(0);
+                await accountPage.selectOptionFromBurgerMenu(slugName);
+                generalService.sleep(1000 * 15);
+                await accountPage.clickOnEmptySpace(accountViewName);
+                await webAppList.clickOnRadioButtonByElementIndex(0);
+                await webAppList.clickOnPencilMenuButton();
+                await webAppList.clickOnPencilMenuButtonEdit();
+                generalService.sleep(1000 * 8);
+                const resourceListService = new ResourceList(driver);
+                await resourceListService.editDataInsideRsourceListEditorPopup('basicValue', updatedValue);
+                await webAppLoginPage.logout();
+            });
+            it(`2. Sales Rep`, async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.longLoginForRep(repEmail, repPass);
+                const webAppHomePage = new WebAppHomePage(driver);
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
+                const webAppList = new WebAppList(driver);
+                const accountPage = new AccountsPage(driver);
+                await webAppHomePage.clickOnBtn('Accounts');
+                generalService.sleep(1000 * 5);
+                await webAppList.searchInList(changedAccountName);
+                await webAppList.clickOnLinkFromListRowWebElement(0);
+                const eseUtils = new E2EUtils(driver);
+                const accUUID = await eseUtils.getUUIDfromURL();
+                await accountPage.selectOptionFromBurgerMenu(slugName);
+                generalService.sleep(1000 * 5);
+                await accountPage.clickOnEmptySpace(accountViewName);
+                const allListElements = await webAppList.getAllListElementsTextValue();
+                const allDataAsArray = allListElements.map((element) => element.split('\n'));
+                for (let index = 0; index < allDataAsArray.length; index++) {
+                    const dataRow = allDataAsArray[index];
+                    //0 - key
+                    expect(dataRow[0]).to.equal(`${dataRow[2]}@${dataRow[3]}@${accUUID}`);
+                    //1 - accountRef
+                    expect(dataRow[1]).to.equal(accUUID);
+                    //get company and division data from UDC for this account
+                    const bodyToSend = {};
+                    bodyToSend['KeyList'] = [dataRow[0]];
+                    const response = await generalService.fetchStatus(
+                        `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${accountsInfoCollectionName}`,
+                        { method: 'POST', body: JSON.stringify(bodyToSend) },
+                    );
+                    expect(response.Ok).to.equal(true);
+                    expect(response.Status).to.equal(200);
+                    const division = response.Body.Objects[0].divisionRef;
+                    const company = response.Body.Objects[0].companyRef;
+                    //2 - companyRef
+                    expect(dataRow[2]).to.equal(company);
+                    //3 - divisionRef
+                    expect(dataRow[3]).to.equal(division);
+                    //4 - dasicVal
+                    expect(dataRow[4]).to.equal(updatedValue);
+                    await webAppHomePage.returnToHomePage();
+                }
+                await webAppLoginPage.logout();
+            });
+            it(`3. Buyer`, async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.longLoginForBuyer(buyerEmail, buyerPass);
+                const webAppHomePage = new WebAppHomePage(driver);
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
+                const webAppList = new WebAppList(driver);
+                const accountPage = new AccountsPage(driver);
+                await webAppHomePage.clickOnBtn('Accounts');
+                generalService.sleep(1000 * 5);
+                await webAppList.clickOnLinkFromListRowWebElement(0);
+                const eseUtils = new E2EUtils(driver);
+                const accUUID = await eseUtils.getUUIDfromURL();
+                await accountPage.selectOptionFromBurgerMenu(slugName);
+                generalService.sleep(1000 * 8);
+                await accountPage.clickOnEmptySpace(accountViewName);
+                const allListElements = await webAppList.getAllListElementsTextValue();
+                const allDataAsArray = allListElements.map((element) => element.split('\n'));
+                for (let index = 0; index < allDataAsArray.length; index++) {
+                    const dataRow = allDataAsArray[index];
+                    //0 - key
+                    expect(dataRow[0]).to.equal(`${dataRow[2]}@${dataRow[3]}@${accUUID}`);
+                    //1 - accountRef
+                    expect(dataRow[1]).to.equal(accUUID);
+                    //get company and division data from UDC for this account
+                    const bodyToSend = {};
+                    bodyToSend['KeyList'] = [dataRow[0]];
+                    const response = await generalService.fetchStatus(
+                        `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${accountsInfoCollectionName}`,
+                        { method: 'POST', body: JSON.stringify(bodyToSend) },
+                    );
+                    expect(response.Ok).to.equal(true);
+                    expect(response.Status).to.equal(200);
+                    const division = response.Body.Objects[0].divisionRef;
+                    const company = response.Body.Objects[0].companyRef;
+                    //2 - companyRef
+                    expect(dataRow[2]).to.equal(company);
+                    //3 - divisionRef
+                    expect(dataRow[3]).to.equal(division);
+                    //4 - dasicVal
+                    expect(dataRow[4]).to.equal(updatedValue);
+                }
+                await webAppHomePage.returnToHomePage();
+            });
+        });
         describe('Tear Down Via API', () => {
-            it('1. resource views', async function () {
+            it('1. resource editor', async function () {
+                const accBody = { Key: editorKey, Hidden: true };
+                const deleteAccountRLResponse = await generalService.fetchStatus(
+                    `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/editors`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(accBody),
+                    },
+                );
+                expect(deleteAccountRLResponse.Ok).to.equal(true);
+                expect(deleteAccountRLResponse.Status).to.equal(200);
+                expect(deleteAccountRLResponse.Body.Name).to.equal(editorName);
+                expect(deleteAccountRLResponse.Body.Hidden).to.equal(true);
+            });
+            it('2. resource views', async function () {
                 const accBody = { Key: accountViewUUID, Hidden: true };
                 const deleteAccountRLResponse = await generalService.fetchStatus(
                     `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
@@ -768,7 +949,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 expect(deleteAccountRLResponse.Body.Name).to.equal(accountViewName);
                 expect(deleteAccountRLResponse.Body.Hidden).to.equal(true);
             });
-            it('2. pages', async function () {
+            it('3. pages', async function () {
                 //3. delete relevant pages
                 const deleteSurveyPageResponse = await generalService.fetchStatus(
                     `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${accountsInfoPageUUID}`,
@@ -781,14 +962,14 @@ export async function SyncTests(email: string, password: string, client: Client,
                 expect(deleteSurveyPageResponse.Status).to.equal(200);
                 expect(deleteSurveyPageResponse.Body).to.equal(true);
             });
-            it('3. slugs', async function () {
+            it('4. slugs', async function () {
                 const slugs: Slugs = new Slugs(driver);
                 const slideShowSlugsResponse = await slugs.deleteSlugByName(slugName, client);
                 expect(slideShowSlugsResponse.Ok).to.equal(true);
                 expect(slideShowSlugsResponse.Status).to.equal(200);
                 expect(slideShowSlugsResponse.Body.success).to.equal(true);
             });
-            it(`4. Purging All left UDCs - To Keep Dist Clean`, async function () {
+            it(`5. Purging All left UDCs - To Keep Dist Clean`, async function () {
                 const udcService = new UDCService(generalService);
                 let allUdcs = await udcService.getSchemes({ page_size: -1 });
                 const onlyRelevantUdcNames = allUdcs.map((doc) => doc.Name);

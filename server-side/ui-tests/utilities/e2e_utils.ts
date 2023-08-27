@@ -485,10 +485,14 @@ export default class E2EUtils extends BasePomObject {
             await this.addEditor(resourceData.editor.editorDetails);
             editorUUID = await this.getUUIDfromURL();
             if (resourceData.editor.editorConfiguration) {
-                await resourceEditors.customEditorConfig(generalService.papiClient, {
-                    editorKey: resourceData.editor.editorConfiguration.editorKey || editorUUID,
-                    fieldsToConfigureInView: resourceData.editor.editorConfiguration.fieldsToConfigureInEditor,
-                });
+                await resourceEditors.customEditorConfig(
+                    generalService,
+                    {
+                        editorKey: resourceData.editor.editorConfiguration.editorKey || editorUUID,
+                        fieldsToConfigureInView: resourceData.editor.editorConfiguration.fieldsToConfigureInEditor,
+                    },
+                    resourceData.editor.editorDetails.nameOfEditor,
+                );
             }
         }
         if (resourceData.view) {

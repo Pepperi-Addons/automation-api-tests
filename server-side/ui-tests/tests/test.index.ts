@@ -89,6 +89,7 @@ import { UDCImportExportTests } from '../../api-tests/user_defined_collections_i
 import { Import200KToAdalFromDimx } from './import_200k_DIMX.test';
 import { Import150KToAdalFromDimx } from './import_150k_DIMX.test';
 import { SyncTests } from './sync.test';
+import { TestDataTestsNewSync } from '../../api-tests/test-service/test_data_new_sync';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -276,7 +277,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 varKeyEU: varPassEU,
             },
         });
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('evgeny')) {
@@ -682,12 +683,12 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     }
     if (tests.includes('SyncE2E')) {
         await SyncTests(email, pass, client, varPass);
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Survey')) {
         await SurveyTests(email, pass, client, varPass); //
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('NGX_POC')) {
         await NgxLibPOC(); // all is needed is the client for general service as were not using an actual pepperi user

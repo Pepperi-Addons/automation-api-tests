@@ -25,7 +25,7 @@ export interface TestDataOptions {
 }
 
 // Get the Tests Data
-export async function TestDataTests(
+export async function TestDataTestsNewSync(
     generalService: GeneralService,
     tester: TesterFunctions,
     options: TestDataOptions = { IsAllAddons: true, IsUUID: false },
@@ -74,13 +74,19 @@ export async function TestDataTests(
                 installedAddons['Data Index Framework'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Activity Data Index')
                 installedAddons['Activity Data Index'] = installedAddonsArr[index].Version;
-            if (installedAddonsArr[index].Addon.Name == 'Audit Log')
-                installedAddons['Audit Log'] = installedAddonsArr[index].Version;
             if (
                 installedAddonsArr[index].Addon.Name == 'Export and Import Framework (DIMX)' ||
                 installedAddonsArr[index].Addon.Name == 'Export and Import Framework'
             )
                 installedAddons['DIMX'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Nebula')
+                installedAddons['Nebula'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'febula')
+                installedAddons['febula'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'sync')
+                installedAddons['sync'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Audit Log')
+                installedAddons['Audit Log'] = installedAddonsArr[index].Version;
         }
     }
 
@@ -116,6 +122,10 @@ export async function TestDataTests(
                     expect(regexMatched.length).to.be.above(2);
                 });
             }
+            it(`Services Framework | Version: ${installedAddons['Services Framework']}`, () => {
+                const regexMatched = installedAddons['Services Framework'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
             it(`Services Framework | Version: ${installedAddons['Services Framework']}`, () => {
                 const regexMatched = installedAddons['Services Framework'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
@@ -160,6 +170,26 @@ export async function TestDataTests(
                 const regexMatched = installedAddons['Audit Log'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
+            it(`DIMX | Version: ${installedAddons['DIMX']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['DIMX'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Nebula | Version: ${installedAddons['Nebula']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['Nebula'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Febula | Version: ${installedAddons['febula']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['febula'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Sync | Version: ${installedAddons['sync']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['sync'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
             // if (options.IsAllAddons) {
             //     it(`Automated Jobs | Version: ${installedAddons['Automated Jobs']}`, () => {
             //         const regexMatched = installedAddons['Automated Jobs'].replace(regex, '');
@@ -176,11 +206,6 @@ export async function TestDataTests(
             });
             it(`Pepperi Notification Service | Version: ${installedAddons['Notification Service']}`, () => {
                 const regexMatched = installedAddons['Notification Service'].replace(regex, '');
-                expect(regexMatched.length).to.be.above(2);
-            });
-            it(`DIMX | Version: ${installedAddons['DIMX']}`, () => {
-                //EVGENY
-                const regexMatched = installedAddons['DIMX'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
             if (options.IsAllAddons) {

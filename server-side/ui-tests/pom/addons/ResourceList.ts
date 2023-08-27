@@ -85,6 +85,8 @@ export class ResourceList extends AddonPage {
     public EditPage_Title: By = By.xpath('//pep-top-bar/div/div/div/div/div/div[2]/span');
     public EditPage_BackToList_Button: By = By.xpath('//span[@title="Back to list"]/ancestor::button');
     public EditPage_Update_Button: By = By.xpath('//button[@data-qa="Update"]');
+    //EVGENY
+    public TextLabelElements: By = By.xpath('//mat-form-field//input');
     // Update Popup
     public Update_Popup_PepDialog: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog');
     public Update_Popup_MessageDiv: By = By.xpath('//span[text()=" Update "]/ancestor::pep-dialog/div[2]/div');
@@ -108,6 +110,10 @@ export class ResourceList extends AddonPage {
     public Save_Popup_Close_Button: By = By.xpath(
         '//span[text()=" Save "]/ancestor::pep-dialog //span[text()=" Close "]/parent::button',
     );
+
+    //editor dialog
+    public DialogElement: By = By.xpath('//mat-dialog-container[@role="dialog"]');
+    public InputInsideDialogElement: By = By.xpath('//mat-label[contains(text(),"{placeholder}")]//..//..//..//input');
 
     public getSelectorOfResourceListSettingsTab(title: string) {
         return By.xpath(`//div[contains(@class,"mat-tab-labels")] //div[text()="${title}"]/parent::div[@role="tab"]`);
@@ -171,6 +177,18 @@ export class ResourceList extends AddonPage {
         } else {
             expect(`${tabName} is NOT defined in the ResourceList.ts selectors' list`).to.be.null;
         }
+    }
+
+    public async editDataInsideRsourceListEditorPopup(valueLabelName: string, dataToInsert: string) {
+        await this.browser.untilIsVisible(this.DialogElement);
+        const inputElement = this.InputInsideDialogElement.valueOf()
+            ['value'].slice()
+            .replace('{placeholder}', valueLabelName);
+        await this.browser.click(By.xpath(inputElement));
+        await this.browser.sendKeys(By.xpath(inputElement), dataToInsert);
+        this.browser.sleep(1000 * 2);
+        await this.browser.click(this.EditPage_Update_Button);
+        this.browser.sleep(1000 * 3);
     }
 
     public async openPencilMenu() {
@@ -607,24 +625,38 @@ export class ResourceEditors extends ResourceList {
     }
 
     public async customEditorConfig(
-        papiClient,
+        generalService: GeneralService,
         editorData: { editorKey: string; fieldsToConfigureInView: BaseFormDataViewField[] },
+        editorName: string,
     ) {
-        const dataViewsService = new DataViewsService(papiClient);
         const resourceFieldsToAddToEditorObj = new UpsertResourceFieldsToEditor(
             editorData.editorKey,
             editorData.fieldsToConfigureInView,
         );
         // POST https://papi.pepperi.com/V1.0/meta_data/data_views
-        const upsertFieldsToEditor = await dataViewsService.postDataView(resourceFieldsToAddToEditorObj);
+        // const upsertFieldsToEditor = await dataViewsService.postDataView(resourceFieldsToAddToEditorObj);
+        const upsertFieldsToEditor = await generalService.fetchStatus('/meta_data/data_views', {
+            method: 'POST',
+            body: JSON.stringify(resourceFieldsToAddToEditorObj),
+        });
         console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToEditor, null, 2)}`);
         this.pause(5 * 1000);
+        await this.click(this.EditPage_BackToList_Button);
+        this.pause(3 * 1000);
+        await this.click(this.Editors_Tab);
+        this.pause(3 * 1000);
+        await this.gotoEditPage(editorName);
+        this.pause(3 * 1000);
         await this.click(this.Form_Tab);
         await this.waitTillVisible(this.EditPage_ConfigProfileCard_Rep, 15000);
         await this.click(this.EditPage_ConfigProfileCard_EditButton_Rep);
-        this.pause(5 * 1000);
-        await this.click(this.EditPage_ProfileEditButton_Back);
-        this.pause(5 * 1000);
-        await this.click(this.EditPage_BackToList_Button);
+        const allFieldsNames = editorData.fieldsToConfigureInView.map((view) => view.FieldID);
+        const allLabelElementsFromUI = await this.browser.findElements(this.TextLabelElements);
+        expect(allLabelElementsFromUI.length).to.equal(allFieldsNames.length);
+        for (let index = 0; index < allLabelElementsFromUI.length; index++) {
+            const uiElement = allLabelElementsFromUI[index];
+            const uiElementTextValue = await uiElement.getAttribute('title');
+            expect(uiElementTextValue).to.be.oneOf(allFieldsNames);
+        }
     }
 }
