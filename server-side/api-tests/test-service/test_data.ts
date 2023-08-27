@@ -76,8 +76,11 @@ export async function TestDataTests(
                 installedAddons['Activity Data Index'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Audit Log')
                 installedAddons['Audit Log'] = installedAddonsArr[index].Version;
-            if (installedAddonsArr[index].Addon.Name == 'Export and Import Framework (DIMX)')
-                installedAddons['Export and Import Framework (DIMX)'] = installedAddonsArr[index].Version;
+            if (
+                installedAddonsArr[index].Addon.Name == 'Export and Import Framework (DIMX)' ||
+                installedAddonsArr[index].Addon.Name == 'Export and Import Framework'
+            )
+                installedAddons['DIMX'] = installedAddonsArr[index].Version;
         }
     }
 
@@ -175,9 +178,9 @@ export async function TestDataTests(
                 const regexMatched = installedAddons['Notification Service'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
-            it(`DIMX | Version: ${installedAddons['Export and Import Framework (DIMX)']}`, () => {
+            it(`DIMX | Version: ${installedAddons['DIMX']}`, () => {
                 //EVGENY
-                const regexMatched = installedAddons['Export and Import Framework (DIMX)'].replace(regex, '');
+                const regexMatched = installedAddons['DIMX'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
             if (options.IsAllAddons) {
