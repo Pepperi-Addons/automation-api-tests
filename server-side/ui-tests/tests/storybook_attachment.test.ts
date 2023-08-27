@@ -98,19 +98,19 @@ export async function StorybookAttachmentTests() {
                         console.info('ALREADY ON IFRAME');
                     }
                 });
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await attachment.getInputRowSelectorByName(input));
+                it(`open inputs if it's closed`, async function () {
+                    const inputsMainTableRowElement = await driver.findElement(attachment.Inputs_mainTableRow);
+                    if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                        await inputsMainTableRowElement.click();
+                    }
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
-                it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(attachment.Inputs_mainTableRow);
-                    if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
-                        await inputsMainTableRowElement.click();
-                    }
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await attachment.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
