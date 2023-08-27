@@ -90,6 +90,7 @@ export async function StorybookAttachmentTests() {
         attachmentInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
+                    await driver.click(await attachment.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -399,6 +400,14 @@ export async function StorybookAttachmentTests() {
         });
         attachmentOutputs.forEach(async (output, index) => {
             describe(`OUTPUT: '${output}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await attachment.getOutputRowSelectorByName(output));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${output}' output`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 if (index === 0) {
                     it(`close inputs & open outputs`, async function () {
                         await driver.click(attachment.Inputs_mainTableRow);

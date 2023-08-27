@@ -108,6 +108,7 @@ export async function StorybookChipsTests() {
         chipsInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
+                    await driver.click(await chips.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -222,6 +223,14 @@ export async function StorybookChipsTests() {
         });
         chipsOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await chips.getOutputRowSelectorByName(output));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${output}' output`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (output) {
                     case 'fieldClick':
                         it(`it '${output}'`, async function () {
@@ -244,6 +253,14 @@ export async function StorybookChipsTests() {
         });
         chipsMethods.forEach(async (method) => {
             describe(`METHOD: '${method}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await chips.getMethodRowSelectorByName(method));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${method}' method`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (method) {
                     case 'addChipsToList':
                         it(`it '${method}'`, async function () {
