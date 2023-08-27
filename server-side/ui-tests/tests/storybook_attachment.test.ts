@@ -183,7 +183,7 @@ export async function StorybookAttachmentTests() {
                                 title: `Label Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const newLabelGotFromUi = await attachment.getLabel();
+                            const newLabelGotFromUi = await attachment.getMainExampleLabel();
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
