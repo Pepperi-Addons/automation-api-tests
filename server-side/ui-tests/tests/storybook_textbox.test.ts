@@ -229,7 +229,7 @@ export async function StorybookTextboxTests() {
         textboxOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await textbox.getInputRowSelectorByName(output));
+                    await driver.click(await textbox.getOutputRowSelectorByName(output));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${output}' output`,
