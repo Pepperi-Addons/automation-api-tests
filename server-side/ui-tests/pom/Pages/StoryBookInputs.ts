@@ -7,12 +7,14 @@ export class StoryBookInpus extends AddonPage {
     );
     public InputTitle: By = By.xpath(`${this.InputsRow.value}/td[1]/span`);
     public LabelInput: By = By.xpath(`//textarea[contains(@name,'label')]`);
-    public ValueInput: By = By.xpath(`//textarea[contains(@name,'value')]`);
+    public ValueInput_textarea: By = By.xpath(`//textarea[contains(@name,'value')]`);
+    public ValueInput_boolean: By = By.xpath(`//input[contains(@name,'value')]`);
     public ClassNamesInput: By = By.xpath(`//textarea[contains(@name,'classNames')]`);
     public IconNameInputControl: By = By.xpath(`//select[contains(@id,'control-iconName')]`);
     public SelectOption_byText: By = By.xpath(`//option[text()="{placeholder}"]`);
     public EmptySpaceToClick: By = By.xpath(`//h1[contains(@class,'title')]`);
     public DisableToggler: By = By.xpath(`//input[contains(@name,'disabled')]`);
+    public VisibleToggler: By = By.xpath(`//input[contains(@name,'visible')]`);
     public MandatoryToggler: By = By.xpath(`//input[contains(@name,'mandatory')]`);
     public ShowTitleToggler: By = By.xpath(`//input[contains(@name,'showTitle')]`);
     public CheckBoxElements: By = By.xpath(`//table//label//input[@type='radio']`);
@@ -35,16 +37,24 @@ export class StoryBookInpus extends AddonPage {
         await this.browser.click(this.EmptySpaceToClick);
     }
 
-    public async changeValue(value: string): Promise<void> {
-        await this.changeInput(this.ValueInput, value);
+    public async changeValueControl(value: string): Promise<void> {
+        await this.changeInput(this.ValueInput_textarea, value);
     }
 
-    public async changeClassNames(value: string): Promise<void> {
+    public async changeClassNamesControl(value: string): Promise<void> {
         await this.changeInput(this.ClassNamesInput, value);
     }
 
     public async toggleDissableComponent(): Promise<void> {
         await this.browser.click(this.DisableToggler);
+    }
+
+    public async toggleVisibleControl(): Promise<void> {
+        await this.browser.click(this.VisibleToggler);
+    }
+
+    public async toggleValueControl(): Promise<void> {
+        await this.browser.click(this.ValueInput_boolean);
     }
 
     public async selectIconName(toSelect: string): Promise<void> {

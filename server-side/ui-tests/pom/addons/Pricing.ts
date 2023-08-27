@@ -304,7 +304,7 @@ export class PricingData {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
+                            UomIndex: 2,
                         },
                     },
                     {
@@ -316,7 +316,7 @@ export class PricingData {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
+                            UomIndex: 2,
                         },
                     },
                     {
@@ -328,7 +328,7 @@ export class PricingData {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
+                            UomIndex: 2,
                         },
                     },
                     {
@@ -340,7 +340,7 @@ export class PricingData {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
+                            UomIndex: 2,
                         },
                     },
                     {
@@ -352,7 +352,7 @@ export class PricingData {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
+                            UomIndex: 2,
                         },
                     },
                 ],

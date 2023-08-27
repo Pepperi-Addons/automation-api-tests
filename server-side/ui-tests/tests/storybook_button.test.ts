@@ -136,7 +136,7 @@ export async function StorybookButtonTests() {
                         });
                         it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
                             const newValueToSet = 'Auto test';
-                            await storyBookPage.inputs.changeValue(newValueToSet);
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Value Input Change`,
@@ -153,7 +153,7 @@ export async function StorybookButtonTests() {
                         });
                         it(`[ control = 'rotate3d' ] functional test (+screenshot)`, async function () {
                             const newClassNamesToSet = 'rotate3d';
-                            await storyBookPage.inputs.changeClassNames(newClassNamesToSet);
+                            await storyBookPage.inputs.changeClassNamesControl(newClassNamesToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `ClassNames Input Change`,
@@ -167,7 +167,7 @@ export async function StorybookButtonTests() {
                         });
                         it(`[ control = '' ] functional test (+screenshot)`, async function () {
                             const newClassNamesToSet = '';
-                            await storyBookPage.inputs.changeClassNames(newClassNamesToSet);
+                            await storyBookPage.inputs.changeClassNamesControl(newClassNamesToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `ClassNames Input Change`,
@@ -192,7 +192,7 @@ export async function StorybookButtonTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                             await storyBookPage.inputs.toggleDissableComponent();
-                            await driver.scrollToElement(button.MainHeader);
+                            await driver.click(button.MainHeader);
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disabled Input Changed to "true"`,
@@ -576,7 +576,71 @@ export async function StorybookButtonTests() {
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('visible')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(button.MainHeader);
+                            const mainExamplePepButton = await driver.findElement(button.MainExamplePepButton);
+                            const mainExamplePepButtonClasses = await mainExamplePepButton.getAttribute('class');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of Visible Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExamplePepButtonClasses).equals('');
+                        });
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleVisibleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(button.MainHeader);
+                            try {
+                                const mainExamplePepButton = await driver.findElement(button.MainExamplePepButton);
+                                const mainExamplePepButtonClasses = await mainExamplePepButton.getAttribute('class');
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of Visible Input "false"`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(mainExamplePepButtonClasses).equals('hidden-element');
+                            } catch (error) {
+                                console.error(error);
+                                const theError = error as Error;
+                                console.info("Can't find Pep-Button");
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of Visible Input "false"`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(theError.message).contains(
+                                    `After wait time of: 15000, for selector of '//div[@id="story--components-button--story-1"]//pep-button', The test must end, The element is not visible`,
+                                );
+                            }
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleVisibleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(button.MainHeader);
+                            const mainExamplePepButton = await driver.findElement(button.MainExamplePepButton);
+                            const mainExamplePepButtonClasses = await mainExamplePepButton.getAttribute('class');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of Visible Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExamplePepButtonClasses).equals('');
+                        });
                         break;
 
                     default:
