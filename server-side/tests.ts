@@ -43,6 +43,7 @@ import {
     UsersTests,
     AccountsTests,
     LegacyResourcesTests,
+    ProfilesTests,
     BulkBigDataTests,
     ContactsTests,
     GeneralActivitiesTests,
@@ -1184,6 +1185,18 @@ export async function data_index_dor(client: Client, request: Request, testerFun
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
+}
+
+export async function profiles(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Profiles';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await ProfilesTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    const results = await testerFunctions.run();
+    service.PrintMemoryUseToLog('End', testName);
+    return results;
 }
 
 export async function legacy_resources(client: Client, request: Request, testerFunctions: TesterFunctions) {
