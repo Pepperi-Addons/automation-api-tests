@@ -9,9 +9,9 @@ import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage
 import { ObjectsService } from '../../services';
 import { OrderPage } from '../pom/Pages/OrderPage';
 import { Key } from 'selenium-webdriver';
-// import { PricingData } from '../pom/addons/Pricing';
-import { PricingData05 } from '../pom/addons/Pricing05';
-import { PricingData06 } from '../pom/addons/Pricing06';
+import { PricingData } from '../pom/addons/Pricing';
+// import { PricingData05 } from '../pom/addons/Pricing05';
+// import { PricingData06 } from '../pom/addons/Pricing06';
 
 interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;
@@ -33,14 +33,15 @@ export async function PricingTests(email: string, password: string, client: Clie
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
     let pricingData;
     switch (installedPricingVersion) {
-        case '5':
-            pricingData = new PricingData05();
-            break;
-        case '6':
-            pricingData = new PricingData06();
-            break;
+        // case '5':
+        //     pricingData = new PricingData05();
+        //     break;
+        // case '6':
+        //     pricingData = new PricingData06();
+        //     break;
 
         default:
+            pricingData = new PricingData();
             break;
     }
 
