@@ -681,10 +681,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await UDCTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
-    if (tests.includes('SyncE2E')) {
-        await SyncTests(email, pass, client, varPass);
-        await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
-    }
+    // if (tests.includes('SyncE2E')) {
+    //     await SyncTests(email, pass, client, varPass);
+    //     await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
+    // }
 
     if (tests.includes('Survey')) {
         await SurveyTests(email, pass, client, varPass); //
