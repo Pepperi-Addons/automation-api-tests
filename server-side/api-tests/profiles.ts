@@ -1,17 +1,8 @@
 import { ProfilesService } from '../services/profiles.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { ObjectsService } from '../services/objects.service';
-import { DistributorService } from '../services/distributor.service';
 
 export async function ProfilesTests(generalService: GeneralService, request, tester: TesterFunctions) {
-    let password;
-    if (generalService.papiClient['options'].baseURL.includes('staging')) {
-        password = request.body.varKeyStage;
-    } else if (generalService.papiClient['options'].baseURL.includes('papi-eu')) {
-        password = request.body.varKeyEU;
-    } else {
-        password = request.body.varKeyPro;
-    }
     const profilesService = new ProfilesService(generalService);
     const objectsService = new ObjectsService(generalService);
     const describe = tester.describe;
