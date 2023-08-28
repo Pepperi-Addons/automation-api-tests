@@ -99,14 +99,6 @@ export async function StorybookCheckboxTests() {
         });
         checkboxInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await checkbox.getInputRowSelectorByName(input));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${input}' input`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
                 it(`switch to iframe`, async function () {
                     try {
                         await driver.findElement(storyBookPage.StorybookIframe, 5000);
@@ -121,6 +113,14 @@ export async function StorybookCheckboxTests() {
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await checkbox.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -146,7 +146,7 @@ export async function StorybookCheckboxTests() {
                         });
                         break;
                     case 'value':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('value')).to.be.true;
                         });
                         it(`making sure current value is "True"`, async function () {
@@ -203,49 +203,49 @@ export async function StorybookCheckboxTests() {
                         });
                         break;
                     case 'additionalValue':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('additionalValue')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('disabled')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'mandatory':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('mandatory')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'renderTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('renderTitle')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'showTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('showTitle')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'type':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('type')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'visible':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('visible')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'xAlignment':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO

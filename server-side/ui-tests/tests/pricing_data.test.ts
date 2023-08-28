@@ -6,7 +6,7 @@ import promised from 'chai-as-promised';
 import { ObjectsService } from '../../services';
 import { PricingData } from '../pom/addons/Pricing';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
-import { PricingData05 } from '../pom/addons/Pricing05';
+// import { PricingData05 } from '../pom/addons/Pricing05';
 // import { PricingData06 } from '../pom/addons/Pricing06';
 
 chai.use(promised);
@@ -34,7 +34,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
     //#region Upgrade script dependencies
 
     const testData = {
-        pricing: ['adb3c829-110c-4706-9168-40fba9c0eb52', '0.5.%'],
+        pricing: ['adb3c829-110c-4706-9168-40fba9c0eb52', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''], // current phased version 0.7.112 | dependency > 0.7.104
@@ -125,7 +125,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                 default:
                     break;
             }
-            pricingData = new PricingData05();
+            // pricingData = new PricingData05();
         });
         it('inserting valid rules to the UDT "PPM_Values"', async () => {
             // const tableName = 'PPM_Values';
