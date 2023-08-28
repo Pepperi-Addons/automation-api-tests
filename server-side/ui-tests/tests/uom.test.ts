@@ -1,6 +1,6 @@
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, before, after } from 'mocha';
-import { WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage } from '../pom/index';
+import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage } from '../pom/index';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import chai, { expect } from 'chai';
@@ -13,6 +13,7 @@ import { ObjectTypeEditor } from '../pom/addons/ObjectTypeEditor';
 import { BrandedApp } from '../pom/addons/BrandedApp';
 import { replaceUIControls } from './test.index';
 import addContext from 'mochawesome/addContext';
+import { AddonLoadCondition } from '../pom/addons/base/AddonPage';
 
 chai.use(promised);
 
@@ -64,11 +65,13 @@ export async function UomTests(email: string, password: string, varPass: string,
     ];
 
     await generalService.baseAddonVersionsInstallation(varPass);
-    // //#region Upgrade cpi-node & UOM
+    //#region Upgrade cpi-node & UOM
     const testData = {
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.12'], //has to be hardcoded because upgrade dependencies cant handle this
         // 'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.7'],
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''], //latest
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
@@ -189,10 +192,24 @@ export async function UomTests(email: string, password: string, varPass: string,
                 await driver.quit();
             });
 
-            it('Login, Select Catalog, Create ATD', async function () {
+            it('Login', async function () {
                 await webAppLoginPage.loginWithImage(email, password);
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Logged in`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Select Catalog', async function () {
                 //1. validating all items are added to the main catalog
                 await uom.selectCatalogItemsByCategory('uom item', 'NOT uom item');
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Catalog selected`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Create ATD (Transaction Type) for UOM', async function () {
                 //2. goto ATD editor - create new 'ATD UOM_{random string}'
                 await objectTypeEditor.createNewATD(
                     this,
@@ -206,23 +223,208 @@ export async function UomTests(email: string, password: string, varPass: string,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it('Setting Up UOM ATD Using UI', async function () {
+            it('Verifying UOM Transaction Type Content is Loaded', async function () {
                 //3. goto new ATD and configure everything needed for the test - 3 calculated fields
-                //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest, UOM Configuration Field as ItemConfig and uom data field as ConstInventory
-                //3.2. add fields to UI control of ATD
-                await uom.configUomATD();
+                await driver.switchTo(uom.AddonContainerIframe);
+                await uom.isAddonFullyLoaded(AddonLoadCondition.Footer);
+                expect(await uom.isEditorHiddenTabExist('DataCustomization', 45000)).to.be.true;
+                expect(await uom.isEditorTabVisible('GeneralInfo')).to.be.true;
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `ATD configured`,
+                    title: `UOM Transaction Type Content Loaded`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.switchToDefaultContent();
+            });
+            it('Switch to UOM Tab and activate if needed', async function () {
+                await uom.selectTabByText('Uom');
+                //validate uom is loaded both if installed and if not
+                let base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Entered UOM Tab`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                expect(await driver.untilIsVisible(uom.UomHeader, 15000)).to.be.true;
+                //testing whether already installed - after loading anyway
+                if (await (await driver.findElement(uom.UomInstallBtn)).isDisplayed()) {
+                    await driver.click(uom.UomInstallBtn);
+                    const webAppDialog = new WebAppDialog(driver);
+                    // ****text not finalized yet - once will be the test is relevant****
+                    // const isPupUP = await (await driver.findElement(webAppDialog.Content)).getText();
+                    // expect(isPupUP).to.equal('Are you sure you want to apply the module on the transaction?');
+                    await webAppDialog.selectDialogBox('ok');
+                    await uom.isSpinnerDone();
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `UOM Activated`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                }
+                expect(await driver.untilIsVisible(uom.UomInstalledHeader, 15000)).to.be.true;
+            });
+            it('Switch to General Tab and add Calculated Field (first phase of test)', async function () {
+                //3.1.configure Allowed UOMs Field as AllowedUomFieldsForTest
+                await uom.selectTabByText('General');
+                const objectTypeEditor = new ObjectTypeEditor(driver);
+                await objectTypeEditor.addATDCalculatedField(
+                    {
+                        Label: 'AllowedUomFieldsForTest',
+                        CalculatedRuleEngine: {
+                            JSFormula:
+                                "return ItemMainCategory==='uom item'?JSON.stringify(['Bx','SIN', 'DOU', 'TR', 'QU','PK','CS']):null;",
+                        },
+                    },
+                    true,
+                    'ItemMainCategory',
+                );
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `First Phase Calculated Field configured`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it('Validating ATD Created on Home Page', async function () {
+            it('Configure at General Tab a second Calculated Field (second phase of test)', async function () {
+                //3.1.configure UOM Configuration Field as ItemConfig
+                await driver.switchToDefaultContent();
+                await uom.selectTabByText('General');
+                //**first testing phase will be performed w/o this feature - second will test this only**
+                await objectTypeEditor.addATDCalculatedField(
+                    {
+                        Label: 'ItemConfig',
+                        CalculatedRuleEngine: {
+                            JSFormula: `return null;`,
+                        },
+                    },
+                    true,
+                );
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Second Phase Calculated Field configured`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Adding UOM Values at General Tab', async function () {
+                await driver.switchToDefaultContent();
+                await uom.selectTabByText('General');
+                await objectTypeEditor.addATDCalculatedField(
+                    {
+                        Label: 'UomValues',
+                        CalculatedRuleEngine: {
+                            JSFormula: `return JSON.stringify(["Bx","SIN", "DOU", "TR", "QU","PK","CS"]);`,
+                        },
+                    },
+                    true,
+                );
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `UOM Values configured`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Setting Inventory Const Value at General Tab', async function () {
+                //3.1.configure uom data field as ConstInventory
+                await driver.switchToDefaultContent();
+                await uom.selectTabByText('General');
+                await objectTypeEditor.addATDCalculatedField(
+                    {
+                        Label: 'ConstInventory',
+                        CalculatedRuleEngine: {
+                            JSFormula: `return 48;`,
+                        },
+                    },
+                    true,
+                    undefined,
+                    'Number',
+                );
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Inventory Const configured`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Configuring UOM Fields and Medium View (at UOM Tab)', async function () {
+                try {
+                    await uom.configureUomDataFields(
+                        'AllowedUomFieldsForTest',
+                        'ItemConfig',
+                        'ConstInventory',
+                        'Fix Quantity',
+                        'Fix Quantity',
+                        'Fix Quantity',
+                    );
+                } catch (error) {
+                    console.error(error);
+                    console.info('CONFIGURING UOM FIELDS FAILED!');
+                    await driver.click(uom.UomHeader);
+                    expect(error).to.be.undefined;
+                }
+            });
+            it('Configuring Medium View to ATD (at Views Tab)', async function () {
+                const objectTypeEditor = new ObjectTypeEditor(driver);
+                try {
+                    await objectTypeEditor.enterATDView('Order Center Views', 'Medium Thumbnails View');
+                } catch (Error) {
+                    //in case medium view isnt added yet
+                    await driver.switchToDefaultContent();
+                    await uom.selectTabByText('General');
+                    await objectTypeEditor.addViewToATD('Order Center Views', 'Medium Thumbnails View');
+                    await objectTypeEditor.enterATDView('Order Center Views', 'Medium Thumbnails View');
+                }
+                driver.sleep(7500);
+            });
+            it('Entering Rep View Editor & Configuring UI Controls (Deleting all first)', async function () {
+                await driver.click(uom.RepViewEditIcon);
+                await uom.deleteAllFieldFromUIControl();
+                await uom.setFieldsInUIControl(
+                    'Item External ID',
+                    'Item Price',
+                    'AOQM_UOM1',
+                    'AOQM_QUANTITY1',
+                    'AOQM_UOM2',
+                    'AOQM_QUANTITY2',
+                    'UomValues',
+                    'ConstInventory',
+                    'Transaction Total Sum',
+                    'ItemConfig',
+                    'Item ID',
+                    'Unit Quantity',
+                );
+                driver.sleep(2000);
+                let base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `UOM Fields and Medium View configured`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.click(uom.SaveUIControlBtn);
+                driver.sleep(3500);
+                await driver.switchToDefaultContent();
+                await driver.click(objectTypeEditor.BackArrowButton); // Hagit, Aug 23 - back to list from specific transaction
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Back to Transaction Types List`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Adding ATD to Home Page', async function () {
                 await webAppHomePage.returnToHomePage();
                 await webAppHeader.openSettings();
                 //4. add the ATD to home screen
                 await brandedApp.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
                 await webAppHomePage.manualResync(client);
+            });
+            it('Sync', async function () {
+                await webAppHomePage.manualResync(client);
+                for (let index = 0; index < 2; index++) {
+                    await webAppHeader.goHome();
+                    await webAppHomePage.isSpinnerDone();
+                    await webAppHomePage.clickOnBtn('Accounts');
+                    await webAppList.isSpinnerDone();
+                    await webAppList.validateListRowElements();
+                }
+                await webAppHeader.goHome();
+                await webAppHomePage.isSpinnerDone();
+            });
+            it('Validating ATD Created on Home Page', async function () {
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(_TEST_DATA_ATD_NAME);
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -247,9 +449,6 @@ export async function UomTests(email: string, password: string, varPass: string,
                             value: 'data:image/png;base64,' + base64ImageComponent,
                         });
                     });
-                    // it("Testing UOM ATD", async function () {
-                    //     await uom.testUomAtdUI();
-                    // });
                     describe('Item [1230]', () => {
                         it('Add 40 items of regular qty - see 40 items are shown (then getting up to 48 by plus clicks)', async function () {
                             //1. regular item testing
@@ -684,7 +883,6 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                         it('Validating Being in Cart', async function () {
-                            // await uom.gotoCart(orderPage);
                             await webAppList.isSpinnerDone();
                             try {
                                 await orderPage.changeOrderCenterPageView('GridLine');
@@ -762,9 +960,6 @@ export async function UomTests(email: string, password: string, varPass: string,
                             value: 'data:image/png;base64,' + base64ImageComponent,
                         });
                     });
-                    // it("Testing UOM ATD with Item Config", async function () {
-                    //     await uom.testUomAtdUIWithItemConfig(driver);
-                    // });
                     describe('Item [1231]', () => {
                         it('Testing UOM ATD with Item Config - Changing UOM1 to Single', async function () {
                             //1. single -> factor:3, minimum:2, case:1, decimal:0, negative:true
@@ -976,7 +1171,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        // for (let i = 1; i < 9; i++) { // commented out dut to https://pepperi.atlassian.net/browse/DI-24705
+                        // for (let i = 1; i < 9; i++) { // commented out dut to https://pepperi.atlassian.net/browse/DI-24705 DO NOT DELETE!
                         //     it(`Minus button clicks - to reach Zero (click number ${i})`, async function () {
                         //         await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
                         //         driver.sleep(1500);
@@ -1126,6 +1321,24 @@ export async function UomTests(email: string, password: string, varPass: string,
                 });
             });
             describe('Data Cleansing', () => {
+                it('Delete All UOM Transactions via API', async function () {
+                    let uomTransactions = await generalService.papiClient.transactions.find({
+                        where: `Type LIKE '%UOM_%'`,
+                        page_size: -1,
+                    });
+                    console.info('Number of UOM Transactions found: ', uomTransactions.length);
+                    const deleted = await Promise.all(
+                        uomTransactions.map(async (transaction) => {
+                            return await generalService.papiClient.transactions.delete(transaction.InternalID || 0);
+                        }),
+                    );
+                    console.info('Deleted UOM Transactions Response Array: ', JSON.stringify(deleted, null, 2));
+                    uomTransactions = await generalService.papiClient.transactions.find({
+                        where: `Type LIKE '%UOM_%'`,
+                        page_size: -1,
+                    });
+                    expect(uomTransactions.length).to.equal(0);
+                });
                 it('Delete test ATD from dist + home screen using UI', async function () {
                     await webAppHeader.goHome();
                     await webAppHeader.openSettings();

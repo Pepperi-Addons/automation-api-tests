@@ -112,6 +112,10 @@ export class Browser {
         await this.driver.switchTo().window(allTabs[indexOfTab]);
     }
 
+    public async goBack(): Promise<any> {
+        await this.driver.navigate().back();
+    }
+
     // public async switchToOtherTab(indexOfTab: number): Promise<any> {
     //     const allTabs = await this.driver.getAllWindowHandles();
     //     await this.driver.switchTo().window(allTabs[indexOfTab]);

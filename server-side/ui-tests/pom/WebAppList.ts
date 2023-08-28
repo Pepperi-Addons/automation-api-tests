@@ -1,7 +1,7 @@
 import { Browser } from '../utilities/browser';
 import { Page } from './Pages/base/Page';
 import config from '../../config';
-import { WebElement, By } from 'selenium-webdriver';
+import { WebElement, By, Key } from 'selenium-webdriver';
 import { ConsoleColors } from '../../services/general.service';
 
 export enum SelectSmartSearchRange {
@@ -19,7 +19,7 @@ export class WebAppList extends Page {
 
     public List: By = By.css('pep-list .scrollable-content');
     public Headers: By = By.css('pep-list .table-header-fieldset fieldset .header-label');
-    public PencilMenu: By = By.xpath('//list-actions//button[@aria-haspopup="menu"]');
+    public PencilMenu: By = By.xpath('//pep-list-actions//pep-menu');
     public RadioButtons: By = By.css('pep-list .table-row-fieldset .mat-radio-button');
     public SelectAllCheckbox: By = By.css('pep-list .table-header-fieldset .mat-checkbox');
     public Cells: By = By.css('pep-list .table-row-fieldset .pep-report-fields');
@@ -76,11 +76,22 @@ export class WebAppList extends Page {
     public Activities_TopActivityInList_ID: By = By.xpath('//pep-form//span[@id="WrntyID"]');
     public Activities_TopActivityInList_Type: By = By.xpath('//pep-form//span[@id="Type"]');
     public Activities_TopActivityInList_Status: By = By.xpath('//pep-form//span[@id="Status"]');
+    //Accounts List
+    public SearchInput: By = By.xpath('//input[@id="searchInput"]');
+    //Pencil Menu Options
+    public PencilEditButton: By = By.xpath('//div[@role="menu"]//button[@title="Edit"]');
 
     public getSelectorOfActionItemUnderPencilByText(text: string) {
         return By.xpath(
             `//div[@role="menu"][contains(@id,"mat-menu-panel-")]//span[contains(text(),"${text}")]/parent::button`,
         );
+    }
+
+    public async searchInList(searchString: string): Promise<void> {
+        await this.isSpinnerDone();
+        await this.browser.click(this.SearchInput);
+        await this.browser.sendKeys(this.SearchInput, searchString + Key.ENTER);
+        await this.isSpinnerDone();
     }
 
     public async validateListRowElements(ms?: number): Promise<void> {
@@ -167,9 +178,15 @@ export class WebAppList extends Page {
         }
     }
 
-    public async clickOnPencilMenuButton(position = 0, waitUntil = 15000): Promise<void> {
+    public async clickOnPencilMenuButton(): Promise<void> {
         await this.isSpinnerDone();
-        return await this.browser.click(this.PencilMenu, position, waitUntil);
+        return await this.browser.click(this.PencilMenu);
+    }
+
+    public async clickOnPencilMenuButtonEdit(): Promise<void> {
+        await this.browser.untilIsVisible(this.PencilEditButton);
+        await this.browser.click(this.PencilEditButton);
+        this.browser.sleep(1000 * 3);
     }
 
     public async selectUnderPencilMenu(textOfActionUnderPencil: string) {

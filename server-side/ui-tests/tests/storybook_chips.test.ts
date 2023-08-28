@@ -107,6 +107,34 @@ export async function StorybookChipsTests() {
         });
         chipsInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await chips.getInputRowSelectorByName(input));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it(`switch to iframe`, async function () {
+                    try {
+                        await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                    } catch (error) {
+                        console.error(error);
+                        console.info('ALREADY ON IFRAME');
+                    }
+                });
+                it(`open inputs if it's closed`, async function () {
+                    const inputsMainTableRowElement = await driver.findElement(chips.Inputs_mainTableRow);
+                    if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                        await inputsMainTableRowElement.click();
+                    }
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (input) {
                     case 'label':
                         it(`it '${input}'`, async function () {
@@ -195,6 +223,14 @@ export async function StorybookChipsTests() {
         });
         chipsOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await chips.getOutputRowSelectorByName(output));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${output}' output`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (output) {
                     case 'fieldClick':
                         it(`it '${output}'`, async function () {
@@ -217,6 +253,14 @@ export async function StorybookChipsTests() {
         });
         chipsMethods.forEach(async (method) => {
             describe(`METHOD: '${method}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await chips.getMethodRowSelectorByName(method));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${method}' method`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (method) {
                     case 'addChipsToList':
                         it(`it '${method}'`, async function () {

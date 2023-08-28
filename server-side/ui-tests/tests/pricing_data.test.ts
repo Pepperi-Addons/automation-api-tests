@@ -4,10 +4,10 @@ import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { ObjectsService } from '../../services';
-// import { PricingData } from '../pom/addons/Pricing';
+import { PricingData } from '../pom/addons/Pricing';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingData05 } from '../pom/addons/Pricing05';
-import { PricingData06 } from '../pom/addons/Pricing06';
+// import { PricingData06 } from '../pom/addons/Pricing06';
 
 chai.use(promised);
 
@@ -93,22 +93,39 @@ export async function PricingDataPrep(varPass: string, client: Client) {
     });
 
     describe('Data Prep', () => {
+        // it('sending configuration object to end point', async () => {
+        //     switch (installedPricingVersion) {
+        //         case '5':
+        //             console.info('AT installedPricingVersion CASE 5');
+        //             pricingData = new PricingData05();
+        //             // await uploadConfiguration(pricingData.config_05);
+        //             break;
+        //         case '6':
+        //             console.info('AT installedPricingVersion CASE 6');
+        //             pricingData = new PricingData06();
+        //             break;
+
+        //         default:
+        //             break;
+        //     }
+        //     await uploadConfiguration(pricingData.config);
+        // });
         it('sending configuration object to end point', async () => {
+            pricingData = new PricingData();
             switch (installedPricingVersion) {
                 case '5':
                     console.info('AT installedPricingVersion CASE 5');
-                    pricingData = new PricingData05();
-                    // await uploadConfiguration(pricingData.config_05);
+                    await uploadConfiguration(pricingData.config_05);
                     break;
                 case '6':
                     console.info('AT installedPricingVersion CASE 6');
-                    pricingData = new PricingData06();
+                    await uploadConfiguration(pricingData.config_06);
                     break;
 
                 default:
                     break;
             }
-            await uploadConfiguration(pricingData.config);
+            pricingData = new PricingData05();
         });
         it('inserting valid rules to the UDT "PPM_Values"', async () => {
             // const tableName = 'PPM_Values';

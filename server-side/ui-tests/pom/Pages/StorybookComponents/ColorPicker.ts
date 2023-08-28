@@ -2,10 +2,12 @@ import { By } from 'selenium-webdriver';
 import { StorybookComponent } from './Base/StorybookComponent';
 
 export class ColorPicker extends StorybookComponent {
+    public IframeElement: By = By.xpath(`//iframe`);
     public Component: By = By.xpath(`//div[contains(@id,'color-picker')]//div[contains(@id,'color-picker')]`);
     public ComponentLabel: By = By.xpath(`(//div[contains(@id,'color-picker')]//pep-field-title//mat-label)[1]`);
     public ComponentLabelTxtAlign: By = By.xpath(`//div[contains(@id,'color-picker')]//pep-field-title//div`);
-    public IframeElement: By = By.xpath(`//iframe`);
+    public MainExampleDiv: By = By.xpath('//div[@id="story--components-color-picker--story-1"]');
+    public MainExampleLabel: By = By.xpath(`${this.MainExampleDiv.value}//mat-label`);
     public PenIcon: By = By.xpath(`//mat-icon//pep-icon[contains(@name,'system_edit')]`);
     public MainExampleColorEditButton: By = By.xpath(
         `//div[@id="story--components-color-picker--story-1"]//div[contains(@class,"pep-color")]/button`,
@@ -44,8 +46,15 @@ export class ColorPicker extends StorybookComponent {
         return await label.getText();
     }
 
+    public async getMainExampleLabel(): Promise<string> {
+        const label = await this.browser.findElement(this.MainExampleLabel);
+        return (await label.getText()).trim();
+    }
+
     public async getComponentTxtAlignment() {
-        const txtAlignComp = await this.browser.findElement(this.ComponentLabelTxtAlign);
+        const txtAlignComp = await this.browser.findElement(
+            By.xpath(this.ComponentLabelTxtAlign.value.replace('{placeholder}', 'color-picker')),
+        );
         const txtAlignVal = (await txtAlignComp.getAttribute('style')).split(':')[1];
         return txtAlignVal;
     }

@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
 import GeneralService from '../../../../services/general.service';
 import { AddonPage } from '../base/AddonPage';
+import { v4 as newUuid } from 'uuid';
 
 export class PageBuilder extends AddonPage {
     public PageBuilder_Title: By = By.xpath('//span[@title="Page Builder"]');
@@ -304,6 +305,79 @@ export class PageBuilder extends AddonPage {
         );
         // return { page: pageBuilderData.Body.page, name: pageBuilderData.Body.Name };
         return pageBuilderData.Body.page;
+    }
+
+    public async publishPageWithResourceListDataViewerBlock(
+        pageUUID: string,
+        pageName: string,
+        viewName: string,
+        resourceName: string,
+        viewUUID: string,
+        sectionUUID: string,
+        client: Client,
+    ) {
+        const generatedBlockUUID = newUuid();
+        const resourceListAddonUUID = '0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3';
+        const pageBody = {
+            Blocks: [
+                {
+                    Configuration: {
+                        Resource: 'DataViewerBlock',
+                        Data: {
+                            viewsList: [
+                                {
+                                    selectedResource: resourceName, //param
+                                    id: '5968fec8-d9e4-4751-a84f-1378330698c7', //??
+                                    title: viewName, //param
+                                    selectedView: {
+                                        value: viewName,
+                                        key: viewUUID, //view uuid
+                                    },
+                                    views: [],
+                                    showContent: true,
+                                },
+                            ],
+                        },
+                        AddonUUID: resourceListAddonUUID, //R.L uuid
+                    },
+                    Key: generatedBlockUUID, //generate UUID
+                },
+            ],
+            Layout: {
+                ColumnsGap: 'md',
+                SectionsGap: 'md',
+                HorizontalSpacing: 'md',
+                Sections: [
+                    {
+                        Columns: [
+                            {
+                                BlockContainer: {
+                                    BlockKey: generatedBlockUUID, //same generated uuid
+                                },
+                            },
+                        ],
+                        FillHeight: true,
+                        Height: 0,
+                        Key: sectionUUID, //section uuid
+                        Name: '',
+                    },
+                ],
+                VerticalSpacing: 'md',
+                MaxWidth: 0,
+            },
+            Hidden: false,
+            Key: pageUUID, //page uuid
+            Name: pageName, //page name
+        };
+        const generalService = new GeneralService(client);
+        const pageBuilderData = await generalService.fetchStatus(
+            `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/publish_page`,
+            {
+                method: 'POST',
+                body: JSON.stringify(pageBody),
+            },
+        );
+        return pageBuilderData;
     }
 
     public async getPageUUIDbyPageName(pageName: string, client: Client) {

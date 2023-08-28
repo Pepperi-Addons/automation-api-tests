@@ -31,7 +31,7 @@ export const testData = {
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
     'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''],
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.16.%'], //NG14 latest webapp
-    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
+    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', ''],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
@@ -388,6 +388,19 @@ export default class GeneralService {
         console.debug(`%cSleep: ${ms} milliseconds`, ConsoleColors.Information);
         msSleep(ms);
         return;
+    }
+
+    getNumberOfRandomElementsFromArray(array, numberOfElements) {
+        const result = new Array(numberOfElements);
+        let len = array.length;
+        const taken = new Array(len);
+        if (numberOfElements > len) throw new RangeError('getRandom: more elements taken than available');
+        while (numberOfElements--) {
+            const x = Math.floor(Math.random() * len);
+            result[numberOfElements] = array[x in taken ? taken[x] : x];
+            taken[x] = --len in taken ? taken[len] : len;
+        }
+        return result;
     }
 
     addQueryAndOptions(url: string, options: QueryOptions = {}) {
@@ -1696,6 +1709,16 @@ export default class GeneralService {
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
 
+    async baseAddonVersionsInstallationNewSync(varPass: string, otherTestData?: any) {
+        const isInstalledArr = await this.areAddonsInstalled(otherTestData ? otherTestData : testDataWithNewSync);
+        const chnageVersionResponseArr = await this.changeVersion(
+            varPass,
+            otherTestData ? otherTestData : testDataWithNewSync,
+            false,
+        );
+        return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
+    }
+
     async setBaseAddonsToPhasedForE2E(varPass: string) {
         const addonsToSwitchToPhased = {};
         const systemAddons = await this.getSystemAddons();
@@ -2124,6 +2147,59 @@ export default class GeneralService {
             for (let index1 = 0; index1 < valueData.length; index1++) {
                 const value = valueData[index1];
                 strData += `${value.includes('index') ? value.replace('index', index.toString()) : value},`;
+            }
+            strData += `${isHidden}\n`;
+        }
+        await this.genrateFile(fileName, strData);
+    }
+
+    async createCSVFileForAccountsInfo(
+        fileName: string,
+        howManyDataRows: number,
+        howManyComapnies: number,
+        howManyDivisions: number,
+        headers: string,
+        keyData: string,
+        valueData: string[],
+        isHidden: string,
+    ) {
+        let strData = '';
+        strData += headers + ',Hidden' + '\n';
+        let companyIndex = 0;
+        let divisionIndex = 0;
+        for (let index = 0; index < howManyDataRows; index++) {
+            if (keyData !== '') strData += `${keyData.replace('index', index.toString())},`;
+            for (let index1 = 0; index1 < valueData.length; index1++) {
+                const value = valueData[index1];
+                if (value.includes('company')) {
+                    if (companyIndex === howManyComapnies) {
+                        companyIndex = 0;
+                        strData += `${
+                            value.includes('index') ? value.replace('index', companyIndex.toString()) : value
+                        },`;
+                        companyIndex++;
+                    } else {
+                        strData += `${
+                            value.includes('index') ? value.replace('index', companyIndex.toString()) : value
+                        },`;
+                        companyIndex++;
+                    }
+                } else if (value.includes('division')) {
+                    if (divisionIndex === howManyDivisions) {
+                        divisionIndex = 0;
+                        strData += `${
+                            value.includes('index') ? value.replace('index', divisionIndex.toString()) : value
+                        },`;
+                        divisionIndex++;
+                    } else {
+                        strData += `${
+                            value.includes('index') ? value.replace('index', divisionIndex.toString()) : value
+                        },`;
+                        divisionIndex++;
+                    }
+                } else {
+                    strData += `${value.includes('index') ? value.replace('index', index.toString()) : value},`;
+                }
             }
             strData += `${isHidden}\n`;
         }

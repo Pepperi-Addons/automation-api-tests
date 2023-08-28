@@ -100,6 +100,34 @@ export async function StorybookColorPickerTests() {
         });
         colorPickerInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await colorPicker.getInputRowSelectorByName(input));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it(`switch to iframe`, async function () {
+                    try {
+                        await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                    } catch (error) {
+                        console.error(error);
+                        console.info('ALREADY ON IFRAME');
+                    }
+                });
+                it(`open inputs if it's closed`, async function () {
+                    const inputsMainTableRowElement = await driver.findElement(colorPicker.Inputs_mainTableRow);
+                    if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                        await inputsMainTableRowElement.click();
+                    }
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (input) {
                     case 'label':
                         it(`validate input`, async function () {
@@ -113,10 +141,11 @@ export async function StorybookColorPickerTests() {
                                 title: `Label Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const newLabelGotFromUi = await colorPicker.getLabel();
+                            const newLabelGotFromUi = await colorPicker.getMainExampleLabel();
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('disabled')).to.be.true;
@@ -139,12 +168,14 @@ export async function StorybookColorPickerTests() {
                             });
                         });
                         break;
+
                     case 'showAAComplient':
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('showAAComplient')).to.be.true;
                         });
-                    // it(`Functional test (+screenshot)`, async function () {});
-                    // break;
+                        // it(`Functional test (+screenshot)`, async function () {});
+                        break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('showTitle')).to.be.true;
@@ -166,6 +197,7 @@ export async function StorybookColorPickerTests() {
                             });
                         });
                         break;
+
                     case 'type':
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('type')).to.be.true;
@@ -191,6 +223,7 @@ export async function StorybookColorPickerTests() {
                             await allTypes[0].click();
                         });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('value')).to.be.true;
@@ -206,20 +239,21 @@ export async function StorybookColorPickerTests() {
                             expect(currentColor).to.equal('(31, 190, 185)'); // same as "#1fbeb9" in RGB
                         });
                         break;
+
                     case 'xAlignment':
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('xAlignment')).to.be.true;
                         });
                         it(`get all xAlignments`, async function () {
-                            const currentAlign = await colorPicker.getComponentTxtAlignment();
+                            const currentAlign = await colorPicker.getTxtAlignmentByComponent('color-picker');
                             expect(currentAlign).to.include('left');
-                            allAlignments = await storyBookPage.inputs.getAllAlignments();
+                            allAlignments = (await storyBookPage.inputs.getAllAlignments()).slice(5);
                         });
                         alignExpectedValues.forEach(async (title, index) => {
                             it(`'${title}' -- functional test (+screenshot)`, async function () {
                                 const alignment = allAlignments[index];
                                 await alignment.click();
-                                const currentAlign = await colorPicker.getComponentTxtAlignment();
+                                const currentAlign = await colorPicker.getTxtAlignmentByComponent('color-picker');
                                 const base64ImageComponentModal = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `${title} (xAlignment) input change`,
@@ -238,6 +272,14 @@ export async function StorybookColorPickerTests() {
         });
         colorPickerOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await colorPicker.getOutputRowSelectorByName(output));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${output}' output`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (output) {
                     case 'valueChange':
                         it(`it '${output}'`, async function () {

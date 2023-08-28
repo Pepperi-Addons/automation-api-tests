@@ -99,18 +99,108 @@ export async function StorybookCheckboxTests() {
         });
         checkboxInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await checkbox.getInputRowSelectorByName(input));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it(`switch to iframe`, async function () {
+                    try {
+                        await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                    } catch (error) {
+                        console.error(error);
+                        console.info('ALREADY ON IFRAME');
+                    }
+                });
+                it(`open inputs if it's closed`, async function () {
+                    const inputsMainTableRowElement = await driver.findElement(checkbox.Inputs_mainTableRow);
+                    if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                        await inputsMainTableRowElement.click();
+                    }
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (input) {
                     case 'label':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('label')).to.be.true;
+                            await driver.click(checkbox.ResetControlsButton);
                         });
-                        // TODO
+                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newLabelToSet = 'Auto test';
+                            await storyBookPage.inputs.changeLabel(newLabelToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newLabelGotFromUi = await checkbox.getMainExampleLabel();
+                            expect(newLabelGotFromUi).to.equal(newLabelToSet);
+                        });
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {
                             expect(checkboxInputsTitles.includes('value')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(checkbox.MainHeader);
+                            const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
+                            const mainExampleCheckboxAriaChecked = await mainExampleCheckbox.getAttribute(
+                                'aria-checked',
+                            );
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of Value Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExampleCheckboxAriaChecked).equals('true');
+                        });
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleValueControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(checkbox.MainHeader);
+                            const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
+                            const mainExampleCheckboxAriaChecked = await mainExampleCheckbox.getAttribute(
+                                'aria-checked',
+                            );
+                            expect(mainExampleCheckboxAriaChecked).equals('false');
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleValueControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(checkbox.MainHeader);
+                            const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
+                            const mainExampleCheckboxAriaChecked = await mainExampleCheckbox.getAttribute(
+                                'aria-checked',
+                            );
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of Value Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExampleCheckboxAriaChecked).equals('true');
+                        });
                         break;
                     case 'additionalValue':
                         it(`it '${input}'`, async function () {
@@ -169,6 +259,14 @@ export async function StorybookCheckboxTests() {
         });
         checkboxOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await checkbox.getOutputRowSelectorByName(output));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${output}' output`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (output) {
                     case 'valueChange':
                         it(`it '${output}'`, async function () {

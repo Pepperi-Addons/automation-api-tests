@@ -102,7 +102,7 @@ export async function FlowTests(email: string, password: string, client: Client,
         Name: newFlowName,
     };
     const expectedResult = 'evgenyosXXX';
-    await generalService.baseAddonVersionsInstallation(varKey);
+    await generalService.baseAddonVersionsInstallationNewSync(varKey);
     // #region Upgrade survey dependencies
 
     const testData = {

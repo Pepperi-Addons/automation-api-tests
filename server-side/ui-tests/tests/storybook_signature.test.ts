@@ -82,6 +82,34 @@ export async function StorybookSignatureTests() {
         });
         signatureInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await signature.getInputRowSelectorByName(input));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it(`switch to iframe`, async function () {
+                    try {
+                        await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                    } catch (error) {
+                        console.error(error);
+                        console.info('ALREADY ON IFRAME');
+                    }
+                });
+                it(`open inputs if it's closed`, async function () {
+                    const inputsMainTableRowElement = await driver.findElement(signature.Inputs_mainTableRow);
+                    if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                        await inputsMainTableRowElement.click();
+                    }
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (input) {
                     case 'rowSpan':
                         it(`it '${input}'`, async function () {
@@ -140,6 +168,14 @@ export async function StorybookSignatureTests() {
         });
         signatureOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await signature.getOutputRowSelectorByName(output));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${output}' output`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (output) {
                     case 'fileChange':
                         it(`it '${output}'`, async function () {

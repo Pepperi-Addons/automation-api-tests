@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../pom';
 import { StoryBookPage } from '../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { Attachment } from '../pom/Pages/StorybookComponents/Attachment';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -19,6 +20,7 @@ export async function StorybookAttachmentTests() {
         'Read only / Disabled',
         'Mandatory',
     ];
+    const alignExpectedValues = ['center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
@@ -28,6 +30,7 @@ export async function StorybookAttachmentTests() {
     let attachmentComplexElement;
     let attachmentComplexHeight;
     let expectedUrl;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "Attachment" Tests Suite', function () {
         this.retries(0);
@@ -86,6 +89,34 @@ export async function StorybookAttachmentTests() {
         });
         attachmentInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
+                it(`switch to iframe`, async function () {
+                    try {
+                        await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                        await driver.switchTo(storyBookPage.StorybookIframe);
+                    } catch (error) {
+                        console.error(error);
+                        console.info('ALREADY ON IFRAME');
+                    }
+                });
+                it(`open inputs if it's closed`, async function () {
+                    const inputsMainTableRowElement = await driver.findElement(attachment.Inputs_mainTableRow);
+                    if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                        await inputsMainTableRowElement.click();
+                    }
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await attachment.getInputRowSelectorByName(input));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (input) {
                     case 'rowSpan':
                         it(`validate input`, async function () {
@@ -139,6 +170,7 @@ export async function StorybookAttachmentTests() {
                             expect(attachmentComplexHeight.trim()).to.equal('46px');
                         });
                         break;
+
                     case 'label':
                         it(`validate input`, async function () {
                             expect(attachmentInputsTitles.includes('label')).to.be.true;
@@ -152,10 +184,11 @@ export async function StorybookAttachmentTests() {
                                 title: `Label Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const newLabelGotFromUi = await attachment.getLabel();
+                            const newLabelGotFromUi = await attachment.getMainExampleLabel();
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'src':
                         it(`validate input`, async function () {
                             expect(attachmentInputsTitles.includes('src')).to.be.true;
@@ -168,13 +201,13 @@ export async function StorybookAttachmentTests() {
                                 title: `default '${input}'`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
-                            const newUrl = await attachment.openMainExampleSource();
+                            const newUrl = await attachment.openMainExampleSource(); // opens new tab
                             base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `default '${input}'- new tab after click`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
-                            await driver.close();
+                            await driver.close(); // closes new tab
                             await driver.switchToOtherTab(1);
                             console.info('default image Url: ', newUrl);
                             expect(newUrl).to.equal(expectedUrl);
@@ -189,43 +222,174 @@ export async function StorybookAttachmentTests() {
                                 title: `image of dfstudio`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
-                            driver.sleep(2 * 1000);
-                            // await driver.scrollToElement(attachment.OutputTitle);
-                            const newUrl = await attachment.openMainExampleSource();
+                            driver.sleep(0.2 * 1000);
+                            const newUrl = await attachment.openMainExampleSource(); // opens new tab
                             base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `image of dfstudio`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
-                            await driver.close();
+                            await driver.close(); // closes new tab
                             await driver.switchToOtherTab(1);
                             console.info('image Url of dfstudio: ', newUrl);
                             expect(newUrl).to.equal(expectedUrl);
+                            expectedUrl = 'https://yonatankof.com/misc/pepp/Addon%20Hackathon%20-%20Badge.png';
                         });
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(attachmentInputsTitles.includes('disabled')).to.be.true;
+                            driver.sleep(1 * 1000);
                         });
-                        // TODO
+                        it(`Functional test (+screenshots)`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.inputs.toggleDissableComponent();
+                            await driver.scrollToElement(attachment.MainHeader);
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(attachment.MainExample_deleteButton);
+                            await storyBookPage.inputs.toggleDissableComponent();
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(attachment.MainExample_deleteButton);
+                        });
                         break;
+
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(attachmentInputsTitles.includes('mandatory')).to.be.true;
+                            driver.sleep(1 * 1000);
                         });
-                        // TODO
+                        it(`Functional test (+screenshots)`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.inputs.toggleMandatoryComponent();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(attachment.MainExample_mandatoryIcon);
+                            await storyBookPage.inputs.toggleMandatoryComponent();
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(attachment.MainExample_mandatoryIcon);
+                        });
                         break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                             expect(attachmentInputsTitles.includes('showTitle')).to.be.true;
+                            await attachment.changeSrcControl(expectedUrl);
+                            driver.sleep(1 * 1000);
                         });
-                        // TODO
+                        it(`Functional test (+screenshots)`, async function () {
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const inputsMainTableRowElement = await driver.findElement(attachment.Inputs_mainTableRow);
+                            if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                                await inputsMainTableRowElement.click();
+                            }
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.inputs.toggleShowTitle();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ShowTitle Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(attachment.MainExample_titleLabel);
+                            await storyBookPage.inputs.toggleShowTitle();
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ShowTitle Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(attachment.MainExample_titleLabel);
+                        });
                         break;
+
                     case 'xAlignment':
-                        it(`validate input`, async function () {
-                            expect(attachmentInputsTitles.includes('xAlignment')).to.be.true;
+                        it(`close outputs`, async function () {
+                            await driver.click(attachment.Outputs_mainTableRow);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Closed Outputs`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
                         });
-                        // TODO
+                        it(`validate input & get all xAlignments`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(attachmentInputsTitles.includes('xAlignment')).to.be.true;
+                            allAlignments = await storyBookPage.inputs.getAllAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const currentAlign = await attachment.getTxtAlignmentByComponent('attachment');
+                            await driver.click(attachment.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: attachment with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(currentAlign).to.include('left');
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                const alignment = allAlignments[index + 1];
+                                await alignment.click();
+                                const currentAlign = await attachment.getTxtAlignmentByComponent('attachment');
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (xAlignment) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(currentAlign).to.include(title);
+                                await driver.click(attachment.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: attachment with x-alignment = '${title}'`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
                         break;
 
                     default:
@@ -234,20 +398,60 @@ export async function StorybookAttachmentTests() {
                 }
             });
         });
-        attachmentOutputs.forEach(async (output) => {
+        attachmentOutputs.forEach(async (output, index) => {
             describe(`OUTPUT: '${output}'`, async function () {
+                if (index === 0) {
+                    it(`close inputs & open outputs`, async function () {
+                        await driver.click(attachment.Inputs_mainTableRow);
+                        let base64ImageComponentModal = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Closed Inputs`,
+                            value: 'data:image/png;base64,' + base64ImageComponentModal,
+                        });
+                        await driver.click(attachment.Outputs_mainTableRow);
+                        base64ImageComponentModal = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Opened Outputs`,
+                            value: 'data:image/png;base64,' + base64ImageComponentModal,
+                        });
+                    });
+                }
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await attachment.getOutputRowSelectorByName(output));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${output}' output`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (output) {
                     case 'elementClick':
-                        it(`it '${output}'`, async function () {
+                        it(`validate output`, async function () {
                             expect(attachmentOutputsTitles.includes('elementClick')).to.be.true;
                         });
-                        // TODO
+                        it(`validate '${output}' output default value [new EventEmitter<IPepFieldClickEvent>()]`, async function () {
+                            const selectorOfOutputDefaultValue = await attachment.getSelectorOfOutputDefaultValueByName(
+                                output,
+                            );
+                            const outputDefaultValue = await (
+                                await driver.findElement(selectorOfOutputDefaultValue)
+                            ).getText();
+                            expect(outputDefaultValue.trim()).equals('new EventEmitter<IPepFieldClickEvent>()');
+                        });
                         break;
                     case 'fileChange':
-                        it(`it '${output}'`, async function () {
+                        it(`validate output`, async function () {
                             expect(attachmentOutputsTitles.includes('fileChange')).to.be.true;
                         });
-                        // TODO
+                        it(`validate '${output}' output default value [new EventEmitter<any>()]`, async function () {
+                            const selectorOfOutputDefaultValue = await attachment.getSelectorOfOutputDefaultValueByName(
+                                output,
+                            );
+                            const outputDefaultValue = await (
+                                await driver.findElement(selectorOfOutputDefaultValue)
+                            ).getText();
+                            expect(outputDefaultValue.trim()).equals('new EventEmitter<any>()');
+                        });
                         break;
 
                     default:
