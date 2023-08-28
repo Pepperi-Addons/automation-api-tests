@@ -78,6 +78,7 @@ export async function StorybookIconTests() {
         iconInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
+                    await driver.click(await icon.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,

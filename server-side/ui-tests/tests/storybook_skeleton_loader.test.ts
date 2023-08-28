@@ -78,6 +78,7 @@ export async function StorybookSkeletonLoaderTests() {
         skeletonLoaderInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
+                    await driver.click(await skeletonLoader.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,

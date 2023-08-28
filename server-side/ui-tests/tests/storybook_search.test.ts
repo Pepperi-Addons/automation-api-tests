@@ -87,6 +87,7 @@ export async function StorybookSearchTests() {
         searchInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
+                    await driver.click(await search.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -147,6 +148,14 @@ export async function StorybookSearchTests() {
         });
         searchProperties.forEach(async (property) => {
             describe(`PROPERTY: '${property}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await search.getPropertyRowSelectorByName(property));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${property}' property`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (property) {
                     case 'fadeState':
                         it(`it '${property}'`, async function () {
@@ -163,6 +172,14 @@ export async function StorybookSearchTests() {
         });
         searchOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await search.getOutputRowSelectorByName(output));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${output}' output`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (output) {
                     case 'search':
                         it(`it '${output}'`, async function () {

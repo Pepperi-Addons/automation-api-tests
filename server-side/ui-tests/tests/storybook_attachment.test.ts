@@ -89,13 +89,6 @@ export async function StorybookAttachmentTests() {
         });
         attachmentInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${input}' input`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
                 it(`switch to iframe`, async function () {
                     try {
                         await driver.findElement(storyBookPage.StorybookIframe, 5000);
@@ -110,6 +103,14 @@ export async function StorybookAttachmentTests() {
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await attachment.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -415,6 +416,14 @@ export async function StorybookAttachmentTests() {
                         });
                     });
                 }
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await attachment.getOutputRowSelectorByName(output));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${output}' output`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (output) {
                     case 'elementClick':
                         it(`validate output`, async function () {

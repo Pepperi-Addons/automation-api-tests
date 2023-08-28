@@ -86,6 +86,7 @@ export async function StorybookImageFilmstripTests() {
         imageFilmstripInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
+                    await driver.click(await imageFilmstrip.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,

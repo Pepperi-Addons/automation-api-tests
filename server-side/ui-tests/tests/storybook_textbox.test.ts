@@ -107,6 +107,7 @@ export async function StorybookTextboxTests() {
         textboxInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
+                    await driver.click(await textbox.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -227,6 +228,14 @@ export async function StorybookTextboxTests() {
         });
         textboxOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await textbox.getOutputRowSelectorByName(output));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${output}' output`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 switch (output) {
                     case 'valueChange':
                         it(`it '${output}'`, async function () {
