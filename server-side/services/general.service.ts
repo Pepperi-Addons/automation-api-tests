@@ -1713,7 +1713,7 @@ export default class GeneralService {
         const isInstalledArr = await this.areAddonsInstalled(otherTestData ? otherTestData : testDataWithNewSync);
         const chnageVersionResponseArr = await this.changeVersion(
             varPass,
-            otherTestData ? otherTestData : testData,
+            otherTestData ? otherTestData : testDataWithNewSync,
             false,
         );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
