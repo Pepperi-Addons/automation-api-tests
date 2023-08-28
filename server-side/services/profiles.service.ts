@@ -49,50 +49,52 @@ export class ProfilesService {
         return this.papiClient.get(url);
     }
 
-    trimDate(date){ 
+    trimDate(date) {
         let output = date.substring(0, date.lastIndexOf('.'));
         output += 'Z';
         return output;
     }
 
-    purgeProfiles(body){
+    purgeProfiles(body) {
         return this.papiClient.post('/profiles/hard_delete', body);
     }
 
-    getAuditDataLog(){
-        return this.papiClient.get(`/audit_data_logs?where=Resource.keyword=profiles&AddonUUID.keyword=00000000-0000-0000-0000-00000000c07e&page_size=1&order_by=ObjectModificationDateTime desc`);
+    getAuditDataLog() {
+        return this.papiClient.get(
+            `/audit_data_logs?where=Resource.keyword=profiles&AddonUUID.keyword=00000000-0000-0000-0000-00000000c07e&page_size=1&order_by=ObjectModificationDateTime desc`,
+        );
     }
 
-    postProfilesBatch(body){
+    postProfilesBatch(body) {
         return this.papiClient.post('/batch/profiles', body);
     }
 
     create110ProfilesArray(name, parentInternalID) {
-        let profilesArray:any[] = [];
+        const profilesArray: any[] = [];
         for (let index = 0; index < 110; index++) {
             profilesArray.push({
                 Name: name + ' ' + [index],
-                ParentInternalID: parentInternalID
-            });  
+                ParentInternalID: parentInternalID,
+            });
         }
         return profilesArray;
     }
 
-    postDataView(atdInternalID, profileInternalID){
-        return this.papiClient.post('/meta_data/data_views',{
-            Context:{
-                Object:{
+    postDataView(atdInternalID, profileInternalID) {
+        return this.papiClient.post('/meta_data/data_views', {
+            Context: {
+                Object: {
                     Resource: 'transactions',
-                    InternalID: atdInternalID
+                    InternalID: atdInternalID,
                 },
-                Profile:{
-                    InternalID: profileInternalID
+                Profile: {
+                    InternalID: profileInternalID,
                 },
                 Name: 'ProfileTestUI' + Math.floor(Math.random() * 10000000),
-                ScreenSize: 'Tablet'
+                ScreenSize: 'Tablet',
             },
-            Type: 'Grid'
-        })
+            Type: 'Grid',
+        });
     }
 
     getDataView(options?: QueryOptions) {

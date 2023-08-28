@@ -156,7 +156,9 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
             it('Get Item by key', async () => {
                 console.log('Saar: Get Item by key');
-                const itemAfterUpdate = await objectsService.getItems({ where: `InternalID like '${legacyCreatedItem.InternalID}'` });
+                const itemAfterUpdate = await objectsService.getItems({
+                    where: `InternalID like '${legacyCreatedItem.InternalID}'`,
+                });
                 itemAfterManipulation = await service.papiCoreComparisonSingle(itemAfterUpdate[0], 'items');
                 const getByKeyItem = await service.getByKey('items', legacyCreatedItem.Key);
                 delete getByKeyItem['ParentExternalID'];
@@ -287,7 +289,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     dimxResult.forEach((object) => {
                         delete object['ParentExternalID'];
                     });
-                    let papiItemsSchemaManipulation = await service.papiCoreComparisonMulti(items, 'items');
+                    const papiItemsSchemaManipulation = await service.papiCoreComparisonMulti(items, 'items');
                     papiItemsSchemaManipulation.sort((a, b) => {
                         return a.InternalID - b.InternalID;
                     });
@@ -371,7 +373,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let updatedAccount;
             let legacyUpdatedAccount;
             let legacyPageAccounts;
-            let accountAfterManipulation
+            let accountAfterManipulation;
 
             it('Create Account', async () => {
                 console.log('Saar: Create Account');
@@ -446,33 +448,33 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 console.log('Saar: Get Account by key');
                 const accountAfterUpdate = await objectsService.getAccountByID(legacyCreatedAccount.InternalID);
                 accountAfterManipulation = await service.papiCoreComparisonSingle(accountAfterUpdate, 'accounts');
-                delete accountAfterManipulation.ModificationDateTime
-                delete accountAfterManipulation.Longitude
-                delete accountAfterManipulation.Latitude
+                delete accountAfterManipulation.ModificationDateTime;
+                delete accountAfterManipulation.Longitude;
+                delete accountAfterManipulation.Latitude;
                 const getByKeyAccount = await service.getByKey('accounts', legacyCreatedAccount.Key);
-                delete getByKeyAccount.ModificationDateTime
-                delete getByKeyAccount.Longitude
-                delete getByKeyAccount.Latitude
-                delete getByKeyAccount.TSADateTime
-                delete getByKeyAccount.TSAContactBirthday
-                delete getByKeyAccount.TSAAttachmentAPI
-                delete getByKeyAccount.TSACheckboxAPI
-                delete getByKeyAccount.TSACurrencyAPI
-                delete getByKeyAccount.TSADateAPI
-                delete getByKeyAccount.TSADateTimeAPI
-                delete getByKeyAccount.TSADecimalNumberAPI
-                delete getByKeyAccount.TSADropdownAPI
-                delete getByKeyAccount.TSAEmailAPI
-                delete getByKeyAccount.TSAHtmlAPI
-                delete getByKeyAccount.TSAImageAPI
-                delete getByKeyAccount.TSALimitedLineAPI
-                delete getByKeyAccount.TSALinkAPI
-                delete getByKeyAccount.TSAMultiChoiceAPI
-                delete getByKeyAccount.TSANumberAPI
-                delete getByKeyAccount.TSAParagraphAPI
-                delete getByKeyAccount.TSASignatureAPI
-                delete getByKeyAccount.TSAPhoneNumberAPI
-                delete getByKeyAccount.TSASingleLineAPI
+                delete getByKeyAccount.ModificationDateTime;
+                delete getByKeyAccount.Longitude;
+                delete getByKeyAccount.Latitude;
+                delete getByKeyAccount.TSADateTime;
+                delete getByKeyAccount.TSAContactBirthday;
+                delete getByKeyAccount.TSAAttachmentAPI;
+                delete getByKeyAccount.TSACheckboxAPI;
+                delete getByKeyAccount.TSACurrencyAPI;
+                delete getByKeyAccount.TSADateAPI;
+                delete getByKeyAccount.TSADateTimeAPI;
+                delete getByKeyAccount.TSADecimalNumberAPI;
+                delete getByKeyAccount.TSADropdownAPI;
+                delete getByKeyAccount.TSAEmailAPI;
+                delete getByKeyAccount.TSAHtmlAPI;
+                delete getByKeyAccount.TSAImageAPI;
+                delete getByKeyAccount.TSALimitedLineAPI;
+                delete getByKeyAccount.TSALinkAPI;
+                delete getByKeyAccount.TSAMultiChoiceAPI;
+                delete getByKeyAccount.TSANumberAPI;
+                delete getByKeyAccount.TSAParagraphAPI;
+                delete getByKeyAccount.TSASignatureAPI;
+                delete getByKeyAccount.TSAPhoneNumberAPI;
+                delete getByKeyAccount.TSASingleLineAPI;
                 expect(getByKeyAccount).to.deep.equal(accountAfterManipulation);
                 await expect(service.getByKey('accounts', '1234')).eventually.to.be.rejected;
             });
@@ -484,83 +486,83 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     'InternalID',
                     legacyCreatedAccount.InternalID,
                 );
-                delete getAccountByInternalID.ModificationDateTime
-                delete getAccountByInternalID.Longitude
-                delete getAccountByInternalID.Latitude
-                delete getAccountByInternalID.TSADateTime
-                delete getAccountByInternalID.TSAContactBirthday
-                delete getAccountByInternalID.TSAAttachmentAPI
-                delete getAccountByInternalID.TSACheckboxAPI
-                delete getAccountByInternalID.TSACurrencyAPI
-                delete getAccountByInternalID.TSADateAPI
-                delete getAccountByInternalID.TSADateTimeAPI
-                delete getAccountByInternalID.TSADecimalNumberAPI
-                delete getAccountByInternalID.TSADropdownAPI
-                delete getAccountByInternalID.TSAEmailAPI
-                delete getAccountByInternalID.TSAHtmlAPI
-                delete getAccountByInternalID.TSAImageAPI
-                delete getAccountByInternalID.TSALimitedLineAPI
-                delete getAccountByInternalID.TSALinkAPI
-                delete getAccountByInternalID.TSAMultiChoiceAPI
-                delete getAccountByInternalID.TSANumberAPI
-                delete getAccountByInternalID.TSAParagraphAPI
-                delete getAccountByInternalID.TSASignatureAPI
-                delete getAccountByInternalID.TSAPhoneNumberAPI
-                delete getAccountByInternalID.TSASingleLineAPI
+                delete getAccountByInternalID.ModificationDateTime;
+                delete getAccountByInternalID.Longitude;
+                delete getAccountByInternalID.Latitude;
+                delete getAccountByInternalID.TSADateTime;
+                delete getAccountByInternalID.TSAContactBirthday;
+                delete getAccountByInternalID.TSAAttachmentAPI;
+                delete getAccountByInternalID.TSACheckboxAPI;
+                delete getAccountByInternalID.TSACurrencyAPI;
+                delete getAccountByInternalID.TSADateAPI;
+                delete getAccountByInternalID.TSADateTimeAPI;
+                delete getAccountByInternalID.TSADecimalNumberAPI;
+                delete getAccountByInternalID.TSADropdownAPI;
+                delete getAccountByInternalID.TSAEmailAPI;
+                delete getAccountByInternalID.TSAHtmlAPI;
+                delete getAccountByInternalID.TSAImageAPI;
+                delete getAccountByInternalID.TSALimitedLineAPI;
+                delete getAccountByInternalID.TSALinkAPI;
+                delete getAccountByInternalID.TSAMultiChoiceAPI;
+                delete getAccountByInternalID.TSANumberAPI;
+                delete getAccountByInternalID.TSAParagraphAPI;
+                delete getAccountByInternalID.TSASignatureAPI;
+                delete getAccountByInternalID.TSAPhoneNumberAPI;
+                delete getAccountByInternalID.TSASingleLineAPI;
                 expect(getAccountByInternalID).to.deep.equal(accountAfterManipulation);
                 const getAccountByExternalID = await service.getByUniqueKey(
                     'accounts',
                     'ExternalID',
                     legacyCreatedAccount.ExternalID,
                 );
-                delete getAccountByExternalID.ModificationDateTime
-                delete getAccountByExternalID.Longitude
-                delete getAccountByExternalID.Latitude
-                delete getAccountByExternalID.TSADateTime
-                delete getAccountByExternalID.TSAContactBirthday
-                delete getAccountByExternalID.TSAAttachmentAPI
-                delete getAccountByExternalID.TSACheckboxAPI
-                delete getAccountByExternalID.TSACurrencyAPI
-                delete getAccountByExternalID.TSADateAPI
-                delete getAccountByExternalID.TSADateTimeAPI
-                delete getAccountByExternalID.TSADecimalNumberAPI
-                delete getAccountByExternalID.TSADropdownAPI
-                delete getAccountByExternalID.TSAEmailAPI
-                delete getAccountByExternalID.TSAHtmlAPI
-                delete getAccountByExternalID.TSAImageAPI
-                delete getAccountByExternalID.TSALimitedLineAPI
-                delete getAccountByExternalID.TSALinkAPI
-                delete getAccountByExternalID.TSAMultiChoiceAPI
-                delete getAccountByExternalID.TSANumberAPI
-                delete getAccountByExternalID.TSAParagraphAPI
-                delete getAccountByExternalID.TSASignatureAPI
-                delete getAccountByExternalID.TSAPhoneNumberAPI
-                delete getAccountByExternalID.TSASingleLineAPI
+                delete getAccountByExternalID.ModificationDateTime;
+                delete getAccountByExternalID.Longitude;
+                delete getAccountByExternalID.Latitude;
+                delete getAccountByExternalID.TSADateTime;
+                delete getAccountByExternalID.TSAContactBirthday;
+                delete getAccountByExternalID.TSAAttachmentAPI;
+                delete getAccountByExternalID.TSACheckboxAPI;
+                delete getAccountByExternalID.TSACurrencyAPI;
+                delete getAccountByExternalID.TSADateAPI;
+                delete getAccountByExternalID.TSADateTimeAPI;
+                delete getAccountByExternalID.TSADecimalNumberAPI;
+                delete getAccountByExternalID.TSADropdownAPI;
+                delete getAccountByExternalID.TSAEmailAPI;
+                delete getAccountByExternalID.TSAHtmlAPI;
+                delete getAccountByExternalID.TSAImageAPI;
+                delete getAccountByExternalID.TSALimitedLineAPI;
+                delete getAccountByExternalID.TSALinkAPI;
+                delete getAccountByExternalID.TSAMultiChoiceAPI;
+                delete getAccountByExternalID.TSANumberAPI;
+                delete getAccountByExternalID.TSAParagraphAPI;
+                delete getAccountByExternalID.TSASignatureAPI;
+                delete getAccountByExternalID.TSAPhoneNumberAPI;
+                delete getAccountByExternalID.TSASingleLineAPI;
                 expect(getAccountByExternalID).to.deep.equal(accountAfterManipulation);
                 const getAccountByKey = await service.getByUniqueKey('accounts', 'Key', legacyCreatedAccount.Key);
-                delete getAccountByKey.ModificationDateTime
-                delete getAccountByKey.Longitude
-                delete getAccountByKey.Latitude
-                delete getAccountByKey.TSADateTime
-                delete getAccountByKey.TSAContactBirthday
-                delete getAccountByKey.TSAAttachmentAPI
-                delete getAccountByKey.TSACheckboxAPI
-                delete getAccountByKey.TSACurrencyAPI
-                delete getAccountByKey.TSADateAPI
-                delete getAccountByKey.TSADateTimeAPI
-                delete getAccountByKey.TSADecimalNumberAPI
-                delete getAccountByKey.TSADropdownAPI
-                delete getAccountByKey.TSAEmailAPI
-                delete getAccountByKey.TSAHtmlAPI
-                delete getAccountByKey.TSAImageAPI
-                delete getAccountByKey.TSALimitedLineAPI
-                delete getAccountByKey.TSALinkAPI
-                delete getAccountByKey.TSAMultiChoiceAPI
-                delete getAccountByKey.TSANumberAPI
-                delete getAccountByKey.TSAParagraphAPI
-                delete getAccountByKey.TSASignatureAPI
-                delete getAccountByKey.TSAPhoneNumberAPI
-                delete getAccountByKey.TSASingleLineAPI
+                delete getAccountByKey.ModificationDateTime;
+                delete getAccountByKey.Longitude;
+                delete getAccountByKey.Latitude;
+                delete getAccountByKey.TSADateTime;
+                delete getAccountByKey.TSAContactBirthday;
+                delete getAccountByKey.TSAAttachmentAPI;
+                delete getAccountByKey.TSACheckboxAPI;
+                delete getAccountByKey.TSACurrencyAPI;
+                delete getAccountByKey.TSADateAPI;
+                delete getAccountByKey.TSADateTimeAPI;
+                delete getAccountByKey.TSADecimalNumberAPI;
+                delete getAccountByKey.TSADropdownAPI;
+                delete getAccountByKey.TSAEmailAPI;
+                delete getAccountByKey.TSAHtmlAPI;
+                delete getAccountByKey.TSAImageAPI;
+                delete getAccountByKey.TSALimitedLineAPI;
+                delete getAccountByKey.TSALinkAPI;
+                delete getAccountByKey.TSAMultiChoiceAPI;
+                delete getAccountByKey.TSANumberAPI;
+                delete getAccountByKey.TSAParagraphAPI;
+                delete getAccountByKey.TSASignatureAPI;
+                delete getAccountByKey.TSAPhoneNumberAPI;
+                delete getAccountByKey.TSASingleLineAPI;
                 expect(getAccountByKey).to.deep.equal(accountAfterManipulation);
                 await expect(service.getByUniqueKey('accounts', 'InternalID', '12341223147776')).eventually.to.be
                     .rejected;
@@ -665,7 +667,10 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 it('DIMX export', async () => {
                     console.log('Saar: Account DIMX export');
                     const accountsForComparison = await objectsService.getAccounts({ page_size: -1 });
-                    const accountsAfterManipulation = await service.papiCoreComparisonMulti(accountsForComparison, 'accounts');
+                    const accountsAfterManipulation = await service.papiCoreComparisonMulti(
+                        accountsForComparison,
+                        'accounts',
+                    );
                     const exportAudit = await service.dimxExport('accounts');
                     const dimxResult = await service.getDimxResult(exportAudit.URI);
                     dimxResult.forEach((object) => {
@@ -1070,33 +1075,33 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 console.log('Saar: Get Contact by key');
                 const contactAfterUpdate = await objectsService.getContacts(legacyCreatedContact.InternalID);
                 contactAfterManipulation = await service.papiCoreComparisonSingle(contactAfterUpdate[0], 'contacts');
-                delete contactAfterManipulation.ModificationDateTime
-                delete contactAfterManipulation.Longitude
-                delete contactAfterManipulation.Latitude
+                delete contactAfterManipulation.ModificationDateTime;
+                delete contactAfterManipulation.Longitude;
+                delete contactAfterManipulation.Latitude;
                 const getByKeyContact = await service.getByKey('contacts', legacyCreatedContact.Key);
-                delete getByKeyContact.ModificationDateTime
-                delete getByKeyContact.Longitude
-                delete getByKeyContact.Latitude
-                delete getByKeyContact.TSADateTime
-                delete getByKeyContact.TSAContactBirthday
-                delete getByKeyContact.TSAAttachmentAPI
-                delete getByKeyContact.TSACheckboxAPI
-                delete getByKeyContact.TSACurrencyAPI
-                delete getByKeyContact.TSADateAPI
-                delete getByKeyContact.TSADateTimeAPI
-                delete getByKeyContact.TSADecimalNumberAPI
-                delete getByKeyContact.TSADropdownAPI
-                delete getByKeyContact.TSAEmailAPI
-                delete getByKeyContact.TSAHtmlAPI
-                delete getByKeyContact.TSAImageAPI
-                delete getByKeyContact.TSALimitedLineAPI
-                delete getByKeyContact.TSALinkAPI
-                delete getByKeyContact.TSAMultiChoiceAPI
-                delete getByKeyContact.TSANumberAPI
-                delete getByKeyContact.TSAParagraphAPI
-                delete getByKeyContact.TSASignatureAPI
-                delete getByKeyContact.TSAPhoneNumberAPI
-                delete getByKeyContact.TSASingleLineAPI
+                delete getByKeyContact.ModificationDateTime;
+                delete getByKeyContact.Longitude;
+                delete getByKeyContact.Latitude;
+                delete getByKeyContact.TSADateTime;
+                delete getByKeyContact.TSAContactBirthday;
+                delete getByKeyContact.TSAAttachmentAPI;
+                delete getByKeyContact.TSACheckboxAPI;
+                delete getByKeyContact.TSACurrencyAPI;
+                delete getByKeyContact.TSADateAPI;
+                delete getByKeyContact.TSADateTimeAPI;
+                delete getByKeyContact.TSADecimalNumberAPI;
+                delete getByKeyContact.TSADropdownAPI;
+                delete getByKeyContact.TSAEmailAPI;
+                delete getByKeyContact.TSAHtmlAPI;
+                delete getByKeyContact.TSAImageAPI;
+                delete getByKeyContact.TSALimitedLineAPI;
+                delete getByKeyContact.TSALinkAPI;
+                delete getByKeyContact.TSAMultiChoiceAPI;
+                delete getByKeyContact.TSANumberAPI;
+                delete getByKeyContact.TSAParagraphAPI;
+                delete getByKeyContact.TSASignatureAPI;
+                delete getByKeyContact.TSAPhoneNumberAPI;
+                delete getByKeyContact.TSASingleLineAPI;
                 expect(getByKeyContact).to.deep.equal(contactAfterManipulation);
                 await expect(service.getByKey('contacts', '1234')).eventually.to.be.rejected;
             });
@@ -1108,83 +1113,83 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                     'InternalID',
                     legacyCreatedContact.InternalID,
                 );
-                delete getContactByInternalID.ModificationDateTime
-                delete getContactByInternalID.Longitude
-                delete getContactByInternalID.Latitude
-                delete getContactByInternalID.TSADateTime
-                delete getContactByInternalID.TSAContactBirthday
-                delete getContactByInternalID.TSAAttachmentAPI
-                delete getContactByInternalID.TSACheckboxAPI
-                delete getContactByInternalID.TSACurrencyAPI
-                delete getContactByInternalID.TSADateAPI
-                delete getContactByInternalID.TSADateTimeAPI
-                delete getContactByInternalID.TSADecimalNumberAPI
-                delete getContactByInternalID.TSADropdownAPI
-                delete getContactByInternalID.TSAEmailAPI
-                delete getContactByInternalID.TSAHtmlAPI
-                delete getContactByInternalID.TSAImageAPI
-                delete getContactByInternalID.TSALimitedLineAPI
-                delete getContactByInternalID.TSALinkAPI
-                delete getContactByInternalID.TSAMultiChoiceAPI
-                delete getContactByInternalID.TSANumberAPI
-                delete getContactByInternalID.TSAParagraphAPI
-                delete getContactByInternalID.TSASignatureAPI
-                delete getContactByInternalID.TSAPhoneNumberAPI
-                delete getContactByInternalID.TSASingleLineAPI
+                delete getContactByInternalID.ModificationDateTime;
+                delete getContactByInternalID.Longitude;
+                delete getContactByInternalID.Latitude;
+                delete getContactByInternalID.TSADateTime;
+                delete getContactByInternalID.TSAContactBirthday;
+                delete getContactByInternalID.TSAAttachmentAPI;
+                delete getContactByInternalID.TSACheckboxAPI;
+                delete getContactByInternalID.TSACurrencyAPI;
+                delete getContactByInternalID.TSADateAPI;
+                delete getContactByInternalID.TSADateTimeAPI;
+                delete getContactByInternalID.TSADecimalNumberAPI;
+                delete getContactByInternalID.TSADropdownAPI;
+                delete getContactByInternalID.TSAEmailAPI;
+                delete getContactByInternalID.TSAHtmlAPI;
+                delete getContactByInternalID.TSAImageAPI;
+                delete getContactByInternalID.TSALimitedLineAPI;
+                delete getContactByInternalID.TSALinkAPI;
+                delete getContactByInternalID.TSAMultiChoiceAPI;
+                delete getContactByInternalID.TSANumberAPI;
+                delete getContactByInternalID.TSAParagraphAPI;
+                delete getContactByInternalID.TSASignatureAPI;
+                delete getContactByInternalID.TSAPhoneNumberAPI;
+                delete getContactByInternalID.TSASingleLineAPI;
                 expect(getContactByInternalID).to.deep.equal(contactAfterManipulation);
                 const getContactByExternalID = await service.getByUniqueKey(
                     'contacts',
                     'ExternalID',
                     legacyCreatedContact.ExternalID,
                 );
-                delete getContactByExternalID.ModificationDateTime
-                delete getContactByExternalID.Longitude
-                delete getContactByExternalID.Latitude
-                delete getContactByExternalID.TSADateTime
-                delete getContactByExternalID.TSAContactBirthday
-                delete getContactByExternalID.TSAAttachmentAPI
-                delete getContactByExternalID.TSACheckboxAPI
-                delete getContactByExternalID.TSACurrencyAPI
-                delete getContactByExternalID.TSADateAPI
-                delete getContactByExternalID.TSADateTimeAPI
-                delete getContactByExternalID.TSADecimalNumberAPI
-                delete getContactByExternalID.TSADropdownAPI
-                delete getContactByExternalID.TSAEmailAPI
-                delete getContactByExternalID.TSAHtmlAPI
-                delete getContactByExternalID.TSAImageAPI
-                delete getContactByExternalID.TSALimitedLineAPI
-                delete getContactByExternalID.TSALinkAPI
-                delete getContactByExternalID.TSAMultiChoiceAPI
-                delete getContactByExternalID.TSANumberAPI
-                delete getContactByExternalID.TSAParagraphAPI
-                delete getContactByExternalID.TSASignatureAPI
-                delete getContactByExternalID.TSAPhoneNumberAPI
-                delete getContactByExternalID.TSASingleLineAPI
+                delete getContactByExternalID.ModificationDateTime;
+                delete getContactByExternalID.Longitude;
+                delete getContactByExternalID.Latitude;
+                delete getContactByExternalID.TSADateTime;
+                delete getContactByExternalID.TSAContactBirthday;
+                delete getContactByExternalID.TSAAttachmentAPI;
+                delete getContactByExternalID.TSACheckboxAPI;
+                delete getContactByExternalID.TSACurrencyAPI;
+                delete getContactByExternalID.TSADateAPI;
+                delete getContactByExternalID.TSADateTimeAPI;
+                delete getContactByExternalID.TSADecimalNumberAPI;
+                delete getContactByExternalID.TSADropdownAPI;
+                delete getContactByExternalID.TSAEmailAPI;
+                delete getContactByExternalID.TSAHtmlAPI;
+                delete getContactByExternalID.TSAImageAPI;
+                delete getContactByExternalID.TSALimitedLineAPI;
+                delete getContactByExternalID.TSALinkAPI;
+                delete getContactByExternalID.TSAMultiChoiceAPI;
+                delete getContactByExternalID.TSANumberAPI;
+                delete getContactByExternalID.TSAParagraphAPI;
+                delete getContactByExternalID.TSASignatureAPI;
+                delete getContactByExternalID.TSAPhoneNumberAPI;
+                delete getContactByExternalID.TSASingleLineAPI;
                 expect(getContactByExternalID).to.deep.equal(contactAfterManipulation);
                 const getContactByKey = await service.getByUniqueKey('contacts', 'Key', legacyCreatedContact.Key);
-                delete getContactByKey.ModificationDateTime
-                delete getContactByKey.Longitude
-                delete getContactByKey.Latitude
-                delete getContactByKey.TSADateTime
-                delete getContactByKey.TSAContactBirthday
-                delete getContactByKey.TSAAttachmentAPI
-                delete getContactByKey.TSACheckboxAPI
-                delete getContactByKey.TSACurrencyAPI
-                delete getContactByKey.TSADateAPI
-                delete getContactByKey.TSADateTimeAPI
-                delete getContactByKey.TSADecimalNumberAPI
-                delete getContactByKey.TSADropdownAPI
-                delete getContactByKey.TSAEmailAPI
-                delete getContactByKey.TSAHtmlAPI
-                delete getContactByKey.TSAImageAPI
-                delete getContactByKey.TSALimitedLineAPI
-                delete getContactByKey.TSALinkAPI
-                delete getContactByKey.TSAMultiChoiceAPI
-                delete getContactByKey.TSANumberAPI
-                delete getContactByKey.TSAParagraphAPI
-                delete getContactByKey.TSASignatureAPI
-                delete getContactByKey.TSAPhoneNumberAPI
-                delete getContactByKey.TSASingleLineAPI
+                delete getContactByKey.ModificationDateTime;
+                delete getContactByKey.Longitude;
+                delete getContactByKey.Latitude;
+                delete getContactByKey.TSADateTime;
+                delete getContactByKey.TSAContactBirthday;
+                delete getContactByKey.TSAAttachmentAPI;
+                delete getContactByKey.TSACheckboxAPI;
+                delete getContactByKey.TSACurrencyAPI;
+                delete getContactByKey.TSADateAPI;
+                delete getContactByKey.TSADateTimeAPI;
+                delete getContactByKey.TSADecimalNumberAPI;
+                delete getContactByKey.TSADropdownAPI;
+                delete getContactByKey.TSAEmailAPI;
+                delete getContactByKey.TSAHtmlAPI;
+                delete getContactByKey.TSAImageAPI;
+                delete getContactByKey.TSALimitedLineAPI;
+                delete getContactByKey.TSALinkAPI;
+                delete getContactByKey.TSAMultiChoiceAPI;
+                delete getContactByKey.TSANumberAPI;
+                delete getContactByKey.TSAParagraphAPI;
+                delete getContactByKey.TSASignatureAPI;
+                delete getContactByKey.TSAPhoneNumberAPI;
+                delete getContactByKey.TSASingleLineAPI;
                 expect(getContactByKey).to.deep.equal(contactAfterManipulation);
                 await expect(service.getByUniqueKey('contacts', 'InternalID', '123412')).eventually.to.be.rejected;
                 await expect(service.getByUniqueKey('contacts', 'Price', '123412')).eventually.to.be.rejected;

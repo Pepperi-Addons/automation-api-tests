@@ -28,12 +28,13 @@ export class LegacyResourcesService {
     }
 
     getSchema(schemeName: string) {
-        return this.generalService.fetchStatus(`/addons/data/schemes?where=Name like '${schemeName}'`, {
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + this.papiClient['options'].token,
-            },
-        })
+        return this.generalService
+            .fetchStatus(`/addons/data/schemes?where=Name like '${schemeName}'`, {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + this.papiClient['options'].token,
+                },
+            })
             .then((res) => res.Body);
     }
 
@@ -44,9 +45,8 @@ export class LegacyResourcesService {
             object['Key'] = object['UUID'];
             object['CreationDateTime'] = object['CreationDateTime'].replace('Z', '.000Z');
             object['ModificationDateTime'] = object['ModificationDateTime'].replace('Z', '.000Z');
-            for (let key in object) {
-                if (!(key in adalSchemeFields))
-                    delete object[key];
+            for (const key in object) {
+                if (!(key in adalSchemeFields)) delete object[key];
             }
         });
         return papiObject;
@@ -58,9 +58,8 @@ export class LegacyResourcesService {
         papiObject['Key'] = papiObject['UUID'];
         papiObject['CreationDateTime'] = papiObject['CreationDateTime'].replace('Z', '.000Z');
         papiObject['ModificationDateTime'] = papiObject['ModificationDateTime'].replace('Z', '.000Z');
-        for (let key in papiObject) {
-            if (!(key in adalSchemeFields))
-                delete papiObject[key];
+        for (const key in papiObject) {
+            if (!(key in adalSchemeFields)) delete papiObject[key];
         }
         return papiObject;
     }
