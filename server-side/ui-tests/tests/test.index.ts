@@ -88,7 +88,7 @@ import { Import250KToAdalFromDimx } from './import_250k_DIMX.test';
 import { UDCImportExportTests } from '../../api-tests/user_defined_collections_import_export';
 import { Import200KToAdalFromDimx } from './import_200k_DIMX.test';
 import { Import150KToAdalFromDimx } from './import_150k_DIMX.test';
-import { SyncTests } from './sync.test';
+// import { SyncTests } from './sync.test';
 import { TestDataTestsNewSync } from '../../api-tests/test-service/test_data_new_sync';
 
 /**
