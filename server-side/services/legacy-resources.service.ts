@@ -27,6 +27,43 @@ export class LegacyResourcesService {
         this.generalService = service;
     }
 
+    getSchema(schemeName: string) {
+        return this.generalService
+            .fetchStatus(`/addons/data/schemes?where=Name like '${schemeName}'`, {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + this.papiClient['options'].token,
+                },
+            })
+            .then((res) => res.Body);
+    }
+
+    async papiCoreComparisonMulti(papiObject, adalSchemeName) {
+        const adalScheme = await this.getSchema(adalSchemeName);
+        const adalSchemeFields = adalScheme[0].Fields as any;
+        papiObject.forEach((object) => {
+            object['Key'] = object['UUID'];
+            object['CreationDateTime'] = object['CreationDateTime'].replace('Z', '.000Z');
+            object['ModificationDateTime'] = object['ModificationDateTime'].replace('Z', '.000Z');
+            for (const key in object) {
+                if (!(key in adalSchemeFields)) delete object[key];
+            }
+        });
+        return papiObject;
+    }
+
+    async papiCoreComparisonSingle(papiObject, adalSchemeName) {
+        const adalScheme = await this.getSchema(adalSchemeName);
+        const adalSchemeFields = adalScheme[0].Fields as any;
+        papiObject['Key'] = papiObject['UUID'];
+        papiObject['CreationDateTime'] = papiObject['CreationDateTime'].replace('Z', '.000Z');
+        papiObject['ModificationDateTime'] = papiObject['ModificationDateTime'].replace('Z', '.000Z');
+        for (const key in papiObject) {
+            if (!(key in adalSchemeFields)) delete papiObject[key];
+        }
+        return papiObject;
+    }
+
     post(resource, body) {
         return this.papiClient.post(`/resources/${resource}`, body);
     }
