@@ -115,7 +115,9 @@ export async function ProfilesTests(generalService: GeneralService, request, tes
                     auditDataLogInsert[0]['ObjectModificationDateTime'],
                 ); //Changing date format due to old bug
                 expect(auditDataLogInsert[0]).to.have.property('ObjectKey').that.equals(createdProfile.UUID);
-                expect(auditDataLogInsert[0]).to.have.property('ObjectModificationDateTime').that.contains(new Date().toISOString().split('T')[0]);
+                expect(auditDataLogInsert[0])
+                    .to.have.property('ObjectModificationDateTime')
+                    .that.contains(new Date().toISOString().split('T')[0]);
                 expect(auditDataLogInsert[0]).to.have.property('ObjectModificationDateTime').that.contains('Z');
                 expect(auditDataLogInsert[0]).to.have.property('ActionType').that.equals('insert');
                 expect(auditDataLogInsert[0]).to.have.property('Resource').that.equals('profiles');
@@ -170,7 +172,9 @@ export async function ProfilesTests(generalService: GeneralService, request, tes
                     auditDataLogUpdate[0]['ObjectModificationDateTime'],
                 );
                 expect(auditDataLogUpdate[0]).to.have.property('ObjectKey').that.equals(createdProfile.UUID);
-                expect(auditDataLogUpdate[0]).to.have.property('ObjectModificationDateTime').that.contains(new Date().toISOString().split('T')[0]);
+                expect(auditDataLogUpdate[0])
+                    .to.have.property('ObjectModificationDateTime')
+                    .that.contains(new Date().toISOString().split('T')[0]);
                 expect(auditDataLogUpdate[0]).to.have.property('ObjectModificationDateTime').that.contains('Z');
                 expect(auditDataLogUpdate[0]).to.have.property('ActionType').that.equals('update');
                 expect(auditDataLogUpdate[0]).to.have.property('Resource').that.equals('profiles');
@@ -227,7 +231,9 @@ export async function ProfilesTests(generalService: GeneralService, request, tes
                     auditDataLogDelete[0]['ObjectModificationDateTime'],
                 );
                 expect(auditDataLogDelete[0]).to.have.property('ObjectKey').that.equals(createdProfile.UUID);
-                expect(auditDataLogDelete[0]).to.have.property('ObjectModificationDateTime').that.contains(new Date().toISOString().split('T')[0]);
+                expect(auditDataLogDelete[0])
+                    .to.have.property('ObjectModificationDateTime')
+                    .that.contains(new Date().toISOString().split('T')[0]);
                 expect(auditDataLogDelete[0]).to.have.property('ObjectModificationDateTime').that.contains('Z');
                 expect(auditDataLogDelete[0]).to.have.property('ActionType').that.equals('update');
                 expect(auditDataLogDelete[0]).to.have.property('Resource').that.equals('profiles');
