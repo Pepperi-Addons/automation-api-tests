@@ -109,6 +109,7 @@ export async function ProfilesTests(generalService: GeneralService, request, tes
             });
 
             it('Verify PNS After insert via audit_data_logs', async () => {
+                generalService.sleep(3000);
                 console.log(`Verify PNS after insert, name: ${profileName}`);
                 const auditDataLogInsert = await profilesService.getAuditDataLog();
                 auditDataLogInsert[0]['ObjectModificationDateTime'] = await profilesService.trimDate(
@@ -166,6 +167,7 @@ export async function ProfilesTests(generalService: GeneralService, request, tes
             });
 
             it('Verify PNS After update via audit_data_logs', async () => {
+                generalService.sleep(3000);
                 console.log(`Verify PNS after update, name: ${profileName}`);
                 const auditDataLogUpdate = await profilesService.getAuditDataLog();
                 auditDataLogUpdate[0]['ObjectModificationDateTime'] = await profilesService.trimDate(
@@ -225,6 +227,7 @@ export async function ProfilesTests(generalService: GeneralService, request, tes
             });
 
             it('Verify PNS After delete via audit_data_logs', async () => {
+                generalService.sleep(3000);
                 console.log(`Verify PNS after update, name: ${profileName}`);
                 const auditDataLogDelete = await profilesService.getAuditDataLog();
                 auditDataLogDelete[0]['ObjectModificationDateTime'] = await profilesService.trimDate(
