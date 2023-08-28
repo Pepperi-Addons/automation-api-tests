@@ -9,8 +9,8 @@ import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage
 import { ObjectsService } from '../../services';
 import { OrderPage } from '../pom/Pages/OrderPage';
 import { Key } from 'selenium-webdriver';
-import { PricingData } from '../pom/addons/Pricing';
-// import { PricingData05 } from '../pom/addons/Pricing05';
+// import { PricingData } from '../pom/addons/Pricing';
+import { PricingData05 } from '../pom/addons/Pricing05';
 // import { PricingData06 } from '../pom/addons/Pricing06';
 
 interface PriceTsaFields {
@@ -41,7 +41,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         //     break;
 
         default:
-            pricingData = new PricingData();
+            pricingData = new PricingData05();
             break;
     }
 
