@@ -235,7 +235,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     const testBody = {} as SyncBody;
                     Object.assign(testBody, _body);
                     testBody.LocalDataUpdates = {} as any;
-                    Object.assign(testBody.LocalDataUpdates, _localData);
+                    Object.assign(testBody.LocalDataUpdates!, _localData);
                     for (let index = 0; index < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; index++) {
                         testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][3] =
                             Math.floor(Math.random() * 100000000000).toString() +
@@ -290,7 +290,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     const testBody = {} as SyncBody;
                     Object.assign(testBody, _body);
                     testBody.LocalDataUpdates = {} as any;
-                    Object.assign(testBody.LocalDataUpdates, _localData);
+                    Object.assign(testBody.LocalDataUpdates!, _localData);
                     for (let index = 0; index < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; index++) {
                         testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][0] = '';
                         testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][3] =
@@ -352,7 +352,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     const testBody = {} as SyncBody;
                     Object.assign(testBody, _body);
                     testBody.LocalDataUpdates = {} as any;
-                    Object.assign(testBody.LocalDataUpdates, _localData);
+                    Object.assign(testBody.LocalDataUpdates!, _localData);
                     for (let index = 0; index < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; index++) {
                         testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][3] =
                             Math.floor(Math.random() * 100000000000).toString() +
@@ -366,7 +366,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                     }
                     //Forcing resync with fixed data that should work
                     testBody.LocalDataUpdates = {} as any;
-                    Object.assign(testBody.LocalDataUpdates, _localData);
+                    Object.assign(testBody.LocalDataUpdates!, _localData);
                     for (let index = 0; index < testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length; index++) {
                         testBody['LocalDataUpdates' as any].jsonBody[2].Lines[index][3] =
                             Math.floor(Math.random() * 100000000000).toString() +
@@ -393,7 +393,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                         const testBody = {} as SyncBody;
                         Object.assign(testBody, _body);
                         testBody.LocalDataUpdates = {} as any;
-                        Object.assign(testBody.LocalDataUpdates, _localData);
+                        Object.assign(testBody.LocalDataUpdates!, _localData);
                         testBody['LocalDataUpdates' as any].jsonBody[2].Lines.length = 100;
                         const syncDataArray = testBody['LocalDataUpdates' as any].jsonBody[2].Lines;
                         for (let index = 0; index < syncDataArray.length; index++) {
@@ -629,7 +629,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
         Object.assign(testBody, _body);
         testBody.LastSyncDateTime = 62610367500000; //This Uses c# DateTime.Ticks
         testBody.LocalDataUpdates = {} as any;
-        Object.assign(testBody.LocalDataUpdates, _localData);
+        Object.assign(testBody.LocalDataUpdates!, _localData);
         testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
         for (let index = 0; index < putsSize; index++) {
             //POST sync job
@@ -648,7 +648,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 );
                 console.log('Done result: ' + JSON.stringify(oneHundredPutResponsArr[index]));
                 console.log('Done Body: ' + JSON.stringify(testBody));
-            } else if (oneHundredPutResponsArr[index].Status == /SyncStart|New/) {
+            } else if (oneHundredPutResponsArr[index].Status == /SyncStart|New/ as any) {
                 console.log('Failed in Hundred Sync Job UUID: ' + tempPostOneHundredPutssPromiseArr[index].SyncJobUUID);
             }
             oneHundredPutResponsArr[index] = oneHundredPutResponsArr[index].Status;
@@ -660,7 +660,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
         Object.assign(testBody, _body);
         testBody.LastSyncDateTime = 62610367500000; //This Uses c# DateTime.Ticks
         testBody.LocalDataUpdates = {} as any;
-        Object.assign(testBody.LocalDataUpdates, _localData);
+        Object.assign(testBody.LocalDataUpdates!, _localData);
         testBody.ClientDBUUID = 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString();
         for (let index = 0; index < tenPutsSize; index++) {
             //Add one order line in every iteration
@@ -761,7 +761,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 tenOrderLinesValidationResult = await orderCreationValidation(tenPutResponsArr[index], testBody);
                 console.log('Done result: ' + JSON.stringify(tenPutResponsArr[index]));
                 console.log('Done Body: ' + JSON.stringify(testBody));
-            } else if (tenPutResponsArr[index].Status == /SyncStart|New/) {
+            } else if (tenPutResponsArr[index].Status == /SyncStart|New/ as any) {
                 console.log('Failed in Ten Sync Job UUID: ' + tempPostTenPutssPromiseArr[index].SyncJobUUID);
             }
             tenPutResponsArr[index] = tenPutResponsArr[index].Status;
@@ -911,7 +911,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             counter++;
             apiGetResponse = await service.jobInfo(uuid);
         } while (
-            (apiGetResponse.Status == ('SyncStart' as SyncStatus) || apiGetResponse.Status == ('New' as SyncStatus)) &&
+            (apiGetResponse.Status == ('SyncStart' as SyncStatus) || apiGetResponse.Status == ('New' as SyncStatus) || apiGetResponse.Status == ('GetInProgress' as SyncStatus)) &&
             apiGetResponse.ModificationDateTime - apiGetResponse.CreationDateTime < maxTime &&
             new Date().getTime() - apiGetResponse.CreationDateTime < maxTime &&
             counter < maxLoops
