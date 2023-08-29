@@ -192,7 +192,7 @@ export async function StorybookButtonTests() {
                                 title: `'${input}' input`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
-                            await storyBookPage.inputs.toggleDissableComponent();
+                            await storyBookPage.inputs.toggleDisableControl();
                             await driver.click(button.MainHeader);
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
@@ -201,7 +201,7 @@ export async function StorybookButtonTests() {
                             });
                             let mainExampleButton = await driver.findElement(button.MainExampleButton);
                             expect(await mainExampleButton.getAttribute('disabled')).to.equal('true');
-                            await storyBookPage.inputs.toggleDissableComponent();
+                            await storyBookPage.inputs.toggleDisableControl();
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disabled Input Changed to "false"`,
