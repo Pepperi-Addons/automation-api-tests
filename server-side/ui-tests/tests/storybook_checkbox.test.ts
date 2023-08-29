@@ -135,7 +135,7 @@ export async function StorybookCheckboxTests() {
                         });
                         it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
                             const newLabelToSet = 'Auto test';
-                            await storyBookPage.inputs.changeLabel(newLabelToSet);
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Label Input Change`,
@@ -145,13 +145,14 @@ export async function StorybookCheckboxTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('value')).to.be.true;
                         });
                         it(`making sure current value is "True"`, async function () {
-                            await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
-                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Value Input default value = "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
@@ -161,11 +162,11 @@ export async function StorybookCheckboxTests() {
                             const mainExampleCheckboxAriaChecked = await mainExampleCheckbox.getAttribute(
                                 'aria-checked',
                             );
-                            base64ImageComponentModal = await driver.saveScreenshots();
-                            addContext(this, {
-                                title: `Upper View of Value Input "true"`,
-                                value: 'data:image/png;base64,' + base64ImageComponentModal,
-                            });
+                            // base64ImageComponentModal = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `Upper View of Value Input "true"`,
+                            //     value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            // });
                             expect(mainExampleCheckboxAriaChecked).equals('true');
                         });
                         it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
@@ -184,9 +185,9 @@ export async function StorybookCheckboxTests() {
                         });
                         it(`back to default [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleValueControl();
-                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input changed back to default value = "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await driver.click(checkbox.MainHeader);
@@ -194,37 +195,210 @@ export async function StorybookCheckboxTests() {
                             const mainExampleCheckboxAriaChecked = await mainExampleCheckbox.getAttribute(
                                 'aria-checked',
                             );
-                            base64ImageComponentModal = await driver.saveScreenshots();
-                            addContext(this, {
-                                title: `Upper View of Value Input "true"`,
-                                value: 'data:image/png;base64,' + base64ImageComponentModal,
-                            });
+                            // base64ImageComponentModal = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `Upper View of Value Input "true"`,
+                            //     value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            // });
                             expect(mainExampleCheckboxAriaChecked).equals('true');
                         });
                         break;
+
                     case 'additionalValue':
                         it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('additionalValue')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(checkbox.MainHeader);
+                            const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
+                            const mainExampleCheckboxDisabled = await mainExampleCheckbox.getAttribute('disabled');
+                            console.info(
+                                'mainExampleCheckboxDisabled (false): ',
+                                JSON.stringify(mainExampleCheckboxDisabled, null, 2),
+                            );
+                            // base64ImageComponentModal = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `Upper View of Disabled Input "false"`,
+                            //     value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            // });
+                            expect(mainExampleCheckboxDisabled).to.be.null;
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(checkbox.MainHeader);
+                            const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
+                            const mainExampleCheckboxDisabled = await mainExampleCheckbox.getAttribute('disabled');
+                            console.info(
+                                'mainExampleCheckboxDisabled (true): ',
+                                JSON.stringify(mainExampleCheckboxDisabled, null, 2),
+                            );
+                            expect(mainExampleCheckboxDisabled).equals('true');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(checkbox.MainHeader);
+                            const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
+                            const mainExampleCheckboxDisabled = await mainExampleCheckbox.getAttribute('disabled');
+                            // base64ImageComponentModal = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `Upper View of Disable Input "false"`,
+                            //     value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            // });
+                            expect(mainExampleCheckboxDisabled).to.be.null;
+                        });
                         break;
+
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('mandatory')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // await driver.click(checkbox.MainHeader);
+                            // const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
+                            // const mainExampleCheckboxDisabled = await mainExampleCheckbox.getAttribute('disabled');
+                            // console.info('mainExampleCheckboxDisabled (false): ', JSON.stringify(mainExampleCheckboxDisabled, null, 2));
+                            // base64ImageComponentModal = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `Upper View of Disabled Input "false"`,
+                            //     value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            // });
+                            await storyBookPage.elemntDoNotExist(checkbox.MainExample_mandatoryIcon);
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // await driver.click(checkbox.MainHeader);
+                            // const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
+                            // const mainExampleCheckboxDisabled = await mainExampleCheckbox.getAttribute('disabled');
+                            // console.info('mainExampleCheckboxDisabled (true): ', JSON.stringify(mainExampleCheckboxDisabled, null, 2));
+                            await storyBookPage.untilIsVisible(checkbox.MainExample_mandatoryIcon);
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // await driver.click(checkbox.MainHeader);
+                            // const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
+                            // const mainExampleCheckboxDisabled = await mainExampleCheckbox.getAttribute('disabled');
+                            // base64ImageComponentModal = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `Upper View of Disable Input "false"`,
+                            //     value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            // });
+                            await storyBookPage.elemntDoNotExist(checkbox.MainExample_mandatoryIcon);
+                        });
+                        // it(`Functional test (+screenshots)`, async function () {
+                        //     const base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `'${input}' input`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     await storyBookPage.inputs.toggleMandatoryComponent();
+                        //     let base64ImageComponentModal = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `Mandatory Input Changed to "true"`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponentModal,
+                        //     });
+                        //     await storyBookPage.untilIsVisible(checkbox.MainExample_mandatoryIcon);
+                        //     await storyBookPage.inputs.toggleMandatoryComponent();
+                        //     base64ImageComponentModal = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `Mandatory Input Changed to "false"`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponentModal,
+                        //     });
+                        //     await storyBookPage.elemntDoNotExist(checkbox.MainExample_mandatoryIcon);
+                        // });
                         break;
+
                     case 'renderTitle':
                         it(`validate input`, async function () {
                             expect(checkboxInputsTitles.includes('renderTitle')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderTitle Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // await driver.click(checkbox.MainHeader);
+                            // const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
+                            // const mainExampleCheckboxAriaChecked = await mainExampleCheckbox.getAttribute(
+                            //     'aria-checked',
+                            // );
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of RenderTitle Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // expect(mainExampleCheckboxAriaChecked).equals('true');
+                        });
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleRenderTitleControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderTitle Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // await driver.click(checkbox.MainHeader);
+                            // const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
+                            // const mainExampleCheckboxAriaChecked = await mainExampleCheckbox.getAttribute(
+                            //     'aria-checked',
+                            // );
+                            // expect(mainExampleCheckboxAriaChecked).equals('false');
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleRenderTitleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderTitle Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // await driver.click(checkbox.MainHeader);
+                            // const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
+                            // const mainExampleCheckboxAriaChecked = await mainExampleCheckbox.getAttribute(
+                            //     'aria-checked',
+                            // );
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of RenderTitle Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // expect(mainExampleCheckboxAriaChecked).equals('true');
+                        });
                         break;
                     case 'showTitle':
                         it(`validate input`, async function () {

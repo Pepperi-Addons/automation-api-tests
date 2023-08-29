@@ -178,7 +178,7 @@ export async function StorybookAttachmentTests() {
                         });
                         it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
                             const newLabelToSet = 'Auto test';
-                            await storyBookPage.inputs.changeLabel(newLabelToSet);
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Label Input Change`,
@@ -248,7 +248,7 @@ export async function StorybookAttachmentTests() {
                                 title: `'${input}' input`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
-                            await storyBookPage.inputs.toggleDissableComponent();
+                            await storyBookPage.inputs.toggleDisableControl();
                             await driver.scrollToElement(attachment.MainHeader);
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
@@ -256,7 +256,7 @@ export async function StorybookAttachmentTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await storyBookPage.elemntDoNotExist(attachment.MainExample_deleteButton);
-                            await storyBookPage.inputs.toggleDissableComponent();
+                            await storyBookPage.inputs.toggleDisableControl();
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disabled Input Changed to "false"`,
@@ -277,14 +277,14 @@ export async function StorybookAttachmentTests() {
                                 title: `'${input}' input`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
-                            await storyBookPage.inputs.toggleMandatoryComponent();
+                            await storyBookPage.inputs.toggleMandatoryControl();
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await storyBookPage.untilIsVisible(attachment.MainExample_mandatoryIcon);
-                            await storyBookPage.inputs.toggleMandatoryComponent();
+                            await storyBookPage.inputs.toggleMandatoryControl();
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
@@ -320,14 +320,14 @@ export async function StorybookAttachmentTests() {
                                 title: `'${input}' input`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
-                            await storyBookPage.inputs.toggleShowTitle();
+                            await storyBookPage.inputs.toggleShowTitleControl();
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `ShowTitle Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await storyBookPage.elemntDoNotExist(attachment.MainExample_titleLabel);
-                            await storyBookPage.inputs.toggleShowTitle();
+                            await storyBookPage.inputs.toggleShowTitleControl();
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `ShowTitle Input Changed to "true"`,
