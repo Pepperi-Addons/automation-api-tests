@@ -102,14 +102,6 @@ export async function StorybookButtonTests() {
         });
         buttonInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await button.getInputRowSelectorByName(input));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${input}' input`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
                 it(`switch to iframe`, async function () {
                     try {
                         await driver.findElement(storyBookPage.StorybookIframe, 5000);
@@ -124,6 +116,14 @@ export async function StorybookButtonTests() {
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await button.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -192,7 +192,7 @@ export async function StorybookButtonTests() {
                                 title: `'${input}' input`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
-                            await storyBookPage.inputs.toggleDissableComponent();
+                            await storyBookPage.inputs.toggleDisableControl();
                             await driver.click(button.MainHeader);
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
@@ -201,7 +201,7 @@ export async function StorybookButtonTests() {
                             });
                             let mainExampleButton = await driver.findElement(button.MainExampleButton);
                             expect(await mainExampleButton.getAttribute('disabled')).to.equal('true');
-                            await storyBookPage.inputs.toggleDissableComponent();
+                            await storyBookPage.inputs.toggleDisableControl();
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disabled Input Changed to "false"`,

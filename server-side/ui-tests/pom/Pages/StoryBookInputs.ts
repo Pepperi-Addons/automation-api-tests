@@ -17,6 +17,7 @@ export class StoryBookInpus extends AddonPage {
     public VisibleToggler: By = By.xpath(`//input[contains(@name,'visible')]`);
     public MandatoryToggler: By = By.xpath(`//input[contains(@name,'mandatory')]`);
     public ShowTitleToggler: By = By.xpath(`//input[contains(@name,'showTitle')]`);
+    public RenderTitleToggler: By = By.xpath(`//input[contains(@name,'renderTitle')]`);
     public CheckBoxElements: By = By.xpath(`//table//label//input[@type='radio']`);
     public RadioButtonElements: By = By.xpath(`//label//input[@type='radio']`);
     public ColorValue: By = By.xpath(`//input[contains(@id,'control-value')]`);
@@ -31,7 +32,7 @@ export class StoryBookInpus extends AddonPage {
         await this.browser.click(this.EmptySpaceToClick);
     }
 
-    public async changeLabel(label: string): Promise<void> {
+    public async changeLabelControl(label: string): Promise<void> {
         await this.browser.sendKeys(this.LabelInput, Key.CONTROL + 'a' + Key.DELETE);
         await this.browser.sendKeys(this.LabelInput, label);
         await this.browser.click(this.EmptySpaceToClick);
@@ -45,7 +46,7 @@ export class StoryBookInpus extends AddonPage {
         await this.changeInput(this.ClassNamesInput, value);
     }
 
-    public async toggleDissableComponent(): Promise<void> {
+    public async toggleDisableControl(): Promise<void> {
         await this.browser.click(this.DisableToggler);
     }
 
@@ -75,12 +76,16 @@ export class StoryBookInpus extends AddonPage {
         return;
     }
 
-    public async toggleMandatoryComponent(): Promise<void> {
+    public async toggleMandatoryControl(): Promise<void> {
         await this.browser.click(this.MandatoryToggler);
     }
 
-    public async toggleShowTitle(): Promise<void> {
+    public async toggleShowTitleControl(): Promise<void> {
         await this.browser.click(this.ShowTitleToggler);
+    }
+
+    public async toggleRenderTitleControl(): Promise<void> {
+        await this.browser.click(this.RenderTitleToggler);
     }
 
     public async getAllTypes() {

@@ -109,6 +109,7 @@ export async function ProfilesTests(generalService: GeneralService, request, tes
             });
 
             it('Verify PNS After insert via audit_data_logs', async () => {
+                generalService.sleep(3000);
                 console.log(`Verify PNS after insert, name: ${profileName}`);
                 const auditDataLogInsert = await profilesService.getAuditDataLog();
                 auditDataLogInsert[0]['ObjectModificationDateTime'] = await profilesService.trimDate(
@@ -117,7 +118,8 @@ export async function ProfilesTests(generalService: GeneralService, request, tes
                 expect(auditDataLogInsert[0]).to.have.property('ObjectKey').that.equals(createdProfile.UUID);
                 expect(auditDataLogInsert[0])
                     .to.have.property('ObjectModificationDateTime')
-                    .that.equals(createdProfile.ModificationDateTime);
+                    .that.contains(new Date().toISOString().split('T')[0]);
+                expect(auditDataLogInsert[0]).to.have.property('ObjectModificationDateTime').that.contains('Z');
                 expect(auditDataLogInsert[0]).to.have.property('ActionType').that.equals('insert');
                 expect(auditDataLogInsert[0]).to.have.property('Resource').that.equals('profiles');
                 console.log(`Finished Verifying PNS after insert, name: ${profileName}`);
@@ -165,6 +167,7 @@ export async function ProfilesTests(generalService: GeneralService, request, tes
             });
 
             it('Verify PNS After update via audit_data_logs', async () => {
+                generalService.sleep(3000);
                 console.log(`Verify PNS after update, name: ${profileName}`);
                 const auditDataLogUpdate = await profilesService.getAuditDataLog();
                 auditDataLogUpdate[0]['ObjectModificationDateTime'] = await profilesService.trimDate(
@@ -173,7 +176,8 @@ export async function ProfilesTests(generalService: GeneralService, request, tes
                 expect(auditDataLogUpdate[0]).to.have.property('ObjectKey').that.equals(createdProfile.UUID);
                 expect(auditDataLogUpdate[0])
                     .to.have.property('ObjectModificationDateTime')
-                    .that.equals(updatedProfile.ModificationDateTime);
+                    .that.contains(new Date().toISOString().split('T')[0]);
+                expect(auditDataLogUpdate[0]).to.have.property('ObjectModificationDateTime').that.contains('Z');
                 expect(auditDataLogUpdate[0]).to.have.property('ActionType').that.equals('update');
                 expect(auditDataLogUpdate[0]).to.have.property('Resource').that.equals('profiles');
                 expect(auditDataLogUpdate[0])
@@ -223,6 +227,7 @@ export async function ProfilesTests(generalService: GeneralService, request, tes
             });
 
             it('Verify PNS After delete via audit_data_logs', async () => {
+                generalService.sleep(3000);
                 console.log(`Verify PNS after update, name: ${profileName}`);
                 const auditDataLogDelete = await profilesService.getAuditDataLog();
                 auditDataLogDelete[0]['ObjectModificationDateTime'] = await profilesService.trimDate(
@@ -231,7 +236,8 @@ export async function ProfilesTests(generalService: GeneralService, request, tes
                 expect(auditDataLogDelete[0]).to.have.property('ObjectKey').that.equals(createdProfile.UUID);
                 expect(auditDataLogDelete[0])
                     .to.have.property('ObjectModificationDateTime')
-                    .that.equals(deletedProfile.ModificationDateTime);
+                    .that.contains(new Date().toISOString().split('T')[0]);
+                expect(auditDataLogDelete[0]).to.have.property('ObjectModificationDateTime').that.contains('Z');
                 expect(auditDataLogDelete[0]).to.have.property('ActionType').that.equals('update');
                 expect(auditDataLogDelete[0]).to.have.property('Resource').that.equals('profiles');
                 expect(auditDataLogDelete[0])

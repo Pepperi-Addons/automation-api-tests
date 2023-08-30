@@ -82,20 +82,20 @@ export async function NgxLibPOC() {
                 await colorPicker.okModal();
                 //4.3. can change label
                 const newLabelToSet = 'evgeny';
-                await storyBookPage.inputs.changeLabel(newLabelToSet);
+                await storyBookPage.inputs.changeLabelControl(newLabelToSet);
                 const newLabelGotFromUi = await colorPicker.getLabel();
                 expect(newLabelGotFromUi).to.equal(newLabelToSet);
                 //4.4. can disabled
-                await storyBookPage.inputs.toggleDissableComponent();
+                await storyBookPage.inputs.toggleDisableControl();
                 const isPenIconFound = await colorPicker.isPenIconFound();
                 expect(isPenIconFound).to.equal(false);
-                await storyBookPage.inputs.toggleDissableComponent();
+                await storyBookPage.inputs.toggleDisableControl();
                 //4.5. can AACompilent on/off -- TODO: what does it mean?
                 //4.6. showTitle
-                await storyBookPage.inputs.toggleShowTitle();
+                await storyBookPage.inputs.toggleShowTitleControl();
                 const labelAfterDisabelingTitle = await colorPicker.getLabel();
                 expect(labelAfterDisabelingTitle).to.equal('Type is main'); // once there is no title - the next title is the one 'taken'
-                await storyBookPage.inputs.toggleShowTitle();
+                await storyBookPage.inputs.toggleShowTitleControl();
                 //4.7. run on all type and see ->3.2.
                 const allTypes = await storyBookPage.inputs.getAllTypes();
                 for (let index = 0; index < allTypes.length; index++) {

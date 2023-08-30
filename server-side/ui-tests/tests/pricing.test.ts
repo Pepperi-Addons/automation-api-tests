@@ -1561,11 +1561,6 @@ export async function PricingTests(email: string, password: string, client: Clie
 
                 describe('Read Only', () => {
                     it('entering the same transaction post submission, checking the latest activity - ID', async function () {
-                        // base64ImageComponent = await driver.saveScreenshots();
-                        // addContext(this, {
-                        //     title: `At activity List - about to choose the latest transaction`,
-                        //     value: 'data:image/png;base64,' + base64ImageComponent,
-                        // });
                         await webAppList.isSpinnerDone();
                         await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
                         const latestActivityID = await (
@@ -1737,11 +1732,6 @@ export async function PricingTests(email: string, password: string, client: Clie
             it('Go Home', async function () {
                 await webAppHeader.goHome();
                 driver.sleep(1 * 1000);
-                // base64ImageComponent = await driver.saveScreenshots();
-                // addContext(this, {
-                //     title: `Returned to Home Page`,
-                //     value: 'data:image/png;base64,' + base64ImageComponent,
-                // });
             });
         });
 
@@ -1755,7 +1745,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                 try {
                     await webAppList.checkAllListElements();
                     driver.sleep(0.1 * 1000);
-                    await webAppList.clickOnPencilMenuButton();
+                    // await webAppList.clickOnPencilMenuButton();
+                    await webAppList.clickOnListActionsButton();
                     driver.sleep(0.1 * 1000);
                     await webAppList.selectUnderPencilMenu('Delete');
                     driver.sleep(0.1 * 1000);
@@ -1882,11 +1873,6 @@ export async function PricingTests(email: string, password: string, client: Clie
 
     async function searchInOrderCenter(this: Context, nameOfItem: string): Promise<void> {
         await orderPage.isSpinnerDone();
-        // let base64ImageComponent = await driver.saveScreenshots();
-        // addContext(this, {
-        //     title: `At Order Center - before Search`,
-        //     value: 'data:image/png;base64,' + base64ImageComponent,
-        // });
         const searchInput = await driver.findElement(orderPage.Search_Input);
         await searchInput.clear();
         driver.sleep(0.1 * 1000);
@@ -1914,11 +1900,6 @@ export async function PricingTests(email: string, password: string, client: Clie
         const itemContainer = await driver.findElement(orderPage.getSelectorOfItemInOrderCenterByName(nameOfItem));
         driver.sleep(0.05 * 1000);
         let itemUomValue = await driver.findElement(orderPage.UnitOfMeasure_Selector_Value);
-        // base64ImageComponent = await driver.saveScreenshots();
-        // addContext(this, {
-        //     title: `At Order Center - before Quantity change`,
-        //     value: 'data:image/png;base64,' + base64ImageComponent,
-        // });
         if ((await itemUomValue.getText()) !== uomValue) {
             await driver.click(orderPage.UnitOfMeasure_Selector_Value);
             driver.sleep(0.05 * 1000);
@@ -1927,11 +1908,6 @@ export async function PricingTests(email: string, password: string, client: Clie
             await itemContainer.click();
             driver.sleep(0.1 * 1000);
             itemUomValue = await driver.findElement(orderPage.UnitOfMeasure_Selector_Value);
-            // base64ImageComponent = await driver.saveScreenshots();
-            // addContext(this, {
-            //     title: `O.C. after UOM change`,
-            //     value: 'data:image/png;base64,' + base64ImageComponent,
-            // });
         }
         driver.sleep(0.05 * 1000);
         await orderPage.isSpinnerDone();
@@ -1990,11 +1966,6 @@ export async function PricingTests(email: string, password: string, client: Clie
     ): Promise<void> {
         driver.sleep(0.05 * 1000);
         let itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
-        // base64ImageComponent = await driver.saveScreenshots();
-        // addContext(this, {
-        //     title: `At Cart - before Quantity change`,
-        //     value: 'data:image/png;base64,' + base64ImageComponent,
-        // });
         if ((await itemUomValue.getText()) !== uomValue) {
             await itemUomValue.click();
             driver.sleep(0.05 * 1000);
@@ -2003,11 +1974,6 @@ export async function PricingTests(email: string, password: string, client: Clie
             await driver.click(orderPage.HtmlBody);
             driver.sleep(0.1 * 1000);
             itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
-            // base64ImageComponent = await driver.saveScreenshots();
-            // addContext(this, {
-            //     title: `Cart after UOM change`,
-            //     value: 'data:image/png;base64,' + base64ImageComponent,
-            // });
         }
         driver.sleep(0.05 * 1000);
         await orderPage.isSpinnerDone();
