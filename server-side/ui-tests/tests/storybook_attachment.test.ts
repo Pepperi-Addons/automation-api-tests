@@ -353,7 +353,7 @@ export async function StorybookAttachmentTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                             expect(attachmentInputsTitles.includes('xAlignment')).to.be.true;
-                            allAlignments = await storyBookPage.inputs.getAllAlignments();
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
                             driver.sleep(1 * 1000);
                         });
                         it(`validate current xAlignment is "left"`, async function () {

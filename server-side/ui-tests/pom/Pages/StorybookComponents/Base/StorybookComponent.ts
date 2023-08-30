@@ -10,6 +10,7 @@ export class StorybookComponent extends AddonPage {
     public MainHeader: By = By.xpath(`//h1[contains(@class,'title')]`);
     public MandatoryIcon: By = By.xpath(`//pep-icon[@name="system_must"]`);
     public PepTitle: By = By.xpath(`//pep-field-title`);
+    public PepCheckboxContainer: By = By.xpath(`//div[contains(@class,'pep-checkbox-container')]`);
     public ResetControlsButton: By = By.xpath(`//button[@title="Reset controls"]`);
     public Inputs_mainTableRow: By = By.xpath('//tr[contains(@title," inputs items")]');
     public Outputs_mainTableRow: By = By.xpath('//tr[contains(@title," outputs items")]');
@@ -56,6 +57,10 @@ export class StorybookComponent extends AddonPage {
 
     public async getSelectorOfOutputDefaultValueByName(outputName: string): Promise<By> {
         return By.xpath(`//span[text()="${outputName}"]/parent::td/following-sibling::td[2]/span`);
+    }
+
+    public async getSelectorOfOutputControlByName(outputName: string): Promise<By> {
+        return By.xpath(`//span[text()="${outputName}"]/parent::td/following-sibling::td[3]//textarea`);
     }
 
     public async isCorrectMainExampleShown(componentText: string): Promise<boolean> {
@@ -143,10 +148,26 @@ export class StorybookComponent extends AddonPage {
     }
 
     public async getTxtAlignmentByComponent(component: string) {
-        const txtAlignComp = await this.browser.findElement(
-            By.xpath(this.LabelTxtAlign.value.replace('{placeholder}', component)),
-        );
-        const txtAlignVal = (await txtAlignComp.getAttribute('style')).split(':')[1];
+        let selector;
+        let txtAlignVal;
+        switch (component) {
+            case 'checkbox':
+                selector = By.xpath(
+                    `${this.MainExample_BigBoxDiv.value.replace('{placeholder}', component)}${
+                        this.PepCheckboxContainer.value
+                    }`,
+                );
+                const txtAlignElement = await this.browser.findElement(selector);
+                const txtAlignElementClasses = await txtAlignElement.getAttribute('class');
+                txtAlignVal = txtAlignElementClasses.split('one-row')[1].split('-alignment')[0].trim();
+                break;
+
+            default:
+                selector = By.xpath(this.LabelTxtAlign.value.replace('{placeholder}', component));
+                const txtAlignComp = await this.browser.findElement(selector);
+                txtAlignVal = (await txtAlignComp.getAttribute('style')).split(':')[1];
+                break;
+        }
         return txtAlignVal;
     }
 }

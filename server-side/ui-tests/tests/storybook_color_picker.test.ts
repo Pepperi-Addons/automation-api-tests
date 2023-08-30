@@ -244,14 +244,14 @@ export async function StorybookColorPickerTests() {
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('xAlignment')).to.be.true;
                         });
-                        it(`get all xAlignments`, async function () {
+                        it(`get all xAlignments & validate current alignment is 'left'`, async function () {
                             const currentAlign = await colorPicker.getTxtAlignmentByComponent('color-picker');
                             expect(currentAlign).to.include('left');
-                            allAlignments = (await storyBookPage.inputs.getAllAlignments()).slice(5);
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
                         });
                         alignExpectedValues.forEach(async (title, index) => {
                             it(`'${title}' -- functional test (+screenshot)`, async function () {
-                                const alignment = allAlignments[index];
+                                const alignment = allAlignments[index + 1];
                                 await alignment.click();
                                 const currentAlign = await colorPicker.getTxtAlignmentByComponent('color-picker');
                                 const base64ImageComponentModal = await driver.saveScreenshots();

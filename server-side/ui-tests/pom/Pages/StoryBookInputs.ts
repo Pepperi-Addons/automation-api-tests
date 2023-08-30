@@ -107,6 +107,10 @@ export class StoryBookInpus extends AddonPage {
         return allIconPositions;
     }
 
+    public async getAllxAlignments() {
+        return await this.getAllRadioButtons('xAlignment');
+    }
+
     public async getAllIconPositions() {
         return await this.getAllRadioButtons('iconPosition');
     }
@@ -121,6 +125,10 @@ export class StoryBookInpus extends AddonPage {
 
     public async getAllStyleTypes() {
         return await this.getAllRadioButtons('styleType');
+    }
+
+    public async getAllTypeInputValues() {
+        return await this.getAllRadioButtons('type');
     }
 
     public async setColorValue(color: string) {
