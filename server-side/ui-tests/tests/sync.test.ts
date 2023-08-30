@@ -53,7 +53,7 @@ export async function SyncTests(email: string, password: string, client: Client,
     const buyerEmail = 'SyncE2ETestingSBBuyer@pepperitest.com';
     const buyerPass = '2HT#bK';
     let driver: Browser;
-    // await generalService.baseAddonVersionsInstallationNewSync(varPass);//---> has to get 1.0.X which is NOT avaliable
+    await generalService.baseAddonVersionsInstallationNewSync(varPass);
     // #region Upgrade survey dependencies
 
     const testData = {
@@ -64,7 +64,7 @@ export async function SyncTests(email: string, password: string, client: Client,
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-        // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],//---> has to get 1.0.X which is NOT avaliable
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
