@@ -44,6 +44,8 @@ export async function SyncTests(email: string, password: string, client: Client,
     let dataCollectionViewName;
     let accountInfoEditorName;
     let editorKey;
+    let accountInfoPageName;
+    let dataCollectionPageName;
     let changedAccountName;
     const updatedValue = 'val_evgeny_xyz123';
     const repEmail = 'SyncE2ETestingSBRep@pepperitest.com';
@@ -729,7 +731,7 @@ export async function SyncTests(email: string, password: string, client: Client,
             });
             it(`3. Create A Page For AccountsInfo Resource View & DataCollection Resource View`, async function () {
                 const e2eUtils = new E2EUtils(driver);
-                const accountInfoPageName = 'AccountsInfoPage';
+                accountInfoPageName = 'AccountsInfoPage';
                 accountsInfoPageUUID = await e2eUtils.addPageNoSections(accountInfoPageName, 'tests');
                 const pageBuilder = new PageBuilder(driver);
                 const createdPageAccountInfo = await pageBuilder.getPageByUUID(accountsInfoPageUUID, client);
@@ -757,7 +759,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 );
                 expect(accountInfoPageBlock.Configuration.Data.viewsList[0].title).to.equal(accountViewName);
                 //////////////////////////////////////
-                const dataCollectionPageName = 'DataCollectionPage';
+                dataCollectionPageName = 'DataCollectionPage';
                 dataCollectionPageUUID = await e2eUtils.addPageNoSections(dataCollectionPageName, 'tests');
                 const createdPageDataCollection = await pageBuilder.getPageByUUID(dataCollectionPageUUID, client);
                 const dataCollectionsectionUUID = createdPageDataCollection.Layout.Sections[0].Key;
@@ -789,7 +791,6 @@ export async function SyncTests(email: string, password: string, client: Client,
             it(`4. Create A Slug For CollectionData Page And Add To HomePage`, async function () {
                 slugNameCollectionData = `datacollection_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = slugNameCollectionData;
-                debugger;
                 await CreateSlug(
                     email,
                     password,
@@ -797,19 +798,18 @@ export async function SyncTests(email: string, password: string, client: Client,
                     generalService,
                     slugNameCollectionData,
                     slugPath,
-                    dataCollectionViewUUID,
+                    dataCollectionPageUUID,
                 );
                 driver.sleep(5000);
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
-                await brandedApp.addAdminHomePageButtons(slugNameCollectionData);
+                await brandedApp.addRepHomePageButtons(slugNameCollectionData);
                 const webAppHomePage = new WebAppHomePage(driver);
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }
-                debugger;
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slugNameCollectionData);
             });
             it(`5. Create A Slug For AccountsInfo Page And Add To HomePage`, async function () {
@@ -822,13 +822,12 @@ export async function SyncTests(email: string, password: string, client: Client,
                     generalService,
                     slugNameAccountInfo,
                     slugPath,
-                    accountViewUUID,
+                    accountsInfoPageUUID,
                 );
                 driver.sleep(5000);
             });
             it(`6. Set Slug To Be Shown In Acc. Dashboard`, async function () {
                 const accountDashboardLayout = new AccountDashboardLayout(driver);
-                debugger;
                 await accountDashboardLayout.configureToAccountMenuRepCardEVGENY(
                     driver,
                     slugNameAccountInfo,
@@ -837,7 +836,6 @@ export async function SyncTests(email: string, password: string, client: Client,
             });
         });
         describe('UI Tests - Enter DataCollection Page From Home Page - See Data Is Loading And Valid', () => {
-            //TODO
             this.retries(0);
 
             before(async function () {
@@ -858,8 +856,30 @@ export async function SyncTests(email: string, password: string, client: Client,
                 //1. re-sync
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.reSyncApp();
-                await webAppHomePage.initiateSalesActivity(slugNameCollectionData);
-                debugger;
+                await webAppHomePage.enterATD(slugNameCollectionData);
+                generalService.sleep(3 * 1000);
+                const webAppList = new WebAppList(driver);
+                const numberOfElements = await webAppList.getNumOfElementsTitle();
+                expect(Number(numberOfElements)).to.equal(dataCollectionSize);
+                await webAppList.clickEmptySpace();
+                const allListElements = await webAppList.getAllListElementsTextValue();
+                const allDataAsArray = allListElements.map((element) => element.split('\n'));
+                for (let index = 0; index < allDataAsArray.length; index++) {
+                    const rowElement = allDataAsArray[index];
+                    //rowElement[0] - Key
+                    expect(rowElement[0]).to.contain('@');
+                    expect(rowElement[0]).to.contain('company_code');
+                    expect(rowElement[0]).to.contain('division_code');
+                    expect(rowElement[0]).to.contain('val1');
+                    //rowElement[1] - division
+                    expect(rowElement[1]).to.contain('division_code_');
+                    //rowElement[2] - company
+                    expect(rowElement[2]).to.contain('company_code_');
+                    //rowElement[3] - val1
+                    expect(rowElement[3]).to.contain('val1_');
+                    //rowElement[4] - val2
+                    expect(rowElement[4]).to.contain('val2_abc_');
+                }
                 await webAppLoginPage.logout();
             });
             it(`2. Sales Rep`, async function () {
@@ -869,6 +889,30 @@ export async function SyncTests(email: string, password: string, client: Client,
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }
+                await webAppHomePage.enterATD(slugNameCollectionData);
+                generalService.sleep(4 * 1000);
+                const webAppList = new WebAppList(driver);
+                const numberOfElements = await webAppList.getNumOfElementsTitle();
+                expect(Number(numberOfElements)).to.equal(dataCollectionSize);
+                await webAppList.clickEmptySpace();
+                const allListElements = await webAppList.getAllListElementsTextValue();
+                const allDataAsArray = allListElements.map((element) => element.split('\n'));
+                for (let index = 0; index < allDataAsArray.length; index++) {
+                    const rowElement = allDataAsArray[index];
+                    //rowElement[0] - Key
+                    expect(rowElement[0]).to.contain('@');
+                    expect(rowElement[0]).to.contain('company_code');
+                    expect(rowElement[0]).to.contain('division_code');
+                    expect(rowElement[0]).to.contain('val1');
+                    //rowElement[1] - division
+                    expect(rowElement[1]).to.contain('division_code_');
+                    //rowElement[2] - company
+                    expect(rowElement[2]).to.contain('company_code_');
+                    //rowElement[3] - val1
+                    expect(rowElement[3]).to.contain('val1_');
+                    //rowElement[4] - val2
+                    expect(rowElement[4]).to.contain('val2_abc_');
+                }
                 await webAppLoginPage.logout();
             });
             it(`3. Buyer`, async function () {
@@ -877,6 +921,30 @@ export async function SyncTests(email: string, password: string, client: Client,
                 const webAppHomePage = new WebAppHomePage(driver);
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
+                }
+                await webAppHomePage.enterATD(slugNameCollectionData);
+                generalService.sleep(6 * 1000);
+                const webAppList = new WebAppList(driver);
+                const numberOfElements = await webAppList.getNumOfElementsTitle();
+                expect(Number(numberOfElements)).to.equal(dataCollectionSize);
+                await webAppList.clickEmptySpace();
+                const allListElements = await webAppList.getAllListElementsTextValue();
+                const allDataAsArray = allListElements.map((element) => element.split('\n'));
+                for (let index = 0; index < allDataAsArray.length; index++) {
+                    const rowElement = allDataAsArray[index];
+                    //rowElement[0] - Key
+                    expect(rowElement[0]).to.contain('@');
+                    expect(rowElement[0]).to.contain('company_code');
+                    expect(rowElement[0]).to.contain('division_code');
+                    expect(rowElement[0]).to.contain('val1');
+                    //rowElement[1] - division
+                    expect(rowElement[1]).to.contain('division_code_');
+                    //rowElement[2] - company
+                    expect(rowElement[2]).to.contain('company_code_');
+                    //rowElement[3] - val1
+                    expect(rowElement[3]).to.contain('val1_');
+                    //rowElement[4] - val2
+                    expect(rowElement[4]).to.contain('val2_abc_');
                 }
             });
         });
@@ -1231,7 +1299,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 );
                 expect(deleteDataCollectionRLResponse.Ok).to.equal(true);
                 expect(deleteDataCollectionRLResponse.Status).to.equal(200);
-                expect(deleteDataCollectionRLResponse.Body.Name).to.equal(accountViewName);
+                expect(deleteDataCollectionRLResponse.Body.Name).to.equal(dataCollectionViewName);
                 expect(deleteDataCollectionRLResponse.Body.Hidden).to.equal(true);
             });
             it('3. pages', async function () {
@@ -1316,7 +1384,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                 await webAppHeader.openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
-                await brandedApp.removeAdminHomePageButtons(slugNameCollectionData);
+                await brandedApp.removeRepHomePageButtons(slugNameCollectionData);
                 const webAppHomePage = new WebAppHomePage(driver);
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);

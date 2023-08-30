@@ -45,6 +45,7 @@ export class AddonPage extends Page {
     public MatOptionDropBox: By = By.xpath(`//span[@class='mat-option-text' and text()='|textToFill|']`);
 
     public AddonContainerEditAdmin: By = By.css('span[title="Admin"]+.editPenIcon');
+    public AddonContainerEditRep: By = By.css('span[title="Rep"]+.editPenIcon');
     public AddonContainerEditorSave: By = By.css('.save');
 
     //Catalog Section Locators
