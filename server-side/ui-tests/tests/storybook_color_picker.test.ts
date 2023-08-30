@@ -135,7 +135,7 @@ export async function StorybookColorPickerTests() {
                         });
                         it(`Functional test (+screenshot)`, async function () {
                             const newLabelToSet = 'Auto test';
-                            await storyBookPage.inputs.changeLabel(newLabelToSet);
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Label Input Change`,
@@ -151,7 +151,7 @@ export async function StorybookColorPickerTests() {
                             expect(colorPickerInputs.includes('disabled')).to.be.true;
                         });
                         it(`Functional test (+screenshot)`, async function () {
-                            await storyBookPage.inputs.toggleDissableComponent();
+                            await storyBookPage.inputs.toggleDisableControl();
                             const isPenIconFound = await colorPicker.isPenIconFound();
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
@@ -160,7 +160,7 @@ export async function StorybookColorPickerTests() {
                             });
                             expect(isPenIconFound).to.equal(false);
                             await storyBookPage.elemntDoNotExist(colorPicker.MainExampleColorEditButton);
-                            await storyBookPage.inputs.toggleDissableComponent();
+                            await storyBookPage.inputs.toggleDisableControl();
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disabled Input Change`,
@@ -181,7 +181,7 @@ export async function StorybookColorPickerTests() {
                             expect(colorPickerInputs.includes('showTitle')).to.be.true;
                         });
                         it(`Functional test (+screenshot)`, async function () {
-                            await storyBookPage.inputs.toggleShowTitle();
+                            await storyBookPage.inputs.toggleShowTitleControl();
                             const labelAfterDisabelingTitle = await colorPicker.getLabel();
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
@@ -189,7 +189,7 @@ export async function StorybookColorPickerTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             expect(labelAfterDisabelingTitle).to.equal('Type is main'); // once there is no title - the next title is the one 'taken'
-                            await storyBookPage.inputs.toggleShowTitle();
+                            await storyBookPage.inputs.toggleShowTitleControl();
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Show Title Input Change`,

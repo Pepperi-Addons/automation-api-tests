@@ -20,6 +20,7 @@ export class WebAppList extends Page {
     public List: By = By.css('pep-list .scrollable-content');
     public Headers: By = By.css('pep-list .table-header-fieldset fieldset .header-label');
     public PencilMenu: By = By.xpath('//pep-list-actions//pep-menu');
+    public ListActionsButton: By = By.xpath('//list-actions//button');
     public RadioButtons: By = By.css('pep-list .table-row-fieldset .mat-radio-button');
     public SelectAllCheckbox: By = By.css('pep-list .table-header-fieldset .mat-checkbox');
     public Cells: By = By.css('pep-list .table-row-fieldset .pep-report-fields');
@@ -41,6 +42,8 @@ export class WebAppList extends Page {
         '//virtual-scroller//fieldset//input[@type="checkbox"][@aria-checked="true"]',
     );
 
+    //title
+    public NumberOfElementsTitle: By = By.xpath('//pep-list-total//span');
     //Addon Page
     public AddonCells: By = By.css('pep-list .table-row-fieldset');
     public AddonAddButton: By = By.css('[data-qa] [title="Add"]');
@@ -181,6 +184,11 @@ export class WebAppList extends Page {
     public async clickOnPencilMenuButton(): Promise<void> {
         await this.isSpinnerDone();
         return await this.browser.click(this.PencilMenu);
+    }
+
+    public async clickOnListActionsButton(): Promise<void> {
+        await this.isSpinnerDone();
+        return await this.browser.click(this.ListActionsButton);
     }
 
     public async clickOnPencilMenuButtonEdit(): Promise<void> {
@@ -350,7 +358,12 @@ export class WebAppList extends Page {
     }
 
     public async getNumOfElementsTitle() {
-        return await (await this.browser.findElement(this.TotalResultsText)).getText();
+        return await (await this.browser.findElement(this.NumberOfElementsTitle)).getText();
+    }
+
+    public async clickEmptySpace() {
+        await this.browser.click(this.NumberOfElementsTitle);
+        this.browser.sleep(3 * 1000);
     }
 
     public async getListElementsAsArray() {
@@ -358,6 +371,12 @@ export class WebAppList extends Page {
     }
 
     public async getAllListElementsTextValue() {
+        const allElems = await this.getListElementsAsArray();
+        const text = await Promise.all(allElems.map(async (elem) => await elem.getText()));
+        return text;
+    }
+
+    public async getNumberOfElementsFromTitle() {
         const allElems = await this.getListElementsAsArray();
         const text = await Promise.all(allElems.map(async (elem) => await elem.getText()));
         return text;

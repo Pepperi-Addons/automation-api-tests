@@ -173,6 +173,22 @@ export class WebAppHomePage extends WebAppPage {
         }
     }
 
+    public async enterATD(nameOfATD?: string): Promise<void> {
+        //Start New Workflow
+        if (nameOfATD) {
+            await this.clickOnBtn(nameOfATD);
+        } else {
+            await this.click(this.MainHomePageBtn);
+        }
+        console.log('Loading List');
+        //Get to Items
+        const webAppList = new WebAppList(this.browser);
+        this.browser.sleep(3000);
+        //Validate nothing is loading before clicking on dialog box
+        await webAppList.isSpinnerDone();
+        return;
+    }
+
     //TODO: POM should not contain Business Logic related checks/validations, move this to the relevant test suite or 'helper service'.
     public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
