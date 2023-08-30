@@ -9,6 +9,7 @@ export class StorybookComponent extends AddonPage {
     public MainExample_content: By = By.xpath(`//div[contains(@id,'#placeholder')]//div[contains(@id,'#placeholder')]`);
     public MainHeader: By = By.xpath(`//h1[contains(@class,'title')]`);
     public MandatoryIcon: By = By.xpath(`//pep-icon[@name="system_must"]`);
+    public PepTitle: By = By.xpath(`//pep-field-title`);
     public ResetControlsButton: By = By.xpath(`//button[@title="Reset controls"]`);
     public Inputs_mainTableRow: By = By.xpath('//tr[contains(@title," inputs items")]');
     public Outputs_mainTableRow: By = By.xpath('//tr[contains(@title," outputs items")]');
