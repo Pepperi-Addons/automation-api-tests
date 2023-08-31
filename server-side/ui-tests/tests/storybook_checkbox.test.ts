@@ -557,8 +557,16 @@ export async function StorybookCheckboxTests() {
                 }
             });
         });
-        checkboxOutputs.forEach(async (output) => {
+        checkboxOutputs.forEach(async (output, index) => {
             describe(`OUTPUT: '${output}'`, async function () {
+                if (index === 0) {
+                    it(`close Inputs`, async function () {
+                        const inputsMainTableRowElement = await driver.findElement(checkbox.Inputs_mainTableRow);
+                        if ((await inputsMainTableRowElement.getAttribute('title')).includes('Hide')) {
+                            await inputsMainTableRowElement.click();
+                        }
+                    });
+                }
                 it(`SCREENSHOT`, async function () {
                     await driver.click(await checkbox.getOutputRowSelectorByName(output));
                     const base64ImageComponent = await driver.saveScreenshots();
