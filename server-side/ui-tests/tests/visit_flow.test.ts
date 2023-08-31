@@ -24,6 +24,7 @@ import { ObjectsService } from '../../services';
 import { OrderPage } from '../pom/Pages/OrderPage';
 import { SurveyTemplateBuilder } from '../pom/addons/SurveyTemplateBuilder';
 import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
+// import { Key } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -466,6 +467,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 it('If more than one visit - Choosing a Visit Flow', async function () {
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Choosing a Visit`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
                         await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
                     } else {
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
@@ -480,7 +486,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
 
                 it('Checking off "Start"', async function () {
                     // debugger
+                    await visitFlow.isSpinnerDone();
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlow_Groups_Content, 15000);
                     await visitFlow.clickElement('VisitFlow_GroupButton_Start');
+                    visitFlow.pause(0.5 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_StartVisit, 15000);
                     visitFlow.pause(0.5 * 1000);
                     base64ImageComponent = await driver.saveScreenshots();
@@ -544,6 +553,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.clickElement('VisitFlow_OrdersChooseCatalogDialog_DoneButton');
                     await visitFlow.isSpinnerDone();
                     // Choosing an item in Order Center:
+                    // debugger
                     await orderPage.searchInOrderCenter(salesOrderItemName);
                     await driver.click(
                         orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(salesOrderItemName),
@@ -689,6 +699,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
                 });
                 it('Performing Manual Sync', async () => {
+                    // driver.sleep(20 * 1000);
                     await e2eUtils.performManualSync(client);
                 });
                 it('Loging Out and Loging In as Rep', async () => {
@@ -716,6 +727,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlow.pause(1 * 1000);
                 });
                 it('If more than one visit - Choosing a Visit Flow', async function () {
+                    // debugger
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
                         await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
@@ -730,6 +742,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
                 });
                 it('Checking off "Start"', async function () {
+                    await visitFlow.isSpinnerDone();
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlow_Groups_Content, 15000);
                     await visitFlow.clickElement('VisitFlow_GroupButton_Start');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_StartVisit, 15000);
                     visitFlow.pause(0.5 * 1000);
@@ -1011,7 +1025,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     expect(getCreatedSalesOrderTransaction[0]).to.haveOwnProperty('TransactionLines');
                 });
 
-                it('Deleting UDCs listings', async () => {
+                it('Deleting UDCs "VisitFlowGroups" listings', async () => {
                     // deleting created VisitFlowGroups documents
                     upsertedListingsToVisitFlowGroups.forEach(async (documentBody) => {
                         const deleteResponse = await udcService.hideObjectInACollection(
@@ -1026,7 +1040,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         expect(deleteResponse.Body.Title).to.equal(documentBody.Title);
                         expect(deleteResponse.Body.SortIndex).to.equal(documentBody.SortIndex);
                     });
-
+                });
+                it('Deleting UDCs "VisitFlows" listings', async () => {
                     // deleting created VisitFlows documents
                     upsertedListingsToVisitFlows.forEach(async (documentBody) => {
                         const deleteResponse = await udcService.hideObjectInACollection('VisitFlows', documentBody.Key);
@@ -1037,7 +1052,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         expect(deleteResponse.Body.Key).to.equal(documentBody.Key);
                         expect(deleteResponse.Body.Title).to.equal(documentBody.Title);
                     });
-
+                });
+                it('Deleting LEFTOVERS UDCs "VisitFlowGroups" listings', async () => {
                     // deleting any leftovers from unsuccessful previous tests
                     let visitFlowGroupsDocuments = await udcService.getDocuments('VisitFlowGroups', {
                         where: 'Title like "%Auto%"',
@@ -1051,7 +1067,9 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         where: 'Title like "%Auto%"',
                     });
                     expect(visitFlowGroupsDocuments).to.be.an('array').with.lengthOf(0);
-
+                });
+                it('Deleting LEFTOVERS UDCs "VisitFlows" listings', async () => {
+                    // deleting any leftovers from unsuccessful previous tests
                     let visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
                         where: 'Name like "Auto%"',
                     });

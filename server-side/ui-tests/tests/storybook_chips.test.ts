@@ -137,79 +137,144 @@ export async function StorybookChipsTests() {
                 });
                 switch (input) {
                     case 'label':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('label')).to.be.true;
                         });
-                        // TODO
+                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newLabelToSet = 'Auto test';
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newLabelGotFromUi = await chips.getMainExampleLabel();
+                            expect(newLabelGotFromUi).to.equal(newLabelToSet);
+                        });
                         break;
+
                     case 'chips':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('chips')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'classNames':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('classNames')).to.be.true;
                         });
-                        // TODO
+                        it(`[ control = 'rotate3d' ] functional test (+screenshot)`, async function () {
+                            const newClassNamesToSet = 'rotate3d';
+                            await storyBookPage.inputs.changeClassNamesControl(newClassNamesToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ClassNames Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newClassNamesGotFromUi = await (
+                                await driver.findElement(chips.MainExampleChip)
+                            ).getAttribute('class');
+                            console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
+                            expect(newClassNamesGotFromUi).to.contain(newClassNamesToSet);
+                        });
+                        it(`[ control = '' ] functional test (+screenshot)`, async function () {
+                            const newClassNamesToSet = '';
+                            await storyBookPage.inputs.changeClassNamesControl(newClassNamesToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ClassNames Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newClassNamesGotFromUi = await (
+                                await driver.findElement(chips.MainExampleChip)
+                            ).getAttribute('class');
+                            console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
+                            expect(newClassNamesGotFromUi).to.not.contain('rotate3d');
+                        });
                         break;
+
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`Functional test (+screenshots)`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.inputs.toggleDisableControl();
+                            await driver.click(chips.MainHeader);
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            let mainExampleChip = await driver.findElement(chips.MainExampleChip);
+                            expect(await mainExampleChip.getAttribute('disabled')).to.equal('true');
+                            await storyBookPage.inputs.toggleDisableControl();
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            mainExampleChip = await driver.findElement(chips.MainExampleChip);
+                            const disabledAttribute = await mainExampleChip.getAttribute('disabled');
+                            expect(disabledAttribute).to.be.null;
+                        });
                         break;
+
                     case 'inline':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('inline')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'mandatory':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('mandatory')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'orientation':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('orientation')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'placeholder':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('placeholder')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'renderTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('renderTitle')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'showTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('showTitle')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'styleType':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('styleType')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'type':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('type')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'xAlignment':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO
