@@ -461,7 +461,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHeader.openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
-                await brandedApp.addAdminHomePageButtons(slideshowSlugDisplayName);
+                await brandedApp.addRepHomePageButtons(slideshowSlugDisplayName);
                 const webAppHomePage = new WebAppHomePage(driver);
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
@@ -707,7 +707,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHeader.openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
-                await brandedApp.removeAdminHomePageButtons(slideshowSlugDisplayName);
+                await brandedApp.removeRepHomePageButtons(slideshowSlugDisplayName);
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.manualResync(client);
                 const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slideshowSlugDisplayName);
