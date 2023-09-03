@@ -1,15 +1,19 @@
 import { By } from 'selenium-webdriver';
-import { AddonPage } from '../..';
+import { StorybookComponent } from './Base/StorybookComponent';
 
-export class ColorPicker extends AddonPage {
-    //should this extend 'page'? maybe create Component base class
-
+export class ColorPicker extends StorybookComponent {
+    public IframeElement: By = By.xpath(`//iframe`);
     public Component: By = By.xpath(`//div[contains(@id,'color-picker')]//div[contains(@id,'color-picker')]`);
     public ComponentLabel: By = By.xpath(`(//div[contains(@id,'color-picker')]//pep-field-title//mat-label)[1]`);
     public ComponentLabelTxtAlign: By = By.xpath(`//div[contains(@id,'color-picker')]//pep-field-title//div`);
-    public IframeElement: By = By.xpath(`//iframe`);
+    public MainExampleDiv: By = By.xpath('//div[@id="story--components-color-picker--story-1"]');
+    public MainExampleLabel: By = By.xpath(`${this.MainExampleDiv.value}//mat-label`);
     public PenIcon: By = By.xpath(`//mat-icon//pep-icon[contains(@name,'system_edit')]`);
+    public MainExampleColorEditButton: By = By.xpath(
+        `//div[@id="story--components-color-picker--story-1"]//div[contains(@class,"pep-color")]/button`,
+    );
     public ComponentColor: By = By.xpath(`//div[contains(@class,'pep-color pep-input one-row')]`);
+    public StoryEditButton: By = By.xpath(`/following-sibling::div[2]//div[contains(@class,"pep-color")]/button`); // has to be concatenated to the story h3 selector
     //color picker modal
     public ChangeHueTitle: By = By.xpath(`//mat-label[@title="Change hue"]`);
     public HueSilder: By = By.xpath(`(//mat-slider)[1]`);
@@ -24,7 +28,6 @@ export class ColorPicker extends AddonPage {
     public CurrentColorBox: By = By.xpath(`//div[@class='current-color']`);
     public ModalOKBtn: By = By.xpath(`//span[contains(text(),'Ok')]`);
     //
-
     public async isComponentFound(): Promise<boolean> {
         await this.browser.switchTo(this.IframeElement);
         return (
@@ -36,6 +39,33 @@ export class ColorPicker extends AddonPage {
     public async openComonentModal(): Promise<void> {
         await this.browser.click(this.Component);
         this.browser.sleep(4000);
+    }
+
+    public async getLabel(): Promise<string> {
+        const label = await this.browser.findElement(this.ComponentLabel);
+        return await label.getText();
+    }
+
+    public async getMainExampleLabel(): Promise<string> {
+        const label = await this.browser.findElement(this.MainExampleLabel);
+        return (await label.getText()).trim();
+    }
+
+    public async getComponentTxtAlignment() {
+        const txtAlignComp = await this.browser.findElement(
+            By.xpath(this.ComponentLabelTxtAlign.value.replace('{placeholder}', 'color-picker')),
+        );
+        const txtAlignVal = (await txtAlignComp.getAttribute('style')).split(':')[1];
+        return txtAlignVal;
+    }
+
+    public async getAllStories() {
+        const allStories = await this.browser.findElements(this.Component);
+        return allStories.slice(1);
+    }
+
+    public async getStoryEditButtonSelector(storySelector: By) {
+        return By.xpath(`${storySelector.value}${this.StoryEditButton.value}`);
     }
 
     public async isModalFullyShown(): Promise<boolean> {
@@ -75,11 +105,6 @@ export class ColorPicker extends AddonPage {
         await this.browser.click(this.ModalOKBtn);
     }
 
-    public async getLabel(): Promise<string> {
-        const label = await this.browser.findElement(this.ComponentLabel);
-        return await label.getText();
-    }
-
     public async isPenIconFound(): Promise<boolean> {
         const penIcon = await this.browser.findElement(this.PenIcon);
         const penIconStyle = await penIcon.getAttribute('style');
@@ -101,14 +126,7 @@ export class ColorPicker extends AddonPage {
         return componentStyle.substring(indexOfP1, indexOfP2 + 1);
     }
 
-    public async getComponentTxtAlignment() {
-        const txtAlignComp = await this.browser.findElement(this.ComponentLabelTxtAlign);
-        const txtAlignVal = (await txtAlignComp.getAttribute('style')).split(':')[1];
-        return txtAlignVal;
-    }
-
-    public async getAllStories() {
-        const allStories = await this.browser.findElements(this.Component);
-        return allStories.slice(1);
+    public async doesColorPickerComponentFound(): Promise<void> {
+        await this.doesComponentFound('color-picker', 'Color picker');
     }
 }

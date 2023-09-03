@@ -69,6 +69,7 @@ export class PFSService {
     }
 
     getFile(schemaName, path: string) {
+        // this.generalService.sleep(1000);
         return this.papiClient.get(`/addons/pfs/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/${schemaName}/${path}`);
     }
 

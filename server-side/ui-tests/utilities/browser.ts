@@ -112,6 +112,15 @@ export class Browser {
         await this.driver.switchTo().window(allTabs[indexOfTab]);
     }
 
+    public async goBack(): Promise<any> {
+        await this.driver.navigate().back();
+    }
+
+    // public async switchToOtherTab(indexOfTab: number): Promise<any> {
+    //     const allTabs = await this.driver.getAllWindowHandles();
+    //     await this.driver.switchTo().window(allTabs[indexOfTab]);
+    // }
+
     //TODO: 19/04 By Oren:
     //Try with this code:
     // const draggable = await driver.findElement(By.css('[title="Chart"]'));
@@ -260,6 +269,7 @@ export class Browser {
         this.sleep(1000);
         if (afterClickLocator) await this.click(afterClickLocator);
         if (waitFunction && that) await waitFunction.call(that);
+        // if (waitFunction && this) await waitFunction.call(this);
     }
 
     public async sendKeys(selector: By, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {

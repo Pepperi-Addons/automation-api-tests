@@ -9,6 +9,8 @@ import promised from 'chai-as-promised';
 import { OrderPageItem } from '../../Pages/OrderPage';
 import { ConsoleColors } from '../../../../services/general.service';
 import { PepperiStatus } from '../../Enumerations/PepperiStatus';
+// import { Context } from 'mocha';
+// import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
@@ -43,6 +45,7 @@ export class AddonPage extends Page {
     public MatOptionDropBox: By = By.xpath(`//span[@class='mat-option-text' and text()='|textToFill|']`);
 
     public AddonContainerEditAdmin: By = By.css('span[title="Admin"]+.editPenIcon');
+    public AddonContainerEditRep: By = By.css('span[title="Rep"]+.editPenIcon');
     public AddonContainerEditorSave: By = By.css('.save');
 
     //Catalog Section Locators
@@ -175,7 +178,7 @@ export class AddonPage extends Page {
     }
 
     public async selectDropBoxByString(locator: By, option: string, index?: number): Promise<void> {
-        // this.browser.sleep(3000);
+        this.browser.sleep(0.1 * 1000);
         this.browser.untilIsVisible(locator);
         if (index !== undefined) {
             await this.browser.click(locator, index);
@@ -268,6 +271,30 @@ export class AddonPage extends Page {
             expect(itemQuantity).to.equal(itemsToValidate[i].expectedQty);
             expect(itemTotalUnitPrice).to.equal(itemsToValidate[i].expectedUnitPrice);
         }
+    }
+
+    public async testCartItem(wholePageExpectedPrice: string, itemToValidate: OrderPageItem): Promise<void> {
+        // Hagit Aug 23
+        const wholeOrderPrice = await (await this.browser.findElement(this.WholeOrderPrice)).getAttribute('title');
+        console.info(
+            'wholeOrderPrice: ',
+            wholeOrderPrice,
+            'wholeOrderPrice after split and trim: ',
+            wholeOrderPrice.split('$')[1].trim(),
+        );
+        // debugger
+        expect(wholeOrderPrice).to.equal(wholePageExpectedPrice);
+
+        const itemQuantity = await (await this.browser.findElement(itemToValidate.qty)).getAttribute('title');
+        console.info('itemQuantity: ', itemQuantity);
+        // debugger
+        const itemTotalUnitPrice = await (
+            await this.browser.findElement(itemToValidate.totalUnitPrice)
+        ).getAttribute('title');
+        console.info('itemTotalUnitPrice: ', itemTotalUnitPrice);
+        // debugger
+        expect(itemQuantity).to.equal(itemToValidate.expectedQty);
+        expect(itemTotalUnitPrice).to.equal(itemToValidate.expectedUnitPrice);
     }
 
     public async getLastOrderIdFromActivitiesByATDName(nameOfATD: string): Promise<string> {

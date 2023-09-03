@@ -1,11 +1,12 @@
 import { describe, it, before, after, afterEach } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../services/general.service';
+import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
+import addContext from 'mochawesome/addContext';
 import { Browser } from '../utilities/browser';
 import {
-    WebAppDialog,
+    // WebAppDialog,
     WebAppHeader,
     WebAppHomePage,
     WebAppLoginPage,
@@ -23,6 +24,7 @@ import { ObjectsService } from '../../services';
 import { OrderPage } from '../pom/Pages/OrderPage';
 import { SurveyTemplateBuilder } from '../pom/addons/SurveyTemplateBuilder';
 import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
+// import { Key } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -36,7 +38,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
-    let webAppDialog: WebAppDialog;
+    // let webAppDialog: WebAppDialog;
     // let settingsSidePanel: WebAppSettingsSidePanel;
     let accountDashboardLayout: AccountDashboardLayout;
     let orderPage: OrderPage;
@@ -79,6 +81,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let getCreatedSalesOrderTransaction;
     // let resourceViews: ResourceViews;
     let salesOrderItemName: string;
+    let base64ImageComponent;
 
     describe('Visit Flow Test Suite', async () => {
         describe('Visit Flow UI tests', () => {
@@ -87,7 +90,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 webAppLoginPage = new WebAppLoginPage(driver);
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
-                webAppDialog = new WebAppDialog(driver);
+                // webAppDialog = new WebAppDialog(driver);
                 // settingsSidePanel = new WebAppSettingsSidePanel(driver);
                 accountDashboardLayout = new AccountDashboardLayout(driver);
                 surveyService = new SurveyTemplateBuilder(driver);
@@ -113,6 +116,60 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await driver.quit();
             });
 
+            it('Pages Leftovers Cleanup', async () => {
+                const allPages = await pageBuilder.getAllPages(client);
+                const pagesOfAutoTest = allPages?.Body.filter((page) => {
+                    if (page.Name.includes('VisitFlow Page Auto_')) {
+                        return page.Key;
+                    }
+                });
+                const blankPages = allPages?.Body.filter((page) => {
+                    if (page.Name.includes('Blank ')) {
+                        return page.Key;
+                    }
+                });
+                console.info(`allPages: ${JSON.stringify(allPages.Body, null, 4)}`);
+                console.info(`pagesOfAutoTest: ${JSON.stringify(pagesOfAutoTest, null, 4)}`);
+                console.info(`blankPages: ${JSON.stringify(blankPages, null, 4)}`);
+                const deleteAutoPagesResponse: FetchStatusResponse[] = await Promise.all(
+                    pagesOfAutoTest.map(async (autoPage) => {
+                        const deleteAutoPageResponse = await pageBuilder.removePageByKey(autoPage.Key, client);
+                        console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                        return deleteAutoPageResponse;
+                    }),
+                );
+                // pagesOfAutoTest.forEach(async (page) => {
+                //     const deleteAutoPageResponse = await pageBuilder.removePageByKey(page.Key, client);
+                //     console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                //     deleteAutoPagesResponse.push(deleteAutoPageResponse);
+                // });
+                const deleteBlankPagesResponse: FetchStatusResponse[] = await Promise.all(
+                    blankPages.map(async (blankPage) => {
+                        const deleteAutoPageResponse = await pageBuilder.removePageByKey(blankPage.Key, client);
+                        console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                        return deleteAutoPageResponse;
+                    }),
+                );
+                // blankPages.forEach(async (page) => {
+                //     // debugger
+                //     const deleteBlankPageResponse = await pageBuilder.removePageByKey(page.Key, client);
+                //     console.info(`deleteBlankPageResponse: ${JSON.stringify(deleteBlankPageResponse, null, 4)}`);
+                //     deleteBlankPagesResponse.push(deleteBlankPageResponse);
+                // });
+                console.info(`deleteAutoPagesResponse: ${JSON.stringify(deleteAutoPagesResponse, null, 4)}`);
+                console.info(`deleteBlankPagesResponse: ${JSON.stringify(deleteBlankPagesResponse, null, 4)}`);
+                generalService.sleep(5 * 1000);
+                const allPagesAfterCleanup = await pageBuilder.getAllPages(client);
+                const findAutoPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) => page.Name.includes('Auto_'));
+                const findBlankPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) =>
+                    page.Name.includes('Blank'),
+                );
+                console.info(`findAutoPageAfterCleanup: ${JSON.stringify(findAutoPageAfterCleanup, null, 4)}`);
+                console.info(`findBlankPageAfterCleanup: ${JSON.stringify(findBlankPageAfterCleanup, null, 4)}`);
+                expect(findAutoPageAfterCleanup).to.be.undefined;
+                expect(findBlankPageAfterCleanup).to.be.undefined;
+            });
+
             it('Making sure UDCs custom (manually inserted) fields are NOT removed upon version upgrade', async () => {
                 // custom field "manuallyAddedField" was added to "VisitFlows" collection, and needs to be there after version upgrade
                 const visitFlowsSchemes = await udcService.getSchemes({
@@ -121,7 +178,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 expect(visitFlowsSchemes).to.be.an('array').with.lengthOf(1);
                 expect(visitFlowsSchemes[0]).to.haveOwnProperty('Fields');
                 expect(visitFlowsSchemes[0].Fields).to.haveOwnProperty('manuallyAddedField');
-                console.info('visitFlowsSchemes: ', visitFlowsSchemes[0].Fields);
+                console.info('visitFlowsSchemes: ', JSON.stringify(visitFlowsSchemes[0].Fields, null, 2));
                 // custom field "manuallyAddedStepField" was added to "VisitFlowSteps" collection, and needs to be there after version upgrade
                 const visitFlowStepsSchemes = await udcService.getSchemes({
                     where: 'Name="VisitFlowSteps"',
@@ -129,7 +186,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 expect(visitFlowStepsSchemes).to.be.an('array').with.lengthOf(1);
                 expect(visitFlowStepsSchemes[0]).to.haveOwnProperty('Fields');
                 expect(visitFlowStepsSchemes[0].Fields).to.haveOwnProperty('manuallyAddedStepField');
-                console.info('visitFlowStepsSchemes: ', visitFlowStepsSchemes[0].Fields);
+                console.info('visitFlowStepsSchemes: ', JSON.stringify(visitFlowStepsSchemes[0].Fields, null, 2));
                 // custom field "manuallyAddedGroupField" was added to "VisitFlowSteps" collection, and needs to be there after version upgrade
                 const visitFlowGroupsSchemes = await udcService.getSchemes({
                     where: 'Name="VisitFlowGroups"',
@@ -137,7 +194,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 expect(visitFlowGroupsSchemes).to.be.an('array').with.lengthOf(1);
                 expect(visitFlowGroupsSchemes[0]).to.haveOwnProperty('Fields');
                 expect(visitFlowGroupsSchemes[0].Fields).to.haveOwnProperty('manuallyAddedGroupField');
-                console.info('visitFlowGroupsSchemes: ', visitFlowGroupsSchemes[0].Fields);
+                console.info('visitFlowGroupsSchemes: ', JSON.stringify(visitFlowGroupsSchemes[0].Fields, null, 2));
             });
 
             it('Login', async () => {
@@ -191,7 +248,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
                 });
-                it('New Page through the UI + VisitFlow Block through API', async () => {
+                it('New Page through the UI + VisitFlow Block through API', async function () {
                     pageUUID = await e2eUtils.addPage(pageName, 'Visit Flow 0.5 tests');
                     expect(pageUUID).to.not.be.undefined;
                     console.info('pageUUID: ', pageUUID);
@@ -202,10 +259,19 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     const responseOfPublishPage = await pageBuilder.publishPage(visitFlowPage, client);
                     console.info('responseOfPublishPage: ', JSON.stringify(responseOfPublishPage, null, 4));
                 });
-                it('Verifying Page was created successfully', async () => {
+                it('Verifying Page was created successfully', async function () {
                     await e2eUtils.navigateTo('Page Builder');
                     await pageBuilder.searchForPageByName(pageName);
+                    await visitFlow.isSpinnerDone();
                     pageBuilder.pause(0.2 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Page created`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    const newPageExist = await pageBuilder.checkPageExist(pageName);
+                    console.info('newPageExist: ', JSON.stringify(typeof newPageExist, null, 4));
+                    // expect(typeof newPageExist).to.equal('WebElement');
                 });
             });
 
@@ -289,17 +355,22 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             });
 
             describe('Creating and Mapping a Slug', () => {
-                it('Creating a Visit Flow Slug for Automation', async () => {
+                it('Creating a Visit Flow Slug for Automation', async function () {
                     await e2eUtils.navigateTo('Slugs');
                     await slugs.createSlug(slugDisplayName, slug_path, 'slug for Visit Flow Automation');
                     slugs.pause(3 * 1000);
                     slugUUID = await slugs.getSlugUUIDbySlugName(slug_path, client);
                     console.info('slugUUID: ', slugUUID);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Slug created`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await webAppHeader.goHome();
                     expect(slugUUID).to.not.be.undefined;
                 });
 
-                it('Dragging the created slug to the mapped fields section and Posting via API', async () => {
+                it('Dragging the created slug to the mapped fields section and Posting via API', async function () {
                     const mappedSlugsUpsertResponse = await e2eUtils.addToMappedSlugs(
                         [{ slug_path: slug_path, pageUUID: pageUUID }],
                         client,
@@ -319,6 +390,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await slugs.clickTab('Mapping_Tab');
                     await webAppHomePage.isSpinnerDone();
                     await slugs.waitTillVisible(slugs.MappingTab_RepCard_InnerListOfMappedSlugs, 15000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Slug Mapped`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     const slugNameAtMappedSlugsSmallDisplayInRepCard = await driver.findElement(
                         slugs.getSelectorOfMappedSlugInRepCardSmallDisplayByText(slug_path),
                         10000,
@@ -347,49 +423,99 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             });
 
             describe('Going Through a Basic Visit Flow', () => {
-                it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async () => {
+                it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');
                     await webAppHeader.isSpinnerDone();
                     driver.sleep(1 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At Accounts`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.waitTillVisible(visitFlow.FirstAccountInList, 15000);
                     await visitFlow.clickElement('FirstAccountInList');
                     await visitFlow.isSpinnerDone();
                     driver.sleep(1 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Inside first account in list`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Button, 15000);
                     await visitFlow.clickElement('AccountHomePage_HamburgerMenu_Button');
+                    visitFlow.pause(0.2 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Hamburger Menu opened`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_HamburgerMenu_Content, 15000);
                     visitFlow.pause(1 * 1000);
                     await visitFlow.click(
                         visitFlow.getSelectorOfAccountHomePageHamburgerMenuVisitFlowAutomatedSlug(slugDisplayName),
                     );
                     visitFlow.pause(1 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Clicked Wanted Slug at hamburger menu`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
 
-                it('If more than one visit - Choosing a Visit Flow', async () => {
+                it('If more than one visit - Choosing a Visit Flow', async function () {
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Choosing a Visit`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
                         await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
                     } else {
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
                     visitFlow.pause(1 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Entered Visit`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
 
-                it('Checking off "Start"', async () => {
+                it('Checking off "Start"', async function () {
+                    // debugger
+                    await visitFlow.isSpinnerDone();
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlow_Groups_Content, 15000);
                     await visitFlow.clickElement('VisitFlow_GroupButton_Start');
+                    visitFlow.pause(0.5 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_StartVisit, 15000);
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Start Group Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.clickElement('VisitFlow_StepButton_StartVisit');
                     await visitFlow.isSpinnerDone();
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Start Visit Step Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.insertTextToInputElement(
                         `Automated test (${randomString}) of Visit Flow started`,
-                        visitFlow.VisitFlowMainActivity_FormPage_SubjectInput,
+                        visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
                     );
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Input content inserted`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
                     await visitFlow.waitTillVisible(
                         visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
@@ -403,9 +529,15 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Start Finished`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
 
-                it('Checking off "Orders"', async () => {
+                it('Checking off "Orders"', async function () {
+                    visitFlow.pause(0.5 * 1000);
                     await visitFlow.clickElement('VisitFlow_GroupButton_Orders');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_SalesOrder, 15000);
                     visitFlow.pause(0.5 * 1000);
@@ -421,6 +553,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.clickElement('VisitFlow_OrdersChooseCatalogDialog_DoneButton');
                     await visitFlow.isSpinnerDone();
                     // Choosing an item in Order Center:
+                    // debugger
                     await orderPage.searchInOrderCenter(salesOrderItemName);
                     await driver.click(
                         orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(salesOrderItemName),
@@ -431,26 +564,68 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.clickElement('VisitFlow_DefaultCatalog_CartButton');
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_DefaultCatalog_SubmitButton, 15000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Order Finished`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.clickElement('VisitFlow_DefaultCatalog_SubmitButton');
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     visitFlow.pause(0.5 * 1000);
                 });
 
-                it('Checking off "End"', async () => {
+                it('Checking off "End"', async function () {
+                    // debugger;
                     await visitFlow.clickElement('VisitFlow_GroupButton_End');
+                    visitFlow.pause(0.2 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_EndVisit, 15000);
-                    visitFlow.pause(0.5 * 1000);
+                    visitFlow.pause(0.3 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `End Group Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.clickElement('VisitFlow_StepButton_EndVisit');
                     await visitFlow.isSpinnerDone();
+                    // await visitFlow.click(visitFlow.HtmlBody);
+                    visitFlow.pause(0.5 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
-                    visitFlow.pause(0.5 * 1000);
-                    await visitFlow.insertTextToInputElement(
-                        'Automated test finished Visit',
-                        visitFlow.VisitFlowMainActivity_FormPage_VisitSummaryInput,
-                    );
-                    visitFlow.pause(0.5 * 1000);
-                    await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `End Visit Step Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    await visitFlow.click(visitFlow.HtmlBody);
+                    visitFlow.pause(1 * 1000);
+                    // await visitFlow.insertTextToInputElement(
+                    //     `Automated test (${randomString}) finished Visit`,
+                    //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
+                    // );
+                    // visitFlow.pause(0.5 * 1000);
+                    if (email.startsWith('visit.flow.eu')) {
+                        await visitFlow.waitTillVisible(
+                            visitFlow.VisitFlowMainActivity_FormPage_Header_SubmitButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    } else {
+                        await visitFlow.waitTillVisible(
+                            visitFlow.VisitFlowMainActivity_FormPage_Header_DoneButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_DoneButton');
+                    }
+                    // await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
+                    // await visitFlow.waitTillVisible(
+                    //     visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
+                    //     15000,
+                    // );
+                    // await visitFlow.waitTillVisible(
+                    //     visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
+                    //     15000,
+                    // );
+                    // await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
                     await visitFlow.isSpinnerDone();
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
@@ -459,6 +634,11 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Finished Visit`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
             });
 
@@ -519,14 +699,15 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
                 });
                 it('Performing Manual Sync', async () => {
+                    // driver.sleep(20 * 1000);
                     await e2eUtils.performManualSync(client);
                 });
                 it('Loging Out and Loging In as Rep', async () => {
-                    await e2eUtils.logOutLogIn('visit.flow.rep@pepperitest.com', password);
+                    await e2eUtils.logOutLogIn(`${email.split('@')[0]}.rep@pepperitest.com`, password);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
                 });
-                it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async () => {
+                it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');
@@ -545,7 +726,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     );
                     visitFlow.pause(1 * 1000);
                 });
-                it('If more than one visit - Choosing a Visit Flow', async () => {
+                it('If more than one visit - Choosing a Visit Flow', async function () {
+                    // debugger
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
                         await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
@@ -553,18 +735,35 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
                     visitFlow.pause(1 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Survey Visit Started`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
-                it('Checking off "Start"', async () => {
+                it('Checking off "Start"', async function () {
+                    await visitFlow.isSpinnerDone();
+                    await visitFlow.waitTillVisible(visitFlow.VisitFlow_Groups_Content, 15000);
                     await visitFlow.clickElement('VisitFlow_GroupButton_Start');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_StartVisit, 15000);
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Start Group Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.clickElement('VisitFlow_StepButton_StartVisit');
                     await visitFlow.isSpinnerDone();
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Start Visit Step Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.insertTextToInputElement(
                         `Automated test (${randomString}) of Visit Flow started`,
-                        visitFlow.VisitFlowMainActivity_FormPage_SubjectInput,
+                        visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
                     );
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
@@ -580,33 +779,73 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Start Finished`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
-                it('Checking off "Survey"', async () => {
+                it('Checking off "Survey"', async function () {
+                    // debugger
                     await visitFlow.clickElement('VisitFlow_GroupButton_Surveys');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_Survey, 15000);
                     visitFlow.pause(0.5 * 1000);
-                    await visitFlow.clickElement('VisitFlow_StepButton_Survey');
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Survey Group Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    // await visitFlow.clickElement('VisitFlow_StepButton_Survey');
                     await visitFlow.isSpinnerDone();
                     visitFlow.pause(0.5 * 1000);
-                    await webAppDialog.isErrorDialogShown(this); // There is an open Bug DI-23784
+                    // await webAppDialog.isErrorDialogShown(this); // There is an open Bug DI-23784
                     // await webAppDialog.selectDialogBox('Ok');
-                    // await visitFlow.waitTillVisible(visitFlow.VisitFlow_OrdersChooseCatalogDialog_Content, 15000); // change to survey
+                    // await visitFlow.waitTillVisible(isitFlow.VisitFlow_OrdersChooseCatalogDialog_Content, 15000); // change to survey
                     visitFlow.pause(5 * 1000);
                 });
-                it('Checking off "End"', async () => {
+                it('Checking off "End"', async function () {
+                    // debugger
                     await visitFlow.clickElement('VisitFlow_GroupButton_End');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_EndVisit, 15000);
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.clickElement('VisitFlow_StepButton_EndVisit');
                     await visitFlow.isSpinnerDone();
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `End Step at Survey Visit Clicked`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
                     visitFlow.pause(0.5 * 1000);
-                    await visitFlow.insertTextToInputElement(
-                        'Automated test finished Visit',
-                        visitFlow.VisitFlowMainActivity_FormPage_VisitSummaryInput,
-                    );
-                    visitFlow.pause(0.5 * 1000);
-                    await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    await visitFlow.click(visitFlow.HtmlBody);
+                    // await visitFlow.insertTextToInputElement(
+                    //     'Automated test finished Visit',
+                    //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
+                    // );
+                    visitFlow.pause(1 * 1000);
+                    if (email.includes('.eu@')) {
+                        await visitFlow.waitTillVisible(
+                            visitFlow.VisitFlowMainActivity_FormPage_Header_SubmitButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_SubmitButton');
+                    } else {
+                        await visitFlow.waitTillVisible(
+                            visitFlow.VisitFlowMainActivity_FormPage_Header_DoneButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_DoneButton');
+                    }
+                    // await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
+                    // await visitFlow.waitTillVisible(
+                    //     visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
+                    //     15000,
+                    // );
+                    // await visitFlow.waitTillVisible(
+                    //     visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
+                    //     15000,
+                    // );
+                    // await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
                     await visitFlow.isSpinnerDone();
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
@@ -615,8 +854,13 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         await visitFlow.waitTillVisible(visitFlow.VisitFlow_Content, 15000);
                     }
                     visitFlow.pause(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Survey Visit Finished`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
-                it('Deleting Activities', async () => {
+                it('Deleting Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');
@@ -684,7 +928,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     // console.info(`existingMappedSlugs: ${JSON.stringify(clearMappedSlugsUpsertResponse, null, 4)}`);
                 });
 
-                it('Deleting Page via UI', async () => {
+                it('Deleting Page via UI', async function () {
                     await e2eUtils.navigateTo('Page Builder');
                     await pageBuilder.isSpinnerDone();
                     await pageBuilder.waitTillVisible(pageBuilder.PagesList_Title, 15000);
@@ -731,21 +975,21 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 //     }
                 // });
 
-                // it('Verifying Mapped Slugs were cleared', async () => {
+                // it('Verifying Mapped Slugs were cleared', async function () {
                 //     await e2eUtils.logOutLogIn(email, password);
                 //     await e2eUtils.navigateTo('Slugs');
                 //     await slugs.clickTab('Mapping_Tab');
                 //     await pageBuilder.isSpinnerDone();
-                //     await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_Rep_EmptyContent, 15000);
+                //     await slugs.waitTillVisible(lugs.EditPage_ConfigProfileCard_Rep_EmptyContent, 15000);
                 //     const repCard_editButton = await driver.findElement(
                 //         slugs.EditPage_ConfigProfileCard_EditButton_Rep,
                 //         15000,
                 //     );
                 //     await repCard_editButton.click();
                 //     await slugs.isSpinnerDone();
-                //     await slugs.waitTillVisible(slugs.MappedSlugs_Title, 15000);
-                //     await slugs.waitTillVisible(slugs.MappedSlugs_Container, 15000);
-                //     await slugs.waitTillVisible(slugs.MappedSlugs_Empty, 15000);
+                //     await slugs.waitTillVisible(lugs.MappedSlugs_Title, 15000);
+                //     await slugs.waitTillVisible(lugs.MappedSlugs_Container, 15000);
+                //     await slugs.waitTillVisible(lugs.MappedSlugs_Empty, 15000);
                 // });
 
                 it('Verifying VF_VisitFlowMainActivity activity was formed', async () => {
@@ -756,10 +1000,13 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('Type');
                     expect(getCreatedVisitFlowMainActivity[0].Type).to.equal('VF_VisitFlowMainActivity');
                     expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('TSAFlowID');
-                    expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('TSASubject');
-                    expect(getCreatedVisitFlowMainActivity[0].TSASubject).to.equal(
-                        `Automated test (${randomString}) of Visit Flow started`,
-                    );
+                    expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('TSAVisitSelectedGroup');
+                    expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('Title');
+                    expect(getCreatedVisitFlowMainActivity[0].Title).to.contain(`Automated test (${randomString}) `);
+                    // expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('TSASubject');
+                    // expect(getCreatedVisitFlowMainActivity[0].TSASubject).to.equal(
+                    //     `Automated test (${randomString}) of Visit Flow started`,
+                    // );
                 });
 
                 it('Verifying Sales Order transaction was formed', async () => {
@@ -778,7 +1025,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     expect(getCreatedSalesOrderTransaction[0]).to.haveOwnProperty('TransactionLines');
                 });
 
-                it('Deleting UDCs listings', async () => {
+                it('Deleting UDCs "VisitFlowGroups" listings', async () => {
                     // deleting created VisitFlowGroups documents
                     upsertedListingsToVisitFlowGroups.forEach(async (documentBody) => {
                         const deleteResponse = await udcService.hideObjectInACollection(
@@ -793,7 +1040,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         expect(deleteResponse.Body.Title).to.equal(documentBody.Title);
                         expect(deleteResponse.Body.SortIndex).to.equal(documentBody.SortIndex);
                     });
-
+                });
+                it('Deleting UDCs "VisitFlows" listings', async () => {
                     // deleting created VisitFlows documents
                     upsertedListingsToVisitFlows.forEach(async (documentBody) => {
                         const deleteResponse = await udcService.hideObjectInACollection('VisitFlows', documentBody.Key);
@@ -804,7 +1052,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         expect(deleteResponse.Body.Key).to.equal(documentBody.Key);
                         expect(deleteResponse.Body.Title).to.equal(documentBody.Title);
                     });
-
+                });
+                it('Deleting LEFTOVERS UDCs "VisitFlowGroups" listings', async () => {
                     // deleting any leftovers from unsuccessful previous tests
                     let visitFlowGroupsDocuments = await udcService.getDocuments('VisitFlowGroups', {
                         where: 'Title like "%Auto%"',
@@ -813,12 +1062,14 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlowGroupsDocuments.forEach(async (visitFlowGroupsDocument) => {
                         await udcService.hideObjectInACollection('VisitFlowGroups', visitFlowGroupsDocument.Key);
                     });
-                    driver.sleep(2.5 * 1000);
+                    driver.sleep(5 * 1000);
                     visitFlowGroupsDocuments = await udcService.getDocuments('VisitFlowGroups', {
                         where: 'Title like "%Auto%"',
                     });
                     expect(visitFlowGroupsDocuments).to.be.an('array').with.lengthOf(0);
-
+                });
+                it('Deleting LEFTOVERS UDCs "VisitFlows" listings', async () => {
+                    // deleting any leftovers from unsuccessful previous tests
                     let visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
                         where: 'Name like "Auto%"',
                     });
@@ -826,7 +1077,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlowsDocuments.forEach(async (visitFlowsDocument) => {
                         await udcService.hideObjectInACollection('VisitFlows', visitFlowsDocument.Key);
                     });
-                    driver.sleep(2.5 * 1000);
+                    driver.sleep(5 * 1000);
                     visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
                         where: 'Name like "Auto%"',
                     });
@@ -839,14 +1090,14 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlowsDocuments.forEach(async (visitFlowsDocument) => {
                         await udcService.hideObjectInACollection('VisitFlows', visitFlowsDocument.Key);
                     });
-                    driver.sleep(2.5 * 1000);
+                    driver.sleep(5 * 1000);
                     visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
                         where: 'Name="MockVisit"',
                     });
                     expect(visitFlowsDocuments).to.be.an('array').with.lengthOf(0);
                 });
 
-                it('Deleting Activities', async () => {
+                it('Deleting Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');

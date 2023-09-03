@@ -51,12 +51,18 @@ export class VisitFlow extends AddonPage {
 
     // Visit Flow Main Activity
     public VisitFlowMainActivity_FormPage_Header_CancelButton: By = By.xpath('//button[@data-qa="cancelButton"]');
-    public VisitFlowMainActivity_FormPage_Header_SubmitButton: By = By.xpath('//button[@data-qa="Done"]');
+    public VisitFlowMainActivity_FormPage_Header_DoneButton: By = By.xpath('//button[@data-qa="Done"]');
+    public VisitFlowMainActivity_FormPage_Header_SubmitButton: By = By.xpath('//button[@data-qa="Submit"]');
     public VisitFlowMainActivity_FormPage_FormContent: By = By.xpath(
         '//div[contains(@class,"pep-page-main-layout")]//div[contains(@class,"pep-main-area")]//div[contains(@class,"form-view")]',
     );
-    public VisitFlowMainActivity_FormPage_SubjectInput: By = By.xpath('//textarea[@id="TSASubject"]');
-    public VisitFlowMainActivity_FormPage_VisitSummaryInput: By = By.xpath('//input[@id="TSASummary"]');
+    // public VisitFlowMainActivity_FormPage_SubjectInput: By = By.xpath('//pep-textbox[@data-qa="TSADescription"]//input');  // Irrelevant
+    // public VisitFlowMainActivity_FormPage_VisitSummaryInput: By = By.xpath('//pep-textbox[@data-qa="TSADescription"]//input');  // Irrelevant
+    // public VisitFlowMainActivity_FormPage_DescriptionInput: By = By.xpath('//pep-textbox[@data-qa="TSADescription"]//input');
+    public VisitFlowMainActivity_FormPage_TitleInput: By = By.xpath('//pep-textbox[@data-qa="Title"]//input');
+    public VisitFlowMainActivity_FormPage_VisitSelectedGroupInput: By = By.xpath(
+        '//pep-textbox[@data-qa="TSAVisitSelectedGroup"]//input',
+    );
 
     // Main Activity "Cancel" Popup Dialog
     public VisitFlowMainActivity_CancelDialog_Notice_Headline: By = By.xpath(

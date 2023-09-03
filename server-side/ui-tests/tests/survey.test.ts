@@ -33,6 +33,7 @@ import { ObjectsService } from '../../services/objects.service';
 chai.use(promised);
 
 export async function SurveyTests(email: string, password: string, client: Client, varPass) {
+    //
     const generalService = new GeneralService(client);
     let driver: Browser;
     let surveyBlockPageName;
@@ -127,7 +128,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         },
     ];
 
-    await generalService.baseAddonVersionsInstallation(varPass);
+    await generalService.baseAddonVersionsInstallationNewSync(varPass);
     // #region Upgrade survey dependencies
 
     const testData = {
@@ -251,6 +252,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 );
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
+                driver.sleep(8000);
                 const webAppHomePage = new WebAppHomePage(driver);
                 //- sync
                 for (let index = 0; index < 2; index++) {
@@ -326,7 +328,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await surveyService.editSurveyTemplateName(newName);
                 const webAppHomePage = new WebAppHomePage(driver);
                 webAppHomePage.returnToHomePage();
-                driver.sleep(3000);
+                driver.sleep(8000); //give it some time to update
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }
@@ -424,7 +426,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
                 const scriptEditor = new ScriptEditor(driver);
-                scriptUUID = await scriptEditor.configureScript(script3, generalService);
+                scriptUUID = await scriptEditor.configureScriptForSurvey(script3, generalService);
                 await webAppHeader.goHome();
             });
             it('8. Create Page With SlideShow Which Will Run The Script', async function () {
@@ -668,7 +670,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const toHideCollections = documents.filter((doc) => doc.Name.includes('NewSurveyCollection'));
                 for (let index = 0; index < toHideCollections.length; index++) {
                     const collectionToHide = toHideCollections[index];
-                    const collectionsObjcts = await udcService.getAllObjectFromCollection(collectionToHide.Name);
+                    const collectionsObjcts = await udcService.getAllObjectFromCollectionCount(collectionToHide.Name);
                     if (collectionsObjcts.objects && collectionsObjcts.objects.length > 0) {
                         for (let index = 0; index < collectionsObjcts.objects.length; index++) {
                             const obj = collectionsObjcts.objects[index];
@@ -977,7 +979,7 @@ export async function createSurvey(
     const script3 = script2.replace('{surveySlugNamePlaceHolder}', surveySlugDisplayName);
     await webAppHeader.goHome();
     const scriptEditor = new ScriptEditor(driver);
-    const scriptUUID = await scriptEditor.configureScript(script3, generalService);
+    const scriptUUID = await scriptEditor.configureScriptForSurvey(script3, generalService);
     await webAppHeader.goHome();
     //6. slide show page creation with survey inside
     surveyBlockPageName = 'surveySlideShow';

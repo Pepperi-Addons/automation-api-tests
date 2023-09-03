@@ -63,6 +63,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
         });
 
         describe('Items', () => {
+            console.log('Saar: Items');
             let items;
             let legacyItemExternalID;
             let itemExternalID;
@@ -72,8 +73,10 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let updatedItem;
             let legacyUpdatedItem;
             let legacyPageItems;
+            let itemAfterManipulation;
 
             it('Create Item', async () => {
+                console.log('Saar: Create item');
                 items = await objectsService.getItems();
                 mainCategoryID = items[0].MainCategoryID;
                 itemExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
@@ -117,6 +120,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Update Item', async () => {
+                console.log('Saar: Update Item');
                 updatedItem = await objectsService.postItem({
                     ExternalID: itemExternalID,
                     MainCategoryID: mainCategoryID,
@@ -151,26 +155,36 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Get Item by key', async () => {
+                console.log('Saar: Get Item by key');
+                const itemAfterUpdate = await objectsService.getItems({
+                    where: `InternalID like '${legacyCreatedItem.InternalID}'`,
+                });
+                itemAfterManipulation = await service.papiCoreComparisonSingle(itemAfterUpdate[0], 'items');
                 const getByKeyItem = await service.getByKey('items', legacyCreatedItem.Key);
-                expect(getByKeyItem).to.deep.equal(legacyUpdatedItem);
+                delete getByKeyItem['ParentExternalID'];
+                expect(getByKeyItem).to.deep.equal(itemAfterManipulation);
                 await expect(service.getByKey('items', '1234')).eventually.to.be.rejected;
             });
 
             it('Get Item by Unique key', async () => {
+                console.log('Saar: Get Item by Unique key');
                 const getItemByInternalID = await service.getByUniqueKey(
                     'items',
                     'InternalID',
                     legacyCreatedItem.InternalID,
                 );
-                expect(getItemByInternalID).to.deep.equal(legacyUpdatedItem);
+                delete getItemByInternalID['ParentExternalID'];
+                expect(getItemByInternalID).to.deep.equal(itemAfterManipulation);
                 const getItemByExternalID = await service.getByUniqueKey(
                     'items',
                     'ExternalID',
                     legacyCreatedItem.ExternalID,
                 );
-                expect(getItemByExternalID).to.deep.equal(legacyUpdatedItem);
+                delete getItemByExternalID['ParentExternalID'];
+                expect(getItemByExternalID).to.deep.equal(itemAfterManipulation);
                 const getItemByKey = await service.getByUniqueKey('items', 'Key', legacyCreatedItem.Key);
-                expect(getItemByKey).to.deep.equal(legacyUpdatedItem);
+                delete getItemByKey['ParentExternalID'];
+                expect(getItemByKey).to.deep.equal(itemAfterManipulation);
                 await expect(service.getByUniqueKey('items', 'InternalID', '123412')).eventually.to.be.rejected;
                 await expect(service.getByUniqueKey('items', 'Price', '123412')).eventually.to.be.rejected;
             });
@@ -178,6 +192,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             describe('Items search', () => {
                 let legacyItems;
                 it('Where', async () => {
+                    console.log('Saar: Items search WHERE');
                     const whereItems = await objectsService.getItems({
                         where: `ExternalID like '%Automated API Item%'`,
                     });
@@ -188,6 +203,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Page and PageSize', async () => {
+                    console.log('Saar: Items search Page and PageSize');
                     legacyItems = await service.get('items?page_size=-1');
                     legacyPageItems;
                     legacyPageItems = await service.search('items', {
@@ -213,6 +229,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('KeyList', async () => {
+                    console.log('Saar: Items search Keylist');
                     legacyItems = await service.get(
                         `items?where=Key IN ('${items[0].UUID}','${items[1].UUID}','${items[2].UUID}','${items[3].UUID}')`,
                     );
@@ -224,6 +241,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('UniqueFieldList', async () => {
+                    console.log('Saar: Items search UniqueFieldList');
                     legacyItems = await service.get(
                         `items?where=InternalID IN ('${items[0].InternalID}','${items[1].InternalID}','${items[2].InternalID}','${items[3].InternalID}')`,
                     );
@@ -241,6 +259,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Fields', async () => {
+                    console.log('Saar: Items search Fields');
                     legacyItems = await service.get(`items?where=InternalID=${items[0].InternalID}`);
                     const legacyFieldsItems = await service.search(`items`, {
                         Where: `InternalID=${items[0].InternalID}`,
@@ -253,6 +272,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Include Count', async () => {
+                    console.log('Saar: Items search Include Count');
                     const legacyIncludeCountItems = await service.search('items', {
                         IncludeCount: true,
                     });
@@ -262,19 +282,26 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
             describe('DIMX + Delete', () => {
                 it('DIMX export', async () => {
+                    console.log('Saar: Items DIMX export');
+                    items = await objectsService.getItems({ page_size: -1 });
                     const exportAudit = await service.dimxExport('items');
                     const dimxResult = await service.getDimxResult(exportAudit.URI);
-                    legacyPageItems.Objects.sort((a, b) => {
+                    dimxResult.forEach((object) => {
+                        delete object['ParentExternalID'];
+                    });
+                    const papiItemsSchemaManipulation = await service.papiCoreComparisonMulti(items, 'items');
+                    papiItemsSchemaManipulation.sort((a, b) => {
                         return a.InternalID - b.InternalID;
                     });
                     dimxResult.sort((a, b) => {
                         return a.InternalID - b.InternalID;
                     });
-                    expect(legacyPageItems.Objects.length).to.equal(dimxResult.length);
-                    expect(legacyPageItems.Objects).to.deep.equal(dimxResult);
+                    expect(papiItemsSchemaManipulation.length).to.equal(dimxResult.length);
+                    expect(papiItemsSchemaManipulation).to.deep.equal(dimxResult);
                 });
 
                 it('DIMX import insert + update', async () => {
+                    console.log('Saar: Items DIMX import');
                     const uuidForImport = newUuid();
                     let dimxImportResult = await service.dimxImport('items', {
                         Objects: [
@@ -311,6 +338,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Delete items', async () => {
+                    console.log('Saar: Items DELETE');
                     const deletedItem = await objectsService.postItem({
                         ExternalID: itemExternalID,
                         MainCategoryID: mainCategoryID,
@@ -336,6 +364,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
         });
 
         describe('Accounts', () => {
+            console.log('Saar: Accounts');
             let accounts;
             let legacyAccountExternalID;
             let accountExternalID;
@@ -344,8 +373,10 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let updatedAccount;
             let legacyUpdatedAccount;
             let legacyPageAccounts;
+            let accountAfterManipulation;
 
             it('Create Account', async () => {
+                console.log('Saar: Create Account');
                 accounts = await objectsService.getAccounts();
                 accountExternalID = 'Automated API Account' + Math.floor(Math.random() * 1000000).toString();
                 legacyAccountExternalID = 'Automated API Account' + Math.floor(Math.random() * 1000000).toString();
@@ -383,6 +414,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Update account', async () => {
+                console.log('Saar: Update Account');
                 updatedAccount = await objectsService.createAccount({
                     ExternalID: accountExternalID,
                     City: 'Holon',
@@ -413,66 +445,125 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Get account by key', async () => {
+                console.log('Saar: Get Account by key');
                 const accountAfterUpdate = await objectsService.getAccountByID(legacyCreatedAccount.InternalID);
-                accountAfterUpdate.Key = legacyCreatedAccount.Key;
-                delete accountAfterUpdate['UUID'];
-                delete accountAfterUpdate['Latitude'];
-                delete accountAfterUpdate['Longitude'];
-                delete accountAfterUpdate['ModificationDateTime'];
-                delete accountAfterUpdate['CreationDateTime'];
-                delete accountAfterUpdate['Catalogs'];
-                delete accountAfterUpdate['Debts30'];
-                delete accountAfterUpdate['Debts60'];
-                delete accountAfterUpdate['Debts90'];
-                delete accountAfterUpdate['DebtsAbove90'];
-                delete accountAfterUpdate['Parent'];
-                delete accountAfterUpdate['PriceList'];
-                delete accountAfterUpdate['Prop1'];
-                delete accountAfterUpdate['Prop2'];
-                delete accountAfterUpdate['Prop3'];
-                delete accountAfterUpdate['Prop4'];
-                delete accountAfterUpdate['Prop5'];
-                delete accountAfterUpdate['Status'];
-                delete accountAfterUpdate['StatusName'];
-                delete accountAfterUpdate['SpecialPriceList'];
-                delete accountAfterUpdate['Users'];
-                delete accountAfterUpdate['Mobile'];
+                accountAfterManipulation = await service.papiCoreComparisonSingle(accountAfterUpdate, 'accounts');
+                delete accountAfterManipulation.ModificationDateTime;
+                delete accountAfterManipulation.Longitude;
+                delete accountAfterManipulation.Latitude;
                 const getByKeyAccount = await service.getByKey('accounts', legacyCreatedAccount.Key);
-                delete getByKeyAccount['Latitude'];
-                delete getByKeyAccount['Longitude'];
-                delete getByKeyAccount['ModificationDateTime'];
-                delete getByKeyAccount['CreationDateTime'];
-                expect(getByKeyAccount).to.deep.equal(accountAfterUpdate);
+                delete getByKeyAccount.ModificationDateTime;
+                delete getByKeyAccount.Longitude;
+                delete getByKeyAccount.Latitude;
+                delete getByKeyAccount.TSADateTime;
+                delete getByKeyAccount.TSAContactBirthday;
+                delete getByKeyAccount.TSAAttachmentAPI;
+                delete getByKeyAccount.TSACheckboxAPI;
+                delete getByKeyAccount.TSACurrencyAPI;
+                delete getByKeyAccount.TSADateAPI;
+                delete getByKeyAccount.TSADateTimeAPI;
+                delete getByKeyAccount.TSADecimalNumberAPI;
+                delete getByKeyAccount.TSADropdownAPI;
+                delete getByKeyAccount.TSAEmailAPI;
+                delete getByKeyAccount.TSAHtmlAPI;
+                delete getByKeyAccount.TSAImageAPI;
+                delete getByKeyAccount.TSALimitedLineAPI;
+                delete getByKeyAccount.TSALinkAPI;
+                delete getByKeyAccount.TSAMultiChoiceAPI;
+                delete getByKeyAccount.TSANumberAPI;
+                delete getByKeyAccount.TSAParagraphAPI;
+                delete getByKeyAccount.TSASignatureAPI;
+                delete getByKeyAccount.TSAPhoneNumberAPI;
+                delete getByKeyAccount.TSASingleLineAPI;
+                expect(getByKeyAccount).to.deep.equal(accountAfterManipulation);
                 await expect(service.getByKey('accounts', '1234')).eventually.to.be.rejected;
             });
 
             it('Get account by Unique key', async () => {
+                console.log('Saar: Get Account by unique key');
                 const getAccountByInternalID = await service.getByUniqueKey(
                     'accounts',
                     'InternalID',
                     legacyCreatedAccount.InternalID,
                 );
-                delete getAccountByInternalID['Latitude'];
-                delete getAccountByInternalID['Longitude'];
-                delete getAccountByInternalID['ModificationDateTime'];
-                delete legacyUpdatedAccount['Latitude'];
-                delete legacyUpdatedAccount['Longitude'];
-                delete legacyUpdatedAccount['ModificationDateTime'];
-                expect(getAccountByInternalID).to.deep.equal(legacyUpdatedAccount);
+                delete getAccountByInternalID.ModificationDateTime;
+                delete getAccountByInternalID.Longitude;
+                delete getAccountByInternalID.Latitude;
+                delete getAccountByInternalID.TSADateTime;
+                delete getAccountByInternalID.TSAContactBirthday;
+                delete getAccountByInternalID.TSAAttachmentAPI;
+                delete getAccountByInternalID.TSACheckboxAPI;
+                delete getAccountByInternalID.TSACurrencyAPI;
+                delete getAccountByInternalID.TSADateAPI;
+                delete getAccountByInternalID.TSADateTimeAPI;
+                delete getAccountByInternalID.TSADecimalNumberAPI;
+                delete getAccountByInternalID.TSADropdownAPI;
+                delete getAccountByInternalID.TSAEmailAPI;
+                delete getAccountByInternalID.TSAHtmlAPI;
+                delete getAccountByInternalID.TSAImageAPI;
+                delete getAccountByInternalID.TSALimitedLineAPI;
+                delete getAccountByInternalID.TSALinkAPI;
+                delete getAccountByInternalID.TSAMultiChoiceAPI;
+                delete getAccountByInternalID.TSANumberAPI;
+                delete getAccountByInternalID.TSAParagraphAPI;
+                delete getAccountByInternalID.TSASignatureAPI;
+                delete getAccountByInternalID.TSAPhoneNumberAPI;
+                delete getAccountByInternalID.TSASingleLineAPI;
+                expect(getAccountByInternalID).to.deep.equal(accountAfterManipulation);
                 const getAccountByExternalID = await service.getByUniqueKey(
                     'accounts',
                     'ExternalID',
                     legacyCreatedAccount.ExternalID,
                 );
-                delete getAccountByExternalID['Latitude'];
-                delete getAccountByExternalID['Longitude'];
-                delete getAccountByExternalID['ModificationDateTime'];
-                expect(getAccountByExternalID).to.deep.equal(legacyUpdatedAccount);
+                delete getAccountByExternalID.ModificationDateTime;
+                delete getAccountByExternalID.Longitude;
+                delete getAccountByExternalID.Latitude;
+                delete getAccountByExternalID.TSADateTime;
+                delete getAccountByExternalID.TSAContactBirthday;
+                delete getAccountByExternalID.TSAAttachmentAPI;
+                delete getAccountByExternalID.TSACheckboxAPI;
+                delete getAccountByExternalID.TSACurrencyAPI;
+                delete getAccountByExternalID.TSADateAPI;
+                delete getAccountByExternalID.TSADateTimeAPI;
+                delete getAccountByExternalID.TSADecimalNumberAPI;
+                delete getAccountByExternalID.TSADropdownAPI;
+                delete getAccountByExternalID.TSAEmailAPI;
+                delete getAccountByExternalID.TSAHtmlAPI;
+                delete getAccountByExternalID.TSAImageAPI;
+                delete getAccountByExternalID.TSALimitedLineAPI;
+                delete getAccountByExternalID.TSALinkAPI;
+                delete getAccountByExternalID.TSAMultiChoiceAPI;
+                delete getAccountByExternalID.TSANumberAPI;
+                delete getAccountByExternalID.TSAParagraphAPI;
+                delete getAccountByExternalID.TSASignatureAPI;
+                delete getAccountByExternalID.TSAPhoneNumberAPI;
+                delete getAccountByExternalID.TSASingleLineAPI;
+                expect(getAccountByExternalID).to.deep.equal(accountAfterManipulation);
                 const getAccountByKey = await service.getByUniqueKey('accounts', 'Key', legacyCreatedAccount.Key);
-                delete getAccountByKey['Latitude'];
-                delete getAccountByKey['Longitude'];
-                delete getAccountByKey['ModificationDateTime'];
-                expect(getAccountByKey).to.deep.equal(legacyUpdatedAccount);
+                delete getAccountByKey.ModificationDateTime;
+                delete getAccountByKey.Longitude;
+                delete getAccountByKey.Latitude;
+                delete getAccountByKey.TSADateTime;
+                delete getAccountByKey.TSAContactBirthday;
+                delete getAccountByKey.TSAAttachmentAPI;
+                delete getAccountByKey.TSACheckboxAPI;
+                delete getAccountByKey.TSACurrencyAPI;
+                delete getAccountByKey.TSADateAPI;
+                delete getAccountByKey.TSADateTimeAPI;
+                delete getAccountByKey.TSADecimalNumberAPI;
+                delete getAccountByKey.TSADropdownAPI;
+                delete getAccountByKey.TSAEmailAPI;
+                delete getAccountByKey.TSAHtmlAPI;
+                delete getAccountByKey.TSAImageAPI;
+                delete getAccountByKey.TSALimitedLineAPI;
+                delete getAccountByKey.TSALinkAPI;
+                delete getAccountByKey.TSAMultiChoiceAPI;
+                delete getAccountByKey.TSANumberAPI;
+                delete getAccountByKey.TSAParagraphAPI;
+                delete getAccountByKey.TSASignatureAPI;
+                delete getAccountByKey.TSAPhoneNumberAPI;
+                delete getAccountByKey.TSASingleLineAPI;
+                expect(getAccountByKey).to.deep.equal(accountAfterManipulation);
                 await expect(service.getByUniqueKey('accounts', 'InternalID', '12341223147776')).eventually.to.be
                     .rejected;
                 await expect(service.getByUniqueKey('accounts', 'Price', '123412')).eventually.to.be.rejected;
@@ -481,6 +572,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             describe('Accounts search', () => {
                 let legacyAccounts;
                 it('Where', async () => {
+                    console.log('Saar: Account search WHERE');
                     const whereAccounts = await objectsService.getAccounts({
                         where: `ExternalID like '%Automated API Account%'`,
                     });
@@ -491,6 +583,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Page and PageSize', async () => {
+                    console.log('Saar: Account search Page and PageSize');
                     legacyAccounts = await service.get('accounts?page_size=-1');
                     legacyPageAccounts = await service.search('accounts', {
                         Page: 1,
@@ -515,6 +608,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('KeyList', async () => {
+                    console.log('Saar: Account search KeyList');
                     legacyAccounts = await service.get(
                         `accounts?where=Key IN ('${accounts[0].UUID}','${accounts[1].UUID}','${accounts[2].UUID}','${accounts[3].UUID}')`,
                     );
@@ -526,6 +620,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('UniqueFieldList', async () => {
+                    console.log('Saar: Account search UniqueFieldList');
                     legacyAccounts = await service.get(
                         `accounts?where=InternalID IN ('${accounts[0].InternalID}','${accounts[1].InternalID}','${accounts[2].InternalID}','${accounts[3].InternalID}')`,
                     );
@@ -543,6 +638,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Fields', async () => {
+                    console.log('Saar: Account search Fields');
                     legacyAccounts = await service.get(`accounts?where=InternalID=${accounts[0].InternalID}`);
                     const legacyFieldsAccounts = await service.search(`accounts`, {
                         Where: `InternalID=${accounts[0].InternalID}`,
@@ -559,6 +655,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Include Count', async () => {
+                    console.log('Saar: Account search Include Count');
                     const legacyIncludeCountAccounts = await service.search('accounts', {
                         IncludeCount: true,
                     });
@@ -568,50 +665,48 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
 
             describe('DIMX + Delete', () => {
                 it('DIMX export', async () => {
+                    console.log('Saar: Account DIMX export');
                     const accountsForComparison = await objectsService.getAccounts({ page_size: -1 });
+                    const accountsAfterManipulation = await service.papiCoreComparisonMulti(
+                        accountsForComparison,
+                        'accounts',
+                    );
                     const exportAudit = await service.dimxExport('accounts');
                     const dimxResult = await service.getDimxResult(exportAudit.URI);
                     dimxResult.forEach((object) => {
-                        delete object['Key'];
                         delete object['TSADateTime'];
                         delete object['TSAContactBirthday'];
-                        delete object['ModificationDateTime'];
+                        delete object['TSAAttachmentAPI'];
+                        delete object['TSACheckboxAPI'];
+                        delete object['TSACurrencyAPI'];
+                        delete object['TSADateAPI'];
+                        delete object['TSADateTimeAPI'];
+                        delete object['TSADecimalNumberAPI'];
+                        delete object['TSADropdownAPI'];
+                        delete object['TSAEmailAPI'];
+                        delete object['TSAHtmlAPI'];
+                        delete object['TSAImageAPI'];
+                        delete object['TSALimitedLineAPI'];
+                        delete object['TSALinkAPI'];
+                        delete object['TSAMultiChoiceAPI'];
+                        delete object['TSANumberAPI'];
+                        delete object['TSAParagraphAPI'];
+                        delete object['TSASignatureAPI'];
+                        delete object['TSAPhoneNumberAPI'];
+                        delete object['TSASingleLineAPI'];
                     });
-                    accountsForComparison.forEach((object) => {
-                        object['CreationDateTime'] = object['CreationDateTime'].replace('Z', '.000Z');
-                        delete object['ModificationDateTime'];
-                        delete object['UUID'];
-                        delete object['Catalogs'];
-                        delete object['Debts30'];
-                        delete object['Debts60'];
-                        delete object['Debts90'];
-                        delete object['DebtsAbove90'];
-                        delete object['Parent'];
-                        delete object['PriceList'];
-                        delete object['Prop1'];
-                        delete object['Prop2'];
-                        delete object['Prop3'];
-                        delete object['Prop4'];
-                        delete object['Prop5'];
-                        delete object['Status'];
-                        delete object['StatusName'];
-                        delete object['SpecialPriceList'];
-                        delete object['Users'];
-                        delete object['Mobile'];
-                        delete object['TSADateTime'];
-                        delete object['TSAContactBirthday'];
-                    });
-                    accountsForComparison.sort((a, b) => {
+                    accountsAfterManipulation.sort((a, b) => {
                         return (a as any).InternalID - (b as any).InternalID;
                     });
                     dimxResult.sort((a, b) => {
                         return a.InternalID - b.InternalID;
                     });
-                    expect(accountsForComparison.length).to.equal(dimxResult.length);
-                    expect(accountsForComparison).to.deep.equal(dimxResult);
+                    expect(accountsAfterManipulation.length).to.equal(dimxResult.length);
+                    expect(accountsAfterManipulation).to.deep.equal(dimxResult);
                 });
 
                 it('DIMX import insert + update', async () => {
+                    console.log('Saar: Account search DIMX Import');
                     const uuidForImport = newUuid();
                     let dimxImportResult = await service.dimxImport('accounts', {
                         Objects: [
@@ -646,6 +741,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Delete accounts', async () => {
+                    console.log('Saar: Delete Accounts');
                     const deletedAccount = await objectsService.createAccount({
                         ExternalID: accountExternalID,
                         Hidden: true,
@@ -868,6 +964,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
         // });
 
         describe('Contact', () => {
+            console.log('Saar: Contact');
             let contacts;
             let legacyContactExternalID;
             let contactExternalID;
@@ -877,8 +974,10 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             let contactEmail;
             let updatedContact;
             let legacyUpdatedContact;
+            let contactAfterManipulation;
 
             it('Create Contact', async () => {
+                console.log('Saar: Create Contact');
                 contacts = await objectsService.getContacts();
                 contactExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
                 legacyContactExternalID = 'Automated API Item' + Math.floor(Math.random() * 1000000).toString();
@@ -935,6 +1034,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Update Contact', async () => {
+                console.log('Saar: Update Contact');
                 updatedContact = await objectsService.createContact({
                     ExternalID: contactExternalID,
                     Email: contactEmail,
@@ -972,26 +1072,125 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Get Contact by key', async () => {
+                console.log('Saar: Get Contact by key');
+                const contactAfterUpdate = await objectsService.getContacts(legacyCreatedContact.InternalID);
+                contactAfterManipulation = await service.papiCoreComparisonSingle(contactAfterUpdate[0], 'contacts');
+                delete contactAfterManipulation.ModificationDateTime;
+                delete contactAfterManipulation.Longitude;
+                delete contactAfterManipulation.Latitude;
                 const getByKeyContact = await service.getByKey('contacts', legacyCreatedContact.Key);
-                expect(getByKeyContact).to.deep.equal(legacyUpdatedContact);
+                delete getByKeyContact.ModificationDateTime;
+                delete getByKeyContact.Longitude;
+                delete getByKeyContact.Latitude;
+                delete getByKeyContact.TSADateTime;
+                delete getByKeyContact.TSAContactBirthday;
+                delete getByKeyContact.TSAAttachmentAPI;
+                delete getByKeyContact.TSACheckboxAPI;
+                delete getByKeyContact.TSACurrencyAPI;
+                delete getByKeyContact.TSADateAPI;
+                delete getByKeyContact.TSADateTimeAPI;
+                delete getByKeyContact.TSADecimalNumberAPI;
+                delete getByKeyContact.TSADropdownAPI;
+                delete getByKeyContact.TSAEmailAPI;
+                delete getByKeyContact.TSAHtmlAPI;
+                delete getByKeyContact.TSAImageAPI;
+                delete getByKeyContact.TSALimitedLineAPI;
+                delete getByKeyContact.TSALinkAPI;
+                delete getByKeyContact.TSAMultiChoiceAPI;
+                delete getByKeyContact.TSANumberAPI;
+                delete getByKeyContact.TSAParagraphAPI;
+                delete getByKeyContact.TSASignatureAPI;
+                delete getByKeyContact.TSAPhoneNumberAPI;
+                delete getByKeyContact.TSASingleLineAPI;
+                expect(getByKeyContact).to.deep.equal(contactAfterManipulation);
                 await expect(service.getByKey('contacts', '1234')).eventually.to.be.rejected;
             });
 
             it('Get Contact by Unique key', async () => {
+                console.log('Saar: GET Contact by unique key');
                 const getContactByInternalID = await service.getByUniqueKey(
                     'contacts',
                     'InternalID',
                     legacyCreatedContact.InternalID,
                 );
-                expect(getContactByInternalID).to.deep.equal(legacyUpdatedContact);
+                delete getContactByInternalID.ModificationDateTime;
+                delete getContactByInternalID.Longitude;
+                delete getContactByInternalID.Latitude;
+                delete getContactByInternalID.TSADateTime;
+                delete getContactByInternalID.TSAContactBirthday;
+                delete getContactByInternalID.TSAAttachmentAPI;
+                delete getContactByInternalID.TSACheckboxAPI;
+                delete getContactByInternalID.TSACurrencyAPI;
+                delete getContactByInternalID.TSADateAPI;
+                delete getContactByInternalID.TSADateTimeAPI;
+                delete getContactByInternalID.TSADecimalNumberAPI;
+                delete getContactByInternalID.TSADropdownAPI;
+                delete getContactByInternalID.TSAEmailAPI;
+                delete getContactByInternalID.TSAHtmlAPI;
+                delete getContactByInternalID.TSAImageAPI;
+                delete getContactByInternalID.TSALimitedLineAPI;
+                delete getContactByInternalID.TSALinkAPI;
+                delete getContactByInternalID.TSAMultiChoiceAPI;
+                delete getContactByInternalID.TSANumberAPI;
+                delete getContactByInternalID.TSAParagraphAPI;
+                delete getContactByInternalID.TSASignatureAPI;
+                delete getContactByInternalID.TSAPhoneNumberAPI;
+                delete getContactByInternalID.TSASingleLineAPI;
+                expect(getContactByInternalID).to.deep.equal(contactAfterManipulation);
                 const getContactByExternalID = await service.getByUniqueKey(
                     'contacts',
                     'ExternalID',
                     legacyCreatedContact.ExternalID,
                 );
-                expect(getContactByExternalID).to.deep.equal(legacyUpdatedContact);
+                delete getContactByExternalID.ModificationDateTime;
+                delete getContactByExternalID.Longitude;
+                delete getContactByExternalID.Latitude;
+                delete getContactByExternalID.TSADateTime;
+                delete getContactByExternalID.TSAContactBirthday;
+                delete getContactByExternalID.TSAAttachmentAPI;
+                delete getContactByExternalID.TSACheckboxAPI;
+                delete getContactByExternalID.TSACurrencyAPI;
+                delete getContactByExternalID.TSADateAPI;
+                delete getContactByExternalID.TSADateTimeAPI;
+                delete getContactByExternalID.TSADecimalNumberAPI;
+                delete getContactByExternalID.TSADropdownAPI;
+                delete getContactByExternalID.TSAEmailAPI;
+                delete getContactByExternalID.TSAHtmlAPI;
+                delete getContactByExternalID.TSAImageAPI;
+                delete getContactByExternalID.TSALimitedLineAPI;
+                delete getContactByExternalID.TSALinkAPI;
+                delete getContactByExternalID.TSAMultiChoiceAPI;
+                delete getContactByExternalID.TSANumberAPI;
+                delete getContactByExternalID.TSAParagraphAPI;
+                delete getContactByExternalID.TSASignatureAPI;
+                delete getContactByExternalID.TSAPhoneNumberAPI;
+                delete getContactByExternalID.TSASingleLineAPI;
+                expect(getContactByExternalID).to.deep.equal(contactAfterManipulation);
                 const getContactByKey = await service.getByUniqueKey('contacts', 'Key', legacyCreatedContact.Key);
-                expect(getContactByKey).to.deep.equal(legacyUpdatedContact);
+                delete getContactByKey.ModificationDateTime;
+                delete getContactByKey.Longitude;
+                delete getContactByKey.Latitude;
+                delete getContactByKey.TSADateTime;
+                delete getContactByKey.TSAContactBirthday;
+                delete getContactByKey.TSAAttachmentAPI;
+                delete getContactByKey.TSACheckboxAPI;
+                delete getContactByKey.TSACurrencyAPI;
+                delete getContactByKey.TSADateAPI;
+                delete getContactByKey.TSADateTimeAPI;
+                delete getContactByKey.TSADecimalNumberAPI;
+                delete getContactByKey.TSADropdownAPI;
+                delete getContactByKey.TSAEmailAPI;
+                delete getContactByKey.TSAHtmlAPI;
+                delete getContactByKey.TSAImageAPI;
+                delete getContactByKey.TSALimitedLineAPI;
+                delete getContactByKey.TSALinkAPI;
+                delete getContactByKey.TSAMultiChoiceAPI;
+                delete getContactByKey.TSANumberAPI;
+                delete getContactByKey.TSAParagraphAPI;
+                delete getContactByKey.TSASignatureAPI;
+                delete getContactByKey.TSAPhoneNumberAPI;
+                delete getContactByKey.TSASingleLineAPI;
+                expect(getContactByKey).to.deep.equal(contactAfterManipulation);
                 await expect(service.getByUniqueKey('contacts', 'InternalID', '123412')).eventually.to.be.rejected;
                 await expect(service.getByUniqueKey('contacts', 'Price', '123412')).eventually.to.be.rejected;
             });
@@ -999,6 +1198,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             describe('Contacts search', () => {
                 let legacyContacts;
                 it('Where', async () => {
+                    console.log('Saar: Contact Search WHERE');
                     const whereContacts = await objectsService.getContactsSDK({
                         where: `ExternalID like '%Automated API Item%'`,
                     });
@@ -1009,6 +1209,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Page and PageSize', async () => {
+                    console.log('Saar: Contact Search Page and PageSize');
                     legacyContacts = await service.get('contacts?page_size=-1');
                     let legacyPageContacts;
                     legacyPageContacts = await service.search('contacts', {
@@ -1034,6 +1235,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('KeyList', async () => {
+                    console.log('Saar: Contact Search KeyList');
                     legacyContacts = await service.get(
                         `contacts?where=Key IN ('${contacts[0].UUID}','${contacts[1].UUID}','${contacts[2].UUID}','${contacts[3].UUID}')`,
                     );
@@ -1045,6 +1247,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('UniqueFieldList', async () => {
+                    console.log('Saar: Contact Search UniqueFieldList');
                     legacyContacts = await service.get(
                         `contacts?where=InternalID IN ('${contacts[0].InternalID}','${contacts[1].InternalID}','${contacts[2].InternalID}','${contacts[3].InternalID}')`,
                     );
@@ -1062,6 +1265,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Fields', async () => {
+                    console.log('Saar: Contact Search Fields');
                     legacyContacts = await service.get(`contacts?where=InternalID=${contacts[0].InternalID}`);
                     const legacyFieldsContacts = await service.search(`contacts`, {
                         Where: `InternalID=${contacts[0].InternalID}`,
@@ -1078,6 +1282,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 });
 
                 it('Include Count', async () => {
+                    console.log('Saar: Contact Search Include Count');
                     const legacyIncludeCountContacts = await service.search('contacts', {
                         IncludeCount: true,
                     });
@@ -1086,6 +1291,7 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
             });
 
             it('Delete contacts', async () => {
+                console.log('Saar: Contact Delete');
                 const deletedContact = await objectsService.createContact({
                     ExternalID: contactExternalID,
                     Hidden: true,

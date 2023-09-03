@@ -101,6 +101,7 @@ import { ADALStressTests } from './adal_stress';
 import { PFSTests } from './pepperi_file_service';
 import { LegacyResourcesTests } from './legacy_resources';
 import { PermissionsTests } from './permissions';
+import { ProfilesTests } from './profiles';
 import { DIMXrecursive } from './DIMX_recursive';
 import { SecurityTests } from './security';
 
@@ -108,6 +109,7 @@ export {
     TestDataTests,
     LegacyResourcesTests,
     PermissionsTests,
+    ProfilesTests,
     UpgradeDependenciesTests,
     LocalAddonFileCreatorTests,
     FileStorageTests,

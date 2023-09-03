@@ -15,7 +15,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
     await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade script dependencies
     const testData = {
-        'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', '0.7.149'],
+        'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
         'Generic Resources': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
@@ -25,7 +25,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'],
+        // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'],
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],

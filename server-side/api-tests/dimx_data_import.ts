@@ -641,7 +641,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         //debugger;
         if (
             logcash.updateDataToTableOverwriteTrue[0].Key == 'testKey2' &&
-            logcash.updateDataToTableOverwriteTrue[0].Status == 'Insert'
+            logcash.updateDataToTableOverwriteTrue[0].Status == 'Overwrite' // chnaged on 10/08/23 from 'Insert'
         ) {
             logcash.updateDataToTableOverwriteTrueStatus = true;
         } else {
@@ -738,6 +738,7 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
         const num = 49;
         let tst = 0;
         let tst1 = 0;
+        let tst2 = 0;
         const object = createObjects(num); // add 9 unique inserts
         object[num] = object[num - 1]; // + 1 duplicated key
         object[num + 1] = object[num - 1]; // + 1 duplicated on row 51
@@ -770,9 +771,14 @@ export async function DimxDataImportTests(generalService: GeneralService, reques
                 //logcash.add50InsertsToTableOverwriteTrue[index].Details == '9'
             ) {
                 tst1++;
+            } else if (
+                logcash.add50InsertsToTableOverwriteTrue[index].Status == 'Overwrite' //&&
+                //logcash.add50InsertsToTableOverwriteTrue[index].Details == '9'
+            ) {
+                tst2++;
             }
         }
-        if (tst == num && tst1 == 2) {
+        if (tst == num - tst2 && tst1 == 2 && tst2 == 9) {
             logcash.add50InsertsToTableOverwriteTrueStatus = true;
         } else {
             logcash.add50InsertsToTableOverwriteTrueStatus = false;

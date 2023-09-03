@@ -67,6 +67,8 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const addonFunctionsFileName = 'dimx24.js';
     const addonExportFunctionName = 'RemoveObject';
     const addonImportFunctionName = 'RemoveColumn1';
+    let adalCreationDate;
+    let adalCreationDateAfterOverwrite;
 
     //#region Upgrade Relations Framework, ADAL And Pepperitest (Jenkins Special Addon) - Code Jobs
     const dimxName = generalService.papiClient['options'].baseURL.includes('staging')
@@ -325,7 +327,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `{ Type: 'String' }
                                 Column1: {
                                     Type: 'Array',
                                     Items: {
@@ -353,7 +355,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -520,6 +522,13 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     });
 
                     it(`Import Content`, async () => {
+                        const adalService = new ADALService(generalService.papiClient);
+                        adalService.papiClient['options'].addonUUID = addonUUID;
+                        adalService.papiClient['options'].addonSecretKey = secretKey;
+                        adalCreationDate = await adalService.getDataFromSchema(addonUUID, schemaName, {
+                            where: `Key like 'testKeyDIMX%'`,
+                            fields: ['CreationDateTime'],
+                        });
                         const relationResponse = await generalService.fetchStatus(
                             JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
                         );
@@ -562,18 +571,27 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     });
 
                     it(`Import Content`, async () => {
+                        debugger;
+                        const adalService = new ADALService(generalService.papiClient);
+                        adalService.papiClient['options'].addonUUID = addonUUID;
+                        adalService.papiClient['options'].addonSecretKey = secretKey;
+                        adalCreationDateAfterOverwrite = await adalService.getDataFromSchema(addonUUID, schemaName, {
+                            where: `Key like 'testKeyDIMX%'`,
+                            fields: ['CreationDateTime'],
+                        });
                         const relationResponse = await generalService.fetchStatus(
                             JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI,
                         );
                         console.log({ URL: JSON.parse(dimxExportDefult.AuditInfo.ResultObject).URI });
                         expect(relationResponse.Body).to.deep.equal([
-                            { Key: 'testKeyDIMX0', Status: 'Insert' },
-                            { Key: 'testKeyDIMX1', Status: 'Insert' },
-                            { Key: 'testKeyDIMX2', Status: 'Insert' },
-                            { Key: 'testKeyDIMX3', Status: 'Insert' },
-                            { Key: 'testKeyDIMX4', Status: 'Insert' },
-                            { Key: 'testKeyDIMX5', Status: 'Insert' },
+                            { Key: 'testKeyDIMX0', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX1', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX2', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX3', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX4', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX5', Status: 'Overwrite' },
                         ]);
+                        expect(adalCreationDate).to.deep.equal(adalCreationDateAfterOverwrite);
                     });
 
                     it(`Post File in JSON Format`, async () => {
@@ -662,6 +680,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     });
 
                     it(`Export the Imported Content`, async () => {
+                        debugger;
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
                         const newDimxExport = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,
@@ -734,7 +753,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `${relation
                                 Column1: {
                                     Type: 'Array',
                                     Items: {
@@ -762,7 +781,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -968,12 +987,12 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         );
                         console.log({ URL: JSON.parse(dimxExportCsv.AuditInfo.ResultObject).URI });
                         expect(relationResponse.Body).to.deep.equal([
-                            { Key: 'testKeyDIMX0', Status: 'Insert' },
-                            { Key: 'testKeyDIMX1', Status: 'Insert' },
-                            { Key: 'testKeyDIMX2', Status: 'Insert' },
-                            { Key: 'testKeyDIMX3', Status: 'Insert' },
-                            { Key: 'testKeyDIMX4', Status: 'Insert' },
-                            { Key: 'testKeyDIMX5', Status: 'Insert' },
+                            { Key: 'testKeyDIMX0', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX1', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX2', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX3', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX4', Status: 'Overwrite' },
+                            { Key: 'testKeyDIMX5', Status: 'Overwrite' },
                         ]);
                     });
 
@@ -1069,7 +1088,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `${relation
                                 Column1: {
                                     Type: 'Array',
                                     Items: {
@@ -1097,7 +1116,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -1175,14 +1194,14 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     `failed with status: 400 - Bad Request error: {"fault":{"faultstring":"Failed due to exception: Table schema must exist`,
                                 );
                         }
-                        await generalService.sleepAsync(10 * 1000);
+                        // await generalService.sleepAsync(10 * 1000);
                         const newSchema = await adalService.postSchema({
                             Name: schemaName,
                             Type: 'data',
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `${relation
                                 Column1: {
                                     Type: 'Array',
                                     Items: {
@@ -1210,7 +1229,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -1366,7 +1385,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Fields: {
                                         Name: { Type: 'String' },
                                         Description: { Type: 'String' },
-                                        Key: { Type: 'String' },
+                                        //Key: `${relation
                                         Column1: {
                                             Type: 'Array',
                                             Items: {
@@ -1422,7 +1441,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     },
                                 });
                                 expect(purgedSchema).to.have.property('Done').that.is.true;
-                                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                                expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                             });
@@ -1914,7 +1933,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Fields: {
                                         Name: { Type: 'String' },
                                         Description: { Type: 'String' },
-                                        Key: { Type: 'String' },
+                                        //Key: `${relation
                                         Column1: {
                                             Type: 'Array',
                                             Items: {
@@ -1956,7 +1975,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     },
                                 });
                                 expect(purgedSchema).to.have.property('Done').that.is.true;
-                                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                                expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                             });
@@ -2150,7 +2169,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `${relation
                                 Column1: {
                                     Type: 'Array',
                                     Items: {
@@ -2206,7 +2225,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -2371,7 +2390,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Fields: {
                                     Name: { Type: 'String' },
                                     Description: { Type: 'String' },
-                                    Key: { Type: 'String' },
+                                    //Key: `${relation
                                     Column1: {
                                         Type: 'Array',
                                         Items: {
@@ -2458,7 +2477,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 },
                             });
                             expect(purgedSchema).to.have.property('Done').that.is.true;
-                            expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                            expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                         });
@@ -2794,11 +2813,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Fields: {
                                     Name: { Type: 'String' },
                                     Description: { Type: 'String' },
-                                    Key: { Type: 'String' },
+                                    //Key: `${relation
                                 },
                             });
                             expect(purgedSchema).to.have.property('Done').that.is.true;
-                            expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                            expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                         });
@@ -3013,7 +3032,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     Fields: {
                                         Name: { Type: 'String' },
                                         Description: { Type: 'String' },
-                                        Key: { Type: 'String' },
+                                        //Key: `${relation
                                         Column1: {
                                             Type: 'Array',
                                             Items: {
@@ -3100,7 +3119,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     },
                                 });
                                 expect(purgedSchema).to.have.property('Done').that.is.true;
-                                expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                                expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                             });
@@ -3252,14 +3271,14 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                     relationResponse.Body[0],
                                     JSON.stringify(dimxImportAfterNoChange.AuditInfo.ResultObject),
                                 ).to.deep.equal({
-                                    Status: 'Insert',
+                                    Status: 'Overwrite',
                                     Key: `testKey${delimiterArr[i]}DIMX0`,
                                 });
                                 expect(
                                     relationResponse.Body[9],
                                     JSON.stringify(dimxImportAfterNoChange.AuditInfo.ResultObject),
                                 ).to.deep.equal({
-                                    Status: 'Insert',
+                                    Status: 'Overwrite',
                                     Key: `testKey${delimiterArr[i]}DIMX9`,
                                 });
                             });
@@ -3381,7 +3400,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 //             Fields: {
                 //                 Name: { Type: 'String' },
                 //                 Description: { Type: 'String' },
-                //                 Key: { Type: 'String' },
+                //                 //Key: `${relation
                 //                 Column1: {
                 //                     Type: 'Array',
                 //                     Items: {
@@ -3437,7 +3456,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                 //             },
                 //         });
                 //         expect(purgedSchema).to.have.property('Done').that.is.true;
-                //         expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                //         expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                 //         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                 //         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                 //     });
@@ -3638,7 +3657,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `${relation
                                 Column1: {
                                     Type: 'Array',
                                     Items: {
@@ -3702,7 +3721,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -3788,11 +3807,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             Fields: {
                                 Name: { Type: 'String' },
                                 Description: { Type: 'String' },
-                                Key: { Type: 'String' },
+                                //Key: `${relation
                             },
                         });
                         expect(purgedSchema).to.have.property('Done').that.is.true;
-                        expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                        expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                         expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                         expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                     });
@@ -4290,7 +4309,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //                 Fields: {
             //                     Name: { Type: 'String' },
             //                     Description: { Type: 'String' },
-            //                     Key: { Type: 'String' },
+            //                     //Key: `${relation
             //                     Column1: {
             //                         Type: 'Array',
             //                         Items: {
@@ -4354,7 +4373,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //                 },
             //             });
             //             expect(purgedSchema).to.have.property('Done').that.is.true;
-            //             expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+            //             expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
             //             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
             //             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
             //         });
@@ -4440,11 +4459,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
             //                 Fields: {
             //                     Name: { Type: 'String' },
             //                     Description: { Type: 'String' },
-            //                     Key: { Type: 'String' },
+            //                     //Key: `${relation
             //                 },
             //             });
             //             expect(purgedSchema).to.have.property('Done').that.is.true;
-            //             expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+            //             expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
             //             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
             //             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
             //         });
@@ -4898,7 +4917,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 Fields: {
                                     Name: { Type: 'String' },
                                     Description: { Type: 'String' },
-                                    Key: { Type: 'String' },
+                                    //Key: `${relation
                                     Column1: {
                                         Type: 'Array',
                                         Items: {
@@ -4926,7 +4945,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 },
                             });
                             expect(purgedSchema).to.have.property('Done').that.is.true;
-                            expect(purgedSchema).to.have.property('RemovedCounter').that.is.a('number');
+                            expect(purgedSchema).to.have.property('ProcessedCounter').that.is.a('number');
                             expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                             expect(newSchema).to.have.property('Type').a('string').that.is.equal('data');
                         });

@@ -87,6 +87,9 @@ export class ObjectTypeEditor extends AddonPage {
         "//div[@id='formContTemplate']//h3[contains(@class,'ui-accordion-header')]//span[contains(@class,'ui-icon')]",
     );
 
+    //hagit::back fron transaction arrow
+    public BackArrowButton: By = By.xpath("//pep-icon[@name='arrow_left_alt']/ancestor::button");
+
     public async selectPostAction(actionName: WorkflowAction): Promise<void> {
         //?
         const selectedTab = Object.assign({}, this.AddonContainerActionsRadioBtn);

@@ -58,7 +58,7 @@ export class WebAppHomePage extends WebAppPage {
         await this.browser.click(this.SupportMenuPopup_Refresh);
         await this.browser.untilIsVisible(this.SupportMenuPopup_RefreshData);
         await this.browser.click(this.SupportMenuPopup_RefreshData);
-        await this.isSpinnerDone();
+        await this.longerIsSpinnerDone();
     }
 
     /**
@@ -173,6 +173,22 @@ export class WebAppHomePage extends WebAppPage {
         }
     }
 
+    public async enterATD(nameOfATD?: string): Promise<void> {
+        //Start New Workflow
+        if (nameOfATD) {
+            await this.clickOnBtn(nameOfATD);
+        } else {
+            await this.click(this.MainHomePageBtn);
+        }
+        console.log('Loading List');
+        //Get to Items
+        const webAppList = new WebAppList(this.browser);
+        this.browser.sleep(3000);
+        //Validate nothing is loading before clicking on dialog box
+        await webAppList.isSpinnerDone();
+        return;
+    }
+
     //TODO: POM should not contain Business Logic related checks/validations, move this to the relevant test suite or 'helper service'.
     public async validateATDIsApearingOnHomeScreen(ATDname: string): Promise<void> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
@@ -180,6 +196,13 @@ export class WebAppHomePage extends WebAppPage {
             .replace('|textToFill|', ATDname);
         await this.browser.untilIsVisible(By.xpath(specificATDInjectedBtn), 10000);
     }
+
+    // public async validateATDIsApearingOnHomeScreen(driver: Browser, ATDname: string): Promise<void> {
+    //     const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
+    //         ['value'].slice()
+    //         .replace('|textToFill|', ATDname);
+    //     await driver.untilIsVisible(By.xpath(specificATDInjectedBtn), 10000);
+    // }
 
     public async validateATDIsNOTApearingOnHomeScreen(ATDname: string): Promise<boolean> {
         const specificATDInjectedBtn = this.HomeScreenSpesificButton.valueOf()
