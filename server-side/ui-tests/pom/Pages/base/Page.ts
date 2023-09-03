@@ -43,7 +43,7 @@ export abstract class Page extends BasePomObject {
     public async safeUntilIsVisible(selector: By, waitUntil = 15000): Promise<boolean> {
         let isVisibale = false;
         try {
-            isVisibale = await this.browser.untilIsVisible(selector, waitUntil);
+            isVisibale = await this.browser.untilIsVisibleRaw(selector, waitUntil);
         } catch (e) {
             const errorMessage = (e as Error).message;
             if (

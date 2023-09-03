@@ -614,6 +614,11 @@ export class Browser {
         return true;
     }
 
+    public async untilIsVisibleRaw(selector: By, waitUntil = 15000): Promise<boolean> {
+        const isVisibale = await this.isElementVisible(selector, waitUntil)
+        return isVisibale;
+    }
+
     public saveScreenshots() {
         return this.driver.takeScreenshot();
     }
