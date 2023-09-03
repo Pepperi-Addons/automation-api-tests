@@ -148,7 +148,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
-        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', '0.7.%'],
+        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', '0.7.%'], //evgeny from 3/9: 0.8.x is avaliable but 0.7.x should be tested
         Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', ''],
     };
 
