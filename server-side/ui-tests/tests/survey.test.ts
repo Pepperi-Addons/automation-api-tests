@@ -205,7 +205,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
 
             afterEach(async function () {
                 const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.collectEndTestData2(this);
+                await webAppHomePage.collectEndTestData(this);
             });
             it(`1. Create A UDC Which Extends 'surveys' Scheme Before Creating A Survey`, async function () {
                 const udcService = new UDCService(generalService);
@@ -486,7 +486,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
 
             afterEach(async function () {
                 const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.collectEndTestData2(this);
+                await webAppHomePage.collectEndTestData(this);
             });
             it('1. Fill Survey Using Admin Account And Validate All Is Working', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
@@ -551,7 +551,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
                     method: 'GET',
                 });
-                
+
                 debugger;
                 const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
                 expect(filteredSurveyResponse.length).to.equal(1);

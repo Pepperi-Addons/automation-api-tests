@@ -341,6 +341,8 @@ export class SurveyTemplateBuilder extends AddonPage {
     }
 
     private async setSurveyName(surveyName: string) {
+        await this.browser.sendKeys(this.SurveyNameInput, '');
+        this.browser.sleep(1000 * 3);
         await this.browser.sendKeys(this.SurveyNameInput, surveyName);
     }
 
