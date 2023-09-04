@@ -4002,6 +4002,10 @@ function doWeHaveSuchAppTest(addonName: string) {
         case 'PFS': {
             return true;
         }
+        case 'CORE-GENERIC-RESOURCES':
+        case 'CORE': {
+            return true;
+        }
         default:
             return false;
     }

@@ -212,9 +212,13 @@ export class PricingData {
                         Type: 'TSAAOQMUOM1',
                         Quantity: 'TSAAOQMQuantity1',
                     },
+                    // {
+                    //     Type: 'TSAAOQMUOM2',
+                    //     Quantity: 'TSAAOQMQuantity2',
+                    // },
                     {
-                        Type: 'TSAAOQMUOM2',
-                        Quantity: 'TSAAOQMQuantity2',
+                        Type: 'TransactionTSASingleUOMType',
+                        Quantity: 'TransactionTSASingleUOMValue',
                     },
                 ],
             },

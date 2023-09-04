@@ -117,8 +117,8 @@ export async function VFdataPrep(varPass: string, client: Client) {
         VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
         // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], // PAPI
         // 'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.26'], // CPAPI
-        // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.10.5'], // CPAS
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
+        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''], // CPAS
+        // 'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
         // 'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.364'],
         // 'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.3'],
         // 'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.0.5'],
@@ -141,7 +141,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
         // 'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''], // current phased version 0.6.2 | dependency > 0.6.2
         // 'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], // UDC current phased version 0.8.29 | dependency > 0.8.11
         // 'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''], // current phased version 0.7.112 | dependency > 0.7.104
-        // Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], // current phased version 0.9.38 | dependency > 0.9.31
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], // current phased version 0.9.38 | dependency > 0.9.31
         // Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''], // current phased version 1.0.23 | dependency > 1.0.23
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // current phased version 0.5.10 | dependency > 0.5.7
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''], // current phased version 0.6.26 | dependency > 0.6.3
