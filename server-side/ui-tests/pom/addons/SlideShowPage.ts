@@ -7,10 +7,10 @@ export class SlideShowPage extends AddonPage {
     public stopButton: By = By.xpath("//pep-button[@iconname='system_pause']");
 
     public async enterSurveyPicker() {
-        if(!(await this.safeUntilIsVisible(this.enterSurveyBtn))){
+        if (!(await this.safeUntilIsVisible(this.enterSurveyBtn))) {
             await this.browser.click(this.arrowBtn);
             await this.browser.click(this.stopButton);
-            this.browser.sleep(1000*2);
+            this.browser.sleep(1000 * 2);
         }
         await this.browser.click(this.enterSurveyBtn);
     }
