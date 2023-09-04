@@ -919,6 +919,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it('Data Cleansing: 7. ATD from home screen', async function () {
                 //5. delete ATD from homescreen
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.openSettings();
                 driver.sleep(6000);
