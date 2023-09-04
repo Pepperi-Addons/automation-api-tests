@@ -35,7 +35,7 @@ export const testData = {
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
-    'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'], // evgeny: 28/6/23 - has to be ABOVE activity data index
+    'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
     'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
@@ -82,7 +82,7 @@ export const testDataForInitUser = {
     Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
     'Key Management Service': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
     'Operation Invoker': ['f8d964d7-aad0-4d29-994b-5977a8f22dca', '9.5.%'],
-    'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', '1.0.%'],
+    'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
     Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.9.%'],
     'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', '1.2.%'],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
