@@ -127,17 +127,21 @@ export async function SurveyTests(email: string, password: string, client: Clien
             ],
         },
     ];
-
+    // const buyerEmail = 'surveyNeo4jProdBuyer@pepperitest.com';
+    // const buyerPass = '9Z^ch5';
+    // const repEmail = 'surveyNeo4jProdRep@pepperitest.com';
+    // const repPass = 'sZ&4Ew';
     await generalService.baseAddonVersionsInstallationNewSync(varPass);
     // #region Upgrade survey dependencies
 
     const testData = {
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.4.%'],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], //has to remain untouched - latest 0.7.x
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
@@ -148,7 +152,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
-        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''],
+        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''], //evgeny from 3/9: 0.8.x is avaliable but 0.7.x should be tested
         Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', ''],
     };
 
@@ -461,7 +465,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHeader.openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
-                await brandedApp.addAdminHomePageButtons(slideshowSlugDisplayName);
+                await brandedApp.addRepHomePageButtons(slideshowSlugDisplayName);
                 const webAppHomePage = new WebAppHomePage(driver);
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
@@ -484,14 +488,12 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData(this);
             });
-            it('1. Fill First Survey And Validate All Is Working', async function () {
-                // const slideshowSlugDisplayName = 'slideshow_slug_knub';
-                // const surveyUUID = 'e3970843-80a2-4c19-9053-5ea9c16ac053';
+            it('1. Fill Survey Using Admin Account And Validate All Is Working', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.reSyncApp();
-                await webAppHomePage.initiateSalesActivity(slideshowSlugDisplayName);
+                await webAppHomePage.enterATD(slideshowSlugDisplayName);
                 const slideShowPage = new SlideShowPage(driver);
                 await slideShowPage.enterSurveyPicker();
                 const surveyPicker = new SurveyPicker(driver);
@@ -527,6 +529,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 ];
                 const allQuestionPositiveAns = [['A', 'C'], 'B', 'short Text12', ['1', '2'], 'Yes', '.123', '1/1/2022'];
                 const surveyFiller = new SurveyFiller(driver);
+                const surveyKey = await surveyFiller.getKeyOfSurveyFromURL();
                 for (let index = 0; index < allQuestionNames.length; index++) {
                     const currentQuestionName = allQuestionNames[index];
                     const currentQuestionType = allQuestionTypes[index];
@@ -545,19 +548,20 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }
-                const surveyResponse = await generalService.fetchStatus(
-                    `/resources/MySurveys?order_by=CreationDateTime DESC`,
-                    {
-                        method: 'GET',
-                    },
-                );
-                const latestSurvey = surveyResponse.Body[0];
-                expect(latestSurvey).to.not.be.undefined;
-                expect(latestSurvey.Template).to.equal(surveyUUID);
-                expect(latestSurvey.StatusName).to.equal('Submitted');
-                expect(latestSurvey.ResourceName).to.equal('MySurveys');
-                expect(latestSurvey.Account).to.equal(accUUID);
-                const surveyAnswers = latestSurvey.Answers;
+                const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
+                    method: 'GET',
+                });
+
+                debugger;
+                const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
+                expect(filteredSurveyResponse.length).to.equal(1);
+                const currentSurvey = filteredSurveyResponse[0];
+                expect(currentSurvey).to.not.be.undefined;
+                expect(currentSurvey.Template).to.equal(surveyUUID);
+                expect(currentSurvey.StatusName).to.equal('Submitted');
+                expect(currentSurvey.ResourceName).to.equal('MySurveys');
+                expect(currentSurvey.Account).to.equal(accUUID);
+                const surveyAnswers = currentSurvey.Answers;
                 for (let index = 0; index < surveyAnswers.length; index++) {
                     const ans = surveyAnswers[index];
                     if (Array.isArray(allQuestionPositiveAns[index])) {
@@ -586,9 +590,221 @@ export async function SurveyTests(email: string, password: string, client: Clien
                         }
                     }
                 }
+                await webAppLoginPage.logout();
             });
+            // it('2. Fill Survey Using Rep Account And Validate All Is Working', async function () {
+            //     ////----->
+            //     const webAppLoginPage = new WebAppLoginPage(driver);
+            //     await webAppLoginPage.longLoginForRep(repEmail, repPass);
+            //     const webAppHomePage = new WebAppHomePage(driver);
+            //     for (let index = 0; index < 2; index++) {
+            //         await webAppHomePage.manualResync(client);
+            //     }
+            //     await webAppHomePage.enterATD(slideshowSlugDisplayName);
+            //     const slideShowPage = new SlideShowPage(driver);
+            //     await slideShowPage.enterSurveyPicker();
+            //     const surveyPicker = new SurveyPicker(driver);
+            //     driver.sleep(4500);
+            //     const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
+            //     driver.sleep(2500);
+            //     expect(isAccountSelectionOpen).to.equal(true);
+            //     const objectsService = new ObjectsService(generalService);
+            //     const accounts = await objectsService.getAccounts();
+            //     expect(accounts.length).to.be.above(0);
+            //     const accName = accounts[0].Name;
+            //     const accUUID = accounts[0].UUID;
+            //     const isTemplateOpen = await surveyPicker.selectAccount(accName);
+            //     driver.sleep(2500);
+            //     expect(isTemplateOpen).to.equal(true);
+            //     const allQuestionNames = [
+            //         'first question',
+            //         'second question',
+            //         'third question',
+            //         'fourth question',
+            //         'fifth question',
+            //         'sixth question',
+            //         'seventh question',
+            //     ];
+            //     const allQuestionTypes: SurveyQuestion['Type'][] = [
+            //         'Multiple Select',
+            //         'Radio Group',
+            //         'Short Text',
+            //         'Checkbox',
+            //         'Yes/No',
+            //         'Decimal',
+            //         'Date',
+            //     ];
+            //     const allQuestionPositiveAns = [['A', 'C'], 'B', 'short Text12', ['1', '2'], 'Yes', '.123', '1/1/2022'];
+            //     const surveyFiller = new SurveyFiller(driver);
+            //     const surveyKey = await surveyFiller.getKeyOfSurveyFromURL();
+            //     for (let index = 0; index < allQuestionNames.length; index++) {
+            //         const currentQuestionName = allQuestionNames[index];
+            //         const currentQuestionType = allQuestionTypes[index];
+            //         const currentQuestionAns = allQuestionPositiveAns[index];
+            //         if (Array.isArray(currentQuestionAns)) {
+            //             await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, currentQuestionAns);
+            //         } else {
+            //             await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, [
+            //                 currentQuestionAns,
+            //             ]);
+            //         }
+            //     }
+            //     await surveyFiller.saveSurvey();
+            //     driver.sleep(8000);
+            //     await webAppHomePage.returnToHomePage();
+            //     for (let index = 0; index < 2; index++) {
+            //         await webAppHomePage.manualResync(client);
+            //     }
+            //     const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
+            //         method: 'GET',
+            //     });
+            //     debugger;
+            //     const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
+            //     expect(filteredSurveyResponse.length).to.equal(1);
+            //     const currentSurvey = filteredSurveyResponse[0];
+            //     expect(currentSurvey).to.not.be.undefined;
+            //     expect(currentSurvey.Template).to.equal(surveyUUID);
+            //     expect(currentSurvey.StatusName).to.equal('Submitted');
+            //     expect(currentSurvey.ResourceName).to.equal('MySurveys');
+            //     expect(currentSurvey.Account).to.equal(accUUID);
+            //     const surveyAnswers = currentSurvey.Answers;
+            //     for (let index = 0; index < surveyAnswers.length; index++) {
+            //         const ans = surveyAnswers[index];
+            //         if (Array.isArray(allQuestionPositiveAns[index])) {
+            //             const joinedArray = (allQuestionPositiveAns[index] as string[]).join(';');
+            //             expect(ans.Answer).to.equal(joinedArray);
+            //         } else {
+            //             if (allQuestionPositiveAns[index] === 'Yes' || allQuestionPositiveAns[index] === 'No') {
+            //                 const convertedAns = allQuestionPositiveAns[index] === 'Yes' ? 'true' : 'false';
+            //                 expect(ans.Answer).to.equal(convertedAns);
+            //             } else {
+            //                 if (allQuestionPositiveAns[index] === '.123') {
+            //                     const numb = '0' + allQuestionPositiveAns[index];
+            //                     expect(ans.Answer).to.equal(numb);
+            //                 } else if (allQuestionPositiveAns[index] === '1/1/2022') {
+            //                     const dateSplit = (allQuestionPositiveAns[index] as string).split('/');
+            //                     const date =
+            //                         dateSplit[dateSplit.length - 1] +
+            //                         '-' +
+            //                         dateSplit[dateSplit.length - 2] +
+            //                         '-' +
+            //                         dateSplit[dateSplit.length - 3];
+            //                     expect(ans.Answer).to.equal(date);
+            //                 } else {
+            //                     expect(ans.Answer).to.equal(allQuestionPositiveAns[index]);
+            //                 }
+            //             }
+            //         }
+            //     }
+            //     await webAppLoginPage.logout();
+            // });
+            // it('3. Fill Survey Using Buyer Account And Validate All Is Working', async function () {
+            //     const webAppLoginPage = new WebAppLoginPage(driver);
+            //     await webAppLoginPage.longLoginForBuyer(buyerEmail, buyerPass);
+            //     const webAppHomePage = new WebAppHomePage(driver);
+            //     for (let index = 0; index < 2; index++) {
+            //         await webAppHomePage.manualResync(client);
+            //     }
+            //     await webAppHomePage.enterATD(slideshowSlugDisplayName);
+            //     const slideShowPage = new SlideShowPage(driver);
+            //     await slideShowPage.enterSurveyPicker();
+            //     const surveyPicker = new SurveyPicker(driver);
+            //     driver.sleep(4500);
+            //     const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
+            //     driver.sleep(2500);
+            //     expect(isAccountSelectionOpen).to.equal(true);
+            //     const objectsService = new ObjectsService(generalService);
+            //     const accounts = await objectsService.getAccounts();
+            //     expect(accounts.length).to.be.above(0);
+            //     const accName = accounts[0].Name;
+            //     const accUUID = accounts[0].UUID;
+            //     const isTemplateOpen = await surveyPicker.selectAccount(accName);
+            //     driver.sleep(2500);
+            //     expect(isTemplateOpen).to.equal(true);
+            //     const allQuestionNames = [
+            //         'first question',
+            //         'second question',
+            //         'third question',
+            //         'fourth question',
+            //         'fifth question',
+            //         'sixth question',
+            //         'seventh question',
+            //     ];
+            //     const allQuestionTypes: SurveyQuestion['Type'][] = [
+            //         'Multiple Select',
+            //         'Radio Group',
+            //         'Short Text',
+            //         'Checkbox',
+            //         'Yes/No',
+            //         'Decimal',
+            //         'Date',
+            //     ];
+            //     const allQuestionPositiveAns = [['A', 'C'], 'B', 'short Text12', ['1', '2'], 'Yes', '.123', '1/1/2022'];
+            //     const surveyFiller = new SurveyFiller(driver);
+            //     const surveyKey = await surveyFiller.getKeyOfSurveyFromURL();
+            //     for (let index = 0; index < allQuestionNames.length; index++) {
+            //         const currentQuestionName = allQuestionNames[index];
+            //         const currentQuestionType = allQuestionTypes[index];
+            //         const currentQuestionAns = allQuestionPositiveAns[index];
+            //         if (Array.isArray(currentQuestionAns)) {
+            //             await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, currentQuestionAns);
+            //         } else {
+            //             await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, [
+            //                 currentQuestionAns,
+            //             ]);
+            //         }
+            //     }
+            //     await surveyFiller.saveSurvey();
+            //     driver.sleep(8000);
+            //     await webAppHomePage.returnToHomePage();
+            //     for (let index = 0; index < 2; index++) {
+            //         await webAppHomePage.manualResync(client);
+            //     }
+            //     const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
+            //         method: 'GET',
+            //     });
+            //     debugger;
+            //     const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
+            //     expect(filteredSurveyResponse.length).to.equal(1);
+            //     const currentSurvey = filteredSurveyResponse[0];
+            //     expect(currentSurvey).to.not.be.undefined;
+            //     expect(currentSurvey.Template).to.equal(surveyUUID);
+            //     expect(currentSurvey.StatusName).to.equal('Submitted');
+            //     expect(currentSurvey.ResourceName).to.equal('MySurveys');
+            //     expect(currentSurvey.Account).to.equal(accUUID);
+            //     const surveyAnswers = currentSurvey.Answers;
+            //     for (let index = 0; index < surveyAnswers.length; index++) {
+            //         const ans = surveyAnswers[index];
+            //         if (Array.isArray(allQuestionPositiveAns[index])) {
+            //             const joinedArray = (allQuestionPositiveAns[index] as string[]).join(';');
+            //             expect(ans.Answer).to.equal(joinedArray);
+            //         } else {
+            //             if (allQuestionPositiveAns[index] === 'Yes' || allQuestionPositiveAns[index] === 'No') {
+            //                 const convertedAns = allQuestionPositiveAns[index] === 'Yes' ? 'true' : 'false';
+            //                 expect(ans.Answer).to.equal(convertedAns);
+            //             } else {
+            //                 if (allQuestionPositiveAns[index] === '.123') {
+            //                     const numb = '0' + allQuestionPositiveAns[index];
+            //                     expect(ans.Answer).to.equal(numb);
+            //                 } else if (allQuestionPositiveAns[index] === '1/1/2022') {
+            //                     const dateSplit = (allQuestionPositiveAns[index] as string).split('/');
+            //                     const date =
+            //                         dateSplit[dateSplit.length - 1] +
+            //                         '-' +
+            //                         dateSplit[dateSplit.length - 2] +
+            //                         '-' +
+            //                         dateSplit[dateSplit.length - 3];
+            //                     expect(ans.Answer).to.equal(date);
+            //                 } else {
+            //                     expect(ans.Answer).to.equal(allQuestionPositiveAns[index]);
+            //                 }
+            //             }
+            //         }
+            //     }
+            // });
             it('Data Cleansing: 1. survey template', async function () {
                 //1. delete survey template
+                debugger;
                 const body = { Key: surveyUUID, Hidden: true };
                 const deleteSurveyTemplateResponse = await generalService.fetchStatus(`/resources/MySurveyTemplates`, {
                     method: 'POST',
@@ -703,11 +919,13 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it('Data Cleansing: 7. ATD from home screen', async function () {
                 //5. delete ATD from homescreen
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
-                await brandedApp.removeAdminHomePageButtons(slideshowSlugDisplayName);
+                await brandedApp.removeRepHomePageButtons(slideshowSlugDisplayName);
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.manualResync(client);
                 const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slideshowSlugDisplayName);
