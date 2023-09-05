@@ -10,6 +10,7 @@ import {
     WebAppHeader,
     WebAppHomePage,
     WebAppLoginPage,
+    WebAppList,
     // WebAppSettingsSidePanel
 } from '../pom';
 // import { ResourceEditors, ResourceList, ResourceViews } from '../pom/addons/ResourceList';
@@ -32,12 +33,14 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const udcService = new UDCService(generalService);
+    const repEmail = email.split('@')[0] + '.rep@pepperitest.com';
 
     let driver: Browser;
     let e2eUtils: E2EUtils;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
+    let webAppList: WebAppList;
     // let webAppDialog: WebAppDialog;
     // let settingsSidePanel: WebAppSettingsSidePanel;
     let accountDashboardLayout: AccountDashboardLayout;
@@ -90,6 +93,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 webAppLoginPage = new WebAppLoginPage(driver);
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
+                webAppList = new WebAppList(driver);
                 // webAppDialog = new WebAppDialog(driver);
                 // settingsSidePanel = new WebAppSettingsSidePanel(driver);
                 accountDashboardLayout = new AccountDashboardLayout(driver);
@@ -540,11 +544,21 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.clickElement('VisitFlow_GroupButton_Orders');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_SalesOrder, 15000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Selecting 'Orders' Group`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.clickElement('VisitFlow_StepButton_SalesOrder');
                     await visitFlow.isSpinnerDone();
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_OrdersChooseCatalogDialog_Content, 15000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Selecting Catalog`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.clickElement('VisitFlow_OrdersChooseCatalogDialog_FirstCatalogInList_RadioButton');
                     await visitFlow.waitTillVisible(
                         visitFlow.VisitFlow_OrdersChooseCatalogDialog_SelectedCatalog_RadioButton,
@@ -552,9 +566,20 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     );
                     await visitFlow.clickElement('VisitFlow_OrdersChooseCatalogDialog_DoneButton');
                     await visitFlow.isSpinnerDone();
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `at Order Center`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     // Choosing an item in Order Center:
                     // debugger
+                    await driver.untilIsVisible(webAppList.ListCardViewElement);
                     await orderPage.searchInOrderCenter(salesOrderItemName);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Searched for a spesific item in order center`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await driver.click(
                         orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(salesOrderItemName),
                     );
@@ -563,10 +588,15 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_DefaultCatalog_CartButton, 15000);
                     await visitFlow.clickElement('VisitFlow_DefaultCatalog_CartButton');
                     await visitFlow.isSpinnerDone();
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `at Cart`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_DefaultCatalog_SubmitButton, 15000);
                     base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `Order Finished`,
+                        title: `Order Finished - before submission`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                     await visitFlow.clickElement('VisitFlow_DefaultCatalog_SubmitButton');
@@ -703,7 +733,8 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await e2eUtils.performManualSync(client);
                 });
                 it('Loging Out and Loging In as Rep', async () => {
-                    await e2eUtils.logOutLogIn(`${email.split('@')[0]}.rep@pepperitest.com`, password);
+                    // await e2eUtils.logOutLogIn(`${email.split('@')[0]}.rep@pepperitest.com`, password);
+                    await e2eUtils.logOutLogIn(repEmail, password);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
                 });
@@ -861,7 +892,9 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
                 });
                 it('Deleting Activities', async function () {
-                    await webAppHeader.goHome();
+                    await e2eUtils.logOutLogIn(repEmail, password);
+                    // await driver.refresh();
+                    // await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');
                     driver.sleep(0.5 * 1000);
