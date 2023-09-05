@@ -11,7 +11,7 @@ chai.use(promised);
 
 export async function StorybookSignatureTests() {
     const signatureInputs = ['rowSpan', 'src', 'label', 'disabled', 'mandatory', 'readonly', 'showTitle', 'xAlignment'];
-    const signatureOutputs = ['fileChange'];
+    const signatureOutputs = ['elementClick', 'fileChange'];
     const signatureSubFoldersHeaders = ['Empty', 'Read only'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
@@ -112,49 +112,49 @@ export async function StorybookSignatureTests() {
                 });
                 switch (input) {
                     case 'rowSpan':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('rowSpan')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'src':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('src')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'label':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('label')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('disabled')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'mandatory':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('mandatory')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'readonly':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('readonly')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'showTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('showTitle')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'xAlignment':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO
@@ -177,8 +177,14 @@ export async function StorybookSignatureTests() {
                     });
                 });
                 switch (output) {
+                    case 'elementClick':
+                        it(`validate output`, async function () {
+                            expect(signatureOutputsTitles.includes('elementClick')).to.be.true;
+                        });
+                        // TODO
+                        break;
                     case 'fileChange':
-                        it(`it '${output}'`, async function () {
+                        it(`validate output`, async function () {
                             expect(signatureOutputsTitles.includes('fileChange')).to.be.true;
                         });
                         // TODO
