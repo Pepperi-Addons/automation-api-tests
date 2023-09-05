@@ -524,11 +524,12 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.reSyncApp();
-                await webAppHomePage.enterATD(slideshowSlugDisplayName);
+                await webAppHomePage.enterActivty(slideshowSlugDisplayName);
+                driver.sleep(3000);
                 const slideShowPage = new SlideShowPage(driver);
                 await slideShowPage.enterSurveyPicker();
                 const surveyPicker = new SurveyPicker(driver);
-                driver.sleep(4500);
+                driver.sleep(6500);
                 const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
                 driver.sleep(2500);
                 expect(isAccountSelectionOpen).to.equal(true);
@@ -582,7 +583,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
                     method: 'GET',
                 });
-
                 debugger;
                 const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
                 expect(filteredSurveyResponse.length).to.equal(1);
@@ -630,11 +630,12 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }
-                await webAppHomePage.enterATD(slideshowSlugDisplayName);
+                await webAppHomePage.enterActivty(slideshowSlugDisplayName);
+                driver.sleep(3000);
                 const slideShowPage = new SlideShowPage(driver);
                 await slideShowPage.enterSurveyPicker();
                 const surveyPicker = new SurveyPicker(driver);
-                driver.sleep(4500);
+                driver.sleep(6500);
                 const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
                 driver.sleep(2500);
                 expect(isAccountSelectionOpen).to.equal(true);
@@ -735,11 +736,12 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 for (let index = 0; index < 2; index++) {
                     await webAppHomePage.manualResync(client);
                 }
-                await webAppHomePage.enterATD(slideshowSlugDisplayName);
+                await webAppHomePage.enterActivty(slideshowSlugDisplayName);
+                driver.sleep(3000);
                 const slideShowPage = new SlideShowPage(driver);
                 await slideShowPage.enterSurveyPicker();
                 const surveyPicker = new SurveyPicker(driver);
-                driver.sleep(4500);
+                driver.sleep(6500);
                 const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
                 driver.sleep(2500);
                 expect(isAccountSelectionOpen).to.equal(true);
@@ -831,6 +833,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                         }
                     }
                 }
+                await webAppLoginPage.logout();
             });
             it('Data Cleansing: 1. survey template', async function () {
                 //1. delete survey template
