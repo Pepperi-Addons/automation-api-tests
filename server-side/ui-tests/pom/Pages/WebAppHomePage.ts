@@ -174,6 +174,7 @@ export class WebAppHomePage extends WebAppPage {
     }
 
     public async enterATD(nameOfATD?: string): Promise<void> {
+        this.browser.sleep(1000);
         //Start New Workflow
         if (nameOfATD) {
             await this.clickOnBtn(nameOfATD);
@@ -186,6 +187,7 @@ export class WebAppHomePage extends WebAppPage {
         this.browser.sleep(3000);
         //Validate nothing is loading before clicking on dialog box
         await webAppList.isSpinnerDone();
+        this.browser.sleep(3000);
         return;
     }
 
