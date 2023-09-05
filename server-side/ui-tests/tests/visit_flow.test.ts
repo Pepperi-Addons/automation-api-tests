@@ -687,6 +687,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                 });
+
                 it('Configuring Survey in UDC: Flows', async () => {
                     driver.sleep(0.5 * 1000);
                     const collectionName = 'VisitFlows';
@@ -728,16 +729,19 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         upsertedListingsToVisitFlows.push(upsertingValues_Response.Body);
                     });
                 });
+
                 it('Performing Manual Sync', async () => {
                     // driver.sleep(20 * 1000);
                     await e2eUtils.performManualSync(client);
                 });
+
                 it('Loging Out and Loging In as Rep', async () => {
                     // await e2eUtils.logOutLogIn(`${email.split('@')[0]}.rep@pepperitest.com`, password);
                     await e2eUtils.logOutLogIn(repEmail, password);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
                 });
+
                 it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
@@ -757,6 +761,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     );
                     visitFlow.pause(1 * 1000);
                 });
+
                 it('If more than one visit - Choosing a Visit Flow', async function () {
                     // debugger
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
@@ -772,6 +777,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
+
                 it('Checking off "Start"', async function () {
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_Groups_Content, 15000);
@@ -816,6 +822,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
+
                 it('Checking off "Survey"', async function () {
                     // debugger
                     await visitFlow.clickElement('VisitFlow_GroupButton_Surveys');
@@ -834,6 +841,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     // await visitFlow.waitTillVisible(isitFlow.VisitFlow_OrdersChooseCatalogDialog_Content, 15000); // change to survey
                     visitFlow.pause(5 * 1000);
                 });
+
                 it('Checking off "End"', async function () {
                     // debugger
                     await visitFlow.clickElement('VisitFlow_GroupButton_End');
@@ -891,6 +899,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
+
                 it('Deleting Activities', async function () {
                     await e2eUtils.logOutLogIn(repEmail, password);
                     // await driver.refresh();
@@ -1074,6 +1083,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         expect(deleteResponse.Body.SortIndex).to.equal(documentBody.SortIndex);
                     });
                 });
+
                 it('Deleting UDCs "VisitFlows" listings', async () => {
                     // deleting created VisitFlows documents
                     upsertedListingsToVisitFlows.forEach(async (documentBody) => {
@@ -1086,6 +1096,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         expect(deleteResponse.Body.Title).to.equal(documentBody.Title);
                     });
                 });
+
                 it('Deleting LEFTOVERS UDCs "VisitFlowGroups" listings', async () => {
                     // deleting any leftovers from unsuccessful previous tests
                     let visitFlowGroupsDocuments = await udcService.getDocuments('VisitFlowGroups', {
@@ -1101,6 +1112,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
                     expect(visitFlowGroupsDocuments).to.be.an('array').with.lengthOf(0);
                 });
+
                 it('Deleting LEFTOVERS UDCs "VisitFlows" listings', async () => {
                     // deleting any leftovers from unsuccessful previous tests
                     let visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
@@ -1115,8 +1127,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         where: 'Name like "Auto%"',
                     });
                     expect(visitFlowsDocuments).to.be.an('array').with.lengthOf(0);
+                });
 
-                    visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
+                it('Deleting LEFTOVERS "MockVisit" listings from UDC "VisitFlows"', async () => {
+                    let visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
                         where: 'Name="MockVisit"',
                     });
                     console.info('visitFlowsDocuments: ', visitFlowsDocuments);
