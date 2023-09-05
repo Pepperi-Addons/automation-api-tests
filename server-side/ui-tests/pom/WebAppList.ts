@@ -24,6 +24,10 @@ export class WebAppList extends Page {
     public RadioButtons: By = By.css('pep-list .table-row-fieldset .mat-radio-button');
     public SelectAllCheckbox: By = By.css('pep-list .table-header-fieldset .mat-checkbox');
     public Cells: By = By.css('pep-list .table-row-fieldset .pep-report-fields');
+    public PepGenericList_mainLayout: By = By.xpath(
+        '//pep-generic-list/pep-page-layout//div[contains(@class,"main-layout")]',
+    );
+    public ListCardViewElement: By = By.xpath('//pep-list//virtual-scroller//pep-form//fieldset//mat-grid-list');
     public ListRowElements: By = By.css('pep-list .table-row-fieldset');
     public RowElementCheckBox: By = By.css('pep-list .table-row-fieldset > mat-checkbox');
     public GeneralCheckBoxValue: By = By.xpath(
