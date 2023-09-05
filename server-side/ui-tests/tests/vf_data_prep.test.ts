@@ -119,7 +119,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
         // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], // PAPI
         // 'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.26'], // CPAPI
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.20.3'], // CPAS
-        // 'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.9.122'],
         // 'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
         // 'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.364'],
         // 'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.3'],
