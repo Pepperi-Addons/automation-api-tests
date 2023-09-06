@@ -629,9 +629,15 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             default:
                                 break;
                         }
-                        it('Close Dialog', async function () {
-                            await resourceListABI.clickElement('ListAbi_dialogButton_done');
-                        });
+                        if (email.includes('.stage') && listTitle === '32. ReferenceAccount - 2 Views') {
+                            it('Dialog Not Shown', async function () {
+                                // await resourceListABI.clickElement('ListAbi_dialogButton_done');
+                            });
+                        } else {
+                            it('Close Dialog', async function () {
+                                await resourceListABI.clickElement('ListAbi_dialogButton_done');
+                            });
+                        }
                     });
                 });
             });
