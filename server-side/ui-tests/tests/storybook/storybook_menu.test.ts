@@ -1,38 +1,50 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { SkeletonLoader } from '../pom/Pages/StorybookComponents/SkeletonLoader';
+import { Menu } from '../../pom/Pages/StorybookComponents/Menu';
 
 chai.use(promised);
 
-export async function StorybookSkeletonLoaderTests() {
-    const skeletonLoaderInputs = ['lastRowOffset', 'rowHeightType', 'rowsNumber'];
-    const skeletonLoaderSubFoldersHeaders = ['Bigger loader'];
+export async function StorybookMenuTests() {
+    const menuInputs = [
+        'iconName',
+        'items',
+        'classNames',
+        'disabled',
+        'selectedItem',
+        'sizeType',
+        'styleType',
+        'text',
+        'type',
+    ];
+    const menuOutputs = ['menuClick', 'menuItemClick'];
+    const menuSubFoldersHeaders = ['Action (default)', 'Action select', 'Select'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let skeletonLoader: SkeletonLoader;
-    let skeletonLoaderInputsTitles;
+    let menu: Menu;
+    let menuInputsTitles;
+    let menuOutputsTitles;
 
-    describe('Storybook "SkeletonLoader" Tests Suite', function () {
+    describe('Storybook "Menu" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            skeletonLoader = new SkeletonLoader(driver);
+            menu = new Menu(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* SkeletonLoader * Component Testing', () => {
+        describe('* Menu Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -54,31 +66,34 @@ export async function StorybookSkeletonLoaderTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** SkeletonLoader ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('skeleton-loader');
+            it(`Enter ** Menu ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('menu');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** SkeletonLoader ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await skeletonLoader.doesSkeletonLoaderComponentFound();
-                skeletonLoaderInputsTitles = await skeletonLoader.getInputsTitles();
-                console.info('skeletonLoaderInputsTitles:', JSON.stringify(skeletonLoaderInputsTitles, null, 2));
+            it(`Overview Test of ** Menu ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await menu.doesMenuComponentFound();
+                menuInputsTitles = await menu.getInputsTitles();
+                console.info('menuInputsTitles:', JSON.stringify(menuInputsTitles, null, 2));
+                menuOutputsTitles = await menu.getOutputsTitles();
+                console.info('menuOutputsTitles:', JSON.stringify(menuOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(skeletonLoaderInputsTitles).to.eql(skeletonLoaderInputs);
+                expect(menuInputsTitles).to.eql(menuInputs);
+                expect(menuOutputsTitles).to.eql(menuOutputs);
                 driver.sleep(5 * 1000);
             });
         });
-        skeletonLoaderInputs.forEach(async (input) => {
+        menuInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await skeletonLoader.getInputRowSelectorByName(input));
+                    await driver.click(await menu.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -95,7 +110,7 @@ export async function StorybookSkeletonLoaderTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(skeletonLoader.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(menu.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -106,21 +121,57 @@ export async function StorybookSkeletonLoaderTests() {
                     });
                 });
                 switch (input) {
-                    case 'lastRowOffset':
+                    case 'iconName':
                         it(`it '${input}'`, async function () {
-                            expect(skeletonLoaderInputsTitles.includes('lastRowOffset')).to.be.true;
+                            expect(menuInputsTitles.includes('iconName')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'rowHeightType':
+                    case 'items':
                         it(`it '${input}'`, async function () {
-                            expect(skeletonLoaderInputsTitles.includes('rowHeightType')).to.be.true;
+                            expect(menuInputsTitles.includes('items')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'rowsNumber':
+                    case 'classNames':
                         it(`it '${input}'`, async function () {
-                            expect(skeletonLoaderInputsTitles.includes('rowsNumber')).to.be.true;
+                            expect(menuInputsTitles.includes('classNames')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'disabled':
+                        it(`it '${input}'`, async function () {
+                            expect(menuInputsTitles.includes('disabled')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'selectedItem':
+                        it(`it '${input}'`, async function () {
+                            expect(menuInputsTitles.includes('selectedItem')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'sizeType':
+                        it(`it '${input}'`, async function () {
+                            expect(menuInputsTitles.includes('sizeType')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'styleType':
+                        it(`it '${input}'`, async function () {
+                            expect(menuInputsTitles.includes('styleType')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'text':
+                        it(`it '${input}'`, async function () {
+                            expect(menuInputsTitles.includes('text')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'type':
+                        it(`it '${input}'`, async function () {
+                            expect(menuInputsTitles.includes('type')).to.be.true;
                         });
                         // TODO
                         break;
@@ -131,8 +182,38 @@ export async function StorybookSkeletonLoaderTests() {
                 }
             });
         });
+        menuOutputs.forEach(async (output) => {
+            describe(`OUTPUT: '${output}'`, async function () {
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await menu.getOutputRowSelectorByName(output));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${output}' output`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+                switch (output) {
+                    case 'menuClick':
+                        it(`it '${output}'`, async function () {
+                            expect(menuOutputsTitles.includes('menuClick')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'menuItemClick':
+                        it(`it '${output}'`, async function () {
+                            expect(menuOutputsTitles.includes('menuItemClick')).to.be.true;
+                        });
+                        // TODO
+                        break;
+
+                    default:
+                        throw new Error(`Output: "${output}" is not covered in switch!`);
+                    // break;
+                }
+            });
+        });
         describe(`**STORIES`, async function () {
-            skeletonLoaderSubFoldersHeaders.forEach(async (header, index) => {
+            menuSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();

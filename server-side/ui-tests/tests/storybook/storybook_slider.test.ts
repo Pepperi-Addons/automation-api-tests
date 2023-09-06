@@ -1,40 +1,40 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { Image } from '../pom/Pages/StorybookComponents/Image';
+import { Slider } from '../../pom/Pages/StorybookComponents/Slider';
 
 chai.use(promised);
 
-export async function StorybookImageTests() {
-    const imageInputs = ['rowSpan', 'src', 'disabled', 'label', 'mandatory', 'showTitle', 'xAlignment'];
-    const imageOutputs = ['elementClick', 'fileChange'];
-    const imageSubFoldersHeaders = ['Without an image', 'With an image', 'Change row span', 'Broken image link'];
+export async function StorybookSliderTests() {
+    const sliderInputs = ['label', 'value', 'hint', 'minValue', 'maxValue', 'disabled', 'step'];
+    const sliderProperties = ['xAlignment'];
+    const sliderSubFoldersHeaders = ['Show value, with step'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let image: Image;
-    let imageInputsTitles;
-    let imageOutputsTitles;
+    let slider: Slider;
+    let sliderInputsTitles;
+    let sliderPropertiesTitles;
 
-    describe('Storybook "Image" Tests Suite', function () {
+    describe('Storybook "Slider" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            image = new Image(driver);
+            slider = new Slider(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* Image Component * Initial Testing', () => {
+        describe('* Slider Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -56,34 +56,34 @@ export async function StorybookImageTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Image ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('image');
+            it(`Enter ** Slider ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('slider');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Image ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await image.doesImageComponentFound();
-                imageInputsTitles = await image.getInputsTitles();
-                console.info('imageInputsTitles:', JSON.stringify(imageInputsTitles, null, 2));
-                imageOutputsTitles = await image.getOutputsTitles();
-                console.info('imageOutputsTitles:', JSON.stringify(imageOutputsTitles, null, 2));
+            it(`Overview Test of ** Slider ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await slider.doesSliderComponentFound();
+                sliderInputsTitles = await slider.getInputsTitles();
+                console.info('sliderInputsTitles:', JSON.stringify(sliderInputsTitles, null, 2));
+                sliderPropertiesTitles = await slider.getPropertiesTitles();
+                console.info('sliderPropertiesTitles:', JSON.stringify(sliderPropertiesTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(imageInputsTitles).to.eql(imageInputs);
-                expect(imageOutputsTitles).to.eql(imageOutputs);
+                expect(sliderInputsTitles).to.eql(sliderInputs);
+                expect(sliderPropertiesTitles).to.eql(sliderProperties);
                 driver.sleep(5 * 1000);
             });
         });
-        imageInputs.forEach(async (input) => {
+        sliderInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await image.getInputRowSelectorByName(input));
+                    await driver.click(await slider.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -100,7 +100,7 @@ export async function StorybookImageTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(image.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(slider.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -111,45 +111,45 @@ export async function StorybookImageTests() {
                     });
                 });
                 switch (input) {
-                    case 'rowSpan':
+                    case 'label':
                         it(`it '${input}'`, async function () {
-                            expect(imageInputsTitles.includes('rowSpan')).to.be.true;
+                            expect(sliderInputsTitles.includes('label')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'src':
+                    case 'value':
                         it(`it '${input}'`, async function () {
-                            expect(imageInputsTitles.includes('src')).to.be.true;
+                            expect(sliderInputsTitles.includes('value')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'hint':
+                        it(`it '${input}'`, async function () {
+                            expect(sliderInputsTitles.includes('hint')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'minValue':
+                        it(`it '${input}'`, async function () {
+                            expect(sliderInputsTitles.includes('minValue')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'maxValue':
+                        it(`it '${input}'`, async function () {
+                            expect(sliderInputsTitles.includes('maxValue')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'disabled':
                         it(`it '${input}'`, async function () {
-                            expect(imageInputsTitles.includes('disabled')).to.be.true;
+                            expect(sliderInputsTitles.includes('disabled')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'label':
+                    case 'step':
                         it(`it '${input}'`, async function () {
-                            expect(imageInputsTitles.includes('label')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'mandatory':
-                        it(`it '${input}'`, async function () {
-                            expect(imageInputsTitles.includes('mandatory')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'showTitle':
-                        it(`it '${input}'`, async function () {
-                            expect(imageInputsTitles.includes('showTitle')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'xAlignment':
-                        it(`it '${input}'`, async function () {
-                            expect(imageInputsTitles.includes('xAlignment')).to.be.true;
+                            expect(sliderInputsTitles.includes('step')).to.be.true;
                         });
                         // TODO
                         break;
@@ -160,38 +160,32 @@ export async function StorybookImageTests() {
                 }
             });
         });
-        imageOutputs.forEach(async (output) => {
-            describe(`OUTPUT: '${output}'`, async function () {
+        sliderProperties.forEach(async (property) => {
+            describe(`PROPERTY: '${property}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await image.getOutputRowSelectorByName(output));
+                    await driver.click(await slider.getPropertyRowSelectorByName(property));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `'${output}' output`,
+                        title: `'${property}' property`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
-                switch (output) {
-                    case 'elementClick':
-                        it(`it '${output}'`, async function () {
-                            expect(imageOutputsTitles.includes('elementClick')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'fileChange':
-                        it(`it '${output}'`, async function () {
-                            expect(imageOutputsTitles.includes('fileChange')).to.be.true;
+                switch (property) {
+                    case 'fadeState':
+                        it(`it '${property}'`, async function () {
+                            expect(sliderPropertiesTitles.includes('fadeState')).to.be.true;
                         });
                         // TODO
                         break;
 
                     default:
-                        throw new Error(`Output: "${output}" is not covered in switch!`);
+                        throw new Error(`Property: "${property}" is not covered in switch!`);
                     // break;
                 }
             });
         });
         describe(`**STORIES`, async function () {
-            imageSubFoldersHeaders.forEach(async (header, index) => {
+            sliderSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();

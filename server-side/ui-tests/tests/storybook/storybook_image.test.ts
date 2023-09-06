@@ -1,53 +1,40 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { Link } from '../pom/Pages/StorybookComponents/Link';
+import { Image } from '../../pom/Pages/StorybookComponents/Image';
 
 chai.use(promised);
 
-export async function StorybookLinkTests() {
-    const linkInputs = [
-        'label',
-        'value',
-        'displayValue',
-        'disabled',
-        'mandatory',
-        'maxFieldCharacters',
-        'renderError',
-        'renderSymbol',
-        'renderTitle',
-        'showTitle',
-        'textColor',
-        'xAlignment',
-    ];
-    const linkOutputs = ['elementClick', 'valueChange'];
-    const linkSubFoldersHeaders = ['Empty', 'Read only', 'Read only, no button', 'Max characters'];
+export async function StorybookImageTests() {
+    const imageInputs = ['rowSpan', 'src', 'disabled', 'label', 'mandatory', 'showTitle', 'xAlignment'];
+    const imageOutputs = ['elementClick', 'fileChange'];
+    const imageSubFoldersHeaders = ['Without an image', 'With an image', 'Change row span', 'Broken image link'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let link: Link;
-    let linkInputsTitles;
-    let linkOutputsTitles;
+    let image: Image;
+    let imageInputsTitles;
+    let imageOutputsTitles;
 
-    describe('Storybook "Link" Tests Suite', function () {
+    describe('Storybook "Image" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            link = new Link(driver);
+            image = new Image(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* Link Component * Initial Testing', () => {
+        describe('* Image Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -69,34 +56,34 @@ export async function StorybookLinkTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Link ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('link');
+            it(`Enter ** Image ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('image');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Link ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await link.doesLinkComponentFound();
-                linkInputsTitles = await link.getInputsTitles();
-                console.info('linkInputsTitles:', JSON.stringify(linkInputsTitles, null, 2));
-                linkOutputsTitles = await link.getOutputsTitles();
-                console.info('linkOutputsTitles:', JSON.stringify(linkOutputsTitles, null, 2));
+            it(`Overview Test of ** Image ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await image.doesImageComponentFound();
+                imageInputsTitles = await image.getInputsTitles();
+                console.info('imageInputsTitles:', JSON.stringify(imageInputsTitles, null, 2));
+                imageOutputsTitles = await image.getOutputsTitles();
+                console.info('imageOutputsTitles:', JSON.stringify(imageOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(linkInputsTitles).to.eql(linkInputs);
-                expect(linkOutputsTitles).to.eql(linkOutputs);
+                expect(imageInputsTitles).to.eql(imageInputs);
+                expect(imageOutputsTitles).to.eql(imageOutputs);
                 driver.sleep(5 * 1000);
             });
         });
-        linkInputs.forEach(async (input) => {
+        imageInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await link.getInputRowSelectorByName(input));
+                    await driver.click(await image.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -113,7 +100,7 @@ export async function StorybookLinkTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(link.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(image.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -124,75 +111,45 @@ export async function StorybookLinkTests() {
                     });
                 });
                 switch (input) {
-                    case 'label':
+                    case 'rowSpan':
                         it(`it '${input}'`, async function () {
-                            expect(linkInputsTitles.includes('label')).to.be.true;
+                            expect(imageInputsTitles.includes('rowSpan')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'value':
+                    case 'src':
                         it(`it '${input}'`, async function () {
-                            expect(linkInputsTitles.includes('value')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'displayValue':
-                        it(`it '${input}'`, async function () {
-                            expect(linkInputsTitles.includes('displayValue')).to.be.true;
+                            expect(imageInputsTitles.includes('src')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'disabled':
                         it(`it '${input}'`, async function () {
-                            expect(linkInputsTitles.includes('disabled')).to.be.true;
+                            expect(imageInputsTitles.includes('disabled')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'label':
+                        it(`it '${input}'`, async function () {
+                            expect(imageInputsTitles.includes('label')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {
-                            expect(linkInputsTitles.includes('mandatory')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'maxFieldCharacters':
-                        it(`it '${input}'`, async function () {
-                            expect(linkInputsTitles.includes('maxFieldCharacters')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'renderError':
-                        it(`it '${input}'`, async function () {
-                            expect(linkInputsTitles.includes('renderError')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'renderSymbol':
-                        it(`it '${input}'`, async function () {
-                            expect(linkInputsTitles.includes('renderSymbol')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'renderTitle':
-                        it(`it '${input}'`, async function () {
-                            expect(linkInputsTitles.includes('renderTitle')).to.be.true;
+                            expect(imageInputsTitles.includes('mandatory')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'showTitle':
                         it(`it '${input}'`, async function () {
-                            expect(linkInputsTitles.includes('showTitle')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'textColor':
-                        it(`it '${input}'`, async function () {
-                            expect(linkInputsTitles.includes('textColor')).to.be.true;
+                            expect(imageInputsTitles.includes('showTitle')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'xAlignment':
                         it(`it '${input}'`, async function () {
-                            expect(linkInputsTitles.includes('xAlignment')).to.be.true;
+                            expect(imageInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO
                         break;
@@ -203,10 +160,10 @@ export async function StorybookLinkTests() {
                 }
             });
         });
-        linkOutputs.forEach(async (output) => {
+        imageOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await link.getOutputRowSelectorByName(output));
+                    await driver.click(await image.getOutputRowSelectorByName(output));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${output}' output`,
@@ -216,13 +173,13 @@ export async function StorybookLinkTests() {
                 switch (output) {
                     case 'elementClick':
                         it(`it '${output}'`, async function () {
-                            expect(linkOutputsTitles.includes('elementClick')).to.be.true;
+                            expect(imageOutputsTitles.includes('elementClick')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'valueChange':
+                    case 'fileChange':
                         it(`it '${output}'`, async function () {
-                            expect(linkOutputsTitles.includes('valueChange')).to.be.true;
+                            expect(imageOutputsTitles.includes('fileChange')).to.be.true;
                         });
                         // TODO
                         break;
@@ -234,7 +191,7 @@ export async function StorybookLinkTests() {
             });
         });
         describe(`**STORIES`, async function () {
-            linkSubFoldersHeaders.forEach(async (header, index) => {
+            imageSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();

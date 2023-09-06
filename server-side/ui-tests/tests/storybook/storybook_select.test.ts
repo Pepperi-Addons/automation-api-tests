@@ -1,52 +1,55 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { DateTime } from '../pom/Pages/StorybookComponents/DateTime';
+import { Select } from '../../pom/Pages/StorybookComponents/Select';
 
 chai.use(promised);
 
-export async function StorybookDateTimeTests() {
-    const dateTimeInputs = [
+export async function StorybookSelectTests() {
+    const selectInputs = [
         'label',
-        'value',
+        'options',
         'disabled',
         'mandatory',
-        'renderError',
-        'renderSymbol',
-        'renderTitle',
+        'readonly',
         'showTitle',
-        'textColor',
         'type',
+        'value',
         'xAlignment',
     ];
-    const dateTimeOutputs = ['valueChange'];
-    const dateTimeSubFoldersHeaders = ['Empty date-time'];
+    const selectOutputs = ['valueChange'];
+    const selectSubFoldersHeaders = [
+        'With initial value',
+        'Multi-select',
+        'Multi-select with initial value',
+        'Disabled',
+    ];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let dateTime: DateTime;
-    let dateTimeInputsTitles;
-    let dateTimeOutputsTitles;
+    let select: Select;
+    let selectInputsTitles;
+    let selectOutputsTitles;
 
-    describe('Storybook "DateTime" Tests Suite', function () {
+    describe('Storybook "Select" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            dateTime = new DateTime(driver);
+            select = new Select(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* DateTime Component * Initial Testing', () => {
+        describe('* Select Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -68,34 +71,34 @@ export async function StorybookDateTimeTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** DateTime ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('date-date-time');
+            it(`Enter ** Select ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('select');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** DateTime ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await dateTime.doesDateTimeComponentFound();
-                dateTimeInputsTitles = await dateTime.getInputsTitles();
-                console.info('dateTimeInputsTitles:', JSON.stringify(dateTimeInputsTitles, null, 2));
-                dateTimeOutputsTitles = await dateTime.getOutputsTitles();
-                console.info('dateTimeOutputsTitles:', JSON.stringify(dateTimeOutputsTitles, null, 2));
+            it(`Overview Test of ** Select ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await select.doesSelectComponentFound();
+                selectInputsTitles = await select.getInputsTitles();
+                console.info('selectInputsTitles:', JSON.stringify(selectInputsTitles, null, 2));
+                selectOutputsTitles = await select.getOutputsTitles();
+                console.info('selectOutputsTitles:', JSON.stringify(selectOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(dateTimeInputsTitles).to.eql(dateTimeInputs);
-                expect(dateTimeOutputsTitles).to.eql(dateTimeOutputs);
+                expect(selectInputsTitles).to.eql(selectInputs);
+                expect(selectOutputsTitles).to.eql(selectOutputs);
                 driver.sleep(5 * 1000);
             });
         });
-        dateTimeInputs.forEach(async (input) => {
+        selectInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await dateTime.getInputRowSelectorByName(input));
+                    await driver.click(await select.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -112,7 +115,7 @@ export async function StorybookDateTimeTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(dateTime.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(select.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -125,67 +128,55 @@ export async function StorybookDateTimeTests() {
                 switch (input) {
                     case 'label':
                         it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('label')).to.be.true;
+                            expect(selectInputsTitles.includes('label')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'value':
+                    case 'options':
                         it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('value')).to.be.true;
+                            expect(selectInputsTitles.includes('options')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'disabled':
                         it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('disabled')).to.be.true;
+                            expect(selectInputsTitles.includes('disabled')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('mandatory')).to.be.true;
+                            expect(selectInputsTitles.includes('mandatory')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'renderError':
+                    case 'readonly':
                         it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('renderError')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'renderSymbol':
-                        it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('renderSymbol')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'renderTitle':
-                        it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('renderTitle')).to.be.true;
+                            expect(selectInputsTitles.includes('readonly')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'showTitle':
                         it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('showTitle')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'textColor':
-                        it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('textColor')).to.be.true;
+                            expect(selectInputsTitles.includes('showTitle')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'type':
                         it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('type')).to.be.true;
+                            expect(selectInputsTitles.includes('type')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'value':
+                        it(`it '${input}'`, async function () {
+                            expect(selectInputsTitles.includes('value')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'xAlignment':
                         it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('xAlignment')).to.be.true;
+                            expect(selectInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO
                         break;
@@ -196,10 +187,10 @@ export async function StorybookDateTimeTests() {
                 }
             });
         });
-        dateTimeOutputs.forEach(async (output) => {
+        selectOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await dateTime.getOutputRowSelectorByName(output));
+                    await driver.click(await select.getOutputRowSelectorByName(output));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${output}' output`,
@@ -209,7 +200,7 @@ export async function StorybookDateTimeTests() {
                 switch (output) {
                     case 'valueChange':
                         it(`it '${output}'`, async function () {
-                            expect(dateTimeOutputsTitles.includes('valueChange')).to.be.true;
+                            expect(selectOutputsTitles.includes('valueChange')).to.be.true;
                         });
                         // TODO
                         break;
@@ -221,8 +212,8 @@ export async function StorybookDateTimeTests() {
             });
         });
         describe(`**STORIES`, async function () {
-            dateTimeSubFoldersHeaders.forEach(async (header, index) => {
-                describe(`'${header}'`, async function () {
+            selectSubFoldersHeaders.forEach(async (header, index) => {
+                describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
@@ -245,19 +236,7 @@ export async function StorybookDateTimeTests() {
                         expect(storyHeader.trim()).equals(header);
                     });
                     // TODO: add tests
-                    // it(`it '${header}'`, async function () {
-                    // let headerText = '';
-                    // switch (header) {
-                    //     case 'Empty date-time':
-                    //         headerText = header.toLowerCase().replace(' ', '-');
-                    //         break;
-
-                    //     default:
-                    //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                    //         // break;
-                    // }
-
-                    // });
+                    // it(`it '${header}'`, async function () { });
                 });
             });
         });

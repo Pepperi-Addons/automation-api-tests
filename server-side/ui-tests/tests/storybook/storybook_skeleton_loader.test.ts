@@ -1,40 +1,38 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { Signature } from '../pom/Pages/StorybookComponents/Signature';
+import { SkeletonLoader } from '../../pom/Pages/StorybookComponents/SkeletonLoader';
 
 chai.use(promised);
 
-export async function StorybookSignatureTests() {
-    const signatureInputs = ['rowSpan', 'src', 'label', 'disabled', 'mandatory', 'readonly', 'showTitle', 'xAlignment'];
-    const signatureOutputs = ['elementClick', 'fileChange'];
-    const signatureSubFoldersHeaders = ['Empty', 'Read only'];
+export async function StorybookSkeletonLoaderTests() {
+    const skeletonLoaderInputs = ['lastRowOffset', 'rowHeightType', 'rowsNumber'];
+    const skeletonLoaderSubFoldersHeaders = ['Bigger loader'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let signature: Signature;
-    let signatureInputsTitles;
-    let signatureOutputsTitles;
+    let skeletonLoader: SkeletonLoader;
+    let skeletonLoaderInputsTitles;
 
-    describe('Storybook "Signature" Tests Suite', function () {
+    describe('Storybook "SkeletonLoader" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            signature = new Signature(driver);
+            skeletonLoader = new SkeletonLoader(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* Signature Component * Initial Testing', () => {
+        describe('* SkeletonLoader * Component Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -56,34 +54,31 @@ export async function StorybookSignatureTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Signature ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('signature');
+            it(`Enter ** SkeletonLoader ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('skeleton-loader');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Signature ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await signature.doesSignatureComponentFound();
-                signatureInputsTitles = await signature.getInputsTitles();
-                console.info('signatureInputsTitles:', JSON.stringify(signatureInputsTitles, null, 2));
-                signatureOutputsTitles = await signature.getOutputsTitles();
-                console.info('signatureOutputsTitles:', JSON.stringify(signatureOutputsTitles, null, 2));
+            it(`Overview Test of ** SkeletonLoader ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await skeletonLoader.doesSkeletonLoaderComponentFound();
+                skeletonLoaderInputsTitles = await skeletonLoader.getInputsTitles();
+                console.info('skeletonLoaderInputsTitles:', JSON.stringify(skeletonLoaderInputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(signatureInputsTitles).to.eql(signatureInputs);
-                expect(signatureOutputsTitles).to.eql(signatureOutputs);
+                expect(skeletonLoaderInputsTitles).to.eql(skeletonLoaderInputs);
                 driver.sleep(5 * 1000);
             });
         });
-        signatureInputs.forEach(async (input) => {
+        skeletonLoaderInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await signature.getInputRowSelectorByName(input));
+                    await driver.click(await skeletonLoader.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -100,7 +95,7 @@ export async function StorybookSignatureTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(signature.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(skeletonLoader.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -111,51 +106,21 @@ export async function StorybookSignatureTests() {
                     });
                 });
                 switch (input) {
-                    case 'rowSpan':
-                        it(`validate input`, async function () {
-                            expect(signatureInputsTitles.includes('rowSpan')).to.be.true;
+                    case 'lastRowOffset':
+                        it(`it '${input}'`, async function () {
+                            expect(skeletonLoaderInputsTitles.includes('lastRowOffset')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'src':
-                        it(`validate input`, async function () {
-                            expect(signatureInputsTitles.includes('src')).to.be.true;
+                    case 'rowHeightType':
+                        it(`it '${input}'`, async function () {
+                            expect(skeletonLoaderInputsTitles.includes('rowHeightType')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'label':
-                        it(`validate input`, async function () {
-                            expect(signatureInputsTitles.includes('label')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'disabled':
-                        it(`validate input`, async function () {
-                            expect(signatureInputsTitles.includes('disabled')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'mandatory':
-                        it(`validate input`, async function () {
-                            expect(signatureInputsTitles.includes('mandatory')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'readonly':
-                        it(`validate input`, async function () {
-                            expect(signatureInputsTitles.includes('readonly')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'showTitle':
-                        it(`validate input`, async function () {
-                            expect(signatureInputsTitles.includes('showTitle')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'xAlignment':
-                        it(`validate input`, async function () {
-                            expect(signatureInputsTitles.includes('xAlignment')).to.be.true;
+                    case 'rowsNumber':
+                        it(`it '${input}'`, async function () {
+                            expect(skeletonLoaderInputsTitles.includes('rowsNumber')).to.be.true;
                         });
                         // TODO
                         break;
@@ -166,38 +131,8 @@ export async function StorybookSignatureTests() {
                 }
             });
         });
-        signatureOutputs.forEach(async (output) => {
-            describe(`OUTPUT: '${output}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await signature.getOutputRowSelectorByName(output));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${output}' output`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
-                switch (output) {
-                    case 'elementClick':
-                        it(`validate output`, async function () {
-                            expect(signatureOutputsTitles.includes('elementClick')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'fileChange':
-                        it(`validate output`, async function () {
-                            expect(signatureOutputsTitles.includes('fileChange')).to.be.true;
-                        });
-                        // TODO
-                        break;
-
-                    default:
-                        throw new Error(`Output: "${output}" is not covered in switch!`);
-                    // break;
-                }
-            });
-        });
         describe(`**STORIES`, async function () {
-            signatureSubFoldersHeaders.forEach(async (header, index) => {
+            skeletonLoaderSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();

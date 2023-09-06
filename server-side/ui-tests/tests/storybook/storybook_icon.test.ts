@@ -1,38 +1,38 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { Separator } from '../pom/Pages/StorybookComponents/Separator';
+import { Icon } from '../../pom/Pages/StorybookComponents/Icon';
 
 chai.use(promised);
 
-export async function StorybookSeparatorTests() {
-    const separatorInputs = ['label', 'layoutType', 'visible', 'xAlignment'];
-    const separatorSubFoldersHeaders = ['RTL'];
+export async function StorybookIconTests() {
+    const iconInputs = ['name', 'fill', 'spin'];
+    const iconSubFoldersHeaders = ['All icons'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let separator: Separator;
-    let separatorInputsTitles;
+    let icon: Icon;
+    let iconInputsTitles;
 
-    describe('Storybook "Separator" Tests Suite', function () {
+    describe('Storybook "Icon" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            separator = new Separator(driver);
+            icon = new Icon(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* Separator Component * Initial Testing', () => {
+        describe('* Icon Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -54,31 +54,31 @@ export async function StorybookSeparatorTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Separator ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('separator');
+            it(`Enter ** Icon ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('icon');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Separator ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await separator.doesSeparatorComponentFound();
-                separatorInputsTitles = await separator.getInputsTitles();
-                console.info('separatorInputsTitles:', JSON.stringify(separatorInputsTitles, null, 2));
+            it(`Overview Test of ** Icon ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await icon.doesIconComponentFound();
+                iconInputsTitles = await icon.getInputsTitles();
+                console.info('iconInputsTitles:', JSON.stringify(iconInputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(separatorInputsTitles).to.eql(separatorInputs);
+                expect(iconInputsTitles).to.eql(iconInputs);
                 driver.sleep(5 * 1000);
             });
         });
-        separatorInputs.forEach(async (input) => {
+        iconInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await separator.getInputRowSelectorByName(input));
+                    await driver.click(await icon.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -95,7 +95,7 @@ export async function StorybookSeparatorTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(separator.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(icon.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -106,27 +106,21 @@ export async function StorybookSeparatorTests() {
                     });
                 });
                 switch (input) {
-                    case 'label':
+                    case 'name':
                         it(`it '${input}'`, async function () {
-                            expect(separatorInputsTitles.includes('label')).to.be.true;
+                            expect(iconInputsTitles.includes('name')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'layoutType':
+                    case 'fill':
                         it(`it '${input}'`, async function () {
-                            expect(separatorInputsTitles.includes('layoutType')).to.be.true;
+                            expect(iconInputsTitles.includes('fill')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'visible':
+                    case 'spin':
                         it(`it '${input}'`, async function () {
-                            expect(separatorInputsTitles.includes('visible')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'xAlignment':
-                        it(`it '${input}'`, async function () {
-                            expect(separatorInputsTitles.includes('xAlignment')).to.be.true;
+                            expect(iconInputsTitles.includes('spin')).to.be.true;
                         });
                         // TODO
                         break;
@@ -138,11 +132,11 @@ export async function StorybookSeparatorTests() {
             });
         });
         describe(`**STORIES`, async function () {
-            separatorSubFoldersHeaders.forEach(async (header, index) => {
+            iconSubFoldersHeaders.forEach(async (header) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
-                        await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
+                        await storyBookPage.chooseSubFolder(`base-all-icons`);
                         driver.sleep(0.1 * 1000);
                         const base64ImageComponent = await driver.saveScreenshots();
                         addContext(this, {
@@ -157,7 +151,7 @@ export async function StorybookSeparatorTests() {
                             .replace(/\s/g, '-')
                             .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
                         console.info('at validate story header -> headerText: ', headerText);
-                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
+                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(0, headerText);
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
