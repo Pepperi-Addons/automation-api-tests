@@ -33,7 +33,6 @@ import { ObjectsService } from '../../services/objects.service';
 chai.use(promised);
 
 export async function SurveyTests(email: string, password: string, client: Client, varPass) {
-    //
     const generalService = new GeneralService(client);
     let driver: Browser;
     let surveyBlockPageName;
@@ -450,7 +449,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             it('7. ADMIN Set Up: Create Script Based On Config File With New Resource Views Configured', async function () {
                 let script;
                 try {
-                    script = fs.readFileSync(path.join(__dirname, 'surveyScriptFile.txt'), 'utf-8');
+                    script = fs.readFileSync(path.join(__dirname, '..', 'test-data', 'surveyScriptFile.txt'), 'utf-8');
                 } catch (error) {
                     throw `couldnt read script from file, got exception: ${(error as any).message}`;
                 }
@@ -1221,7 +1220,7 @@ export async function createSurvey(
     //5. survey script creation
     let script;
     try {
-        script = fs.readFileSync(path.join(__dirname, 'surveyScriptFile.txt'), 'utf-8');
+        script = fs.readFileSync(path.join(__dirname, '..', 'test-data', 'surveyScriptFile.txt'), 'utf-8');
     } catch (error) {
         throw `couldnt read script from file, got exception: ${(error as any).message}`;
     }

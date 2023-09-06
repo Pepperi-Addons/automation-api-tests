@@ -1,6 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 import { PFSService } from '../services/pfs.service';
-import fs from 'fs';
 import { UdcField, UDCService } from '../services/user-defined-collections.service';
 import jwt_decode from 'jwt-decode';
 
@@ -174,8 +173,9 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                     '',
                     ['Account for order scenarios', 'val1_index', 'val2_index'],
                     'false',
+                    true,
                 );
-                const buf1 = fs.readFileSync('./newUDCFile.csv');
+                const buf1 = generalService.readFileServeSideLocation('newUDCFile.csv');
                 // 2. create PFS Temp file
                 const fileName1 = 'TempFile' + generalService.generateRandomString(8) + '.csv';
                 const mime = 'text/csv';
