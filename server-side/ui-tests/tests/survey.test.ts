@@ -269,7 +269,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     expect(response).to.haveOwnProperty('Template');
                 }
             });
-            it('2. Create A Survey Template - Validate Via API All Data Is Sent Correctly', async function () {
+            it('2. ADMIN Set Up: Create A Survey Template - Validate Via API All Data Is Sent Correctly', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const surveyService = new SurveyTemplateBuilder(driver);
@@ -351,7 +351,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 }
                 await webAppLoginPage.logout();
             });
-            it('3. Login Again - Edit The Survey And See API Respose Is Changed', async function () {
+            it('3. ADMIN Set Up: Login Again - Edit The Survey And See API Respose Is Changed', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const surveyService = new SurveyTemplateBuilder(driver);
@@ -376,7 +376,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(surveyTemplateResponse.Body[0].Name).to.equal(newName);
                 surveyTemplateName = newName;
             });
-            it('4. Configure Resource Views For Account + Survey', async function () {
+            it('4. ADMIN Set Up: Configure Resource Views For Account + Survey', async function () {
                 const resourceListUtils = new E2EUtils(driver);
                 const resourceViews = new ResourceViews(driver);
                 // Configure View - Accounts
@@ -419,7 +419,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            it('5. Create Page With Survey Block Inside It', async function () {
+            it('5. ADMIN Set Up: Create Page With Survey Block Inside It', async function () {
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveyBlockPage';
                 surveyBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
@@ -434,7 +434,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            it('6. Create Slug And Map It To Show The Page With Survey Block', async function () {
+            it('6. ADMIN Set Up: Create Slug And Map It To Show The Page With Survey Block', async function () {
                 surveySlugDisplayName = `survey_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = surveySlugDisplayName;
                 await CreateSlug(
@@ -447,7 +447,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     surveyBlockPageUUID,
                 );
             });
-            it('7. Create Script Based On Config File With New Resource Views Configured', async function () {
+            it('7. ADMIN Set Up: Create Script Based On Config File With New Resource Views Configured', async function () {
                 let script;
                 try {
                     script = fs.readFileSync(path.join(__dirname, 'surveyScriptFile.txt'), 'utf-8');
@@ -463,7 +463,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 scriptUUID = await scriptEditor.configureScriptForSurvey(script3, generalService);
                 await webAppHeader.goHome();
             });
-            it('8. Create Page With SlideShow Which Will Run The Script', async function () {
+            it('8. ADMIN Set Up: Create Page With SlideShow Which Will Run The Script', async function () {
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveySlideShow';
                 slideshowBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
@@ -478,7 +478,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            it('9. Create A Slug For The Slideshow Page And Set It To Show On Homepage', async function () {
+            it('9. ADMIN Set Up: Create A Slug For The Slideshow Page And Set It To Show On Homepage', async function () {
                 slideshowSlugDisplayName = `slideshow_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = slideshowSlugDisplayName;
                 await CreateSlug(
@@ -504,7 +504,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 debugger;
             });
         });
-        describe('Test Configured Survey', () => {
+        describe('UI Test Configured Survey: Admin, Rep, Buyer', () => {
             this.retries(0);
 
             before(async function () {
@@ -519,7 +519,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData(this);
             });
-            it('1. Fill Survey Using Admin Account And Validate All Is Working', async function () {
+            it('1. Admin Testing: Fill Survey Via UI, See Is Synced To Admin UDC', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
@@ -623,7 +623,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 }
                 await webAppLoginPage.logout();
             });
-            it('2. Fill Survey Using Rep Account And Validate All Is Working', async function () {
+            it('2. Rep Testing: Fill Survey Via UI, See Is Synced To Admin UDC', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.longLoginForRep(repEmail, repPass);
                 const webAppHomePage = new WebAppHomePage(driver);
@@ -729,7 +729,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 }
                 await webAppLoginPage.logout();
             });
-            it('3. Fill Survey Using Buyer Account And Validate All Is Working', async function () {
+            it('3. Buyer Testing: Fill Survey Via UI, See Is Synced To Admin UDC', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.longLoginForBuyer(buyerEmail, buyerPass);
                 const webAppHomePage = new WebAppHomePage(driver);
@@ -835,7 +835,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 }
                 await webAppLoginPage.logout();
             });
-            it('Data Cleansing: 1. survey template', async function () {
+            it('API Data Cleansing: 1. survey template', async function () {
                 //1. delete survey template
                 debugger;
                 const body = { Key: surveyUUID, Hidden: true };
@@ -848,7 +848,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(deleteSurveyTemplateResponse.Body.Key).to.equal(surveyUUID);
                 expect(deleteSurveyTemplateResponse.Body.Hidden).to.equal(true);
             });
-            it('Data Cleansing: 2. resource views', async function () {
+            it('API Data Cleansing: 2. resource views', async function () {
                 //2. delete resource views
                 const accBody = { Key: accountViewUUID, Hidden: true };
                 const deleteAccountRLResponse = await generalService.fetchStatus(
@@ -875,7 +875,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(deleteSurveyRLResponse.Body.Name).to.equal('Surveys');
                 expect(deleteSurveyRLResponse.Body.Hidden).to.equal(true);
             });
-            it('Data Cleansing: 3. pages', async function () {
+            it('API Data Cleansing: 3. pages', async function () {
                 //3. delete relevant pages
                 const deleteSurveyPageResponse = await generalService.fetchStatus(
                     `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${surveyBlockPageUUID}`,
@@ -898,7 +898,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(deleteSlideShowPageResponse.Status).to.equal(200);
                 expect(deleteSlideShowPageResponse.Body).to.equal(true);
             });
-            it('Data Cleansing: 4. script', async function () {
+            it('API Data Cleansing: 4. script', async function () {
                 //delete the script
                 const bodyForSctips = { Keys: [`${scriptUUID}`] };
                 const deleteScriptResponse = await generalService.fetchStatus(
@@ -912,7 +912,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(deleteScriptResponse.Status).to.equal(200);
                 expect(deleteScriptResponse.Body[0].Key).to.equal(scriptUUID);
             });
-            it('Data Cleansing: 5. UDC', async function () {
+            it('API Data Cleansing: 5. UDC', async function () {
                 //delete UDC
                 const udcService = new UDCService(generalService);
                 const documents = await udcService.getSchemes();
@@ -938,7 +938,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     expect(hideResponse.Body.Hidden).to.equal(true);
                 }
             });
-            it('Data Cleansing: 6. slugs', async function () {
+            it('API Data Cleansing: 6. slugs', async function () {
                 //4. delete slugs
                 const slugs: Slugs = new Slugs(driver);
                 const slideShowSlugsResponse = await slugs.deleteSlugByName(slideshowSlugDisplayName, client);
@@ -950,7 +950,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(surveySlugResponse.Status).to.equal(200);
                 expect(surveySlugResponse.Body.success).to.equal(true);
             });
-            it('Data Cleansing: 7. ATD from home screen', async function () {
+            it('UI Data Cleansing: 7. ATD from home screen', async function () {
                 //5. delete ATD from homescreen
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
