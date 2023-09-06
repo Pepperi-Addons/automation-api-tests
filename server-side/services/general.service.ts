@@ -2152,6 +2152,9 @@ export default class GeneralService {
         isHidden: string,
         serverSide?: boolean,
     ) {
+        if (!fileName.includes('.csv')) {
+            fileName += '.csv';
+        }
         let strData = '';
         strData += headers + ',Hidden' + '\n';
         for (let index = 0; index < howManyDataRows; index++) {

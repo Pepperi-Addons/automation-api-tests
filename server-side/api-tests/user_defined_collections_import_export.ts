@@ -175,7 +175,7 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                     'false',
                     true,
                 );
-                const buf1 = generalService.readFileServeSideLocation('newUDCFile.csv');
+                const buf1 = generalService.readFileServeSideLocation('./newUDCFile.csv');
                 // 2. create PFS Temp file
                 const fileName1 = 'TempFile' + generalService.generateRandomString(8) + '.csv';
                 const mime = 'text/csv';
