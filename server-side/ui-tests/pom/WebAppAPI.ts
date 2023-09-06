@@ -14,7 +14,7 @@ export class WebAppAPI extends Page {
         this._BASE_URL = '';
     }
 
-    async getSyncResponse(accessToken: string, loopsAmount = 30) {
+    async pollForSyncResponse(accessToken: string, loopsAmount = 30) {
         const generalService = new GeneralService(this._CLIENT);
         let syncStatusReposnse;
         const URL = `${await this.getBaseURL()}/Service1.svc/v1/GetSyncStatus`;
@@ -30,12 +30,12 @@ export class WebAppAPI extends Page {
             syncStatusReposnse = syncStatusReposnse.Body;
             if (syncStatusReposnse === null) {
                 this.browser.sleep(5000);
-                console.log('Sync status not found, waiting...');
+                console.log(`Sync status not found (returned 'null'), Retry For ${loopsAmount} Times.`);
             }
             //This case will only retry the get call again as many times as the "loopsAmount"
             else if (syncStatusReposnse.Status == 'Processing') {
                 await this.browser.sleep(5000);
-                console.log(`Processing: Retry ${loopsAmount} Times.`);
+                console.log(`Sync status is 'Processing': Retry ${loopsAmount} Times.`);
             }
             loopsAmount--;
         } while ((syncStatusReposnse === null || syncStatusReposnse.Status == 'Processing') && loopsAmount > 0);

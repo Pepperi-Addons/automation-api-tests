@@ -32,8 +32,9 @@ export class WebAppHomePage extends WebAppPage {
     public async manualResync(client: Client): Promise<void> {
         const webAppAPI = new WebAppAPI(this.browser, client);
         const accessToken = await webAppAPI.getAccessToken();
-        let syncResponse = await webAppAPI.getSyncResponse(accessToken);
+        let syncResponse = await webAppAPI.pollForSyncResponse(accessToken);
         console.log(`received sync response: ${JSON.stringify(syncResponse)}`);
+        //we got 'syncResponse' after polling for different than 'Processing' status - if the gotten status is NOT one of these - it took too long!
         expect(syncResponse.Status).to.be.oneOf(['UpToDate', 'HasChanges']);
         const webAppList = new WebAppList(this.browser);
         //Resync - Going to Accounts and back to Home Page
@@ -45,8 +46,9 @@ export class WebAppHomePage extends WebAppPage {
         this.browser.sleep(1500);
         await this.returnToHomePage();
         this.browser.sleep(5005);
-        syncResponse = await webAppAPI.getSyncResponse(accessToken);
+        syncResponse = await webAppAPI.pollForSyncResponse(accessToken);
         console.log(`received sync response: ${JSON.stringify(syncResponse)}`);
+        //we got 'syncResponse' after polling for different than 'Processing' status - if the gotten status is NOT one of these - it took too long!
         expect(syncResponse.Status).to.be.oneOf(['UpToDate', 'HasChanges']);
         return;
     }
