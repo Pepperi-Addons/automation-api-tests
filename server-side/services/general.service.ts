@@ -18,6 +18,7 @@ import { ADALService } from './adal.service';
 import fs from 'fs';
 import { execFileSync } from 'child_process';
 import tester from '../tester';
+import * as path from 'path';
 
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON --
@@ -2124,9 +2125,19 @@ export default class GeneralService {
         return updateVersionResponse.Body.SecretKey;
     }
 
-    async genrateFile(tempFileName, data) {
+    async generateFileE2EFolder(tempFileName, data) {
+        const filePath = path.join(__dirname, '..', 'ui-tests', 'test-data', tempFileName);
         try {
-            fs.writeFileSync(`./${tempFileName}.csv`, data, 'utf-8');
+            fs.writeFileSync(filePath, data, 'utf-8');
+        } catch (error) {
+            throw new Error(`Error: ${(error as any).message}`);
+        }
+    }
+
+    async generateFileServerSideFolder(tempFileName, data) {
+        const filePath = path.join(__dirname, '..', 'api-tests', 'test-data', tempFileName);
+        try {
+            fs.writeFileSync(filePath, data, 'utf-8');
         } catch (error) {
             throw new Error(`Error: ${(error as any).message}`);
         }
@@ -2139,7 +2150,11 @@ export default class GeneralService {
         keyData: string,
         valueData: string[],
         isHidden: string,
+        serverSide?: boolean,
     ) {
+        if (!fileName.includes('.csv')) {
+            fileName += '.csv';
+        }
         let strData = '';
         strData += headers + ',Hidden' + '\n';
         for (let index = 0; index < howManyDataRows; index++) {
@@ -2150,7 +2165,23 @@ export default class GeneralService {
             }
             strData += `${isHidden}\n`;
         }
-        await this.genrateFile(fileName, strData);
+        if (serverSide) {
+            await this.generateFileServerSideFolder(fileName, strData);
+        } else {
+            await this.generateFileE2EFolder(fileName, strData);
+        }
+    }
+
+    readFileE2ELocation(fileName: string) {
+        const filePath = path.join(__dirname, '..', 'ui-tests', 'test-data', fileName);
+        const buf1 = fs.readFileSync(filePath);
+        return buf1;
+    }
+
+    readFileServeSideLocation(fileName: string) {
+        const filePath = path.join(__dirname, '..', 'api-tests', 'test-data', fileName);
+        const buf1 = fs.readFileSync(filePath);
+        return buf1;
     }
 
     async createCSVFileForAccountsInfo(
@@ -2163,6 +2194,9 @@ export default class GeneralService {
         valueData: string[],
         isHidden: string,
     ) {
+        if (!fileName.includes('.csv')) {
+            fileName += '.csv';
+        }
         let strData = '';
         strData += headers + ',Hidden' + '\n';
         let companyIndex = 0;
@@ -2203,7 +2237,7 @@ export default class GeneralService {
             }
             strData += `${isHidden}\n`;
         }
-        await this.genrateFile(fileName, strData);
+        await this.generateFileE2EFolder(fileName, strData);
     }
 
     generateRandomString(length: number): string {
