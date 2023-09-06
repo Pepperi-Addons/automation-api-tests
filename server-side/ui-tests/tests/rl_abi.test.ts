@@ -629,6 +629,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             default:
                                 break;
                         }
+                        it('Close Dialog', async function () {
+                            await resourceListABI.clickElement('ListAbi_dialogButton_done');
+                        });
                     });
                 });
             });
@@ -648,6 +651,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         if (listToSelect) {
             await resourceListABI.selectDropBoxByString(resourceListABI.TestsAddon_dropdownElement, listToSelect);
             await resourceListABI.isSpinnerDone();
+            await resourceListABI.clickElement('TestsAddon_chooseList_mainDiv');
         }
         driver.sleep(1 * 1000);
         let base64ImageBuild = await driver.saveScreenshots();
