@@ -1,48 +1,57 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { DraggableItems } from '../pom/Pages/StorybookComponents/DraggableItems';
+import { RichHtmlTextarea } from '../../pom/Pages/StorybookComponents/RichHtmlTextarea';
 
 chai.use(promised);
 
-export async function StorybookDraggableItemsTests() {
-    const draggableItemsInputs = [
-        'containerId',
-        'dropAreaIds',
-        'items',
-        'showSearch',
-        'title',
-        'titleSizeType',
-        'titleType',
+export async function StorybookRichHtmlTextareaTests() {
+    const richHtmlTextareaInputs = [
+        'label',
+        'rowSpan',
+        'value',
+        'disabled',
+        'inlineMode',
+        'mandatory',
+        'maxFieldCharacters',
+        'showTitle',
+        'visible',
+        'xAlignment',
     ];
-    const draggableItemsOutputs = ['itemDragEnded', 'itemDragStarted'];
-    const draggableItemsSubFoldersHeaders = ['Drag into area', 'Show search box'];
+    const richHtmlTextareaOutputs = ['valueChange'];
+    const richHtmlTextareaSubFoldersHeaders = [
+        'Read only',
+        'Editable',
+        'Empty',
+        'Inline, no content',
+        'Inline, with content',
+    ];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let draggableItems: DraggableItems;
-    let draggableItemsInputsTitles;
-    let draggableItemsOutputsTitles;
+    let richHtmlTextarea: RichHtmlTextarea;
+    let richHtmlTextareaInputsTitles;
+    let richHtmlTextareaOutputsTitles;
 
-    describe('Storybook "DraggableItems" Tests Suite', function () {
+    describe('Storybook "RichHtmlTextarea" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            draggableItems = new DraggableItems(driver);
+            richHtmlTextarea = new RichHtmlTextarea(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* DraggableItems Component * Initial Testing', () => {
+        describe('* RichHtmlTextarea Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -64,34 +73,34 @@ export async function StorybookDraggableItemsTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** DraggableItems ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('draggable-items');
+            it(`Enter ** RichHtmlTextarea ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('rich-html-textarea');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** DraggableItems ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await draggableItems.doesDraggableItemsComponentFound();
-                draggableItemsInputsTitles = await draggableItems.getInputsTitles();
-                console.info('draggableItemsInputsTitles:', JSON.stringify(draggableItemsInputsTitles, null, 2));
-                draggableItemsOutputsTitles = await draggableItems.getOutputsTitles();
-                console.info('draggableItemsOutputsTitles:', JSON.stringify(draggableItemsOutputsTitles, null, 2));
+            it(`Overview Test of ** RichHtmlTextarea ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await richHtmlTextarea.doesRichHtmlTextareaComponentFound();
+                richHtmlTextareaInputsTitles = await richHtmlTextarea.getInputsTitles();
+                console.info('richHtmlTextareaInputsTitles:', JSON.stringify(richHtmlTextareaInputsTitles, null, 2));
+                richHtmlTextareaOutputsTitles = await richHtmlTextarea.getOutputsTitles();
+                console.info('richHtmlTextareaOutputsTitles:', JSON.stringify(richHtmlTextareaOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(draggableItemsInputsTitles).to.eql(draggableItemsInputs);
-                expect(draggableItemsOutputsTitles).to.eql(draggableItemsOutputs);
+                expect(richHtmlTextareaInputsTitles).to.eql(richHtmlTextareaInputs);
+                expect(richHtmlTextareaOutputsTitles).to.eql(richHtmlTextareaOutputs);
                 driver.sleep(5 * 1000);
             });
         });
-        draggableItemsInputs.forEach(async (input) => {
+        richHtmlTextareaInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await draggableItems.getInputRowSelectorByName(input));
+                    await driver.click(await richHtmlTextarea.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -108,7 +117,7 @@ export async function StorybookDraggableItemsTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(draggableItems.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(richHtmlTextarea.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -119,45 +128,63 @@ export async function StorybookDraggableItemsTests() {
                     });
                 });
                 switch (input) {
-                    case 'containerId':
+                    case 'label':
                         it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('containerId')).to.be.true;
+                            expect(richHtmlTextareaInputsTitles.includes('label')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'dropAreaIds':
+                    case 'rowSpan':
                         it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('dropAreaIds')).to.be.true;
+                            expect(richHtmlTextareaInputsTitles.includes('rowSpan')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'items':
+                    case 'value':
                         it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('items')).to.be.true;
+                            expect(richHtmlTextareaInputsTitles.includes('value')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'showSearch':
+                    case 'disabled':
                         it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('showSearch')).to.be.true;
+                            expect(richHtmlTextareaInputsTitles.includes('disabled')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'title':
+                    case 'inlineMode':
                         it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('title')).to.be.true;
+                            expect(richHtmlTextareaInputsTitles.includes('inlineMode')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'titleSizeType':
+                    case 'mandatory':
                         it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('titleSizeType')).to.be.true;
+                            expect(richHtmlTextareaInputsTitles.includes('mandatory')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'titleType':
+                    case 'maxFieldCharacters':
                         it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('titleType')).to.be.true;
+                            expect(richHtmlTextareaInputsTitles.includes('maxFieldCharacters')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'showTitle':
+                        it(`it '${input}'`, async function () {
+                            expect(richHtmlTextareaInputsTitles.includes('showTitle')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'visible':
+                        it(`it '${input}'`, async function () {
+                            expect(richHtmlTextareaInputsTitles.includes('visible')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'xAlignment':
+                        it(`it '${input}'`, async function () {
+                            expect(richHtmlTextareaInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO
                         break;
@@ -168,10 +195,10 @@ export async function StorybookDraggableItemsTests() {
                 }
             });
         });
-        draggableItemsOutputs.forEach(async (output) => {
+        richHtmlTextareaOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await draggableItems.getOutputRowSelectorByName(output));
+                    await driver.click(await richHtmlTextarea.getOutputRowSelectorByName(output));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${output}' output`,
@@ -179,15 +206,9 @@ export async function StorybookDraggableItemsTests() {
                     });
                 });
                 switch (output) {
-                    case 'itemDragEnded':
+                    case 'valueChange':
                         it(`it '${output}'`, async function () {
-                            expect(draggableItemsOutputsTitles.includes('itemDragEnded')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'itemDragStarted':
-                        it(`it '${output}'`, async function () {
-                            expect(draggableItemsOutputsTitles.includes('itemDragStarted')).to.be.true;
+                            expect(richHtmlTextareaOutputsTitles.includes('valueChange')).to.be.true;
                         });
                         // TODO
                         break;
@@ -199,7 +220,7 @@ export async function StorybookDraggableItemsTests() {
             });
         });
         describe(`**STORIES`, async function () {
-            draggableItemsSubFoldersHeaders.forEach(async (header, index) => {
+            richHtmlTextareaSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
@@ -223,19 +244,7 @@ export async function StorybookDraggableItemsTests() {
                         expect(storyHeader.trim()).equals(header);
                     });
                     // TODO: add tests
-                    // it(`it '${header}'`, async function () {
-                    // let headerText = '';
-                    // switch (header) {
-                    //     case 'Empty date-time':
-                    //         headerText = header.toLowerCase().replace(' ', '-');
-                    //         break;
-
-                    //     default:
-                    //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                    //     // break;
-                    // }
-
-                    // });
+                    // it(`it '${header}'`, async function () { });
                 });
             });
         });

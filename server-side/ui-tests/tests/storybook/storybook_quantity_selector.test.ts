@@ -1,51 +1,52 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { Textarea } from '../pom/Pages/StorybookComponents/Textarea';
+import { QuantitySelector } from '../../pom/Pages/StorybookComponents/QuantitySelector';
 
 chai.use(promised);
 
-export async function StorybookTextareaTests() {
-    const textareaInputs = [
-        'rowSpan',
+export async function StorybookQuantitySelectorTests() {
+    const quantitySelectorInputs = [
         'label',
         'value',
+        'allowDecimal',
         'disabled',
         'mandatory',
-        'maxFieldCharacters',
+        'readonly',
         'showTitle',
+        'styleType',
         'textColor',
         'visible',
         'xAlignment',
     ];
-    const textareaOutputs = ['valueChange'];
-    const textareaSubFoldersHeaders = ['Max field characters', 'Disabled'];
+    const quantitySelectorOutputs = ['elementClick', 'valueChange'];
+    const quantitySelectorSubFoldersHeaders = ['Twist and shake', 'Shake and twist'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let textarea: Textarea;
-    let textareaInputsTitles;
-    let textareaOutputsTitles;
+    let quantitySelector: QuantitySelector;
+    let quantitySelectorInputsTitles;
+    let quantitySelectorOutputsTitles;
 
-    describe('Storybook "Textarea" Tests Suite', function () {
+    describe('Storybook "QuantitySelector" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            textarea = new Textarea(driver);
+            quantitySelector = new QuantitySelector(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* Textarea Component * Initial Testing', () => {
+        describe('* QuantitySelector Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -67,34 +68,34 @@ export async function StorybookTextareaTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Textarea ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('textarea');
+            it(`Enter ** QuantitySelector ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('quantity-selector');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Textarea ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await textarea.doesTextareaComponentFound();
-                textareaInputsTitles = await textarea.getInputsTitles();
-                console.info('textareaInputsTitles:', JSON.stringify(textareaInputsTitles, null, 2));
-                textareaOutputsTitles = await textarea.getOutputsTitles();
-                console.info('textareaOutputsTitles:', JSON.stringify(textareaOutputsTitles, null, 2));
+            it(`Overview Test of ** QuantitySelector ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await quantitySelector.doesQuantitySelectorComponentFound();
+                quantitySelectorInputsTitles = await quantitySelector.getInputsTitles();
+                console.info('quantitySelectorInputsTitles:', JSON.stringify(quantitySelectorInputsTitles, null, 2));
+                quantitySelectorOutputsTitles = await quantitySelector.getOutputsTitles();
+                console.info('quantitySelectorOutputsTitles:', JSON.stringify(quantitySelectorOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(textareaInputsTitles).to.eql(textareaInputs);
-                expect(textareaOutputsTitles).to.eql(textareaOutputs);
+                expect(quantitySelectorInputsTitles).to.eql(quantitySelectorInputs);
+                expect(quantitySelectorOutputsTitles).to.eql(quantitySelectorOutputs);
                 driver.sleep(5 * 1000);
             });
         });
-        textareaInputs.forEach(async (input) => {
+        quantitySelectorInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await textarea.getInputRowSelectorByName(input));
+                    await driver.click(await quantitySelector.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -111,7 +112,7 @@ export async function StorybookTextareaTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(textarea.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(quantitySelector.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -122,63 +123,63 @@ export async function StorybookTextareaTests() {
                     });
                 });
                 switch (input) {
-                    case 'rowSpan':
-                        it(`it '${input}'`, async function () {
-                            expect(textareaInputsTitles.includes('rowSpan')).to.be.true;
-                        });
-                        // TODO
-                        break;
                     case 'label':
                         it(`it '${input}'`, async function () {
-                            expect(textareaInputsTitles.includes('label')).to.be.true;
+                            expect(quantitySelectorInputsTitles.includes('label')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {
-                            expect(textareaInputsTitles.includes('value')).to.be.true;
+                            expect(quantitySelectorInputsTitles.includes('value')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'allowDecimal':
+                        it(`it '${input}'`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('allowDecimal')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'disabled':
                         it(`it '${input}'`, async function () {
-                            expect(textareaInputsTitles.includes('disabled')).to.be.true;
+                            expect(quantitySelectorInputsTitles.includes('disabled')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {
-                            expect(textareaInputsTitles.includes('mandatory')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'maxFieldCharacters':
-                        it(`it '${input}'`, async function () {
-                            expect(textareaInputsTitles.includes('maxFieldCharacters')).to.be.true;
+                            expect(quantitySelectorInputsTitles.includes('mandatory')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'showTitle':
                         it(`it '${input}'`, async function () {
-                            expect(textareaInputsTitles.includes('showTitle')).to.be.true;
+                            expect(quantitySelectorInputsTitles.includes('showTitle')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'styleType':
+                        it(`it '${input}'`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('styleType')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'textColor':
                         it(`it '${input}'`, async function () {
-                            expect(textareaInputsTitles.includes('textColor')).to.be.true;
+                            expect(quantitySelectorInputsTitles.includes('textColor')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'visible':
                         it(`it '${input}'`, async function () {
-                            expect(textareaInputsTitles.includes('visible')).to.be.true;
+                            expect(quantitySelectorInputsTitles.includes('visible')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'xAlignment':
                         it(`it '${input}'`, async function () {
-                            expect(textareaInputsTitles.includes('xAlignment')).to.be.true;
+                            expect(quantitySelectorInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO
                         break;
@@ -189,10 +190,10 @@ export async function StorybookTextareaTests() {
                 }
             });
         });
-        textareaOutputs.forEach(async (output) => {
+        quantitySelectorOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await textarea.getOutputRowSelectorByName(output));
+                    await driver.click(await quantitySelector.getOutputRowSelectorByName(output));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${output}' output`,
@@ -200,9 +201,15 @@ export async function StorybookTextareaTests() {
                     });
                 });
                 switch (output) {
-                    case 'fileChange':
+                    case 'elementClick':
                         it(`it '${output}'`, async function () {
-                            expect(textareaOutputsTitles.includes('fileChange')).to.be.true;
+                            expect(quantitySelectorOutputsTitles.includes('elementClick')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'valueChange':
+                        it(`it '${output}'`, async function () {
+                            expect(quantitySelectorOutputsTitles.includes('valueChange')).to.be.true;
                         });
                         // TODO
                         break;
@@ -214,7 +221,7 @@ export async function StorybookTextareaTests() {
             });
         });
         describe(`**STORIES`, async function () {
-            textareaSubFoldersHeaders.forEach(async (header, index) => {
+            quantitySelectorSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();

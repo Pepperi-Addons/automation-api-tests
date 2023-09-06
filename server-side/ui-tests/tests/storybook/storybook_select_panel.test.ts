@@ -1,55 +1,51 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { Select } from '../pom/Pages/StorybookComponents/Select';
+import { SelectPanel } from '../../pom/Pages/StorybookComponents/SelectPanel';
 
 chai.use(promised);
 
-export async function StorybookSelectTests() {
-    const selectInputs = [
+export async function StorybookSelectPanelTests() {
+    const selectPanelInputs = [
         'label',
+        'value',
         'options',
+        'isMultiSelect',
+        'classNames',
         'disabled',
         'mandatory',
-        'readonly',
+        'numOfCol',
         'showTitle',
-        'type',
-        'value',
         'xAlignment',
     ];
-    const selectOutputs = ['valueChange'];
-    const selectSubFoldersHeaders = [
-        'With initial value',
-        'Multi-select',
-        'Multi-select with initial value',
-        'Disabled',
-    ];
+    const selectPanelOutputs = ['valueChange'];
+    const selectPanelSubFoldersHeaders = ['Multi select', 'Single select', 'RTL'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let select: Select;
-    let selectInputsTitles;
-    let selectOutputsTitles;
+    let selectPanel: SelectPanel;
+    let selectPanelInputsTitles;
+    let selectPanelOutputsTitles;
 
-    describe('Storybook "Select" Tests Suite', function () {
+    describe('Storybook "SelectPanel" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            select = new Select(driver);
+            selectPanel = new SelectPanel(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* Select Component * Initial Testing', () => {
+        describe('* SelectPanel Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -71,34 +67,34 @@ export async function StorybookSelectTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Select ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('select');
+            it(`Enter ** SelectPanel ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('select-panel');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Select ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await select.doesSelectComponentFound();
-                selectInputsTitles = await select.getInputsTitles();
-                console.info('selectInputsTitles:', JSON.stringify(selectInputsTitles, null, 2));
-                selectOutputsTitles = await select.getOutputsTitles();
-                console.info('selectOutputsTitles:', JSON.stringify(selectOutputsTitles, null, 2));
+            it(`Overview Test of ** SelectPanel ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await selectPanel.doesSelectPanelComponentFound();
+                selectPanelInputsTitles = await selectPanel.getInputsTitles();
+                console.info('selectPanelInputsTitles:', JSON.stringify(selectPanelInputsTitles, null, 2));
+                selectPanelOutputsTitles = await selectPanel.getOutputsTitles();
+                console.info('selectPanelOutputsTitles:', JSON.stringify(selectPanelOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(selectInputsTitles).to.eql(selectInputs);
-                expect(selectOutputsTitles).to.eql(selectOutputs);
+                expect(selectPanelInputsTitles).to.eql(selectPanelInputs);
+                expect(selectPanelOutputsTitles).to.eql(selectPanelOutputs);
                 driver.sleep(5 * 1000);
             });
         });
-        selectInputs.forEach(async (input) => {
+        selectPanelInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await select.getInputRowSelectorByName(input));
+                    await driver.click(await selectPanel.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -115,7 +111,7 @@ export async function StorybookSelectTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(select.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(selectPanel.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -128,55 +124,61 @@ export async function StorybookSelectTests() {
                 switch (input) {
                     case 'label':
                         it(`it '${input}'`, async function () {
-                            expect(selectInputsTitles.includes('label')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'options':
-                        it(`it '${input}'`, async function () {
-                            expect(selectInputsTitles.includes('options')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'disabled':
-                        it(`it '${input}'`, async function () {
-                            expect(selectInputsTitles.includes('disabled')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'mandatory':
-                        it(`it '${input}'`, async function () {
-                            expect(selectInputsTitles.includes('mandatory')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'readonly':
-                        it(`it '${input}'`, async function () {
-                            expect(selectInputsTitles.includes('readonly')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'showTitle':
-                        it(`it '${input}'`, async function () {
-                            expect(selectInputsTitles.includes('showTitle')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'type':
-                        it(`it '${input}'`, async function () {
-                            expect(selectInputsTitles.includes('type')).to.be.true;
+                            expect(selectPanelInputsTitles.includes('label')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {
-                            expect(selectInputsTitles.includes('value')).to.be.true;
+                            expect(selectPanelInputsTitles.includes('value')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'options':
+                        it(`it '${input}'`, async function () {
+                            expect(selectPanelInputsTitles.includes('options')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'isMultiSelect':
+                        it(`it '${input}'`, async function () {
+                            expect(selectPanelInputsTitles.includes('isMultiSelect')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'classNames':
+                        it(`it '${input}'`, async function () {
+                            expect(selectPanelInputsTitles.includes('classNames')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'disabled':
+                        it(`it '${input}'`, async function () {
+                            expect(selectPanelInputsTitles.includes('disabled')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'mandatory':
+                        it(`it '${input}'`, async function () {
+                            expect(selectPanelInputsTitles.includes('mandatory')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'numOfCol':
+                        it(`it '${input}'`, async function () {
+                            expect(selectPanelInputsTitles.includes('numOfCol')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'showTitle':
+                        it(`it '${input}'`, async function () {
+                            expect(selectPanelInputsTitles.includes('showTitle')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'xAlignment':
                         it(`it '${input}'`, async function () {
-                            expect(selectInputsTitles.includes('xAlignment')).to.be.true;
+                            expect(selectPanelInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO
                         break;
@@ -187,10 +189,10 @@ export async function StorybookSelectTests() {
                 }
             });
         });
-        selectOutputs.forEach(async (output) => {
+        selectPanelOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await select.getOutputRowSelectorByName(output));
+                    await driver.click(await selectPanel.getOutputRowSelectorByName(output));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${output}' output`,
@@ -200,7 +202,7 @@ export async function StorybookSelectTests() {
                 switch (output) {
                     case 'valueChange':
                         it(`it '${output}'`, async function () {
-                            expect(selectOutputsTitles.includes('valueChange')).to.be.true;
+                            expect(selectPanelOutputsTitles.includes('valueChange')).to.be.true;
                         });
                         // TODO
                         break;
@@ -212,7 +214,7 @@ export async function StorybookSelectTests() {
             });
         });
         describe(`**STORIES`, async function () {
-            selectSubFoldersHeaders.forEach(async (header, index) => {
+            selectPanelSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
