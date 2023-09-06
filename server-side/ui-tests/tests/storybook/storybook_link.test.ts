@@ -1,55 +1,53 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { GroupButtons } from '../pom/Pages/StorybookComponents/GroupButtons';
+import { Link } from '../../pom/Pages/StorybookComponents/Link';
 
 chai.use(promised);
 
-export async function StorybookGroupButtonsTests() {
-    const groupButtonsInputs = [
-        'buttons',
-        'buttonsDisabled',
-        'selectedButtonKey',
-        'sizeType',
-        'stretch',
-        'styleType',
-        'supportUnselect',
-        'viewType',
+export async function StorybookLinkTests() {
+    const linkInputs = [
+        'label',
+        'value',
+        'displayValue',
+        'disabled',
+        'mandatory',
+        'maxFieldCharacters',
+        'renderError',
+        'renderSymbol',
+        'renderTitle',
+        'showTitle',
+        'textColor',
+        'xAlignment',
     ];
-    const groupButtonsOutputs = ['buttonClick'];
-    const groupButtonsSubFoldersHeaders = [
-        'Regular view type',
-        'Dropdown view type',
-        'Split view type',
-        'Toggle view type w/ initial selection',
-        'Toggle view type wo/ initial selection',
-    ];
+    const linkOutputs = ['elementClick', 'valueChange'];
+    const linkSubFoldersHeaders = ['Empty', 'Read only', 'Read only, no button', 'Max characters'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let groupButtons: GroupButtons;
-    let groupButtonsInputsTitles;
-    let groupButtonsOutputsTitles;
+    let link: Link;
+    let linkInputsTitles;
+    let linkOutputsTitles;
 
-    describe('Storybook "GroupButtons" Tests Suite', function () {
+    describe('Storybook "Link" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            groupButtons = new GroupButtons(driver);
+            link = new Link(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* GroupButtons Component * Initial Testing', () => {
+        describe('* Link Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -71,34 +69,34 @@ export async function StorybookGroupButtonsTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** GroupButtons ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('group-buttons');
+            it(`Enter ** Link ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('link');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** GroupButtons ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await groupButtons.doesGroupButtonsComponentFound();
-                groupButtonsInputsTitles = await groupButtons.getInputsTitles();
-                console.info('groupButtonsInputsTitles:', JSON.stringify(groupButtonsInputsTitles, null, 2));
-                groupButtonsOutputsTitles = await groupButtons.getOutputsTitles();
-                console.info('groupButtonsOutputsTitles:', JSON.stringify(groupButtonsOutputsTitles, null, 2));
+            it(`Overview Test of ** Link ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await link.doesLinkComponentFound();
+                linkInputsTitles = await link.getInputsTitles();
+                console.info('linkInputsTitles:', JSON.stringify(linkInputsTitles, null, 2));
+                linkOutputsTitles = await link.getOutputsTitles();
+                console.info('linkOutputsTitles:', JSON.stringify(linkOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(groupButtonsInputsTitles).to.eql(groupButtonsInputs);
-                expect(groupButtonsOutputsTitles).to.eql(groupButtonsOutputs);
-                driver.sleep(1 * 1000);
+                expect(linkInputsTitles).to.eql(linkInputs);
+                expect(linkOutputsTitles).to.eql(linkOutputs);
+                driver.sleep(5 * 1000);
             });
         });
-        groupButtonsInputs.forEach(async (input) => {
+        linkInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await groupButtons.getInputRowSelectorByName(input));
+                    await driver.click(await link.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -115,7 +113,7 @@ export async function StorybookGroupButtonsTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(groupButtons.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(link.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -126,51 +124,75 @@ export async function StorybookGroupButtonsTests() {
                     });
                 });
                 switch (input) {
-                    case 'buttons':
+                    case 'label':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('buttons')).to.be.true;
+                            expect(linkInputsTitles.includes('label')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'buttonsDisabled':
+                    case 'value':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('buttonsDisabled')).to.be.true;
+                            expect(linkInputsTitles.includes('value')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'selectedButtonKey':
+                    case 'displayValue':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('selectedButtonKey')).to.be.true;
+                            expect(linkInputsTitles.includes('displayValue')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'sizeType':
+                    case 'disabled':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('sizeType')).to.be.true;
+                            expect(linkInputsTitles.includes('disabled')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'stretch':
+                    case 'mandatory':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('stretch')).to.be.true;
+                            expect(linkInputsTitles.includes('mandatory')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'styleType':
+                    case 'maxFieldCharacters':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('styleType')).to.be.true;
+                            expect(linkInputsTitles.includes('maxFieldCharacters')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'supportUnselect':
+                    case 'renderError':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('supportUnselect')).to.be.true;
+                            expect(linkInputsTitles.includes('renderError')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'viewType':
+                    case 'renderSymbol':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('viewType')).to.be.true;
+                            expect(linkInputsTitles.includes('renderSymbol')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'renderTitle':
+                        it(`it '${input}'`, async function () {
+                            expect(linkInputsTitles.includes('renderTitle')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'showTitle':
+                        it(`it '${input}'`, async function () {
+                            expect(linkInputsTitles.includes('showTitle')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'textColor':
+                        it(`it '${input}'`, async function () {
+                            expect(linkInputsTitles.includes('textColor')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'xAlignment':
+                        it(`it '${input}'`, async function () {
+                            expect(linkInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO
                         break;
@@ -181,10 +203,10 @@ export async function StorybookGroupButtonsTests() {
                 }
             });
         });
-        groupButtonsOutputs.forEach(async (output) => {
+        linkOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await groupButtons.getOutputRowSelectorByName(output));
+                    await driver.click(await link.getOutputRowSelectorByName(output));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${output}' output`,
@@ -192,9 +214,15 @@ export async function StorybookGroupButtonsTests() {
                     });
                 });
                 switch (output) {
-                    case 'buttonClick':
+                    case 'elementClick':
                         it(`it '${output}'`, async function () {
-                            expect(groupButtonsOutputsTitles.includes('buttonClick')).to.be.true;
+                            expect(linkOutputsTitles.includes('elementClick')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'valueChange':
+                        it(`it '${output}'`, async function () {
+                            expect(linkOutputsTitles.includes('valueChange')).to.be.true;
                         });
                         // TODO
                         break;
@@ -206,7 +234,7 @@ export async function StorybookGroupButtonsTests() {
             });
         });
         describe(`**STORIES`, async function () {
-            groupButtonsSubFoldersHeaders.forEach(async (header, index) => {
+            linkSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();

@@ -1,63 +1,48 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { Textbox } from '../pom/Pages/StorybookComponents/Textbox';
+import { DraggableItems } from '../../pom/Pages/StorybookComponents/DraggableItems';
 
 chai.use(promised);
 
-export async function StorybookTextboxTests() {
-    const textboxInputs = [
-        'label',
-        'value',
-        'disabled',
-        'mandatory',
-        'maxFieldCharacters',
-        'regex',
-        'regexError',
-        'renderError',
-        'renderSymbol',
-        'renderTitle',
-        'showTitle',
-        'textColor',
-        'type',
-        'xAlignment',
+export async function StorybookDraggableItemsTests() {
+    const draggableItemsInputs = [
+        'containerId',
+        'dropAreaIds',
+        'items',
+        'showSearch',
+        'title',
+        'titleSizeType',
+        'titleType',
     ];
-    const textboxOutputs = ['valueChange'];
-    const textboxSubFoldersHeaders = [
-        'Currency',
-        'Email',
-        'Max field characters',
-        'Number Decimal',
-        'Number Integer',
-        'Percentage',
-        'Phone',
-    ];
+    const draggableItemsOutputs = ['itemDragEnded', 'itemDragStarted'];
+    const draggableItemsSubFoldersHeaders = ['Drag into area', 'Show search box'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let textbox: Textbox;
-    let textboxInputsTitles;
-    let textboxOutputsTitles;
+    let draggableItems: DraggableItems;
+    let draggableItemsInputsTitles;
+    let draggableItemsOutputsTitles;
 
-    describe('Storybook "Textbox" Tests Suite', function () {
+    describe('Storybook "DraggableItems" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            textbox = new Textbox(driver);
+            draggableItems = new DraggableItems(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* Textbox Component * Initial Testing', () => {
+        describe('* DraggableItems Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -79,35 +64,34 @@ export async function StorybookTextboxTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Textbox ** Component StoryBook - SCREENSHOT`, async function () {
-                await driver.scrollToElement(storyBookPage.SidebarServicesHeader); // for the purpose of navigating to the area of 'textbox' at sidebar menu
-                await storyBookPage.chooseComponent('textbox');
+            it(`Enter ** DraggableItems ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('draggable-items');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Textbox ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await textbox.doesTextboxComponentFound();
-                textboxInputsTitles = await textbox.getInputsTitles();
-                console.info('textboxInputsTitles:', JSON.stringify(textboxInputsTitles, null, 2));
-                textboxOutputsTitles = await textbox.getOutputsTitles();
-                console.info('textboxOutputsTitles:', JSON.stringify(textboxOutputsTitles, null, 2));
+            it(`Overview Test of ** DraggableItems ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await draggableItems.doesDraggableItemsComponentFound();
+                draggableItemsInputsTitles = await draggableItems.getInputsTitles();
+                console.info('draggableItemsInputsTitles:', JSON.stringify(draggableItemsInputsTitles, null, 2));
+                draggableItemsOutputsTitles = await draggableItems.getOutputsTitles();
+                console.info('draggableItemsOutputsTitles:', JSON.stringify(draggableItemsOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(textboxInputsTitles).to.eql(textboxInputs);
-                expect(textboxOutputsTitles).to.eql(textboxOutputs);
+                expect(draggableItemsInputsTitles).to.eql(draggableItemsInputs);
+                expect(draggableItemsOutputsTitles).to.eql(draggableItemsOutputs);
                 driver.sleep(5 * 1000);
             });
         });
-        textboxInputs.forEach(async (input) => {
+        draggableItemsInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await textbox.getInputRowSelectorByName(input));
+                    await driver.click(await draggableItems.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -124,7 +108,7 @@ export async function StorybookTextboxTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(textbox.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(draggableItems.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -135,87 +119,45 @@ export async function StorybookTextboxTests() {
                     });
                 });
                 switch (input) {
-                    case 'label':
+                    case 'containerId':
                         it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('label')).to.be.true;
+                            expect(draggableItemsInputsTitles.includes('containerId')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'value':
+                    case 'dropAreaIds':
                         it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('value')).to.be.true;
+                            expect(draggableItemsInputsTitles.includes('dropAreaIds')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'disabled':
+                    case 'items':
                         it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('disabled')).to.be.true;
+                            expect(draggableItemsInputsTitles.includes('items')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'mandatory':
+                    case 'showSearch':
                         it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('mandatory')).to.be.true;
+                            expect(draggableItemsInputsTitles.includes('showSearch')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'maxFieldCharacters':
+                    case 'title':
                         it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('maxFieldCharacters')).to.be.true;
+                            expect(draggableItemsInputsTitles.includes('title')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'regex':
+                    case 'titleSizeType':
                         it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('regex')).to.be.true;
+                            expect(draggableItemsInputsTitles.includes('titleSizeType')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'regexError':
+                    case 'titleType':
                         it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('regexError')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'renderError':
-                        it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('renderError')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'renderSymbol':
-                        it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('renderSymbol')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'renderTitle':
-                        it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('renderTitle')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'showTitle':
-                        it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('showTitle')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'textColor':
-                        it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('textColor')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'type':
-                        it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('type')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'xAlignment':
-                        it(`it '${input}'`, async function () {
-                            expect(textboxInputsTitles.includes('xAlignment')).to.be.true;
+                            expect(draggableItemsInputsTitles.includes('titleType')).to.be.true;
                         });
                         // TODO
                         break;
@@ -226,10 +168,10 @@ export async function StorybookTextboxTests() {
                 }
             });
         });
-        textboxOutputs.forEach(async (output) => {
+        draggableItemsOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await textbox.getOutputRowSelectorByName(output));
+                    await driver.click(await draggableItems.getOutputRowSelectorByName(output));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${output}' output`,
@@ -237,9 +179,15 @@ export async function StorybookTextboxTests() {
                     });
                 });
                 switch (output) {
-                    case 'valueChange':
+                    case 'itemDragEnded':
                         it(`it '${output}'`, async function () {
-                            expect(textboxOutputsTitles.includes('valueChange')).to.be.true;
+                            expect(draggableItemsOutputsTitles.includes('itemDragEnded')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'itemDragStarted':
+                        it(`it '${output}'`, async function () {
+                            expect(draggableItemsOutputsTitles.includes('itemDragStarted')).to.be.true;
                         });
                         // TODO
                         break;
@@ -251,19 +199,11 @@ export async function StorybookTextboxTests() {
             });
         });
         describe(`**STORIES`, async function () {
-            it(`Navigate to place on sidebar menu`, async function () {
-                await driver.switchToDefaultContent();
-                await driver.scrollToElement(storyBookPage.SidebarServicesHeader); // for the purpose of navigating to the area of 'textbox' at sidebar menu
-            });
-            textboxSubFoldersHeaders.forEach(async (header) => {
+            draggableItemsSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
-                        const headerText = header
-                            .toLowerCase()
-                            .replace(/\s/g, '-')
-                            .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
-                        await storyBookPage.chooseSubFolder(headerText);
+                        await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
                         driver.sleep(0.1 * 1000);
                         const base64ImageComponent = await driver.saveScreenshots();
                         addContext(this, {
@@ -278,12 +218,24 @@ export async function StorybookTextboxTests() {
                             .replace(/\s/g, '-')
                             .replace(/[^a-z0-9]/gi, '-'); // replacing white spaces and non-alfabetic characters with '-'
                         console.info('at validate story header -> headerText: ', headerText);
-                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(-1, headerText);
+                        const storyHeaderSelector = await storyBookPage.getStorySelectorByText(index + 2, headerText);
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
                     // TODO: add tests
-                    // it(`it '${header}'`, async function () { });
+                    // it(`it '${header}'`, async function () {
+                    // let headerText = '';
+                    // switch (header) {
+                    //     case 'Empty date-time':
+                    //         headerText = header.toLowerCase().replace(' ', '-');
+                    //         break;
+
+                    //     default:
+                    //         throw new Error(`Header: "${header}" is not covered in switch!`);
+                    //     // break;
+                    // }
+
+                    // });
                 });
             });
         });
