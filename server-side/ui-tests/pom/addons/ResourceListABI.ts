@@ -8,6 +8,7 @@ export class ResourceListABI extends AddonPage {
     public TestsAddon_dropdownTitle: By = By.xpath(
         `${this.TestsAddon_container.value}//pep-select//pep-field-title//mat-label`,
     );
+    public TestsAddon_chooseList_mainDiv: By = By.xpath(`//div[contains(@class,"pep-center-layout")]`);
     public TestsAddon_dropdownElement: By = By.xpath(`${this.TestsAddon_container.value}//pep-select//mat-form-field`);
     public TestsAddon_openABI_button: By = By.xpath(
         `${this.TestsAddon_container.value}//pep-button[@value="open ABI"]/button[@data-qa="open ABI"]`,
@@ -68,5 +69,13 @@ export class ResourceListABI extends AddonPage {
     );
     public ListAbi_ViewsDropdownSingleOption_textContent: By = By.xpath(
         `${this.ListAbi_ViewsDropdown_singleOption.value}/span`,
+    );
+
+    // Dialog buttons
+    public ListAbi_dialogButton_done: By = By.xpath(
+        '//div[contains(@class,"mat-dialog-actions")]/pep-button[1]/button',
+    );
+    public ListAbi_dialogButton_cancel: By = By.xpath(
+        '//div[contains(@class,"mat-dialog-actions")]/pep-button[2]/button',
     );
 }
