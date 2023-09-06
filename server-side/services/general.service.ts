@@ -2194,6 +2194,9 @@ export default class GeneralService {
         valueData: string[],
         isHidden: string,
     ) {
+        if (!fileName.includes('.csv')) {
+            fileName += '.csv';
+        }
         let strData = '';
         strData += headers + ',Hidden' + '\n';
         let companyIndex = 0;
