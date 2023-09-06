@@ -660,10 +660,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             value: 'data:image/png;base64,' + base64ImageBuild,
         });
         await resourceListABI.clickElement('TestsAddon_openABI_button');
-        driver.sleep(2.5 * 1000);
         await resourceListABI.isSpinnerDone();
+        driver.sleep(2.5 * 1000);
         await resourceListABI.waitTillVisible(resourceListABI.ListAbi_container, 15000);
         if (!err) {
+            await resourceListABI.waitTillVisible(webAppList.ListRowElements, 15000);
             const listAbiTitle = await (await driver.findElement(resourceListABI.ListAbi_title)).getAttribute('title');
             expect(listAbiTitle.trim()).to.equal(expectedTitle);
             await resourceListABI.waitTillVisible(resourceListABI.ListAbi_ViewsDropdown, 15000);
