@@ -1,40 +1,38 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { Slider } from '../pom/Pages/StorybookComponents/Slider';
+import { SkeletonLoader } from '../../pom/Pages/StorybookComponents/SkeletonLoader';
 
 chai.use(promised);
 
-export async function StorybookSliderTests() {
-    const sliderInputs = ['label', 'value', 'hint', 'minValue', 'maxValue', 'disabled', 'step'];
-    const sliderProperties = ['xAlignment'];
-    const sliderSubFoldersHeaders = ['Show value, with step'];
+export async function StorybookSkeletonLoaderTests() {
+    const skeletonLoaderInputs = ['lastRowOffset', 'rowHeightType', 'rowsNumber'];
+    const skeletonLoaderSubFoldersHeaders = ['Bigger loader'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let slider: Slider;
-    let sliderInputsTitles;
-    let sliderPropertiesTitles;
+    let skeletonLoader: SkeletonLoader;
+    let skeletonLoaderInputsTitles;
 
-    describe('Storybook "Slider" Tests Suite', function () {
+    describe('Storybook "SkeletonLoader" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            slider = new Slider(driver);
+            skeletonLoader = new SkeletonLoader(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* Slider Component * Initial Testing', () => {
+        describe('* SkeletonLoader * Component Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -56,34 +54,31 @@ export async function StorybookSliderTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** Slider ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('slider');
+            it(`Enter ** SkeletonLoader ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('skeleton-loader');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** Slider ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await slider.doesSliderComponentFound();
-                sliderInputsTitles = await slider.getInputsTitles();
-                console.info('sliderInputsTitles:', JSON.stringify(sliderInputsTitles, null, 2));
-                sliderPropertiesTitles = await slider.getPropertiesTitles();
-                console.info('sliderPropertiesTitles:', JSON.stringify(sliderPropertiesTitles, null, 2));
+            it(`Overview Test of ** SkeletonLoader ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await skeletonLoader.doesSkeletonLoaderComponentFound();
+                skeletonLoaderInputsTitles = await skeletonLoader.getInputsTitles();
+                console.info('skeletonLoaderInputsTitles:', JSON.stringify(skeletonLoaderInputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(sliderInputsTitles).to.eql(sliderInputs);
-                expect(sliderPropertiesTitles).to.eql(sliderProperties);
+                expect(skeletonLoaderInputsTitles).to.eql(skeletonLoaderInputs);
                 driver.sleep(5 * 1000);
             });
         });
-        sliderInputs.forEach(async (input) => {
+        skeletonLoaderInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await slider.getInputRowSelectorByName(input));
+                    await driver.click(await skeletonLoader.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -100,7 +95,7 @@ export async function StorybookSliderTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(slider.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(skeletonLoader.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -111,45 +106,21 @@ export async function StorybookSliderTests() {
                     });
                 });
                 switch (input) {
-                    case 'label':
+                    case 'lastRowOffset':
                         it(`it '${input}'`, async function () {
-                            expect(sliderInputsTitles.includes('label')).to.be.true;
+                            expect(skeletonLoaderInputsTitles.includes('lastRowOffset')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'value':
+                    case 'rowHeightType':
                         it(`it '${input}'`, async function () {
-                            expect(sliderInputsTitles.includes('value')).to.be.true;
+                            expect(skeletonLoaderInputsTitles.includes('rowHeightType')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'hint':
+                    case 'rowsNumber':
                         it(`it '${input}'`, async function () {
-                            expect(sliderInputsTitles.includes('hint')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'minValue':
-                        it(`it '${input}'`, async function () {
-                            expect(sliderInputsTitles.includes('minValue')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'maxValue':
-                        it(`it '${input}'`, async function () {
-                            expect(sliderInputsTitles.includes('maxValue')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'disabled':
-                        it(`it '${input}'`, async function () {
-                            expect(sliderInputsTitles.includes('disabled')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'step':
-                        it(`it '${input}'`, async function () {
-                            expect(sliderInputsTitles.includes('step')).to.be.true;
+                            expect(skeletonLoaderInputsTitles.includes('rowsNumber')).to.be.true;
                         });
                         // TODO
                         break;
@@ -160,32 +131,8 @@ export async function StorybookSliderTests() {
                 }
             });
         });
-        sliderProperties.forEach(async (property) => {
-            describe(`PROPERTY: '${property}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await slider.getPropertyRowSelectorByName(property));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${property}' property`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
-                switch (property) {
-                    case 'fadeState':
-                        it(`it '${property}'`, async function () {
-                            expect(sliderPropertiesTitles.includes('fadeState')).to.be.true;
-                        });
-                        // TODO
-                        break;
-
-                    default:
-                        throw new Error(`Property: "${property}" is not covered in switch!`);
-                    // break;
-                }
-            });
-        });
         describe(`**STORIES`, async function () {
-            sliderSubFoldersHeaders.forEach(async (header, index) => {
+            skeletonLoaderSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();

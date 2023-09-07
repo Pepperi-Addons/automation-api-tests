@@ -1,52 +1,38 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { DateTime } from '../pom/Pages/StorybookComponents/DateTime';
+import { Separator } from '../../pom/Pages/StorybookComponents/Separator';
 
 chai.use(promised);
 
-export async function StorybookDateTimeTests() {
-    const dateTimeInputs = [
-        'label',
-        'value',
-        'disabled',
-        'mandatory',
-        'renderError',
-        'renderSymbol',
-        'renderTitle',
-        'showTitle',
-        'textColor',
-        'type',
-        'xAlignment',
-    ];
-    const dateTimeOutputs = ['valueChange'];
-    const dateTimeSubFoldersHeaders = ['Empty date-time'];
+export async function StorybookSeparatorTests() {
+    const separatorInputs = ['label', 'layoutType', 'visible', 'xAlignment'];
+    const separatorSubFoldersHeaders = ['RTL'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let dateTime: DateTime;
-    let dateTimeInputsTitles;
-    let dateTimeOutputsTitles;
+    let separator: Separator;
+    let separatorInputsTitles;
 
-    describe('Storybook "DateTime" Tests Suite', function () {
+    describe('Storybook "Separator" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            dateTime = new DateTime(driver);
+            separator = new Separator(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* DateTime Component * Initial Testing', () => {
+        describe('* Separator Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -68,34 +54,31 @@ export async function StorybookDateTimeTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** DateTime ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('date-date-time');
+            it(`Enter ** Separator ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('separator');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** DateTime ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await dateTime.doesDateTimeComponentFound();
-                dateTimeInputsTitles = await dateTime.getInputsTitles();
-                console.info('dateTimeInputsTitles:', JSON.stringify(dateTimeInputsTitles, null, 2));
-                dateTimeOutputsTitles = await dateTime.getOutputsTitles();
-                console.info('dateTimeOutputsTitles:', JSON.stringify(dateTimeOutputsTitles, null, 2));
+            it(`Overview Test of ** Separator ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await separator.doesSeparatorComponentFound();
+                separatorInputsTitles = await separator.getInputsTitles();
+                console.info('separatorInputsTitles:', JSON.stringify(separatorInputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(dateTimeInputsTitles).to.eql(dateTimeInputs);
-                expect(dateTimeOutputsTitles).to.eql(dateTimeOutputs);
+                expect(separatorInputsTitles).to.eql(separatorInputs);
                 driver.sleep(5 * 1000);
             });
         });
-        dateTimeInputs.forEach(async (input) => {
+        separatorInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await dateTime.getInputRowSelectorByName(input));
+                    await driver.click(await separator.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -112,7 +95,7 @@ export async function StorybookDateTimeTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(dateTime.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(separator.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -125,67 +108,25 @@ export async function StorybookDateTimeTests() {
                 switch (input) {
                     case 'label':
                         it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('label')).to.be.true;
+                            expect(separatorInputsTitles.includes('label')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'value':
+                    case 'layoutType':
                         it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('value')).to.be.true;
+                            expect(separatorInputsTitles.includes('layoutType')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'disabled':
+                    case 'visible':
                         it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('disabled')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'mandatory':
-                        it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('mandatory')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'renderError':
-                        it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('renderError')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'renderSymbol':
-                        it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('renderSymbol')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'renderTitle':
-                        it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('renderTitle')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'showTitle':
-                        it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('showTitle')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'textColor':
-                        it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('textColor')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'type':
-                        it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('type')).to.be.true;
+                            expect(separatorInputsTitles.includes('visible')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'xAlignment':
                         it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('xAlignment')).to.be.true;
+                            expect(separatorInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO
                         break;
@@ -196,33 +137,9 @@ export async function StorybookDateTimeTests() {
                 }
             });
         });
-        dateTimeOutputs.forEach(async (output) => {
-            describe(`OUTPUT: '${output}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await dateTime.getOutputRowSelectorByName(output));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${output}' output`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
-                switch (output) {
-                    case 'valueChange':
-                        it(`it '${output}'`, async function () {
-                            expect(dateTimeOutputsTitles.includes('valueChange')).to.be.true;
-                        });
-                        // TODO
-                        break;
-
-                    default:
-                        throw new Error(`Output: "${output}" is not covered in switch!`);
-                    // break;
-                }
-            });
-        });
         describe(`**STORIES`, async function () {
-            dateTimeSubFoldersHeaders.forEach(async (header, index) => {
-                describe(`'${header}'`, async function () {
+            separatorSubFoldersHeaders.forEach(async (header, index) => {
+                describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
                         await storyBookPage.chooseSubFolder(`--story-${index + 2}`);
@@ -245,19 +162,7 @@ export async function StorybookDateTimeTests() {
                         expect(storyHeader.trim()).equals(header);
                     });
                     // TODO: add tests
-                    // it(`it '${header}'`, async function () {
-                    // let headerText = '';
-                    // switch (header) {
-                    //     case 'Empty date-time':
-                    //         headerText = header.toLowerCase().replace(' ', '-');
-                    //         break;
-
-                    //     default:
-                    //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                    //         // break;
-                    // }
-
-                    // });
+                    // it(`it '${header}'`, async function () { });
                 });
             });
         });

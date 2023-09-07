@@ -107,6 +107,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const testData = {
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         ResourceListABI_Addon: ['cd3ba412-66a4-42f4-8abc-65768c5dc606', ''],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
         // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     };
@@ -628,6 +629,15 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             default:
                                 break;
                         }
+                        if (email.includes('.stage') && listTitle === '32. ReferenceAccount - 2 Views') {
+                            it('Dialog Not Shown', async function () {
+                                // await resourceListABI.clickElement('ListAbi_dialogButton_done');
+                            });
+                        } else {
+                            it('Close Dialog', async function () {
+                                await resourceListABI.clickElement('ListAbi_dialogButton_done');
+                            });
+                        }
                     });
                 });
             });
@@ -647,6 +657,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         if (listToSelect) {
             await resourceListABI.selectDropBoxByString(resourceListABI.TestsAddon_dropdownElement, listToSelect);
             await resourceListABI.isSpinnerDone();
+            await resourceListABI.clickElement('TestsAddon_chooseList_mainDiv');
         }
         driver.sleep(1 * 1000);
         let base64ImageBuild = await driver.saveScreenshots();
@@ -655,10 +666,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             value: 'data:image/png;base64,' + base64ImageBuild,
         });
         await resourceListABI.clickElement('TestsAddon_openABI_button');
-        driver.sleep(2.5 * 1000);
         await resourceListABI.isSpinnerDone();
+        driver.sleep(2.5 * 1000);
         await resourceListABI.waitTillVisible(resourceListABI.ListAbi_container, 15000);
         if (!err) {
+            await resourceListABI.waitTillVisible(webAppList.ListRowElements, 15000);
             const listAbiTitle = await (await driver.findElement(resourceListABI.ListAbi_title)).getAttribute('title');
             expect(listAbiTitle.trim()).to.equal(expectedTitle);
             await resourceListABI.waitTillVisible(resourceListABI.ListAbi_ViewsDropdown, 15000);

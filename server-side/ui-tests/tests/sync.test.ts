@@ -5,7 +5,6 @@ import promised from 'chai-as-promised';
 import GeneralService from '../../services/general.service';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { UDCService, UdcField } from '../../services/user-defined-collections.service';
-import fs from 'fs';
 import { PFSService } from '../../services/pfs.service';
 import { BrandedApp, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage } from '../pom';
 import E2EUtils from '../utilities/e2e_utils';
@@ -377,7 +376,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     ['division_code_index', 'division_name_index'],
                     'false',
                 );
-                const buf1 = fs.readFileSync('./udc_file_for_divisions.csv');
+                const buf1 = generalService.readFileE2ELocation('udc_file_for_divisions.csv');
                 // 2. create PFS Temp file
                 const fileName1 = 'TempFile' + generalService.generateRandomString(8) + '.csv';
                 const mime = 'text/csv';
@@ -442,7 +441,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     ['company_code_index', 'company_name_index'],
                     'false',
                 );
-                const buf1 = fs.readFileSync('./udc_file_for_companies.csv');
+                const buf1 = generalService.readFileE2ELocation('udc_file_for_companies.csv');
                 // 2. create PFS Temp file
                 const fileName1 = 'TempFile' + generalService.generateRandomString(8) + '.csv';
                 const mime = 'text/csv';
@@ -509,7 +508,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     ['company_code_index', 'division_code_index', 'accounts_index', 'val_index'],
                     'false',
                 );
-                const buf1 = fs.readFileSync('./udc_file_for_accountsInfo.csv');
+                const buf1 = generalService.readFileE2ELocation('./udc_file_for_accountsInfo.csv');
                 // 2. create PFS Temp file
                 const fileName1 = 'TempFile' + generalService.generateRandomString(8) + '.csv';
                 const mime = 'text/csv';
@@ -576,7 +575,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     ['company_code_index', 'division_code_index', 'val1_index', 'val2_abc_index'],
                     'false',
                 );
-                const buf1 = fs.readFileSync('./udc_file_for_dataCollection.csv');
+                const buf1 = generalService.readFileE2ELocation('./udc_file_for_dataCollection.csv');
                 // 2. create PFS Temp file
                 const fileName1 = 'TempFile' + generalService.generateRandomString(8) + '.csv';
                 const mime = 'text/csv';

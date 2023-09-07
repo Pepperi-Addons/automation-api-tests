@@ -968,6 +968,24 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                         addonSk,
                     ),
                 ]);
+                if (
+                    devTestResponseEu.Body.URI === undefined ||
+                    devTestResponseProd.Body.URI === undefined ||
+                    devTestResponseSb.Body.URI === undefined
+                ) {
+                    let whichEnvs = devTestResponseEu.Body.URI === undefined ? 'EU,,' : '';
+                    whichEnvs += devTestResponseProd.Body.URI === undefined ? 'PRDO,' : '';
+                    whichEnvs += devTestResponseSb.Body.URI === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`${errorString}`);
+                }
                 //4.2. poll audit log response for each env
                 console.log(
                     `####################### ${currentTestName}: EXECUTION UUIDS:\nEU - ${devTestResponseEu.Body.URI}\nPROD - ${devTestResponseProd.Body.URI}\nSB - ${devTestResponseSb.Body.URI}`,
@@ -1426,6 +1444,19 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                         addonSk,
                     ),
                 ]);
+                if (devTestResponseEu.Body.URI === undefined || devTestResponseSb.Body.URI === undefined) {
+                    let whichEnvs = devTestResponseEu.Body.URI === undefined ? 'EU,,' : '';
+                    whichEnvs += devTestResponseSb.Body.URI === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonEu,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`${errorString}`);
+                }
                 //4.2. poll audit log response for each env
                 console.log(
                     `####################### ${currentTestName}: EXECUTION UUIDS:\nEU - ${devTestResponseEu.Body.URI}\nSB - ${devTestResponseSb.Body.URI}`,
@@ -1917,6 +1948,24 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                         addonSk,
                     ),
                 ]);
+                if (
+                    devTestResponseEu.Body.URI === undefined ||
+                    devTestResponseProd.Body.URI === undefined ||
+                    devTestResponseSb.Body.URI === undefined
+                ) {
+                    let whichEnvs = devTestResponseEu.Body.URI === undefined ? 'EU,,' : '';
+                    whichEnvs += devTestResponseProd.Body.URI === undefined ? 'PRDO,' : '';
+                    whichEnvs += devTestResponseSb.Body.URI === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`${errorString}`);
+                }
                 //4.2. poll audit log response for each env
                 console.log(
                     `####################### ${currentTestName}: EXECUTION UUIDS:\nEU - ${devTestResponseEu.Body.URI}\nPROD - ${devTestResponseProd.Body.URI}\nSB - ${devTestResponseSb.Body.URI}`,

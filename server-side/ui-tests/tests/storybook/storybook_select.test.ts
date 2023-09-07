@@ -1,52 +1,55 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { QuantitySelector } from '../pom/Pages/StorybookComponents/QuantitySelector';
+import { Select } from '../../pom/Pages/StorybookComponents/Select';
 
 chai.use(promised);
 
-export async function StorybookQuantitySelectorTests() {
-    const quantitySelectorInputs = [
+export async function StorybookSelectTests() {
+    const selectInputs = [
         'label',
-        'value',
-        'allowDecimal',
+        'options',
         'disabled',
         'mandatory',
         'readonly',
         'showTitle',
-        'styleType',
-        'textColor',
-        'visible',
+        'type',
+        'value',
         'xAlignment',
     ];
-    const quantitySelectorOutputs = ['elementClick', 'valueChange'];
-    const quantitySelectorSubFoldersHeaders = ['Twist and shake', 'Shake and twist'];
+    const selectOutputs = ['valueChange'];
+    const selectSubFoldersHeaders = [
+        'With initial value',
+        'Multi-select',
+        'Multi-select with initial value',
+        'Disabled',
+    ];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let quantitySelector: QuantitySelector;
-    let quantitySelectorInputsTitles;
-    let quantitySelectorOutputsTitles;
+    let select: Select;
+    let selectInputsTitles;
+    let selectOutputsTitles;
 
-    describe('Storybook "QuantitySelector" Tests Suite', function () {
+    describe('Storybook "Select" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            quantitySelector = new QuantitySelector(driver);
+            select = new Select(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* QuantitySelector Component * Initial Testing', () => {
+        describe('* Select Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -68,34 +71,34 @@ export async function StorybookQuantitySelectorTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** QuantitySelector ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('quantity-selector');
+            it(`Enter ** Select ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('select');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** QuantitySelector ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await quantitySelector.doesQuantitySelectorComponentFound();
-                quantitySelectorInputsTitles = await quantitySelector.getInputsTitles();
-                console.info('quantitySelectorInputsTitles:', JSON.stringify(quantitySelectorInputsTitles, null, 2));
-                quantitySelectorOutputsTitles = await quantitySelector.getOutputsTitles();
-                console.info('quantitySelectorOutputsTitles:', JSON.stringify(quantitySelectorOutputsTitles, null, 2));
+            it(`Overview Test of ** Select ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await select.doesSelectComponentFound();
+                selectInputsTitles = await select.getInputsTitles();
+                console.info('selectInputsTitles:', JSON.stringify(selectInputsTitles, null, 2));
+                selectOutputsTitles = await select.getOutputsTitles();
+                console.info('selectOutputsTitles:', JSON.stringify(selectOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(quantitySelectorInputsTitles).to.eql(quantitySelectorInputs);
-                expect(quantitySelectorOutputsTitles).to.eql(quantitySelectorOutputs);
+                expect(selectInputsTitles).to.eql(selectInputs);
+                expect(selectOutputsTitles).to.eql(selectOutputs);
                 driver.sleep(5 * 1000);
             });
         });
-        quantitySelectorInputs.forEach(async (input) => {
+        selectInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await quantitySelector.getInputRowSelectorByName(input));
+                    await driver.click(await select.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -112,7 +115,7 @@ export async function StorybookQuantitySelectorTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(quantitySelector.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(select.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -125,61 +128,55 @@ export async function StorybookQuantitySelectorTests() {
                 switch (input) {
                     case 'label':
                         it(`it '${input}'`, async function () {
-                            expect(quantitySelectorInputsTitles.includes('label')).to.be.true;
+                            expect(selectInputsTitles.includes('label')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'value':
+                    case 'options':
                         it(`it '${input}'`, async function () {
-                            expect(quantitySelectorInputsTitles.includes('value')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'allowDecimal':
-                        it(`it '${input}'`, async function () {
-                            expect(quantitySelectorInputsTitles.includes('allowDecimal')).to.be.true;
+                            expect(selectInputsTitles.includes('options')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'disabled':
                         it(`it '${input}'`, async function () {
-                            expect(quantitySelectorInputsTitles.includes('disabled')).to.be.true;
+                            expect(selectInputsTitles.includes('disabled')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {
-                            expect(quantitySelectorInputsTitles.includes('mandatory')).to.be.true;
+                            expect(selectInputsTitles.includes('mandatory')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'readonly':
+                        it(`it '${input}'`, async function () {
+                            expect(selectInputsTitles.includes('readonly')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'showTitle':
                         it(`it '${input}'`, async function () {
-                            expect(quantitySelectorInputsTitles.includes('showTitle')).to.be.true;
+                            expect(selectInputsTitles.includes('showTitle')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'styleType':
+                    case 'type':
                         it(`it '${input}'`, async function () {
-                            expect(quantitySelectorInputsTitles.includes('styleType')).to.be.true;
+                            expect(selectInputsTitles.includes('type')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'textColor':
+                    case 'value':
                         it(`it '${input}'`, async function () {
-                            expect(quantitySelectorInputsTitles.includes('textColor')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'visible':
-                        it(`it '${input}'`, async function () {
-                            expect(quantitySelectorInputsTitles.includes('visible')).to.be.true;
+                            expect(selectInputsTitles.includes('value')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'xAlignment':
                         it(`it '${input}'`, async function () {
-                            expect(quantitySelectorInputsTitles.includes('xAlignment')).to.be.true;
+                            expect(selectInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO
                         break;
@@ -190,10 +187,10 @@ export async function StorybookQuantitySelectorTests() {
                 }
             });
         });
-        quantitySelectorOutputs.forEach(async (output) => {
+        selectOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await quantitySelector.getOutputRowSelectorByName(output));
+                    await driver.click(await select.getOutputRowSelectorByName(output));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${output}' output`,
@@ -201,15 +198,9 @@ export async function StorybookQuantitySelectorTests() {
                     });
                 });
                 switch (output) {
-                    case 'elementClick':
-                        it(`it '${output}'`, async function () {
-                            expect(quantitySelectorOutputsTitles.includes('elementClick')).to.be.true;
-                        });
-                        // TODO
-                        break;
                     case 'valueChange':
                         it(`it '${output}'`, async function () {
-                            expect(quantitySelectorOutputsTitles.includes('valueChange')).to.be.true;
+                            expect(selectOutputsTitles.includes('valueChange')).to.be.true;
                         });
                         // TODO
                         break;
@@ -221,7 +212,7 @@ export async function StorybookQuantitySelectorTests() {
             });
         });
         describe(`**STORIES`, async function () {
-            quantitySelectorSubFoldersHeaders.forEach(async (header, index) => {
+            selectSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();

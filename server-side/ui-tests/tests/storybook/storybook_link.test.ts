@@ -1,57 +1,53 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { RichHtmlTextarea } from '../pom/Pages/StorybookComponents/RichHtmlTextarea';
+import { Link } from '../../pom/Pages/StorybookComponents/Link';
 
 chai.use(promised);
 
-export async function StorybookRichHtmlTextareaTests() {
-    const richHtmlTextareaInputs = [
+export async function StorybookLinkTests() {
+    const linkInputs = [
         'label',
-        'rowSpan',
         'value',
+        'displayValue',
         'disabled',
-        'inlineMode',
         'mandatory',
         'maxFieldCharacters',
+        'renderError',
+        'renderSymbol',
+        'renderTitle',
         'showTitle',
-        'visible',
+        'textColor',
         'xAlignment',
     ];
-    const richHtmlTextareaOutputs = ['valueChange'];
-    const richHtmlTextareaSubFoldersHeaders = [
-        'Read only',
-        'Editable',
-        'Empty',
-        'Inline, no content',
-        'Inline, with content',
-    ];
+    const linkOutputs = ['elementClick', 'valueChange'];
+    const linkSubFoldersHeaders = ['Empty', 'Read only', 'Read only, no button', 'Max characters'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let richHtmlTextarea: RichHtmlTextarea;
-    let richHtmlTextareaInputsTitles;
-    let richHtmlTextareaOutputsTitles;
+    let link: Link;
+    let linkInputsTitles;
+    let linkOutputsTitles;
 
-    describe('Storybook "RichHtmlTextarea" Tests Suite', function () {
+    describe('Storybook "Link" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            richHtmlTextarea = new RichHtmlTextarea(driver);
+            link = new Link(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* RichHtmlTextarea Component * Initial Testing', () => {
+        describe('* Link Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -73,34 +69,34 @@ export async function StorybookRichHtmlTextareaTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** RichHtmlTextarea ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('rich-html-textarea');
+            it(`Enter ** Link ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('link');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** RichHtmlTextarea ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await richHtmlTextarea.doesRichHtmlTextareaComponentFound();
-                richHtmlTextareaInputsTitles = await richHtmlTextarea.getInputsTitles();
-                console.info('richHtmlTextareaInputsTitles:', JSON.stringify(richHtmlTextareaInputsTitles, null, 2));
-                richHtmlTextareaOutputsTitles = await richHtmlTextarea.getOutputsTitles();
-                console.info('richHtmlTextareaOutputsTitles:', JSON.stringify(richHtmlTextareaOutputsTitles, null, 2));
+            it(`Overview Test of ** Link ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await link.doesLinkComponentFound();
+                linkInputsTitles = await link.getInputsTitles();
+                console.info('linkInputsTitles:', JSON.stringify(linkInputsTitles, null, 2));
+                linkOutputsTitles = await link.getOutputsTitles();
+                console.info('linkOutputsTitles:', JSON.stringify(linkOutputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(richHtmlTextareaInputsTitles).to.eql(richHtmlTextareaInputs);
-                expect(richHtmlTextareaOutputsTitles).to.eql(richHtmlTextareaOutputs);
+                expect(linkInputsTitles).to.eql(linkInputs);
+                expect(linkOutputsTitles).to.eql(linkOutputs);
                 driver.sleep(5 * 1000);
             });
         });
-        richHtmlTextareaInputs.forEach(async (input) => {
+        linkInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await richHtmlTextarea.getInputRowSelectorByName(input));
+                    await driver.click(await link.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -117,7 +113,7 @@ export async function StorybookRichHtmlTextareaTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(richHtmlTextarea.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(link.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -130,61 +126,73 @@ export async function StorybookRichHtmlTextareaTests() {
                 switch (input) {
                     case 'label':
                         it(`it '${input}'`, async function () {
-                            expect(richHtmlTextareaInputsTitles.includes('label')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'rowSpan':
-                        it(`it '${input}'`, async function () {
-                            expect(richHtmlTextareaInputsTitles.includes('rowSpan')).to.be.true;
+                            expect(linkInputsTitles.includes('label')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {
-                            expect(richHtmlTextareaInputsTitles.includes('value')).to.be.true;
+                            expect(linkInputsTitles.includes('value')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'displayValue':
+                        it(`it '${input}'`, async function () {
+                            expect(linkInputsTitles.includes('displayValue')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'disabled':
                         it(`it '${input}'`, async function () {
-                            expect(richHtmlTextareaInputsTitles.includes('disabled')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'inlineMode':
-                        it(`it '${input}'`, async function () {
-                            expect(richHtmlTextareaInputsTitles.includes('inlineMode')).to.be.true;
+                            expect(linkInputsTitles.includes('disabled')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {
-                            expect(richHtmlTextareaInputsTitles.includes('mandatory')).to.be.true;
+                            expect(linkInputsTitles.includes('mandatory')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'maxFieldCharacters':
                         it(`it '${input}'`, async function () {
-                            expect(richHtmlTextareaInputsTitles.includes('maxFieldCharacters')).to.be.true;
+                            expect(linkInputsTitles.includes('maxFieldCharacters')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'renderError':
+                        it(`it '${input}'`, async function () {
+                            expect(linkInputsTitles.includes('renderError')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'renderSymbol':
+                        it(`it '${input}'`, async function () {
+                            expect(linkInputsTitles.includes('renderSymbol')).to.be.true;
+                        });
+                        // TODO
+                        break;
+                    case 'renderTitle':
+                        it(`it '${input}'`, async function () {
+                            expect(linkInputsTitles.includes('renderTitle')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'showTitle':
                         it(`it '${input}'`, async function () {
-                            expect(richHtmlTextareaInputsTitles.includes('showTitle')).to.be.true;
+                            expect(linkInputsTitles.includes('showTitle')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'visible':
+                    case 'textColor':
                         it(`it '${input}'`, async function () {
-                            expect(richHtmlTextareaInputsTitles.includes('visible')).to.be.true;
+                            expect(linkInputsTitles.includes('textColor')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'xAlignment':
                         it(`it '${input}'`, async function () {
-                            expect(richHtmlTextareaInputsTitles.includes('xAlignment')).to.be.true;
+                            expect(linkInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO
                         break;
@@ -195,10 +203,10 @@ export async function StorybookRichHtmlTextareaTests() {
                 }
             });
         });
-        richHtmlTextareaOutputs.forEach(async (output) => {
+        linkOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await richHtmlTextarea.getOutputRowSelectorByName(output));
+                    await driver.click(await link.getOutputRowSelectorByName(output));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${output}' output`,
@@ -206,9 +214,15 @@ export async function StorybookRichHtmlTextareaTests() {
                     });
                 });
                 switch (output) {
+                    case 'elementClick':
+                        it(`it '${output}'`, async function () {
+                            expect(linkOutputsTitles.includes('elementClick')).to.be.true;
+                        });
+                        // TODO
+                        break;
                     case 'valueChange':
                         it(`it '${output}'`, async function () {
-                            expect(richHtmlTextareaOutputsTitles.includes('valueChange')).to.be.true;
+                            expect(linkOutputsTitles.includes('valueChange')).to.be.true;
                         });
                         // TODO
                         break;
@@ -220,7 +234,7 @@ export async function StorybookRichHtmlTextareaTests() {
             });
         });
         describe(`**STORIES`, async function () {
-            richHtmlTextareaSubFoldersHeaders.forEach(async (header, index) => {
+            linkSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();

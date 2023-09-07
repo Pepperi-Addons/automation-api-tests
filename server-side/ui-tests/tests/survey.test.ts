@@ -33,7 +33,6 @@ import { ObjectsService } from '../../services/objects.service';
 chai.use(promised);
 
 export async function SurveyTests(email: string, password: string, client: Client, varPass) {
-    //
     const generalService = new GeneralService(client);
     let driver: Browser;
     let surveyBlockPageName;
@@ -127,10 +126,39 @@ export async function SurveyTests(email: string, password: string, client: Clien
             ],
         },
     ];
-    // const buyerEmail = 'surveyNeo4jProdBuyer@pepperitest.com';
-    // const buyerPass = '9Z^ch5';
-    // const repEmail = 'surveyNeo4jProdRep@pepperitest.com';
-    // const repPass = 'sZ&4Ew';
+    const buyerEmailProd = 'surveyNeo4jProdBuyer@pepperitest.com';
+    const buyerPassProd = '9Z^ch5';
+    const repEmailProd = 'surveyNeo4jProdRep@pepperitest.com';
+    const repPassProd = 'sZ&4Ew';
+    const buyerEmailStage = 'surveyNeo4jSBBuyer@pepperitest.com';
+    const buyerPassStage = '4iuWd*';
+    const repEmailStage = 'surveyNeo4jSBRep@pepperitest.com';
+    const repPassStage = 'F@QVr9';
+    const buyerEmailEU = 'surveyNeo4jEUBuyer@pepperitest.com';
+    const buyerPassEU = 'Ee$U94';
+    const repEmailEU = 'surveyNeo4jEURep@pepperitest.com';
+    const repPassEU = '3q3@TA';
+
+    let repEmail;
+    let repPass;
+    let buyerEmail;
+    let buyerPass;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        repEmail = repEmailStage;
+        repPass = repPassStage;
+        buyerEmail = buyerEmailStage;
+        buyerPass = buyerPassStage;
+    } else if (generalService.papiClient['options'].baseURL.includes('eu')) {
+        repEmail = repEmailEU;
+        repPass = repPassEU;
+        buyerEmail = buyerEmailEU;
+        buyerPass = buyerPassEU;
+    } else {
+        repEmail = repEmailProd;
+        repPass = repPassProd;
+        buyerEmail = buyerEmailProd;
+        buyerPass = buyerPassProd;
+    }
     await generalService.baseAddonVersionsInstallationNewSync(varPass);
     // #region Upgrade survey dependencies
 
@@ -139,7 +167,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.4.%'],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.9.122'], //currently locked as this version will make rep and buyer work
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], //has to remain untouched - latest 0.7.x
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
@@ -208,6 +236,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
             it(`1. Create A UDC Which Extends 'surveys' Scheme Before Creating A Survey`, async function () {
+                debugger;
                 const udcService = new UDCService(generalService);
                 const newSurveyUDCName = 'NewSurveyCollection' + generalService.generateRandomString(4);
                 const response = await udcService.createUDCWithFields(
@@ -239,7 +268,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     expect(response).to.haveOwnProperty('Template');
                 }
             });
-            it('2. Create A Survey Template - Validate Via API All Data Is Sent Correctly', async function () {
+            it('2. ADMIN Set Up: Create A Survey Template - Validate Via API All Data Is Sent Correctly', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const surveyService = new SurveyTemplateBuilder(driver);
@@ -321,7 +350,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 }
                 await webAppLoginPage.logout();
             });
-            it('3. Login Again - Edit The Survey And See API Respose Is Changed', async function () {
+            it('3. ADMIN Set Up: Login Again - Edit The Survey And See API Respose Is Changed', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const surveyService = new SurveyTemplateBuilder(driver);
@@ -346,7 +375,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(surveyTemplateResponse.Body[0].Name).to.equal(newName);
                 surveyTemplateName = newName;
             });
-            it('4. Configure Resource Views For Account + Survey', async function () {
+            it('4. ADMIN Set Up: Configure Resource Views For Account + Survey', async function () {
                 const resourceListUtils = new E2EUtils(driver);
                 const resourceViews = new ResourceViews(driver);
                 // Configure View - Accounts
@@ -389,7 +418,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            it('5. Create Page With Survey Block Inside It', async function () {
+            it('5. ADMIN Set Up: Create Page With Survey Block Inside It', async function () {
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveyBlockPage';
                 surveyBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
@@ -404,7 +433,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            it('6. Create Slug And Map It To Show The Page With Survey Block', async function () {
+            it('6. ADMIN Set Up: Create Slug And Map It To Show The Page With Survey Block', async function () {
                 surveySlugDisplayName = `survey_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = surveySlugDisplayName;
                 await CreateSlug(
@@ -417,10 +446,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     surveyBlockPageUUID,
                 );
             });
-            it('7. Create Script Based On Config File With New Resource Views Configured', async function () {
+            it('7. ADMIN Set Up: Create Script Based On Config File With New Resource Views Configured', async function () {
                 let script;
                 try {
-                    script = fs.readFileSync(path.join(__dirname, 'surveyScriptFile.txt'), 'utf-8');
+                    script = fs.readFileSync(path.join(__dirname, '..', 'test-data', 'surveyScriptFile.txt'), 'utf-8');
                 } catch (error) {
                     throw `couldnt read script from file, got exception: ${(error as any).message}`;
                 }
@@ -433,7 +462,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 scriptUUID = await scriptEditor.configureScriptForSurvey(script3, generalService);
                 await webAppHeader.goHome();
             });
-            it('8. Create Page With SlideShow Which Will Run The Script', async function () {
+            it('8. ADMIN Set Up: Create Page With SlideShow Which Will Run The Script', async function () {
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveySlideShow';
                 slideshowBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
@@ -448,7 +477,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
             });
-            it('9. Create A Slug For The Slideshow Page And Set It To Show On Homepage', async function () {
+            it('9. ADMIN Set Up: Create A Slug For The Slideshow Page And Set It To Show On Homepage', async function () {
                 slideshowSlugDisplayName = `slideshow_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = slideshowSlugDisplayName;
                 await CreateSlug(
@@ -471,9 +500,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     await webAppHomePage.manualResync(client);
                 }
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slideshowSlugDisplayName);
+                debugger;
             });
         });
-        describe('Test Configured Survey', () => {
+        describe('UI Test Configured Survey: Admin, Rep, Buyer', () => {
             this.retries(0);
 
             before(async function () {
@@ -488,16 +518,17 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData(this);
             });
-            it('1. Fill Survey Using Admin Account And Validate All Is Working', async function () {
+            it('1. Admin Testing: Fill Survey Via UI, See Is Synced To Admin UDC', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.reSyncApp();
-                await webAppHomePage.enterATD(slideshowSlugDisplayName);
+                await webAppHomePage.enterActivty(slideshowSlugDisplayName);
+                driver.sleep(3000);
                 const slideShowPage = new SlideShowPage(driver);
                 await slideShowPage.enterSurveyPicker();
                 const surveyPicker = new SurveyPicker(driver);
-                driver.sleep(4500);
+                driver.sleep(6500);
                 const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
                 driver.sleep(2500);
                 expect(isAccountSelectionOpen).to.equal(true);
@@ -551,7 +582,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
                     method: 'GET',
                 });
-
                 debugger;
                 const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
                 expect(filteredSurveyResponse.length).to.equal(1);
@@ -592,217 +622,219 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 }
                 await webAppLoginPage.logout();
             });
-            // it('2. Fill Survey Using Rep Account And Validate All Is Working', async function () {
-            //     ////----->
-            //     const webAppLoginPage = new WebAppLoginPage(driver);
-            //     await webAppLoginPage.longLoginForRep(repEmail, repPass);
-            //     const webAppHomePage = new WebAppHomePage(driver);
-            //     for (let index = 0; index < 2; index++) {
-            //         await webAppHomePage.manualResync(client);
-            //     }
-            //     await webAppHomePage.enterATD(slideshowSlugDisplayName);
-            //     const slideShowPage = new SlideShowPage(driver);
-            //     await slideShowPage.enterSurveyPicker();
-            //     const surveyPicker = new SurveyPicker(driver);
-            //     driver.sleep(4500);
-            //     const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
-            //     driver.sleep(2500);
-            //     expect(isAccountSelectionOpen).to.equal(true);
-            //     const objectsService = new ObjectsService(generalService);
-            //     const accounts = await objectsService.getAccounts();
-            //     expect(accounts.length).to.be.above(0);
-            //     const accName = accounts[0].Name;
-            //     const accUUID = accounts[0].UUID;
-            //     const isTemplateOpen = await surveyPicker.selectAccount(accName);
-            //     driver.sleep(2500);
-            //     expect(isTemplateOpen).to.equal(true);
-            //     const allQuestionNames = [
-            //         'first question',
-            //         'second question',
-            //         'third question',
-            //         'fourth question',
-            //         'fifth question',
-            //         'sixth question',
-            //         'seventh question',
-            //     ];
-            //     const allQuestionTypes: SurveyQuestion['Type'][] = [
-            //         'Multiple Select',
-            //         'Radio Group',
-            //         'Short Text',
-            //         'Checkbox',
-            //         'Yes/No',
-            //         'Decimal',
-            //         'Date',
-            //     ];
-            //     const allQuestionPositiveAns = [['A', 'C'], 'B', 'short Text12', ['1', '2'], 'Yes', '.123', '1/1/2022'];
-            //     const surveyFiller = new SurveyFiller(driver);
-            //     const surveyKey = await surveyFiller.getKeyOfSurveyFromURL();
-            //     for (let index = 0; index < allQuestionNames.length; index++) {
-            //         const currentQuestionName = allQuestionNames[index];
-            //         const currentQuestionType = allQuestionTypes[index];
-            //         const currentQuestionAns = allQuestionPositiveAns[index];
-            //         if (Array.isArray(currentQuestionAns)) {
-            //             await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, currentQuestionAns);
-            //         } else {
-            //             await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, [
-            //                 currentQuestionAns,
-            //             ]);
-            //         }
-            //     }
-            //     await surveyFiller.saveSurvey();
-            //     driver.sleep(8000);
-            //     await webAppHomePage.returnToHomePage();
-            //     for (let index = 0; index < 2; index++) {
-            //         await webAppHomePage.manualResync(client);
-            //     }
-            //     const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
-            //         method: 'GET',
-            //     });
-            //     debugger;
-            //     const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
-            //     expect(filteredSurveyResponse.length).to.equal(1);
-            //     const currentSurvey = filteredSurveyResponse[0];
-            //     expect(currentSurvey).to.not.be.undefined;
-            //     expect(currentSurvey.Template).to.equal(surveyUUID);
-            //     expect(currentSurvey.StatusName).to.equal('Submitted');
-            //     expect(currentSurvey.ResourceName).to.equal('MySurveys');
-            //     expect(currentSurvey.Account).to.equal(accUUID);
-            //     const surveyAnswers = currentSurvey.Answers;
-            //     for (let index = 0; index < surveyAnswers.length; index++) {
-            //         const ans = surveyAnswers[index];
-            //         if (Array.isArray(allQuestionPositiveAns[index])) {
-            //             const joinedArray = (allQuestionPositiveAns[index] as string[]).join(';');
-            //             expect(ans.Answer).to.equal(joinedArray);
-            //         } else {
-            //             if (allQuestionPositiveAns[index] === 'Yes' || allQuestionPositiveAns[index] === 'No') {
-            //                 const convertedAns = allQuestionPositiveAns[index] === 'Yes' ? 'true' : 'false';
-            //                 expect(ans.Answer).to.equal(convertedAns);
-            //             } else {
-            //                 if (allQuestionPositiveAns[index] === '.123') {
-            //                     const numb = '0' + allQuestionPositiveAns[index];
-            //                     expect(ans.Answer).to.equal(numb);
-            //                 } else if (allQuestionPositiveAns[index] === '1/1/2022') {
-            //                     const dateSplit = (allQuestionPositiveAns[index] as string).split('/');
-            //                     const date =
-            //                         dateSplit[dateSplit.length - 1] +
-            //                         '-' +
-            //                         dateSplit[dateSplit.length - 2] +
-            //                         '-' +
-            //                         dateSplit[dateSplit.length - 3];
-            //                     expect(ans.Answer).to.equal(date);
-            //                 } else {
-            //                     expect(ans.Answer).to.equal(allQuestionPositiveAns[index]);
-            //                 }
-            //             }
-            //         }
-            //     }
-            //     await webAppLoginPage.logout();
-            // });
-            // it('3. Fill Survey Using Buyer Account And Validate All Is Working', async function () {
-            //     const webAppLoginPage = new WebAppLoginPage(driver);
-            //     await webAppLoginPage.longLoginForBuyer(buyerEmail, buyerPass);
-            //     const webAppHomePage = new WebAppHomePage(driver);
-            //     for (let index = 0; index < 2; index++) {
-            //         await webAppHomePage.manualResync(client);
-            //     }
-            //     await webAppHomePage.enterATD(slideshowSlugDisplayName);
-            //     const slideShowPage = new SlideShowPage(driver);
-            //     await slideShowPage.enterSurveyPicker();
-            //     const surveyPicker = new SurveyPicker(driver);
-            //     driver.sleep(4500);
-            //     const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
-            //     driver.sleep(2500);
-            //     expect(isAccountSelectionOpen).to.equal(true);
-            //     const objectsService = new ObjectsService(generalService);
-            //     const accounts = await objectsService.getAccounts();
-            //     expect(accounts.length).to.be.above(0);
-            //     const accName = accounts[0].Name;
-            //     const accUUID = accounts[0].UUID;
-            //     const isTemplateOpen = await surveyPicker.selectAccount(accName);
-            //     driver.sleep(2500);
-            //     expect(isTemplateOpen).to.equal(true);
-            //     const allQuestionNames = [
-            //         'first question',
-            //         'second question',
-            //         'third question',
-            //         'fourth question',
-            //         'fifth question',
-            //         'sixth question',
-            //         'seventh question',
-            //     ];
-            //     const allQuestionTypes: SurveyQuestion['Type'][] = [
-            //         'Multiple Select',
-            //         'Radio Group',
-            //         'Short Text',
-            //         'Checkbox',
-            //         'Yes/No',
-            //         'Decimal',
-            //         'Date',
-            //     ];
-            //     const allQuestionPositiveAns = [['A', 'C'], 'B', 'short Text12', ['1', '2'], 'Yes', '.123', '1/1/2022'];
-            //     const surveyFiller = new SurveyFiller(driver);
-            //     const surveyKey = await surveyFiller.getKeyOfSurveyFromURL();
-            //     for (let index = 0; index < allQuestionNames.length; index++) {
-            //         const currentQuestionName = allQuestionNames[index];
-            //         const currentQuestionType = allQuestionTypes[index];
-            //         const currentQuestionAns = allQuestionPositiveAns[index];
-            //         if (Array.isArray(currentQuestionAns)) {
-            //             await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, currentQuestionAns);
-            //         } else {
-            //             await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, [
-            //                 currentQuestionAns,
-            //             ]);
-            //         }
-            //     }
-            //     await surveyFiller.saveSurvey();
-            //     driver.sleep(8000);
-            //     await webAppHomePage.returnToHomePage();
-            //     for (let index = 0; index < 2; index++) {
-            //         await webAppHomePage.manualResync(client);
-            //     }
-            //     const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
-            //         method: 'GET',
-            //     });
-            //     debugger;
-            //     const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
-            //     expect(filteredSurveyResponse.length).to.equal(1);
-            //     const currentSurvey = filteredSurveyResponse[0];
-            //     expect(currentSurvey).to.not.be.undefined;
-            //     expect(currentSurvey.Template).to.equal(surveyUUID);
-            //     expect(currentSurvey.StatusName).to.equal('Submitted');
-            //     expect(currentSurvey.ResourceName).to.equal('MySurveys');
-            //     expect(currentSurvey.Account).to.equal(accUUID);
-            //     const surveyAnswers = currentSurvey.Answers;
-            //     for (let index = 0; index < surveyAnswers.length; index++) {
-            //         const ans = surveyAnswers[index];
-            //         if (Array.isArray(allQuestionPositiveAns[index])) {
-            //             const joinedArray = (allQuestionPositiveAns[index] as string[]).join(';');
-            //             expect(ans.Answer).to.equal(joinedArray);
-            //         } else {
-            //             if (allQuestionPositiveAns[index] === 'Yes' || allQuestionPositiveAns[index] === 'No') {
-            //                 const convertedAns = allQuestionPositiveAns[index] === 'Yes' ? 'true' : 'false';
-            //                 expect(ans.Answer).to.equal(convertedAns);
-            //             } else {
-            //                 if (allQuestionPositiveAns[index] === '.123') {
-            //                     const numb = '0' + allQuestionPositiveAns[index];
-            //                     expect(ans.Answer).to.equal(numb);
-            //                 } else if (allQuestionPositiveAns[index] === '1/1/2022') {
-            //                     const dateSplit = (allQuestionPositiveAns[index] as string).split('/');
-            //                     const date =
-            //                         dateSplit[dateSplit.length - 1] +
-            //                         '-' +
-            //                         dateSplit[dateSplit.length - 2] +
-            //                         '-' +
-            //                         dateSplit[dateSplit.length - 3];
-            //                     expect(ans.Answer).to.equal(date);
-            //                 } else {
-            //                     expect(ans.Answer).to.equal(allQuestionPositiveAns[index]);
-            //                 }
-            //             }
-            //         }
-            //     }
-            // });
-            it('Data Cleansing: 1. survey template', async function () {
+            it('2. Rep Testing: Fill Survey Via UI, See Is Synced To Admin UDC', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.longLoginForRep(repEmail, repPass);
+                const webAppHomePage = new WebAppHomePage(driver);
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
+                await webAppHomePage.enterActivty(slideshowSlugDisplayName);
+                driver.sleep(3000);
+                const slideShowPage = new SlideShowPage(driver);
+                await slideShowPage.enterSurveyPicker();
+                const surveyPicker = new SurveyPicker(driver);
+                driver.sleep(6500);
+                const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
+                driver.sleep(2500);
+                expect(isAccountSelectionOpen).to.equal(true);
+                const objectsService = new ObjectsService(generalService);
+                const accounts = await objectsService.getAccounts();
+                expect(accounts.length).to.be.above(0);
+                const accName = accounts[0].Name;
+                const accUUID = accounts[0].UUID;
+                const isTemplateOpen = await surveyPicker.selectAccount(accName);
+                driver.sleep(2500);
+                expect(isTemplateOpen).to.equal(true);
+                const allQuestionNames = [
+                    'first question',
+                    'second question',
+                    'third question',
+                    'fourth question',
+                    'fifth question',
+                    'sixth question',
+                    'seventh question',
+                ];
+                const allQuestionTypes: SurveyQuestion['Type'][] = [
+                    'Multiple Select',
+                    'Radio Group',
+                    'Short Text',
+                    'Checkbox',
+                    'Yes/No',
+                    'Decimal',
+                    'Date',
+                ];
+                const allQuestionPositiveAns = [['A', 'C'], 'B', 'short Text12', ['1', '2'], 'Yes', '.123', '1/1/2022'];
+                const surveyFiller = new SurveyFiller(driver);
+                const surveyKey = await surveyFiller.getKeyOfSurveyFromURL();
+                for (let index = 0; index < allQuestionNames.length; index++) {
+                    const currentQuestionName = allQuestionNames[index];
+                    const currentQuestionType = allQuestionTypes[index];
+                    const currentQuestionAns = allQuestionPositiveAns[index];
+                    if (Array.isArray(currentQuestionAns)) {
+                        await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, currentQuestionAns);
+                    } else {
+                        await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, [
+                            currentQuestionAns,
+                        ]);
+                    }
+                }
+                await surveyFiller.saveSurvey();
+                driver.sleep(8000);
+                await webAppHomePage.returnToHomePage();
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
+                const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
+                    method: 'GET',
+                });
+                debugger;
+                const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
+                expect(filteredSurveyResponse.length).to.equal(1);
+                const currentSurvey = filteredSurveyResponse[0];
+                expect(currentSurvey).to.not.be.undefined;
+                expect(currentSurvey.Template).to.equal(surveyUUID);
+                expect(currentSurvey.StatusName).to.equal('Submitted');
+                expect(currentSurvey.ResourceName).to.equal('MySurveys');
+                expect(currentSurvey.Account).to.equal(accUUID);
+                const surveyAnswers = currentSurvey.Answers;
+                for (let index = 0; index < surveyAnswers.length; index++) {
+                    const ans = surveyAnswers[index];
+                    if (Array.isArray(allQuestionPositiveAns[index])) {
+                        const joinedArray = (allQuestionPositiveAns[index] as string[]).join(';');
+                        expect(ans.Answer).to.equal(joinedArray);
+                    } else {
+                        if (allQuestionPositiveAns[index] === 'Yes' || allQuestionPositiveAns[index] === 'No') {
+                            const convertedAns = allQuestionPositiveAns[index] === 'Yes' ? 'true' : 'false';
+                            expect(ans.Answer).to.equal(convertedAns);
+                        } else {
+                            if (allQuestionPositiveAns[index] === '.123') {
+                                const numb = '0' + allQuestionPositiveAns[index];
+                                expect(ans.Answer).to.equal(numb);
+                            } else if (allQuestionPositiveAns[index] === '1/1/2022') {
+                                const dateSplit = (allQuestionPositiveAns[index] as string).split('/');
+                                const date =
+                                    dateSplit[dateSplit.length - 1] +
+                                    '-' +
+                                    dateSplit[dateSplit.length - 2] +
+                                    '-' +
+                                    dateSplit[dateSplit.length - 3];
+                                expect(ans.Answer).to.equal(date);
+                            } else {
+                                expect(ans.Answer).to.equal(allQuestionPositiveAns[index]);
+                            }
+                        }
+                    }
+                }
+                await webAppLoginPage.logout();
+            });
+            it('3. Buyer Testing: Fill Survey Via UI, See Is Synced To Admin UDC', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.longLoginForBuyer(buyerEmail, buyerPass);
+                const webAppHomePage = new WebAppHomePage(driver);
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
+                await webAppHomePage.enterActivty(slideshowSlugDisplayName);
+                driver.sleep(3000);
+                const slideShowPage = new SlideShowPage(driver);
+                await slideShowPage.enterSurveyPicker();
+                const surveyPicker = new SurveyPicker(driver);
+                driver.sleep(6500);
+                const isAccountSelectionOpen = await surveyPicker.selectSurvey(surveyUUID);
+                driver.sleep(2500);
+                expect(isAccountSelectionOpen).to.equal(true);
+                const objectsService = new ObjectsService(generalService);
+                const accounts = await objectsService.getAccounts();
+                expect(accounts.length).to.be.above(0);
+                const accName = accounts[0].Name;
+                const accUUID = accounts[0].UUID;
+                const isTemplateOpen = await surveyPicker.selectAccount(accName);
+                driver.sleep(2500);
+                expect(isTemplateOpen).to.equal(true);
+                const allQuestionNames = [
+                    'first question',
+                    'second question',
+                    'third question',
+                    'fourth question',
+                    'fifth question',
+                    'sixth question',
+                    'seventh question',
+                ];
+                const allQuestionTypes: SurveyQuestion['Type'][] = [
+                    'Multiple Select',
+                    'Radio Group',
+                    'Short Text',
+                    'Checkbox',
+                    'Yes/No',
+                    'Decimal',
+                    'Date',
+                ];
+                const allQuestionPositiveAns = [['A', 'C'], 'B', 'short Text12', ['1', '2'], 'Yes', '.123', '1/1/2022'];
+                const surveyFiller = new SurveyFiller(driver);
+                const surveyKey = await surveyFiller.getKeyOfSurveyFromURL();
+                for (let index = 0; index < allQuestionNames.length; index++) {
+                    const currentQuestionName = allQuestionNames[index];
+                    const currentQuestionType = allQuestionTypes[index];
+                    const currentQuestionAns = allQuestionPositiveAns[index];
+                    if (Array.isArray(currentQuestionAns)) {
+                        await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, currentQuestionAns);
+                    } else {
+                        await surveyFiller.answerQuestion(currentQuestionType, currentQuestionName, [
+                            currentQuestionAns,
+                        ]);
+                    }
+                }
+                await surveyFiller.saveSurvey();
+                driver.sleep(8000);
+                await webAppHomePage.returnToHomePage();
+                for (let index = 0; index < 2; index++) {
+                    await webAppHomePage.manualResync(client);
+                }
+                const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
+                    method: 'GET',
+                });
+                debugger;
+                const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
+                expect(filteredSurveyResponse.length).to.equal(1);
+                const currentSurvey = filteredSurveyResponse[0];
+                expect(currentSurvey).to.not.be.undefined;
+                expect(currentSurvey.Template).to.equal(surveyUUID);
+                expect(currentSurvey.StatusName).to.equal('Submitted');
+                expect(currentSurvey.ResourceName).to.equal('MySurveys');
+                expect(currentSurvey.Account).to.equal(accUUID);
+                const surveyAnswers = currentSurvey.Answers;
+                for (let index = 0; index < surveyAnswers.length; index++) {
+                    const ans = surveyAnswers[index];
+                    if (Array.isArray(allQuestionPositiveAns[index])) {
+                        const joinedArray = (allQuestionPositiveAns[index] as string[]).join(';');
+                        expect(ans.Answer).to.equal(joinedArray);
+                    } else {
+                        if (allQuestionPositiveAns[index] === 'Yes' || allQuestionPositiveAns[index] === 'No') {
+                            const convertedAns = allQuestionPositiveAns[index] === 'Yes' ? 'true' : 'false';
+                            expect(ans.Answer).to.equal(convertedAns);
+                        } else {
+                            if (allQuestionPositiveAns[index] === '.123') {
+                                const numb = '0' + allQuestionPositiveAns[index];
+                                expect(ans.Answer).to.equal(numb);
+                            } else if (allQuestionPositiveAns[index] === '1/1/2022') {
+                                const dateSplit = (allQuestionPositiveAns[index] as string).split('/');
+                                const date =
+                                    dateSplit[dateSplit.length - 1] +
+                                    '-' +
+                                    dateSplit[dateSplit.length - 2] +
+                                    '-' +
+                                    dateSplit[dateSplit.length - 3];
+                                expect(ans.Answer).to.equal(date);
+                            } else {
+                                expect(ans.Answer).to.equal(allQuestionPositiveAns[index]);
+                            }
+                        }
+                    }
+                }
+                await webAppLoginPage.logout();
+            });
+            it('API Data Cleansing: 1. survey template', async function () {
                 //1. delete survey template
                 debugger;
                 const body = { Key: surveyUUID, Hidden: true };
@@ -815,7 +847,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(deleteSurveyTemplateResponse.Body.Key).to.equal(surveyUUID);
                 expect(deleteSurveyTemplateResponse.Body.Hidden).to.equal(true);
             });
-            it('Data Cleansing: 2. resource views', async function () {
+            it('API Data Cleansing: 2. resource views', async function () {
                 //2. delete resource views
                 const accBody = { Key: accountViewUUID, Hidden: true };
                 const deleteAccountRLResponse = await generalService.fetchStatus(
@@ -842,7 +874,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(deleteSurveyRLResponse.Body.Name).to.equal('Surveys');
                 expect(deleteSurveyRLResponse.Body.Hidden).to.equal(true);
             });
-            it('Data Cleansing: 3. pages', async function () {
+            it('API Data Cleansing: 3. pages', async function () {
                 //3. delete relevant pages
                 const deleteSurveyPageResponse = await generalService.fetchStatus(
                     `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${surveyBlockPageUUID}`,
@@ -865,7 +897,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(deleteSlideShowPageResponse.Status).to.equal(200);
                 expect(deleteSlideShowPageResponse.Body).to.equal(true);
             });
-            it('Data Cleansing: 4. script', async function () {
+            it('API Data Cleansing: 4. script', async function () {
                 //delete the script
                 const bodyForSctips = { Keys: [`${scriptUUID}`] };
                 const deleteScriptResponse = await generalService.fetchStatus(
@@ -879,7 +911,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(deleteScriptResponse.Status).to.equal(200);
                 expect(deleteScriptResponse.Body[0].Key).to.equal(scriptUUID);
             });
-            it('Data Cleansing: 5. UDC', async function () {
+            it('API Data Cleansing: 5. UDC', async function () {
                 //delete UDC
                 const udcService = new UDCService(generalService);
                 const documents = await udcService.getSchemes();
@@ -905,7 +937,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     expect(hideResponse.Body.Hidden).to.equal(true);
                 }
             });
-            it('Data Cleansing: 6. slugs', async function () {
+            it('API Data Cleansing: 6. slugs', async function () {
                 //4. delete slugs
                 const slugs: Slugs = new Slugs(driver);
                 const slideShowSlugsResponse = await slugs.deleteSlugByName(slideshowSlugDisplayName, client);
@@ -917,8 +949,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(surveySlugResponse.Status).to.equal(200);
                 expect(surveySlugResponse.Body.success).to.equal(true);
             });
-            it('Data Cleansing: 7. ATD from home screen', async function () {
+            it('UI Data Cleansing: 7. ATD from home screen', async function () {
                 //5. delete ATD from homescreen
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.openSettings();
                 driver.sleep(6000);
@@ -1186,7 +1220,7 @@ export async function createSurvey(
     //5. survey script creation
     let script;
     try {
-        script = fs.readFileSync(path.join(__dirname, 'surveyScriptFile.txt'), 'utf-8');
+        script = fs.readFileSync(path.join(__dirname, '..', 'test-data', 'surveyScriptFile.txt'), 'utf-8');
     } catch (error) {
         throw `couldnt read script from file, got exception: ${(error as any).message}`;
     }

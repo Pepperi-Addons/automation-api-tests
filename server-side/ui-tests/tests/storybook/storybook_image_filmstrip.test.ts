@@ -1,55 +1,46 @@
-import { Browser } from '../utilities/browser';
+import { Browser } from '../../utilities/browser';
 import { describe, it, before, afterEach, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import { StoryBookPage } from '../pom/Pages/StoryBookPage';
+import { WebAppHomePage } from '../../pom';
+import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
-import { GroupButtons } from '../pom/Pages/StorybookComponents/GroupButtons';
+import { ImageFilmstrip } from '../../pom/Pages/StorybookComponents/ImageFilmstrip';
 
 chai.use(promised);
 
-export async function StorybookGroupButtonsTests() {
-    const groupButtonsInputs = [
-        'buttons',
-        'buttonsDisabled',
-        'selectedButtonKey',
-        'sizeType',
-        'stretch',
-        'styleType',
-        'supportUnselect',
-        'viewType',
+export async function StorybookImageFilmstripTests() {
+    const imageFilmstripInputs = [
+        'rowSpan',
+        'label',
+        'value',
+        'renderTitle',
+        'showThumbnails',
+        'showTitle',
+        'xAlignment',
     ];
-    const groupButtonsOutputs = ['buttonClick'];
-    const groupButtonsSubFoldersHeaders = [
-        'Regular view type',
-        'Dropdown view type',
-        'Split view type',
-        'Toggle view type w/ initial selection',
-        'Toggle view type wo/ initial selection',
-    ];
+    const imageFilmstripSubFoldersHeaders = ['No title & missing image', 'With thumbnails'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
-    let groupButtons: GroupButtons;
-    let groupButtonsInputsTitles;
-    let groupButtonsOutputsTitles;
+    let imageFilmstrip: ImageFilmstrip;
+    let imageFilmstripInputsTitles;
 
-    describe('Storybook "GroupButtons" Tests Suite', function () {
+    describe('Storybook "ImageFilmstrip" Tests Suite', function () {
         this.retries(0);
 
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppHomePage = new WebAppHomePage(driver);
             storyBookPage = new StoryBookPage(driver);
-            groupButtons = new GroupButtons(driver);
+            imageFilmstrip = new ImageFilmstrip(driver);
         });
 
         after(async function () {
             await driver.quit();
         });
 
-        describe('* GroupButtons Component * Initial Testing', () => {
+        describe('* ImageFilmstrip Component * Initial Testing', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -71,34 +62,31 @@ export async function StorybookGroupButtonsTests() {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Enter ** GroupButtons ** Component StoryBook - SCREENSHOT`, async function () {
-                await storyBookPage.chooseComponent('group-buttons');
+            it(`Enter ** ImageFilmstrip ** Component StoryBook - SCREENSHOT`, async function () {
+                await storyBookPage.chooseComponent('image-filmstrip');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Overview Test of ** GroupButtons ** Component - ASSERTIONS + SCREENSHOT`, async function () {
-                await groupButtons.doesGroupButtonsComponentFound();
-                groupButtonsInputsTitles = await groupButtons.getInputsTitles();
-                console.info('groupButtonsInputsTitles:', JSON.stringify(groupButtonsInputsTitles, null, 2));
-                groupButtonsOutputsTitles = await groupButtons.getOutputsTitles();
-                console.info('groupButtonsOutputsTitles:', JSON.stringify(groupButtonsOutputsTitles, null, 2));
+            it(`Overview Test of ** ImageFilmstrip ** Component - ASSERTIONS + SCREENSHOT`, async function () {
+                await imageFilmstrip.doesImageFilmstripComponentFound();
+                imageFilmstripInputsTitles = await imageFilmstrip.getInputsTitles();
+                console.info('imageFilmstripInputsTitles:', JSON.stringify(imageFilmstripInputsTitles, null, 2));
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Component Page We Got Into`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                expect(groupButtonsInputsTitles).to.eql(groupButtonsInputs);
-                expect(groupButtonsOutputsTitles).to.eql(groupButtonsOutputs);
-                driver.sleep(1 * 1000);
+                expect(imageFilmstripInputsTitles).to.eql(imageFilmstripInputs);
+                driver.sleep(5 * 1000);
             });
         });
-        groupButtonsInputs.forEach(async (input) => {
+        imageFilmstripInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
                 it(`SCREENSHOT`, async function () {
-                    await driver.click(await groupButtons.getInputRowSelectorByName(input));
+                    await driver.click(await imageFilmstrip.getInputRowSelectorByName(input));
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `'${input}' input`,
@@ -115,7 +103,7 @@ export async function StorybookGroupButtonsTests() {
                     }
                 });
                 it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(groupButtons.Inputs_mainTableRow);
+                    const inputsMainTableRowElement = await driver.findElement(imageFilmstrip.Inputs_mainTableRow);
                     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
                         await inputsMainTableRowElement.click();
                     }
@@ -126,51 +114,45 @@ export async function StorybookGroupButtonsTests() {
                     });
                 });
                 switch (input) {
-                    case 'buttons':
+                    case 'rowSpan':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('buttons')).to.be.true;
+                            expect(imageFilmstripInputsTitles.includes('rowSpan')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'buttonsDisabled':
+                    case 'label':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('buttonsDisabled')).to.be.true;
+                            expect(imageFilmstripInputsTitles.includes('label')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'selectedButtonKey':
+                    case 'value':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('selectedButtonKey')).to.be.true;
+                            expect(imageFilmstripInputsTitles.includes('value')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'sizeType':
+                    case 'renderTitle':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('sizeType')).to.be.true;
+                            expect(imageFilmstripInputsTitles.includes('renderTitle')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'stretch':
+                    case 'showThumbnails':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('stretch')).to.be.true;
+                            expect(imageFilmstripInputsTitles.includes('showThumbnails')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'styleType':
+                    case 'showTitle':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('styleType')).to.be.true;
+                            expect(imageFilmstripInputsTitles.includes('showTitle')).to.be.true;
                         });
                         // TODO
                         break;
-                    case 'supportUnselect':
+                    case 'xAlignment':
                         it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('supportUnselect')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'viewType':
-                        it(`it '${input}'`, async function () {
-                            expect(groupButtonsInputsTitles.includes('viewType')).to.be.true;
+                            expect(imageFilmstripInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         // TODO
                         break;
@@ -181,32 +163,8 @@ export async function StorybookGroupButtonsTests() {
                 }
             });
         });
-        groupButtonsOutputs.forEach(async (output) => {
-            describe(`OUTPUT: '${output}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await groupButtons.getOutputRowSelectorByName(output));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${output}' output`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
-                switch (output) {
-                    case 'buttonClick':
-                        it(`it '${output}'`, async function () {
-                            expect(groupButtonsOutputsTitles.includes('buttonClick')).to.be.true;
-                        });
-                        // TODO
-                        break;
-
-                    default:
-                        throw new Error(`Output: "${output}" is not covered in switch!`);
-                    // break;
-                }
-            });
-        });
         describe(`**STORIES`, async function () {
-            groupButtonsSubFoldersHeaders.forEach(async (header, index) => {
+            imageFilmstripSubFoldersHeaders.forEach(async (header, index) => {
                 describe(`"${header}"`, async function () {
                     it(`Navigate to story (Screenshot)`, async function () {
                         await driver.switchToDefaultContent();
