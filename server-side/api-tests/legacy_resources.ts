@@ -475,6 +475,12 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 delete getByKeyAccount.TSASignatureAPI;
                 delete getByKeyAccount.TSAPhoneNumberAPI;
                 delete getByKeyAccount.TSASingleLineAPI;
+                delete getByKeyAccount.TSAAccountCustomtextfield;
+                delete getByKeyAccount.TSAAtt4;
+                delete getByKeyAccount.TSAAtt5par;
+                delete getByKeyAccount.TSAggggggggggggggggggggggggtest;
+                delete getByKeyAccount.TSAtest1122;
+                delete getByKeyAccount.TSAtestdropdown123;
                 expect(getByKeyAccount).to.deep.equal(accountAfterManipulation);
                 await expect(service.getByKey('accounts', '1234')).eventually.to.be.rejected;
             });
@@ -509,6 +515,12 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 delete getAccountByInternalID.TSASignatureAPI;
                 delete getAccountByInternalID.TSAPhoneNumberAPI;
                 delete getAccountByInternalID.TSASingleLineAPI;
+                delete getAccountByInternalID.TSAAccountCustomtextfield;
+                delete getAccountByInternalID.TSAAtt4;
+                delete getAccountByInternalID.TSAAtt5par;
+                delete getAccountByInternalID.TSAggggggggggggggggggggggggtest;
+                delete getAccountByInternalID.TSAtest1122;
+                delete getAccountByInternalID.TSAtestdropdown123;
                 expect(getAccountByInternalID).to.deep.equal(accountAfterManipulation);
                 const getAccountByExternalID = await service.getByUniqueKey(
                     'accounts',
@@ -538,6 +550,12 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 delete getAccountByExternalID.TSASignatureAPI;
                 delete getAccountByExternalID.TSAPhoneNumberAPI;
                 delete getAccountByExternalID.TSASingleLineAPI;
+                delete getAccountByExternalID.TSAAccountCustomtextfield;
+                delete getAccountByExternalID.TSAAtt4;
+                delete getAccountByExternalID.TSAAtt5par;
+                delete getAccountByExternalID.TSAggggggggggggggggggggggggtest;
+                delete getAccountByExternalID.TSAtest1122;
+                delete getAccountByExternalID.TSAtestdropdown123;
                 expect(getAccountByExternalID).to.deep.equal(accountAfterManipulation);
                 const getAccountByKey = await service.getByUniqueKey('accounts', 'Key', legacyCreatedAccount.Key);
                 delete getAccountByKey.ModificationDateTime;
@@ -563,6 +581,12 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                 delete getAccountByKey.TSASignatureAPI;
                 delete getAccountByKey.TSAPhoneNumberAPI;
                 delete getAccountByKey.TSASingleLineAPI;
+                delete getAccountByKey.TSAAccountCustomtextfield;
+                delete getAccountByKey.TSAAtt4;
+                delete getAccountByKey.TSAAtt5par;
+                delete getAccountByKey.TSAggggggggggggggggggggggggtest;
+                delete getAccountByKey.TSAtest1122;
+                delete getAccountByKey.TSAtestdropdown123;
                 expect(getAccountByKey).to.deep.equal(accountAfterManipulation);
                 await expect(service.getByUniqueKey('accounts', 'InternalID', '12341223147776')).eventually.to.be
                     .rejected;
@@ -694,6 +718,12 @@ export async function LegacyResourcesTests(generalService: GeneralService, reque
                         delete object['TSASignatureAPI'];
                         delete object['TSAPhoneNumberAPI'];
                         delete object['TSASingleLineAPI'];
+                        delete object['TSAAccountCustomtextfield'];
+                        delete object['TSAAtt4'];
+                        delete object['TSAAtt5par'];
+                        delete object['TSAggggggggggggggggggggggggtest'];
+                        delete object['TSAtest1122'];
+                        delete object['TSAtestdropdown123'];
                     });
                     accountsAfterManipulation.sort((a, b) => {
                         return (a as any).InternalID - (b as any).InternalID;
