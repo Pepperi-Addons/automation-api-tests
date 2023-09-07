@@ -34,14 +34,14 @@ export async function ChartManagerTests(generalService: GeneralService, request,
         : 'Export and Import Framework (DIMX)'; //to handle different DIMX names between envs
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.0.2'],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         'Charts Manager': ['3d118baf-f576-4cdb-a81e-c2cc9af4d7ad', ''],
         'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''], //papi index
         'Data Visualization': ['00000000-0000-0000-0000-0da1a0de41e5', ''],
     };
-    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.7.36'];
+    testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = request.body.varKeyStage;
