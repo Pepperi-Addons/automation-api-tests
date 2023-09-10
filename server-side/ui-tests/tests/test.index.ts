@@ -930,7 +930,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             //4. iterate on all test names and call each
             for (let index = 0; index < testsList.length; index++) {
                 const currentTestName = testsList[index];
-                const body = prepareTestBody(addonName, currentTestName, addonUUID);
+                const body = prepareTestBody(addonName, currentTestName);
                 console.log(
                     `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
                         testsList.length
@@ -1435,7 +1435,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             //4. iterate on all test names and call each
             for (let index = 0; index < testsList.length; index++) {
                 const currentTestName = testsList[index];
-                const body = prepareTestBody(addonName, currentTestName, addonUUID);
+                const body = prepareTestBody(addonName, currentTestName);
                 console.log(
                     `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
                         testsList.length
@@ -1967,14 +1967,14 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             //4. iterate on all test names and call each
             for (let index = 0; index < testsList.length; index++) {
                 const currentTestName = testsList[index];
-                const body = prepareTestBody(addonName, currentTestName, addonUUID);
+                const body = prepareTestBody(addonName, currentTestName);
                 console.log(
                     `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
                         testsList.length
                     }  #######################`,
                 );
                 let addonSk = null;
-                if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+                if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
                     addonSk = await service.getSecretfromKMS(email, pass, 'AutomationAddonSecretKey');
                 }
                 //4.1. call current test async->
@@ -3979,7 +3979,7 @@ async function runDevTestOnCertainEnv(
         urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
     } else if (addonName === 'RELATED-ITEMS') {
         urlToCall = '/addons/api/async/4f9f10f3-cd7d-43f8-b969-5029dad9d02b/tests/tests';
-    } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+    } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests';
         headers = {
             'x-pepperi-ownerid': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
@@ -3992,7 +3992,7 @@ async function runDevTestOnCertainEnv(
         urlToCall = `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`;
     }
     let testResponse;
-    if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+    if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
         testResponse = await service.fetchStatus(urlToCall, {
             body: JSON.stringify(bodyToSend),
             method: 'POST',
@@ -4026,7 +4026,7 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getFebulaTests(user, 'prod');
     } else if (addonName === 'SYNC') {
         return await getSyncTests(user, 'prod');
-    } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+    } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
         return await getDataIndexTests(user, 'prod');
     } else if (addonName === 'CORE' || addonName === 'CORE-GENERIC-RESOURCES') {
         return await getCoreTests(user, 'prod');
@@ -4055,10 +4055,11 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
     }
 }
 
-function prepareTestBody(addonName, currentTestName, addonUUID) {
+function prepareTestBody(addonName, currentTestName) {
     let body;
     if (
         addonName === 'NEBULA' ||
+        addonName === 'ADAL' ||
         addonName === 'FEBULA' ||
         addonName === 'SYNC' ||
         addonName === 'DATA INDEX' ||
@@ -4072,15 +4073,6 @@ function prepareTestBody(addonName, currentTestName, addonUUID) {
     ) {
         body = {
             Name: currentTestName,
-        };
-    } else {
-        if (addonUUID === '00000000-0000-0000-0000-00000000ada1') {
-            addonUUID = '00000000-0000-0000-0000-00000e1a571c';
-        }
-        body = {
-            AddonUUID: addonUUID,
-            TestName: currentTestName,
-            isLocal: false,
         };
     }
     return body;
