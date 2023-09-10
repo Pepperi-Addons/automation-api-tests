@@ -658,6 +658,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             await resourceListABI.selectDropBoxByString(resourceListABI.TestsAddon_dropdownElement, listToSelect);
             await resourceListABI.isSpinnerDone();
             await resourceListABI.clickElement('TestsAddon_chooseList_mainDiv');
+            await resourceListABI.isSpinnerDone();
         }
         driver.sleep(1 * 1000);
         let base64ImageBuild = await driver.saveScreenshots();
@@ -668,6 +669,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         await resourceListABI.clickElement('TestsAddon_openABI_button');
         await resourceListABI.isSpinnerDone();
         driver.sleep(2.5 * 1000);
+        await resourceListABI.isSpinnerDone();
         await resourceListABI.waitTillVisible(resourceListABI.ListAbi_container, 15000);
         if (!err) {
             await resourceListABI.waitTillVisible(webAppList.ListRowElements, 15000);

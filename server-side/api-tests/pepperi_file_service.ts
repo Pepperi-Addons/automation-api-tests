@@ -93,12 +93,10 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const newSchema = await adalService.postSchema({
                     Name: schemaName,
                     Type: 'pfs',
-                    SyncData: { Sync: true },
                 } as any);
                 expect(purgedSchema).to.equal('');
                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('pfs');
-                expect(newSchema).to.not.have.property('SyncData');
                 expect(newSchema.Fields).to.have.property('Description');
                 expect(newSchema.Fields).to.have.property('MIME');
                 expect(newSchema.Fields).to.have.property('Sync');
@@ -111,35 +109,14 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(newSchema.Fields).to.have.property('FileSize');
             });
 
-            it(`Get underlying PFS schema and verify SyncData field`, async () => {
-                const pfsSchema = (await pfsService.getPFSSchema(pfsSchemaNAme)) as any;
-                expect(pfsSchema.Body).to.have.property('Name').a('string').that.is.equal(pfsSchemaNAme);
-                expect(pfsSchema.Body).to.have.property('Type').a('string').that.is.equal('data');
-                expect(pfsSchema.Body)
-                    .to.have.property('SyncData')
-                    .that.deep.equals({ Sync: true, PushLocalChanges: false });
-                expect(pfsSchema.Body.Fields).to.have.property('Description');
-                expect(pfsSchema.Body.Fields).to.have.property('MIME');
-                expect(pfsSchema.Body.Fields).to.have.property('Sync');
-                expect(pfsSchema.Body.Fields).to.have.property('Thumbnails');
-                expect(pfsSchema.Body.Fields).to.have.property('Folder');
-                expect(pfsSchema.Body.Fields).to.have.property('URL');
-                expect(pfsSchema.Body.Fields).to.have.property('FileVersion');
-                expect(pfsSchema.Body.Fields).to.have.property('Cache');
-                expect(pfsSchema.Body.Fields).to.have.property('UploadedBy');
-                expect(pfsSchema.Body.Fields).to.have.property('FileSize');
-            });
-
             it(`Upsert schema and verify underlying schema was updated`, async () => {
                 const adalService = new ADALService(generalService.papiClient);
                 const updatedSchema = await adalService.postSchema({
                     Name: schemaName,
                     Type: 'pfs',
-                    SyncData: { Sync: false },
                 } as any);
                 expect(updatedSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                 expect(updatedSchema).to.have.property('Type').a('string').that.is.equal('pfs');
-                expect(updatedSchema).to.not.have.property('SyncData');
                 expect(updatedSchema.Fields).to.have.property('Description');
                 expect(updatedSchema.Fields).to.have.property('MIME');
                 expect(updatedSchema.Fields).to.have.property('Sync');
@@ -154,7 +131,6 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 const pfsSchema = (await pfsService.getPFSSchema(pfsSchemaNAme)) as any;
                 expect(pfsSchema.Body).to.have.property('Name').a('string').that.is.equal(pfsSchemaNAme);
                 expect(pfsSchema.Body).to.have.property('Type').a('string').that.is.equal('data');
-                expect(pfsSchema.Body).to.have.property('SyncData').that.deep.equals({ Sync: false });
                 expect(pfsSchema.Body.Fields).to.have.property('Description');
                 expect(pfsSchema.Body.Fields).to.have.property('MIME');
                 expect(pfsSchema.Body.Fields).to.have.property('Sync');
@@ -1171,47 +1147,48 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
         });
 
         describe('PresignedURL, thumbnails, hard delete', () => {
-            it(`Post file and PUT to presigned URL`, async () => {
-                const tempKey = 'PresignedURLFile' + Math.floor(Math.random() * 1000000).toString() + '.jpg';
-                const putImage = await pfsService.getFileFromURL(
-                    'https://pfs.staging.pepperi.com/e66154d0-06af-4588-a1ea-d5924aba86f2/f6458728-25fd-469d-9a20-73a99265fe52/aDeletedFile.png',
-                );
-                const postFileResponse = await pfsService.postFile(schemaName, {
-                    Key: tempKey,
-                    MIME: 'image/jpeg',
-                });
-                expect(postFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(postFileResponse.CreationDateTime).to.include('Z');
-                expect(postFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
-                expect(postFileResponse.ModificationDateTime).to.include('Z');
-                expect(postFileResponse.Folder).to.equal('/');
-                expect(postFileResponse.Key).to.equal(tempKey);
-                expect(postFileResponse.MIME).to.equal('image/jpeg');
-                expect(postFileResponse.Name).to.equal(tempKey);
-                expect(postFileResponse.Sync).to.equal('None');
-                expect(postFileResponse.URL).to.include('pfs.');
-                expect(postFileResponse.URL).to.include(
-                    '.pepperi.com/' +
-                        distributor.UUID +
-                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
-                        schemaName +
-                        '/' +
-                        tempKey,
-                );
-                expect(postFileResponse).to.have.property('PresignedURL').that.is.a('string').and.is.not.empty;
-                const putResponse = await pfsService.putPresignedURL(
-                    postFileResponse.PresignedURL,
-                    putImage,
-                    'image/jpeg',
-                );
-                expect(putResponse.ok).to.equal(true);
-                expect(putResponse.status).to.equal(200);
-                const presignedPutFile = await pfsService.getFileFromURL(postFileResponse.URL);
-                expect(putImage).to.deep.equal(presignedPutFile);
-                const deletedFileResponse = await pfsService.deleteFile(schemaName, tempKey);
-                expect(deletedFileResponse.Key).to.equal(tempKey);
-                expect(deletedFileResponse.Hidden).to.be.true;
-            });
+            // King Saar asked us peons to remove tests https://pepperi.atlassian.net/browse/DI-25109
+            // it(`Post file and PUT to presigned URL`, async () => {
+            //     const tempKey = 'PresignedURLFile' + Math.floor(Math.random() * 1000000).toString() + '.jpg';
+            //     const putImage = await pfsService.getFileFromURL(
+            //         'https://pfs.staging.pepperi.com/e66154d0-06af-4588-a1ea-d5924aba86f2/f6458728-25fd-469d-9a20-73a99265fe52/aDeletedFile.png',
+            //     );
+            //     const postFileResponse = await pfsService.postFile(schemaName, {
+            //         Key: tempKey,
+            //         MIME: 'image/jpeg',
+            //     });
+            //     expect(postFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+            //     expect(postFileResponse.CreationDateTime).to.include('Z');
+            //     expect(postFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+            //     expect(postFileResponse.ModificationDateTime).to.include('Z');
+            //     expect(postFileResponse.Folder).to.equal('/');
+            //     expect(postFileResponse.Key).to.equal(tempKey);
+            //     expect(postFileResponse.MIME).to.equal('image/jpeg');
+            //     expect(postFileResponse.Name).to.equal(tempKey);
+            //     expect(postFileResponse.Sync).to.equal('None');
+            //     expect(postFileResponse.URL).to.include('pfs.');
+            //     expect(postFileResponse.URL).to.include(
+            //         '.pepperi.com/' +
+            //             distributor.UUID +
+            //             '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+            //             schemaName +
+            //             '/' +
+            //             tempKey,
+            //     );
+            //     expect(postFileResponse).to.have.property('PresignedURL').that.is.a('string').and.is.not.empty;
+            //     const putResponse = await pfsService.putPresignedURL(
+            //         postFileResponse.PresignedURL,
+            //         putImage,
+            //         'image/jpeg',
+            //     );
+            //     expect(putResponse.ok).to.equal(true);
+            //     expect(putResponse.status).to.equal(200);
+            //     const presignedPutFile = await pfsService.getFileFromURL(postFileResponse.URL);
+            //     expect(putImage).to.deep.equal(presignedPutFile);
+            //     const deletedFileResponse = await pfsService.deleteFile(schemaName, tempKey);
+            //     expect(deletedFileResponse.Key).to.equal(tempKey);
+            //     expect(deletedFileResponse.Hidden).to.be.true;
+            // });
 
             it(`Post image file with thumbnail + delete thumbnail`, async () => {
                 const tempKey = 'ThumbnailFile' + Math.floor(Math.random() * 1000000).toString() + '.jpg';
