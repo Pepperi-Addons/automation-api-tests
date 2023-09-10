@@ -969,6 +969,24 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     ),
                 ]);
                 if (
+                    devTestResponseEu === undefined ||
+                    devTestResponseProd === undefined ||
+                    devTestResponseSb === undefined
+                ) {
+                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
+                    whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
+                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`${errorString}`);
+                }
+                if (
                     devTestResponseEu.Body.URI === undefined ||
                     devTestResponseProd.Body.URI === undefined ||
                     devTestResponseSb.Body.URI === undefined
@@ -996,24 +1014,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     sbExecution: devTestResponseSb.Body.URI,
                     euExecution: devTestResponseEu.Body.URI,
                 };
-                if (
-                    devTestResponseEu === undefined ||
-                    devTestResponseProd === undefined ||
-                    devTestResponseSb === undefined
-                ) {
-                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
-                    whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
-                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
-                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
-                    await reportToTeamsMessage(
-                        addonName,
-                        addonUUID,
-                        latestVersionOfTestedAddonProd,
-                        errorString,
-                        service,
-                    );
-                    throw new Error(`${errorString}`);
-                }
                 // debugger;
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
@@ -1100,6 +1100,27 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     objectToPrintEu = testResultArrayEu.tests;
                     objectToPrintProd = testResultArrayProd.tests;
                     objectToPrintSB = testResultArraySB.tests;
+                }
+                if (objectToPrintEu === undefined || objectToPrintProd === undefined || objectToPrintSB === undefined) {
+                    debugger;
+                    let errorString = '';
+                    if (!objectToPrintEu) {
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                    }
+                    if (!objectToPrintProd) {
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                    }
+                    if (!objectToPrintSB) {
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                    }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
                 for (let index = 0; index < objectToPrintProd.length; index++) {
                     const result = objectToPrintProd[index];
@@ -1444,6 +1465,19 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                         addonSk,
                     ),
                 ]);
+                if (devTestResponseEu === undefined || devTestResponseSb === undefined) {
+                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
+                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonEu,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`${errorString}`);
+                }
                 if (devTestResponseEu.Body.URI === undefined || devTestResponseSb.Body.URI === undefined) {
                     let whichEnvs = devTestResponseEu.Body.URI === undefined ? 'EU,,' : '';
                     whichEnvs += devTestResponseSb.Body.URI === undefined ? 'SB' : '';
@@ -1466,19 +1500,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     sbExecution: devTestResponseSb.Body.URI,
                     euExecution: devTestResponseEu.Body.URI,
                 };
-                if (devTestResponseEu === undefined || devTestResponseSb === undefined) {
-                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
-                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
-                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
-                    await reportToTeamsMessage(
-                        addonName,
-                        addonUUID,
-                        latestVersionOfTestedAddonEu,
-                        errorString,
-                        service,
-                    );
-                    throw new Error(`${errorString}`);
-                }
                 // debugger;
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
@@ -1583,6 +1604,42 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 } else {
                     objectToPrintEu = testResultArrayEu.tests;
                     objectToPrintSB = testResultArraySB.tests;
+                }
+                if (objectToPrintEu === undefined || objectToPrintSB === undefined) {
+                    debugger;
+                    let errorString = '';
+                    if (!objectToPrintEu) {
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                    }
+                    if (!objectToPrintSB) {
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                    }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonEu,
+                        errorString,
+                        service,
+                    );
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEU,
+                            latestVersionOfTestedAddonEu,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonEu,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
                 for (let index = 0; index < objectToPrintSB.length; index++) {
                     const result = objectToPrintSB[index];
@@ -1949,6 +2006,24 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     ),
                 ]);
                 if (
+                    devTestResponseEu === undefined ||
+                    devTestResponseProd === undefined ||
+                    devTestResponseSb === undefined
+                ) {
+                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
+                    whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
+                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`${errorString}`);
+                }
+                if (
                     devTestResponseEu.Body.URI === undefined ||
                     devTestResponseProd.Body.URI === undefined ||
                     devTestResponseSb.Body.URI === undefined
@@ -1976,24 +2051,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     sbExecution: devTestResponseSb.Body.URI,
                     euExecution: devTestResponseEu.Body.URI,
                 };
-                if (
-                    devTestResponseEu === undefined ||
-                    devTestResponseProd === undefined ||
-                    devTestResponseSb === undefined
-                ) {
-                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
-                    whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
-                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
-                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
-                    await reportToTeamsMessage(
-                        addonName,
-                        addonUUID,
-                        latestVersionOfTestedAddonProd,
-                        errorString,
-                        service,
-                    );
-                    throw new Error(`${errorString}`);
-                }
                 debugger;
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
@@ -2132,6 +2189,53 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     objectToPrintEu = testResultArrayEu.tests;
                     objectToPrintProd = testResultArrayProd.tests;
                     objectToPrintSB = testResultArraySB.tests;
+                }
+                if (objectToPrintEu === undefined || objectToPrintProd === undefined || objectToPrintSB === undefined) {
+                    debugger;
+                    let errorString = '';
+                    if (!objectToPrintEu) {
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                    }
+                    if (!objectToPrintProd) {
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                    }
+                    if (!objectToPrintSB) {
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                    }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEU,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
                 for (let index = 0; index < objectToPrintProd.length; index++) {
                     const result = objectToPrintProd[index];
