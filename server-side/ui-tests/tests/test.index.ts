@@ -2943,7 +2943,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 addonUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
                 const buildToken = 'COREApprovmentTests';
                 const jobPathPROD =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20F1%20EU%20-%20Core';
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20F1%20Production%20-%20Core';
                 const jobPathEU =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20F1%20EU%20-%20Core';
                 const jobPathSB =
