@@ -2940,10 +2940,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             }
             case 'CORE':
             case 'CORE-GENERIC-RESOURCES': {
-                addonUUID =
-                    addonName === 'CORE'
-                        ? '00000000-0000-0000-0000-00000000c07e'
-                        : 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
+                addonUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
                 const buildToken = 'COREApprovmentTests';
                 const jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20F1%20EU%20-%20Core';
