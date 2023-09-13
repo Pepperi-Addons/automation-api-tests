@@ -21,6 +21,8 @@ import { VFdataPrep } from './vf_data_prep.test';
 import { SurveyTests } from './survey.test';
 import { PricingTests } from './pricing.test';
 import { PricingDataPrep } from './pricing_data.test';
+import { Pricing06Tests } from './pricing06.test';
+import { Pricing06DataPrep } from './pricing06_data_prep.test';
 import { ResourceListAbiTests } from './rl_abi.test';
 import { InstallationsTest } from './installations.test';
 import { StorybookColorPickerTests } from './storybook/storybook_color_picker.test';
@@ -72,6 +74,8 @@ export {
     SurveyTests,
     PricingTests,
     PricingDataPrep,
+    Pricing06Tests,
+    Pricing06DataPrep,
     ResourceListAbiTests,
     InstallationsTest,
     StorybookAttachmentTests,
