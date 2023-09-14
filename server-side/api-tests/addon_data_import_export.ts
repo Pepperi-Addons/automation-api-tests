@@ -64,9 +64,10 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
     const importOverwriteFileName = 'Overwrite1.json';
     const importJSONFileName = 'import5.json';
     const importCSVFileName = 'import5.csv';
-    const addonFunctionsFileName = 'dimx24.js';
+    const addonFunctionsFileName = 'dimx26.js';
     const addonExportFunctionName = 'RemoveObject';
     const addonImportFunctionName = 'RemoveColumn1';
+    const CheckInitFuntionName = 'CheckInit';
     let adalCreationDate;
     let adalCreationDateAfterOverwrite;
 
@@ -151,6 +152,10 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                             }
                             return Request.body;
                         };
+
+                        exports.CheckInit = async (Client, Request) => {  
+                            return {"Yoni": "Maziar"};
+                        };
                         
                         exports.RemoveColumn1 = async (Client, Request) => {
                             for (let i = 0; i < Request.body.DIMXObjects.length; i++) {
@@ -231,6 +236,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         Type: 'AddonAPI', // mandatory on create
                         Description: 'DIMX Export',
                         AddonRelativeURL: `/${addonFunctionsFileName}/${addonExportFunctionName}`, // mandatory on create
+                        InitRelationDataRelativeURL: `/${addonFunctionsFileName}/${CheckInitFuntionName}`
                     },
                 );
                 expect(relationResponse).to.equal(200);
@@ -244,6 +250,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     Type: 'AddonAPI', // mandatory on create
                     Description: 'DIMX Export',
                     AddonRelativeURL: `/${addonFunctionsFileName}/${addonExportFunctionName}`, // mandatory on create
+                    InitRelationDataRelativeURL: `/${addonFunctionsFileName}/${CheckInitFuntionName}`
                 };
                 const relationResponse = await relationService.getRelationWithNameAndUUID(
                     {
@@ -273,6 +280,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         Type: 'AddonAPI', // mandatory on create
                         Description: 'DIMX Import',
                         AddonRelativeURL: `/${addonFunctionsFileName}/${addonImportFunctionName}`, // mandatory on create
+                        InitRelationDataRelativeURL: `/${addonFunctionsFileName}/${CheckInitFuntionName}`
                     },
                 );
                 expect(relationResponse).to.equal(200);
@@ -571,7 +579,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     });
 
                     it(`Import Content`, async () => {
-                        debugger;
                         const adalService = new ADALService(generalService.papiClient);
                         adalService.papiClient['options'].addonUUID = addonUUID;
                         adalService.papiClient['options'].addonSecretKey = secretKey;
@@ -680,7 +687,6 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     });
 
                     it(`Export the Imported Content`, async () => {
-                        debugger;
                         const relationResponse = await dimxService.dataExport(addonUUID, schemaName);
                         const newDimxExport = await generalService.getAuditLogResultObjectIfValid(
                             relationResponse.URI,

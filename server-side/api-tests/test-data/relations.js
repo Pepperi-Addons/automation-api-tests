@@ -14,6 +14,10 @@ exports.RemoveObject = async (Client, Request) => {
     return Request.body;
 };
 
+exports.CheckInit = async (Client, Request) => {  
+    return {"Yoni": "Maziar"};
+};
+
 exports.RemoveColumn1 = async (Client, Request) => {
     for (let i = 0; i < Request.body.DIMXObjects.length; i++) {
         if (Request.body.DIMXObjects[i].Object.Column1) {
