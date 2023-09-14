@@ -30,7 +30,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
         // 'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', '0.9.122'],
-        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.20.6'], // CPAS
+        // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.20.6'], // CPAS
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
