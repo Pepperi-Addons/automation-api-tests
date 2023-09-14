@@ -311,7 +311,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                             Active: true,
                             steps: [
                                 {
-                                    Completed: 'In Creation',
+                                    Completed: ['In Creation'],
                                     Resource: 'activities',
                                     Title: 'Start Visit',
                                     Group: group_Start ? group_Start.Key : '',
@@ -319,14 +319,14 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                                     Mandatory: true,
                                 },
                                 {
-                                    Completed: 'In Progress',
+                                    Completed: ['In Progress'],
                                     Resource: 'transactions',
                                     Title: 'Sales Order',
                                     Group: group_Orders ? group_Orders.Key : '',
                                     ResourceCreationData: 'Sales Order',
                                 },
                                 {
-                                    Completed: 'Submitted',
+                                    Completed: ['Submitted'],
                                     Resource: 'activities',
                                     Title: 'End Visit',
                                     Group: group_End ? group_End.Key : '',
@@ -704,7 +704,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
                     console.info('visitFlowDocumentResponse: ', JSON.stringify(visitFlowDocumentResponse, null, 2));
                     visitFlowDocumentResponse[0]['steps'].push({
-                        Completed: 'In Progress',
+                        Completed: ['In Progress'],
                         Resource: 'MySurveys',
                         Title: 'Visit Survey',
                         Group: group_Surveys ? group_Surveys.Key : '',

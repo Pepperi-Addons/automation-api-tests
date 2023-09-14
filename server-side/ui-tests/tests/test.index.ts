@@ -65,6 +65,8 @@ import {
     StorybookSliderTests,
     StorybookTextareaTests,
     StorybookTextboxTests,
+    Pricing06DataPrep,
+    Pricing06Tests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -425,13 +427,23 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
-    if (tests.includes('DataPrepPrc')) {
+    if (tests === 'DataPrepPrc') {
         await PricingDataPrep(varPass, client);
     }
 
-    if (tests.includes('Pricing')) {
+    if (tests.includes('DataPrepPrc06')) {
+        await Pricing06DataPrep(varPass, client);
+    }
+
+    if (tests === 'Pricing') {
         await PricingDataPrep(varPass, client);
         await PricingTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('Pricing06')) {
+        await Pricing06DataPrep(varPass, client);
+        await Pricing06Tests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
@@ -930,7 +942,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             //4. iterate on all test names and call each
             for (let index = 0; index < testsList.length; index++) {
                 const currentTestName = testsList[index];
-                const body = prepareTestBody(addonName, currentTestName, addonUUID);
+                const body = prepareTestBody(addonName, currentTestName);
                 console.log(
                     `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
                         testsList.length
@@ -969,6 +981,24 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     ),
                 ]);
                 if (
+                    devTestResponseEu === undefined ||
+                    devTestResponseProd === undefined ||
+                    devTestResponseSb === undefined
+                ) {
+                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
+                    whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
+                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`${errorString}`);
+                }
+                if (
                     devTestResponseEu.Body.URI === undefined ||
                     devTestResponseProd.Body.URI === undefined ||
                     devTestResponseSb.Body.URI === undefined
@@ -996,24 +1026,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     sbExecution: devTestResponseSb.Body.URI,
                     euExecution: devTestResponseEu.Body.URI,
                 };
-                if (
-                    devTestResponseEu === undefined ||
-                    devTestResponseProd === undefined ||
-                    devTestResponseSb === undefined
-                ) {
-                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
-                    whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
-                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
-                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
-                    await reportToTeamsMessage(
-                        addonName,
-                        addonUUID,
-                        latestVersionOfTestedAddonProd,
-                        errorString,
-                        service,
-                    );
-                    throw new Error(`${errorString}`);
-                }
                 // debugger;
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
@@ -1100,6 +1112,27 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     objectToPrintEu = testResultArrayEu.tests;
                     objectToPrintProd = testResultArrayProd.tests;
                     objectToPrintSB = testResultArraySB.tests;
+                }
+                if (objectToPrintEu === undefined || objectToPrintProd === undefined || objectToPrintSB === undefined) {
+                    debugger;
+                    let errorString = '';
+                    if (!objectToPrintEu) {
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                    }
+                    if (!objectToPrintProd) {
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                    }
+                    if (!objectToPrintSB) {
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                    }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
                 for (let index = 0; index < objectToPrintProd.length; index++) {
                     const result = objectToPrintProd[index];
@@ -1414,7 +1447,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             //4. iterate on all test names and call each
             for (let index = 0; index < testsList.length; index++) {
                 const currentTestName = testsList[index];
-                const body = prepareTestBody(addonName, currentTestName, addonUUID);
+                const body = prepareTestBody(addonName, currentTestName);
                 console.log(
                     `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
                         testsList.length
@@ -1444,6 +1477,19 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                         addonSk,
                     ),
                 ]);
+                if (devTestResponseEu === undefined || devTestResponseSb === undefined) {
+                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
+                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonEu,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`${errorString}`);
+                }
                 if (devTestResponseEu.Body.URI === undefined || devTestResponseSb.Body.URI === undefined) {
                     let whichEnvs = devTestResponseEu.Body.URI === undefined ? 'EU,,' : '';
                     whichEnvs += devTestResponseSb.Body.URI === undefined ? 'SB' : '';
@@ -1466,19 +1512,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     sbExecution: devTestResponseSb.Body.URI,
                     euExecution: devTestResponseEu.Body.URI,
                 };
-                if (devTestResponseEu === undefined || devTestResponseSb === undefined) {
-                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
-                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
-                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
-                    await reportToTeamsMessage(
-                        addonName,
-                        addonUUID,
-                        latestVersionOfTestedAddonEu,
-                        errorString,
-                        service,
-                    );
-                    throw new Error(`${errorString}`);
-                }
                 // debugger;
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
@@ -1583,6 +1616,42 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 } else {
                     objectToPrintEu = testResultArrayEu.tests;
                     objectToPrintSB = testResultArraySB.tests;
+                }
+                if (objectToPrintEu === undefined || objectToPrintSB === undefined) {
+                    debugger;
+                    let errorString = '';
+                    if (!objectToPrintEu) {
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                    }
+                    if (!objectToPrintSB) {
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                    }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonEu,
+                        errorString,
+                        service,
+                    );
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEU,
+                            latestVersionOfTestedAddonEu,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonEu,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
                 for (let index = 0; index < objectToPrintSB.length; index++) {
                     const result = objectToPrintSB[index];
@@ -1910,14 +1979,14 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             //4. iterate on all test names and call each
             for (let index = 0; index < testsList.length; index++) {
                 const currentTestName = testsList[index];
-                const body = prepareTestBody(addonName, currentTestName, addonUUID);
+                const body = prepareTestBody(addonName, currentTestName);
                 console.log(
                     `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
                         testsList.length
                     }  #######################`,
                 );
                 let addonSk = null;
-                if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+                if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
                     addonSk = await service.getSecretfromKMS(email, pass, 'AutomationAddonSecretKey');
                 }
                 //4.1. call current test async->
@@ -1949,6 +2018,24 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     ),
                 ]);
                 if (
+                    devTestResponseEu === undefined ||
+                    devTestResponseProd === undefined ||
+                    devTestResponseSb === undefined
+                ) {
+                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
+                    whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
+                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`${errorString}`);
+                }
+                if (
                     devTestResponseEu.Body.URI === undefined ||
                     devTestResponseProd.Body.URI === undefined ||
                     devTestResponseSb.Body.URI === undefined
@@ -1976,24 +2063,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     sbExecution: devTestResponseSb.Body.URI,
                     euExecution: devTestResponseEu.Body.URI,
                 };
-                if (
-                    devTestResponseEu === undefined ||
-                    devTestResponseProd === undefined ||
-                    devTestResponseSb === undefined
-                ) {
-                    let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
-                    whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
-                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
-                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
-                    await reportToTeamsMessage(
-                        addonName,
-                        addonUUID,
-                        latestVersionOfTestedAddonProd,
-                        errorString,
-                        service,
-                    );
-                    throw new Error(`${errorString}`);
-                }
                 debugger;
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
@@ -2132,6 +2201,53 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     objectToPrintEu = testResultArrayEu.tests;
                     objectToPrintProd = testResultArrayProd.tests;
                     objectToPrintSB = testResultArraySB.tests;
+                }
+                if (objectToPrintEu === undefined || objectToPrintProd === undefined || objectToPrintSB === undefined) {
+                    debugger;
+                    let errorString = '';
+                    if (!objectToPrintEu) {
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                    }
+                    if (!objectToPrintProd) {
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                    }
+                    if (!objectToPrintSB) {
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                    }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEU,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
                 for (let index = 0; index < objectToPrintProd.length; index++) {
                     const result = objectToPrintProd[index];
@@ -2352,6 +2468,52 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL';
                 const jobPathSB =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL';
+                const {
+                    JenkinsBuildResultsAllEnvs,
+                    latestRunProd,
+                    latestRunEU,
+                    latestRunSB,
+                    addonEntryUUIDProd,
+                    addonEntryUUIDEu,
+                    addonEntryUUIDSb,
+                    addonVersionProd,
+                    addonVersionEU,
+                    addonVersionSb,
+                } = await runnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
+                    addonName,
+                    addonUUID,
+                    jobPathPROD,
+                    jobPathEU,
+                    jobPathSB,
+                    buildToken,
+                );
+                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
+                latestRunProdEx = latestRunProd;
+                latestRunEUEx = latestRunEU;
+                latestRunSBEx = latestRunSB;
+                pathProdEx = jobPathPROD;
+                pathEUEx = jobPathEU;
+                pathSBEx = jobPathSB;
+                addonEntryUUIDProdEx = addonEntryUUIDProd;
+                addonEntryUUIDEuEx = addonEntryUUIDEu;
+                addonEntryUUIDSbEx = addonEntryUUIDSb;
+                addonVersionProdEx = addonVersionProd;
+                addonVersionEUEx = addonVersionEU;
+                addonVersionSbEx = addonVersionSb;
+                break;
+            }
+            case 'PAPI-DATA-INDEX':
+            case 'PAPI INDEX': {
+                addonUUID = '10979a11-d7f4-41df-8993-f06bfd778304';
+                const buildToken = 'PapiDataIndexApprovmentTests';
+                const jobPathPROD =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20K1%20Production%20-%20Papi%20Data%20Index';
+                const jobPathEU =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20K1%20EU%20-%20Papi%20Data%20Index';
+                const jobPathSB =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20K1%20Stage%20%20-%20Papi%20Data%20Index';
                 const {
                     JenkinsBuildResultsAllEnvs,
                     latestRunProd,
@@ -2836,13 +2998,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             }
             case 'CORE':
             case 'CORE-GENERIC-RESOURCES': {
-                addonUUID =
-                    addonName === 'CORE'
-                        ? '00000000-0000-0000-0000-00000000c07e'
-                        : 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
+                addonUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
                 const buildToken = 'COREApprovmentTests';
                 const jobPathPROD =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20F1%20EU%20-%20Core';
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20F1%20Production%20-%20Core';
                 const jobPathEU =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20F1%20EU%20-%20Core';
                 const jobPathSB =
@@ -2913,6 +3072,9 @@ export async function handleTeamsURL(addonName, service, email, pass) {
     switch (addonName) {
         case 'QA':
             return await service.getSecretfromKMS(email, pass, 'QAWebHook');
+        case 'PAPI-DATA-INDEX':
+        case 'PAPI INDEX': //evgeny todo
+            return await service.getSecretfromKMS(email, pass, 'PapiDataIndexWebHook');
         case 'SYNC':
             return await service.getSecretfromKMS(email, pass, 'SyncTeamsWebHook');
         case 'ADAL': //new teams
@@ -3875,7 +4037,7 @@ async function runDevTestOnCertainEnv(
         urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
     } else if (addonName === 'RELATED-ITEMS') {
         urlToCall = '/addons/api/async/4f9f10f3-cd7d-43f8-b969-5029dad9d02b/tests/tests';
-    } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+    } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests';
         headers = {
             'x-pepperi-ownerid': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
@@ -3888,7 +4050,7 @@ async function runDevTestOnCertainEnv(
         urlToCall = `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`;
     }
     let testResponse;
-    if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+    if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
         testResponse = await service.fetchStatus(urlToCall, {
             body: JSON.stringify(bodyToSend),
             method: 'POST',
@@ -3922,7 +4084,7 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getFebulaTests(user, 'prod');
     } else if (addonName === 'SYNC') {
         return await getSyncTests(user, 'prod');
-    } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+    } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
         return await getDataIndexTests(user, 'prod');
     } else if (addonName === 'CORE' || addonName === 'CORE-GENERIC-RESOURCES') {
         return await getCoreTests(user, 'prod');
@@ -3951,10 +4113,11 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
     }
 }
 
-function prepareTestBody(addonName, currentTestName, addonUUID) {
+function prepareTestBody(addonName, currentTestName) {
     let body;
     if (
         addonName === 'NEBULA' ||
+        addonName === 'ADAL' ||
         addonName === 'FEBULA' ||
         addonName === 'SYNC' ||
         addonName === 'DATA INDEX' ||
@@ -3968,15 +4131,6 @@ function prepareTestBody(addonName, currentTestName, addonUUID) {
     ) {
         body = {
             Name: currentTestName,
-        };
-    } else {
-        if (addonUUID === '00000000-0000-0000-0000-00000000ada1') {
-            addonUUID = '00000000-0000-0000-0000-00000e1a571c';
-        }
-        body = {
-            AddonUUID: addonUUID,
-            TestName: currentTestName,
-            isLocal: false,
         };
     }
     return body;

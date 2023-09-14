@@ -423,13 +423,334 @@ export class PricingData {
         ],
     };
 
+    public config_06_expanded = {
+        PPM_General: {
+            QuantityCriteriaField: 'UnitsQuantity',
+            PriceCriteriaField: 'TSATotalLinePrice',
+            CalcDateField: 'TransactionTSAPricingDate',
+            UOM: {
+                ConfigurationField: 'TSAUOMConfig',
+                AllowedUomsField: 'TSAUOMAllowedUOMs',
+                Fields: [
+                    {
+                        Type: 'TSAAOQMUOM1',
+                        Quantity: 'TSAAOQMQuantity1',
+                    },
+                    {
+                        Type: 'TSAAOQMUOM2',
+                        Quantity: 'TSAAOQMQuantity2',
+                    },
+                ],
+            },
+        },
+        PPM_CalcProcedures: [
+            {
+                Key: 'Proc1',
+                Blocks: [
+                    {
+                        Key: 'Base',
+                        ConditionsOrder: ['ZBASE'],
+                        InitialPrice: {
+                            Type: 'Field',
+                            Name: 'UnitPrice',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Field',
+                            Name: 'UnitPrice',
+                        },
+                    },
+                    {
+                        Key: 'Discount',
+                        ConditionsOrder: ['ZDS1', 'ZDS2', 'ZDS3'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                    },
+                    {
+                        Key: 'Discount2',
+                        ConditionsOrder: ['ZDS4', 'ZDS5'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                    },
+                    {
+                        Key: 'GroupDiscount',
+                        Group: true,
+                        ExclusionRules: [
+                            {
+                                Condition: 'ZGD1',
+                                ExcludeConditions: ['ZGD2'],
+                            },
+                        ],
+                        ConditionsOrder: ['ZGD1', 'ZGD2'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                    },
+                    {
+                        Key: 'ManualLine',
+                        ConditionsOrder: [],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'Discount',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'Discount',
+                        },
+                        UserManual: {
+                            ValueField: 'TSAUserLineDiscount',
+                        },
+                    },
+                    {
+                        Key: 'Tax',
+                        ConditionsOrder: ['MTAX'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'ManualLine',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'ManualLine',
+                        },
+                    },
+                ],
+                ExclusionRules: [
+                    {
+                        Condition: 'ZDS1',
+                        ExcludeConditions: ['ZDS4'],
+                    },
+                ],
+                CalculatedItemFields: [
+                    {
+                        Name: 'TSAPriceBaseUnitPriceAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceDiscountUnitPriceAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Discount',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceGroupDiscountUnitPriceAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'GroupDiscount',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceManualLineUnitPriceAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'ManualLine',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceTaxUnitPriceAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Tax',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceDiscount2UnitPriceAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Discount2',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceTaxTotal',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Tax',
+                        },
+                        BlockPriceField: {
+                            Type: 'Total',
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceTaxTotalPercent',
+                        Type: '%',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Tax',
+                        },
+                        Operand2: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        BlockPriceField: {
+                            Type: 'Total',
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceTaxTotalDiff',
+                        Type: '-',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Tax',
+                        },
+                        Operand2: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        BlockPriceField: {
+                            Type: 'Total',
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceTaxUnitDiff',
+                        Type: '-',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Tax',
+                        },
+                        Operand2: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                ],
+                AdditionalItemPricing: {
+                    BasedOnBlock: 'Base',
+                    ContinueCalcFromBlock: 'Tax',
+                },
+            },
+        ],
+        PPM_Conditions: [
+            {
+                Key: 'ZBASE',
+                Name: 'ZBASE',
+                TablesSearchOrder: ['A002', 'A001', 'A003'],
+            },
+            {
+                Key: 'ZDS1',
+                Name: 'ZDS1',
+                TablesSearchOrder: ['A001', 'A002', 'A003'],
+            },
+            {
+                Key: 'ZDS2',
+                Name: 'ZDS2',
+                TablesSearchOrder: ['A002'],
+            },
+            {
+                Key: 'ZDS3',
+                Name: 'ZDS3',
+                TablesSearchOrder: ['A001'],
+            },
+            {
+                Key: 'ZDS4',
+                Name: 'ZDS4',
+                TablesSearchOrder: ['A001'],
+            },
+            {
+                Key: 'ZDS5',
+                Name: 'ZDS5',
+                TablesSearchOrder: ['A001'],
+            },
+            {
+                Key: 'ZGD1',
+                Name: 'ZGD1',
+                TablesSearchOrder: ['A002', 'A003'],
+            },
+            {
+                Key: 'ZGD2',
+                Name: 'ZGD2',
+                TablesSearchOrder: ['A004', 'A003', 'A002'],
+            },
+            {
+                Key: 'MTAX',
+                Name: 'MTAX',
+                TablesSearchOrder: ['A002', 'A004'],
+            },
+        ],
+        PPM_Tables: [
+            {
+                Key: 'A001',
+                KeyFields: ['ItemExternalID'],
+            },
+            {
+                Key: 'A002',
+                KeyFields: ['TransactionAccountExternalID', 'ItemExternalID'],
+            },
+            {
+                Key: 'A003',
+                KeyFields: ['TransactionAccountExternalID', 'ItemMainCategory'],
+            },
+            {
+                Key: 'A004',
+                KeyFields: ['TransactionAccountExternalID'],
+            },
+        ],
+    };
+
     public documentsIn_PPM_Values = {
         'ZBASE@A002@Acc01@Frag005': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]',
         'ZBASE@A002@Acc01@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",22,"P"]]]]',
-        'ZBASE@A001@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",50,"P"]]]]',
-        'ZBASE@A001@Frag012': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",20,"P"]]]]',
+        'ZBASE@A001@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",50,"P"]]]]',
+        'ZBASE@A001@Frag007':
+            '[[true,"1555891200000","1704067200000","1","1","ZBASE_A001",[[0,"S",40,"P"]]],[true,"1704067200000","","1","1","ZBASE_A001",[[0,"S",60,"P"]]]]',
+        'ZBASE@A001@Frag012': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",20,"P"]]]]',
         'ZBASE@A003@Acc01@Pharmacy': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",30,"P"]]]]',
         'ZDS1@A001@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]',
+        'ZDS1@A001@Frag007': '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]',
+        'ZDS1@A001@Drug0005': '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]',
         'ZDS1@A001@Spring Loaded Frizz-Fighting Conditioner':
             '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",5,"%"],[5,"D",10,"%"],[20,"D",15,"%"]]]]',
         'ZDS2@A002@Acc01@ToBr55':
@@ -448,6 +769,10 @@ export class PricingData {
             '[[true,"1555891200000","2534022144999","1","","ZGD2_A003",[[3,"D",3,"%"],[7,"D",7,"%"]],"EA"]]',
         'MTAX@A002@Acc01@Frag005': '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
         'MTAX@A002@Acc01@Frag012': '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
+        'ZDS4@A001@Frag007':
+            '[[true,"1555891200000","1704067200000","1","1","ZDS4_A001",[[0,"D",10,"%"]]],[true,"1701388800000","","1","1","ZDS4_A001",[[0,"D",5,"%"]]]]',
+        'ZDS5@A001@Frag007':
+            '[[true,"1555891200000","1704067200000","1","1","ZDS5_A001",[[0,"D",10,"%"]]],[true,"1701388800000","","1","1","ZDS5_A001",[[0,"D",5,"%"]]]]',
     };
     public testItemsValues = {
         'Lipstick no.1': {
