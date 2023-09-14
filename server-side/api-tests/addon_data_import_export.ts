@@ -236,7 +236,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         Type: 'AddonAPI', // mandatory on create
                         Description: 'DIMX Export',
                         AddonRelativeURL: `/${addonFunctionsFileName}/${addonExportFunctionName}`, // mandatory on create
-                        InitRelationDataRelativeURL: `/${addonFunctionsFileName}/${CheckInitFuntionName}`
+                        InitRelationDataRelativeURL: `/${addonFunctionsFileName}/${CheckInitFuntionName}`,
                     },
                 );
                 expect(relationResponse).to.equal(200);
@@ -250,7 +250,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                     Type: 'AddonAPI', // mandatory on create
                     Description: 'DIMX Export',
                     AddonRelativeURL: `/${addonFunctionsFileName}/${addonExportFunctionName}`, // mandatory on create
-                    InitRelationDataRelativeURL: `/${addonFunctionsFileName}/${CheckInitFuntionName}`
+                    InitRelationDataRelativeURL: `/${addonFunctionsFileName}/${CheckInitFuntionName}`,
                 };
                 const relationResponse = await relationService.getRelationWithNameAndUUID(
                     {
@@ -280,7 +280,7 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                         Type: 'AddonAPI', // mandatory on create
                         Description: 'DIMX Import',
                         AddonRelativeURL: `/${addonFunctionsFileName}/${addonImportFunctionName}`, // mandatory on create
-                        InitRelationDataRelativeURL: `/${addonFunctionsFileName}/${CheckInitFuntionName}`
+                        InitRelationDataRelativeURL: `/${addonFunctionsFileName}/${CheckInitFuntionName}`,
                     },
                 );
                 expect(relationResponse).to.equal(200);
