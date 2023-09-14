@@ -65,6 +65,8 @@ import {
     StorybookSliderTests,
     StorybookTextareaTests,
     StorybookTextboxTests,
+    Pricing06DataPrep,
+    Pricing06Tests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -425,13 +427,23 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
-    if (tests.includes('DataPrepPrc')) {
+    if (tests === 'DataPrepPrc') {
         await PricingDataPrep(varPass, client);
     }
 
-    if (tests.includes('Pricing')) {
+    if (tests.includes('DataPrepPrc06')) {
+        await Pricing06DataPrep(varPass, client);
+    }
+
+    if (tests === 'Pricing') {
         await PricingDataPrep(varPass, client);
         await PricingTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('Pricing06')) {
+        await Pricing06DataPrep(varPass, client);
+        await Pricing06Tests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
