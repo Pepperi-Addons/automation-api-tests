@@ -2504,6 +2504,52 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 addonVersionSbEx = addonVersionSb;
                 break;
             }
+            case 'PAPI-DATA-INDEX':
+            case 'PAPI INDEX': {
+                addonUUID = '10979a11-d7f4-41df-8993-f06bfd778304';
+                const buildToken = 'PapiDataIndexApprovmentTests';
+                const jobPathPROD =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20K1%20Production%20-%20Papi%20Data%20Index';
+                const jobPathEU =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20K1%20EU%20-%20Papi%20Data%20Index';
+                const jobPathSB =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20K1%20Stage%20%20-%20Papi%20Data%20Index';
+                const {
+                    JenkinsBuildResultsAllEnvs,
+                    latestRunProd,
+                    latestRunEU,
+                    latestRunSB,
+                    addonEntryUUIDProd,
+                    addonEntryUUIDEu,
+                    addonEntryUUIDSb,
+                    addonVersionProd,
+                    addonVersionEU,
+                    addonVersionSb,
+                } = await runnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
+                    addonName,
+                    addonUUID,
+                    jobPathPROD,
+                    jobPathEU,
+                    jobPathSB,
+                    buildToken,
+                );
+                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
+                latestRunProdEx = latestRunProd;
+                latestRunEUEx = latestRunEU;
+                latestRunSBEx = latestRunSB;
+                pathProdEx = jobPathPROD;
+                pathEUEx = jobPathEU;
+                pathSBEx = jobPathSB;
+                addonEntryUUIDProdEx = addonEntryUUIDProd;
+                addonEntryUUIDEuEx = addonEntryUUIDEu;
+                addonEntryUUIDSbEx = addonEntryUUIDSb;
+                addonVersionProdEx = addonVersionProd;
+                addonVersionEUEx = addonVersionEU;
+                addonVersionSbEx = addonVersionSb;
+                break;
+            }
             case 'GENERIC RESOURCE':
             case 'GENERIC-RESOURCE': {
                 addonUUID = 'df90dba6-e7cc-477b-95cf-2c70114e44e0';
@@ -3026,6 +3072,9 @@ export async function handleTeamsURL(addonName, service, email, pass) {
     switch (addonName) {
         case 'QA':
             return await service.getSecretfromKMS(email, pass, 'QAWebHook');
+        case 'PAPI-DATA-INDEX':
+        case 'PAPI INDEX': //evgeny todo
+            return await service.getSecretfromKMS(email, pass, 'PapiDataIndexWebHook');
         case 'SYNC':
             return await service.getSecretfromKMS(email, pass, 'SyncTeamsWebHook');
         case 'ADAL': //new teams
