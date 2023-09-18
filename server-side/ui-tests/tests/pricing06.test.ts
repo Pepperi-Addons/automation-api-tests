@@ -153,6 +153,7 @@ export async function Pricing06Tests(email: string, password: string, client: Cl
                             transactionUUID = transactionUUID_OtherAcc;
                             break;
                     }
+                    await orderPage.changeOrderCenterPageView('Line View');
                     // base64ImageComponent = await driver.saveScreenshots();
                     // addContext(this, {
                     //     title: `New Slaes Order trasaction started`,
@@ -277,6 +278,7 @@ export async function Pricing06Tests(email: string, password: string, client: Cl
                                     it('Click "Continue ordering" button', async function () {
                                         await driver.click(orderPage.Cart_ContinueOrdering_Button);
                                         await orderPage.isSpinnerDone();
+                                        await orderPage.changeOrderCenterPageView('Line View');
                                         await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
                                         driver.sleep(1 * 1000);
                                         base64ImageComponent = await driver.saveScreenshots();
@@ -914,6 +916,8 @@ export async function Pricing06Tests(email: string, password: string, client: Cl
                         }
                         it('Click "Continue ordering" button', async () => {
                             await driver.click(orderPage.Cart_ContinueOrdering_Button);
+                            await orderPage.isSpinnerDone();
+                            await orderPage.changeOrderCenterPageView('Line View');
                             await orderPage.isSpinnerDone();
                             await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
                             driver.sleep(0.2 * 1000);

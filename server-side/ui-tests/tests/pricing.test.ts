@@ -120,11 +120,11 @@ export async function PricingTests(email: string, password: string, client: Clie
 
         it('Login', async function () {
             await webAppLoginPage.login(email, password);
-            // base64ImageComponent = await driver.saveScreenshots();
-            // addContext(this, {
-            //     title: `At Home Page`,
-            //     value: 'data:image/png;base64,' + base64ImageComponent,
-            // });
+            base64ImageComponent = await driver.saveScreenshots();
+            addContext(this, {
+                title: `At Home Page`,
+                value: 'data:image/png;base64,' + base64ImageComponent,
+            });
         });
 
         it('Manual Sync', async () => {
@@ -149,11 +149,20 @@ export async function PricingTests(email: string, password: string, client: Clie
                             transactionUUID = transactionUUID_OtherAcc;
                             break;
                     }
-                    // base64ImageComponent = await driver.saveScreenshots();
-                    // addContext(this, {
-                    //     title: `New Slaes Order trasaction started`,
-                    //     value: 'data:image/png;base64,' + base64ImageComponent,
-                    // });
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `New Slaes Order trasaction started`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+
+                it(`switch to 'Line View'`, async function () {
+                    await orderPage.changeOrderCenterPageView('Line View');
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `After "Line View" was selected`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
 
                 testStates.forEach((state) => {
@@ -245,11 +254,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     await driver.click(orderPage.Cart_Button);
                                     await orderPage.isSpinnerDone();
                                     driver.sleep(1 * 1000);
-                                    // base64ImageComponent = await driver.saveScreenshots();
-                                    // addContext(this, {
-                                    //     title: `Entered Cart`,
-                                    //     value: 'data:image/png;base64,' + base64ImageComponent,
-                                    // });
                                     await driver.untilIsVisible(orderPage.Cart_Total_Header);
                                 });
                                 it('verify that the sum total of items in the cart is correct', async function () {
@@ -277,10 +281,17 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         });
                                     });
                                 });
-                                describe('back to Order Center', () => {
+                                describe('back to Order Center and switch to Line View', () => {
                                     it('Click "Continue ordering" button', async function () {
                                         await driver.click(orderPage.Cart_ContinueOrdering_Button);
                                         await orderPage.isSpinnerDone();
+                                        await orderPage.changeOrderCenterPageView('Line View');
+                                        await orderPage.isSpinnerDone();
+                                        base64ImageComponent = await driver.saveScreenshots();
+                                        addContext(this, {
+                                            title: `After "Line View" was selected`,
+                                            value: 'data:image/png;base64,' + base64ImageComponent,
+                                        });
                                         await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
                                         driver.sleep(1 * 1000);
                                         base64ImageComponent = await driver.saveScreenshots();
@@ -321,6 +332,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 ),
                                             );
                                             driver.sleep(0.5 * 1000);
+                                            base64ImageComponent = await driver.saveScreenshots();
+                                            addContext(this, {
+                                                title: `At Order Center - after Plus Button clicked`,
+                                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                            });
                                             break;
 
                                         case '20 Each':
@@ -420,6 +436,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 ),
                                             );
                                             driver.sleep(0.5 * 1000);
+                                            base64ImageComponent = await driver.saveScreenshots();
+                                            addContext(this, {
+                                                title: `At Order Center - after Plus Button clicked`,
+                                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                            });
                                             break;
 
                                         default:
@@ -463,6 +484,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     ),
                                 );
                                 driver.sleep(0.75 * 1000);
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At Order Center - after Minus Button clicked`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
                                 Drug0002priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
                                 console.info('Drug0002priceTSAs_OC (9 Cases): ', Drug0002priceTSAs_OC);
 
@@ -512,6 +538,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 ),
                                             );
                                             driver.sleep(0.5 * 1000);
+                                            base64ImageComponent = await driver.saveScreenshots();
+                                            addContext(this, {
+                                                title: `At Order Center - after Plus Button clicked`,
+                                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                            });
                                             break;
 
                                         default:
@@ -555,6 +586,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     ),
                                 );
                                 driver.sleep(0.5 * 1000);
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At Order Center - after Minus Button clicked`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
                                 Drug0004priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
                                 console.info(`Drug0004priceTSAs_OC (2 cases): `, Drug0004priceTSAs_OC);
 
@@ -589,6 +625,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                             transactionID = Number(
                                 await (await driver.findElement(orderPage.TransactionID)).getAttribute('title'),
                             );
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `At Order Center`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                         });
                     });
                     describe('Transition and Validation', () => {
@@ -597,6 +638,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                             await webAppHomePage.isSpinnerDone();
                             await driver.untilIsVisible(webAppHomePage.MainHomePageBtn);
                             driver.sleep(1 * 1000);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `At Home Page`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                         });
                         it('verifying transaction ID', async () => {
                             console.info('transactionUUID:', transactionUUID);
@@ -621,10 +667,25 @@ export async function PricingTests(email: string, password: string, client: Clie
                             await webAppHomePage.clickOnBtn('Accounts');
                             await webAppHeader.isSpinnerDone();
                             driver.sleep(0.1 * 1000);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `At Accounts List`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                             await webAppList.clickOnFromListRowWebElementByName(accountName);
                             await webAppList.isSpinnerDone();
-                            await webAppList.clickOnLinkFromListRowWebElementByText(`${accountName}`);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After the Row of "${accountName}" Account in List was clicked`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await webAppList.clickOnLinkFromListRowWebElementByText(accountName);
                             await webAppList.isSpinnerDone();
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After the Link of "${accountName}" Account in List was clicked`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                         });
                         it('checking the latest activity - type: Sales Order, status: In Creation', async () => {
                             driver.sleep(0.1 * 1000);
@@ -655,6 +716,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                     });
                     describe('CART', () => {
                         it('verifying that the sum total of items in the cart is correct', async () => {
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `At Cart`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                             await driver.untilIsVisible(orderPage.Cart_Total_Header); // check to be in cart
                             const itemsInCart = await (
                                 await driver.findElement(orderPage.Cart_Headline_Results_Number)
@@ -873,9 +939,21 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 expect(ToBr55_freeItem_numberOfAOQM).equals(1);
                             });
                         }
-                        it('Click "Continue ordering" button', async () => {
+                        it('Click "Continue ordering" button + switch to "Line View"', async () => {
                             await driver.click(orderPage.Cart_ContinueOrdering_Button);
                             await orderPage.isSpinnerDone();
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `At Order Center`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await orderPage.changeOrderCenterPageView('Line View');
+                            await orderPage.isSpinnerDone();
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After "Line View" was selected`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                             await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
                             driver.sleep(0.2 * 1000);
                         });
