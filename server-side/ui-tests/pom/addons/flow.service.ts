@@ -433,7 +433,7 @@ export class FlowService extends AddonPage {
     }
 
     async addStepViaAPI(generalService, flowKey, flowName, step) {
-        const bodyToSend = { Key: flowKey, Name: flowName, Steps: step};
+        const bodyToSend = { Key: flowKey, Name: flowName, Steps: step };
         const responseForFlow = await generalService.fetchStatus('/user_defined_flows', {
             method: 'POST',
             body: JSON.stringify(bodyToSend),
