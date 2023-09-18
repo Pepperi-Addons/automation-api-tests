@@ -72,6 +72,7 @@ export async function UomTests(email: string, password: string, varPass: string,
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''], //latest
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+        // 'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.1.22'],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
