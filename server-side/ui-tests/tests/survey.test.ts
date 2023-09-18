@@ -620,6 +620,9 @@ export async function SurveyTests(email: string, password: string, client: Clien
                         }
                     }
                 }
+            });
+            it('1.1. Admin Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.logout();
             });
             it('2. Rep Testing: Fill Survey Via UI, See Is Synced To Admin UDC', async function () {
@@ -726,6 +729,9 @@ export async function SurveyTests(email: string, password: string, client: Clien
                         }
                     }
                 }
+            });
+            it('2.1. Rep Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.logout();
             });
             it('3. Buyer Testing: Fill Survey Via UI, See Is Synced To Admin UDC', async function () {
@@ -832,6 +838,9 @@ export async function SurveyTests(email: string, password: string, client: Clien
                         }
                     }
                 }
+            });
+            it('3.1. Buyer Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.logout();
             });
             it('API Data Cleansing: 1. survey template', async function () {
