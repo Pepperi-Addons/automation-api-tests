@@ -239,6 +239,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                     expect(stepFromAPI.Configuration).to.deep.equal(stepInput.Configuration);
                 }
                 driver.sleep(10000); //wait for eveything to sync or whatever
+                debugger;
                 //-> enter flow
                 await flowService.enterFlowBySearchingName(positiveFlow.Name);
                 //->validate all steps are there with correct names
@@ -247,9 +248,11 @@ export async function FlowTests(email: string, password: string, client: Client,
                     const isCreatedSecsefully = await flowService.validateStepCreatedByApi(step.Name, index + 1);
                     expect(isCreatedSecsefully).to.equal(true);
                 }
+                debugger;
                 //-> validate the script inside the step and its params
                 for (let index = 0; index < newFlowSteps.length; index++) {
                     const step = newFlowSteps[index];
+                    debugger;
                     const isCreatedSuccessfully = await flowService.validateStepScript(index + 1, step, generalService);
                     expect(isCreatedSuccessfully).to.equal(true);
                     await flowService.closeScriptModal();

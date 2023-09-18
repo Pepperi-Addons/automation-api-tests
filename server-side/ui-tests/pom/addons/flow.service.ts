@@ -58,7 +58,7 @@ export class FlowService extends AddonPage {
     public ResultsHeader: By = By.xpath(`//span[@class='bold number']`);
     public searchField: By = By.xpath(`//pep-search`);
     public HamburgerButton: By = By.xpath(`//pep-menu`);
-    public AddFlowButton: By = By.xpath(`//span[contains(text(),'Add flow')]`);
+    public AddFlowButton: By = By.xpath(`//span[contains(text(),'Add')]`);
     //add flow modal
     public AddFlowModalTitle: By = By.xpath(`//pep-dialog//div//span[contains(text(),'Add flow')]`);
     public ModalNameSubTitle: By = By.xpath(`//mat-label[contains(text(),'Name')]`);
@@ -166,7 +166,7 @@ export class FlowService extends AddonPage {
     public async enterNewFlowPage(flowBuilder: Flow): Promise<any> {
         await this.fillNameAndDescriptionModal(flowBuilder.Name, flowBuilder.Description);
         await this.browser.click(this.ModalAddButton);
-        this.browser.sleep(5000);
+        this.browser.sleep(10000);
         const currentUrl = (await this.browser.getCurrentUrl()).split('/');
         const flowKey = currentUrl[currentUrl.length - 1];
         return [await this.browser.untilIsVisible(this.FlowTabList, 6000), flowKey];
@@ -433,7 +433,7 @@ export class FlowService extends AddonPage {
     }
 
     async addStepViaAPI(generalService, flowKey, flowName, step) {
-        const bodyToSend = { Key: flowKey, Name: flowName, Steps: step };
+        const bodyToSend = { Key: flowKey, Name: flowName, Steps: step};
         const responseForFlow = await generalService.fetchStatus('/user_defined_flows', {
             method: 'POST',
             body: JSON.stringify(bodyToSend),
@@ -503,7 +503,6 @@ export class FlowService extends AddonPage {
             '|PLACEHOLDER|',
             scriptName,
         );
-        debugger;
         await this.browser.click(By.xpath(DDvalueToPressScripts));
         //scripts params
         await this.browser.click(this.InitalDDButtonScriptPickerParams);
@@ -521,7 +520,7 @@ export class FlowService extends AddonPage {
         //script
         const editButtonOfStepBlock = stepByIndex + "//pep-button[@title='Edit']";
         await this.browser.click(By.xpath(editButtonOfStepBlock));
-        this.browser.sleep(3000);
+        this.browser.sleep(6000);
         await this.browser.untilIsVisible(this.scriptPickerTitle, 10000);
         const nameOfParamInput = Object.keys(step.Configuration.runScriptData.ScriptData)[0];
         const realScriptName = await this.convertScriptKeyToName(service, step.Configuration.runScriptData.ScriptKey);
