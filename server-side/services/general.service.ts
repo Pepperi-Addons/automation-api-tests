@@ -839,7 +839,7 @@ export default class GeneralService {
                 );
                 loopsAmount--;
             }
-        } while ( //2-> in progress, 5->pending, 4-> in retry
+        } while ( //2-> in progress, 5->Started, 4-> in retry|||| "ID": 5,"Name": "Started"
             (auditLogResponse === null ||
                 auditLogResponse.Status.ID == '2' ||
                 auditLogResponse.Status.ID == '5' ||
