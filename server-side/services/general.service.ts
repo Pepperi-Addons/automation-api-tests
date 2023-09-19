@@ -48,6 +48,7 @@ export const testData = {
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+    'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', '1.1.%'], //19/9/23: add for pages 0.9.x as its a dependency
     Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
 };
 
