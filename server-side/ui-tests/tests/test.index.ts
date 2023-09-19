@@ -1026,6 +1026,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     sbExecution: devTestResponseSb.Body.URI,
                     euExecution: devTestResponseEu.Body.URI,
                 };
+                generalService.sleep(1000 * 15);
                 // debugger;
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
@@ -1513,6 +1514,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     euExecution: devTestResponseEu.Body.URI,
                 };
                 // debugger;
+                generalService.sleep(1000 * 15);
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
                 //4.3. parse the response
@@ -2064,6 +2066,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     euExecution: devTestResponseEu.Body.URI,
                 };
                 debugger;
+                generalService.sleep(1000 * 15);
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
                     prodUser,
