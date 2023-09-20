@@ -546,7 +546,7 @@ export class PricingData {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
+                            UomIndex: 1,
                         },
                     },
                     {
@@ -558,7 +558,7 @@ export class PricingData {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
+                            UomIndex: 1,
                         },
                     },
                     {
@@ -570,7 +570,7 @@ export class PricingData {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
+                            UomIndex: 1,
                         },
                     },
                     {
@@ -582,7 +582,7 @@ export class PricingData {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
+                            UomIndex: 1,
                         },
                     },
                     {
@@ -594,7 +594,7 @@ export class PricingData {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
+                            UomIndex: 1,
                         },
                     },
                     {
@@ -606,7 +606,7 @@ export class PricingData {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
+                            UomIndex: 1,
                         },
                     },
                     {
@@ -663,7 +663,7 @@ export class PricingData {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
+                            UomIndex: 1,
                         },
                     },
                 ],
