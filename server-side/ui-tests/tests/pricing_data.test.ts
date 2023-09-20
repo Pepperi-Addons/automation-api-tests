@@ -35,7 +35,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
 
     const testData = {
         pricing: ['adb3c829-110c-4706-9168-40fba9c0eb52', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', '0.9.%'],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''], // current phased version 0.7.112 | dependency > 0.7.104
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // current phased version 0.5.10 | dependency > 0.5.7
