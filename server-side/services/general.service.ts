@@ -2278,6 +2278,9 @@ export default class GeneralService {
                 return '84c999c3-84b7-454e-9a86-71b7abc96554';
             case 'RELATED-ITEMS':
                 return '4f9f10f3-cd7d-43f8-b969-5029dad9d02b';
+            case 'PEPPERI-FILE-STORAGE':
+            case 'PFS':
+                return '00000000-0000-0000-0000-0000000f11e5';
             default:
                 return 'none';
         }
