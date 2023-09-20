@@ -74,13 +74,24 @@ export async function TestDataTests(
                 installedAddons['Data Index Framework'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Activity Data Index')
                 installedAddons['Activity Data Index'] = installedAddonsArr[index].Version;
-            if (installedAddonsArr[index].Addon.Name == 'Audit Log')
-                installedAddons['Audit Log'] = installedAddonsArr[index].Version;
             if (
                 installedAddonsArr[index].Addon.Name == 'Export and Import Framework (DIMX)' ||
                 installedAddonsArr[index].Addon.Name == 'Export and Import Framework'
             )
                 installedAddons['DIMX'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Audit Log')
+                installedAddons['Audit Log'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Pages')
+                installedAddons['Pages'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Core Data Source Interface')
+                installedAddons['Core Data Source Interface'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Core Resources')
+                installedAddons['Core Resources'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Cross Platform Engine Data')
+                installedAddons['Cross Platform Engine Data'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Cross Platform Engine')
+                installedAddons['Cross Platform Engine'] = installedAddonsArr[index].Version;
+            //Cross Platform Engine
         }
     }
 
@@ -124,8 +135,12 @@ export async function TestDataTests(
                 const regexMatched = installedAddons['Cross Platforms API'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
-            it(`WebApp API Framework | Version: ${installedAddons['WebApp API Framework']}`, () => {
+            it(`WebApp API Framework (CPAS) | Version: ${installedAddons['WebApp API Framework']}`, () => {
                 const regexMatched = installedAddons['WebApp API Framework'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Cpi Node | Version: ${installedAddons['Cross Platform Engine']}`, () => {
+                const regexMatched = installedAddons['Cross Platform Engine'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
             it(`WebApp Platform | Version: ${installedAddons['WebApp Platform']}`, () => {
@@ -160,6 +175,10 @@ export async function TestDataTests(
                 const regexMatched = installedAddons['Audit Log'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
+            it(`Page Builder | Version: ${installedAddons['Pages']}`, () => {
+                const regexMatched = installedAddons['Pages'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
             // if (options.IsAllAddons) {
             //     it(`Automated Jobs | Version: ${installedAddons['Automated Jobs']}`, () => {
             //         const regexMatched = installedAddons['Automated Jobs'].replace(regex, '');
@@ -181,6 +200,21 @@ export async function TestDataTests(
             it(`DIMX | Version: ${installedAddons['DIMX']}`, () => {
                 //EVGENY
                 const regexMatched = installedAddons['DIMX'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Core Data Source Interface | Version: ${installedAddons['Core Data Source Interface']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['Core Data Source Interface'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Core Resources | Version: ${installedAddons['Core Resources']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['Core Resources'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Cross Platform Engine Data | Version: ${installedAddons['Cross Platform Engine Data']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['Cross Platform Engine Data'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
             if (options.IsAllAddons) {

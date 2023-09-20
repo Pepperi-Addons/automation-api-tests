@@ -1026,6 +1026,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     sbExecution: devTestResponseSb.Body.URI,
                     euExecution: devTestResponseEu.Body.URI,
                 };
+                generalService.sleep(1000 * 15);
                 // debugger;
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
@@ -1046,13 +1047,25 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     debugger;
                     let errorString = '';
                     if (!devTestResutsEu.AuditInfo.ResultObject) {
-                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                        errorString += `${euUser} got the error: ${
+                            devTestResutsEu.AuditInfo.ErrorMessage
+                        } from Audit Log, Returned Audit Log Is: ${JSON.parse(
+                            devTestResutsEu.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
                     }
                     if (!devTestResultsProd.AuditInfo.ResultObject) {
-                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                        errorString += `${prodUser} got the error: ${
+                            devTestResultsProd.AuditInfo.ErrorMessage
+                        } from Audit Log, Returned Audit Log Is: ${JSON.parse(
+                            devTestResultsProd.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
                     }
                     if (!devTestResultsSb.AuditInfo.ResultObject) {
-                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                        errorString += `${sbUser} got the error: ${
+                            devTestResultsSb.AuditInfo.ErrorMessage
+                        } from Audit Log, Returned Audit Log Is: ${JSON.parse(
+                            devTestResultsSb.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
                     await reportToTeamsMessageNeptune(
                         addonName,
@@ -1513,6 +1526,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     euExecution: devTestResponseEu.Body.URI,
                 };
                 // debugger;
+                generalService.sleep(1000 * 15);
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
                 //4.3. parse the response
@@ -1525,10 +1539,18 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     debugger;
                     let errorString = '';
                     if (!devTestResutsEu.AuditInfo.ResultObject) {
-                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                        errorString += `${euUser} got the error: ${
+                            devTestResutsEu.AuditInfo.ErrorMessage
+                        } from Audit Log, Returned Audit Log Is: ${JSON.parse(
+                            devTestResutsEu.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
                     }
                     if (!devTestResultsSb.AuditInfo.ResultObject) {
-                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                        errorString += `${sbUser} got the error: ${
+                            devTestResultsSb.AuditInfo.ErrorMessage
+                        } from Audit Log, Returned Audit Log Is: ${JSON.parse(
+                            devTestResultsSb.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
                     await reportToTeamsMessage(
                         addonName,
@@ -2064,6 +2086,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     euExecution: devTestResponseEu.Body.URI,
                 };
                 debugger;
+                generalService.sleep(1000 * 15);
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsProd = await getTestResponseFromAuditLog(
                     prodUser,
@@ -2083,13 +2106,25 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     debugger;
                     let errorString = '';
                     if (!devTestResutsEu.AuditInfo.ResultObject) {
-                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                        errorString += `${euUser} got the error: ${
+                            devTestResutsEu.AuditInfo.ErrorMessage
+                        } from Audit Log, Returned Audit Log Is: ${JSON.parse(
+                            devTestResutsEu.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
                     }
                     if (!devTestResultsProd.AuditInfo.ResultObject) {
-                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                        errorString += `${prodUser} got the error: ${
+                            devTestResultsProd.AuditInfo.ErrorMessage
+                        } from Audit Log, Returned Audit Log Is: ${JSON.parse(
+                            devTestResultsProd.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
                     }
                     if (!devTestResultsSb.AuditInfo.ResultObject) {
-                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                        errorString += `${sbUser} got the error: ${
+                            devTestResultsSb.AuditInfo.ErrorMessage
+                        } from Audit Log, Returned Audit Log Is: ${JSON.parse(
+                            devTestResultsSb.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
                     await reportToTeamsMessage(
                         addonName,

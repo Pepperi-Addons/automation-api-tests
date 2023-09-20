@@ -879,6 +879,9 @@ export async function SyncTests(email: string, password: string, client: Client,
                     //rowElement[4] - val2
                     expect(rowElement[4]).to.contain('val2_abc_');
                 }
+            });
+            it('1.1. Admin Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.logout();
             });
             it(`2. Sales Rep`, async function () {
@@ -912,6 +915,9 @@ export async function SyncTests(email: string, password: string, client: Client,
                     //rowElement[4] - val2
                     expect(rowElement[4]).to.contain('val2_abc_');
                 }
+            });
+            it('2.1. Rep Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.logout();
             });
             it(`3. Buyer`, async function () {
@@ -945,6 +951,10 @@ export async function SyncTests(email: string, password: string, client: Client,
                     //rowElement[4] - val2
                     expect(rowElement[4]).to.contain('val2_abc_');
                 }
+            });
+            it('3.1. Buyer Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.logout();
             });
         });
         describe('UI Tests - Enter 10 Account Dashboards And See Data Is Arriving', () => {
@@ -1020,6 +1030,9 @@ export async function SyncTests(email: string, password: string, client: Client,
                         await webAppHomePage.returnToHomePage();
                     }
                 }
+            });
+            it('1.1. Admin Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.logout();
             });
             it(`2. Sales Rep`, async function () {
@@ -1081,6 +1094,9 @@ export async function SyncTests(email: string, password: string, client: Client,
                         await webAppHomePage.returnToHomePage();
                     }
                 }
+            });
+            it('2.1. Rep Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.logout();
             });
             it(`3. Buyer`, async function () {
@@ -1129,6 +1145,10 @@ export async function SyncTests(email: string, password: string, client: Client,
                 }
                 await webAppHomePage.returnToHomePage();
             });
+            it('3.1. Buyer Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.logout();
+            });
         });
         describe('UI Tests - Change Certain UDC Row Via UI And See Data Was Updated In Admin, Buyer & Rep', () => {
             this.retries(0);
@@ -1165,6 +1185,9 @@ export async function SyncTests(email: string, password: string, client: Client,
                 generalService.sleep(1000 * 8);
                 const resourceListService = new ResourceList(driver);
                 await resourceListService.editDataInsideRsourceListEditorPopup('basicValue', updatedValue);
+            });
+            it('1.1. Rep Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.logout();
             });
             it(`2. Sales Rep`, async function () {
@@ -1212,6 +1235,9 @@ export async function SyncTests(email: string, password: string, client: Client,
                     expect(dataRow[4]).to.equal(updatedValue);
                     await webAppHomePage.returnToHomePage();
                 }
+            });
+            it('2.1. Rep Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.logout();
             });
             it(`3. Buyer`, async function () {
@@ -1258,6 +1284,10 @@ export async function SyncTests(email: string, password: string, client: Client,
                     expect(dataRow[4]).to.equal(updatedValue);
                 }
                 await webAppHomePage.returnToHomePage();
+            });
+            it('3.1. Buyer Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.logout();
             });
         });
         describe('Tear Down Via API', () => {

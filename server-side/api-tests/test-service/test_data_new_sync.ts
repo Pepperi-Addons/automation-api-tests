@@ -87,6 +87,20 @@ export async function TestDataTestsNewSync(
                 installedAddons['sync'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Audit Log')
                 installedAddons['Audit Log'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Generic Resource')
+                installedAddons['Generic Resource'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'User Defined Collections')
+                installedAddons['User Defined Collections'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Pages')
+                installedAddons['Pages'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Core Data Source Interface')
+                installedAddons['Core Data Source Interface'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Core Resources')
+                installedAddons['Core Resources'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Cross Platform Engine Data')
+                installedAddons['Cross Platform Engine Data'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Cross Platform Engine')
+                installedAddons['Cross Platform Engine'] = installedAddonsArr[index].Version;
         }
     }
 
@@ -126,16 +140,16 @@ export async function TestDataTestsNewSync(
                 const regexMatched = installedAddons['Services Framework'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
-            it(`Services Framework | Version: ${installedAddons['Services Framework']}`, () => {
-                const regexMatched = installedAddons['Services Framework'].replace(regex, '');
-                expect(regexMatched.length).to.be.above(2);
-            });
             it(`Cross Platforms API | Version: ${installedAddons['Cross Platforms API']}`, () => {
                 const regexMatched = installedAddons['Cross Platforms API'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
-            it(`WebApp API Framework | Version: ${installedAddons['WebApp API Framework']}`, () => {
+            it(`WebApp API Framework (CPAS) | Version: ${installedAddons['WebApp API Framework']}`, () => {
                 const regexMatched = installedAddons['WebApp API Framework'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Cpi Node | Version: ${installedAddons['Cross Platform Engine']}`, () => {
+                const regexMatched = installedAddons['Cross Platform Engine'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
             it(`WebApp Platform | Version: ${installedAddons['WebApp Platform']}`, () => {
@@ -190,6 +204,21 @@ export async function TestDataTestsNewSync(
                 const regexMatched = installedAddons['sync'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
+            it(`Generic Resource | Version: ${installedAddons['Generic Resource']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['Generic Resource'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`User Defined Collections | Version: ${installedAddons['User Defined Collections']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['User Defined Collections'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Page Builder | Version: ${installedAddons['Pages']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['Pages'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
             // if (options.IsAllAddons) {
             //     it(`Automated Jobs | Version: ${installedAddons['Automated Jobs']}`, () => {
             //         const regexMatched = installedAddons['Automated Jobs'].replace(regex, '');
@@ -206,6 +235,21 @@ export async function TestDataTestsNewSync(
             });
             it(`Pepperi Notification Service | Version: ${installedAddons['Notification Service']}`, () => {
                 const regexMatched = installedAddons['Notification Service'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Core Data Source Interface | Version: ${installedAddons['Core Data Source Interface']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['Core Data Source Interface'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Core Resources | Version: ${installedAddons['Core Resources']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['Core Resources'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Cross Platform Engine Data | Version: ${installedAddons['Cross Platform Engine Data']}`, () => {
+                //EVGENY
+                const regexMatched = installedAddons['Cross Platform Engine Data'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
             if (options.IsAllAddons) {
