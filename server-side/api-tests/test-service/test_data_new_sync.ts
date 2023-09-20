@@ -99,6 +99,8 @@ export async function TestDataTestsNewSync(
                 installedAddons['Core Resources'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Cross Platform Engine Data')
                 installedAddons['Cross Platform Engine Data'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Cross Platform Engine')
+                installedAddons['Cross Platform Engine'] = installedAddonsArr[index].Version;
         }
     }
 
@@ -142,8 +144,12 @@ export async function TestDataTestsNewSync(
                 const regexMatched = installedAddons['Cross Platforms API'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
-            it(`WebApp API Framework | Version: ${installedAddons['WebApp API Framework']}`, () => {
+            it(`WebApp API Framework (CPAS) | Version: ${installedAddons['WebApp API Framework']}`, () => {
                 const regexMatched = installedAddons['WebApp API Framework'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`Cpi Node | Version: ${installedAddons['Cross Platform Engine']}`, () => {
+                const regexMatched = installedAddons['Cross Platform Engine'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
             it(`WebApp Platform | Version: ${installedAddons['WebApp Platform']}`, () => {
