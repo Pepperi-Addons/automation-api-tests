@@ -1130,13 +1130,25 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     debugger;
                     let errorString = '';
                     if (!objectToPrintEu) {
-                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                        errorString += `${euUser} got the error: ${
+                            devTestResutsEu.AuditInfo.ErrorMessage
+                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                            devTestResutsEu.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
                     }
                     if (!objectToPrintProd) {
-                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                        errorString += `${prodUser} got the error: ${
+                            devTestResultsProd.AuditInfo.ErrorMessage
+                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                            devTestResultsProd.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
                     }
                     if (!objectToPrintSB) {
-                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                        errorString += `${sbUser} got the error: ${
+                            devTestResultsSb.AuditInfo.ErrorMessage
+                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                            devTestResultsSb.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
                     await reportToTeamsMessage(
                         addonName,
@@ -1643,10 +1655,18 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     debugger;
                     let errorString = '';
                     if (!objectToPrintEu) {
-                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                        errorString += `${euUser} got the error: ${
+                            devTestResutsEu.AuditInfo.ErrorMessage
+                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                            devTestResutsEu.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
                     }
                     if (!objectToPrintSB) {
-                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                        errorString += `${sbUser} got the error: ${
+                            devTestResultsSb.AuditInfo.ErrorMessage
+                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                            devTestResultsSb.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
                     await reportToTeamsMessage(
                         addonName,
@@ -2241,13 +2261,25 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     debugger;
                     let errorString = '';
                     if (!objectToPrintEu) {
-                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                        errorString += `${euUser} got the error: ${
+                            devTestResutsEu.AuditInfo.ErrorMessage
+                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                            devTestResutsEu.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
                     }
                     if (!objectToPrintProd) {
-                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                        errorString += `${prodUser} got the error: ${
+                            devTestResultsProd.AuditInfo.ErrorMessage
+                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                            devTestResultsProd.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
                     }
                     if (!objectToPrintSB) {
-                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, , EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                        errorString += `${sbUser} got the error: ${
+                            devTestResultsSb.AuditInfo.ErrorMessage
+                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                            devTestResultsSb.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
                     await reportToTeamsMessage(
                         addonName,
@@ -3899,6 +3931,9 @@ function resolveUserPerTest(addonName): any[] {
         case 'CORE':
         case 'CORE-GENERIC-RESOURCES':
             return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
+        case 'PEPPERI-FILE-STORAGE':
+        case 'PFS':
+            return ['PfsCpiTestEU@pepperitest.com', 'PfsCpiTestProd@pepperitest.com', 'PfsCpiTestSB@pepperitest.com'];
         case 'CONFIGURATIONS':
             return ['configEU@pepperitest.com', 'configProd@pepperitest.com', 'configSB@pepperitest.com'];
         case 'RELATED-ITEMS':
@@ -4035,6 +4070,19 @@ async function getRelatedItemsTests(userName, env) {
     return toReturn;
 }
 
+async function getPFSTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/00000000-0000-0000-0000-0000000f11e5/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function getUDBTests(userName, env) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
@@ -4081,6 +4129,8 @@ async function runDevTestOnCertainEnv(
         };
     } else if (addonName === 'UDB' || addonName === 'USER DEFINED BLOCKS') {
         urlToCall = '/addons/api/async/9abbb634-9df5-49ab-91d1-41ad7a2632a6/tests/tests';
+    } else if (addonName === 'PFS' || addonName === 'PEPPERI-FILE-STORAGE') {
+        urlToCall = '/addons/api/async/00000000-0000-0000-0000-0000000f11e5/tests/tests';
     } else {
         urlToCall = `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`;
     }
@@ -4129,6 +4179,8 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getConfifurationsTests(user, 'prod');
     } else if (addonName === 'RELATED-ITEMS') {
         return await getRelatedItemsTests(user, 'prod');
+    } else if (addonName === 'PEPPERI-FILE-STORAGE' || 'PFS') {
+        return await getPFSTests(user, 'prod');
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
         const service = new GeneralService(client);
@@ -4162,7 +4214,9 @@ function prepareTestBody(addonName, currentTestName) {
         addonName === 'UDB' ||
         addonName === 'CONFIGURATIONS' ||
         addonName === 'RELATED-ITEMS' ||
-        addonName === 'USER DEFINED BLOCKS'
+        addonName === 'USER DEFINED BLOCKS' ||
+        addonName === 'PFS' ||
+        addonName === 'PEPPERI-FILE-STORAGE'
     ) {
         body = {
             Name: currentTestName,
