@@ -650,7 +650,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                     });
-                    describe('Item [1232] - fill the order with Double & Singles (Positive & Negative)', () => {
+                    describe('Item [1232] - fill the order with Double & Singles (Positive)', () => {
                         //2.2. Double & Single
                         it('UOM item testing - UOM1: [Double] & UOM2: [Single]', async function () {
                             workingUomObject = new UomUIObject('1232');
@@ -1173,39 +1173,40 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
-                        // for (let i = 1; i < 9; i++) { // commented out dut to https://pepperi.atlassian.net/browse/DI-24705 DO NOT DELETE!
-                        //     it(`Minus button clicks - to reach Zero (click number ${i})`, async function () {
-                        //         await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
-                        //         driver.sleep(1500);
-                        //         await uom.isSpinnerDone();
-                        //         await uom.testQtysOfItem(
-                        //             workingUomObject,
-                        //             -i,
-                        //             0,
-                        //             -(i * 2.5),
-                        //             56 + i * -2.5,
-                        //             56 + i * -2.5,
-                        //         );
-                        //         const base64ImageComponent = await driver.saveScreenshots();
-                        //         addContext(this, {
-                        //             title: `Minus button - click number ${i}`,
-                        //             value: 'data:image/png;base64,' + base64ImageComponent,
-                        //         });
-                        //     });
-                        // }
-                        it(`DI-24705 - set qty to '-8' for the reset of the test to work`, async function () {
-                            for (let i = 1; i < 9; i++) {
+                        for (let i = 1; i < 9; i++) {
+                            // commented out dut to https://pepperi.atlassian.net/browse/DI-24705 DO NOT DELETE!
+                            it(`Minus button clicks - to reach Zero (click number ${i})`, async function () {
                                 await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
                                 driver.sleep(1500);
                                 await uom.isSpinnerDone();
-                            }
-                            await uom.testQtysOfItem(workingUomObject, -8, 0, -(8 * 2.5), 56 + 8 * -2.5, 56 + 8 * -2.5);
-                            const base64ImageComponent = await driver.saveScreenshots();
-                            addContext(this, {
-                                title: `UOM1 qty set to '-8'`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                await uom.testQtysOfItem(
+                                    workingUomObject,
+                                    -i,
+                                    0,
+                                    -(i * 2.5),
+                                    56 + i * -2.5,
+                                    56 + i * -2.5,
+                                );
+                                const base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Minus button - click number ${i}`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
                             });
-                        });
+                        }
+                        // it(`DI-24705 - set qty to '-8' for the reset of the test to work`, async function () {
+                        //     for (let i = 1; i < 9; i++) {
+                        //         await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
+                        //         driver.sleep(1500);
+                        //         await uom.isSpinnerDone();
+                        //     }
+                        //     await uom.testQtysOfItem(workingUomObject, -8, 0, -(8 * 2.5), 56 + 8 * -2.5, 56 + 8 * -2.5);
+                        //     const base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `UOM1 qty set to '-8'`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        // });
 
                         //set lower uom type to Box
                         it('Set lower uom type to Box', async function () {
@@ -1432,6 +1433,7 @@ function createItemsListForUom(): Item[] {
             MainCategoryID: i === 0 ? 'NOT uom item' : 'uom item',
             Name: `${i === 0 ? 'non uom item' : 'uom item'}`,
             Price: i === 0 ? 0.5 : 1,
+            AllowDecimal: true,
         };
         itemList.push(item);
     }
