@@ -450,7 +450,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             value: 'data:image/png;base64,' + base64ImageComponent,
                         });
                     });
-                    describe('Item [1230]', () => {
+                    describe('Item [1230] - Neutral Reference', () => {
                         it('Add 40 items of regular qty - see 40 items are shown (then getting up to 48 by plus clicks)', async function () {
                             //1. regular item testing
                             //1.1 add 40 items of regular qty - see 40 items are shown + correct price is presented
@@ -544,7 +544,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                     });
-                    describe('Item [1231] - fill the order with boxes & singles', () => {
+                    describe('Item [1231] - fill the order with Boxes & Singles (Positive)', () => {
                         //2. UOM item testing
                         it('UOM item testing - UOM1: [Box] & UOM2: [Single]', async function () {
                             //2.1. Box & single
@@ -650,7 +650,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                     });
-                    describe('Item [1232] - fill the order with Double & Singles', () => {
+                    describe('Item [1232] - fill the order with Double & Singles (Positive & Negative)', () => {
                         //2.2. Double & Single
                         it('UOM item testing - UOM1: [Double] & UOM2: [Single]', async function () {
                             workingUomObject = new UomUIObject('1232');
@@ -747,7 +747,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                     });
-                    describe('Item [1233]', () => {
+                    describe('Item [1233] - fill the order with Pack & Double (Positive)', () => {
                         //2.3. Pack & Double
                         it('UOM item testing - Pack & Double', async function () {
                             workingUomObject = new UomUIObject('1233');
@@ -822,7 +822,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                     });
-                    describe('Item [1234]', () => {
+                    describe('Item [1234] - fill the order with Case & Box (Positive)', () => {
                         //2.4. Case & Box
                         it('UOM item testing - Case & Box', async function () {
                             workingUomObject = new UomUIObject('1234');
@@ -873,7 +873,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                     });
-                    describe('Conclusion', () => {
+                    describe('Conclusion - Cart Test', () => {
                         //3. UOM order test ended - submiting to cart
                         it('Entering Cart', async function () {
                             await driver.click(orderPage.SubmitToCart);
@@ -933,6 +933,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                         });
                     });
                 });
+
                 describe("Config Items ['1231','1232','1233']", () => {
                     it('Go Home & Edit Item Config', async function () {
                         await driver.switchToDefaultContent();
@@ -961,8 +962,8 @@ export async function UomTests(email: string, password: string, varPass: string,
                             value: 'data:image/png;base64,' + base64ImageComponent,
                         });
                     });
-                    describe('Item [1231]', () => {
-                        it('Testing UOM ATD with Item Config - Changing UOM1 to Single', async function () {
+                    describe('Item [1231] - Negative', () => {
+                        it('Single -> factor:3, minimum:2, case:1, decimal:0, negative:true', async function () {
                             //1. single -> factor:3, minimum:2, case:1, decimal:0, negative:true
                             //set uom type to single
                             workingUomObject = new UomUIObject('1231');
@@ -1042,7 +1043,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                     });
-                    describe('Item [1232]', () => {
+                    describe('Item [1232] - Positive Decimal', () => {
                         it('Box -> factor:2, min:1, case:2, negative:false, decimal: 3', async function () {
                             //2. Box -> factor:2, min:1, case:2, negative:false, decimal: 3
                             workingUomObject = new UomUIObject('1232');
@@ -1123,7 +1124,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                     });
-                    describe('Item [1233]', () => {
+                    describe('Item [1233] - Negative Decimal', () => {
                         it('Double -> factor:2.5, min:10, case:5, negative:true, decimal:1', async function () {
                             //3. Double -> factor:2.5, min:10, case:5, negative:true, decimal:1
                             workingUomObject = new UomUIObject('1233');
@@ -1259,7 +1260,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         }
                     });
-                    describe('Conclusion', () => {
+                    describe('Conclusion - Cart Test', () => {
                         //4. UOM order test ended - submiting to cart
                         it('Entering Cart', async function () {
                             await driver.click(orderPage.SubmitToCart);
