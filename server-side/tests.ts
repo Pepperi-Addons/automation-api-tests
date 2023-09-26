@@ -1342,7 +1342,7 @@ export async function handleDevTestInstallation(
     await service.baseAddonVersionsInstallation(varPass);
     //2.1 install template automation addon
     const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, {
-        automation_template_addon: ['02754342-e0b5-4300-b728-a94ea5e0e8f4', ''],
+        automation_template_addon: ['d541b959-87af-4d18-9215-1b30dbe1bcf4', ''],
     });
     if (templateAddonResponse[0] != true) {
         throw new Error(
