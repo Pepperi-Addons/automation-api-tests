@@ -945,6 +945,23 @@ export async function UomTests(email: string, password: string, varPass: string,
                             value: 'data:image/png;base64,' + base64ImageComponent,
                         });
                     });
+                    it('Add "AllowDecimal: true" to item 1233', async function () {
+                        const items = await objectsService.getItems({ page_size: -1 });
+                        const item1233 = items.find((item) => {
+                            if (item.ExternalID === '1233') {
+                                return item;
+                            }
+                        });
+                        if (item1233) {
+                            item1233['AllowDecimal'] = true;
+                            const postItemResponse = await objectsService.postItem(item1233);
+                            expect(postItemResponse.ExternalID).to.equal(postItemResponse.ExternalID);
+                            expect(postItemResponse.MainCategoryID).to.equal(postItemResponse.MainCategoryID);
+                            expect(postItemResponse.Name).to.equal(postItemResponse.Name);
+                            expect(postItemResponse.Price).to.equal(postItemResponse.Price);
+                            expect(postItemResponse.AllowDecimal).to.be.true;
+                        }
+                    });
                     it('Return to Home & Sync', async function () {
                         await webAppHomePage.returnToHomePage();
                         await webAppHomePage.manualResync(client);
@@ -1260,6 +1277,23 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 });
                             });
                         }
+                        it('Set "AllowDecimal: false" of item 1233', async function () {
+                            const items = await objectsService.getItems({ page_size: -1 });
+                            const item1233 = items.find((item) => {
+                                if (item.ExternalID === '1233') {
+                                    return item;
+                                }
+                            });
+                            if (item1233) {
+                                item1233['AllowDecimal'] = false;
+                                const postItemResponse = await objectsService.postItem(item1233);
+                                expect(postItemResponse.ExternalID).to.equal(postItemResponse.ExternalID);
+                                expect(postItemResponse.MainCategoryID).to.equal(postItemResponse.MainCategoryID);
+                                expect(postItemResponse.Name).to.equal(postItemResponse.Name);
+                                expect(postItemResponse.Price).to.equal(postItemResponse.Price);
+                                expect(postItemResponse.AllowDecimal).to.equal(false);
+                            }
+                        });
                     });
                     describe('Conclusion - Cart Test', () => {
                         //4. UOM order test ended - submiting to cart
@@ -1433,8 +1467,10 @@ function createItemsListForUom(): Item[] {
             MainCategoryID: i === 0 ? 'NOT uom item' : 'uom item',
             Name: `${i === 0 ? 'non uom item' : 'uom item'}`,
             Price: i === 0 ? 0.5 : 1,
-            AllowDecimal: true,
         };
+        // if (i == 3) {
+        //     item['AllowDecimal'] = true;
+        // }
         itemList.push(item);
     }
     return itemList;
