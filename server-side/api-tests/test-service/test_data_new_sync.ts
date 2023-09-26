@@ -101,6 +101,8 @@ export async function TestDataTestsNewSync(
                 installedAddons['Cross Platform Engine Data'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Cross Platform Engine')
                 installedAddons['Cross Platform Engine'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'File Service Framework')
+                installedAddons['File Service Framework'] = installedAddonsArr[index].Version;
         }
     }
 
@@ -235,6 +237,10 @@ export async function TestDataTestsNewSync(
             });
             it(`Pepperi Notification Service | Version: ${installedAddons['Notification Service']}`, () => {
                 const regexMatched = installedAddons['Notification Service'].replace(regex, '');
+                expect(regexMatched.length).to.be.above(2);
+            });
+            it(`⁠File Service Framework (PFS) | Version: ${installedAddons['File Service Framework']}`, () => {
+                const regexMatched = installedAddons['File Service Framework'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
             it(`Core Data Source Interface | Version: ${installedAddons['Core Data Source Interface']}`, () => {
