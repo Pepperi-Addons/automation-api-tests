@@ -217,6 +217,7 @@ export class Uom extends AddonPage {
         wholeItemQty?: number,
         itemGrandTotal?: number,
         pageGrandTotal?: number,
+        decimal?: boolean,
     ) {
         console.info(
             'inside testQtysOfItem. ',
@@ -262,26 +263,15 @@ export class Uom extends AddonPage {
             const workingUomObjectWholeItemQty = await (
                 await this.browser.findElement(workingUomObject.wholeItemQty)
             ).getText(); // Hagit June 23
-            // debugger
             console.info('workingUomObjectWholeItemQty: ', workingUomObjectWholeItemQty);
             const theDecimalPortionOf_wholeItemQty = (wholeItemQty - Math.floor(wholeItemQty)) * 10;
             console.info('theDecimalPortionOf_wholeItemQty: ', theDecimalPortionOf_wholeItemQty);
-            // let newWholeItemQty: number; // Hagit June 23 - checking if when item's quantity has decimal portion - it rounds up
-            // if (theDecimalPortionOf_wholeItemQty > 0) {
-            //     const base =
-            //         wholeItemQty > 0
-            //             ? wholeItemQty - theDecimalPortionOf_wholeItemQty / 10
-            //             : wholeItemQty + theDecimalPortionOf_wholeItemQty / 10;
-            //     newWholeItemQty = wholeItemQty > 0 ? base + 1 : base - 1;
-            // } else {
-            //     newWholeItemQty = wholeItemQty;
-            // }
-            // console.info('newWholeItemQty: ', newWholeItemQty);
-            // expect(workingUomObjectWholeItemQty).to.equal(newWholeItemQty.toString());
             expect(workingUomObjectWholeItemQty).to.equal(
-                // Hagit - needs to check if a "Decimal" key is sent (it's value would be 4)
+                // Hagit - needs to check if a "Decimal" key is sent (it's value would be 3) 26/9/23
                 wholeItemQty.toString().includes('.')
-                    ? `${parseFloat(wholeItemQty.toString()).toFixed(4)}`
+                    ? `${parseFloat(wholeItemQty.toString()).toFixed(3)}`
+                    : decimal
+                    ? `${wholeItemQty.toString()}.000`
                     : wholeItemQty.toString(),
             );
         }
