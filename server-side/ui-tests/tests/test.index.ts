@@ -1036,28 +1036,42 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 );
                 const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
                 if (
-                    devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') ||
-                    devTestResultsProd.AuditInfo.hasOwnProperty('ErrorMessage') ||
-                    devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage')
-                )
+                    (devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')) ||
+                    (devTestResultsProd.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after')) ||
+                    (devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after'))
+                ) {
+                    debugger;
+                    let errorString = '';
                     if (
-                        devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after') ||
-                        devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after') ||
+                        devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')
+                    ) {
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                    }
+                    if (
+                        devTestResultsProd.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after')
+                    ) {
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                    }
+                    if (
+                        devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
                         devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after')
                     ) {
-                        debugger;
-                        let errorString = '';
-                        if (devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')) {
-                            errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
-                        }
-                        if (devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after')) {
-                            errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
-                        }
-                        if (devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after')) {
-                            errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
-                        }
-                        throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonEu,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                }
                 //4.3. parse the response
                 let testResultArrayEu;
                 let testResultArrayProd;
@@ -1565,30 +1579,34 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 const devTestResutsEu = await getTestResponseFromAuditLog(euUser, 'prod', devTestResponseEu.Body.URI);
                 const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
                 if (
-                    devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') ||
-                    devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage')
-                )
+                    (devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')) ||
+                    (devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after'))
+                ) {
+                    debugger;
+                    let errorString = '';
                     if (
-                        devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after') ||
+                        devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')
+                    ) {
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                    }
+                    if (
+                        devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
                         devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after')
                     ) {
-                        debugger;
-                        let errorString = '';
-                        if (devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')) {
-                            errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
-                        }
-                        if (devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after')) {
-                            errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
-                        }
-                        await reportToTeamsMessage(
-                            addonName,
-                            addonUUID,
-                            latestVersionOfTestedAddonEu,
-                            errorString,
-                            service,
-                        );
-                        throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonEu,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                }
                 //4.3. parse the response
                 let testResultArrayEu;
                 let testResultArraySB;
@@ -2162,62 +2180,70 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     devTestResponseProd.Body.URI,
                 );
                 const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
+                debugger;
                 if (
-                    devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') ||
-                    devTestResultsProd.AuditInfo.hasOwnProperty('ErrorMessage') ||
-                    devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage')
-                )
+                    (devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')) ||
+                    (devTestResultsProd.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after')) ||
+                    (devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after'))
+                ) {
+                    debugger;
+                    let errorString = '';
                     if (
-                        devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after') ||
-                        devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after') ||
+                        devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')
+                    ) {
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                    }
+                    if (
+                        devTestResultsProd.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after')
+                    ) {
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                    }
+                    if (
+                        devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
                         devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after')
                     ) {
-                        debugger;
-                        let errorString = '';
-                        if (devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')) {
-                            errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
-                        }
-                        if (devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after')) {
-                            errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
-                        }
-                        if (devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after')) {
-                            errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
-                        }
-                        await reportToTeamsMessage(
-                            addonName,
-                            addonUUID,
-                            latestVersionOfTestedAddonProd,
-                            errorString,
-                            service,
-                        );
-                        await Promise.all([
-                            unavailableAddonVersion(
-                                'prod',
-                                addonName,
-                                addonEntryUUIDEU,
-                                latestVersionOfTestedAddonProd,
-                                addonUUID,
-                                varPassEU,
-                            ),
-                            unavailableAddonVersion(
-                                'prod',
-                                addonName,
-                                addonEntryUUIDProd,
-                                latestVersionOfTestedAddonProd,
-                                addonUUID,
-                                varPass,
-                            ),
-                            unavailableAddonVersion(
-                                'stage',
-                                addonName,
-                                addonEntryUUIDSb,
-                                latestVersionOfTestedAddonProd,
-                                addonUUID,
-                                varPassSB,
-                            ),
-                        ]);
-                        throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                        errorString,
+                        service,
+                    );
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDEU,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassEU,
+                        ),
+                        unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                }
                 debugger;
                 //4.3. parse the response
                 let testResultArrayEu;
