@@ -138,7 +138,7 @@ export class OrderPage extends WebAppList {
 
     public async clickViewMenu() {
         await this.browser.click(this.ChangeViewButton);
-        await this.browser.sleep(1500);
+        await this.browser.sleep(0.05 * 1000);
     }
 
     public async searchInOrderCenter(nameOfItem: string): Promise<void> {

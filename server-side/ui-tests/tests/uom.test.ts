@@ -45,7 +45,7 @@ export async function UomTests(email: string, password: string, varPass: string,
     ];
     //2. expected order data of second phase - using item config
     const expectedOrderConfigItems: OrderPageItem[] = [
-        new OrderPageItem('1233', '-20', '$ -20.00'),
+        new OrderPageItem('1233', '-20.000', '$ -20.00'),
         new OrderPageItem('1232', '8', '$ 8.00'),
         new OrderPageItem('1231', '48', '$ 48.00'),
     ];
@@ -1159,7 +1159,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
                             driver.sleep(1500);
                             await uom.isSpinnerDone();
-                            await uom.testQtysOfItem(workingUomObject, 8, 0, 20, 76, 76);
+                            await uom.testQtysOfItem(workingUomObject, 8, 0, 20, 76, 76, true);
                             let base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `UOM1 Plus button clicked`,
@@ -1168,7 +1168,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             await driver.click(workingUomObject.aoqmUom1PlusQtyButton);
                             driver.sleep(1500);
                             await uom.isSpinnerDone();
-                            await uom.testQtysOfItem(workingUomObject, 12, 0, 30, 86, 86);
+                            await uom.testQtysOfItem(workingUomObject, 12, 0, 30, 86, 86, true);
                             base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `UOM1 Plus button clicked`,
@@ -1203,6 +1203,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                     -(i * 2.5),
                                     56 + i * -2.5,
                                     56 + i * -2.5,
+                                    true,
                                 );
                                 const base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
@@ -1248,6 +1249,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                     -20 + i * 4,
                                     36 + i * 4,
                                     36 + i * 4,
+                                    true,
                                 );
                                 const base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
@@ -1269,6 +1271,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                     -12 - i * 4,
                                     44 - i * 4,
                                     44 - i * 4,
+                                    true,
                                 );
                                 const base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
