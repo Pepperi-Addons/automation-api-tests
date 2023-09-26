@@ -217,7 +217,7 @@ export class Uom extends AddonPage {
         wholeItemQty?: number,
         itemGrandTotal?: number,
         pageGrandTotal?: number,
-        decimal?: boolean,
+        decimal?: boolean, // added to overcome https://pepperi.atlassian.net/browse/DI-24705
     ) {
         console.info(
             'inside testQtysOfItem. ',
