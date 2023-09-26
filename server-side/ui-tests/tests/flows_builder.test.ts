@@ -108,6 +108,7 @@ export async function FlowTests(email: string, password: string, client: Client,
     const testData = {
         'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
+        configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
