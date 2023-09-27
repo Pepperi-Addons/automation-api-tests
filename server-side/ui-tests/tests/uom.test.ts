@@ -455,6 +455,8 @@ export async function UomTests(email: string, password: string, varPass: string,
                             //1. regular item testing
                             //1.1 add 40 items of regular qty - see 40 items are shown + correct price is presented
                             workingUomObject = new UomUIObject('1230');
+                            await driver.refresh();
+                            await uom.isSpinnerDone();
                             await driver.click(workingUomObject.aoqmUom1Qty);
                             await driver.sendKeys(workingUomObject.aoqmUom1Qty, '40');
                             driver.sleep(1000);
@@ -468,6 +470,8 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                         it('40 items of regular qty - see that correct price is presented', async function () {
+                            await driver.refresh();
+                            await uom.isSpinnerDone();
                             await uom.testQtysOfItem(workingUomObject, 40, undefined, 40, 20, 20);
                             const base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
