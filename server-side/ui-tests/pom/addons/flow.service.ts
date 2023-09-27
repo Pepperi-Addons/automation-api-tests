@@ -121,7 +121,9 @@ export class FlowService extends AddonPage {
     public ModalParamSourceName: By = By.xpath(
         '(//addon-script-picker//pep-generic-form//mat-select//div//span//span)[2]',
     );
-    public FlowRadioButton: By = By.xpath('(//mat-radio-button)[|PLACEHOLDER|]');
+    public FlowRadioButton: By = By.xpath(
+        '(//virtual-scroller//div[@class="table-row ng-star-inserted"][|PLACEHOLDER|]//mat-checkbox)[1]',
+    );
     public FlowLink: By = By.xpath("//pep-form//pep-link//a[@title='|PLACEHOLDER|_copy']");
     public AllFlowsInList: By = By.xpath("//a[@id='Name']");
     public FlowPencilButton: By = By.xpath('//pep-list-actions//pep-menu//button');
@@ -282,13 +284,11 @@ export class FlowService extends AddonPage {
         await this.browser.click(By.xpath(radioButtonByIndex));
     }
 
-    async getToRunPageOfFlowByIndex(flowIndex, flow: Flow) {
-        await this.selectRadioButtonOfFlowByIndexFromList(flowIndex);
-        await this.browser.untilIsVisible(this.FlowPencilButton);
-        await this.browser.click(this.FlowPencilButton);
-        await this.browser.untilIsVisible(this.PencilTestButton);
-        await this.browser.click(this.PencilTestButton);
-        this.browser.sleep(3000);
+    async getToRunPageOfFlowByKeyUsingNav(flowKey, flow: Flow) {
+        const currentUrl = await this.browser.getCurrentUrl();
+        const testURL = currentUrl + `/${flowKey}/test`;
+        await this.browser.navigate(testURL);
+        this.browser.sleep(8000);
         await this.browser.untilIsVisible(this.RunScreenTtile);
         const isNamesSimilar = (await (await this.browser.findElement(this.RunScreenTtile)).getText()).includes(
             flow.Name,
@@ -301,6 +301,30 @@ export class FlowService extends AddonPage {
         const isParamNameCorrect =
             (await (await this.browser.findElement(this.RunScreenParamName)).getText()) === flow.Params[0].Name;
         return isNamesSimilar && isTypeCorrect && isValueCorrect && isParamNameCorrect;
+    }
+
+    async duplicateFlowByKeyUsingAPI(generalService, flowKey, flow: Flow) {
+        const responseForFlow = await generalService.fetchStatus(
+            `/addons/api/dc8c5ca7-3fcc-4285-b790-349c7f3908bd/api/duplicate_flow?key=${flowKey}`,
+            {
+                method: 'POST',
+                body: JSON.stringify(flow),
+            },
+        );
+        return responseForFlow;
+    }
+
+    async getToLogsPageOfFlowByKeyUsingNav(flowKey, flow: Flow) {
+        const currentUrl = await this.browser.getCurrentUrl();
+        const testURL = currentUrl + `/${flowKey}/logs`;
+        await this.browser.navigate(testURL);
+        this.browser.sleep(12000);
+        await this.browser.untilIsVisible(this.LogsScreenTtile);
+        const isNamesSimilar = (await (await this.browser.findElement(this.LogsScreenTtile)).getText()).includes(
+            flow.Name,
+        );
+        this.browser.sleep(1000 * 5);
+        return isNamesSimilar;
     }
 
     async getToLogsPageOfFlowByIndex(flowIndex, flow: Flow) {
@@ -348,6 +372,18 @@ export class FlowService extends AddonPage {
         await this.browser.untilIsVisible(this.ModalButtonDeleteFlow);
         await this.browser.click(this.ModalButtonDeleteFlow);
         this.browser.sleep(1000 * 15);
+    }
+
+    async deleteFlowByKeyUsingAPI(generalService, flowKey) {
+        const bodyToSend = { Key: flowKey, Hidden: true };
+        const responseForFlow = await generalService.fetchStatus(
+            `/addons/api/84c999c3-84b7-454e-9a86-71b7abc96554/api/objects?addonUUID=dc8c5ca7-3fcc-4285-b790-349c7f3908bd&name=flows&scheme=drafts`,
+            {
+                method: 'POST',
+                body: JSON.stringify(bodyToSend),
+            },
+        );
+        return responseForFlow;
     }
 
     async validateLogs() {

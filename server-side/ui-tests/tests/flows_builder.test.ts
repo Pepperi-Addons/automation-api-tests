@@ -106,9 +106,9 @@ export async function FlowTests(email: string, password: string, client: Client,
     // #region Upgrade survey dependencies
 
     const testData = {
-        'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''],
-        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
+        'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
@@ -240,7 +240,6 @@ export async function FlowTests(email: string, password: string, client: Client,
                     expect(stepFromAPI.Configuration).to.deep.equal(stepInput.Configuration);
                 }
                 driver.sleep(10000); //wait for eveything to sync or whatever
-                debugger;
                 //-> enter flow
                 await flowService.enterFlowBySearchingName(positiveFlow.Name);
                 //->validate all steps are there with correct names
@@ -249,11 +248,9 @@ export async function FlowTests(email: string, password: string, client: Client,
                     const isCreatedSecsefully = await flowService.validateStepCreatedByApi(step.Name, index + 1);
                     expect(isCreatedSecsefully).to.equal(true);
                 }
-                debugger;
                 //-> validate the script inside the step and its params
                 for (let index = 0; index < newFlowSteps.length; index++) {
                     const step = newFlowSteps[index];
-                    debugger;
                     const isCreatedSuccessfully = await flowService.validateStepScript(index + 1, step, generalService);
                     expect(isCreatedSuccessfully).to.equal(true);
                     await flowService.closeScriptModal();
@@ -278,7 +275,10 @@ export async function FlowTests(email: string, password: string, client: Client,
             it('6. Run Flow And See Result', async function () {
                 const flowService = new FlowService(driver);
                 //->run flow and see result
-                const isRunFlowPresentedCorrectly = await flowService.getToRunPageOfFlowByIndex(1, positiveFlow);
+                const isRunFlowPresentedCorrectly = await flowService.getToRunPageOfFlowByKeyUsingNav(
+                    flowKey,
+                    positiveFlow,
+                );
                 expect(isRunFlowPresentedCorrectly).to.equal(true);
                 await flowService.runFlow();
                 const runDParamShown = await flowService.validateRunParam();
@@ -292,7 +292,10 @@ export async function FlowTests(email: string, password: string, client: Client,
             it('7. Enter Flows Logs And See Everything Was Recoreded', async function () {
                 const flowService = new FlowService(driver);
                 //enter Logs For The Same Flow
-                const isLogsPagePresentedCorrectly = await flowService.getToLogsPageOfFlowByIndex(1, positiveFlow);
+                const isLogsPagePresentedCorrectly = await flowService.getToLogsPageOfFlowByKeyUsingNav(
+                    flowKey,
+                    positiveFlow,
+                );
                 expect(isLogsPagePresentedCorrectly).to.equal(true);
                 driver.sleep(1000 * 60 * 5); //wait 5 minutes for the logs to load
                 await flowService.refreshLogs(); //refresh logs by pressing button
@@ -321,17 +324,25 @@ export async function FlowTests(email: string, password: string, client: Client,
             it('8. Duplicate The Flow - Run The Copy - See Everything Was Created Correctly', async function () {
                 const flowService = new FlowService(driver);
                 //2. Duplicate The Flow & run it - see everything is good
-                const isDuplicateShown = await flowService.duplicateFlowByIndex(1, positiveFlow);
-                expect(isDuplicateShown).to.equal(true);
+                const duplicateResponse = await flowService.duplicateFlowByKeyUsingAPI(
+                    generalService,
+                    flowKey,
+                    positiveFlow,
+                ); //this worked
+                expect(duplicateResponse.Status).to.equal(200);
+                expect(duplicateResponse.Ok).to.equal(true);
+                await driver.refresh();
+                driver.sleep(6000);
                 duplicatedFlow = {
+                    Key: duplicateResponse.Body.Key,
                     Name: positiveFlow.Name + '_copy',
                     Params: positiveFlow.Params,
                     Steps: positiveFlow.Steps,
                     Hidden: false,
                 };
                 await flowService.searchFlowByName(duplicatedFlow.Name);
-                const isRunFlowPresentedCorrectlyCopyFlow = await flowService.getToRunPageOfFlowByIndex(
-                    1,
+                const isRunFlowPresentedCorrectlyCopyFlow = await flowService.getToRunPageOfFlowByKeyUsingNav(
+                    duplicatedFlow.Key,
                     duplicatedFlow,
                 );
                 expect(isRunFlowPresentedCorrectlyCopyFlow).to.equal(true);
@@ -346,7 +357,13 @@ export async function FlowTests(email: string, password: string, client: Client,
                 const flowService = new FlowService(driver);
                 //3. delete the duplicate using pencil menu - see only the first one is left
                 await flowService.searchFlowByName(duplicatedFlow.Name);
-                await flowService.deleteFlowByIndex(1);
+                const deleteResponse = await flowService.deleteFlowByKeyUsingAPI(generalService, duplicatedFlow.Key);
+                expect(deleteResponse.Status).to.equal(200);
+                expect(deleteResponse.Ok).to.equal(true);
+                expect(deleteResponse.Body.Key).to.equal(duplicatedFlow.Key);
+                expect(deleteResponse.Body.Hidden).to.equal(true);
+                await driver.refresh();
+                driver.sleep(6000);
                 const allFlowInMainList = await flowService.getAllFlowsFromMainList();
                 expect(allFlowInMainList.length).to.equal(1);
                 //->Get all flow by API - see only the original is left
