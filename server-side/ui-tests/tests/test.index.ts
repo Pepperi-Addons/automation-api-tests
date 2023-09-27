@@ -2195,19 +2195,19 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                         devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') &&
                         devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')
                     ) {
-                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                        errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
                     }
                     if (
                         devTestResultsProd.AuditInfo.hasOwnProperty('ErrorMessage') &&
                         devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after')
                     ) {
-                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
                     }
                     if (
                         devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
                         devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after')
                     ) {
-                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
                     await reportToTeamsMessage(
                         addonName,
@@ -3924,10 +3924,10 @@ export async function reportToTeamsNeptune(
 
 export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, error, service: GeneralService) {
     await reportBuildEnded(addonName, addonUUID, addonVersion, service);
-    const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Failed On: ${error}`;
+    const message = `${error}`;
     const bodyToSend = {
         Name: `${addonName} Approvment Tests Status: Failed Due CI/CD Process Exception`,
-        Description: message,
+        Description: `${addonName} - (${addonUUID}), Version:${addonVersion}, Failed!`,
         Status: 'ERROR',
         Message: message,
         UserWebhook: await handleTeamsURL(addonName, service, email, pass),
