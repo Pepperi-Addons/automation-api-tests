@@ -1191,7 +1191,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                             });
                         });
                         for (let i = 1; i < 9; i++) {
-                            // commented out dut to https://pepperi.atlassian.net/browse/DI-24705 DO NOT DELETE!
+                            // commented out dut to https://pepperi.atlassian.net/browse/DI-24705 - Resolved
                             it(`Minus button clicks - to reach Zero (click number ${i})`, async function () {
                                 await driver.click(workingUomObject.aoqmUom1MinusQtyButton);
                                 driver.sleep(1500);
