@@ -219,8 +219,9 @@ export class Uom extends AddonPage {
         pageGrandTotal?: number,
         decimal?: boolean, // added to overcome https://pepperi.atlassian.net/browse/DI-24705
     ) {
-        console.info(
-            'inside testQtysOfItem. ',
+        console.log(
+            'inside testQtysOfItem.\n',
+            'received arguments:\n',
             'aoqmUom1Qty: ',
             aoqmUom1Qty,
             ' aoqmUom2Qty: ',
@@ -239,11 +240,11 @@ export class Uom extends AddonPage {
                 parseFloat(aoqmUom1Qty.toString()).toFixed(1),
                 parseFloat(aoqmUom1Qty.toString()).toFixed(2),
             ];
-            console.info('optionArr at aoqmUom1Qty: ', optionArr);
+            console.log('EXPECTED - optionArr at aoqmUom1Qty: ', optionArr);
             const workingUomObjectAoqmUom1Qty = await (
                 await this.browser.findElement(workingUomObject.aoqmUom1Qty)
             ).getAttribute('title'); // Hagit June 23
-            console.info('workingUomObjectAoqmUom1Qty: ', workingUomObjectAoqmUom1Qty);
+            console.info('ACTUAL - workingUomObjectAoqmUom1Qty: ', workingUomObjectAoqmUom1Qty);
             expect(workingUomObjectAoqmUom1Qty).to.be.oneOf(optionArr);
         }
         if (aoqmUom2Qty !== undefined) {
@@ -252,20 +253,21 @@ export class Uom extends AddonPage {
                 parseFloat(aoqmUom2Qty.toString()).toFixed(1),
                 parseFloat(aoqmUom2Qty.toString()).toFixed(2),
             ];
-            console.info('optionArr at aoqmUom2Qty: ', optionArr);
+            console.log('EXPECTED - optionArr at aoqmUom2Qty: ', optionArr);
             const workingUomObjectAoqmUom2Qty = await (
                 await this.browser.findElement(workingUomObject.aoqmUom2Qty)
             ).getAttribute('title');
-            console.info('workingUomObjectAoqmUom2Qty: ', workingUomObjectAoqmUom2Qty);
+            console.info('ACTUAL - workingUomObjectAoqmUom2Qty: ', workingUomObjectAoqmUom2Qty);
             expect(workingUomObjectAoqmUom2Qty).to.be.oneOf(optionArr);
         }
         if (wholeItemQty !== undefined) {
+            console.log('EXPECTED - wholeItemQty: ', wholeItemQty);
             const workingUomObjectWholeItemQty = await (
                 await this.browser.findElement(workingUomObject.wholeItemQty)
             ).getText(); // Hagit June 23
-            console.info('workingUomObjectWholeItemQty: ', workingUomObjectWholeItemQty);
+            console.info('ACTUAL - workingUomObjectWholeItemQty: ', workingUomObjectWholeItemQty);
             const theDecimalPortionOf_wholeItemQty = (wholeItemQty - Math.floor(wholeItemQty)) * 10;
-            console.info('theDecimalPortionOf_wholeItemQty: ', theDecimalPortionOf_wholeItemQty);
+            console.info('ACTUAL - theDecimalPortionOf_wholeItemQty: ', theDecimalPortionOf_wholeItemQty);
             expect(workingUomObjectWholeItemQty).to.equal(
                 // Hagit - needs to check if a "Decimal" key is sent (it's value would be 3) 26/9/23
                 wholeItemQty.toString().includes('.')
@@ -277,13 +279,13 @@ export class Uom extends AddonPage {
         }
         if (itemGrandTotal !== undefined) {
             const itemGrandTotalString = parseFloat(itemGrandTotal.toString()).toFixed(2);
-            console.info('itemGrandTotalString: ', itemGrandTotalString);
+            console.log('EXPECTED - itemGrandTotalString: ', itemGrandTotalString);
             const workingUomObjectItemGrandTotal = (
                 await (await this.browser.findElement(workingUomObject.itemGrandTotal)).getText()
             )
                 .split('$')[1]
                 .trim();
-            console.info('workingUomObjectItemGrandTotal: ', workingUomObjectItemGrandTotal);
+            console.info('ACTUAL - workingUomObjectItemGrandTotal: ', workingUomObjectItemGrandTotal);
             expect(workingUomObjectItemGrandTotal).to.be.oneOf([
                 `${itemGrandTotalString.trim()}`,
                 `-${itemGrandTotalString.trim()}`,
@@ -292,9 +294,11 @@ export class Uom extends AddonPage {
 
         if (pageGrandTotal !== undefined) {
             const pageGrandTotalString = parseFloat(pageGrandTotal.toString()).toFixed(2);
+            console.log('EXPECTED - pageGrandTotalString: ', pageGrandTotalString);
             const orderPageGrandTotal = (await (await this.browser.findElement(orderPage.pageGrandTotal)).getText())
                 .split('$')[1]
                 .trim();
+            console.info('ACTUAL - orderPageGrandTotal: ', orderPageGrandTotal);
             expect(orderPageGrandTotal).to.be.oneOf([
                 `${pageGrandTotalString.trim()}`,
                 `-${pageGrandTotalString.trim()}`,
