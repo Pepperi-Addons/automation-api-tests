@@ -247,7 +247,7 @@ export async function Pricing06Tests(email: string, password: string, client: Cl
                                     //     title: `Entered Cart`,
                                     //     value: 'data:image/png;base64,' + base64ImageComponent,
                                     // });
-                                    await driver.untilIsVisible(orderPage.Cart_Total_Header);
+                                    await driver.untilIsVisible(orderPage.Cart_List_container);
                                 });
                                 it('verify that the sum total of items in the cart is correct', async function () {
                                     base64ImageComponent = await driver.saveScreenshots();
@@ -671,7 +671,7 @@ export async function Pricing06Tests(email: string, password: string, client: Cl
                     });
                     describe('CART', () => {
                         it('verifying that the sum total of items in the cart is correct', async () => {
-                            await driver.untilIsVisible(orderPage.Cart_Total_Header); // check to be in cart
+                            await driver.untilIsVisible(orderPage.Cart_List_container); // check to be in cart
                             const itemsInCart = await (
                                 await driver.findElement(orderPage.Cart_Headline_Results_Number)
                             ).getText();
@@ -1643,7 +1643,7 @@ export async function Pricing06Tests(email: string, password: string, client: Cl
                         });
                         it('Click "Submit" button', async () => {
                             await orderPage.isSpinnerDone();
-                            await driver.untilIsVisible(orderPage.Cart_Total_Header);
+                            await driver.untilIsVisible(orderPage.Cart_List_container);
                             await driver.click(orderPage.Cart_Submit_Button);
                             driver.sleep(0.1 * 1000);
                         });
