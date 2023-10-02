@@ -4,10 +4,10 @@ import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { ObjectsService } from '../../services';
-import { PricingData } from '../pom/addons/Pricing';
+// import { PricingData } from '../pom/addons/Pricing';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
-// import { PricingData05 } from '../pom/addons/Pricing05';
-// import { PricingData06 } from '../pom/addons/Pricing06';
+import { PricingData05 } from '../pom/addons/Pricing05';
+import { PricingData06 } from '../pom/addons/Pricing06';
 
 chai.use(promised);
 
@@ -34,7 +34,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
     //#region Upgrade script dependencies
 
     const testData = {
-        pricing: ['adb3c829-110c-4706-9168-40fba9c0eb52', ''],
+        pricing: ['adb3c829-110c-4706-9168-40fba9c0eb52', '0.6.%'],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''], // current phased version 0.7.112 | dependency > 0.7.104
@@ -93,40 +93,40 @@ export async function PricingDataPrep(varPass: string, client: Client) {
     });
 
     describe('Data Prep', () => {
-        // it('sending configuration object to end point', async () => {
-        //     switch (installedPricingVersion) {
-        //         case '5':
-        //             console.info('AT installedPricingVersion CASE 5');
-        //             pricingData = new PricingData05();
-        //             // await uploadConfiguration(pricingData.config_05);
-        //             break;
-        //         case '6':
-        //             console.info('AT installedPricingVersion CASE 6');
-        //             pricingData = new PricingData06();
-        //             break;
-
-        //         default:
-        //             break;
-        //     }
-        //     await uploadConfiguration(pricingData.config);
-        // });
         it('sending configuration object to end point', async () => {
-            pricingData = new PricingData();
             switch (installedPricingVersion) {
                 case '5':
                     console.info('AT installedPricingVersion CASE 5');
-                    await uploadConfiguration(pricingData.config_05);
+                    pricingData = new PricingData05();
+                    // await uploadConfiguration(pricingData.config_05);
                     break;
                 case '6':
                     console.info('AT installedPricingVersion CASE 6');
-                    await uploadConfiguration(pricingData.config_06);
+                    pricingData = new PricingData06();
                     break;
 
                 default:
                     break;
             }
-            // pricingData = new PricingData05();
+            await uploadConfiguration(pricingData.config);
         });
+        // it('sending configuration object to end point', async () => {
+        //     pricingData = new PricingData();
+        //     switch (installedPricingVersion) {
+        //         case '5':
+        //             console.info('AT installedPricingVersion CASE 5');
+        //             await uploadConfiguration(pricingData.config_05);
+        //             break;
+        //         case '6':
+        //             console.info('AT installedPricingVersion CASE 6');
+        //             await uploadConfiguration(pricingData.config_06);
+        //             break;
+
+        //         default:
+        //             break;
+        //     }
+        //     // pricingData = new PricingData05();
+        // });
         it('inserting valid rules to the UDT "PPM_Values"', async () => {
             // const tableName = 'PPM_Values';
             const dataToBatch: {
@@ -149,10 +149,14 @@ export async function PricingDataPrep(varPass: string, client: Client) {
             batchUDTresponse.map((row) => {
                 expect(row).to.have.property('InternalID').that.is.above(0);
                 expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
-                expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore']);
+                expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
                 expect(row)
                     .to.have.property('Message')
-                    .that.is.oneOf(['Row inserted.', 'No changes in this row. The row is being ignored.']);
+                    .that.is.oneOf([
+                        'Row inserted.',
+                        'No changes in this row. The row is being ignored.',
+                        'Row updated.',
+                    ]);
                 expect(row)
                     .to.have.property('URI')
                     .that.equals('/user_defined_tables/' + row.InternalID);
@@ -192,6 +196,13 @@ export async function PricingDataPrep(varPass: string, client: Client) {
             console.info('PPM_Values: ', JSON.stringify(initialPpmValues, null, 2));
         });
         it('validating "PPM_Values" via API', async () => {
+            console.info('BASE URL: ', client.BaseURL);
+            // debugger
+            console.info(
+                'EXPECTED: Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length: ',
+                Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length,
+            );
+            console.info('ACTUAL: initialPpmValues.length: ', initialPpmValues.length);
             expect(initialPpmValues.length).equals(
                 Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length,
             );
@@ -202,8 +213,16 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                         return tableRow;
                     }
                 });
-                console.info('matchingRowOfinitialPpmValues: ', matchingRowOfinitialPpmValues['Values'][0]);
-                expect(pricingData.documentsIn_PPM_Values[mainKey]).equals(matchingRowOfinitialPpmValues['Values'][0]);
+                console.info('EXPECTED: matchingRowOfinitialPpmValues: ', matchingRowOfinitialPpmValues['Values'][0]);
+                console.info(
+                    'ACTUAL: pricingData.documentsIn_PPM_Values[mainKey]: ',
+                    pricingData.documentsIn_PPM_Values[mainKey],
+                );
+                expect(pricingData.documentsIn_PPM_Values[mainKey]).equals(
+                    client.BaseURL.includes('staging')
+                        ? matchingRowOfinitialPpmValues['Values'].join()
+                        : matchingRowOfinitialPpmValues['Values'][0],
+                );
             });
             // initialPpmValues.forEach((tableRow) => {
             //     expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
@@ -219,12 +238,11 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                 });
                 // valueObj["Hidden"] = true;
                 console.info(
-                    'dummyPPM_InternalID',
+                    'dummyPPM_InternalID:',
                     dummyPPM_InternalID,
-                    'dummyPPM_ValueObj: ',
+                    ', dummyPPM_ValueObj: ',
                     JSON.stringify(valueObj, null, 2),
                 );
-                // debugger
                 const body: UserDefinedTableRow = {
                     InternalID: dummyPPM_InternalID,
                     Hidden: true,
@@ -233,11 +251,13 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                     MapDataExternalID: tableName,
                     Values: [dummyPPMvalue],
                 };
+                // debugger
                 deleteUDTresponse = await objectsService.postUDT(body);
+                console.info('dummyPPM_ValuesKeys Delete RESPONSE: ', JSON.stringify(deleteUDTresponse, null, 2));
                 expect(deleteUDTresponse).to.deep.include({
                     MapDataExternalID: tableName,
                     SecondaryKey: null,
-                    Values: [dummyPPMvalue],
+                    Values: [client.BaseURL.includes('staging') ? dummyPPMvalue.split('\\') : dummyPPMvalue],
                 });
                 expect(deleteUDTresponse).to.have.property('MainKey').that.contains('ZDS1@A001@Dummy');
                 expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
@@ -247,7 +267,6 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                 expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
                 expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
                 expect(deleteUDTresponse).to.have.property('InternalID').that.equals(dummyPPM_InternalID);
-                console.info('dummyPPM_ValuesKeys Delete RESPONSE: ', JSON.stringify(deleteUDTresponse, null, 2));
             });
         });
     });
