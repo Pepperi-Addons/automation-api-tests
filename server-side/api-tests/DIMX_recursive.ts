@@ -33,7 +33,7 @@ export async function DIMXrecursive(generalService: GeneralService, request, tes
         'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.2.28'], //Evgeny 2/10/23: bug in installing PFS 1.3.x so locked for now
     };
     testData[`${dimxName}`] = ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''];
     const isInstalledArr = await generalService.areAddonsInstalled(testData);

@@ -1353,6 +1353,15 @@ export async function handleDevTestInstallation(
     const addonDep = await getDependenciesOfAddon(service, addonUUID, varPass);
     //4. install on dist
     if (addonDep !== undefined && addonDep.length !== 0) {
+        if (addonUUID === '00000000-0000-0000-0000-0000000f11e5') {
+            //OFS
+            const depObjNebula = {};
+            depObjNebula['Nebula'] = ['00000000-0000-0000-0000-000000006a91', ''];
+            const depObjSync = {};
+            depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.84'];
+            addonDep.push(depObjNebula);
+            addonDep.push(depObjSync);
+        }
         if (
             addonUUID === '00000000-0000-0000-0000-000000006a91' //Nebula
         ) {
