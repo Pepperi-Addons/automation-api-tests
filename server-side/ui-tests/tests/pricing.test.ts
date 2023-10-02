@@ -254,7 +254,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     await driver.click(orderPage.Cart_Button);
                                     await orderPage.isSpinnerDone();
                                     driver.sleep(1 * 1000);
-                                    await driver.untilIsVisible(orderPage.Cart_Total_Header);
+                                    await driver.untilIsVisible(orderPage.Cart_List_container);
                                 });
                                 it('verify that the sum total of items in the cart is correct', async function () {
                                     base64ImageComponent = await driver.saveScreenshots();
@@ -721,7 +721,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 title: `At Cart`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
-                            await driver.untilIsVisible(orderPage.Cart_Total_Header); // check to be in cart
+                            await driver.untilIsVisible(orderPage.Cart_List_container); // check to be in cart
                             const itemsInCart = await (
                                 await driver.findElement(orderPage.Cart_Headline_Results_Number)
                             ).getText();
@@ -1630,7 +1630,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('Click "Submit" button', async () => {
                             await orderPage.isSpinnerDone();
-                            await driver.untilIsVisible(orderPage.Cart_Total_Header);
+                            await driver.untilIsVisible(orderPage.Cart_List_container);
                             await driver.click(orderPage.Cart_Submit_Button);
                             driver.sleep(0.1 * 1000);
                         });

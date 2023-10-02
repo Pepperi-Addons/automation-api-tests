@@ -30,7 +30,9 @@ export class OrderPage extends WebAppList {
     public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
     public Cart_Totals: By = By.xpath('//list-totals-view');
     public Cart_Total_Header: By = By.xpath('//pep-textbox[@data-qa="PSAGrandTotalHeader"]');
+    public Cart_Total_Header_container: By = By.xpath('//div[contains(@class,"line-view")]');
     public Cart_Submit_Button: By = By.xpath('//button[@data-qa="Submit"]');
+    public Cart_List_container: By = By.xpath('//app-cart//pep-list/div');
     public TransactionUUID: By = By.id('UUID');
     public TransactionID: By = By.id('WrntyID');
 
