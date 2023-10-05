@@ -36,6 +36,9 @@ export class DevTest {
     public failedSuitesEU: any[] = [];
     public failedSuitesProd: any[] = [];
     public failedSuitesSB: any[] = [];
+    public euUser;
+    public prodUser;
+    public sbUser;
 
     constructor(
         addonName: string,
@@ -93,7 +96,16 @@ export class DevTest {
         const userList = await this.resolveUserPerTest2();
         for (let index = 0; index < userList.length; index++) {
             const user = userList[index];
-            await this.installDependenciesInternal(user.email, user.env);
+            const varPass = user.env === 'EU' || user.env === 'PROD' ? this.varPass : this.varPassSB;
+            try {
+                await this.installDependenciesInternal(user.email, user.env, varPass);
+            } catch (error) {
+                const errorString = `Error: Got Exception While Trying To Upgrade Addons: ${
+                    (error as any).message
+                }, On User: ${user.email}`;
+                await this.reportToTeamsMessage(errorString);
+                throw new Error(errorString);
+            }
         }
     }
 
@@ -119,7 +131,7 @@ export class DevTest {
         return isInstalled;
     }
 
-    async installDependenciesInternal(userName, env) {
+    async installDependenciesInternal(userName, env, varPass) {
         //im here - TODO
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
@@ -130,9 +142,9 @@ export class DevTest {
         //1. convert Name to UUID
         service.PrintMemoryUseToLog('Start', testName);
         //2. upgrade dependencys - basic: correct for all addons
-        await service.baseAddonVersionsInstallation(this.varPass);
+        await service.baseAddonVersionsInstallation(varPass);
         //2.1 install template automation addon
-        const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(this.varPass, {
+        const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, {
             automation_template_addon: ['d541b959-87af-4d18-9215-1b30dbe1bcf4', ''],
         });
         if (templateAddonResponse[0] != true) {
@@ -141,7 +153,7 @@ export class DevTest {
             );
         }
         //3. get dependencys of tested addon
-        const addonDep = await this.getDependenciesOfAddon(service, this.addonUUID, this.varPass);
+        const addonDep = await this.getDependenciesOfAddon(service, this.addonUUID, varPass);
         //4. install on dist
         if (addonDep !== undefined && addonDep.length !== 0) {
             if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5') {
@@ -192,11 +204,11 @@ export class DevTest {
                     currentAddonName === 'nebula' &&
                     uuid === '00000000-0000-0000-0000-000000006a91'
                 ) {
-                    const NebulaDep = await this.getDependenciesOfAddon(service, uuid, this.varPass);
+                    const NebulaDep = await this.getDependenciesOfAddon(service, uuid, varPass);
                     for (let index = 0; index < NebulaDep.length; index++) {
                         const nebulaDepAddon = NebulaDep[index];
                         const installAddonResponse = (await service.installLatestAvalibaleVersionOfAddon(
-                            this.varPass,
+                            varPass,
                             nebulaDepAddon,
                         )) as any;
                         if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
@@ -211,7 +223,7 @@ export class DevTest {
                     }
                 }
                 const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(
-                    this.varPass,
+                    varPass,
                     addonToInstall,
                 );
                 if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
@@ -238,7 +250,7 @@ export class DevTest {
         // this can be used to install NOT latest avalivale versions
         // const version = addonName === 'SYNC' ? '0.7.30' : '%';
         addonToInstall[this.addonName] = [this.addonUUID, '%'];
-        const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(this.varPass, addonToInstall);
+        const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
         if (installAddonResponse[0] != true) {
             throw new Error(
                 `Error: can't install ${this.addonName} - ${this.addonUUID}, exception: ${installAddonResponse}`,
@@ -248,18 +260,22 @@ export class DevTest {
     }
 
     async getEuUser() {
-        return await this.resolveUserPerTest2()[0];
+        debugger;
+        return this.euUser;
     }
 
     async getSbUser() {
-        return await this.resolveUserPerTest2()[2];
+        return this.sbUser;
     }
 
     async getProdUser() {
-        return await this.resolveUserPerTest2()[1];
+        return this.prodUser;
     }
 
     async validateAllVersionsAreEqualBetweenEnvs() {
+        this.euUser = (await this.resolveUserPerTest2())[0];
+        this.prodUser = (await this.resolveUserPerTest2())[1];
+        this.sbUser = (await this.resolveUserPerTest2())[2];
         let latestVersionOfTestedAddonProd,
             addonEntryUUIDProd,
             latestVersionOfTestedAddonEu,
@@ -267,21 +283,28 @@ export class DevTest {
             latestVersionOfTestedAddonSb,
             addonEntryUUIDSb;
         try {
-            [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await (
-                await this.resolveUserPerTest2()
-            )[0].generalService.getLatestAvailableVersion(this.addonUUID, this.varPass, null, 'prod');
-            [latestVersionOfTestedAddonEu, addonEntryUUIDEU] = await (
-                await this.resolveUserPerTest2()
-            )[1].generalService.getLatestAvailableVersion(this.addonUUID, this.varPassEU, null, 'prod');
-            [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await (
-                await this.resolveUserPerTest2()
-            )[2].generalService.getLatestAvailableVersion(this.addonUUID, this.varPassSB, null, 'stage');
+            [latestVersionOfTestedAddonProd, addonEntryUUIDProd] =
+                await this.euUser.generalService.getLatestAvailableVersion(this.addonUUID, this.varPass, null, 'prod');
+            [latestVersionOfTestedAddonEu, addonEntryUUIDEU] =
+                await this.prodUser.generalService.getLatestAvailableVersion(
+                    this.addonUUID,
+                    this.varPass,
+                    null,
+                    'prod',
+                );
+            [latestVersionOfTestedAddonSb, addonEntryUUIDSb] =
+                await this.sbUser.generalService.getLatestAvailableVersion(
+                    this.addonUUID,
+                    this.varPassSB,
+                    null,
+                    'stage',
+                );
         } catch (error) {
             debugger;
             const errorString = `Error: Couldn't Get Latest Available Versions Of ${this.addonName}: ${
                 (error as any).message
             }`;
-            await this.reportToTeamsMessage(this.addonName);
+            await this.reportToTeamsMessage(errorString);
             throw new Error(errorString);
         }
         if (
@@ -291,7 +314,7 @@ export class DevTest {
         ) {
             const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`;
             debugger;
-            await this.reportToTeamsMessage(this.addonName);
+            await this.reportToTeamsMessage(errorString);
             await this.unavailableVersion(
                 addonEntryUUIDEU,
                 addonEntryUUIDProd,
@@ -310,8 +333,8 @@ export class DevTest {
     async getTestNames() {
         const response = (
             await (
-                await this.resolveUserPerTest2()
-            )[1].generalService.fetchStatus(`/addons/api/${this.addonUUID}/tests/tests`, {
+                await this.getProdUser()
+            ).generalService.fetchStatus(`/addons/api/${this.addonUUID}/tests/tests`, {
                 method: 'GET',
             })
         ).Body;
@@ -339,6 +362,7 @@ export class DevTest {
                     'AutomationAddonSecretKey',
                 );
             }
+            debugger;
             const euUser = await this.getEuUser();
             const prodUser = await this.getProdUser();
             const sbUser = await this.getSbUser();
@@ -787,6 +811,7 @@ export class DevTest {
     }
 
     async unavailableVersion(addonEntryUUIDEU, addonEntryUUIDProd, addonEntryUUIDSb, latestVersionOfTestedAddonProd) {
+        debugger;
         await Promise.all([
             this.unavailableAddonVersion(
                 'prod',
@@ -871,6 +896,7 @@ export class DevTest {
     }
 
     async reportToTeamsMessage(error) {
+        debugger;
         await this.reportBuildEnded();
         const message = `${error}`;
         const bodyToSend = {
@@ -907,6 +933,7 @@ export class DevTest {
     }
 
     async reportBuildEnded() {
+        debugger;
         const message = `${this.addonName} - (${this.addonUUID}), Version:${this.addonVersion}, Ended Testing`;
         const bodyToSend = {
             Name: `${this.addonName}, ${this.addonUUID}, ${this.addonVersion}`,
@@ -1070,8 +1097,9 @@ export class DevTest {
             const userEnv = userEmail.toLocaleUpperCase().includes('EU')
                 ? 'EU'
                 : userEmail.toLocaleUpperCase().includes('SB')
-                ? 'SB'
-                : 'PRDO';
+                ? 'stage'
+                : 'PROD';
+            debugger;
             const client = await initiateTester(userEmail, userPass, userEnv);
             const service = new GeneralService(client);
             const devUser: DevTestUser = new DevTestUser(userEmail, userPass, userEnv, service);
