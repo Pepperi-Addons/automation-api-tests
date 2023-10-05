@@ -1,4 +1,4 @@
-import GeneralService, { initiateTester } from "../../services/general.service";
+import GeneralService, { initiateTester } from '../../services/general.service';
 
 class DevTestUser {
     email: string;
@@ -28,8 +28,24 @@ export class DevTest {
     public adminBaseUserEmail;
     public adminBaseUserPass;
     public addonVersion;
+    public addonEntryUUIDProd;
+    public addonEntryUUIDEU;
+    public addonEntryUUIDSb;
+    public devPassingEnvs: string[] = [];
+    public devFailedEnvs: string[] = [];
+    public failedSuitesEU: any[] = [];
+    public failedSuitesProd: any[] = [];
+    public failedSuitesSB: any[] = [];
 
-    constructor(addonName: string, varPass, varPassEU, varPassSB, adminBaseUserGeneralService, adminBaseUserEmail, adminBaseUserPass) {
+    constructor(
+        addonName: string,
+        varPass,
+        varPassEU,
+        varPassSB,
+        adminBaseUserGeneralService,
+        adminBaseUserEmail,
+        adminBaseUserPass,
+    ) {
         this.addonName = addonName;
         this.addonUUID = this.convertNameToUUIDForDevTests(addonName.toUpperCase());
         this.addonTestsURL = `/addons/api/async/${this.addonUUID}/tests/tests`;
@@ -73,8 +89,174 @@ export class DevTest {
         }
     }
 
-    installDependencies() {
+    async installDependencies() {
+        const userList = await this.resolveUserPerTest2();
+        for (let index = 0; index < userList.length; index++) {
+            const user = userList[index];
+            await this.installDependenciesInternal(user.email, user.env);
+        }
+    }
 
+    async valdateTestedAddonLatestVersionIsInstalled() {
+        const arrayOfResponses: boolean[] = [];
+        const userList = await this.resolveUserPerTest2();
+        for (let index = 0; index < userList.length; index++) {
+            const user = userList[index];
+            arrayOfResponses.push(await this.valdateTestedAddonLatestVersionIsInstalledInternal(user.email, user.env));
+        }
+        return arrayOfResponses;
+    }
+
+    async valdateTestedAddonLatestVersionIsInstalledInternal(userName, env) {
+        const client = await initiateTester(userName, 'Aa123456', env);
+        const service = new GeneralService(client);
+        const installedAddonsArr = await service.getInstalledAddons({ page_size: -1 });
+        const isInstalled = installedAddonsArr.find(
+            (addon) => addon.Addon.UUID == this.addonUUID && addon.Version == this.addonVersion,
+        )
+            ? true
+            : false;
+        return isInstalled;
+    }
+
+    async installDependenciesInternal(userName, env) {
+        //im here - TODO
+        const client = await initiateTester(userName, 'Aa123456', env);
+        const service = new GeneralService(client);
+        const testName = `Installing Dev Test Prerequisites On ${
+            userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
+        } Env, User: ${userName}, Addon: ${this.addonName}, UUID: ${this.addonUUID}`;
+        // const testerFunctions = service.initiateTesterFunctions(client, testName);
+        //1. convert Name to UUID
+        service.PrintMemoryUseToLog('Start', testName);
+        //2. upgrade dependencys - basic: correct for all addons
+        await service.baseAddonVersionsInstallation(this.varPass);
+        //2.1 install template automation addon
+        const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(this.varPass, {
+            automation_template_addon: ['d541b959-87af-4d18-9215-1b30dbe1bcf4', ''],
+        });
+        if (templateAddonResponse[0] != true) {
+            throw new Error(
+                `Error: can't install automation_template_addon, got the exception: ${templateAddonResponse} from audit log`,
+            );
+        }
+        //3. get dependencys of tested addon
+        const addonDep = await this.getDependenciesOfAddon(service, this.addonUUID, this.varPass);
+        //4. install on dist
+        if (addonDep !== undefined && addonDep.length !== 0) {
+            if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5') {
+                //OFS
+                const depObjNebula = {};
+                depObjNebula['Nebula'] = ['00000000-0000-0000-0000-000000006a91', ''];
+                const depObjSync = {};
+                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.84'];
+                addonDep.push(depObjNebula);
+                addonDep.push(depObjSync);
+            }
+            if (
+                this.addonUUID === '00000000-0000-0000-0000-000000006a91' //Nebula
+            ) {
+                const depObj = {};
+                depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''];
+                addonDep.push(depObj);
+            }
+            if (this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+                //Sync
+                const depObj = {};
+                depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''];
+                addonDep.push(depObj);
+            }
+            if (
+                this.addonUUID === 'cebb251f-1c80-4d80-b62c-442e48e678e8' //Febula
+            ) {
+                const depObj = {};
+                depObj['Generic Resource'] = ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '%'];
+                addonDep.push(depObj);
+            }
+            if (
+                this.addonUUID === 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f' //Core
+            ) {
+                const depObj = {};
+                depObj['User Defined Collections'] = ['122c0e9d-c240-4865-b446-f37ece866c22', ''];
+                addonDep.push(depObj);
+            }
+            for (let index = 0; index < addonDep.length; index++) {
+                const addonToInstall = addonDep[index];
+                const currentAddonName = Object.entries(addonToInstall)[0][0];
+                const uuid = (Object.entries(addonToInstall)[0][1] as any)[0];
+                if (currentAddonName === 'papi' && this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+                    addonToInstall[currentAddonName][1] = '9.6.%';
+                }
+                if (
+                    this.addonName !== 'nebula' &&
+                    currentAddonName === 'nebula' &&
+                    uuid === '00000000-0000-0000-0000-000000006a91'
+                ) {
+                    const NebulaDep = await this.getDependenciesOfAddon(service, uuid, this.varPass);
+                    for (let index = 0; index < NebulaDep.length; index++) {
+                        const nebulaDepAddon = NebulaDep[index];
+                        const installAddonResponse = (await service.installLatestAvalibaleVersionOfAddon(
+                            this.varPass,
+                            nebulaDepAddon,
+                        )) as any;
+                        if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
+                            throw new Error(
+                                `Error: can't install one of Nebulas dependency's: ${
+                                    Object.entries(nebulaDepAddon)[0][0]
+                                } - ${(Object.entries(nebulaDepAddon)[0][1] as any)[0]}, error:${
+                                    installAddonResponse[0]
+                                }`,
+                            );
+                        }
+                    }
+                }
+                const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(
+                    this.varPass,
+                    addonToInstall,
+                );
+                if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
+                    throw new Error(
+                        `Error: can't install ${this.addonName} - ${uuid}, error:${installAddonResponse[0]}`,
+                    );
+                }
+            }
+            // for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
+            //     const addonToInstall = {};
+            //     if (addonName === 'papi' && addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+            //         addonToInstall[addonName] = [(uuid as any[])[0], '9.6.%'];
+            //     } else {
+            //         addonToInstall[addonName] = uuid;
+            //     }
+            //     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
+            //     if (!installAddonResponse[0]) {
+            //         throw new Error(`Error: can't install ${addonName} - ${uuid}`);
+            //     }
+            // }
+        }
+        //5. validate actual tested addon is installed
+        const addonToInstall = {};
+        // this can be used to install NOT latest avalivale versions
+        // const version = addonName === 'SYNC' ? '0.7.30' : '%';
+        addonToInstall[this.addonName] = [this.addonUUID, '%'];
+        const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(this.varPass, addonToInstall);
+        if (installAddonResponse[0] != true) {
+            throw new Error(
+                `Error: can't install ${this.addonName} - ${this.addonUUID}, exception: ${installAddonResponse}`,
+            );
+        }
+        service.PrintMemoryUseToLog('End', testName);
+    }
+
+    async getEuUser() {
+        return await this.resolveUserPerTest2()[0];
+    }
+
+    async getSbUser() {
+        return await this.resolveUserPerTest2()[2];
+    }
+
+    async getProdUser() {
+        return await this.resolveUserPerTest2()[1];
     }
 
     async validateAllVersionsAreEqualBetweenEnvs() {
@@ -85,28 +267,20 @@ export class DevTest {
             latestVersionOfTestedAddonSb,
             addonEntryUUIDSb;
         try {
-            [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await (await this.resolveUserPerTest2())[0].generalService.getLatestAvailableVersion(
-                this.addonUUID,
-                this.varPass,
-                null,
-                'prod',
-            );
-            [latestVersionOfTestedAddonEu, addonEntryUUIDEU] = await (await this.resolveUserPerTest2())[1].generalService.getLatestAvailableVersion(
-                this.addonUUID,
-                this.varPassEU,
-                null,
-                'prod',
-            );
-            [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await (await this.resolveUserPerTest2())[2].generalService.getLatestAvailableVersion(
-                this.addonUUID,
-                this.varPassSB,
-                null,
-                'stage',
-            );
+            [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await (
+                await this.resolveUserPerTest2()
+            )[0].generalService.getLatestAvailableVersion(this.addonUUID, this.varPass, null, 'prod');
+            [latestVersionOfTestedAddonEu, addonEntryUUIDEU] = await (
+                await this.resolveUserPerTest2()
+            )[1].generalService.getLatestAvailableVersion(this.addonUUID, this.varPassEU, null, 'prod');
+            [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await (
+                await this.resolveUserPerTest2()
+            )[2].generalService.getLatestAvailableVersion(this.addonUUID, this.varPassSB, null, 'stage');
         } catch (error) {
             debugger;
-            const errorString = `Error: Couldn't Get Latest Available Versions Of ${this.addonName}: ${(error as any).message
-                }`;
+            const errorString = `Error: Couldn't Get Latest Available Versions Of ${this.addonName}: ${
+                (error as any).message
+            }`;
             await this.reportToTeamsMessage(this.addonName);
             throw new Error(errorString);
         }
@@ -118,47 +292,582 @@ export class DevTest {
             const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`;
             debugger;
             await this.reportToTeamsMessage(this.addonName);
-            await Promise.all([
-                this.unavailableAddonVersion(
-                    'prod',
-                    this.addonName,
-                    addonEntryUUIDEU,
-                    latestVersionOfTestedAddonProd,
-                    this.addonUUID,
-                    this.varPassEU,
-                ),
-                this.unavailableAddonVersion(
-                    'prod',
-                    this.addonName,
-                    addonEntryUUIDProd,
-                    latestVersionOfTestedAddonProd,
-                    this.addonUUID,
-                    this.varPass,
-                ),
-                this.unavailableAddonVersion(
-                    'stage',
-                    this.addonName,
-                    addonEntryUUIDSb,
-                    latestVersionOfTestedAddonProd,
-                    this.addonUUID,
-                    this.varPassSB,
-                ),
-            ]);
+            await this.unavailableVersion(
+                addonEntryUUIDEU,
+                addonEntryUUIDProd,
+                addonEntryUUIDSb,
+                latestVersionOfTestedAddonProd,
+            );
             throw new Error(errorString);
         } else {
             this.addonVersion = latestVersionOfTestedAddonProd;
+            this.addonEntryUUIDProd = addonEntryUUIDProd;
+            this.addonEntryUUIDEU = addonEntryUUIDEU;
+            this.addonEntryUUIDSb = addonEntryUUIDSb;
         }
     }
 
     async getTestNames() {
         const response = (
-            await (await this.resolveUserPerTest2())[1].generalService.fetchStatus(`/addons/api/${this.addonUUID}/tests/tests`, {
+            await (
+                await this.resolveUserPerTest2()
+            )[1].generalService.fetchStatus(`/addons/api/${this.addonUUID}/tests/tests`, {
                 method: 'GET',
             })
         ).Body;
         let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
         toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
         return toReturn;
+    }
+
+    async runDevTest(testNames: string[]) {
+        for (let index = 0; index < testNames.length; index++) {
+            const currentTestName = testNames[index];
+            const body = {
+                Name: currentTestName,
+            };
+            console.log(
+                `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
+                    testNames.length
+                }  #######################`,
+            );
+            let addonSk = null;
+            if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX') {
+                addonSk = await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'AutomationAddonSecretKey',
+                );
+            }
+            const euUser = await this.getEuUser();
+            const prodUser = await this.getProdUser();
+            const sbUser = await this.getSbUser();
+            const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
+                //devTestResponseEu,
+                //userName, env, addonSk, bodyToSend
+                this.runDevTestOnCertainEnv(euUser.email, 'prod', addonSk, body),
+                this.runDevTestOnCertainEnv(prodUser.email, 'prod', addonSk, body),
+                this.runDevTestOnCertainEnv(sbUser.email, 'stage', addonSk, body),
+            ]);
+            if (
+                devTestResponseEu === undefined ||
+                devTestResponseProd === undefined ||
+                devTestResponseSb === undefined
+            ) {
+                let whichEnvs = devTestResponseEu === undefined ? 'EU,,' : '';
+                whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
+                whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
+                const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                await this.reportToTeamsMessage(errorString);
+                throw new Error(`${errorString}`);
+            }
+            if (
+                devTestResponseEu.Body.URI === undefined ||
+                devTestResponseProd.Body.URI === undefined ||
+                devTestResponseSb.Body.URI === undefined
+            ) {
+                let whichEnvs = devTestResponseEu.Body.URI === undefined ? 'EU,,' : '';
+                whichEnvs += devTestResponseProd.Body.URI === undefined ? 'PRDO,' : '';
+                whichEnvs += devTestResponseSb.Body.URI === undefined ? 'SB' : '';
+                const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                await this.reportToTeamsMessage(errorString);
+                throw new Error(`${errorString}`);
+            }
+            console.log(
+                `####################### ${currentTestName}: EXECUTION UUIDS:\nEU - ${devTestResponseEu.Body.URI}\nPROD - ${devTestResponseProd.Body.URI}\nSB - ${devTestResponseSb.Body.URI}`,
+            );
+            const testObject = {
+                name: currentTestName,
+                prodExecution: devTestResponseProd.Body.URI,
+                sbExecution: devTestResponseSb.Body.URI,
+                euExecution: devTestResponseEu.Body.URI,
+            };
+            this.adminBaseUserGeneralService.sleep(1000 * 15);
+            const devTestResutsEu = await this.getTestResponse(euUser.email, 'prod', devTestResponseEu.Body.URI);
+            const devTestResultsProd = await this.getTestResponse(prodUser.email, 'prod', devTestResponseProd.Body.URI);
+            const devTestResultsSb = await this.getTestResponse(sbUser.email, 'stage', devTestResponseSb.Body.URI);
+            if (
+                (devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                    devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')) ||
+                (devTestResultsProd.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                    devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after')) ||
+                (devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                    devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after'))
+            ) {
+                debugger;
+                let errorString = '';
+                if (
+                    devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                    devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')
+                ) {
+                    errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                }
+                if (
+                    devTestResultsProd.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                    devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after')
+                ) {
+                    errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                }
+                if (
+                    devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                    devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after')
+                ) {
+                    errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                }
+                await this.reportToTeamsMessage(errorString);
+                await this.unavailableVersion(
+                    this.addonEntryUUIDEU,
+                    this.addonEntryUUIDProd,
+                    this.addonEntryUUIDSb,
+                    this.addonVersion,
+                );
+                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            }
+            debugger;
+            //4.3. parse the response
+            let testResultArrayEu;
+            let testResultArrayProd;
+            let testResultArraySB;
+            try {
+                testResultArrayEu = JSON.parse(devTestResutsEu.AuditInfo.ResultObject);
+                testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
+                testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
+            } catch (error) {
+                debugger;
+                let errorString = '';
+                if (!devTestResutsEu.AuditInfo.ResultObject) {
+                    errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName} ,EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                }
+                if (!devTestResultsProd.AuditInfo.ResultObject) {
+                    errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                }
+                if (!devTestResultsSb.AuditInfo.ResultObject) {
+                    errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                }
+                await this.reportToTeamsMessage(errorString);
+                await this.unavailableVersion(
+                    this.addonEntryUUIDEU,
+                    this.addonEntryUUIDProd,
+                    this.addonEntryUUIDSb,
+                    this.addonVersion,
+                );
+                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            }
+            let objectToPrintEu;
+            let objectToPrintProd;
+            let objectToPrintSB;
+            let shouldAlsoPrintVer = false;
+            if (
+                testResultArrayProd.results === undefined &&
+                testResultArraySB.results === undefined &&
+                testResultArrayEu.results === undefined &&
+                testResultArrayProd.tests === undefined &&
+                testResultArraySB.tests === undefined &&
+                testResultArrayEu.tests === undefined
+            ) {
+                const errorString = `Cannot Parse Result Object, Recieved: Prod: ${JSON.stringify(
+                    testResultArrayProd,
+                )}, EU: ${JSON.stringify(testResultArrayEu)}, SB: ${JSON.stringify(
+                    testResultArraySB,
+                )}, On: ${currentTestName} Test`;
+                debugger;
+                await this.reportToTeamsMessage(errorString);
+                await this.unavailableVersion(
+                    this.addonEntryUUIDEU,
+                    this.addonEntryUUIDProd,
+                    this.addonEntryUUIDSb,
+                    this.addonVersion,
+                );
+                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            }
+            //TODO: move the parsing to another function
+            if (
+                testResultArrayProd.results &&
+                testResultArrayProd.results[0].suites[0].suites &&
+                testResultArrayProd.results[0].suites[0].suites.length > 0
+            ) {
+                shouldAlsoPrintVer = true;
+                objectToPrintEu = testResultArrayEu.results[0].suites[0].suites;
+                objectToPrintProd = testResultArrayProd.results[0].suites[0].suites;
+                objectToPrintSB = testResultArraySB.results[0].suites[0].suites;
+            } else if (testResultArrayProd.results) {
+                //add an if to catch the other result config also
+                objectToPrintEu = testResultArrayEu.results[0].suites;
+                objectToPrintProd = testResultArrayProd.results[0].suites;
+                objectToPrintSB = testResultArraySB.results[0].suites;
+            } else {
+                objectToPrintEu = testResultArrayEu.tests;
+                objectToPrintProd = testResultArrayProd.tests;
+                objectToPrintSB = testResultArraySB.tests;
+            }
+            if (objectToPrintEu === undefined || objectToPrintProd === undefined || objectToPrintSB === undefined) {
+                debugger;
+                let errorString = '';
+                if (!objectToPrintEu) {
+                    errorString += `${euUser} got the error: ${
+                        devTestResutsEu.AuditInfo.ErrorMessage
+                    } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                        devTestResutsEu.AuditInfo,
+                    )}, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                }
+                if (!objectToPrintProd) {
+                    errorString += `${prodUser} got the error: ${
+                        devTestResultsProd.AuditInfo.ErrorMessage
+                    } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                        devTestResultsProd.AuditInfo,
+                    )}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                }
+                if (!objectToPrintSB) {
+                    errorString += `${sbUser} got the error: ${
+                        devTestResultsSb.AuditInfo.ErrorMessage
+                    } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                        devTestResultsSb.AuditInfo,
+                    )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                }
+                await this.reportToTeamsMessage(errorString);
+                await this.unavailableVersion(
+                    this.addonEntryUUIDEU,
+                    this.addonEntryUUIDProd,
+                    this.addonEntryUUIDSb,
+                    this.addonVersion,
+                );
+                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            }
+            for (let index = 0; index < objectToPrintProd.length; index++) {
+                const result = objectToPrintProd[index];
+                console.log(`\n***${currentTestName} PROD result object: ${JSON.stringify(result)}***\n`);
+            }
+            for (let index = 0; index < objectToPrintSB.length; index++) {
+                const result = objectToPrintSB[index];
+                console.log(`\n***${currentTestName} SB result object: ${JSON.stringify(result)}***\n`);
+            }
+            for (let index = 0; index < objectToPrintEu.length; index++) {
+                const result = objectToPrintEu[index];
+                console.log(`\n***${currentTestName} EU result object: ${JSON.stringify(result)}***\n`);
+            }
+            const euResults = await this.printResultsTestObject(objectToPrintEu, euUser, 'prod');
+            const prodResults = await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod');
+            const sbResults = await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage');
+            if (shouldAlsoPrintVer) {
+                objectToPrintEu = testResultArrayEu.results[0].suites[1].suites;
+                objectToPrintProd = testResultArrayProd.results[0].suites[1].suites;
+                objectToPrintSB = testResultArraySB.results[0].suites[1].suites;
+                await this.printResultsTestObject(objectToPrintEu, euUser, 'prod');
+                await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod');
+                await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage');
+            }
+            // debugger;
+            //4.6. create the array of passing / failing tests
+            // debugger;
+            if (euResults.didSucceed) {
+                //devPassingEnvs  devFailedEnvs   failedSuitesEU   failedSuitesProd   failedSuitesSB
+                this.devPassingEnvs.push('Eu');
+            } else {
+                this.devFailedEnvs.push('Eu');
+                this.failedSuitesEU.push({ testName: currentTestName, executionUUID: testObject.euExecution });
+            }
+            if (prodResults.didSucceed) {
+                this.devPassingEnvs.push('Production');
+            } else {
+                this.devFailedEnvs.push('Production');
+                this.failedSuitesProd.push({ testName: currentTestName, executionUUID: testObject.prodExecution });
+            }
+            if (sbResults.didSucceed) {
+                this.devPassingEnvs.push('Stage');
+            } else {
+                this.devFailedEnvs.push('Stage');
+                this.failedSuitesSB.push({ testName: currentTestName, executionUUID: testObject.sbExecution });
+            }
+        }
+    }
+
+    async calculateAndReportResults(isLocal) {
+        const devPassingEnvs2: string[] = [];
+        const devFailedEnvs2: string[] = [];
+        const testsList = await this.getTestNames();
+        let jenkinsLink;
+        if (
+            this.devPassingEnvs.filter((v) => v === 'Eu').length === testsList.length &&
+            this.devFailedEnvs.filter((v) => v === 'Eu').length === 0
+        ) {
+            devPassingEnvs2.push('EU');
+        } else {
+            devFailedEnvs2.push('EU');
+        }
+        if (
+            this.devPassingEnvs.filter((v) => v === 'Production').length === testsList.length &&
+            this.devFailedEnvs.filter((v) => v === 'Production').length === 0
+        ) {
+            devPassingEnvs2.push('PROD');
+        } else {
+            devFailedEnvs2.push('PROD');
+        }
+        if (
+            this.devPassingEnvs.filter((v) => v === 'Stage').length === testsList.length &&
+            this.devFailedEnvs.filter((v) => v === 'Stage').length === 0
+        ) {
+            devPassingEnvs2.push('STAGING');
+        } else {
+            devFailedEnvs2.push('STAGING');
+        }
+        // debugger;
+        if (isLocal) {
+            jenkinsLink = 'none, running locally';
+        } else {
+            const kmsSecret = await this.adminBaseUserGeneralService.getSecretfromKMS(
+                this.adminBaseUserEmail,
+                this.adminBaseUserPass,
+                'JenkinsBuildUserCred',
+            );
+            const latestRun = await this.adminBaseUserGeneralService.getLatestJenkinsJobExecutionId(
+                kmsSecret,
+                'API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons',
+            );
+            jenkinsLink = `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons/${latestRun}/console`;
+        }
+        if (devFailedEnvs2.length != 0) {
+            debugger;
+            await this.unavailableVersion(
+                this.addonEntryUUIDEU,
+                this.addonEntryUUIDProd,
+                this.addonEntryUUIDSb,
+                this.addonVersion,
+            );
+            await this.reportToTeams(jenkinsLink);
+            console.log('Dev Test Didnt Pass - No Point In Running Approvment');
+            return;
+        } else if (!this.doWeHaveSuchAppTest(this.addonName)) {
+            await this.reportToTeams(jenkinsLink);
+        }
+    }
+
+    doWeHaveSuchAppTest(addonName: string) {
+        switch (addonName) {
+            //add another 'case' here when adding new addons to this mehcanisem
+            case 'ADAL': {
+                return true;
+            }
+            case 'DIMX': {
+                return true;
+            }
+            case 'DATA INDEX':
+            case 'DATA-INDEX': {
+                return true;
+            }
+            case 'PEPPERI-FILE-STORAGE':
+            case 'PFS': {
+                return true;
+            }
+            case 'CORE-GENERIC-RESOURCES':
+            case 'CORE': {
+                return true;
+            }
+            default:
+                return false;
+        }
+    }
+
+    async reportToTeams(jenkinsLink) {
+        await this.reportBuildEnded();
+        const users = await this.resolveUserPerTest2();
+        const userMails = users.map((user) => user.email);
+        const stringUsers = userMails.join(',');
+        const uniqFailingEnvs = [...new Set(this.devFailedEnvs)];
+        debugger;
+        const message = `Dev Test: ${this.addonName} - (${this.addonUUID}), Version:${
+            this.addonVersion
+        }, Test Users:<br>${stringUsers}<br>${
+            this.devFailedEnvs.length === 0 ? '' : 'Passed On: ' + this.devFailedEnvs.join(', ') + ' |||'
+        } ${
+            this.devFailedEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')
+        },<br>Link: ${jenkinsLink}`;
+        const message2 = `${
+            this.failedSuitesProd.length === 0
+                ? ''
+                : 'FAILED TESTS AND EXECUTION UUIDS:<br>PROD:' +
+                  this.failedSuitesProd.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+        }${
+            this.failedSuitesEU.length === 0
+                ? ''
+                : ',<br>EU:' + this.failedSuitesEU.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+        }${
+            this.failedSuitesSB.length === 0
+                ? ''
+                : ',<br>SB:' + this.failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+        }`;
+        const bodyToSend = {
+            Name: `${this.addonName} Dev Test Result Status`,
+            Description: message,
+            Status: this.devFailedEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
+            Message: message2 === '' ? '~' : message2,
+            UserWebhook: await this.handleTeamsURL(this.addonName),
+        };
+        const monitoringResponse = await this.adminBaseUserGeneralService.fetchStatus(
+            'https://papi.pepperi.com/v1.0/system_health/notifications',
+            {
+                method: 'POST',
+                headers: {
+                    'X-Pepperi-SecretKey': await this.adminBaseUserGeneralService.getSecret()[1],
+                    'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+                },
+                body: JSON.stringify(bodyToSend),
+            },
+        );
+        if (monitoringResponse.Ok !== true) {
+            throw new Error(
+                `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
+                    monitoringResponse,
+                )}`,
+            );
+        }
+        if (monitoringResponse.Status !== 200) {
+            throw new Error(
+                `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
+                    monitoringResponse,
+                )}`,
+            );
+        }
+        if (Object.keys(monitoringResponse.Error).length !== 0) {
+            throw new Error(
+                `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
+                    monitoringResponse,
+                )}`,
+            );
+        }
+    }
+
+    async printResultsTestObject(testResultArray, userName, env) {
+        const client = await initiateTester(userName, 'Aa123456', env);
+        const service = new GeneralService(client);
+        const installedAddonsArr = await service.getInstalledAddons({ page_size: -1 });
+        let didSucceed = true;
+        // debugger;
+        console.log(
+            `####################### ${userName.includes('EU') ? 'EU' : env} Dev Test Results For Addon ${
+                this.addonUUID
+            } #######################`,
+        );
+        for (let index = 0; index < testResultArray.length; index++) {
+            const testResult = testResultArray[index];
+            if (testResult.title.includes('Test Data')) {
+                if (testResult.failures.length > 1) {
+                    didSucceed = false;
+                }
+            } else if (testResult.failures) {
+                if (testResult.failures.length > 0) didSucceed = false;
+            } else {
+                for (let index = 0; index < testResultArray.length; index++) {
+                    const test = testResultArray[index];
+                    if (!test.passed || test.failed || (test.hasOwnProperty('failure') && test.failure.length > 0)) {
+                        didSucceed = false;
+                    }
+                }
+            }
+            if (testResultArray.length > 1) {
+                for (let index = 0; index < testResultArray.length; index++) {
+                    const test = testResultArray[index];
+                    service.reportResults2(
+                        test,
+                        installedAddonsArr.find(
+                            (addon) => addon.Addon.UUID == this.addonUUID && addon.Version == this.addonVersion,
+                        ),
+                    );
+                }
+            } else {
+                service.reportResults2(
+                    testResult,
+                    installedAddonsArr.find(
+                        (addon) => addon.Addon.UUID == this.addonUUID && addon.Version == this.addonVersion,
+                    ),
+                );
+            }
+        }
+        console.log(`##############################################`);
+        return { didSucceed };
+    }
+
+    async unavailableVersion(addonEntryUUIDEU, addonEntryUUIDProd, addonEntryUUIDSb, latestVersionOfTestedAddonProd) {
+        await Promise.all([
+            this.unavailableAddonVersion(
+                'prod',
+                this.addonName,
+                addonEntryUUIDEU,
+                latestVersionOfTestedAddonProd,
+                this.addonUUID,
+                this.varPassEU,
+            ),
+            this.unavailableAddonVersion(
+                'prod',
+                this.addonName,
+                addonEntryUUIDProd,
+                latestVersionOfTestedAddonProd,
+                this.addonUUID,
+                this.varPass,
+            ),
+            this.unavailableAddonVersion(
+                'stage',
+                this.addonName,
+                addonEntryUUIDSb,
+                latestVersionOfTestedAddonProd,
+                this.addonUUID,
+                this.varPassSB,
+            ),
+        ]);
+    }
+
+    async getTestResponse(userName, env, URI) {
+        const client = await initiateTester(userName, 'Aa123456', env);
+        const service = new GeneralService(client);
+        const auditLogDevTestResponse = await service.getAuditLogResultObjectIfValid(URI as string, 120, 7000);
+        return auditLogDevTestResponse;
+    }
+
+    async runDevTestOnCertainEnv(userName, env, addonSk, bodyToSend) {
+        const client = await initiateTester(userName, 'Aa123456', env);
+        const service = new GeneralService(client);
+        let urlToCall;
+        let headers;
+        if (this.addonName === 'NEBULA') {
+            urlToCall = '/addons/api/async/00000000-0000-0000-0000-000000006a91/tests/tests';
+        } else if (this.addonName === 'FEBULA') {
+            urlToCall = '/addons/api/async/cebb251f-1c80-4d80-b62c-442e48e678e8/tests/tests';
+        } else if (this.addonName === 'SYNC') {
+            urlToCall = '/addons/api/async/5122dc6d-745b-4f46-bb8e-bd25225d350a/tests/tests';
+        } else if (this.addonName === 'CORE' || this.addonName === 'CORE-GENERIC-RESOURCES') {
+            urlToCall = '/addons/api/async/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/tests/tests';
+        } else if (this.addonName === 'CONFIGURATIONS') {
+            urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
+        } else if (this.addonName === 'RELATED-ITEMS') {
+            urlToCall = '/addons/api/async/4f9f10f3-cd7d-43f8-b969-5029dad9d02b/tests/tests';
+        } else if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
+            urlToCall = '/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests';
+            headers = {
+                'x-pepperi-ownerid': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+                'x-pepperi-secretkey': addonSk,
+                Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
+            };
+        } else if (this.addonName === 'UDB' || this.addonName === 'USER DEFINED BLOCKS') {
+            urlToCall = '/addons/api/async/9abbb634-9df5-49ab-91d1-41ad7a2632a6/tests/tests';
+        } else if (this.addonName === 'PFS' || this.addonName === 'PEPPERI-FILE-STORAGE') {
+            urlToCall = '/addons/api/async/00000000-0000-0000-0000-0000000f11e5/tests/tests';
+        }
+        let testResponse;
+        if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
+            testResponse = await service.fetchStatus(urlToCall, {
+                body: JSON.stringify(bodyToSend),
+                method: 'POST',
+                headers: headers,
+            });
+        } else {
+            testResponse = await service.fetchStatus(urlToCall, {
+                body: JSON.stringify(bodyToSend),
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
+                },
+            });
+        }
+        return testResponse;
     }
 
     async reportToTeamsMessage(error) {
@@ -174,14 +883,17 @@ export class DevTest {
         const testAddonSecretKey = await this.adminBaseUserGeneralService.getSecret()[1];
         const testAddonUUID = await this.adminBaseUserGeneralService.getSecret()[0];
         debugger;
-        const monitoringResponse = await this.adminBaseUserGeneralService.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
-            method: 'POST',
-            headers: {
-                'X-Pepperi-SecretKey': testAddonSecretKey,
-                'X-Pepperi-OwnerID': testAddonUUID,
+        const monitoringResponse = await this.adminBaseUserGeneralService.fetchStatus(
+            'https://papi.pepperi.com/v1.0/system_health/notifications',
+            {
+                method: 'POST',
+                headers: {
+                    'X-Pepperi-SecretKey': testAddonSecretKey,
+                    'X-Pepperi-OwnerID': testAddonUUID,
+                },
+                body: JSON.stringify(bodyToSend),
             },
-            body: JSON.stringify(bodyToSend),
-        });
+        );
         debugger;
         if (monitoringResponse.Ok !== true) {
             throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
@@ -203,14 +915,17 @@ export class DevTest {
             Message: message,
             UserWebhook: await this.handleTeamsURL('QA'),
         };
-        const monitoringResponse = await this.adminBaseUserGeneralService.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
-            method: 'POST',
-            headers: {
-                'X-Pepperi-SecretKey': await this.adminBaseUserGeneralService.getSecret()[1],
-                'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+        const monitoringResponse = await this.adminBaseUserGeneralService.fetchStatus(
+            'https://papi.pepperi.com/v1.0/system_health/notifications',
+            {
+                method: 'POST',
+                headers: {
+                    'X-Pepperi-SecretKey': await this.adminBaseUserGeneralService.getSecret()[1],
+                    'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+                },
+                body: JSON.stringify(bodyToSend),
             },
-            body: JSON.stringify(bodyToSend),
-        });
+        );
         if (monitoringResponse.Ok !== true) {
             throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
         }
@@ -226,51 +941,123 @@ export class DevTest {
         //-->eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
         switch (addonName) {
             case 'QA':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'QAWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'QAWebHook',
+                );
             case 'PAPI-DATA-INDEX':
             case 'PAPI INDEX': //evgeny todo
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'PapiDataIndexWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'PapiDataIndexWebHook',
+                );
             case 'SYNC':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'SyncTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'SyncTeamsWebHook',
+                );
             case 'ADAL': //new teams
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'ADALTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'ADALTeamsWebHook',
+                );
             case 'NEBULA':
             case 'FEBULA': //new teams
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'NebulaTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'NebulaTeamsWebHook',
+                );
             case 'DIMX':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'DIMXTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'DIMXTeamsWebHook',
+                );
             case 'DATA INDEX': //new teams
             case 'DATA-INDEX':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'DataIndexTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'DataIndexTeamsWebHook',
+                );
             case 'PFS':
             case 'PEPPERI-FILE-STORAGE':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'PFSTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'PFSTeamsWebHook',
+                );
             case 'PNS':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'PNSTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'PNSTeamsWebHook',
+                );
             case 'USER-DEFINED-COLLECTIONS':
             case 'UDC':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'UDCTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'UDCTeamsWebHook',
+                );
             case 'SCHEDULER':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'SchedulerTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'SchedulerTeamsWebHook',
+                );
             case 'CPI-DATA': //new teams
             case 'CPI DATA':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'ADALTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'ADALTeamsWebHook',
+                );
             case 'CORE': //new teams
             case 'CORE-GENERIC-RESOURCES':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'CORETeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'CORETeamsWebHook',
+                );
             case 'RESOURCE-LIST': //new teams
             case 'RESOURCE LIST':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'ResourceListTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'ResourceListTeamsWebHook',
+                );
             case 'UDB':
             case 'USER DEFINED BLOCKS':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'UDBTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'UDBTeamsWebHook',
+                );
             case 'CONFIGURATIONS':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'CONFIGURATIONSTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'CONFIGURATIONSTeamsWebHook',
+                );
             case 'RELATED-ITEMS':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'RelatedItemsTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'RelatedItemsTeamsWebHook',
+                );
             case 'GENERIC-RESOURCE': //new teams
             case 'GENERIC RESOURCE':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(this.adminBaseUserEmail, this.adminBaseUserPass, 'GenericResourceTeamsWebHook');
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'GenericResourceTeamsWebHook',
+                );
         }
     }
 
@@ -279,8 +1066,12 @@ export class DevTest {
         const userListToReturn: DevTestUser[] = [];
         for (let index = 0; index < usreEmailList.length; index++) {
             const userEmail = usreEmailList[index];
-            const userPass = "Aa123456";
-            const userEnv = userEmail.toLocaleUpperCase().includes('EU') ? 'EU' : userEmail.toLocaleUpperCase().includes('SB') ? 'SB' : 'PRDO';
+            const userPass = 'Aa123456';
+            const userEnv = userEmail.toLocaleUpperCase().includes('EU')
+                ? 'EU'
+                : userEmail.toLocaleUpperCase().includes('SB')
+                ? 'SB'
+                : 'PRDO';
             const client = await initiateTester(userEmail, userPass, userEnv);
             const service = new GeneralService(client);
             const devUser: DevTestUser = new DevTestUser(userEmail, userPass, userEnv, service);
@@ -288,7 +1079,6 @@ export class DevTest {
         }
         return userListToReturn;
     }
-
 
     resolveUserPerTest(): any[] {
         switch (this.addonName) {
@@ -310,7 +1100,11 @@ export class DevTest {
                 return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
             case 'PEPPERI-FILE-STORAGE':
             case 'PFS':
-                return ['PfsCpiTestEU@pepperitest.com', 'PfsCpiTestProd@pepperitest.com', 'PfsCpiTestSB@pepperitest.com'];
+                return [
+                    'PfsCpiTestEU@pepperitest.com',
+                    'PfsCpiTestProd@pepperitest.com',
+                    'PfsCpiTestSB@pepperitest.com',
+                ];
             case 'CONFIGURATIONS':
                 return ['configEU@pepperitest.com', 'configProd@pepperitest.com', 'configSB@pepperitest.com'];
             case 'RELATED-ITEMS':
@@ -354,7 +1148,9 @@ export class DevTest {
             },
         );
         if (varResponseProd.Ok !== true) {
-            throw new Error(`Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseProd.Ok}`);
+            throw new Error(
+                `Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseProd.Ok}`,
+            );
         }
         if (varResponseProd.Status !== 200) {
             throw new Error(
@@ -381,4 +1177,40 @@ export class DevTest {
         );
     }
 
+    async getDependenciesOfAddon(service: GeneralService, addonUUID, varPass) {
+        const latestVer = (
+            await service.fetchStatus(
+                `${service['client'].BaseURL.replace(
+                    'papi-eu',
+                    'papi',
+                )}/var/addons/versions?where=AddonUUID='${addonUUID}'AND Available=1&order_by=CreationDateTime DESC`,
+                {
+                    method: `GET`,
+                    headers: {
+                        Authorization: `Basic ${Buffer.from(varPass).toString('base64')}`,
+                    },
+                },
+            )
+        ).Body[0];
+        const latestVerPublishConfig = JSON.parse(latestVer.PublishConfig);
+        const dependenciesFromPublishConfig = latestVerPublishConfig.Dependencies;
+        let dependeciesUUIDs: any[] = [];
+        if (dependenciesFromPublishConfig !== undefined && Object.entries(dependenciesFromPublishConfig).length !== 0) {
+            dependeciesUUIDs = await this.buildTheDependencyArray(service, dependenciesFromPublishConfig);
+        }
+        return dependeciesUUIDs;
+    }
+
+    async buildTheDependencyArray(service: GeneralService, dependenciesFromPublishConfig) {
+        //map the dependency addons to thier real name in VAR
+        const allAddonDependencys = await service.fetchStatus('/configuration_fields?key=AddonsForDependencies');
+        const allAddonDependencysAsObject = JSON.parse(allAddonDependencys.Body.Value);
+        const arrayOfAllUUIDs: any[] = [];
+        for (const dependecyAddon in dependenciesFromPublishConfig) {
+            const depObj = {};
+            depObj[dependecyAddon] = [allAddonDependencysAsObject[dependecyAddon], ''];
+            arrayOfAllUUIDs.push(depObj);
+        }
+        return arrayOfAllUUIDs;
+    }
 }
