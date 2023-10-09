@@ -769,9 +769,28 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 expect(deletedFileResponse.Key).to.equal(tempKey);
                 expect(deletedFileResponse.Hidden).to.be.true;
                 expect(deletedFileResponse.ExpirationDateTime).to.include('Z');
-                await expect(pfsService.getFile(schemaName, tempKey)).eventually.to.be.rejectedWith(
-                    `failed with status: 404 - Not Found error: {"fault":{"faultstring":"Failed due to exception: Could not find requested item:`,
+
+                const getDeletedFileResponse = await pfsService.getFile(schemaName, tempKey);
+                expect(getDeletedFileResponse.CreationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(getDeletedFileResponse.CreationDateTime).to.include('Z');
+                expect(getDeletedFileResponse.ModificationDateTime).to.include(new Date().toISOString().split('T')[0]);
+                expect(getDeletedFileResponse.ModificationDateTime).to.include('Z');
+                expect(getDeletedFileResponse.Description).to.equal(tempDescription);
+                expect(getDeletedFileResponse.Folder).to.equal('/');
+                expect(getDeletedFileResponse.Key).to.equal(tempKey);
+                expect(getDeletedFileResponse.MIME).to.equal('file/plain');
+                expect(getDeletedFileResponse.Name).to.equal(tempKey);
+                expect(getDeletedFileResponse.Sync).to.equal('Device');
+                expect(getDeletedFileResponse.URL).to.include('pfs.');
+                expect(getDeletedFileResponse.URL).to.include(
+                    '.pepperi.com/' +
+                        distributor.UUID +
+                        '/eb26afcd-3cf2-482e-9ab1-b53c41a6adbe/' +
+                        schemaName +
+                        '/' +
+                        tempKey,
                 );
+                expect(getDeletedFileResponse.Hidden).to.be.true;
             });
         });
 
