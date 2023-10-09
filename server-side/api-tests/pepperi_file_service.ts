@@ -83,7 +83,10 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                 try {
                     purgedSchema = await adalService.deleteSchema(schemaName);
                 } catch (error) {
-                    purgedSchema = '';
+                    purgedSchema = {
+                        Done: true,
+                        ProcessedCounter: 0,
+                    };
                     expect(error)
                         .to.have.property('message')
                         .that.includes(
@@ -94,7 +97,11 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
                     Name: schemaName,
                     Type: 'pfs',
                 } as any);
-                expect(purgedSchema).to.equal('');
+                expect(purgedSchema).to.have.property('Done').a('boolean').that.is.true;
+                // Not expecting a specific number of processed items, since currently PFS
+                // doesn't return the number of objects deleted, but in the future it might.
+                expect(purgedSchema).to.have.property('ProcessedCounter').a('number');
+
                 expect(newSchema).to.have.property('Name').a('string').that.is.equal(schemaName);
                 expect(newSchema).to.have.property('Type').a('string').that.is.equal('pfs');
                 expect(newSchema.Fields).to.have.property('Description');
