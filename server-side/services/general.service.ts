@@ -54,6 +54,7 @@ export const testData = {
 
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
 export const testDataWithNewSync = {
+    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
     ...testData,
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
