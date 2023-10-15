@@ -217,23 +217,25 @@ export async function StorybookLinkTests() {
                             // expect(currentAlign).to.include('left'); // need to find another way of validating this
                         });
                         alignExpectedValues.forEach(async (title, index) => {
-                            it(`'${title}' -- functional test (+screenshots)`, async function () {
-                                const alignment = allAlignments[index];
-                                await alignment.click();
-                                const currentAlign = await link.getTxtAlignmentByComponent('link');
-                                let base64ImageComponentModal = await driver.saveScreenshots();
-                                addContext(this, {
-                                    title: `${title} (xAlignment) input change`,
-                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                    const alignment = allAlignments[index];
+                                    await alignment.click();
+                                    const currentAlign = await link.getTxtAlignmentByComponent('link');
+                                    let base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
+                                    await driver.click(link.MainHeader);
+                                    base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `upper screenshot: link with x-alignment = '${title}'`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
                                 });
-                                expect(currentAlign).to.include(title);
-                                await driver.click(link.MainHeader);
-                                base64ImageComponentModal = await driver.saveScreenshots();
-                                addContext(this, {
-                                    title: `upper screenshot: link with x-alignment = '${title}'`,
-                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
-                                });
-                            });
+                            }
                         });
                         break;
 
