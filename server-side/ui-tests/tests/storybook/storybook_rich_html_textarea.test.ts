@@ -199,11 +199,13 @@ export async function StorybookRichHtmlTextareaTests() {
                                 title: `[xAlignment = 'left']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const currentAlign = await richHtmlTextarea.getTxtAlignmentByComponent('richHtmlTextarea');
+                            const currentAlign = await richHtmlTextarea.getTxtAlignmentByComponent(
+                                'rich-html-textarea',
+                            );
                             await driver.click(richHtmlTextarea.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `upper screenshot: richHtmlTextarea with x-alignment = 'left'`,
+                                title: `upper screenshot: rich-html-textarea with x-alignment = 'left'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             expect(currentAlign).to.include('left');

@@ -200,11 +200,11 @@ export async function StorybookDateTimeTests() {
                                 title: `[xAlignment = 'left']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const currentAlign = await dateTime.getTxtAlignmentByComponent('dateTime');
+                            const currentAlign = await dateTime.getTxtAlignmentByComponent('date-time');
                             await driver.click(dateTime.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `upper screenshot: dateTime with x-alignment = 'left'`,
+                                title: `upper screenshot: date-time with x-alignment = 'left'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             expect(currentAlign).to.include('left');
@@ -224,7 +224,7 @@ export async function StorybookDateTimeTests() {
                                     await driver.click(dateTime.MainHeader);
                                     base64ImageComponentModal = await driver.saveScreenshots();
                                     addContext(this, {
-                                        title: `upper screenshot: dateTime with x-alignment = '${title}'`,
+                                        title: `upper screenshot: date-time with x-alignment = '${title}'`,
                                         value: 'data:image/png;base64,' + base64ImageComponentModal,
                                     });
                                 });

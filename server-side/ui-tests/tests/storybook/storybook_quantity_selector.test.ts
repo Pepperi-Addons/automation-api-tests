@@ -194,11 +194,11 @@ export async function StorybookQuantitySelectorTests() {
                                 title: `[xAlignment = 'left']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const currentAlign = await quantitySelector.getTxtAlignmentByComponent('quantitySelector');
+                            const currentAlign = await quantitySelector.getTxtAlignmentByComponent('quantity-selector');
                             await driver.click(quantitySelector.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `upper screenshot: quantitySelector with x-alignment = 'left'`,
+                                title: `upper screenshot: quantity-selector with x-alignment = 'left'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             expect(currentAlign).to.include('left');

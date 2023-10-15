@@ -167,11 +167,11 @@ export async function StorybookImageFilmstripTests() {
                                 title: `[xAlignment = 'left']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const currentAlign = await imageFilmstrip.getTxtAlignmentByComponent('imageFilmstrip');
+                            const currentAlign = await imageFilmstrip.getTxtAlignmentByComponent('image-filmstrip');
                             await driver.click(imageFilmstrip.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `upper screenshot: imageFilmstrip with x-alignment = 'left'`,
+                                title: `upper screenshot: image-filmstrip with x-alignment = 'left'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             expect(currentAlign).to.include('left');
