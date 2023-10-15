@@ -204,25 +204,27 @@ export async function StorybookQuantitySelectorTests() {
                             // expect(currentAlign).to.include('left'); // need to find another way of validating this
                         });
                         alignExpectedValues.forEach(async (title, index) => {
-                            it(`'${title}' -- functional test (+screenshots)`, async function () {
-                                const alignment = allAlignments[index];
-                                await alignment.click();
-                                const currentAlign = await quantitySelector.getTxtAlignmentByComponent(
-                                    'quantitySelector',
-                                );
-                                let base64ImageComponentModal = await driver.saveScreenshots();
-                                addContext(this, {
-                                    title: `${title} (xAlignment) input change`,
-                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                    const alignment = allAlignments[index];
+                                    await alignment.click();
+                                    const currentAlign = await quantitySelector.getTxtAlignmentByComponent(
+                                        'quantity-selector',
+                                    );
+                                    let base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
+                                    await driver.click(quantitySelector.MainHeader);
+                                    base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `upper screenshot: quantitySelector with x-alignment = '${title}'`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
                                 });
-                                expect(currentAlign).to.include(title);
-                                await driver.click(quantitySelector.MainHeader);
-                                base64ImageComponentModal = await driver.saveScreenshots();
-                                addContext(this, {
-                                    title: `upper screenshot: quantitySelector with x-alignment = '${title}'`,
-                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
-                                });
-                            });
+                            }
                         });
                         break;
 

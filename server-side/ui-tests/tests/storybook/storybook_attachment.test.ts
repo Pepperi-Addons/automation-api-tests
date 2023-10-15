@@ -372,23 +372,25 @@ export async function StorybookAttachmentTests() {
                             expect(currentAlign).to.include('left');
                         });
                         alignExpectedValues.forEach(async (title, index) => {
-                            it(`'${title}' -- functional test (+screenshots)`, async function () {
-                                const alignment = allAlignments[index + 1];
-                                await alignment.click();
-                                const currentAlign = await attachment.getTxtAlignmentByComponent('attachment');
-                                let base64ImageComponentModal = await driver.saveScreenshots();
-                                addContext(this, {
-                                    title: `${title} (xAlignment) input change`,
-                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                    const alignment = allAlignments[index + 1];
+                                    await alignment.click();
+                                    const currentAlign = await attachment.getTxtAlignmentByComponent('attachment');
+                                    let base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
+                                    await driver.click(attachment.MainHeader);
+                                    base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `upper screenshot: attachment with x-alignment = '${title}'`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
                                 });
-                                expect(currentAlign).to.include(title);
-                                await driver.click(attachment.MainHeader);
-                                base64ImageComponentModal = await driver.saveScreenshots();
-                                addContext(this, {
-                                    title: `upper screenshot: attachment with x-alignment = '${title}'`,
-                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
-                                });
-                            });
+                            }
                         });
                         break;
 
