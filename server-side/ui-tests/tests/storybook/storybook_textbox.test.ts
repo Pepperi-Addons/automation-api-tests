@@ -217,7 +217,7 @@ export async function StorybookTextboxTests() {
                         // TODO
                         break;
                     case 'xAlignment':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         it(`get all xAlignments`, async function () {
@@ -230,14 +230,14 @@ export async function StorybookTextboxTests() {
                                 title: `[xAlignment = 'left']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // const currentAlign = await textbox.getTxtAlignmentByComponent('textbox');
+                            const currentAlign = await textbox.getTxtAlignmentByComponent('textbox');
                             await driver.click(textbox.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `upper screenshot: textbox with x-alignment = 'left'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // expect(currentAlign).to.include('left'); // need to find another way of validating this
+                            expect(currentAlign).to.include('left');
                         });
                         alignExpectedValues.forEach(async (title, index) => {
                             if (title) {

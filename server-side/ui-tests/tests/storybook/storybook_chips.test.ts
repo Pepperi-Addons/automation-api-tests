@@ -290,14 +290,14 @@ export async function StorybookChipsTests() {
                                 title: `[xAlignment = 'left']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // const currentAlign = await chips.getTxtAlignmentByComponent('chips');
+                            const currentAlign = await chips.getTxtAlignmentByComponent('chips');
                             await driver.click(chips.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `upper screenshot: chips with x-alignment = 'left'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // expect(currentAlign).to.include('left'); // need to find another way of validating this
+                            expect(currentAlign).to.include('left');
                         });
                         alignExpectedValues.forEach(async (title, index) => {
                             if (title) {

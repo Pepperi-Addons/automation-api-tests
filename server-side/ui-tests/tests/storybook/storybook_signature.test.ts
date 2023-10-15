@@ -170,14 +170,14 @@ export async function StorybookSignatureTests() {
                                 title: `[xAlignment = 'left']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // const currentAlign = await signature.getTxtAlignmentByComponent('signature');
+                            const currentAlign = await signature.getTxtAlignmentByComponent('signature');
                             await driver.click(signature.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `upper screenshot: signature with x-alignment = 'left'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // expect(currentAlign).to.include('left'); // need to find another way of validating this
+                            expect(currentAlign).to.include('left');
                         });
                         alignExpectedValues.forEach(async (title, index) => {
                             if (title) {

@@ -148,7 +148,7 @@ export async function StorybookImageFilmstripTests() {
                         // TODO
                         break;
                     case 'showTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('showTitle')).to.be.true;
                         });
                         // TODO
@@ -167,14 +167,14 @@ export async function StorybookImageFilmstripTests() {
                                 title: `[xAlignment = 'left']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // const currentAlign = await imageFilmstrip.getTxtAlignmentByComponent('imageFilmstrip');
+                            const currentAlign = await imageFilmstrip.getTxtAlignmentByComponent('imageFilmstrip');
                             await driver.click(imageFilmstrip.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `upper screenshot: imageFilmstrip with x-alignment = 'left'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // expect(currentAlign).to.include('left'); // need to find another way of validating this
+                            expect(currentAlign).to.include('left');
                         });
                         alignExpectedValues.forEach(async (title, index) => {
                             if (title) {
