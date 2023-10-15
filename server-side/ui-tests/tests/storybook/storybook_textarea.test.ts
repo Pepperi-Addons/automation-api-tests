@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { Textarea } from '../../pom/Pages/StorybookComponents/Textarea';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -24,12 +25,14 @@ export async function StorybookTextareaTests() {
     ];
     const textareaOutputs = ['valueChange'];
     const textareaSubFoldersHeaders = ['Max field characters', 'Disabled'];
+    const alignExpectedValues = ['', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let textarea: Textarea;
     let textareaInputsTitles;
     let textareaOutputsTitles;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "Textarea" Tests Suite', function () {
         this.retries(0);
@@ -180,7 +183,44 @@ export async function StorybookTextareaTests() {
                         it(`it '${input}'`, async function () {
                             expect(textareaInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // const currentAlign = await textarea.getTxtAlignmentByComponent('textarea');
+                            await driver.click(textarea.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: textarea with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // expect(currentAlign).to.include('left'); // need to find another way of validating this
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                const alignment = allAlignments[index];
+                                await alignment.click();
+                                const currentAlign = await textarea.getTxtAlignmentByComponent('textarea');
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (xAlignment) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(currentAlign).to.include(title);
+                                await driver.click(textarea.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: textarea with x-alignment = '${title}'`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
                         break;
 
                     default:

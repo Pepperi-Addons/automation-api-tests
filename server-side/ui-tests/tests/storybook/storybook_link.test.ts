@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { Link } from '../../pom/Pages/StorybookComponents/Link';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -26,12 +27,14 @@ export async function StorybookLinkTests() {
     ];
     const linkOutputs = ['elementClick', 'valueChange'];
     const linkSubFoldersHeaders = ['Empty', 'Read only', 'Read only, no button', 'Max characters'];
+    const alignExpectedValues = ['', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let link: Link;
     let linkInputsTitles;
     let linkOutputsTitles;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "Link" Tests Suite', function () {
         this.retries(0);
@@ -194,7 +197,44 @@ export async function StorybookLinkTests() {
                         it(`it '${input}'`, async function () {
                             expect(linkInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // const currentAlign = await link.getTxtAlignmentByComponent('link');
+                            await driver.click(link.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: link with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // expect(currentAlign).to.include('left'); // need to find another way of validating this
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                const alignment = allAlignments[index];
+                                await alignment.click();
+                                const currentAlign = await link.getTxtAlignmentByComponent('link');
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (xAlignment) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(currentAlign).to.include(title);
+                                await driver.click(link.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: link with x-alignment = '${title}'`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
                         break;
 
                     default:

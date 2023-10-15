@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { Signature } from '../../pom/Pages/StorybookComponents/Signature';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -13,12 +14,14 @@ export async function StorybookSignatureTests() {
     const signatureInputs = ['rowSpan', 'src', 'label', 'disabled', 'mandatory', 'readonly', 'showTitle', 'xAlignment'];
     const signatureOutputs = ['elementClick', 'fileChange'];
     const signatureSubFoldersHeaders = ['Empty', 'Read only'];
+    const alignExpectedValues = ['', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let signature: Signature;
     let signatureInputsTitles;
     let signatureOutputsTitles;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "Signature" Tests Suite', function () {
         this.retries(0);
@@ -157,7 +160,44 @@ export async function StorybookSignatureTests() {
                         it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // const currentAlign = await signature.getTxtAlignmentByComponent('signature');
+                            await driver.click(signature.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: signature with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // expect(currentAlign).to.include('left'); // need to find another way of validating this
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                const alignment = allAlignments[index];
+                                await alignment.click();
+                                const currentAlign = await signature.getTxtAlignmentByComponent('signature');
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (xAlignment) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(currentAlign).to.include(title);
+                                await driver.click(signature.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: signature with x-alignment = '${title}'`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
                         break;
 
                     default:

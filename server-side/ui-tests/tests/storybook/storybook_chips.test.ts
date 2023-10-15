@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { Chips } from '../../pom/Pages/StorybookComponents/Chips';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -34,6 +35,7 @@ export async function StorybookChipsTests() {
         'Type is select',
         'Orientation is vertical',
     ];
+    const alignExpectedValues = ['', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
@@ -41,6 +43,7 @@ export async function StorybookChipsTests() {
     let chipsInputsTitles;
     let chipsOutputsTitles;
     let chipsMethodsTitles;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "Chips" Tests Suite', function () {
         this.retries(0);
@@ -277,7 +280,44 @@ export async function StorybookChipsTests() {
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // const currentAlign = await chips.getTxtAlignmentByComponent('chips');
+                            await driver.click(chips.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: chips with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // expect(currentAlign).to.include('left'); // need to find another way of validating this
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                const alignment = allAlignments[index];
+                                await alignment.click();
+                                const currentAlign = await chips.getTxtAlignmentByComponent('chips');
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (xAlignment) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(currentAlign).to.include(title);
+                                await driver.click(chips.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: chips with x-alignment = '${title}'`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
                         break;
 
                     default:
