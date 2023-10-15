@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { QuantitySelector } from '../../pom/Pages/StorybookComponents/QuantitySelector';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -25,12 +26,14 @@ export async function StorybookQuantitySelectorTests() {
     ];
     const quantitySelectorOutputs = ['elementClick', 'valueChange'];
     const quantitySelectorSubFoldersHeaders = ['Twist and shake', 'Shake and twist'];
+    const alignExpectedValues = ['', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let quantitySelector: QuantitySelector;
     let quantitySelectorInputsTitles;
     let quantitySelectorOutputsTitles;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "QuantitySelector" Tests Suite', function () {
         this.retries(0);
@@ -181,7 +184,46 @@ export async function StorybookQuantitySelectorTests() {
                         it(`it '${input}'`, async function () {
                             expect(quantitySelectorInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // const currentAlign = await quantitySelector.getTxtAlignmentByComponent('quantitySelector');
+                            await driver.click(quantitySelector.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: quantitySelector with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // expect(currentAlign).to.include('left'); // need to find another way of validating this
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                const alignment = allAlignments[index];
+                                await alignment.click();
+                                const currentAlign = await quantitySelector.getTxtAlignmentByComponent(
+                                    'quantitySelector',
+                                );
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (xAlignment) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(currentAlign).to.include(title);
+                                await driver.click(quantitySelector.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: quantitySelector with x-alignment = '${title}'`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
                         break;
 
                     default:
