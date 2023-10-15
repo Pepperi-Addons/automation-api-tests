@@ -180,7 +180,7 @@ export async function StorybookSelectPanelTests() {
                         // TODO
                         break;
                     case 'xAlignment':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         it(`get all xAlignments`, async function () {
@@ -193,14 +193,14 @@ export async function StorybookSelectPanelTests() {
                                 title: `[xAlignment = 'left']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // const currentAlign = await selectPanel.getTxtAlignmentByComponent('selectPanel');
+                            const currentAlign = await selectPanel.getTxtAlignmentByComponent('selectPanel');
                             await driver.click(selectPanel.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `upper screenshot: selectPanel with x-alignment = 'left'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // expect(currentAlign).to.include('left'); // need to find another way of validating this
+                            expect(currentAlign).to.include('left');
                         });
                         alignExpectedValues.forEach(async (title, index) => {
                             if (title) {

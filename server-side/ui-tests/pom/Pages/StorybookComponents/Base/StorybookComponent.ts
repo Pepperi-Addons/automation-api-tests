@@ -11,6 +11,7 @@ export class StorybookComponent extends AddonPage {
     public MandatoryIcon: By = By.xpath(`//pep-icon[@name="system_must"]`);
     public PepTitle: By = By.xpath(`//pep-field-title`);
     public PepCheckboxContainer: By = By.xpath(`//div[contains(@class,'pep-checkbox-container')]`);
+    public PepSeparatorContainer: By = By.xpath(`//pep-separator//div[@title="Separator"]`);
     public ResetControlsButton: By = By.xpath(`//button[@title="Reset controls"]`);
     public Inputs_mainTableRow: By = By.xpath('//tr[contains(@title," inputs items")]');
     public Outputs_mainTableRow: By = By.xpath('//tr[contains(@title," outputs items")]');
@@ -160,6 +161,16 @@ export class StorybookComponent extends AddonPage {
                 const txtAlignElement = await this.browser.findElement(selector);
                 const txtAlignElementClasses = await txtAlignElement.getAttribute('class');
                 txtAlignVal = txtAlignElementClasses.split('one-row')[1].split('-alignment')[0].trim();
+                break;
+            case 'separator':
+                selector = By.xpath(
+                    `${this.MainExample_BigBoxDiv.value.replace('{placeholder}', component)}${
+                        this.PepSeparatorContainer.value
+                    }`,
+                );
+                const sepTxtAlignElement = await this.browser.findElement(selector);
+                const sepTxtAlignElementClasses = await sepTxtAlignElement.getAttribute('class');
+                txtAlignVal = sepTxtAlignElementClasses.split('align-')[1].split(' ')[0].trim();
                 break;
 
             default:

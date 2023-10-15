@@ -175,7 +175,7 @@ export async function StorybookQuantitySelectorTests() {
                         // TODO
                         break;
                     case 'visible':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('visible')).to.be.true;
                         });
                         // TODO
@@ -194,14 +194,14 @@ export async function StorybookQuantitySelectorTests() {
                                 title: `[xAlignment = 'left']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // const currentAlign = await quantitySelector.getTxtAlignmentByComponent('quantitySelector');
+                            const currentAlign = await quantitySelector.getTxtAlignmentByComponent('quantitySelector');
                             await driver.click(quantitySelector.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `upper screenshot: quantitySelector with x-alignment = 'left'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // expect(currentAlign).to.include('left'); // need to find another way of validating this
+                            expect(currentAlign).to.include('left');
                         });
                         alignExpectedValues.forEach(async (title, index) => {
                             if (title) {

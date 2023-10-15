@@ -128,7 +128,7 @@ export async function StorybookSeparatorTests() {
                         // TODO
                         break;
                     case 'xAlignment':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(separatorInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         it(`get all xAlignments`, async function () {
@@ -141,14 +141,14 @@ export async function StorybookSeparatorTests() {
                                 title: `[xAlignment = 'left']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // const currentAlign = await separator.getTxtAlignmentByComponent('separator');
+                            const currentAlign = await separator.getTxtAlignmentByComponent('separator');
                             await driver.click(separator.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `upper screenshot: separator with x-alignment = 'left'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // expect(currentAlign).to.include('left'); // need to find another way of validating this
+                            expect(currentAlign).to.include('left');
                         });
                         alignExpectedValues.forEach(async (title, index) => {
                             if (title) {
