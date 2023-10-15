@@ -193,11 +193,11 @@ export async function StorybookSelectPanelTests() {
                                 title: `[xAlignment = 'left']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const currentAlign = await selectPanel.getTxtAlignmentByComponent('selectPanel');
+                            const currentAlign = await selectPanel.getTxtAlignmentByComponent('select-panel');
                             await driver.click(selectPanel.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `upper screenshot: selectPanel with x-alignment = 'left'`,
+                                title: `upper screenshot: select-panel with x-alignment = 'left'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             expect(currentAlign).to.include('left');
