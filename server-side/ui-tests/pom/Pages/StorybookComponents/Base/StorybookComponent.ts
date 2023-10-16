@@ -12,7 +12,7 @@ export class StorybookComponent extends AddonPage {
     public PepTitle: By = By.xpath(`//pep-field-title`);
     public PepCheckboxContainer: By = By.xpath(`//div[contains(@class,'pep-checkbox-container')]`);
     public PepChipsAlignmentElement: By = By.xpath(`//pep-field-title/div`);
-    public PepSeparatorContainer: By = By.xpath(`//pep-separator//div[@title="Separator"]`);
+    public PepSeparatorContainer: By = By.xpath(`//pep-separator//div`);
     public ResetControlsButton: By = By.xpath(`//button[@title="Reset controls"]`);
     public Inputs_mainTableRow: By = By.xpath('//tr[contains(@title," inputs items")]');
     public Outputs_mainTableRow: By = By.xpath('//tr[contains(@title," outputs items")]');
