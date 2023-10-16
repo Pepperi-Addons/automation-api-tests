@@ -1,4 +1,4 @@
-import { By } from 'selenium-webdriver';
+import { By, Key } from 'selenium-webdriver';
 import { AddonPage } from '../../..';
 import { expect } from 'chai';
 
@@ -36,6 +36,7 @@ export class StorybookComponent extends AddonPage {
     public OutputDefaultValue_byOutputName: By = By.xpath(
         `//span[text()="{placeholder}"]/parent::td/following-sibling::td[2]/span`,
     );
+    public RowSpanControlInput: By = By.xpath(`//input[@id="control-rowSpan"]`);
 
     public async getMainExampleContentSelecor(componentText: string): Promise<By> {
         return By.xpath(`//div[contains(@id,'anchor')]//div[contains(@id,'${componentText}')]`);
@@ -181,5 +182,11 @@ export class StorybookComponent extends AddonPage {
                 break;
         }
         return txtAlignVal;
+    }
+
+    public async changeRowSpanControl(toNum: number): Promise<void> {
+        await this.browser.sendKeys(this.RowSpanControlInput, Key.CONTROL + 'a' + Key.DELETE);
+        await this.browser.sendKeys(this.RowSpanControlInput, toNum + Key.ENTER);
+        this.browser.sleep(1 * 1000);
     }
 }

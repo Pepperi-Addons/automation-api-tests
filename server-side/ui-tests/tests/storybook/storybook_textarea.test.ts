@@ -32,6 +32,8 @@ export async function StorybookTextareaTests() {
     let textarea: Textarea;
     let textareaInputsTitles;
     let textareaOutputsTitles;
+    let textareaComplexElement;
+    let textareaComplexHeight;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "Textarea" Tests Suite', function () {
@@ -126,10 +128,68 @@ export async function StorybookTextareaTests() {
                 });
                 switch (input) {
                     case 'rowSpan':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('rowSpan')).to.be.true;
                         });
-                        // TODO
+                        it(`default height [ control = 2 ] measurement (+screenshot)`, async function () {
+                            textareaComplexElement = await driver.findElement(textarea.MainExampleHeightDiv);
+                            textareaComplexHeight = await textareaComplexElement.getCssValue('height');
+                            console.info('textareaComplexHeight: ', textareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(textareaComplexHeight.trim()).to.equal('144px');
+                        });
+                        it(`[ control = 1 ] height measurement (+screenshot)`, async function () {
+                            await textarea.changeRowSpanControl(1);
+                            textareaComplexElement = await driver.findElement(textarea.MainExampleHeightDiv);
+                            textareaComplexHeight = await textareaComplexElement.getCssValue('height');
+                            console.info('textareaComplexHeight: ', textareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(textareaComplexHeight.trim()).to.equal('77.5938px');
+                        });
+                        it(`[ control = 3 ] height measurement (+screenshot)`, async function () {
+                            await textarea.changeRowSpanControl(3);
+                            textareaComplexElement = await driver.findElement(textarea.MainExampleHeightDiv);
+                            textareaComplexHeight = await textareaComplexElement.getCssValue('height');
+                            console.info('textareaComplexHeight: ', textareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(textareaComplexHeight.trim()).to.equal('208px');
+                        });
+                        it(`[ control = 0 ] height measurement (+screenshot)`, async function () {
+                            await textarea.changeRowSpanControl(0);
+                            textareaComplexElement = await driver.findElement(textarea.MainExampleHeightDiv);
+                            textareaComplexHeight = await textareaComplexElement.getCssValue('height');
+                            console.info('textareaComplexHeight: ', textareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(textareaComplexHeight.trim()).to.equal('80px');
+                        });
+                        it(`back to default height [ control = 2 ] measurement (+screenshot)`, async function () {
+                            await textarea.changeRowSpanControl(2);
+                            textareaComplexElement = await driver.findElement(textarea.MainExampleHeightDiv);
+                            textareaComplexHeight = await textareaComplexElement.getCssValue('height');
+                            console.info('textareaComplexHeight: ', textareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' back to default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(textareaComplexHeight.trim()).to.equal('144px');
+                        });
                         break;
                     case 'label':
                         it(`it '${input}'`, async function () {

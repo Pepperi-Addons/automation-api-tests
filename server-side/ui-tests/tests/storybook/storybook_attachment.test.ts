@@ -169,6 +169,18 @@ export async function StorybookAttachmentTests() {
                             });
                             expect(attachmentComplexHeight.trim()).to.equal('46px');
                         });
+                        it(`back to default height [ control = 2 ] measurement (+screenshot)`, async function () {
+                            await attachment.changeRowSpanControl(2);
+                            attachmentComplexElement = await driver.findElement(attachment.MainExampleHeightDiv);
+                            attachmentComplexHeight = await attachmentComplexElement.getCssValue('height');
+                            console.info('attachmentComplexHeight: ', attachmentComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' back to default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(attachmentComplexHeight.trim()).to.equal('106px');
+                        });
                         break;
 
                     case 'label':
