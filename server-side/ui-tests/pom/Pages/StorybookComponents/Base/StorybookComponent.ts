@@ -213,7 +213,7 @@ export class StorybookComponent extends AddonPage {
                 break;
             case 'date-time':
                 mainExampleLabel = By.xpath(
-                    `//div[@id="story--components-date-time--story-1"]//pep-field-title//mat-label`,
+                    `//div[@id="story--components-date-date-time--story-1"]//pep-field-title//mat-label`,
                 );
                 break;
             case 'image-filmstrip':
@@ -250,9 +250,7 @@ export class StorybookComponent extends AddonPage {
                 );
                 break;
             case 'separator':
-                mainExampleLabel = By.xpath(
-                    `//div[@id="story--components-separator--story-1"]//pep-field-title//mat-label`,
-                );
+                mainExampleLabel = By.xpath(`//div[@id="story--components-separator--story-1"]//pep-separator//span`);
                 break;
             case 'signature':
                 mainExampleLabel = By.xpath(
@@ -270,9 +268,7 @@ export class StorybookComponent extends AddonPage {
                 );
                 break;
             case 'textbox':
-                mainExampleLabel = By.xpath(
-                    `//div[@id="story--components-textbox--story-1"]//pep-field-title//mat-label`,
-                );
+                mainExampleLabel = By.xpath(`//div[@id="story--components-textbox--base"]//pep-field-title//mat-label`);
                 break;
             default:
                 mainExampleLabel = By.xpath('');
