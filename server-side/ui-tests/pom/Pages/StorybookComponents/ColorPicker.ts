@@ -7,7 +7,7 @@ export class ColorPicker extends StorybookComponent {
     public ComponentLabel: By = By.xpath(`(//div[contains(@id,'color-picker')]//pep-field-title//mat-label)[1]`);
     public ComponentLabelTxtAlign: By = By.xpath(`//div[contains(@id,'color-picker')]//pep-field-title//div`);
     public MainExampleDiv: By = By.xpath('//div[@id="story--components-color-picker--story-1"]');
-    public MainExampleLabel: By = By.xpath(`${this.MainExampleDiv.value}//mat-label`);
+    // public MainExampleLabel: By = By.xpath(`${this.MainExampleDiv.value}//mat-label`);
     public PenIcon: By = By.xpath(`//mat-icon//pep-icon[contains(@name,'system_edit')]`);
     public MainExampleColorEditButton: By = By.xpath(
         `//div[@id="story--components-color-picker--story-1"]//div[contains(@class,"pep-color")]/button`,
@@ -46,10 +46,10 @@ export class ColorPicker extends StorybookComponent {
         return await label.getText();
     }
 
-    public async getMainExampleLabel(): Promise<string> {
-        const label = await this.browser.findElement(this.MainExampleLabel);
-        return (await label.getText()).trim();
-    }
+    // public async getMainExampleLabel(): Promise<string> {
+    //     const label = await this.browser.findElement(this.MainExampleLabel);
+    //     return (await label.getText()).trim();
+    // }
 
     public async getComponentTxtAlignment() {
         const txtAlignComp = await this.browser.findElement(

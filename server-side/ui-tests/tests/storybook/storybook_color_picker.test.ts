@@ -141,7 +141,7 @@ export async function StorybookColorPickerTests() {
                                 title: `Label Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const newLabelGotFromUi = await colorPicker.getMainExampleLabel();
+                            const newLabelGotFromUi = await colorPicker.getMainExampleLabel('color-picker');
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;

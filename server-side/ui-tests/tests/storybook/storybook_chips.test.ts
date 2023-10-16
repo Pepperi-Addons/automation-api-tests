@@ -151,7 +151,7 @@ export async function StorybookChipsTests() {
                                 title: `Label Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const newLabelGotFromUi = await chips.getMainExampleLabel();
+                            const newLabelGotFromUi = await chips.getMainExampleLabel('chips');
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
