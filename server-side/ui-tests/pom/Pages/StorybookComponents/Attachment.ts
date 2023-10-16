@@ -9,19 +9,12 @@ export class Attachment extends StorybookComponent {
     public MainExample_deleteButton: By = By.xpath(`${this.MainExampleDiv.value}//button[contains(@class,"delete")]`);
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
-    // public RowSpanControlInput: By = By.xpath(`//input[@id="control-rowSpan"]`);
     public LabelControlInput: By = By.xpath(`//textarea[@id="control-label"]`);
     public SrcControlInput: By = By.xpath(`//textarea[@id="control-src"]`);
 
     public async doesAttachmentComponentFound(): Promise<void> {
         await this.doesComponentFound('attachment', 'Attachment');
     }
-
-    // public async changeRowSpanControl(toNum: number): Promise<void> {
-    //     await this.browser.sendKeys(this.RowSpanControlInput, Key.CONTROL + 'a' + Key.DELETE);
-    //     await this.browser.sendKeys(this.RowSpanControlInput, toNum + Key.ENTER);
-    //     this.browser.sleep(0.5 * 1000);
-    // }
 
     public async getLabelControl(): Promise<string> {
         const label = await this.browser.findElement(this.LabelControlInput);
