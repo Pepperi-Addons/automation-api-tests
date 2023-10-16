@@ -27,6 +27,8 @@ export async function StorybookImageFilmstripTests() {
     let storyBookPage: StoryBookPage;
     let imageFilmstrip: ImageFilmstrip;
     let imageFilmstripInputsTitles;
+    let imageFilmstripComplexElement;
+    let imageFilmstripComplexHeight;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "ImageFilmstrip" Tests Suite', function () {
@@ -118,10 +120,78 @@ export async function StorybookImageFilmstripTests() {
                 });
                 switch (input) {
                     case 'rowSpan':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('rowSpan')).to.be.true;
                         });
-                        // TODO
+                        it(`default height [ control = 8 ] measurement (+screenshot)`, async function () {
+                            imageFilmstripComplexElement = await driver.findElement(
+                                imageFilmstrip.MainExampleHeightDiv,
+                            );
+                            imageFilmstripComplexHeight = await imageFilmstripComplexElement.getCssValue('height');
+                            console.info('imageFilmstripComplexHeight: ', imageFilmstripComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageFilmstripComplexHeight.trim()).to.equal('512px');
+                        });
+                        it(`[ control = 1 ] height measurement (+screenshot)`, async function () {
+                            await imageFilmstrip.changeRowSpanControl(1);
+                            imageFilmstripComplexElement = await driver.findElement(
+                                imageFilmstrip.MainExampleHeightDiv,
+                            );
+                            imageFilmstripComplexHeight = await imageFilmstripComplexElement.getCssValue('height');
+                            console.info('imageFilmstripComplexHeight: ', imageFilmstripComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageFilmstripComplexHeight.trim()).to.equal('64px');
+                        });
+                        it(`[ control = 3 ] height measurement (+screenshot)`, async function () {
+                            await imageFilmstrip.changeRowSpanControl(3);
+                            imageFilmstripComplexElement = await driver.findElement(
+                                imageFilmstrip.MainExampleHeightDiv,
+                            );
+                            imageFilmstripComplexHeight = await imageFilmstripComplexElement.getCssValue('height');
+                            console.info('imageFilmstripComplexHeight: ', imageFilmstripComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageFilmstripComplexHeight.trim()).to.equal('192px');
+                        });
+                        it(`[ control = 0 ] height measurement (+screenshot)`, async function () {
+                            await imageFilmstrip.changeRowSpanControl(0);
+                            imageFilmstripComplexElement = await driver.findElement(
+                                imageFilmstrip.MainExampleHeightDiv,
+                            );
+                            imageFilmstripComplexHeight = await imageFilmstripComplexElement.getCssValue('height');
+                            console.info('imageFilmstripComplexHeight: ', imageFilmstripComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageFilmstripComplexHeight.trim()).to.equal('64px');
+                        });
+                        it(`back to default height [ control = 8 ] measurement (+screenshot)`, async function () {
+                            await imageFilmstrip.changeRowSpanControl(8);
+                            imageFilmstripComplexElement = await driver.findElement(
+                                imageFilmstrip.MainExampleHeightDiv,
+                            );
+                            imageFilmstripComplexHeight = await imageFilmstripComplexElement.getCssValue('height');
+                            console.info('imageFilmstripComplexHeight: ', imageFilmstripComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' back to default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageFilmstripComplexHeight.trim()).to.equal('512px');
+                        });
                         break;
                     case 'label':
                         it(`it '${input}'`, async function () {

@@ -21,6 +21,8 @@ export async function StorybookSignatureTests() {
     let signature: Signature;
     let signatureInputsTitles;
     let signatureOutputsTitles;
+    let signatureComplexElement;
+    let signatureComplexHeight;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "Signature" Tests Suite', function () {
@@ -118,7 +120,65 @@ export async function StorybookSignatureTests() {
                         it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('rowSpan')).to.be.true;
                         });
-                        // TODO
+                        it(`default height [ control = 4 ] measurement (+screenshot)`, async function () {
+                            signatureComplexElement = await driver.findElement(signature.MainExampleHeightDiv);
+                            signatureComplexHeight = await signatureComplexElement.getCssValue('height');
+                            console.info('signatureComplexHeight: ', signatureComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(signatureComplexHeight.trim()).to.equal('258px');
+                        });
+                        it(`[ control = 1 ] height measurement (+screenshot)`, async function () {
+                            await signature.changeRowSpanControl(1);
+                            signatureComplexElement = await driver.findElement(signature.MainExampleHeightDiv);
+                            signatureComplexHeight = await signatureComplexElement.getCssValue('height');
+                            console.info('signatureComplexHeight: ', signatureComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(signatureComplexHeight.trim()).to.equal('66px');
+                        });
+                        it(`[ control = 3 ] height measurement (+screenshot)`, async function () {
+                            await signature.changeRowSpanControl(3);
+                            signatureComplexElement = await driver.findElement(signature.MainExampleHeightDiv);
+                            signatureComplexHeight = await signatureComplexElement.getCssValue('height');
+                            console.info('signatureComplexHeight: ', signatureComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(signatureComplexHeight.trim()).to.equal('194px');
+                        });
+                        it(`[ control = 0 ] height measurement (+screenshot)`, async function () {
+                            await signature.changeRowSpanControl(0);
+                            signatureComplexElement = await driver.findElement(signature.MainExampleHeightDiv);
+                            signatureComplexHeight = await signatureComplexElement.getCssValue('height');
+                            console.info('signatureComplexHeight: ', signatureComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(signatureComplexHeight.trim()).to.equal('64px');
+                        });
+                        it(`back to default height [ control = 4 ] measurement (+screenshot)`, async function () {
+                            await signature.changeRowSpanControl(4);
+                            signatureComplexElement = await driver.findElement(signature.MainExampleHeightDiv);
+                            signatureComplexHeight = await signatureComplexElement.getCssValue('height');
+                            console.info('signatureComplexHeight: ', signatureComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' back to default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(signatureComplexHeight.trim()).to.equal('258px');
+                        });
                         break;
                     case 'src':
                         it(`validate input`, async function () {

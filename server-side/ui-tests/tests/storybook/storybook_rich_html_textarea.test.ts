@@ -38,6 +38,8 @@ export async function StorybookRichHtmlTextareaTests() {
     let richHtmlTextarea: RichHtmlTextarea;
     let richHtmlTextareaInputsTitles;
     let richHtmlTextareaOutputsTitles;
+    let richHtmlTextareaComplexElement;
+    let richHtmlTextareaComplexHeight;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "RichHtmlTextarea" Tests Suite', function () {
@@ -138,10 +140,78 @@ export async function StorybookRichHtmlTextareaTests() {
                         // TODO
                         break;
                     case 'rowSpan':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('rowSpan')).to.be.true;
                         });
-                        // TODO
+                        it(`default height [ control = 6 ] measurement (+screenshot)`, async function () {
+                            richHtmlTextareaComplexElement = await driver.findElement(
+                                richHtmlTextarea.MainExampleHeightDiv,
+                            );
+                            richHtmlTextareaComplexHeight = await richHtmlTextareaComplexElement.getCssValue('height');
+                            console.info('richHtmlTextareaComplexHeight: ', richHtmlTextareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(richHtmlTextareaComplexHeight.trim()).to.equal('384px');
+                        });
+                        it(`[ control = 1 ] height measurement (+screenshot)`, async function () {
+                            await richHtmlTextarea.changeRowSpanControl(1);
+                            richHtmlTextareaComplexElement = await driver.findElement(
+                                richHtmlTextarea.MainExampleHeightDiv,
+                            );
+                            richHtmlTextareaComplexHeight = await richHtmlTextareaComplexElement.getCssValue('height');
+                            console.info('richHtmlTextareaComplexHeight: ', richHtmlTextareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(richHtmlTextareaComplexHeight.trim()).to.equal('64px');
+                        });
+                        it(`[ control = 3 ] height measurement (+screenshot)`, async function () {
+                            await richHtmlTextarea.changeRowSpanControl(3);
+                            richHtmlTextareaComplexElement = await driver.findElement(
+                                richHtmlTextarea.MainExampleHeightDiv,
+                            );
+                            richHtmlTextareaComplexHeight = await richHtmlTextareaComplexElement.getCssValue('height');
+                            console.info('richHtmlTextareaComplexHeight: ', richHtmlTextareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(richHtmlTextareaComplexHeight.trim()).to.equal('192px');
+                        });
+                        it(`[ control = 0 ] height measurement (+screenshot)`, async function () {
+                            await richHtmlTextarea.changeRowSpanControl(0);
+                            richHtmlTextareaComplexElement = await driver.findElement(
+                                richHtmlTextarea.MainExampleHeightDiv,
+                            );
+                            richHtmlTextareaComplexHeight = await richHtmlTextareaComplexElement.getCssValue('height');
+                            console.info('richHtmlTextareaComplexHeight: ', richHtmlTextareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(richHtmlTextareaComplexHeight.trim()).to.equal('46px');
+                        });
+                        it(`back to default height [ control = 6 ] measurement (+screenshot)`, async function () {
+                            await richHtmlTextarea.changeRowSpanControl(6);
+                            richHtmlTextareaComplexElement = await driver.findElement(
+                                richHtmlTextarea.MainExampleHeightDiv,
+                            );
+                            richHtmlTextareaComplexHeight = await richHtmlTextareaComplexElement.getCssValue('height');
+                            console.info('richHtmlTextareaComplexHeight: ', richHtmlTextareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' back to default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(richHtmlTextareaComplexHeight.trim()).to.equal('384px');
+                        });
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {

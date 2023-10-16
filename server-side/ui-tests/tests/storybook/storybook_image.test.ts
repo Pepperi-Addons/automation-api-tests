@@ -21,6 +21,8 @@ export async function StorybookImageTests() {
     let image: Image;
     let imageInputsTitles;
     let imageOutputsTitles;
+    let imageComplexElement;
+    let imageComplexHeight;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "Image" Tests Suite', function () {
@@ -115,10 +117,68 @@ export async function StorybookImageTests() {
                 });
                 switch (input) {
                     case 'rowSpan':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageInputsTitles.includes('rowSpan')).to.be.true;
                         });
-                        // TODO
+                        it(`default height [ control = 4 ] measurement (+screenshot)`, async function () {
+                            imageComplexElement = await driver.findElement(image.MainExampleHeightDiv);
+                            imageComplexHeight = await imageComplexElement.getCssValue('height');
+                            console.info('imageComplexHeight: ', imageComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageComplexHeight.trim()).to.equal('258px');
+                        });
+                        it(`[ control = 1 ] height measurement (+screenshot)`, async function () {
+                            await image.changeRowSpanControl(1);
+                            imageComplexElement = await driver.findElement(image.MainExampleHeightDiv);
+                            imageComplexHeight = await imageComplexElement.getCssValue('height');
+                            console.info('imageComplexHeight: ', imageComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageComplexHeight.trim()).to.equal('66px');
+                        });
+                        it(`[ control = 3 ] height measurement (+screenshot)`, async function () {
+                            await image.changeRowSpanControl(3);
+                            imageComplexElement = await driver.findElement(image.MainExampleHeightDiv);
+                            imageComplexHeight = await imageComplexElement.getCssValue('height');
+                            console.info('imageComplexHeight: ', imageComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageComplexHeight.trim()).to.equal('194px');
+                        });
+                        it(`[ control = 0 ] height measurement (+screenshot)`, async function () {
+                            await image.changeRowSpanControl(0);
+                            imageComplexElement = await driver.findElement(image.MainExampleHeightDiv);
+                            imageComplexHeight = await imageComplexElement.getCssValue('height');
+                            console.info('imageComplexHeight: ', imageComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageComplexHeight.trim()).to.equal('64px');
+                        });
+                        it(`back to default height [ control = 4 ] measurement (+screenshot)`, async function () {
+                            await image.changeRowSpanControl(4);
+                            imageComplexElement = await driver.findElement(image.MainExampleHeightDiv);
+                            imageComplexHeight = await imageComplexElement.getCssValue('height');
+                            console.info('imageComplexHeight: ', imageComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' back to default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageComplexHeight.trim()).to.equal('258px');
+                        });
                         break;
                     case 'src':
                         it(`it '${input}'`, async function () {
