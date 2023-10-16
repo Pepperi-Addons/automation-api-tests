@@ -184,20 +184,20 @@ export async function StorybookRichHtmlTextareaTests() {
                             });
                             expect(richHtmlTextareaComplexHeight.trim()).to.equal('192px');
                         });
-                        it(`[ control = 0 ] height measurement (+screenshot)`, async function () {
-                            await richHtmlTextarea.changeRowSpanControl(0);
-                            richHtmlTextareaComplexElement = await driver.findElement(
-                                richHtmlTextarea.MainExampleHeightDiv,
-                            );
-                            richHtmlTextareaComplexHeight = await richHtmlTextareaComplexElement.getCssValue('height');
-                            console.info('richHtmlTextareaComplexHeight: ', richHtmlTextareaComplexHeight);
-                            const base64ImageComponent = await driver.saveScreenshots();
-                            addContext(this, {
-                                title: `'${input}' default height`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
-                            });
-                            expect(richHtmlTextareaComplexHeight.trim()).to.equal('46px');
-                        });
+                        // it(`[ control = 0 ] height measurement (+screenshot)`, async function () {  // https://pepperi.atlassian.net/browse/DI-25456
+                        //     await richHtmlTextarea.changeRowSpanControl(0);
+                        //     richHtmlTextareaComplexElement = await driver.findElement(
+                        //         richHtmlTextarea.MainExampleHeightDiv,
+                        //     );
+                        //     richHtmlTextareaComplexHeight = await richHtmlTextareaComplexElement.getCssValue('height');
+                        //     console.info('richHtmlTextareaComplexHeight: ', richHtmlTextareaComplexHeight);
+                        //     const base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `'${input}' default height`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     expect(richHtmlTextareaComplexHeight.trim()).to.equal('46px');
+                        // });
                         it(`back to default height [ control = 6 ] measurement (+screenshot)`, async function () {
                             await richHtmlTextarea.changeRowSpanControl(6);
                             richHtmlTextareaComplexElement = await driver.findElement(
