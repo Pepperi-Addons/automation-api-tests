@@ -189,4 +189,96 @@ export class StorybookComponent extends AddonPage {
         await this.browser.sendKeys(this.RowSpanControlInput, toNum + Key.ENTER);
         this.browser.sleep(1 * 1000);
     }
+
+    public async getMainExampleLabel(component: string): Promise<string> {
+        let mainExampleLabel: By;
+        switch (component) {
+            case 'attachment':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-attachment--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'checkbox':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-checkbox--story-1"]//mat-checkbox/label/span[2]`,
+                );
+                break;
+            case 'chips':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-chips--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'color-picker':
+                mainExampleLabel = By.xpath(`//div[@id="story--components-color-picker--story-1"]//mat-label`);
+                break;
+            case 'date-time':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-date-time--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'image-filmstrip':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-image-filmstrip--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'image':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-image--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'link':
+                mainExampleLabel = By.xpath(`//div[@id="story--components-link--story-1"]//pep-field-title//mat-label`);
+                break;
+            case 'quantity-selector':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-quantity-selector--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'rich-html-textarea':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-rich-html-textarea--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'select':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-select--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'select-panel':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-select-panel--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'separator':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-separator--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'signature':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-signature--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'slider':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-slider--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'textarea':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-textarea--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'textbox':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-textbox--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            default:
+                mainExampleLabel = By.xpath('');
+                break;
+        }
+        const label = await this.browser.findElement(mainExampleLabel);
+        return (await label.getText()).trim();
+    }
 }

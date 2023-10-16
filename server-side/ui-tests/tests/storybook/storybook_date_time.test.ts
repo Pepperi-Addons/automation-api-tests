@@ -127,10 +127,21 @@ export async function StorybookDateTimeTests() {
                 });
                 switch (input) {
                     case 'label':
-                        it(`it '${input}'`, async function () {
-                            expect(dateTimeInputs.includes('label')).to.be.true;
+                        it(`validate input`, async function () {
+                            expect(dateTimeInputsTitles.includes('label')).to.be.true;
+                            await driver.click(dateTime.ResetControlsButton);
                         });
-                        // TODO
+                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newLabelToSet = 'Auto test';
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newLabelGotFromUi = await dateTime.getMainExampleLabel('date-time');
+                            expect(newLabelGotFromUi).to.equal(newLabelToSet);
+                        });
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {

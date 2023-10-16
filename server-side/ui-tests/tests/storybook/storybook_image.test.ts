@@ -193,10 +193,21 @@ export async function StorybookImageTests() {
                         // TODO
                         break;
                     case 'label':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageInputsTitles.includes('label')).to.be.true;
+                            await driver.click(image.ResetControlsButton);
                         });
-                        // TODO
+                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newLabelToSet = 'Auto test';
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newLabelGotFromUi = await image.getMainExampleLabel('image');
+                            expect(newLabelGotFromUi).to.equal(newLabelToSet);
+                        });
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {
