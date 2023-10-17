@@ -1438,7 +1438,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 testsList = await getTestNames(
                     addonName,
                     sbUser,
-                    'prod',
+                    'stage',
                     latestVersionOfAutomationTemplateAddon,
                     addonUUID,
                 );
@@ -1448,6 +1448,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonSb, errorString, service);
                 throw new Error(`Error: got exception trying to get test Names: ${(error as any).message} `);
             }
+            debugger;
             //4. iterate on all test names and call each
             for (let index = 0; index < testsList.length; index++) {
                 const currentTestName = testsList[index];
@@ -4747,7 +4748,7 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
     } else if (addonName === 'CONFIGURATIONS') {
         return await getConfifurationsTests(user, 'prod');
     } else if (addonName === 'RELATED-ITEMS') {
-        return await getRelatedItemsTests(user, 'prod');
+        return await getRelatedItemsTests(user, env);
     } else if (addonName === 'PEPPERI-FILE-STORAGE' || 'PFS') {
         return await getPFSTests(user, 'prod');
     } else {
