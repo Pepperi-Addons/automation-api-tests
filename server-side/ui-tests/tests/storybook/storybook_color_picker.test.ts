@@ -196,7 +196,7 @@ export async function StorybookColorPickerTests() {
                             const mainExampleColorPicker = await driver.findElement(colorPicker.MainExampleColorPicker);
                             const mainExampleColorPickerDisabled = await mainExampleColorPicker.getAttribute('class');
                             expect(mainExampleColorPickerDisabled).to.not.include('disable');
-                            expect(isPenIconFound).to.be.true;
+                            expect(isPenIconFound).to.eventually.be.true;
                         });
                         // it(`Functional test (+screenshot)`, async function () {
                         //     await storyBookPage.inputs.toggleDisableControl();
