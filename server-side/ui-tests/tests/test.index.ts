@@ -1353,6 +1353,417 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         addonUUID = generalService.convertNameToUUIDForDevTests(addonName);
         if (addonUUID === 'none') {
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
+        } else if (addonUUID === '4f9f10f3-cd7d-43f8-b969-5029dad9d02b') {
+            //related items - shouldnt only on SB currently
+            const [sbUser] = resolveUserPerTest(addonName); //
+            console.log(`####################### Running For: ${addonName}(${addonUUID}) #######################`);
+            // 1. install all dependencys latest available versions on testing user + template addon latest available version
+            let latestVersionOfTestedAddonSb, addonEntryUUIDSb;
+            try {
+                [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await generalService.getLatestAvailableVersion(
+                    addonUUID,
+                    varPassSB,
+                    null,
+                    'stage',
+                );
+            } catch (error) {
+                debugger;
+                const errorString = `Error: Couldn't Get Latest Available Versions Of ${addonName}: ${
+                    (error as any).message
+                }`;
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonSb, errorString, service);
+                throw new Error(errorString);
+            }
+            console.log(
+                `####################### Running For: ${addonName}(${addonUUID}), version: ${latestVersionOfTestedAddonSb} #######################`,
+            );
+            debugger;
+            await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonSb, generalService);
+            // debugger;
+            try {
+                await Promise.all([
+                    handleDevTestInstallation(
+                        sbUser,
+                        addonName,
+                        addonUUID,
+                        { describe, expect, it } as TesterFunctions,
+                        varPassSB,
+                        'stage',
+                    ),
+                ]);
+            } catch (error) {
+                debugger;
+                const errorString = (error as any).message;
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonSb, errorString, service);
+                await Promise.all([
+                    unavailableAddonVersion(
+                        'stage',
+                        addonName,
+                        addonEntryUUIDSb,
+                        latestVersionOfTestedAddonSb,
+                        addonUUID,
+                        varPassSB,
+                    ),
+                ]);
+                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            }
+            console.log(
+                `####################### ${addonName} Version: ${latestVersionOfTestedAddonSb} #######################`,
+            );
+
+            debugger;
+            const isInstalled = await Promise.all([
+                validateLatestVersionOfAddonIsInstalled(sbUser, addonUUID, latestVersionOfTestedAddonSb, 'stage'),
+            ]);
+            const devPassingEnvs: any[] = [];
+            const devFailedEnvs: any[] = [];
+            for (let index = 0; index < isInstalled.length; index++) {
+                const isTestedAddonInstalled = isInstalled[index];
+                if (isTestedAddonInstalled === false) {
+                    throw new Error(
+                        `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddonSb}`,
+                    );
+                }
+            }
+            debugger;
+            //3. run the test on latest version of the template addon
+            const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
+                '02754342-e0b5-4300-b728-a94ea5e0e8f4',
+                varPass,
+            );
+            console.log(entryUUID);
+            // debugger;
+            //3.1 get test names
+            try {
+                testsList = await getTestNames(
+                    addonName,
+                    sbUser,
+                    'prod',
+                    latestVersionOfAutomationTemplateAddon,
+                    addonUUID,
+                );
+            } catch (error) {
+                debugger;
+                const errorString = `Error: got exception trying to get test Names: ${(error as any).message}`;
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonSb, errorString, service);
+                throw new Error(`Error: got exception trying to get test Names: ${(error as any).message} `);
+            }
+            //4. iterate on all test names and call each
+            for (let index = 0; index < testsList.length; index++) {
+                const currentTestName = testsList[index];
+                const body = prepareTestBody(addonName, currentTestName);
+                console.log(
+                    `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
+                        testsList.length
+                    }  #######################`,
+                );
+                let addonSk = null;
+                if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+                    addonSk = await service.getSecretfromKMS(email, pass, 'AutomationAddonSecretKey');
+                }
+                //4.1. call current test async->
+                const [devTestResponseSb] = await Promise.all([
+                    //devTestResponseEu,
+                    runDevTestOnCertainEnv(
+                        sbUser,
+                        'stage',
+                        latestVersionOfAutomationTemplateAddon,
+                        body,
+                        addonName,
+                        addonSk,
+                    ),
+                ]);
+                if (devTestResponseSb === undefined) {
+                    const whichEnvs = devTestResponseSb === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonSb,
+                        errorString,
+                        service,
+                    );
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonSb,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(`${errorString}`);
+                }
+                if (devTestResponseSb.Body.URI === undefined) {
+                    const whichEnvs = devTestResponseSb.Body.URI === undefined ? 'SB' : '';
+                    const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonSb,
+                        errorString,
+                        service,
+                    );
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonSb,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(`${errorString}`);
+                }
+                //4.2. poll audit log response for each env
+                console.log(
+                    `####################### ${currentTestName}: EXECUTION UUIDS:\nSB - ${devTestResponseSb.Body.URI}`,
+                );
+                const testObject = {
+                    name: currentTestName,
+                    sbExecution: devTestResponseSb.Body.URI,
+                };
+                // debugger;
+                generalService.sleep(1000 * 15);
+                const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
+                if (
+                    devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                    devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after')
+                ) {
+                    debugger;
+                    let errorString = '';
+                    if (
+                        devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after')
+                    ) {
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                    }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonSb,
+                        errorString,
+                        service,
+                    );
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonSb,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                }
+                debugger;
+                //4.3. parse the response
+                let testResultArrayEu;
+                let testResultArraySB;
+                try {
+                    testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
+                } catch (error) {
+                    debugger;
+                    let errorString = '';
+                    if (!devTestResultsSb.AuditInfo.ResultObject) {
+                        errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                    }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonSb,
+                        errorString,
+                        service,
+                    );
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonSb,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                }
+                // debugger;
+                // debugger;
+                // debugger;
+                //4.4. print results to log
+                //4.5. print the results
+                let objectToPrintSB;
+                let shouldAlsoPrintVer = false;
+                if (testResultArraySB.results === undefined && testResultArraySB.tests === undefined) {
+                    const errorString = `Cannot Parse Result Object, Recieved: EU: ${JSON.stringify(
+                        testResultArrayEu,
+                    )}, SB: ${JSON.stringify(testResultArraySB)}, On: ${currentTestName} Test`;
+                    debugger;
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonSb,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonSb,
+                        errorString,
+                        service,
+                    );
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                }
+                if (
+                    testResultArrayEu.results &&
+                    testResultArrayEu.results[0].suites[0].suites &&
+                    testResultArrayEu.results[0].suites[0].suites.length > 0
+                ) {
+                    shouldAlsoPrintVer = true;
+                    objectToPrintSB = testResultArraySB.results[0].suites[0].suites;
+                } else if (testResultArrayEu.results) {
+                    //add an if to catch the other result config also
+                    objectToPrintSB = testResultArraySB.results[0].suites;
+                } else {
+                    objectToPrintSB = testResultArraySB.tests;
+                }
+                if (objectToPrintSB === undefined) {
+                    debugger;
+                    let errorString = '';
+                    if (!objectToPrintSB) {
+                        errorString += `${sbUser} got the error: ${
+                            devTestResultsSb.AuditInfo.ErrorMessage
+                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                            devTestResultsSb.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                    }
+                    await reportToTeamsMessage(
+                        addonName,
+                        addonUUID,
+                        latestVersionOfTestedAddonSb,
+                        errorString,
+                        service,
+                    );
+                    await Promise.all([
+                        unavailableAddonVersion(
+                            'stage',
+                            addonName,
+                            addonEntryUUIDSb,
+                            latestVersionOfTestedAddonSb,
+                            addonUUID,
+                            varPassSB,
+                        ),
+                    ]);
+                    throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+                }
+                for (let index = 0; index < objectToPrintSB.length; index++) {
+                    const result = objectToPrintSB[index];
+                    console.log(`\n***${currentTestName} SB result object: ${JSON.stringify(result)}***\n`);
+                }
+                const sbResults = await printResultsTestObject(
+                    objectToPrintSB,
+                    sbUser,
+                    'stage',
+                    addonUUID,
+                    latestVersionOfTestedAddonSb,
+                );
+                if (shouldAlsoPrintVer) {
+                    objectToPrintSB = testResultArraySB.results[0].suites[1].suites;
+                    await printResultsTestObject(
+                        objectToPrintSB,
+                        sbUser,
+                        'stage',
+                        addonUUID,
+                        latestVersionOfTestedAddonSb,
+                    );
+                }
+                // debugger;
+                //4.6. create the array of passing / failing tests
+                // debugger;
+                if (sbResults.didSucceed) {
+                    devPassingEnvs.push('Stage');
+                } else {
+                    devFailedEnvs.push('Stage');
+                    failedSuitesSB.push({ testName: currentTestName, executionUUID: testObject.sbExecution });
+                }
+            }
+            // debugger;
+            const devPassingEnvs2: string[] = [];
+            const devFailedEnvs2: string[] = [];
+            if (
+                devPassingEnvs.filter((v) => v === 'Stage').length === testsList.length &&
+                devFailedEnvs.filter((v) => v === 'Stage').length === 0
+            ) {
+                devPassingEnvs2.push('STAGING');
+            } else {
+                devFailedEnvs2.push('STAGING');
+            }
+            // debugger;
+            if (isLocal) {
+                jenkinsLink = 'none, running locally';
+            } else {
+                const kmsSecret = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
+                const latestRun = await generalService.getLatestJenkinsJobExecutionId(
+                    kmsSecret,
+                    'API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons',
+                );
+                jenkinsLink = `https://admin-box.pepperi.com/job/API%20Testing%20Framework/job/Addons%20Api%20Tests/job/GitHubAddons/${latestRun}/console`;
+            }
+            if (devFailedEnvs2.length != 0) {
+                debugger;
+                await Promise.all([
+                    unavailableAddonVersion(
+                        'stage',
+                        addonName,
+                        addonEntryUUIDSb,
+                        latestVersionOfTestedAddonSb,
+                        addonUUID,
+                        varPassSB,
+                    ),
+                ]);
+                await reportToTeams(
+                    service,
+                    email,
+                    pass,
+                    addonName,
+                    addonUUID,
+                    latestVersionOfTestedAddonSb,
+                    devPassingEnvs2,
+                    devFailedEnvs2,
+                    true,
+                    [sbUser],
+                    failedSuitesProd,
+                    failedSuitesEU,
+                    failedSuitesSB,
+                    jenkinsLink,
+                );
+                console.log('Dev Test Didnt Pass - No Point In Running Approvment');
+                return;
+            } else if (!doWeHaveSuchAppTest(addonName)) {
+                await reportToTeams(
+                    service,
+                    email,
+                    pass,
+                    addonName,
+                    addonUUID,
+                    latestVersionOfTestedAddonSb,
+                    devPassingEnvs2,
+                    devFailedEnvs2,
+                    true,
+                    [sbUser],
+                    failedSuitesProd,
+                    failedSuitesEU,
+                    failedSuitesSB,
+                    jenkinsLink,
+                );
+            }
         } else if (addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
             //sync - shouldnt run on PROD!
             const [euUser, sbUser] = resolveUserPerTest(addonName); //
@@ -4092,12 +4503,14 @@ function resolveUserPerTest(addonName): any[] {
             return ['PfsCpiTestEU@pepperitest.com', 'PfsCpiTestProd@pepperitest.com', 'PfsCpiTestSB@pepperitest.com'];
         case 'CONFIGURATIONS':
             return ['configEU@pepperitest.com', 'configProd@pepperitest.com', 'configSB@pepperitest.com'];
+        // case 'RELATED-ITEMS':
+        //     return [
+        //         'relatedItemsTestEU@pepperitest.com',
+        //         'relatedItemsTestProd@pepperitest.com',
+        //         'relatedItemsTestSB@pepperitest.com',
+        //     ];
         case 'RELATED-ITEMS':
-            return [
-                'relatedItemsTestEU@pepperitest.com',
-                'relatedItemsTestProd@pepperitest.com',
-                'relatedItemsTestSB@pepperitest.com',
-            ];
+            return ['relatedItemsTestSB@pepperitest.com'];
         case 'UDB':
         case 'USER DEFINED BLOCKS':
             return [
