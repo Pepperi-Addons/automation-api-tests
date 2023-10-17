@@ -245,12 +245,12 @@ export async function StorybookSignatureTests() {
                             });
                             await driver.click(signature.MainHeader);
                             const mainExampleSignature = await driver.findElement(signature.MainExampleSignature);
-                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('disable');
+                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('class');
                             console.info(
                                 'mainExampleSignatureDisabled (false): ',
                                 JSON.stringify(mainExampleSignatureDisabled, null, 2),
                             );
-                            expect(mainExampleSignatureDisabled).to.be.null;
+                            expect(mainExampleSignatureDisabled).to.not.include('disable');
                         });
                         it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
@@ -261,12 +261,12 @@ export async function StorybookSignatureTests() {
                             });
                             await driver.click(signature.MainHeader);
                             const mainExampleSignature = await driver.findElement(signature.MainExampleSignature);
-                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('disable');
+                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('class');
                             console.info(
                                 'mainExampleSignatureDisabled (true): ',
                                 JSON.stringify(mainExampleSignatureDisabled, null, 2),
                             );
-                            expect(mainExampleSignatureDisabled).equals('true');
+                            expect(mainExampleSignatureDisabled).to.include('disable');
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
@@ -277,8 +277,8 @@ export async function StorybookSignatureTests() {
                             });
                             await driver.click(signature.MainHeader);
                             const mainExampleSignature = await driver.findElement(signature.MainExampleSignature);
-                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('disable');
-                            expect(mainExampleSignatureDisabled).to.be.null;
+                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('class');
+                            expect(mainExampleSignatureDisabled).to.not.include('disable');
                         });
                         break;
                     case 'mandatory':

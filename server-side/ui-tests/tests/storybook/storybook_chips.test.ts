@@ -176,7 +176,7 @@ export async function StorybookChipsTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             const newClassNamesGotFromUi = await (
-                                await driver.findElement(chips.MainExampleChip)
+                                await driver.findElement(chips.MainExampleChips)
                             ).getAttribute('class');
                             console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
                             expect(newClassNamesGotFromUi).to.contain(newClassNamesToSet);
@@ -190,7 +190,7 @@ export async function StorybookChipsTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             const newClassNamesGotFromUi = await (
-                                await driver.findElement(chips.MainExampleChip)
+                                await driver.findElement(chips.MainExampleChips)
                             ).getAttribute('class');
                             console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
                             expect(newClassNamesGotFromUi).to.not.contain('rotate3d');
@@ -201,30 +201,48 @@ export async function StorybookChipsTests() {
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('disabled')).to.be.true;
                         });
-                        it(`Functional test (+screenshots)`, async function () {
-                            const base64ImageComponent = await driver.saveScreenshots();
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `'${input}' input`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await storyBookPage.inputs.toggleDisableControl();
                             await driver.click(chips.MainHeader);
-                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            const mainExampleChips = await driver.findElement(chips.MainExampleChips);
+                            const mainExampleChipsDisabled = await mainExampleChips.getAttribute('disabled');
+                            console.info(
+                                'mainExampleChipsDisabled (false): ',
+                                JSON.stringify(mainExampleChipsDisabled, null, 2),
+                            );
+                            expect(mainExampleChipsDisabled).to.be.null;
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disabled Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            let mainExampleChip = await driver.findElement(chips.MainExampleChip);
-                            expect(await mainExampleChip.getAttribute('disabled')).to.equal('true');
+                            await driver.click(chips.MainHeader);
+                            const mainExampleChips = await driver.findElement(chips.MainExampleChips);
+                            const mainExampleChipsDisabled = await mainExampleChips.getAttribute('disabled');
+                            console.info(
+                                'mainExampleChipsDisabled (true): ',
+                                JSON.stringify(mainExampleChipsDisabled, null, 2),
+                            );
+                            expect(mainExampleChipsDisabled).equals('true');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
-                            base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Disabled Input Changed to "false"`,
+                                title: `Disable Input changed back to default value = "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            mainExampleChip = await driver.findElement(chips.MainExampleChip);
-                            const disabledAttribute = await mainExampleChip.getAttribute('disabled');
-                            expect(disabledAttribute).to.be.null;
+                            await driver.click(chips.MainHeader);
+                            const mainExampleChips = await driver.findElement(chips.MainExampleChips);
+                            const mainExampleChipsDisabled = await mainExampleChips.getAttribute('disabled');
+                            expect(mainExampleChipsDisabled).to.be.null;
                         });
                         break;
 
