@@ -4,12 +4,11 @@ import { StorybookComponent } from './Base/StorybookComponent';
 export class Attachment extends StorybookComponent {
     public MainExampleHeightDiv: By = By.xpath(`//pep-attachment//mat-form-field/div/div`);
     public MainExampleDiv: By = By.xpath('//div[@id="story--components-attachment--story-1"]');
-    public MainExampleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
+    // public MainExampleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
     public MainExample_aHref: By = By.xpath(`${this.MainExampleDiv.value}//span[text()="See original"]/parent::a`);
     public MainExample_deleteButton: By = By.xpath(`${this.MainExampleDiv.value}//button[contains(@class,"delete")]`);
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
-    public RowSpanControlInput: By = By.xpath(`//input[@id="control-rowSpan"]`);
     public LabelControlInput: By = By.xpath(`//textarea[@id="control-label"]`);
     public SrcControlInput: By = By.xpath(`//textarea[@id="control-src"]`);
 
@@ -17,21 +16,15 @@ export class Attachment extends StorybookComponent {
         await this.doesComponentFound('attachment', 'Attachment');
     }
 
-    public async changeRowSpanControl(toNum: number): Promise<void> {
-        await this.browser.sendKeys(this.RowSpanControlInput, Key.CONTROL + 'a' + Key.DELETE);
-        await this.browser.sendKeys(this.RowSpanControlInput, toNum + Key.ENTER);
-        this.browser.sleep(0.5 * 1000);
-    }
-
     public async getLabelControl(): Promise<string> {
         const label = await this.browser.findElement(this.LabelControlInput);
         return await label.getText();
     }
 
-    public async getMainExampleLabel(): Promise<string> {
-        const label = await this.browser.findElement(this.MainExampleLabel);
-        return (await label.getText()).trim();
-    }
+    // public async getMainExampleLabel(): Promise<string> {
+    //     const label = await this.browser.findElement(this.MainExampleLabel);
+    //     return (await label.getText()).trim();
+    // }
 
     public async openMainExampleSource(): Promise<string> {
         return await this.openSource(this.MainExample_aHref);

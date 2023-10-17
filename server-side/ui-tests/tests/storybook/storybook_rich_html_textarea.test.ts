@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { RichHtmlTextarea } from '../../pom/Pages/StorybookComponents/RichHtmlTextarea';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -30,12 +31,16 @@ export async function StorybookRichHtmlTextareaTests() {
         'Inline, no content',
         'Inline, with content',
     ];
+    const alignExpectedValues = ['', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let richHtmlTextarea: RichHtmlTextarea;
     let richHtmlTextareaInputsTitles;
     let richHtmlTextareaOutputsTitles;
+    let richHtmlTextareaComplexElement;
+    let richHtmlTextareaComplexHeight;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "RichHtmlTextarea" Tests Suite', function () {
         this.retries(0);
@@ -129,16 +134,95 @@ export async function StorybookRichHtmlTextareaTests() {
                 });
                 switch (input) {
                     case 'label':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('label')).to.be.true;
+                            await driver.click(richHtmlTextarea.ResetControlsButton);
                         });
-                        // TODO
+                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newLabelToSet = 'Auto test';
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newLabelGotFromUi = await richHtmlTextarea.getMainExampleLabel('rich-html-textarea');
+                            expect(newLabelGotFromUi).to.equal(newLabelToSet);
+                        });
                         break;
                     case 'rowSpan':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('rowSpan')).to.be.true;
                         });
-                        // TODO
+                        it(`default height [ control = 6 ] measurement (+screenshot)`, async function () {
+                            richHtmlTextareaComplexElement = await driver.findElement(
+                                richHtmlTextarea.MainExampleHeightDiv,
+                            );
+                            richHtmlTextareaComplexHeight = await richHtmlTextareaComplexElement.getCssValue('height');
+                            console.info('richHtmlTextareaComplexHeight: ', richHtmlTextareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(richHtmlTextareaComplexHeight.trim()).to.equal('384px');
+                        });
+                        it(`[ control = 1 ] height measurement (+screenshot)`, async function () {
+                            await richHtmlTextarea.changeRowSpanControl(1);
+                            richHtmlTextareaComplexElement = await driver.findElement(
+                                richHtmlTextarea.MainExampleHeightDiv,
+                            );
+                            richHtmlTextareaComplexHeight = await richHtmlTextareaComplexElement.getCssValue('height');
+                            console.info('richHtmlTextareaComplexHeight: ', richHtmlTextareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(richHtmlTextareaComplexHeight.trim()).to.equal('64px');
+                        });
+                        it(`[ control = 3 ] height measurement (+screenshot)`, async function () {
+                            await richHtmlTextarea.changeRowSpanControl(3);
+                            richHtmlTextareaComplexElement = await driver.findElement(
+                                richHtmlTextarea.MainExampleHeightDiv,
+                            );
+                            richHtmlTextareaComplexHeight = await richHtmlTextareaComplexElement.getCssValue('height');
+                            console.info('richHtmlTextareaComplexHeight: ', richHtmlTextareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(richHtmlTextareaComplexHeight.trim()).to.equal('192px');
+                        });
+                        // it(`[ control = 0 ] height measurement (+screenshot)`, async function () {  // https://pepperi.atlassian.net/browse/DI-25456
+                        //     await richHtmlTextarea.changeRowSpanControl(0);
+                        //     richHtmlTextareaComplexElement = await driver.findElement(
+                        //         richHtmlTextarea.MainExampleHeightDiv,
+                        //     );
+                        //     richHtmlTextareaComplexHeight = await richHtmlTextareaComplexElement.getCssValue('height');
+                        //     console.info('richHtmlTextareaComplexHeight: ', richHtmlTextareaComplexHeight);
+                        //     const base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `'${input}' default height`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     expect(richHtmlTextareaComplexHeight.trim()).to.equal('46px');
+                        // });
+                        it(`back to default height [ control = 6 ] measurement (+screenshot)`, async function () {
+                            await richHtmlTextarea.changeRowSpanControl(6);
+                            richHtmlTextareaComplexElement = await driver.findElement(
+                                richHtmlTextarea.MainExampleHeightDiv,
+                            );
+                            richHtmlTextareaComplexHeight = await richHtmlTextareaComplexElement.getCssValue('height');
+                            console.info('richHtmlTextareaComplexHeight: ', richHtmlTextareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' back to default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(richHtmlTextareaComplexHeight.trim()).to.equal('384px');
+                        });
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {
@@ -183,10 +267,53 @@ export async function StorybookRichHtmlTextareaTests() {
                         // TODO
                         break;
                     case 'xAlignment':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const currentAlign = await richHtmlTextarea.getTxtAlignmentByComponent(
+                                'rich-html-textarea',
+                            );
+                            await driver.click(richHtmlTextarea.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: rich-html-textarea with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(currentAlign).to.include('left');
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                    const alignment = allAlignments[index];
+                                    await alignment.click();
+                                    const currentAlign = await richHtmlTextarea.getTxtAlignmentByComponent(
+                                        'rich-html-textarea',
+                                    );
+                                    let base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
+                                    await driver.click(richHtmlTextarea.MainHeader);
+                                    base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `upper screenshot: richHtmlTextarea with x-alignment = '${title}'`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                });
+                            }
+                        });
                         break;
 
                     default:

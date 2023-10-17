@@ -141,7 +141,7 @@ export async function StorybookColorPickerTests() {
                                 title: `Label Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const newLabelGotFromUi = await colorPicker.getMainExampleLabel();
+                            const newLabelGotFromUi = await colorPicker.getMainExampleLabel('color-picker');
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
@@ -250,17 +250,19 @@ export async function StorybookColorPickerTests() {
                             allAlignments = await storyBookPage.inputs.getAllxAlignments();
                         });
                         alignExpectedValues.forEach(async (title, index) => {
-                            it(`'${title}' -- functional test (+screenshot)`, async function () {
-                                const alignment = allAlignments[index + 1];
-                                await alignment.click();
-                                const currentAlign = await colorPicker.getTxtAlignmentByComponent('color-picker');
-                                const base64ImageComponentModal = await driver.saveScreenshots();
-                                addContext(this, {
-                                    title: `${title} (xAlignment) input change`,
-                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                    const alignment = allAlignments[index + 1];
+                                    await alignment.click();
+                                    const currentAlign = await colorPicker.getTxtAlignmentByComponent('color-picker');
+                                    const base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
                                 });
-                                expect(currentAlign).to.include(title);
-                            });
+                            }
                         });
                         break;
 

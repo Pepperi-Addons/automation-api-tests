@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { ImageFilmstrip } from '../../pom/Pages/StorybookComponents/ImageFilmstrip';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -20,11 +21,15 @@ export async function StorybookImageFilmstripTests() {
         'xAlignment',
     ];
     const imageFilmstripSubFoldersHeaders = ['No title & missing image', 'With thumbnails'];
+    const alignExpectedValues = ['', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let imageFilmstrip: ImageFilmstrip;
     let imageFilmstripInputsTitles;
+    let imageFilmstripComplexElement;
+    let imageFilmstripComplexHeight;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "ImageFilmstrip" Tests Suite', function () {
         this.retries(0);
@@ -115,16 +120,95 @@ export async function StorybookImageFilmstripTests() {
                 });
                 switch (input) {
                     case 'rowSpan':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('rowSpan')).to.be.true;
                         });
-                        // TODO
+                        it(`default height [ control = 8 ] measurement (+screenshot)`, async function () {
+                            imageFilmstripComplexElement = await driver.findElement(
+                                imageFilmstrip.MainExampleHeightDiv,
+                            );
+                            imageFilmstripComplexHeight = await imageFilmstripComplexElement.getCssValue('height');
+                            console.info('imageFilmstripComplexHeight: ', imageFilmstripComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageFilmstripComplexHeight.trim()).to.equal('512px');
+                        });
+                        it(`[ control = 1 ] height measurement (+screenshot)`, async function () {
+                            await imageFilmstrip.changeRowSpanControl(1);
+                            imageFilmstripComplexElement = await driver.findElement(
+                                imageFilmstrip.MainExampleHeightDiv,
+                            );
+                            imageFilmstripComplexHeight = await imageFilmstripComplexElement.getCssValue('height');
+                            console.info('imageFilmstripComplexHeight: ', imageFilmstripComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageFilmstripComplexHeight.trim()).to.equal('64px');
+                        });
+                        it(`[ control = 3 ] height measurement (+screenshot)`, async function () {
+                            await imageFilmstrip.changeRowSpanControl(3);
+                            imageFilmstripComplexElement = await driver.findElement(
+                                imageFilmstrip.MainExampleHeightDiv,
+                            );
+                            imageFilmstripComplexHeight = await imageFilmstripComplexElement.getCssValue('height');
+                            console.info('imageFilmstripComplexHeight: ', imageFilmstripComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageFilmstripComplexHeight.trim()).to.equal('192px');
+                        });
+                        it(`[ control = 0 ] height measurement (+screenshot)`, async function () {
+                            await imageFilmstrip.changeRowSpanControl(0);
+                            imageFilmstripComplexElement = await driver.findElement(
+                                imageFilmstrip.MainExampleHeightDiv,
+                            );
+                            imageFilmstripComplexHeight = await imageFilmstripComplexElement.getCssValue('height');
+                            console.info('imageFilmstripComplexHeight: ', imageFilmstripComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageFilmstripComplexHeight.trim()).to.equal('64px');
+                        });
+                        it(`back to default height [ control = 8 ] measurement (+screenshot)`, async function () {
+                            await imageFilmstrip.changeRowSpanControl(8);
+                            imageFilmstripComplexElement = await driver.findElement(
+                                imageFilmstrip.MainExampleHeightDiv,
+                            );
+                            imageFilmstripComplexHeight = await imageFilmstripComplexElement.getCssValue('height');
+                            console.info('imageFilmstripComplexHeight: ', imageFilmstripComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' back to default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageFilmstripComplexHeight.trim()).to.equal('512px');
+                        });
                         break;
                     case 'label':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('label')).to.be.true;
+                            await driver.click(imageFilmstrip.ResetControlsButton);
                         });
-                        // TODO
+                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newLabelToSet = 'Auto test';
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newLabelGotFromUi = await imageFilmstrip.getMainExampleLabel('image-filmstrip');
+                            expect(newLabelGotFromUi).to.equal(newLabelToSet);
+                        });
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {
@@ -145,7 +229,7 @@ export async function StorybookImageFilmstripTests() {
                         // TODO
                         break;
                     case 'showTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('showTitle')).to.be.true;
                         });
                         // TODO
@@ -154,7 +238,48 @@ export async function StorybookImageFilmstripTests() {
                         it(`it '${input}'`, async function () {
                             expect(imageFilmstripInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const currentAlign = await imageFilmstrip.getTxtAlignmentByComponent('image-filmstrip');
+                            await driver.click(imageFilmstrip.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: image-filmstrip with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(currentAlign).to.include('left');
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                    const alignment = allAlignments[index];
+                                    await alignment.click();
+                                    const currentAlign = await imageFilmstrip.getTxtAlignmentByComponent(
+                                        'image-filmstrip',
+                                    );
+                                    let base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
+                                    await driver.click(imageFilmstrip.MainHeader);
+                                    base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `upper screenshot: imageFilmstrip with x-alignment = '${title}'`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                });
+                            }
+                        });
                         break;
 
                     default:
