@@ -234,30 +234,10 @@ export async function StorybookRichHtmlTextareaTests() {
                         it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('disabled')).to.be.true;
                         });
-                        it(`making sure current value is "False"`, async function () {
+                        it(`making sure current value is "True"`, async function () {
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Disabled Input default value = "false"`,
-                                value: 'data:image/png;base64,' + base64ImageComponentModal,
-                            });
-                            await driver.click(richHtmlTextarea.MainHeader);
-                            const mainExampleRichHtmlTextarea = await driver.findElement(
-                                richHtmlTextarea.MainExampleRichHtmlTextarea,
-                            );
-                            const mainExampleRichHtmlTextareaDisabled = await mainExampleRichHtmlTextarea.getAttribute(
-                                'class',
-                            );
-                            console.info(
-                                'mainExampleRichHtmlTextareaDisabled (false): ',
-                                JSON.stringify(mainExampleRichHtmlTextareaDisabled, null, 2),
-                            );
-                            expect(mainExampleRichHtmlTextareaDisabled).to.not.include('mat-form-field-disabled');
-                        });
-                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleDisableControl();
-                            const base64ImageComponentModal = await driver.saveScreenshots();
-                            addContext(this, {
-                                title: `Disabled Input Changed to "true"`,
+                                title: `Disabled Input default value = "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await driver.click(richHtmlTextarea.MainHeader);
@@ -273,11 +253,11 @@ export async function StorybookRichHtmlTextareaTests() {
                             );
                             expect(mainExampleRichHtmlTextareaDisabled).to.include('mat-form-field-disabled');
                         });
-                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Disable Input changed back to default value = "false"`,
+                                title: `Disabled Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await driver.click(richHtmlTextarea.MainHeader);
@@ -287,7 +267,27 @@ export async function StorybookRichHtmlTextareaTests() {
                             const mainExampleRichHtmlTextareaDisabled = await mainExampleRichHtmlTextarea.getAttribute(
                                 'class',
                             );
+                            console.info(
+                                'mainExampleRichHtmlTextareaDisabled (false): ',
+                                JSON.stringify(mainExampleRichHtmlTextareaDisabled, null, 2),
+                            );
                             expect(mainExampleRichHtmlTextareaDisabled).to.not.include('mat-form-field-disabled');
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(richHtmlTextarea.MainHeader);
+                            const mainExampleRichHtmlTextarea = await driver.findElement(
+                                richHtmlTextarea.MainExampleRichHtmlTextarea,
+                            );
+                            const mainExampleRichHtmlTextareaDisabled = await mainExampleRichHtmlTextarea.getAttribute(
+                                'class',
+                            );
+                            expect(mainExampleRichHtmlTextareaDisabled).to.include('mat-form-field-disabled');
                         });
                         break;
                     case 'inlineMode':

@@ -239,6 +239,7 @@ export async function StorybookImageTests() {
                             });
                             await driver.click(image.MainHeader);
                             expect(await driver.isElementVisible(image.MainExampleImage)).to.be.false;
+                            driver.sleep(1 * 1000);
                             expect(await driver.isElementVisible(image.MainExampleImage_disabled)).to.be.true;
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {

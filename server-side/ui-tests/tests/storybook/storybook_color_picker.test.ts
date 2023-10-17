@@ -186,13 +186,13 @@ export async function StorybookColorPickerTests() {
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
-                            const isPenIconFound = await colorPicker.isPenIconFound();
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disable Input changed back to default value = "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await driver.click(colorPicker.MainHeader);
+                            const isPenIconFound = await colorPicker.isPenIconFound();
                             const mainExampleColorPicker = await driver.findElement(colorPicker.MainExampleColorPicker);
                             const mainExampleColorPickerDisabled = await mainExampleColorPicker.getAttribute('class');
                             expect(mainExampleColorPickerDisabled).to.not.include('disable');
