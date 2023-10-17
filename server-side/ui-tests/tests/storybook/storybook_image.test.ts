@@ -23,6 +23,8 @@ export async function StorybookImageTests() {
     let imageOutputsTitles;
     let imageComplexElement;
     let imageComplexHeight;
+    let expectedSrc;
+    let imageSrc;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "Image" Tests Suite', function () {
@@ -181,10 +183,33 @@ export async function StorybookImageTests() {
                         });
                         break;
                     case 'src':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageInputsTitles.includes('src')).to.be.true;
                         });
-                        // TODO
+                        it(`default source [ control = 'https://yonatankof.com/misc/pepp/Addon%20Hackathon%20-%20Badge.png' ] (+screenshot)`, async function () {
+                            expectedSrc = 'https://yonatankof.com/misc/pepp/Addon%20Hackathon%20-%20Badge.png';
+                            imageSrc = await image.getImageSource();
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `default '${input}'`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageSrc).to.equal(expectedSrc);
+                        });
+                        it(`[ control = 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-980x653.jpg' ] functional test (+screenshot)`, async function () {
+                            expectedSrc =
+                                'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-980x653.jpg';
+                            await image.changeSrcControl(expectedSrc);
+                            driver.sleep(0.2 * 1000);
+                            imageSrc = await image.getImageSource();
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `image of dfstudio`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageSrc).to.equal(expectedSrc);
+                            expectedSrc = 'https://yonatankof.com/misc/pepp/Addon%20Hackathon%20-%20Badge.png';
+                        });
                         break;
                     case 'disabled':
                         it(`it '${input}'`, async function () {

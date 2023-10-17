@@ -37,6 +37,7 @@ export class StorybookComponent extends AddonPage {
         `//span[text()="{placeholder}"]/parent::td/following-sibling::td[2]/span`,
     );
     public RowSpanControlInput: By = By.xpath(`//input[@id="control-rowSpan"]`);
+    public SrcControlInput: By = By.xpath(`//textarea[@id="control-src"]`);
 
     public async getMainExampleContentSelecor(componentText: string): Promise<By> {
         return By.xpath(`//div[contains(@id,'anchor')]//div[contains(@id,'${componentText}')]`);
@@ -188,6 +189,13 @@ export class StorybookComponent extends AddonPage {
         await this.browser.sendKeys(this.RowSpanControlInput, Key.CONTROL + 'a' + Key.DELETE);
         await this.browser.sendKeys(this.RowSpanControlInput, toNum + Key.ENTER);
         this.browser.sleep(1 * 1000);
+    }
+
+    public async changeSrcControl(src: string): Promise<void> {
+        this.browser.sleep(0.1 * 1000);
+        await this.browser.sendKeys(this.SrcControlInput, Key.CONTROL + 'a' + Key.DELETE);
+        await this.browser.sendKeys(this.SrcControlInput, src);
+        await this.browser.click(this.DocsDiv);
     }
 
     public async getMainExampleLabel(component: string): Promise<string> {
