@@ -1379,7 +1379,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             );
             debugger;
             await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonSb, generalService);
-            // debugger;
+            debugger;
             try {
                 await Promise.all([
                     handleDevTestInstallation(
@@ -1528,6 +1528,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 };
                 // debugger;
                 generalService.sleep(1000 * 15);
+                debugger;
                 const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
                 if (
                     devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
@@ -1562,7 +1563,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 }
                 debugger;
                 //4.3. parse the response
-                let testResultArrayEu;
                 let testResultArraySB;
                 try {
                     testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
@@ -1599,8 +1599,8 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 let objectToPrintSB;
                 let shouldAlsoPrintVer = false;
                 if (testResultArraySB.results === undefined && testResultArraySB.tests === undefined) {
-                    const errorString = `Cannot Parse Result Object, Recieved: EU: ${JSON.stringify(
-                        testResultArrayEu,
+                    const errorString = `Cannot Parse Result Object, Recieved: SB: ${JSON.stringify(
+                        testResultArraySB,
                     )}, SB: ${JSON.stringify(testResultArraySB)}, On: ${currentTestName} Test`;
                     debugger;
                     await Promise.all([
@@ -1622,14 +1622,15 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     );
                     throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
+                debugger;
                 if (
-                    testResultArrayEu.results &&
-                    testResultArrayEu.results[0].suites[0].suites &&
-                    testResultArrayEu.results[0].suites[0].suites.length > 0
+                    testResultArraySB.results &&
+                    testResultArraySB.results[0].suites[0].suites &&
+                    testResultArraySB.results[0].suites[0].suites.length > 0
                 ) {
                     shouldAlsoPrintVer = true;
                     objectToPrintSB = testResultArraySB.results[0].suites[0].suites;
-                } else if (testResultArrayEu.results) {
+                } else if (testResultArraySB.results) {
                     //add an if to catch the other result config also
                     objectToPrintSB = testResultArraySB.results[0].suites;
                 } else {
