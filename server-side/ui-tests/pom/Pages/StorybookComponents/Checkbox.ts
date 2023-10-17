@@ -3,7 +3,6 @@ import { StorybookComponent } from './Base/StorybookComponent';
 
 export class Checkbox extends StorybookComponent {
     public MainExampleDiv: By = By.xpath('//div[@id="story--components-checkbox--story-1"]');
-    // public MainExampleLabel: By = By.xpath(`${this.MainExampleDiv.value}//mat-checkbox/label/span[2]`);
     public MainExampleCheckbox: By = By.xpath(`${this.MainExampleDiv.value}//mat-checkbox/label/span/input`);
     public MainExampleBooleanText: By = By.xpath(
         `${this.MainExampleDiv.value}//div[contains(@class,"pep-checkbox-container")]//button`,
@@ -15,9 +14,4 @@ export class Checkbox extends StorybookComponent {
     public async doesCheckboxComponentFound(): Promise<void> {
         await this.doesComponentFound('checkbox', 'Checkbox');
     }
-
-    // public async getMainExampleLabel(): Promise<string> {
-    //     const label = await this.browser.findElement(this.MainExampleLabel);
-    //     return await label.getText();
-    // }
 }

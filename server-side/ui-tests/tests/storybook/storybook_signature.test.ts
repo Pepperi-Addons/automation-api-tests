@@ -23,6 +23,8 @@ export async function StorybookSignatureTests() {
     let signatureOutputsTitles;
     let signatureComplexElement;
     let signatureComplexHeight;
+    let expectedSrc;
+    let imageSrc;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "Signature" Tests Suite', function () {
@@ -184,7 +186,35 @@ export async function StorybookSignatureTests() {
                         it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('src')).to.be.true;
                         });
-                        // TODO
+                        it(`default source [ control = 'https://yonatankof.com/misc/pepp/Addon%20Hackathon%20-%20Badge.png' ] (+screenshot)`, async function () {
+                            expectedSrc = 'https://yonatankof.com/misc/pepp/signature.png';
+                            imageSrc = await signature.getImageSource();
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `default '${input}'`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageSrc).to.equal(expectedSrc);
+                        });
+                        it(`[ control = 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-980x653.jpg' ] functional test (+screenshot)`, async function () {
+                            expectedSrc =
+                                'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-980x653.jpg';
+                            await signature.changeSrcControl(expectedSrc);
+                            driver.sleep(0.2 * 1000);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `image of dfstudio`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            imageSrc = await signature.getImageSource();
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `image of dfstudio`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageSrc).to.equal(expectedSrc);
+                            expectedSrc = 'https://yonatankof.com/misc/pepp/signature.png';
+                        });
                         break;
                     case 'label':
                         it(`validate input`, async function () {
