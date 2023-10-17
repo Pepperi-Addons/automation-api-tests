@@ -238,13 +238,8 @@ export async function StorybookImageTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await driver.click(image.MainHeader);
-                            const mainExampleImage = await driver.findElement(image.MainExampleImage);
-                            const mainExampleImageDisabled = await mainExampleImage.getAttribute('disabled');
-                            console.info(
-                                'mainExampleImageDisabled (true): ',
-                                JSON.stringify(mainExampleImageDisabled, null, 2),
-                            );
-                            expect(mainExampleImageDisabled).equals('true');
+                            expect(await driver.isElementVisible(image.MainExampleImage)).to.be.false;
+                            expect(await driver.isElementVisible(image.MainExampleImage_disabled)).to.be.true;
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();

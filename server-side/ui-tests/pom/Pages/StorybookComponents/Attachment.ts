@@ -4,6 +4,7 @@ import { StorybookComponent } from './Base/StorybookComponent';
 export class Attachment extends StorybookComponent {
     public MainExampleHeightDiv: By = By.xpath(`//pep-attachment//mat-form-field/div/div`);
     public MainExampleDiv: By = By.xpath('//div[@id="story--components-attachment--story-1"]');
+    public MainExampleAttachment: By = By.xpath(`${this.MainExampleDiv.value}//span[text()="See original"]/parent::a`);
     public MainExample_aHref: By = By.xpath(`${this.MainExampleDiv.value}//span[text()="See original"]/parent::a`);
     public MainExample_deleteButton: By = By.xpath(`${this.MainExampleDiv.value}//button[contains(@class,"delete")]`);
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);

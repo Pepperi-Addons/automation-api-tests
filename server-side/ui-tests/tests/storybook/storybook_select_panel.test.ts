@@ -178,12 +178,12 @@ export async function StorybookSelectPanelTests() {
                             });
                             await driver.click(selectPanel.MainHeader);
                             const mainExampleSelectPanel = await driver.findElement(selectPanel.MainExampleSelectPanel);
-                            const mainExampleSelectPanelDisabled = await mainExampleSelectPanel.getAttribute('disable');
+                            const mainExampleSelectPanelDisabled = await mainExampleSelectPanel.getAttribute('class');
                             console.info(
                                 'mainExampleSelectPanelDisabled (false): ',
                                 JSON.stringify(mainExampleSelectPanelDisabled, null, 2),
                             );
-                            expect(mainExampleSelectPanelDisabled).to.be.null;
+                            expect(mainExampleSelectPanelDisabled).to.not.include('disable');
                         });
                         it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
@@ -194,12 +194,12 @@ export async function StorybookSelectPanelTests() {
                             });
                             await driver.click(selectPanel.MainHeader);
                             const mainExampleSelectPanel = await driver.findElement(selectPanel.MainExampleSelectPanel);
-                            const mainExampleSelectPanelDisabled = await mainExampleSelectPanel.getAttribute('disable');
+                            const mainExampleSelectPanelDisabled = await mainExampleSelectPanel.getAttribute('class');
                             console.info(
                                 'mainExampleSelectPanelDisabled (true): ',
                                 JSON.stringify(mainExampleSelectPanelDisabled, null, 2),
                             );
-                            expect(mainExampleSelectPanelDisabled).equals('true');
+                            expect(mainExampleSelectPanelDisabled).to.include('disable');
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
@@ -210,8 +210,8 @@ export async function StorybookSelectPanelTests() {
                             });
                             await driver.click(selectPanel.MainHeader);
                             const mainExampleSelectPanel = await driver.findElement(selectPanel.MainExampleSelectPanel);
-                            const mainExampleSelectPanelDisabled = await mainExampleSelectPanel.getAttribute('disable');
-                            expect(mainExampleSelectPanelDisabled).to.be.null;
+                            const mainExampleSelectPanelDisabled = await mainExampleSelectPanel.getAttribute('class');
+                            expect(mainExampleSelectPanelDisabled).to.not.include('disable');
                         });
                         break;
                     case 'mandatory':

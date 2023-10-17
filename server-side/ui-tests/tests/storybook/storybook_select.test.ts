@@ -169,7 +169,7 @@ export async function StorybookSelectTests() {
                                 'mainExampleSelectDisabled (false): ',
                                 JSON.stringify(mainExampleSelectDisabled, null, 2),
                             );
-                            expect(mainExampleSelectDisabled).to.not.include('mat-select-disabled');
+                            expect(mainExampleSelectDisabled).to.not.include('mat-form-field-disabled');
                         });
                         it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
@@ -185,7 +185,7 @@ export async function StorybookSelectTests() {
                                 'mainExampleSelectDisabled (true): ',
                                 JSON.stringify(mainExampleSelectDisabled, null, 2),
                             );
-                            expect(mainExampleSelectDisabled).to.include('mat-select-disabled');
+                            expect(mainExampleSelectDisabled).to.include('mat-form-field-disabled');
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
@@ -197,7 +197,7 @@ export async function StorybookSelectTests() {
                             await driver.click(select.MainHeader);
                             const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
                             const mainExampleSelectDisabled = await mainExampleSelect.getAttribute('class');
-                            expect(mainExampleSelectDisabled).to.not.include('mat-select-disabled');
+                            expect(mainExampleSelectDisabled).to.not.include('mat-form-field-disabled');
                         });
                         break;
                     case 'mandatory':

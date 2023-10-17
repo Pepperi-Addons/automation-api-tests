@@ -245,13 +245,13 @@ export async function StorybookRichHtmlTextareaTests() {
                                 richHtmlTextarea.MainExampleRichHtmlTextarea,
                             );
                             const mainExampleRichHtmlTextareaDisabled = await mainExampleRichHtmlTextarea.getAttribute(
-                                'disabled',
+                                'class',
                             );
                             console.info(
                                 'mainExampleRichHtmlTextareaDisabled (false): ',
                                 JSON.stringify(mainExampleRichHtmlTextareaDisabled, null, 2),
                             );
-                            expect(mainExampleRichHtmlTextareaDisabled).to.be.null;
+                            expect(mainExampleRichHtmlTextareaDisabled).to.not.include('mat-form-field-disabled');
                         });
                         it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
@@ -265,13 +265,13 @@ export async function StorybookRichHtmlTextareaTests() {
                                 richHtmlTextarea.MainExampleRichHtmlTextarea,
                             );
                             const mainExampleRichHtmlTextareaDisabled = await mainExampleRichHtmlTextarea.getAttribute(
-                                'disabled',
+                                'class',
                             );
                             console.info(
                                 'mainExampleRichHtmlTextareaDisabled (true): ',
                                 JSON.stringify(mainExampleRichHtmlTextareaDisabled, null, 2),
                             );
-                            expect(mainExampleRichHtmlTextareaDisabled).equals('true');
+                            expect(mainExampleRichHtmlTextareaDisabled).to.include('mat-form-field-disabled');
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
@@ -285,9 +285,9 @@ export async function StorybookRichHtmlTextareaTests() {
                                 richHtmlTextarea.MainExampleRichHtmlTextarea,
                             );
                             const mainExampleRichHtmlTextareaDisabled = await mainExampleRichHtmlTextarea.getAttribute(
-                                'disabled',
+                                'class',
                             );
-                            expect(mainExampleRichHtmlTextareaDisabled).to.be.null;
+                            expect(mainExampleRichHtmlTextareaDisabled).to.not.include('mat-form-field-disabled');
                         });
                         break;
                     case 'inlineMode':

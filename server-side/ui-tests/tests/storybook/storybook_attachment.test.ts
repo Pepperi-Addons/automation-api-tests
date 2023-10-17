@@ -254,27 +254,48 @@ export async function StorybookAttachmentTests() {
                             expect(attachmentInputsTitles.includes('disabled')).to.be.true;
                             driver.sleep(1 * 1000);
                         });
-                        it(`Functional test (+screenshots)`, async function () {
-                            const base64ImageComponent = await driver.saveScreenshots();
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `'${input}' input`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            await driver.click(attachment.MainHeader);
+                            const mainExampleAttachment = await driver.findElement(attachment.MainExampleAttachment);
+                            const mainExampleAttachmentDisabled = await mainExampleAttachment.getAttribute('class');
+                            console.info(
+                                'mainExampleAttachmentDisabled (false): ',
+                                JSON.stringify(mainExampleAttachmentDisabled, null, 2),
+                            );
+                            expect(mainExampleAttachmentDisabled).to.not.include('mat-form-field-disabled');
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
-                            await driver.scrollToElement(attachment.MainHeader);
-                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disabled Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await storyBookPage.elemntDoNotExist(attachment.MainExample_deleteButton);
+                            await driver.click(attachment.MainHeader);
+                            const mainExampleAttachment = await driver.findElement(attachment.MainExampleAttachment);
+                            const mainExampleAttachmentDisabled = await mainExampleAttachment.getAttribute('class');
+                            console.info(
+                                'mainExampleAttachmentDisabled (true): ',
+                                JSON.stringify(mainExampleAttachmentDisabled, null, 2),
+                            );
+                            expect(mainExampleAttachmentDisabled).to.include('mat-form-field-disabled');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
-                            base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Disabled Input Changed to "false"`,
+                                title: `Disable Input changed back to default value = "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await storyBookPage.untilIsVisible(attachment.MainExample_deleteButton);
+                            await driver.click(attachment.MainHeader);
+                            const mainExampleAttachment = await driver.findElement(attachment.MainExampleAttachment);
+                            const mainExampleAttachmentDisabled = await mainExampleAttachment.getAttribute('class');
+                            expect(mainExampleAttachmentDisabled).to.not.include('mat-form-field-disabled');
                         });
                         break;
 
