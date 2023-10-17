@@ -153,10 +153,52 @@ export async function StorybookSliderTests() {
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(sliderInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(slider.MainHeader);
+                            const mainExampleSlider = await driver.findElement(slider.MainExampleSlider);
+                            const mainExampleSliderDisabled = await mainExampleSlider.getAttribute('aria-disabled');
+                            console.info(
+                                'mainExampleSliderDisabled (false): ',
+                                JSON.stringify(mainExampleSliderDisabled, null, 2),
+                            );
+                            expect(mainExampleSliderDisabled).equals('false');
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(slider.MainHeader);
+                            const mainExampleSlider = await driver.findElement(slider.MainExampleSlider);
+                            const mainExampleSliderDisabled = await mainExampleSlider.getAttribute('aria-disabled');
+                            console.info(
+                                'mainExampleSliderDisabled (true): ',
+                                JSON.stringify(mainExampleSliderDisabled, null, 2),
+                            );
+                            expect(mainExampleSliderDisabled).equals('true');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(slider.MainHeader);
+                            const mainExampleSlider = await driver.findElement(slider.MainExampleSlider);
+                            const mainExampleSliderDisabled = await mainExampleSlider.getAttribute('aria-disabled');
+                            expect(mainExampleSliderDisabled).equals('false');
+                        });
                         break;
                     case 'step':
                         it(`it '${input}'`, async function () {

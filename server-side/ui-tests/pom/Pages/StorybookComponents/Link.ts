@@ -2,7 +2,8 @@ import { By } from 'selenium-webdriver';
 import { StorybookComponent } from './Base/StorybookComponent';
 
 export class Link extends StorybookComponent {
-    public ModalOKBtn: By = By.xpath(`//span[contains(text(),'Ok')]`);
+    public MainExampleDiv: By = By.xpath('//div[@id="story--components-link--story-1"]');
+    public MainExampleLink: By = By.xpath(`${this.MainExampleDiv.value}//pep-link//mat-form-field`);
 
     public async doesLinkComponentFound(): Promise<void> {
         await this.doesComponentFound('link', 'Link');

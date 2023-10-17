@@ -231,10 +231,64 @@ export async function StorybookRichHtmlTextareaTests() {
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(richHtmlTextarea.MainHeader);
+                            const mainExampleRichHtmlTextarea = await driver.findElement(
+                                richHtmlTextarea.MainExampleRichHtmlTextarea,
+                            );
+                            const mainExampleRichHtmlTextareaDisabled = await mainExampleRichHtmlTextarea.getAttribute(
+                                'disabled',
+                            );
+                            console.info(
+                                'mainExampleRichHtmlTextareaDisabled (false): ',
+                                JSON.stringify(mainExampleRichHtmlTextareaDisabled, null, 2),
+                            );
+                            expect(mainExampleRichHtmlTextareaDisabled).to.be.null;
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(richHtmlTextarea.MainHeader);
+                            const mainExampleRichHtmlTextarea = await driver.findElement(
+                                richHtmlTextarea.MainExampleRichHtmlTextarea,
+                            );
+                            const mainExampleRichHtmlTextareaDisabled = await mainExampleRichHtmlTextarea.getAttribute(
+                                'disabled',
+                            );
+                            console.info(
+                                'mainExampleRichHtmlTextareaDisabled (true): ',
+                                JSON.stringify(mainExampleRichHtmlTextareaDisabled, null, 2),
+                            );
+                            expect(mainExampleRichHtmlTextareaDisabled).equals('true');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(richHtmlTextarea.MainHeader);
+                            const mainExampleRichHtmlTextarea = await driver.findElement(
+                                richHtmlTextarea.MainExampleRichHtmlTextarea,
+                            );
+                            const mainExampleRichHtmlTextareaDisabled = await mainExampleRichHtmlTextarea.getAttribute(
+                                'disabled',
+                            );
+                            expect(mainExampleRichHtmlTextareaDisabled).to.be.null;
+                        });
                         break;
                     case 'inlineMode':
                         it(`it '${input}'`, async function () {

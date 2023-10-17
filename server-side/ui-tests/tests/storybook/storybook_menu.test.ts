@@ -140,10 +140,52 @@ export async function StorybookMenuTests() {
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(menuInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(menu.MainHeader);
+                            const mainExampleMenu = await driver.findElement(menu.MainExampleMenu);
+                            const mainExampleMenuDisabled = await mainExampleMenu.getAttribute('disabled');
+                            console.info(
+                                'mainExampleMenuDisabled (false): ',
+                                JSON.stringify(mainExampleMenuDisabled, null, 2),
+                            );
+                            expect(mainExampleMenuDisabled).to.be.null;
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(menu.MainHeader);
+                            const mainExampleMenu = await driver.findElement(menu.MainExampleMenu);
+                            const mainExampleMenuDisabled = await mainExampleMenu.getAttribute('disabled');
+                            console.info(
+                                'mainExampleMenuDisabled (true): ',
+                                JSON.stringify(mainExampleMenuDisabled, null, 2),
+                            );
+                            expect(mainExampleMenuDisabled).equals('true');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(menu.MainHeader);
+                            const mainExampleMenu = await driver.findElement(menu.MainExampleMenu);
+                            const mainExampleMenuDisabled = await mainExampleMenu.getAttribute('disabled');
+                            expect(mainExampleMenuDisabled).to.be.null;
+                        });
                         break;
                     case 'selectedItem':
                         it(`it '${input}'`, async function () {
