@@ -144,16 +144,58 @@ export async function StorybookDateTimeTests() {
                         });
                         break;
                     case 'value':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(dateTimeInputs.includes('value')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(dateTimeInputs.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainHeader);
+                            const mainExampleDateTime = await driver.findElement(dateTime.MainExampleDateTime);
+                            const mainExampleDateTimeDisabled = await mainExampleDateTime.getAttribute('disabled');
+                            console.info(
+                                'mainExampleDateTimeDisabled (false): ',
+                                JSON.stringify(mainExampleDateTimeDisabled, null, 2),
+                            );
+                            expect(mainExampleDateTimeDisabled).to.be.null;
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainHeader);
+                            const mainExampleDateTime = await driver.findElement(dateTime.MainExampleDateTime);
+                            const mainExampleDateTimeDisabled = await mainExampleDateTime.getAttribute('disabled');
+                            console.info(
+                                'mainExampleDateTimeDisabled (true): ',
+                                JSON.stringify(mainExampleDateTimeDisabled, null, 2),
+                            );
+                            expect(mainExampleDateTimeDisabled).equals('true');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainHeader);
+                            const mainExampleDateTime = await driver.findElement(dateTime.MainExampleDateTime);
+                            const mainExampleDateTimeDisabled = await mainExampleDateTime.getAttribute('disabled');
+                            expect(mainExampleDateTimeDisabled).to.be.null;
+                        });
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {

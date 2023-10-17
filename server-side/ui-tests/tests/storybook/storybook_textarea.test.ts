@@ -215,10 +215,52 @@ export async function StorybookTextareaTests() {
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            const mainExampleTextarea = await driver.findElement(textarea.MainExampleTextarea);
+                            const mainExampleTextareaDisabled = await mainExampleTextarea.getAttribute('disabled');
+                            console.info(
+                                'mainExampleTextareaDisabled (false): ',
+                                JSON.stringify(mainExampleTextareaDisabled, null, 2),
+                            );
+                            expect(mainExampleTextareaDisabled).to.be.null;
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            const mainExampleTextarea = await driver.findElement(textarea.MainExampleTextarea);
+                            const mainExampleTextareaDisabled = await mainExampleTextarea.getAttribute('disabled');
+                            console.info(
+                                'mainExampleTextareaDisabled (true): ',
+                                JSON.stringify(mainExampleTextareaDisabled, null, 2),
+                            );
+                            expect(mainExampleTextareaDisabled).equals('true');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            const mainExampleTextarea = await driver.findElement(textarea.MainExampleTextarea);
+                            const mainExampleTextareaDisabled = await mainExampleTextarea.getAttribute('disabled');
+                            expect(mainExampleTextareaDisabled).to.be.null;
+                        });
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {
