@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { Signature } from '../../pom/Pages/StorybookComponents/Signature';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -13,12 +14,18 @@ export async function StorybookSignatureTests() {
     const signatureInputs = ['rowSpan', 'src', 'label', 'disabled', 'mandatory', 'readonly', 'showTitle', 'xAlignment'];
     const signatureOutputs = ['elementClick', 'fileChange'];
     const signatureSubFoldersHeaders = ['Empty', 'Read only'];
+    const alignExpectedValues = ['', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let signature: Signature;
     let signatureInputsTitles;
     let signatureOutputsTitles;
+    let signatureComplexElement;
+    let signatureComplexHeight;
+    let expectedSrc;
+    let imageSrc;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "Signature" Tests Suite', function () {
         this.retries(0);
@@ -115,25 +122,164 @@ export async function StorybookSignatureTests() {
                         it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('rowSpan')).to.be.true;
                         });
-                        // TODO
+                        it(`default height [ control = 4 ] measurement (+screenshot)`, async function () {
+                            signatureComplexElement = await driver.findElement(signature.MainExampleHeightDiv);
+                            signatureComplexHeight = await signatureComplexElement.getCssValue('height');
+                            console.info('signatureComplexHeight: ', signatureComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(signatureComplexHeight.trim()).to.equal('258px');
+                        });
+                        it(`[ control = 1 ] height measurement (+screenshot)`, async function () {
+                            await signature.changeRowSpanControl(1);
+                            signatureComplexElement = await driver.findElement(signature.MainExampleHeightDiv);
+                            signatureComplexHeight = await signatureComplexElement.getCssValue('height');
+                            console.info('signatureComplexHeight: ', signatureComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(signatureComplexHeight.trim()).to.equal('66px');
+                        });
+                        it(`[ control = 3 ] height measurement (+screenshot)`, async function () {
+                            await signature.changeRowSpanControl(3);
+                            signatureComplexElement = await driver.findElement(signature.MainExampleHeightDiv);
+                            signatureComplexHeight = await signatureComplexElement.getCssValue('height');
+                            console.info('signatureComplexHeight: ', signatureComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(signatureComplexHeight.trim()).to.equal('194px');
+                        });
+                        it(`[ control = 0 ] height measurement (+screenshot)`, async function () {
+                            await signature.changeRowSpanControl(0);
+                            signatureComplexElement = await driver.findElement(signature.MainExampleHeightDiv);
+                            signatureComplexHeight = await signatureComplexElement.getCssValue('height');
+                            console.info('signatureComplexHeight: ', signatureComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(signatureComplexHeight.trim()).to.equal('64px');
+                        });
+                        it(`back to default height [ control = 4 ] measurement (+screenshot)`, async function () {
+                            await signature.changeRowSpanControl(4);
+                            signatureComplexElement = await driver.findElement(signature.MainExampleHeightDiv);
+                            signatureComplexHeight = await signatureComplexElement.getCssValue('height');
+                            console.info('signatureComplexHeight: ', signatureComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' back to default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(signatureComplexHeight.trim()).to.equal('258px');
+                        });
                         break;
                     case 'src':
                         it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('src')).to.be.true;
                         });
-                        // TODO
+                        it(`default source [ control = 'https://yonatankof.com/misc/pepp/Addon%20Hackathon%20-%20Badge.png' ] (+screenshot)`, async function () {
+                            expectedSrc = 'https://yonatankof.com/misc/pepp/signature.png';
+                            imageSrc = await signature.getImageSource();
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `default '${input}'`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageSrc).to.equal(expectedSrc);
+                        });
+                        it(`[ control = 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-980x653.jpg' ] functional test (+screenshot)`, async function () {
+                            expectedSrc =
+                                'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-980x653.jpg';
+                            await signature.changeSrcControl(expectedSrc);
+                            driver.sleep(0.2 * 1000);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `image of dfstudio`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            imageSrc = await signature.getImageSource();
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `image of dfstudio`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(imageSrc).to.equal(expectedSrc);
+                            expectedSrc = 'https://yonatankof.com/misc/pepp/signature.png';
+                        });
                         break;
                     case 'label':
                         it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('label')).to.be.true;
+                            await driver.click(signature.ResetControlsButton);
                         });
-                        // TODO
+                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newLabelToSet = 'Auto test';
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newLabelGotFromUi = await signature.getMainExampleLabel('signature');
+                            expect(newLabelGotFromUi).to.equal(newLabelToSet);
+                        });
                         break;
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(signature.MainHeader);
+                            const mainExampleSignature = await driver.findElement(signature.MainExampleSignature);
+                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('class');
+                            console.info(
+                                'mainExampleSignatureDisabled (false): ',
+                                JSON.stringify(mainExampleSignatureDisabled, null, 2),
+                            );
+                            expect(mainExampleSignatureDisabled).to.not.include('disable');
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(signature.MainHeader);
+                            const mainExampleSignature = await driver.findElement(signature.MainExampleSignature);
+                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('class');
+                            console.info(
+                                'mainExampleSignatureDisabled (true): ',
+                                JSON.stringify(mainExampleSignatureDisabled, null, 2),
+                            );
+                            expect(mainExampleSignatureDisabled).to.include('disable');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(signature.MainHeader);
+                            const mainExampleSignature = await driver.findElement(signature.MainExampleSignature);
+                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('class');
+                            expect(mainExampleSignatureDisabled).to.not.include('disable');
+                        });
                         break;
                     case 'mandatory':
                         it(`validate input`, async function () {
@@ -157,7 +303,46 @@ export async function StorybookSignatureTests() {
                         it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const currentAlign = await signature.getTxtAlignmentByComponent('signature');
+                            await driver.click(signature.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: signature with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(currentAlign).to.include('left');
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                    const alignment = allAlignments[index];
+                                    await alignment.click();
+                                    const currentAlign = await signature.getTxtAlignmentByComponent('signature');
+                                    let base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
+                                    await driver.click(signature.MainHeader);
+                                    base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `upper screenshot: signature with x-alignment = '${title}'`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                });
+                            }
+                        });
                         break;
 
                     default:

@@ -7,7 +7,7 @@ import { v4 as newUuid } from 'uuid';
 
 export class PageBuilder extends AddonPage {
     public PageBuilder_Title: By = By.xpath('//span[@title="Page Builder"]');
-    public AddPage_Button: By = By.xpath('//span[@title="Add"]/ancestor::pep-button/button');
+    public AddPage_Button: By = By.xpath('//span[contains(@title,"Add")]/ancestor::pep-button/button');
     public PageBuilder_Search_Input: By = By.xpath('//input[@placeholder="Search..."]');
     public PageBuilder_Search_Submit: By = By.xpath(
         '//input[@placeholder="Search..."]/parent::div/following-sibling::div //mat-icon[2]',

@@ -1,4 +1,4 @@
-import { By } from 'selenium-webdriver';
+import { By, Key } from 'selenium-webdriver';
 import { AddonPage } from '../../..';
 import { expect } from 'chai';
 
@@ -11,6 +11,8 @@ export class StorybookComponent extends AddonPage {
     public MandatoryIcon: By = By.xpath(`//pep-icon[@name="system_must"]`);
     public PepTitle: By = By.xpath(`//pep-field-title`);
     public PepCheckboxContainer: By = By.xpath(`//div[contains(@class,'pep-checkbox-container')]`);
+    public PepChipsAlignmentElement: By = By.xpath(`//pep-field-title/div`);
+    public PepSeparatorContainer: By = By.xpath(`//pep-separator//div`);
     public ResetControlsButton: By = By.xpath(`//button[@title="Reset controls"]`);
     public Inputs_mainTableRow: By = By.xpath('//tr[contains(@title," inputs items")]');
     public Outputs_mainTableRow: By = By.xpath('//tr[contains(@title," outputs items")]');
@@ -34,6 +36,8 @@ export class StorybookComponent extends AddonPage {
     public OutputDefaultValue_byOutputName: By = By.xpath(
         `//span[text()="{placeholder}"]/parent::td/following-sibling::td[2]/span`,
     );
+    public RowSpanControlInput: By = By.xpath(`//input[@id="control-rowSpan"]`);
+    public SrcControlInput: By = By.xpath(`//textarea[@id="control-src"]`);
 
     public async getMainExampleContentSelecor(componentText: string): Promise<By> {
         return By.xpath(`//div[contains(@id,'anchor')]//div[contains(@id,'${componentText}')]`);
@@ -161,6 +165,16 @@ export class StorybookComponent extends AddonPage {
                 const txtAlignElementClasses = await txtAlignElement.getAttribute('class');
                 txtAlignVal = txtAlignElementClasses.split('one-row')[1].split('-alignment')[0].trim();
                 break;
+            case 'separator':
+                selector = By.xpath(
+                    `${this.MainExample_BigBoxDiv.value.replace('{placeholder}', component)}${
+                        this.PepSeparatorContainer.value
+                    }`,
+                );
+                const sepTxtAlignElement = await this.browser.findElement(selector);
+                const sepTxtAlignElementClasses = await sepTxtAlignElement.getAttribute('class');
+                txtAlignVal = sepTxtAlignElementClasses.split('align-')[1].split(' ')[0].trim();
+                break;
 
             default:
                 selector = By.xpath(this.LabelTxtAlign.value.replace('{placeholder}', component));
@@ -169,5 +183,106 @@ export class StorybookComponent extends AddonPage {
                 break;
         }
         return txtAlignVal;
+    }
+
+    public async changeRowSpanControl(toNum: number): Promise<void> {
+        await this.browser.sendKeys(this.RowSpanControlInput, Key.CONTROL + 'a' + Key.DELETE);
+        await this.browser.sendKeys(this.RowSpanControlInput, toNum + Key.ENTER);
+        this.browser.sleep(1 * 1000);
+    }
+
+    public async changeSrcControl(src: string): Promise<void> {
+        this.browser.sleep(0.1 * 1000);
+        await this.browser.sendKeys(this.SrcControlInput, Key.CONTROL + 'a' + Key.DELETE);
+        await this.browser.sendKeys(this.SrcControlInput, src);
+        await this.browser.click(this.DocsDiv);
+    }
+
+    public async getMainExampleLabel(component: string): Promise<string> {
+        let mainExampleLabel: By;
+        switch (component) {
+            case 'attachment':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-attachment--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'checkbox':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-checkbox--story-1"]//mat-checkbox/label/span[2]`,
+                );
+                break;
+            case 'chips':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-chips--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'color-picker':
+                mainExampleLabel = By.xpath(`//div[@id="story--components-color-picker--story-1"]//mat-label`);
+                break;
+            case 'date-time':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-date-date-time--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'image-filmstrip':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-image-filmstrip--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'image':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-image--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'link':
+                mainExampleLabel = By.xpath(`//div[@id="story--components-link--story-1"]//pep-field-title//mat-label`);
+                break;
+            case 'quantity-selector':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-quantity-selector--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'rich-html-textarea':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-rich-html-textarea--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'select':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-select--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'select-panel':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-select-panel--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'separator':
+                mainExampleLabel = By.xpath(`//div[@id="story--components-separator--story-1"]//pep-separator//span`);
+                break;
+            case 'signature':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-signature--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'slider':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-slider--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'textarea':
+                mainExampleLabel = By.xpath(
+                    `//div[@id="story--components-textarea--story-1"]//pep-field-title//mat-label`,
+                );
+                break;
+            case 'textbox':
+                mainExampleLabel = By.xpath(`//div[@id="story--components-textbox--base"]//pep-field-title//mat-label`);
+                break;
+            default:
+                mainExampleLabel = By.xpath('');
+                break;
+        }
+        const label = await this.browser.findElement(mainExampleLabel);
+        return (await label.getText()).trim();
     }
 }

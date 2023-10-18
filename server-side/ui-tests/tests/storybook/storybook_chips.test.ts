@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { Chips } from '../../pom/Pages/StorybookComponents/Chips';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -34,6 +35,7 @@ export async function StorybookChipsTests() {
         'Type is select',
         'Orientation is vertical',
     ];
+    const alignExpectedValues = ['left', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
@@ -41,6 +43,7 @@ export async function StorybookChipsTests() {
     let chipsInputsTitles;
     let chipsOutputsTitles;
     let chipsMethodsTitles;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "Chips" Tests Suite', function () {
         this.retries(0);
@@ -148,7 +151,7 @@ export async function StorybookChipsTests() {
                                 title: `Label Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const newLabelGotFromUi = await chips.getMainExampleLabel();
+                            const newLabelGotFromUi = await chips.getMainExampleLabel('chips');
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
@@ -173,7 +176,7 @@ export async function StorybookChipsTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             const newClassNamesGotFromUi = await (
-                                await driver.findElement(chips.MainExampleChip)
+                                await driver.findElement(chips.MainExampleChips)
                             ).getAttribute('class');
                             console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
                             expect(newClassNamesGotFromUi).to.contain(newClassNamesToSet);
@@ -187,7 +190,7 @@ export async function StorybookChipsTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             const newClassNamesGotFromUi = await (
-                                await driver.findElement(chips.MainExampleChip)
+                                await driver.findElement(chips.MainExampleChips)
                             ).getAttribute('class');
                             console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
                             expect(newClassNamesGotFromUi).to.not.contain('rotate3d');
@@ -198,30 +201,48 @@ export async function StorybookChipsTests() {
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('disabled')).to.be.true;
                         });
-                        it(`Functional test (+screenshots)`, async function () {
-                            const base64ImageComponent = await driver.saveScreenshots();
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `'${input}' input`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await storyBookPage.inputs.toggleDisableControl();
                             await driver.click(chips.MainHeader);
-                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            const mainExampleChips = await driver.findElement(chips.MainExampleChips);
+                            const mainExampleChipsDisabled = await mainExampleChips.getAttribute('disabled');
+                            console.info(
+                                'mainExampleChipsDisabled (false): ',
+                                JSON.stringify(mainExampleChipsDisabled, null, 2),
+                            );
+                            expect(mainExampleChipsDisabled).to.be.null;
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disabled Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            let mainExampleChip = await driver.findElement(chips.MainExampleChip);
-                            expect(await mainExampleChip.getAttribute('disabled')).to.equal('true');
+                            await driver.click(chips.MainHeader);
+                            const mainExampleChips = await driver.findElement(chips.MainExampleChips);
+                            const mainExampleChipsDisabled = await mainExampleChips.getAttribute('disabled');
+                            console.info(
+                                'mainExampleChipsDisabled (true): ',
+                                JSON.stringify(mainExampleChipsDisabled, null, 2),
+                            );
+                            expect(mainExampleChipsDisabled).equals('true');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
-                            base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Disabled Input Changed to "false"`,
+                                title: `Disable Input changed back to default value = "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            mainExampleChip = await driver.findElement(chips.MainExampleChip);
-                            const disabledAttribute = await mainExampleChip.getAttribute('disabled');
-                            expect(disabledAttribute).to.be.null;
+                            await driver.click(chips.MainHeader);
+                            const mainExampleChips = await driver.findElement(chips.MainExampleChips);
+                            const mainExampleChipsDisabled = await mainExampleChips.getAttribute('disabled');
+                            expect(mainExampleChipsDisabled).to.be.null;
                         });
                         break;
 
@@ -277,7 +298,31 @@ export async function StorybookChipsTests() {
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                    const alignment = allAlignments[index];
+                                    await alignment.click();
+                                    const currentAlign = await chips.getTxtAlignmentByComponent('chips');
+                                    let base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
+                                    await driver.click(chips.MainHeader);
+                                    base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `upper screenshot: chips with x-alignment = '${title}'`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                });
+                            }
+                        });
                         break;
 
                     default:

@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { Textbox } from '../../pom/Pages/StorybookComponents/Textbox';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -36,12 +37,14 @@ export async function StorybookTextboxTests() {
         'Percentage',
         'Phone',
     ];
+    const alignExpectedValues = ['', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let textbox: Textbox;
     let textboxInputsTitles;
     let textboxOutputsTitles;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "Textbox" Tests Suite', function () {
         this.retries(0);
@@ -136,10 +139,21 @@ export async function StorybookTextboxTests() {
                 });
                 switch (input) {
                     case 'label':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('label')).to.be.true;
+                            await driver.click(textbox.ResetControlsButton);
                         });
-                        // TODO
+                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newLabelToSet = 'Auto test';
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newLabelGotFromUi = await textbox.getMainExampleLabel('textbox');
+                            expect(newLabelGotFromUi).to.equal(newLabelToSet);
+                        });
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {
@@ -148,10 +162,52 @@ export async function StorybookTextboxTests() {
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textbox.MainHeader);
+                            const mainExampleTextbox = await driver.findElement(textbox.MainExampleTextbox);
+                            const mainExampleTextboxDisabled = await mainExampleTextbox.getAttribute('disabled');
+                            console.info(
+                                'mainExampleTextboxDisabled (false): ',
+                                JSON.stringify(mainExampleTextboxDisabled, null, 2),
+                            );
+                            expect(mainExampleTextboxDisabled).to.be.null;
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textbox.MainHeader);
+                            const mainExampleTextbox = await driver.findElement(textbox.MainExampleTextbox);
+                            const mainExampleTextboxDisabled = await mainExampleTextbox.getAttribute('disabled');
+                            console.info(
+                                'mainExampleTextboxDisabled (true): ',
+                                JSON.stringify(mainExampleTextboxDisabled, null, 2),
+                            );
+                            expect(mainExampleTextboxDisabled).equals('true');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textbox.MainHeader);
+                            const mainExampleTextbox = await driver.findElement(textbox.MainExampleTextbox);
+                            const mainExampleTextboxDisabled = await mainExampleTextbox.getAttribute('disabled');
+                            expect(mainExampleTextboxDisabled).to.be.null;
+                        });
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {
@@ -214,10 +270,49 @@ export async function StorybookTextboxTests() {
                         // TODO
                         break;
                     case 'xAlignment':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const currentAlign = await textbox.getTxtAlignmentByComponent('textbox');
+                            await driver.click(textbox.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: textbox with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(currentAlign).to.include('left');
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                    const alignment = allAlignments[index];
+                                    await alignment.click();
+                                    const currentAlign = await textbox.getTxtAlignmentByComponent('textbox');
+                                    let base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
+                                    await driver.click(textbox.MainHeader);
+                                    base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `upper screenshot: textbox with x-alignment = '${title}'`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                });
+                            }
+                        });
                         break;
 
                     default:

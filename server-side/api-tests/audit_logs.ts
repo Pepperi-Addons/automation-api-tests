@@ -581,15 +581,18 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 throw new Error(`Test can't run on the server: ${server}`);
         }
 
+        const currentDate = new Date();
+        const lastWeekDate = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const unixTime = parseInt((new Date(lastWeekDate).getTime() / 1000).toFixed(0));
         let raw;
         if (testName.includes('Negative')) {
             raw =
                 '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">\r\n    <s:Header>\r\n        <h:AgentID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">11442503</h:AgentID>\r\n        <h:ClientMachineID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">OrenSyncTest</h:ClientMachineID>\r\n        <h:LastSyncTime xmlns:h="WrntyAgentClientDevice.BLL.Agent3">73747156750000</h:LastSyncTime>\r\n        <h:TimeZoneDiff xmlns:h="WrntyAgentClientDevice.BLL.Agent3">0</h:TimeZoneDiff>\r\n    </s:Header>\r\n    <s:Body>\r\n        <GetDataRequest xmlns="WrntyAgentClientDevice.BLL.Agent3"/>\r\n    </s:Body>\r\n</s:Envelope>';
         } else {
-            raw =
-                '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">\r\n    <s:Header>\r\n        <h:AgentID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">11442503</h:AgentID>\r\n        <h:ClientMachineID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">OrenSyncTest</h:ClientMachineID>\r\n        <h:LastSyncTime xmlns:h="WrntyAgentClientDevice.BLL.Agent3">63747156750000</h:LastSyncTime>\r\n        <h:TimeZoneDiff xmlns:h="WrntyAgentClientDevice.BLL.Agent3">0</h:TimeZoneDiff>\r\n    </s:Header>\r\n    <s:Body>\r\n        <GetDataRequest xmlns="WrntyAgentClientDevice.BLL.Agent3"/>\r\n    </s:Body>\r\n</s:Envelope>';
+            raw = `<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">\r\n    <s:Header>\r\n        <h:AgentID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">11442503</h:AgentID>\r\n        <h:ClientMachineID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">OrenSyncTest</h:ClientMachineID>\r\n        <h:LastSyncTime xmlns:h="WrntyAgentClientDevice.BLL.Agent3">${unixTime}0000</h:LastSyncTime>\r\n        <h:TimeZoneDiff xmlns:h="WrntyAgentClientDevice.BLL.Agent3">0</h:TimeZoneDiff>\r\n    </s:Header>\r\n    <s:Body>\r\n        <GetDataRequest xmlns="WrntyAgentClientDevice.BLL.Agent3"/>\r\n    </s:Body>\r\n</s:Envelope>`;
         }
 
+        debugger;
         const syncResponse = await generalService
             .fetchStatus(url, {
                 method: 'POST',
@@ -608,6 +611,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 body: raw,
             })
             .then((res) => res.Body);
+        debugger;
 
         if (testName.includes('Negative')) {
             try {

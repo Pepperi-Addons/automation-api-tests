@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { Link } from '../../pom/Pages/StorybookComponents/Link';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -26,12 +27,14 @@ export async function StorybookLinkTests() {
     ];
     const linkOutputs = ['elementClick', 'valueChange'];
     const linkSubFoldersHeaders = ['Empty', 'Read only', 'Read only, no button', 'Max characters'];
+    const alignExpectedValues = ['', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let link: Link;
     let linkInputsTitles;
     let linkOutputsTitles;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "Link" Tests Suite', function () {
         this.retries(0);
@@ -125,10 +128,21 @@ export async function StorybookLinkTests() {
                 });
                 switch (input) {
                     case 'label':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(linkInputsTitles.includes('label')).to.be.true;
+                            await driver.click(link.ResetControlsButton);
                         });
-                        // TODO
+                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newLabelToSet = 'Auto test';
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newLabelGotFromUi = await link.getMainExampleLabel('link');
+                            expect(newLabelGotFromUi).to.equal(newLabelToSet);
+                        });
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {
@@ -143,10 +157,52 @@ export async function StorybookLinkTests() {
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(linkInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(link.MainHeader);
+                            const mainExampleLink = await driver.findElement(link.MainExampleLink);
+                            const mainExampleLinkDisabled = await mainExampleLink.getAttribute('class');
+                            console.info(
+                                'mainExampleLinkDisabled (false): ',
+                                JSON.stringify(mainExampleLinkDisabled, null, 2),
+                            );
+                            expect(mainExampleLinkDisabled).to.not.include('mat-form-field-disabled');
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(link.MainHeader);
+                            const mainExampleLink = await driver.findElement(link.MainExampleLink);
+                            const mainExampleLinkDisabled = await mainExampleLink.getAttribute('class');
+                            console.info(
+                                'mainExampleLinkDisabled (true): ',
+                                JSON.stringify(mainExampleLinkDisabled, null, 2),
+                            );
+                            expect(mainExampleLinkDisabled).include('mat-form-field-disabled');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(link.MainHeader);
+                            const mainExampleLink = await driver.findElement(link.MainExampleLink);
+                            const mainExampleLinkDisabled = await mainExampleLink.getAttribute('class');
+                            expect(mainExampleLinkDisabled).to.not.include('mat-form-field-disabled');
+                        });
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {
@@ -191,10 +247,49 @@ export async function StorybookLinkTests() {
                         // TODO
                         break;
                     case 'xAlignment':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(linkInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const currentAlign = await link.getTxtAlignmentByComponent('link');
+                            await driver.click(link.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: link with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(currentAlign).to.include('left');
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                    const alignment = allAlignments[index];
+                                    await alignment.click();
+                                    const currentAlign = await link.getTxtAlignmentByComponent('link');
+                                    let base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
+                                    await driver.click(link.MainHeader);
+                                    base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `upper screenshot: link with x-alignment = '${title}'`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                });
+                            }
+                        });
                         break;
 
                     default:

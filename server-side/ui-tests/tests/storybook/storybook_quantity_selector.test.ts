@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { QuantitySelector } from '../../pom/Pages/StorybookComponents/QuantitySelector';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -25,12 +26,14 @@ export async function StorybookQuantitySelectorTests() {
     ];
     const quantitySelectorOutputs = ['elementClick', 'valueChange'];
     const quantitySelectorSubFoldersHeaders = ['Twist and shake', 'Shake and twist'];
+    const alignExpectedValues = ['', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let quantitySelector: QuantitySelector;
     let quantitySelectorInputsTitles;
     let quantitySelectorOutputsTitles;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "QuantitySelector" Tests Suite', function () {
         this.retries(0);
@@ -124,10 +127,21 @@ export async function StorybookQuantitySelectorTests() {
                 });
                 switch (input) {
                     case 'label':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('label')).to.be.true;
+                            await driver.click(quantitySelector.ResetControlsButton);
                         });
-                        // TODO
+                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newLabelToSet = 'Auto test';
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newLabelGotFromUi = await quantitySelector.getMainExampleLabel('quantity-selector');
+                            expect(newLabelGotFromUi).to.equal(newLabelToSet);
+                        });
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {
@@ -142,10 +156,64 @@ export async function StorybookQuantitySelectorTests() {
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(quantitySelector.MainHeader);
+                            const mainExampleQuantitySelector = await driver.findElement(
+                                quantitySelector.MainExampleQuantitySelector,
+                            );
+                            const mainExampleQuantitySelectorDisabled = await mainExampleQuantitySelector.getAttribute(
+                                'class',
+                            );
+                            console.info(
+                                'mainExampleQuantitySelectorDisabled (false): ',
+                                JSON.stringify(mainExampleQuantitySelectorDisabled, null, 2),
+                            );
+                            expect(mainExampleQuantitySelectorDisabled).to.not.include('mat-form-field-disabled');
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(quantitySelector.MainHeader);
+                            const mainExampleQuantitySelector = await driver.findElement(
+                                quantitySelector.MainExampleQuantitySelector,
+                            );
+                            const mainExampleQuantitySelectorDisabled = await mainExampleQuantitySelector.getAttribute(
+                                'class',
+                            );
+                            console.info(
+                                'mainExampleQuantitySelectorDisabled (true): ',
+                                JSON.stringify(mainExampleQuantitySelectorDisabled, null, 2),
+                            );
+                            expect(mainExampleQuantitySelectorDisabled).to.include('mat-form-field-disabled');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(quantitySelector.MainHeader);
+                            const mainExampleQuantitySelector = await driver.findElement(
+                                quantitySelector.MainExampleQuantitySelector,
+                            );
+                            const mainExampleQuantitySelectorDisabled = await mainExampleQuantitySelector.getAttribute(
+                                'class',
+                            );
+                            expect(mainExampleQuantitySelectorDisabled).to.not.include('mat-form-field-disabled');
+                        });
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {
@@ -172,7 +240,7 @@ export async function StorybookQuantitySelectorTests() {
                         // TODO
                         break;
                     case 'visible':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('visible')).to.be.true;
                         });
                         // TODO
@@ -181,7 +249,48 @@ export async function StorybookQuantitySelectorTests() {
                         it(`it '${input}'`, async function () {
                             expect(quantitySelectorInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const currentAlign = await quantitySelector.getTxtAlignmentByComponent('quantity-selector');
+                            await driver.click(quantitySelector.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: quantity-selector with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(currentAlign).to.include('left');
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                    const alignment = allAlignments[index];
+                                    await alignment.click();
+                                    const currentAlign = await quantitySelector.getTxtAlignmentByComponent(
+                                        'quantity-selector',
+                                    );
+                                    let base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
+                                    await driver.click(quantitySelector.MainHeader);
+                                    base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `upper screenshot: quantitySelector with x-alignment = '${title}'`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                });
+                            }
+                        });
                         break;
 
                     default:

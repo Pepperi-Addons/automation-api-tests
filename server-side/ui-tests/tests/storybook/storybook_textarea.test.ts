@@ -6,6 +6,7 @@ import { WebAppHomePage } from '../../pom';
 import { StoryBookPage } from '../../pom/Pages/StoryBookPage';
 import addContext from 'mochawesome/addContext';
 import { Textarea } from '../../pom/Pages/StorybookComponents/Textarea';
+import { WebElement } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -24,12 +25,16 @@ export async function StorybookTextareaTests() {
     ];
     const textareaOutputs = ['valueChange'];
     const textareaSubFoldersHeaders = ['Max field characters', 'Disabled'];
+    const alignExpectedValues = ['', 'center', 'right'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let textarea: Textarea;
     let textareaInputsTitles;
     let textareaOutputsTitles;
+    let textareaComplexElement;
+    let textareaComplexHeight;
+    let allAlignments: WebElement[] = [];
 
     describe('Storybook "Textarea" Tests Suite', function () {
         this.retries(0);
@@ -123,16 +128,85 @@ export async function StorybookTextareaTests() {
                 });
                 switch (input) {
                     case 'rowSpan':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('rowSpan')).to.be.true;
                         });
-                        // TODO
+                        it(`default height [ control = 2 ] measurement (+screenshot)`, async function () {
+                            textareaComplexElement = await driver.findElement(textarea.MainExampleHeightDiv);
+                            textareaComplexHeight = await textareaComplexElement.getCssValue('height');
+                            console.info('textareaComplexHeight: ', textareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(textareaComplexHeight.trim()).to.equal('144px');
+                        });
+                        it(`[ control = 1 ] height measurement (+screenshot)`, async function () {
+                            await textarea.changeRowSpanControl(1);
+                            textareaComplexElement = await driver.findElement(textarea.MainExampleHeightDiv);
+                            textareaComplexHeight = await textareaComplexElement.getCssValue('height');
+                            console.info('textareaComplexHeight: ', textareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(textareaComplexHeight.trim()).to.equal('77.5938px');
+                        });
+                        it(`[ control = 3 ] height measurement (+screenshot)`, async function () {
+                            await textarea.changeRowSpanControl(3);
+                            textareaComplexElement = await driver.findElement(textarea.MainExampleHeightDiv);
+                            textareaComplexHeight = await textareaComplexElement.getCssValue('height');
+                            console.info('textareaComplexHeight: ', textareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(textareaComplexHeight.trim()).to.equal('208px');
+                        });
+                        it(`[ control = 0 ] height measurement (+screenshot)`, async function () {
+                            await textarea.changeRowSpanControl(0);
+                            textareaComplexElement = await driver.findElement(textarea.MainExampleHeightDiv);
+                            textareaComplexHeight = await textareaComplexElement.getCssValue('height');
+                            console.info('textareaComplexHeight: ', textareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(textareaComplexHeight.trim()).to.equal('80px');
+                        });
+                        it(`back to default height [ control = 2 ] measurement (+screenshot)`, async function () {
+                            await textarea.changeRowSpanControl(2);
+                            textareaComplexElement = await driver.findElement(textarea.MainExampleHeightDiv);
+                            textareaComplexHeight = await textareaComplexElement.getCssValue('height');
+                            console.info('textareaComplexHeight: ', textareaComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' back to default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(textareaComplexHeight.trim()).to.equal('144px');
+                        });
                         break;
                     case 'label':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('label')).to.be.true;
+                            await driver.click(textarea.ResetControlsButton);
                         });
-                        // TODO
+                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newLabelToSet = 'Auto test';
+                            await storyBookPage.inputs.changeLabelControl(newLabelToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Label Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newLabelGotFromUi = await textarea.getMainExampleLabel('textarea');
+                            expect(newLabelGotFromUi).to.equal(newLabelToSet);
+                        });
                         break;
                     case 'value':
                         it(`it '${input}'`, async function () {
@@ -141,10 +215,52 @@ export async function StorybookTextareaTests() {
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            const mainExampleTextarea = await driver.findElement(textarea.MainExampleTextarea);
+                            const mainExampleTextareaDisabled = await mainExampleTextarea.getAttribute('disabled');
+                            console.info(
+                                'mainExampleTextareaDisabled (false): ',
+                                JSON.stringify(mainExampleTextareaDisabled, null, 2),
+                            );
+                            expect(mainExampleTextareaDisabled).to.be.null;
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            const mainExampleTextarea = await driver.findElement(textarea.MainExampleTextarea);
+                            const mainExampleTextareaDisabled = await mainExampleTextarea.getAttribute('disabled');
+                            console.info(
+                                'mainExampleTextareaDisabled (true): ',
+                                JSON.stringify(mainExampleTextareaDisabled, null, 2),
+                            );
+                            expect(mainExampleTextareaDisabled).equals('true');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            const mainExampleTextarea = await driver.findElement(textarea.MainExampleTextarea);
+                            const mainExampleTextareaDisabled = await mainExampleTextarea.getAttribute('disabled');
+                            expect(mainExampleTextareaDisabled).to.be.null;
+                        });
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {
@@ -177,10 +293,49 @@ export async function StorybookTextareaTests() {
                         // TODO
                         break;
                     case 'xAlignment':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('xAlignment')).to.be.true;
                         });
-                        // TODO
+                        it(`get all xAlignments`, async function () {
+                            allAlignments = await storyBookPage.inputs.getAllxAlignments();
+                            driver.sleep(1 * 1000);
+                        });
+                        it(`validate current xAlignment is "left"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `[xAlignment = 'left']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const currentAlign = await textarea.getTxtAlignmentByComponent('textarea');
+                            await driver.click(textarea.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: textarea with x-alignment = 'left'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(currentAlign).to.include('left');
+                        });
+                        alignExpectedValues.forEach(async (title, index) => {
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                    const alignment = allAlignments[index];
+                                    await alignment.click();
+                                    const currentAlign = await textarea.getTxtAlignmentByComponent('textarea');
+                                    let base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
+                                    await driver.click(textarea.MainHeader);
+                                    base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `upper screenshot: textarea with x-alignment = '${title}'`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                });
+                            }
+                        });
                         break;
 
                     default:

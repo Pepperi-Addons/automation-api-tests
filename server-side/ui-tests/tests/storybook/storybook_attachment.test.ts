@@ -169,6 +169,18 @@ export async function StorybookAttachmentTests() {
                             });
                             expect(attachmentComplexHeight.trim()).to.equal('46px');
                         });
+                        it(`back to default height [ control = 2 ] measurement (+screenshot)`, async function () {
+                            await attachment.changeRowSpanControl(2);
+                            attachmentComplexElement = await driver.findElement(attachment.MainExampleHeightDiv);
+                            attachmentComplexHeight = await attachmentComplexElement.getCssValue('height');
+                            console.info('attachmentComplexHeight: ', attachmentComplexHeight);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' back to default height`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(attachmentComplexHeight.trim()).to.equal('106px');
+                        });
                         break;
 
                     case 'label':
@@ -184,7 +196,7 @@ export async function StorybookAttachmentTests() {
                                 title: `Label Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            const newLabelGotFromUi = await attachment.getMainExampleLabel();
+                            const newLabelGotFromUi = await attachment.getMainExampleLabel('attachment');
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
@@ -242,27 +254,48 @@ export async function StorybookAttachmentTests() {
                             expect(attachmentInputsTitles.includes('disabled')).to.be.true;
                             driver.sleep(1 * 1000);
                         });
-                        it(`Functional test (+screenshots)`, async function () {
-                            const base64ImageComponent = await driver.saveScreenshots();
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `'${input}' input`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            await driver.click(attachment.MainHeader);
+                            const mainExampleAttachment = await driver.findElement(attachment.MainExampleAttachment);
+                            const mainExampleAttachmentDisabled = await mainExampleAttachment.getAttribute('class');
+                            console.info(
+                                'mainExampleAttachmentDisabled (false): ',
+                                JSON.stringify(mainExampleAttachmentDisabled, null, 2),
+                            );
+                            expect(mainExampleAttachmentDisabled).to.not.include('mat-form-field-disabled');
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
-                            await driver.scrollToElement(attachment.MainHeader);
-                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disabled Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await storyBookPage.elemntDoNotExist(attachment.MainExample_deleteButton);
+                            await driver.click(attachment.MainHeader);
+                            const mainExampleAttachment = await driver.findElement(attachment.MainExampleAttachment);
+                            const mainExampleAttachmentDisabled = await mainExampleAttachment.getAttribute('class');
+                            console.info(
+                                'mainExampleAttachmentDisabled (true): ',
+                                JSON.stringify(mainExampleAttachmentDisabled, null, 2),
+                            );
+                            expect(mainExampleAttachmentDisabled).to.include('mat-form-field-disabled');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
-                            base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Disabled Input Changed to "false"`,
+                                title: `Disable Input changed back to default value = "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await storyBookPage.untilIsVisible(attachment.MainExample_deleteButton);
+                            await driver.click(attachment.MainHeader);
+                            const mainExampleAttachment = await driver.findElement(attachment.MainExampleAttachment);
+                            const mainExampleAttachmentDisabled = await mainExampleAttachment.getAttribute('class');
+                            expect(mainExampleAttachmentDisabled).to.not.include('mat-form-field-disabled');
                         });
                         break;
 
@@ -372,23 +405,25 @@ export async function StorybookAttachmentTests() {
                             expect(currentAlign).to.include('left');
                         });
                         alignExpectedValues.forEach(async (title, index) => {
-                            it(`'${title}' -- functional test (+screenshots)`, async function () {
-                                const alignment = allAlignments[index + 1];
-                                await alignment.click();
-                                const currentAlign = await attachment.getTxtAlignmentByComponent('attachment');
-                                let base64ImageComponentModal = await driver.saveScreenshots();
-                                addContext(this, {
-                                    title: `${title} (xAlignment) input change`,
-                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            if (title) {
+                                it(`'${title}' -- functional test (+screenshots)`, async function () {
+                                    const alignment = allAlignments[index + 1];
+                                    await alignment.click();
+                                    const currentAlign = await attachment.getTxtAlignmentByComponent('attachment');
+                                    let base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `${title} (xAlignment) input change`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
+                                    expect(currentAlign).to.include(title);
+                                    await driver.click(attachment.MainHeader);
+                                    base64ImageComponentModal = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `upper screenshot: attachment with x-alignment = '${title}'`,
+                                        value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                    });
                                 });
-                                expect(currentAlign).to.include(title);
-                                await driver.click(attachment.MainHeader);
-                                base64ImageComponentModal = await driver.saveScreenshots();
-                                addContext(this, {
-                                    title: `upper screenshot: attachment with x-alignment = '${title}'`,
-                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
-                                });
-                            });
+                            }
                         });
                         break;
 
