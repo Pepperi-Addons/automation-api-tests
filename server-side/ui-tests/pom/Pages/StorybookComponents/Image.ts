@@ -8,6 +8,7 @@ export class Image extends StorybookComponent {
     public MainExampleImage: By = By.xpath(`${this.MainExampleDiv.value}//pep-files-uploader//img`);
     public MainExample_deleteButton: By = By.xpath(`${this.MainExampleDiv.value}//button[contains(@class,"delete")]`);
     public MainExampleImage_disabled: By = By.xpath(`${this.MainExampleDiv.value}//pep-date//input`);
+    public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
 
     public async doesImageComponentFound(): Promise<void> {
         await this.doesComponentFound('image', 'Image');
