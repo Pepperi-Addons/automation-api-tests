@@ -4,6 +4,7 @@ import { expect } from 'chai';
 
 export class StorybookComponent extends AddonPage {
     public IframeElement: By = By.xpath(`//iframe`);
+    public RootDiv: By = By.id('docs-root');
     public DocsDiv: By = By.xpath(`//div[contains(@class, 'sbdoc')]`);
     public MainExample_BigBoxDiv: By = By.xpath(`//div[@id="anchor--components-{placeholder}--story-1"]`);
     public MainExample_content: By = By.xpath(`//div[contains(@id,'#placeholder')]//div[contains(@id,'#placeholder')]`);
