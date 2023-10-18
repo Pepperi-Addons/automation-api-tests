@@ -186,30 +186,48 @@ export async function StorybookButtonTests() {
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('disabled')).to.be.true;
                         });
-                        it(`Functional test (+screenshots)`, async function () {
-                            const base64ImageComponent = await driver.saveScreenshots();
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `'${input}' input`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await storyBookPage.inputs.toggleDisableControl();
                             await driver.click(button.MainHeader);
-                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            const mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            const mainExampleButtonDisabled = await mainExampleButton.getAttribute('disabled');
+                            console.info(
+                                'mainExampleButtonDisabled (false): ',
+                                JSON.stringify(mainExampleButtonDisabled, null, 2),
+                            );
+                            expect(mainExampleButtonDisabled).to.be.null;
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disabled Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            let mainExampleButton = await driver.findElement(button.MainExampleButton);
-                            expect(await mainExampleButton.getAttribute('disabled')).to.equal('true');
+                            await driver.click(button.MainHeader);
+                            const mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            const mainExampleButtonDisabled = await mainExampleButton.getAttribute('disabled');
+                            console.info(
+                                'mainExampleButtonDisabled (true): ',
+                                JSON.stringify(mainExampleButtonDisabled, null, 2),
+                            );
+                            expect(mainExampleButtonDisabled).equals('true');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
-                            base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Disabled Input Changed to "false"`,
+                                title: `Disable Input changed back to default value = "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            mainExampleButton = await driver.findElement(button.MainExampleButton);
-                            const disabledAttribute = await mainExampleButton.getAttribute('disabled');
-                            expect(disabledAttribute).to.be.null;
+                            await driver.click(button.MainHeader);
+                            const mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            const mainExampleButtonDisabled = await mainExampleButton.getAttribute('disabled');
+                            expect(mainExampleButtonDisabled).to.be.null;
                         });
                         break;
 

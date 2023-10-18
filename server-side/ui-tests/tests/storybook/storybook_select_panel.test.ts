@@ -167,10 +167,52 @@ export async function StorybookSelectPanelTests() {
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(selectPanel.MainHeader);
+                            const mainExampleSelectPanel = await driver.findElement(selectPanel.MainExampleSelectPanel);
+                            const mainExampleSelectPanelDisabled = await mainExampleSelectPanel.getAttribute('class');
+                            console.info(
+                                'mainExampleSelectPanelDisabled (false): ',
+                                JSON.stringify(mainExampleSelectPanelDisabled, null, 2),
+                            );
+                            expect(mainExampleSelectPanelDisabled).to.not.include('disable');
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(selectPanel.MainHeader);
+                            const mainExampleSelectPanel = await driver.findElement(selectPanel.MainExampleSelectPanel);
+                            const mainExampleSelectPanelDisabled = await mainExampleSelectPanel.getAttribute('class');
+                            console.info(
+                                'mainExampleSelectPanelDisabled (true): ',
+                                JSON.stringify(mainExampleSelectPanelDisabled, null, 2),
+                            );
+                            expect(mainExampleSelectPanelDisabled).to.include('disable');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(selectPanel.MainHeader);
+                            const mainExampleSelectPanel = await driver.findElement(selectPanel.MainExampleSelectPanel);
+                            const mainExampleSelectPanelDisabled = await mainExampleSelectPanel.getAttribute('class');
+                            expect(mainExampleSelectPanelDisabled).to.not.include('disable');
+                        });
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {

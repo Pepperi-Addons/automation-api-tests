@@ -153,10 +153,52 @@ export async function StorybookSelectTests() {
                         // TODO
                         break;
                     case 'disabled':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(select.MainHeader);
+                            const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
+                            const mainExampleSelectDisabled = await mainExampleSelect.getAttribute('class');
+                            console.info(
+                                'mainExampleSelectDisabled (false): ',
+                                JSON.stringify(mainExampleSelectDisabled, null, 2),
+                            );
+                            expect(mainExampleSelectDisabled).to.not.include('mat-form-field-disabled');
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(select.MainHeader);
+                            const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
+                            const mainExampleSelectDisabled = await mainExampleSelect.getAttribute('class');
+                            console.info(
+                                'mainExampleSelectDisabled (true): ',
+                                JSON.stringify(mainExampleSelectDisabled, null, 2),
+                            );
+                            expect(mainExampleSelectDisabled).to.include('mat-form-field-disabled');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(select.MainHeader);
+                            const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
+                            const mainExampleSelectDisabled = await mainExampleSelect.getAttribute('class');
+                            expect(mainExampleSelectDisabled).to.not.include('mat-form-field-disabled');
+                        });
                         break;
                     case 'mandatory':
                         it(`it '${input}'`, async function () {

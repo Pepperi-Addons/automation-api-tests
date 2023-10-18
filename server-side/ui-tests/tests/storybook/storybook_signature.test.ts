@@ -237,7 +237,49 @@ export async function StorybookSignatureTests() {
                         it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('disabled')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(signature.MainHeader);
+                            const mainExampleSignature = await driver.findElement(signature.MainExampleSignature);
+                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('class');
+                            console.info(
+                                'mainExampleSignatureDisabled (false): ',
+                                JSON.stringify(mainExampleSignatureDisabled, null, 2),
+                            );
+                            expect(mainExampleSignatureDisabled).to.not.include('disable');
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(signature.MainHeader);
+                            const mainExampleSignature = await driver.findElement(signature.MainExampleSignature);
+                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('class');
+                            console.info(
+                                'mainExampleSignatureDisabled (true): ',
+                                JSON.stringify(mainExampleSignatureDisabled, null, 2),
+                            );
+                            expect(mainExampleSignatureDisabled).to.include('disable');
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleDisableControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disable Input changed back to default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(signature.MainHeader);
+                            const mainExampleSignature = await driver.findElement(signature.MainExampleSignature);
+                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('class');
+                            expect(mainExampleSignatureDisabled).to.not.include('disable');
+                        });
                         break;
                     case 'mandatory':
                         it(`validate input`, async function () {

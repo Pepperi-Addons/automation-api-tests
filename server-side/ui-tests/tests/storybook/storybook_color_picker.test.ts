@@ -150,23 +150,71 @@ export async function StorybookColorPickerTests() {
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('disabled')).to.be.true;
                         });
-                        it(`Functional test (+screenshot)`, async function () {
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Disabled Input default value = "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(colorPicker.MainHeader);
+                            const mainExampleColorPicker = await driver.findElement(colorPicker.MainExampleColorPicker);
+                            const mainExampleColorPickerDisabled = await mainExampleColorPicker.getAttribute('class');
+                            console.info(
+                                'mainExampleColorPickerDisabled (false): ',
+                                JSON.stringify(mainExampleColorPickerDisabled, null, 2),
+                            );
+                            expect(mainExampleColorPickerDisabled).to.not.include('disable');
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
                             const isPenIconFound = await colorPicker.isPenIconFound();
-                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Disabled Input Change`,
+                                title: `Disabled Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            await driver.click(colorPicker.MainHeader);
+                            const mainExampleColorPicker = await driver.findElement(colorPicker.MainExampleColorPicker);
+                            const mainExampleColorPickerDisabled = await mainExampleColorPicker.getAttribute('class');
+                            console.info(
+                                'mainExampleColorPickerDisabled (true): ',
+                                JSON.stringify(mainExampleColorPickerDisabled, null, 2),
+                            );
+                            expect(mainExampleColorPickerDisabled).to.include('disable');
                             expect(isPenIconFound).to.equal(false);
                             await storyBookPage.elemntDoNotExist(colorPicker.MainExampleColorEditButton);
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
-                            base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Disabled Input Change`,
+                                title: `Disable Input changed back to default value = "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            await driver.click(colorPicker.MainHeader);
+                            const isPenIconFound = await colorPicker.isPenIconFound();
+                            const mainExampleColorPicker = await driver.findElement(colorPicker.MainExampleColorPicker);
+                            const mainExampleColorPickerDisabled = await mainExampleColorPicker.getAttribute('class');
+                            expect(mainExampleColorPickerDisabled).to.not.include('disable');
+                            expect(isPenIconFound).to.eventually.be.true;
                         });
+                        // it(`Functional test (+screenshot)`, async function () {
+                        //     await storyBookPage.inputs.toggleDisableControl();
+                        //     const isPenIconFound = await colorPicker.isPenIconFound();
+                        //     let base64ImageComponentModal = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `Disabled Input Change`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponentModal,
+                        //     });
+                        //     expect(isPenIconFound).to.equal(false);
+                        //     await storyBookPage.elemntDoNotExist(colorPicker.MainExampleColorEditButton);
+                        //     await storyBookPage.inputs.toggleDisableControl();
+                        //     base64ImageComponentModal = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `Disabled Input Change`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponentModal,
+                        //     });
+                        // });
                         break;
 
                     case 'showAAComplient':

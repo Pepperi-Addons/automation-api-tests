@@ -232,11 +232,6 @@ export async function StorybookCheckboxTests() {
                                 'mainExampleCheckboxDisabled (false): ',
                                 JSON.stringify(mainExampleCheckboxDisabled, null, 2),
                             );
-                            // base64ImageComponentModal = await driver.saveScreenshots();
-                            // addContext(this, {
-                            //     title: `Upper View of Disabled Input "false"`,
-                            //     value: 'data:image/png;base64,' + base64ImageComponentModal,
-                            // });
                             expect(mainExampleCheckboxDisabled).to.be.null;
                         });
                         it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
@@ -265,11 +260,6 @@ export async function StorybookCheckboxTests() {
                             await driver.click(checkbox.MainHeader);
                             const mainExampleCheckbox = await driver.findElement(checkbox.MainExampleCheckbox);
                             const mainExampleCheckboxDisabled = await mainExampleCheckbox.getAttribute('disabled');
-                            // base64ImageComponentModal = await driver.saveScreenshots();
-                            // addContext(this, {
-                            //     title: `Upper View of Disable Input "false"`,
-                            //     value: 'data:image/png;base64,' + base64ImageComponentModal,
-                            // });
                             expect(mainExampleCheckboxDisabled).to.be.null;
                         });
                         break;
