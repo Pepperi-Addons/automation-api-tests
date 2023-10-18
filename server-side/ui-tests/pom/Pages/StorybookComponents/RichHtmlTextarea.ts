@@ -22,6 +22,7 @@ export class RichHtmlTextarea extends StorybookComponent {
         `${this.MainExample_PopupDialog_container.value}//pep-icon[@name="system_close"]/ancestor::button`,
     );
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
+    public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
 
     public async doesRichHtmlTextareaComponentFound(): Promise<void> {
         await this.doesComponentFound('rich-html-textarea', 'Rich HTML textarea');

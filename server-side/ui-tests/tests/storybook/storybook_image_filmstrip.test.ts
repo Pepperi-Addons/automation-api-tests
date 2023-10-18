@@ -232,7 +232,43 @@ export async function StorybookImageFilmstripTests() {
                         it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('showTitle')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const inputsMainTableRowElement = await driver.findElement(
+                                imageFilmstrip.Inputs_mainTableRow,
+                            );
+                            if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                                await inputsMainTableRowElement.click();
+                            }
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.untilIsVisible(imageFilmstrip.MainExample_titleLabel);
+                        });
+                        it(`functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleShowTitleControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ShowTitle Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(imageFilmstrip.MainExample_titleLabel);
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleShowTitleControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ShowTitle Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(imageFilmstrip.MainExample_titleLabel);
+                        });
                         break;
                     case 'xAlignment':
                         it(`it '${input}'`, async function () {

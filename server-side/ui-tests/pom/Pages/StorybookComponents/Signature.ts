@@ -12,6 +12,7 @@ export class Signature extends StorybookComponent {
         `${this.MainExampleDiv.value}//pep-signature//img/parent::div/parent::div`,
     );
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
+    public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
 
     public async doesSignatureComponentFound(): Promise<void> {
         await this.doesComponentFound('signature', 'Signature');
