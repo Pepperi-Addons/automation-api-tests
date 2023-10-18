@@ -340,10 +340,36 @@ export async function StorybookRichHtmlTextareaTests() {
                         // TODO
                         break;
                     case 'mandatory':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('mandatory')).to.be.true;
+                            driver.sleep(1 * 1000);
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(richHtmlTextarea.MainExample_mandatoryIcon);
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(richHtmlTextarea.MainExample_mandatoryIcon);
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(richHtmlTextarea.MainExample_mandatoryIcon);
+                        });
                         break;
                     case 'maxFieldCharacters':
                         it(`it '${input}'`, async function () {

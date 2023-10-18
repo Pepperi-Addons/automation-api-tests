@@ -215,10 +215,36 @@ export async function StorybookSelectPanelTests() {
                         });
                         break;
                     case 'mandatory':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('mandatory')).to.be.true;
+                            driver.sleep(1 * 1000);
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(selectPanel.MainExample_mandatoryIcon);
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(selectPanel.MainExample_mandatoryIcon);
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(selectPanel.MainExample_mandatoryIcon);
+                        });
                         break;
                     case 'numOfCol':
                         it(`it '${input}'`, async function () {
