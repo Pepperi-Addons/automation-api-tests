@@ -7,6 +7,7 @@ export class QuantitySelector extends StorybookComponent {
         `${this.MainExampleDiv.value}//pep-quantity-selector//mat-form-field`,
     );
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
+    public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
 
     public async doesQuantitySelectorComponentFound(): Promise<void> {
         await this.doesComponentFound('quantity-selector', 'Quantity selector');
