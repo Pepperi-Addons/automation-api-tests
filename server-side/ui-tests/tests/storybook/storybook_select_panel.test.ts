@@ -161,10 +161,37 @@ export async function StorybookSelectPanelTests() {
                         // TODO
                         break;
                     case 'classNames':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('classNames')).to.be.true;
                         });
-                        // TODO
+                        it(`[ control = 'rotate3d' ] functional test (+screenshot)`, async function () {
+                            const newClassNamesToSet = 'rotate3d';
+                            await storyBookPage.inputs.changeClassNamesControl(newClassNamesToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ClassNames Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newClassNamesGotFromUi = await (
+                                await driver.findElement(selectPanel.MainExampleSelectPanel)
+                            ).getAttribute('class');
+                            console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
+                            expect(newClassNamesGotFromUi).to.contain(newClassNamesToSet);
+                        });
+                        it(`[ control = '' ] functional test (+screenshot)`, async function () {
+                            const newClassNamesToSet = '';
+                            await storyBookPage.inputs.changeClassNamesControl(newClassNamesToSet);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ClassNames Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const newClassNamesGotFromUi = await (
+                                await driver.findElement(selectPanel.MainExampleSelectPanel)
+                            ).getAttribute('class');
+                            console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
+                            expect(newClassNamesGotFromUi).to.not.contain('rotate3d');
+                        });
                         break;
                     case 'disabled':
                         it(`validate input`, async function () {
