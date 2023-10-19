@@ -201,10 +201,36 @@ export async function StorybookSelectTests() {
                         });
                         break;
                     case 'mandatory':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('mandatory')).to.be.true;
+                            driver.sleep(1 * 1000);
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(select.MainExample_mandatoryIcon);
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(select.MainExample_mandatoryIcon);
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(select.MainExample_mandatoryIcon);
+                        });
                         break;
                     case 'readonly':
                         it(`it '${input}'`, async function () {
@@ -213,10 +239,44 @@ export async function StorybookSelectTests() {
                         // TODO
                         break;
                     case 'showTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('showTitle')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const inputsMainTableRowElement = await driver.findElement(select.Inputs_mainTableRow);
+                            if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                                await inputsMainTableRowElement.click();
+                            }
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.untilIsVisible(select.MainExample_titleLabel);
+                        });
+                        it(`functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleShowTitleControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ShowTitle Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(select.MainExample_titleLabel);
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleShowTitleControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ShowTitle Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(select.MainExample_titleLabel);
+                        });
                         break;
                     case 'type':
                         it(`it '${input}'`, async function () {

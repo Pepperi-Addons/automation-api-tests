@@ -253,6 +253,28 @@ export async function StorybookRichHtmlTextareaTests() {
                             );
                             expect(mainExampleRichHtmlTextareaDisabled).to.include('mat-form-field-disabled');
                         });
+                        it(`opening button and making sure the popup dialog contains Read Only display`, async function () {
+                            await driver.click(richHtmlTextarea.MainExampleRichHtmlTextarea_button);
+                            driver.sleep(0.5 * 1000);
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Read Only - was opened`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const mainExamplePopup = await driver.findElement(
+                                richHtmlTextarea.MainExample_PopupDialog_readOnly,
+                            );
+                            expect(mainExamplePopup).to.not.be.null.and.not.be.undefined;
+                            // closing dialog:
+                            await driver.click(richHtmlTextarea.MainExample_PopupDialog_wrapperContainer);
+                            await driver.click(richHtmlTextarea.MainExample_PopupDialog_wrapperContainer);
+                            driver.sleep(2 * 1000);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Read Only - was closed`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                        });
                         it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
                             const base64ImageComponentModal = await driver.saveScreenshots();
@@ -272,6 +294,27 @@ export async function StorybookRichHtmlTextareaTests() {
                                 JSON.stringify(mainExampleRichHtmlTextareaDisabled, null, 2),
                             );
                             expect(mainExampleRichHtmlTextareaDisabled).to.not.include('mat-form-field-disabled');
+                        });
+                        it(`opening button and making sure the popup dialog contains Editable display`, async function () {
+                            await driver.click(richHtmlTextarea.MainExampleRichHtmlTextarea_button);
+                            driver.sleep(0.5 * 1000);
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Edit Mode - was opened`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const mainExamplePopup = await driver.findElement(
+                                richHtmlTextarea.MainExample_PopupDialog_editMode,
+                            );
+                            expect(mainExamplePopup).to.not.be.null.and.not.be.undefined;
+                            // closing dialog:
+                            await driver.click(richHtmlTextarea.MainExample_PopupDialog_closeButton);
+                            driver.sleep(2 * 1000);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Edit Mode - was closed`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
                         });
                         it(`back to default [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
@@ -297,10 +340,36 @@ export async function StorybookRichHtmlTextareaTests() {
                         // TODO
                         break;
                     case 'mandatory':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('mandatory')).to.be.true;
+                            driver.sleep(1 * 1000);
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(richHtmlTextarea.MainExample_mandatoryIcon);
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(richHtmlTextarea.MainExample_mandatoryIcon);
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(richHtmlTextarea.MainExample_mandatoryIcon);
+                        });
                         break;
                     case 'maxFieldCharacters':
                         it(`it '${input}'`, async function () {
@@ -309,10 +378,46 @@ export async function StorybookRichHtmlTextareaTests() {
                         // TODO
                         break;
                     case 'showTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('showTitle')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const inputsMainTableRowElement = await driver.findElement(
+                                richHtmlTextarea.Inputs_mainTableRow,
+                            );
+                            if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                                await inputsMainTableRowElement.click();
+                            }
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.untilIsVisible(richHtmlTextarea.MainExample_titleLabel);
+                        });
+                        it(`functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleShowTitleControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ShowTitle Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(richHtmlTextarea.MainExample_titleLabel);
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleShowTitleControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ShowTitle Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(richHtmlTextarea.MainExample_titleLabel);
+                        });
                         break;
                     case 'visible':
                         it(`it '${input}'`, async function () {

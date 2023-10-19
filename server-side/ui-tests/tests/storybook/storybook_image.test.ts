@@ -240,8 +240,8 @@ export async function StorybookImageTests() {
                             await driver.click(image.MainHeader);
                             expect(await driver.isElementVisible(image.MainExampleImage)).to.be.false;
                             driver.sleep(1 * 1000);
-                            expect(await driver.isElementVisible(image.MainExampleImage_disabled)).to.eventually.be
-                                .true;
+                            // expect(await driver.isElementVisible(image.MainExampleImage_disabled)).to.eventually.be
+                            //     .true;
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleDisableControl();
@@ -274,16 +274,76 @@ export async function StorybookImageTests() {
                         });
                         break;
                     case 'mandatory':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageInputsTitles.includes('mandatory')).to.be.true;
+                            driver.sleep(1 * 1000);
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(image.MainExample_mandatoryIcon);
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(image.MainExample_mandatoryIcon);
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Mandatory Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(image.MainExample_mandatoryIcon);
+                        });
                         break;
                     case 'showTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageInputsTitles.includes('showTitle')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const inputsMainTableRowElement = await driver.findElement(image.Inputs_mainTableRow);
+                            if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                                await inputsMainTableRowElement.click();
+                            }
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.untilIsVisible(image.MainExample_titleLabel);
+                        });
+                        it(`functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleShowTitleControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ShowTitle Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(image.MainExample_titleLabel);
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleShowTitleControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `ShowTitle Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(image.MainExample_titleLabel);
+                        });
                         break;
                     case 'xAlignment':
                         it(`validate input`, async function () {

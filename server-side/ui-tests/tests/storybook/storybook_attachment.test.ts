@@ -304,21 +304,26 @@ export async function StorybookAttachmentTests() {
                             expect(attachmentInputsTitles.includes('mandatory')).to.be.true;
                             driver.sleep(1 * 1000);
                         });
-                        it(`Functional test (+screenshots)`, async function () {
-                            const base64ImageComponent = await driver.saveScreenshots();
+                        it(`making sure current value is "False"`, async function () {
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `'${input}' input`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                title: `Mandatory Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            await storyBookPage.elemntDoNotExist(attachment.MainExample_mandatoryIcon);
+                        });
+                        it(`functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
-                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await storyBookPage.untilIsVisible(attachment.MainExample_mandatoryIcon);
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
-                            base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
@@ -338,7 +343,7 @@ export async function StorybookAttachmentTests() {
                             await attachment.changeSrcControl(expectedUrl);
                             driver.sleep(1 * 1000);
                         });
-                        it(`Functional test (+screenshots)`, async function () {
+                        it(`making sure current value is "True"`, async function () {
                             let base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `'${input}' input`,
@@ -353,15 +358,20 @@ export async function StorybookAttachmentTests() {
                                 title: `'${input}' input`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
+                            await storyBookPage.untilIsVisible(attachment.MainExample_titleLabel);
+                        });
+                        it(`functional test [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleShowTitleControl();
-                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `ShowTitle Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await storyBookPage.elemntDoNotExist(attachment.MainExample_titleLabel);
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleShowTitleControl();
-                            base64ImageComponentModal = await driver.saveScreenshots();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `ShowTitle Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
@@ -519,30 +529,6 @@ export async function StorybookAttachmentTests() {
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
-                    // TODO: add tests
-                    // it(`it '${header}'`, async function () {
-                    // let headerText = '';
-                    // switch (header) {
-                    //     case 'With content':
-                    //     case 'Without content':
-                    //         headerText = header.toLowerCase().replace(' ', '-');
-                    //         break;
-                    //     case 'One span high':
-                    //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
-                    //         break;
-                    //     case 'Read only / Disabled':
-                    //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-').replace('/', '-').replace(' ', '-');
-                    //         // headerText = 'read-only---disabled';
-                    //         break;
-                    //     case 'Mandatory':
-                    //         headerText = header.toLowerCase();
-                    //         break;
-
-                    //     default:
-                    //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                    //         // break;
-                    // }
-                    // });
                 });
             });
         });
