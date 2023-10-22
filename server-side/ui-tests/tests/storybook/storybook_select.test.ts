@@ -285,10 +285,45 @@ export async function StorybookSelectTests() {
                         // TODO
                         break;
                     case 'value':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('value')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(select.MainHeader);
+                            const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
+                            const mainExampleSelectAriaChecked = await mainExampleSelect.getAttribute('aria-checked');
+                            expect(mainExampleSelectAriaChecked).equals('true');
+                        });
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleValueControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(select.MainHeader);
+                            const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
+                            const mainExampleSelectAriaChecked = await mainExampleSelect.getAttribute('aria-checked');
+                            expect(mainExampleSelectAriaChecked).equals('false');
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleValueControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(select.MainHeader);
+                            const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
+                            const mainExampleSelectAriaChecked = await mainExampleSelect.getAttribute('aria-checked');
+                            expect(mainExampleSelectAriaChecked).equals('true');
+                        });
                         break;
                     case 'xAlignment':
                         it(`validate input`, async function () {

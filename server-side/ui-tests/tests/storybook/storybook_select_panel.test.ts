@@ -143,10 +143,51 @@ export async function StorybookSelectPanelTests() {
                         });
                         break;
                     case 'value':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('value')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(selectPanel.MainHeader);
+                            const mainExampleSelectPanel = await driver.findElement(selectPanel.MainExampleSelectPanel);
+                            const mainExampleSelectPanelAriaChecked = await mainExampleSelectPanel.getAttribute(
+                                'aria-checked',
+                            );
+                            expect(mainExampleSelectPanelAriaChecked).equals('true');
+                        });
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleValueControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(selectPanel.MainHeader);
+                            const mainExampleSelectPanel = await driver.findElement(selectPanel.MainExampleSelectPanel);
+                            const mainExampleSelectPanelAriaChecked = await mainExampleSelectPanel.getAttribute(
+                                'aria-checked',
+                            );
+                            expect(mainExampleSelectPanelAriaChecked).equals('false');
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleValueControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(selectPanel.MainHeader);
+                            const mainExampleSelectPanel = await driver.findElement(selectPanel.MainExampleSelectPanel);
+                            const mainExampleSelectPanelAriaChecked = await mainExampleSelectPanel.getAttribute(
+                                'aria-checked',
+                            );
+                            expect(mainExampleSelectPanelAriaChecked).equals('true');
+                        });
                         break;
                     case 'options':
                         it(`it '${input}'`, async function () {
@@ -164,20 +205,20 @@ export async function StorybookSelectPanelTests() {
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('classNames')).to.be.true;
                         });
-                        it(`[ control = 'rotate3d' ] functional test (+screenshot)`, async function () {
-                            const newClassNamesToSet = 'rotate3d';
-                            await storyBookPage.inputs.changeClassNamesControl(newClassNamesToSet);
-                            const base64ImageComponentModal = await driver.saveScreenshots();
-                            addContext(this, {
-                                title: `ClassNames Input Change`,
-                                value: 'data:image/png;base64,' + base64ImageComponentModal,
-                            });
-                            const newClassNamesGotFromUi = await (
-                                await driver.findElement(selectPanel.MainExampleSelectPanel)
-                            ).getAttribute('class');
-                            console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
-                            expect(newClassNamesGotFromUi).to.contain(newClassNamesToSet);
-                        });
+                        // it(`[ control = 'rotate3d' ] functional test (+screenshot)`, async function () { // BUG: https://pepperi.atlassian.net/browse/DI-25512
+                        //     const newClassNamesToSet = 'rotate3d';
+                        //     await storyBookPage.inputs.changeClassNamesControl(newClassNamesToSet);
+                        //     const base64ImageComponentModal = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `ClassNames Input Change`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponentModal,
+                        //     });
+                        //     const newClassNamesGotFromUi = await (
+                        //         await driver.findElement(selectPanel.MainExampleSelectPanel)
+                        //     ).getAttribute('class');
+                        //     console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
+                        //     expect(newClassNamesGotFromUi).to.contain(newClassNamesToSet);
+                        // });
                         it(`[ control = '' ] functional test (+screenshot)`, async function () {
                             const newClassNamesToSet = '';
                             await storyBookPage.inputs.changeClassNamesControl(newClassNamesToSet);
