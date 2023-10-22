@@ -11,6 +11,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
     const setNewTestHeadline = tester.setNewTestHeadline;
     const addTestResultUnderHeadline = tester.addTestResultUnderHeadline;
     const printTestResults = tester.printTestResults;
+    
 
     //#region Prerequisites for Audit Logs Tests
     //TestData
@@ -482,6 +483,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 const getResultObjectInterval = setInterval(async () => {
                     inetrvalLimit -= SetIntervalEvery;
                     if (inetrvalLimit < 1) {
+                        debugger;//4) Audit Logs of Sync - Interval Timer
                         clearInterval(getResultObjectInterval);
                         //Report test results
                         addTestResultUnderHeadline(testName, 'Audit Logs of Sync - Interval Timer', false);
@@ -582,6 +584,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
         }
 
         const idoTime = new Date().getTime() - new Date('0001-01-01T00:00:00Z').getTime();
+        const hardCodedTime = 63747156750000;
 
         debugger;
         let raw;
@@ -589,7 +592,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
             raw =
                 '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">\r\n    <s:Header>\r\n        <h:AgentID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">11442503</h:AgentID>\r\n        <h:ClientMachineID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">OrenSyncTest</h:ClientMachineID>\r\n        <h:LastSyncTime xmlns:h="WrntyAgentClientDevice.BLL.Agent3">73747156750000</h:LastSyncTime>\r\n        <h:TimeZoneDiff xmlns:h="WrntyAgentClientDevice.BLL.Agent3">0</h:TimeZoneDiff>\r\n    </s:Header>\r\n    <s:Body>\r\n        <GetDataRequest xmlns="WrntyAgentClientDevice.BLL.Agent3"/>\r\n    </s:Body>\r\n</s:Envelope>';
         } else {
-            raw = `<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">\r\n    <s:Header>\r\n        <h:AgentID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">11442503</h:AgentID>\r\n        <h:ClientMachineID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">OrenSyncTest</h:ClientMachineID>\r\n        <h:LastSyncTime xmlns:h="WrntyAgentClientDevice.BLL.Agent3">${idoTime}</h:LastSyncTime>\r\n        <h:TimeZoneDiff xmlns:h="WrntyAgentClientDevice.BLL.Agent3">0</h:TimeZoneDiff>\r\n    </s:Header>\r\n    <s:Body>\r\n        <GetDataRequest xmlns="WrntyAgentClientDevice.BLL.Agent3"/>\r\n    </s:Body>\r\n</s:Envelope>`;
+            raw = `<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">\r\n    <s:Header>\r\n        <h:AgentID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">11442503</h:AgentID>\r\n        <h:ClientMachineID xmlns:h="WrntyAgentClientDevice.BLL.Agent3">OrenSyncTest</h:ClientMachineID>\r\n        <h:LastSyncTime xmlns:h="WrntyAgentClientDevice.BLL.Agent3">${hardCodedTime}</h:LastSyncTime>\r\n        <h:TimeZoneDiff xmlns:h="WrntyAgentClientDevice.BLL.Agent3">0</h:TimeZoneDiff>\r\n    </s:Header>\r\n    <s:Body>\r\n        <GetDataRequest xmlns="WrntyAgentClientDevice.BLL.Agent3"/>\r\n    </s:Body>\r\n</s:Envelope>`;
         }
 
         const syncResponse = await generalService
@@ -692,7 +695,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 'No Server Error',
                 JSON.stringify(syncResponse).includes('/h:ServerError') ? JSON.stringify(syncResponse) : true,
             );
-
+            debugger;
             const FileName = JSON.stringify(syncResponse).split('h:FileName')[1];
             try {
                 addTestResultUnderHeadline(
