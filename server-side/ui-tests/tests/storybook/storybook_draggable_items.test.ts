@@ -222,20 +222,6 @@ export async function StorybookDraggableItemsTests() {
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
-                    // TODO: add tests
-                    // it(`it '${header}'`, async function () {
-                    // let headerText = '';
-                    // switch (header) {
-                    //     case 'Empty date-time':
-                    //         headerText = header.toLowerCase().replace(' ', '-');
-                    //         break;
-
-                    //     default:
-                    //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                    //     // break;
-                    // }
-
-                    // });
                 });
             });
         });

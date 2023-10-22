@@ -144,10 +144,54 @@ export async function StorybookQuantitySelectorTests() {
                         });
                         break;
                     case 'value':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('value')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(quantitySelector.MainHeader);
+                            const mainExampleQuantitySelector = await driver.findElement(
+                                quantitySelector.MainExampleQuantitySelector,
+                            );
+                            const mainExampleQuantitySelectorAriaChecked =
+                                await mainExampleQuantitySelector.getAttribute('aria-checked');
+                            expect(mainExampleQuantitySelectorAriaChecked).equals('true');
+                        });
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleValueControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(quantitySelector.MainHeader);
+                            const mainExampleQuantitySelector = await driver.findElement(
+                                quantitySelector.MainExampleQuantitySelector,
+                            );
+                            const mainExampleQuantitySelectorAriaChecked =
+                                await mainExampleQuantitySelector.getAttribute('aria-checked');
+                            expect(mainExampleQuantitySelectorAriaChecked).equals('false');
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleValueControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(quantitySelector.MainHeader);
+                            const mainExampleQuantitySelector = await driver.findElement(
+                                quantitySelector.MainExampleQuantitySelector,
+                            );
+                            const mainExampleQuantitySelectorAriaChecked =
+                                await mainExampleQuantitySelector.getAttribute('aria-checked');
+                            expect(mainExampleQuantitySelectorAriaChecked).equals('true');
+                        });
                         break;
                     case 'allowDecimal':
                         it(`it '${input}'`, async function () {
