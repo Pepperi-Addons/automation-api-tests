@@ -10,4 +10,9 @@ export class Textbox extends StorybookComponent {
     public async doesTextboxComponentFound(): Promise<void> {
         await this.doesComponentFound('textbox', 'Textbox');
     }
+
+    public async getMainExampleTextboxValue(): Promise<string> {
+        const inputValue = await (await this.browser.findElement(this.MainExampleTextbox)).getAttribute('value');
+        return inputValue.trim();
+    }
 }

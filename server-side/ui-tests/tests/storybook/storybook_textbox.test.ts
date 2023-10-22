@@ -159,41 +159,39 @@ export async function StorybookTextboxTests() {
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('value')).to.be.true;
                         });
-                        it(`making sure current value is "True"`, async function () {
-                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                        it(`making sure current value is "Not all who wander are lost"`, async function () {
+                            const expectedValue = 'Not all who wander are lost';
+                            await driver.click(textbox.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Value Input default value = "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(textbox.MainHeader);
-                            const mainExampleTextbox = await driver.findElement(textbox.MainExampleTextbox);
-                            const mainExampleTextboxAriaChecked = await mainExampleTextbox.getAttribute('aria-checked');
-                            expect(mainExampleTextboxAriaChecked).equals('true');
+                            const valueGotFromUi = await textbox.getMainExampleTextboxValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`functional test [ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                            const newValueToSet = 'Auto test';
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input Changed to "false"`,
+                                title: `Value Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(textbox.MainHeader);
-                            const mainExampleTextbox = await driver.findElement(textbox.MainExampleTextbox);
-                            const mainExampleTextboxAriaChecked = await mainExampleTextbox.getAttribute('aria-checked');
-                            expect(mainExampleTextboxAriaChecked).equals('false');
+                            const newValueGotFromUi = await textbox.getMainExampleTextboxValue();
+                            expect(newValueGotFromUi).to.equal(newValueToSet);
                         });
-                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`back to default [ control = "Not all who wander are lost" ](+screenshots)`, async function () {
+                            await driver.click(textbox.ResetControlsButton);
+                            const expectedValue = 'Not all who wander are lost';
+                            await driver.click(textbox.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input changed back to default value = "true"`,
+                                title: `Value Input default value = "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(textbox.MainHeader);
-                            const mainExampleTextbox = await driver.findElement(textbox.MainExampleTextbox);
-                            const mainExampleTextboxAriaChecked = await mainExampleTextbox.getAttribute('aria-checked');
-                            expect(mainExampleTextboxAriaChecked).equals('true');
+                            const valueGotFromUi = await textbox.getMainExampleTextboxValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
                     case 'disabled':
