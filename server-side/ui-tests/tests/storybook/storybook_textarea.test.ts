@@ -213,10 +213,7 @@ export async function StorybookTextareaTests() {
                             expect(textareaInputsTitles.includes('value')).to.be.true;
                         });
                         it(`making sure current value is "A: Would you tell me, please, which way I ought to go from here?..."`, async function () {
-                            const expectedValue = `A: Would you tell me, please, which way I ought to go from here?
-                            CC: That depends a good deal on where you want to get to
-                            A: I don’t much care where
-                            CC: Then it doesn’t matter which way you go`;
+                            const expectedValue = `A: Would you tell me, please, which way I ought to go from here?\nCC: That depends a good deal on where you want to get to\nA: I don’t much care where\nCC: Then it doesn’t matter which way you go`;
                             await driver.click(textarea.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
@@ -239,10 +236,7 @@ export async function StorybookTextareaTests() {
                         });
                         it(`back to default [ control = "A: Would you tell me, please, which way I ought to go from here?..." ](+screenshots)`, async function () {
                             await driver.click(textarea.ResetControlsButton);
-                            const expectedValue = `A: Would you tell me, please, which way I ought to go from here?
-                            CC: That depends a good deal on where you want to get to
-                            A: I don’t much care where
-                            CC: Then it doesn’t matter which way you go`;
+                            const expectedValue = `A: Would you tell me, please, which way I ought to go from here?\nCC: That depends a good deal on where you want to get to\nA: I don’t much care where\nCC: Then it doesn’t matter which way you go`;
                             await driver.click(textarea.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
