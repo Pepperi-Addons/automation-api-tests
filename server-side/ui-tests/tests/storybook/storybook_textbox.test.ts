@@ -164,7 +164,7 @@ export async function StorybookTextboxTests() {
                             await driver.click(textbox.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input default value = "Not all who wander are lost"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             const valueGotFromUi = await textbox.getMainExampleTextboxValue();
@@ -187,7 +187,7 @@ export async function StorybookTextboxTests() {
                             await driver.click(textbox.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input default value = "Not all who wander are lost"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             const valueGotFromUi = await textbox.getMainExampleTextboxValue();
