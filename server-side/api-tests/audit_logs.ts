@@ -11,7 +11,6 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
     const setNewTestHeadline = tester.setNewTestHeadline;
     const addTestResultUnderHeadline = tester.addTestResultUnderHeadline;
     const printTestResults = tester.printTestResults;
-    
 
     //#region Prerequisites for Audit Logs Tests
     //TestData
@@ -483,7 +482,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 const getResultObjectInterval = setInterval(async () => {
                     inetrvalLimit -= SetIntervalEvery;
                     if (inetrvalLimit < 1) {
-                        debugger;//4) Audit Logs of Sync - Interval Timer
+                        debugger; //4) Audit Logs of Sync - Interval Timer
                         clearInterval(getResultObjectInterval);
                         //Report test results
                         addTestResultUnderHeadline(testName, 'Audit Logs of Sync - Interval Timer', false);
@@ -583,7 +582,7 @@ export async function AuditLogsTests(generalService: GeneralService, tester: Tes
                 throw new Error(`Test can't run on the server: ${server}`);
         }
 
-        const idoTime = new Date().getTime() - new Date('0001-01-01T00:00:00Z').getTime();
+        // const idoTime = new Date().getTime() - new Date('0001-01-01T00:00:00Z').getTime();
         const hardCodedTime = 63747156750000;
 
         debugger;
