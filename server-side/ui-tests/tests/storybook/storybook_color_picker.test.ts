@@ -198,23 +198,6 @@ export async function StorybookColorPickerTests() {
                             expect(mainExampleColorPickerDisabled).to.not.include('disable');
                             // expect(isPenIconFound).to.eventually.be.true;
                         });
-                        // it(`Functional test (+screenshot)`, async function () {
-                        //     await storyBookPage.inputs.toggleDisableControl();
-                        //     const isPenIconFound = await colorPicker.isPenIconFound();
-                        //     let base64ImageComponentModal = await driver.saveScreenshots();
-                        //     addContext(this, {
-                        //         title: `Disabled Input Change`,
-                        //         value: 'data:image/png;base64,' + base64ImageComponentModal,
-                        //     });
-                        //     expect(isPenIconFound).to.equal(false);
-                        //     await storyBookPage.elemntDoNotExist(colorPicker.MainExampleColorEditButton);
-                        //     await storyBookPage.inputs.toggleDisableControl();
-                        //     base64ImageComponentModal = await driver.saveScreenshots();
-                        //     addContext(this, {
-                        //         title: `Disabled Input Change`,
-                        //         value: 'data:image/png;base64,' + base64ImageComponentModal,
-                        //     });
-                        // });
                         break;
 
                     case 'showAAComplient':

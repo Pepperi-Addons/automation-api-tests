@@ -716,31 +716,6 @@ export async function StorybookButtonTests() {
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
-                    // TODO: add tests
-                    // it(`it '${header}'`, async function () {
-                    // let headerText = '';
-                    // switch (header) {
-                    //     case 'Disabled':
-                    //         headerText = header.toLowerCase();
-                    //         break;
-                    //     case 'Icon on start':
-                    //     case 'Icon on end':
-                    //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
-                    //         break;
-                    //     case 'Icon only':
-                    //         headerText = header.toLowerCase().replace(' ', '-');
-                    //         break;
-                    //     case 'Styles, options and sizes':
-                    //         headerText = header.split(', ')[1].replace(' ', '-').replace(' ', '-');
-                    //         // headerText = 'options-and-sizes';
-                    //         break;
-
-                    //     default:
-                    //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                    //         // break;
-                    // }
-
-                    //});
                 });
             });
         });
