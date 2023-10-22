@@ -11,4 +11,9 @@ export class Textarea extends StorybookComponent {
     public async doesTextareaComponentFound(): Promise<void> {
         await this.doesComponentFound('textarea', 'Textarea');
     }
+
+    public async getMainExampleTextareaValue(): Promise<string> {
+        const inputValue = await (await this.browser.findElement(this.MainExampleTextarea)).getAttribute('value');
+        return inputValue.trim();
+    }
 }
