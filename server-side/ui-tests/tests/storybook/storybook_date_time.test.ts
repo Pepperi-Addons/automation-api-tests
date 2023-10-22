@@ -147,7 +147,48 @@ export async function StorybookDateTimeTests() {
                         it(`validate input`, async function () {
                             expect(dateTimeInputs.includes('value')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainHeader);
+                            const mainExampleDateTime = await driver.findElement(dateTime.MainExampleDateTime);
+                            const mainExampleDateTimeAriaChecked = await mainExampleDateTime.getAttribute(
+                                'aria-checked',
+                            );
+                            expect(mainExampleDateTimeAriaChecked).equals('true');
+                        });
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleValueControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainHeader);
+                            const mainExampleDateTime = await driver.findElement(dateTime.MainExampleDateTime);
+                            const mainExampleDateTimeAriaChecked = await mainExampleDateTime.getAttribute(
+                                'aria-checked',
+                            );
+                            expect(mainExampleDateTimeAriaChecked).equals('false');
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleValueControl();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainHeader);
+                            const mainExampleDateTime = await driver.findElement(dateTime.MainExampleDateTime);
+                            const mainExampleDateTimeAriaChecked = await mainExampleDateTime.getAttribute(
+                                'aria-checked',
+                            );
+                            expect(mainExampleDateTimeAriaChecked).equals('true');
+                        });
                         break;
                     case 'disabled':
                         it(`validate input`, async function () {
@@ -399,20 +440,6 @@ export async function StorybookDateTimeTests() {
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
-                    // TODO: add tests
-                    // it(`it '${header}'`, async function () {
-                    // let headerText = '';
-                    // switch (header) {
-                    //     case 'Empty date-time':
-                    //         headerText = header.toLowerCase().replace(' ', '-');
-                    //         break;
-
-                    //     default:
-                    //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                    //         // break;
-                    // }
-
-                    // });
                 });
             });
         });

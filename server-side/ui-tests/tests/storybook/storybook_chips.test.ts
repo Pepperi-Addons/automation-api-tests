@@ -469,26 +469,6 @@ export async function StorybookChipsTests() {
                         const storyHeader = await (await driver.findElement(storyHeaderSelector)).getText();
                         expect(storyHeader.trim()).equals(header);
                     });
-                    // TODO: add tests
-                    // it(`it '${header}'`, async function () {
-                    // let headerText = '';
-                    // switch (header) {
-                    //     case 'Without content':
-                    //     case 'With content':
-                    //         headerText = header.toLowerCase().replace(' ', '-');
-                    //         break;
-                    //     case 'Inline is true':
-                    //     case 'Type is select':
-                    //     case 'Orientation is vertical':
-                    //         headerText = header.toLowerCase().replace(' ', '-').replace(' ', '-');
-                    //         break;
-
-                    //     default:
-                    //         throw new Error(`Header: "${header}" is not covered in switch!`);
-                    //         // break;
-                    // }
-
-                    // });
                 });
             });
         });

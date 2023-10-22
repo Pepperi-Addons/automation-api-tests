@@ -166,11 +166,6 @@ export async function StorybookCheckboxTests() {
                             const mainExampleCheckboxAriaChecked = await mainExampleCheckbox.getAttribute(
                                 'aria-checked',
                             );
-                            // base64ImageComponentModal = await driver.saveScreenshots();
-                            // addContext(this, {
-                            //     title: `Upper View of Value Input "true"`,
-                            //     value: 'data:image/png;base64,' + base64ImageComponentModal,
-                            // });
                             expect(mainExampleCheckboxAriaChecked).equals('true');
                         });
                         it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
@@ -199,11 +194,6 @@ export async function StorybookCheckboxTests() {
                             const mainExampleCheckboxAriaChecked = await mainExampleCheckbox.getAttribute(
                                 'aria-checked',
                             );
-                            // base64ImageComponentModal = await driver.saveScreenshots();
-                            // addContext(this, {
-                            //     title: `Upper View of Value Input "true"`,
-                            //     value: 'data:image/png;base64,' + base64ImageComponentModal,
-                            // });
                             expect(mainExampleCheckboxAriaChecked).equals('true');
                         });
                         break;
