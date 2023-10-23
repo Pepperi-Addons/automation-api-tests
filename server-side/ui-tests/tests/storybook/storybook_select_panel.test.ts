@@ -146,47 +146,61 @@ export async function StorybookSelectPanelTests() {
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('value')).to.be.true;
                         });
-                        it(`making sure current value is "True"`, async function () {
-                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                        it(`making sure current value is "Green, Red, Blue"`, async function () {
+                            await driver.click(selectPanel.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input default value = "Green, Red, Blue"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(selectPanel.MainHeader);
-                            const mainExampleSelectPanel = await driver.findElement(selectPanel.MainExampleSelectPanel);
-                            const mainExampleSelectPanelAriaChecked = await mainExampleSelectPanel.getAttribute(
-                                'aria-checked',
-                            );
-                            expect(mainExampleSelectPanelAriaChecked).equals('true');
+                            const greenValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Green');
+                            const redValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Red');
+                            const blueValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Blue');
+                            const greyValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Gray');
+                            const tealValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Teal');
+                            expect(greenValueGotFromUi).to.be.true;
+                            expect(redValueGotFromUi).to.be.true;
+                            expect(blueValueGotFromUi).to.be.true;
+                            expect(greyValueGotFromUi).to.be.false;
+                            expect(tealValueGotFromUi).to.be.false;
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`functional test [ control = "Gray, Teal" ] functional test (+screenshot)`, async function () {
+                            const newValueToSet = 'grey;teal;';
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input Changed to "false"`,
+                                title: `Value Input Change -> "Gray, Teal"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(selectPanel.MainHeader);
-                            const mainExampleSelectPanel = await driver.findElement(selectPanel.MainExampleSelectPanel);
-                            const mainExampleSelectPanelAriaChecked = await mainExampleSelectPanel.getAttribute(
-                                'aria-checked',
-                            );
-                            expect(mainExampleSelectPanelAriaChecked).equals('false');
+                            const greyValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Gray');
+                            const tealValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Teal');
+                            const greenValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Green');
+                            const redValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Red');
+                            const blueValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Blue');
+                            expect(greyValueGotFromUi).to.be.true;
+                            expect(tealValueGotFromUi).to.be.true;
+                            expect(greenValueGotFromUi).to.be.false;
+                            expect(redValueGotFromUi).to.be.false;
+                            expect(blueValueGotFromUi).to.be.false;
                         });
-                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`back to default [ control = "Green, Red, Blue" ](+screenshots)`, async function () {
+                            await driver.click(selectPanel.ResetControlsButton);
+                            await driver.click(selectPanel.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input changed back to default value = "true"`,
+                                title: `Value Input default value = "Green, Red, Blue"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(selectPanel.MainHeader);
-                            const mainExampleSelectPanel = await driver.findElement(selectPanel.MainExampleSelectPanel);
-                            const mainExampleSelectPanelAriaChecked = await mainExampleSelectPanel.getAttribute(
-                                'aria-checked',
-                            );
-                            expect(mainExampleSelectPanelAriaChecked).equals('true');
+                            const greenValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Green');
+                            const redValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Red');
+                            const blueValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Blue');
+                            const greyValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Gray');
+                            const tealValueGotFromUi = await selectPanel.isMainExampleByNameSelected('Teal');
+                            expect(greenValueGotFromUi).to.be.true;
+                            expect(redValueGotFromUi).to.be.true;
+                            expect(blueValueGotFromUi).to.be.true;
+                            expect(greyValueGotFromUi).to.be.false;
+                            expect(tealValueGotFromUi).to.be.false;
                         });
                         break;
                     case 'options':
