@@ -135,7 +135,18 @@ export async function StorybookButtonTests() {
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('value')).to.be.true;
                         });
-                        it(`[ control = 'Auto test' ] functional test (+screenshot)`, async function () {
+                        it(`making sure current value is "Click me you fool"`, async function () {
+                            const expectedValue = 'Click me you fool';
+                            await driver.click(button.MainHeader);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "Click me you fool"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await button.getMainExampleButtonValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
+                        });
+                        it(`functional test [ control = "Auto test" ] functional test (+screenshot)`, async function () {
                             const newValueToSet = 'Auto test';
                             await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
@@ -145,6 +156,18 @@ export async function StorybookButtonTests() {
                             });
                             const newValueGotFromUi = await button.getMainExampleButtonValue();
                             expect(newValueGotFromUi).to.equal(newValueToSet);
+                        });
+                        it(`back to default [ control = "Click me you fool" ](+screenshots)`, async function () {
+                            await driver.click(button.ResetControlsButton);
+                            const expectedValue = 'Click me you fool';
+                            await driver.click(button.MainHeader);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "Click me you fool"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await button.getMainExampleButtonValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
 
