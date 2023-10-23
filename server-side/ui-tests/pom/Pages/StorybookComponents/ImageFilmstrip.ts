@@ -10,4 +10,10 @@ export class ImageFilmstrip extends StorybookComponent {
     public async doesImageFilmstripComponentFound(): Promise<void> {
         await this.doesComponentFound('image-filmstrip', 'Image filmstrip');
     }
+
+    public async getMainExampleImageFilmstripValue(): Promise<string> {
+        const image = await (await this.browser.findElement(this.MainExampleImageFilmstrip)).getAttribute('style');
+        const backgroundImage = image.split('background-image:')[1];
+        return backgroundImage.trim();
+    }
 }
