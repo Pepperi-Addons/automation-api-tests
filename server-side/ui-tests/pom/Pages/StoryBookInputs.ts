@@ -26,7 +26,7 @@ export class StoryBookInpus extends AddonPage {
         return By.xpath(`${this.InputTitle.value}[text()='${inputTitle}']`);
     }
 
-    public async changeInput(selector: By, changeTo: string): Promise<void> {
+    public async changeInput(selector: By, changeTo: string | number): Promise<void> {
         await this.browser.sendKeys(selector, Key.CONTROL + 'a' + Key.DELETE);
         await this.browser.sendKeys(selector, changeTo);
         await this.browser.click(this.EmptySpaceToClick);
@@ -38,7 +38,7 @@ export class StoryBookInpus extends AddonPage {
         await this.browser.click(this.EmptySpaceToClick);
     }
 
-    public async changeValueControl(value: string): Promise<void> {
+    public async changeValueControl(value: string | number): Promise<void> {
         await this.changeInput(this.ValueInput_textarea, value);
     }
 

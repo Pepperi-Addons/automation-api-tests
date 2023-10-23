@@ -132,41 +132,39 @@ export async function StorybookSliderTests() {
                         it(`validate input`, async function () {
                             expect(sliderInputsTitles.includes('value')).to.be.true;
                         });
-                        it(`making sure current value is "True"`, async function () {
-                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                        it(`making sure current value is "50"`, async function () {
+                            const expectedValue = '50';
+                            await driver.click(slider.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input default value = "50"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(slider.MainHeader);
-                            const mainExampleSlider = await driver.findElement(slider.MainExampleSlider);
-                            const mainExampleSliderAriaChecked = await mainExampleSlider.getAttribute('aria-checked');
-                            expect(mainExampleSliderAriaChecked).equals('true');
+                            const valueGotFromUi = await slider.getMainExampleSliderValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`functional test [ control = '100' ] functional test (+screenshot)`, async function () {
+                            const newValueToSet = 100;
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input Changed to "false"`,
+                                title: `Value Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(slider.MainHeader);
-                            const mainExampleSlider = await driver.findElement(slider.MainExampleSlider);
-                            const mainExampleSliderAriaChecked = await mainExampleSlider.getAttribute('aria-checked');
-                            expect(mainExampleSliderAriaChecked).equals('false');
+                            const newValueGotFromUi = await slider.getMainExampleSliderValue();
+                            expect(newValueGotFromUi).to.equal(newValueToSet.toString());
                         });
-                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`back to default [ control = "50" ](+screenshots)`, async function () {
+                            await driver.click(slider.ResetControlsButton);
+                            const expectedValue = '50';
+                            await driver.click(slider.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input changed back to default value = "true"`,
+                                title: `Value Input default value = "50"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(slider.MainHeader);
-                            const mainExampleSlider = await driver.findElement(slider.MainExampleSlider);
-                            const mainExampleSliderAriaChecked = await mainExampleSlider.getAttribute('aria-checked');
-                            expect(mainExampleSliderAriaChecked).equals('true');
+                            const valueGotFromUi = await slider.getMainExampleSliderValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
                     case 'hint':
