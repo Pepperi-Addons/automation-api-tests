@@ -193,6 +193,7 @@ export async function StorybookImageFilmstripTests() {
                             expect(imageFilmstripComplexHeight.trim()).to.equal('512px');
                         });
                         break;
+
                     case 'label':
                         it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('label')).to.be.true;
@@ -210,71 +211,63 @@ export async function StorybookImageFilmstripTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('value')).to.be.true;
                         });
-                        it(`making sure current value is "True"`, async function () {
-                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                        it(`making sure current value is "https://yonatankof.com/misc/pepp/Addon%20Hackathon%20-%20Badge.png"`, async function () {
+                            const expectedValue = `url("https://yonatankof.com/misc/pepp/Addon%20Hackathon%20-%20Badge.png");`;
+                            await driver.click(imageFilmstrip.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input default value = "https://yonatankof.com/misc/pepp/Addon%20Hackathon%20-%20Badge.png"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(imageFilmstrip.MainHeader);
-                            const mainExampleImageFilmstrip = await driver.findElement(
-                                imageFilmstrip.MainExampleImageFilmstrip,
-                            );
-                            const mainExampleImageFilmstripAriaChecked = await mainExampleImageFilmstrip.getAttribute(
-                                'aria-checked',
-                            );
-                            expect(mainExampleImageFilmstripAriaChecked).equals('true');
+                            const valueGotFromUi = await imageFilmstrip.getMainExampleImageFilmstripValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`functional test [ control = "https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-980x653.jpg" ] (+screenshot)`, async function () {
+                            const newValueToSet =
+                                'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-980x653.jpg';
+                            const expectedValue = `url("https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-980x653.jpg");`;
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input Changed to "false"`,
+                                title: `Value Input Change -> 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-980x653.jpg'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(imageFilmstrip.MainHeader);
-                            const mainExampleImageFilmstrip = await driver.findElement(
-                                imageFilmstrip.MainExampleImageFilmstrip,
-                            );
-                            const mainExampleImageFilmstripAriaChecked = await mainExampleImageFilmstrip.getAttribute(
-                                'aria-checked',
-                            );
-                            expect(mainExampleImageFilmstripAriaChecked).equals('false');
+                            const newValueGotFromUi = await imageFilmstrip.getMainExampleImageFilmstripValue();
+                            expect(newValueGotFromUi).to.equal(expectedValue);
                         });
-                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`back to default [ control = "https://yonatankof.com/misc/pepp/Addon%20Hackathon%20-%20Badge.png" ] (+screenshots)`, async function () {
+                            await driver.click(imageFilmstrip.ResetControlsButton);
+                            const expectedValue = `url("https://yonatankof.com/misc/pepp/Addon%20Hackathon%20-%20Badge.png");`;
+                            await driver.click(imageFilmstrip.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input changed back to default value = "true"`,
+                                title: `Value Input default value = "https://yonatankof.com/misc/pepp/Addon%20Hackathon%20-%20Badge.png"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(imageFilmstrip.MainHeader);
-                            const mainExampleImageFilmstrip = await driver.findElement(
-                                imageFilmstrip.MainExampleImageFilmstrip,
-                            );
-                            const mainExampleImageFilmstripAriaChecked = await mainExampleImageFilmstrip.getAttribute(
-                                'aria-checked',
-                            );
-                            expect(mainExampleImageFilmstripAriaChecked).equals('true');
+                            const valueGotFromUi = await imageFilmstrip.getMainExampleImageFilmstripValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
+
                     case 'renderTitle':
                         it(`it '${input}'`, async function () {
                             expect(imageFilmstripInputsTitles.includes('renderTitle')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'showThumbnails':
                         it(`it '${input}'`, async function () {
                             expect(imageFilmstripInputsTitles.includes('showThumbnails')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('showTitle')).to.be.true;
@@ -317,6 +310,7 @@ export async function StorybookImageFilmstripTests() {
                             await storyBookPage.untilIsVisible(imageFilmstrip.MainExample_titleLabel);
                         });
                         break;
+
                     case 'xAlignment':
                         it(`it '${input}'`, async function () {
                             expect(imageFilmstripInputsTitles.includes('xAlignment')).to.be.true;
