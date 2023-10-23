@@ -228,50 +228,41 @@ export async function StorybookRichHtmlTextareaTests() {
                         it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('value')).to.be.true;
                         });
-                        it(`making sure current value is "True"`, async function () {
-                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                        it(`making sure current value is "<style>main{font-family:sans-serif}strong{color:#b68300}..."`, async function () {
+                            const expectedValue =
+                                '<style>main{font-family:sans-serif}strong{color:#b68300}ul{list-style:none;padding:0 .5rem;margin:0}li{display:flex;flex-direction:row;align-items:center;gap:1rem}img{height:auto;width:2rem}p{font-size:1rem;margin-block:1rem}h2{margin:0}</style><main><h1>B07MZ3</h1><p>Brand: <strong>SojoS</strong></p><p>Product Code: <strong>She Young</strong></p><p>List Price: <strong>12.9</strong></p><h2>Product Details</h2><ul><li><img src="https://static.zennioptical.com/dev/image/site/frame-size-icons/frame-width.svg"><p>Frame Width: <strong>132mm</strong></p></li><li><img src="https://static.zennioptical.com/dev/image/site/frame-size-icons/lens-width.svg"><p>Lens Width: <strong>52mm</strong></p></li><li><img src="https://static.zennioptical.com/dev/image/site/frame-size-icons/bridge.svg"><p>Bridge: <strong>16mm</strong></p></li></ul></main>';
+                            await driver.click(richHtmlTextarea.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input default value = "<style>main{font-family:sans-serif}strong{color:#b68300}..."`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(richHtmlTextarea.MainHeader);
-                            const mainExampleRichHtmlTextarea = await driver.findElement(
-                                richHtmlTextarea.MainExampleRichHtmlTextarea,
-                            );
-                            const mainExampleRichHtmlTextareaAriaChecked =
-                                await mainExampleRichHtmlTextarea.getAttribute('aria-checked');
-                            expect(mainExampleRichHtmlTextareaAriaChecked).equals('true');
+                            const valueGotFromUi = await richHtmlTextarea.getMainExampleRichHtmlTextareaValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`functional test [ control = "<h6>Auto test</h6>" ] functional test (+screenshot)`, async function () {
+                            const newValueToSet = '<h6>Auto test</h6>';
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input Changed to "false"`,
+                                title: `Value Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(richHtmlTextarea.MainHeader);
-                            const mainExampleRichHtmlTextarea = await driver.findElement(
-                                richHtmlTextarea.MainExampleRichHtmlTextarea,
-                            );
-                            const mainExampleRichHtmlTextareaAriaChecked =
-                                await mainExampleRichHtmlTextarea.getAttribute('aria-checked');
-                            expect(mainExampleRichHtmlTextareaAriaChecked).equals('false');
+                            const newValueGotFromUi = await richHtmlTextarea.getMainExampleRichHtmlTextareaValue();
+                            expect(newValueGotFromUi).to.equal(newValueToSet);
                         });
-                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`back to default [ control = "<style>main{font-family:sans-serif}strong{color:#b68300}..." ](+screenshots)`, async function () {
+                            await driver.click(richHtmlTextarea.ResetControlsButton);
+                            const expectedValue =
+                                '<style>main{font-family:sans-serif}strong{color:#b68300}ul{list-style:none;padding:0 .5rem;margin:0}li{display:flex;flex-direction:row;align-items:center;gap:1rem}img{height:auto;width:2rem}p{font-size:1rem;margin-block:1rem}h2{margin:0}</style><main><h1>B07MZ3</h1><p>Brand: <strong>SojoS</strong></p><p>Product Code: <strong>She Young</strong></p><p>List Price: <strong>12.9</strong></p><h2>Product Details</h2><ul><li><img src="https://static.zennioptical.com/dev/image/site/frame-size-icons/frame-width.svg"><p>Frame Width: <strong>132mm</strong></p></li><li><img src="https://static.zennioptical.com/dev/image/site/frame-size-icons/lens-width.svg"><p>Lens Width: <strong>52mm</strong></p></li><li><img src="https://static.zennioptical.com/dev/image/site/frame-size-icons/bridge.svg"><p>Bridge: <strong>16mm</strong></p></li></ul></main>';
+                            await driver.click(richHtmlTextarea.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input changed back to default value = "true"`,
+                                title: `Value Input default value = "<style>main{font-family:sans-serif}strong{color:#b68300}..."`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(richHtmlTextarea.MainHeader);
-                            const mainExampleRichHtmlTextarea = await driver.findElement(
-                                richHtmlTextarea.MainExampleRichHtmlTextarea,
-                            );
-                            const mainExampleRichHtmlTextareaAriaChecked =
-                                await mainExampleRichHtmlTextarea.getAttribute('aria-checked');
-                            expect(mainExampleRichHtmlTextareaAriaChecked).equals('true');
+                            const valueGotFromUi = await richHtmlTextarea.getMainExampleRichHtmlTextareaValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
                     case 'disabled':

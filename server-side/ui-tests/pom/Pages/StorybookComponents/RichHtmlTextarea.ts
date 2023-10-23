@@ -23,8 +23,19 @@ export class RichHtmlTextarea extends StorybookComponent {
     );
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
+    public MainExampleRichHtmlTextarea_value: By = By.xpath(
+        `${this.MainExampleRichHtmlTextarea.value}//div[contains(@class,"rich-text-cont")]`,
+    );
 
     public async doesRichHtmlTextareaComponentFound(): Promise<void> {
         await this.doesComponentFound('rich-html-textarea', 'Rich HTML textarea');
+    }
+
+    public async getMainExampleRichHtmlTextareaValue(): Promise<string> {
+        const htmlCont = await (
+            await this.browser.findElement(this.MainExampleRichHtmlTextarea_value)
+        ).getAttribute('innerHTML');
+        console.info('at getMainExampleRichHtmlTextareaValue -> innerHTML: ', htmlCont);
+        return htmlCont;
     }
 }
