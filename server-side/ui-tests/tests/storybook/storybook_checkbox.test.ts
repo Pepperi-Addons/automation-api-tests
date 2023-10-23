@@ -155,7 +155,6 @@ export async function StorybookCheckboxTests() {
                             expect(checkboxInputsTitles.includes('value')).to.be.true;
                         });
                         it(`making sure current value is "True"`, async function () {
-                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Value Input default value = "true"`,
@@ -168,7 +167,7 @@ export async function StorybookCheckboxTests() {
                             );
                             expect(mainExampleCheckboxAriaChecked).equals('true');
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                        it(`functional test [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleValueControl();
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
