@@ -124,4 +124,10 @@ export class ColorPicker extends StorybookComponent {
     public async doesColorPickerComponentFound(): Promise<void> {
         await this.doesComponentFound('color-picker', 'Color picker');
     }
+
+    public async getMainExampleColorPickerValue(): Promise<string> {
+        const colorDiv = await this.browser.findElement(this.MainExampleColorPicker);
+        const backgroundColor = (await colorDiv.getAttribute('style')).split('background:')[1].split(';')[0];
+        return backgroundColor.trim();
+    }
 }

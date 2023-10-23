@@ -147,50 +147,39 @@ export async function StorybookQuantitySelectorTests() {
                         it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('value')).to.be.true;
                         });
-                        it(`making sure current value is "True"`, async function () {
-                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                        it(`making sure current value is "18.00"`, async function () {
+                            const expectedValue = '18.00';
+                            await driver.click(quantitySelector.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input default value = "18.00"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(quantitySelector.MainHeader);
-                            const mainExampleQuantitySelector = await driver.findElement(
-                                quantitySelector.MainExampleQuantitySelector,
-                            );
-                            const mainExampleQuantitySelectorAriaChecked =
-                                await mainExampleQuantitySelector.getAttribute('aria-checked');
-                            expect(mainExampleQuantitySelectorAriaChecked).equals('true');
+                            const valueGotFromUi = await quantitySelector.getMainExampleQuantitySelectorValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`functional test [ control = "54" ] functional test (+screenshot)`, async function () {
+                            const newValueToSet = '54';
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input Changed to "false"`,
+                                title: `Value Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(quantitySelector.MainHeader);
-                            const mainExampleQuantitySelector = await driver.findElement(
-                                quantitySelector.MainExampleQuantitySelector,
-                            );
-                            const mainExampleQuantitySelectorAriaChecked =
-                                await mainExampleQuantitySelector.getAttribute('aria-checked');
-                            expect(mainExampleQuantitySelectorAriaChecked).equals('false');
+                            const newValueGotFromUi = await quantitySelector.getMainExampleQuantitySelectorValue();
+                            expect(newValueGotFromUi).to.equal(newValueToSet + '.00');
                         });
-                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`back to default [ control = "18" ](+screenshots)`, async function () {
+                            await driver.click(quantitySelector.ResetControlsButton);
+                            const expectedValue = '18.00';
+                            await driver.click(quantitySelector.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input changed back to default value = "true"`,
+                                title: `Value Input default value = "18.00"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(quantitySelector.MainHeader);
-                            const mainExampleQuantitySelector = await driver.findElement(
-                                quantitySelector.MainExampleQuantitySelector,
-                            );
-                            const mainExampleQuantitySelectorAriaChecked =
-                                await mainExampleQuantitySelector.getAttribute('aria-checked');
-                            expect(mainExampleQuantitySelectorAriaChecked).equals('true');
+                            const valueGotFromUi = await quantitySelector.getMainExampleQuantitySelectorValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
                     case 'allowDecimal':
@@ -290,6 +279,12 @@ export async function StorybookQuantitySelectorTests() {
                             });
                             await storyBookPage.elemntDoNotExist(quantitySelector.MainExample_mandatoryIcon);
                         });
+                        break;
+                    case 'readonly':
+                        it(`validate input`, async function () {
+                            expect(quantitySelectorInputsTitles.includes('readonly')).to.be.true;
+                        });
+                        // TODO
                         break;
                     case 'showTitle':
                         it(`validate input`, async function () {
