@@ -119,41 +119,39 @@ export async function StorybookSearchTests() {
                         it(`validate input`, async function () {
                             expect(searchInputsTitles.includes('value')).to.be.true;
                         });
-                        it(`making sure current value is "True"`, async function () {
-                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                        it(`making sure current value is "Type your search here..."`, async function () {
+                            const expectedValue = 'Type your search here...';
+                            await driver.click(search.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input default value = "Type your search here..."`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(search.MainHeader);
-                            const mainExampleSearch = await driver.findElement(search.MainExampleSearch);
-                            const mainExampleSearchAriaChecked = await mainExampleSearch.getAttribute('aria-checked');
-                            expect(mainExampleSearchAriaChecked).equals('true');
+                            const valueGotFromUi = await search.getMainExampleSearchValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`functional test [ control = "Auto test" ] functional test (+screenshot)`, async function () {
+                            const newValueToSet = 'Auto test';
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input Changed to "false"`,
+                                title: `Value Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(search.MainHeader);
-                            const mainExampleSearch = await driver.findElement(search.MainExampleSearch);
-                            const mainExampleSearchAriaChecked = await mainExampleSearch.getAttribute('aria-checked');
-                            expect(mainExampleSearchAriaChecked).equals('false');
+                            const newValueGotFromUi = await search.getMainExampleSearchValue();
+                            expect(newValueGotFromUi).to.equal(newValueToSet);
                         });
-                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`back to default [ control = "Type your search here..." ](+screenshots)`, async function () {
+                            await driver.click(search.ResetControlsButton);
+                            const expectedValue = 'Type your search here...';
+                            await driver.click(search.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input changed back to default value = "true"`,
+                                title: `Value Input default value = "Type your search here..."`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(search.MainHeader);
-                            const mainExampleSearch = await driver.findElement(search.MainExampleSearch);
-                            const mainExampleSearchAriaChecked = await mainExampleSearch.getAttribute('aria-checked');
-                            expect(mainExampleSearchAriaChecked).equals('true');
+                            const valueGotFromUi = await search.getMainExampleSearchValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
                     case 'shrink':
