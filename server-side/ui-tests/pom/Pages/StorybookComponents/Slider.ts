@@ -8,4 +8,9 @@ export class Slider extends StorybookComponent {
     public async doesSliderComponentFound(): Promise<void> {
         await this.doesComponentFound('slider', 'Slider');
     }
+
+    public async getMainExampleSliderValue(): Promise<string> {
+        const inputValue = await (await this.browser.findElement(this.MainExampleSlider)).getAttribute('aria-valuenow');
+        return inputValue.trim();
+    }
 }
