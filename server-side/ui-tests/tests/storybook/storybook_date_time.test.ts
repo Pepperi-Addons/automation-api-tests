@@ -143,53 +143,47 @@ export async function StorybookDateTimeTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(dateTimeInputs.includes('value')).to.be.true;
                         });
-                        it(`making sure current value is "True"`, async function () {
-                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                        it(`making sure current value is "01/01/2020"`, async function () {
+                            const expectedValue = '01/01/2020';
+                            await driver.click(dateTime.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input default value = "01/01/2020"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(dateTime.MainHeader);
-                            const mainExampleDateTime = await driver.findElement(dateTime.MainExampleDateTime);
-                            const mainExampleDateTimeAriaChecked = await mainExampleDateTime.getAttribute(
-                                'aria-checked',
-                            );
-                            expect(mainExampleDateTimeAriaChecked).equals('true');
+                            const valueGotFromUi = await dateTime.getMainExampleDateTimeValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`functional test [ control = "03/17/1999" ] (+screenshot)`, async function () {
+                            const newValueToSet = '1999-3-17';
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input Changed to "false"`,
+                                title: `Value Input Change -> '1999-3-17'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(dateTime.MainHeader);
-                            const mainExampleDateTime = await driver.findElement(dateTime.MainExampleDateTime);
-                            const mainExampleDateTimeAriaChecked = await mainExampleDateTime.getAttribute(
-                                'aria-checked',
-                            );
-                            expect(mainExampleDateTimeAriaChecked).equals('false');
+                            const newValueGotFromUi = await dateTime.getMainExampleDateTimeValue();
+                            expect(newValueGotFromUi).to.equal('03/17/1999');
                         });
-                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`back to default [ control = "01/01/2020" ] (+screenshots)`, async function () {
+                            await driver.click(dateTime.ResetControlsButton);
+                            const expectedValue = '01/01/2020';
+                            await driver.click(dateTime.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input changed back to default value = "true"`,
+                                title: `Value Input default value = "01/01/2020"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(dateTime.MainHeader);
-                            const mainExampleDateTime = await driver.findElement(dateTime.MainExampleDateTime);
-                            const mainExampleDateTimeAriaChecked = await mainExampleDateTime.getAttribute(
-                                'aria-checked',
-                            );
-                            expect(mainExampleDateTimeAriaChecked).equals('true');
+                            const valueGotFromUi = await dateTime.getMainExampleDateTimeValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(dateTimeInputs.includes('disabled')).to.be.true;
@@ -238,6 +232,7 @@ export async function StorybookDateTimeTests() {
                             expect(mainExampleDateTimeDisabled).to.be.null;
                         });
                         break;
+
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(dateTimeInputsTitles.includes('mandatory')).to.be.true;
@@ -270,24 +265,28 @@ export async function StorybookDateTimeTests() {
                             await storyBookPage.elemntDoNotExist(dateTime.MainExample_mandatoryIcon);
                         });
                         break;
+
                     case 'renderError':
                         it(`it '${input}'`, async function () {
                             expect(dateTimeInputs.includes('renderError')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'renderSymbol':
                         it(`it '${input}'`, async function () {
                             expect(dateTimeInputs.includes('renderSymbol')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'renderTitle':
                         it(`it '${input}'`, async function () {
                             expect(dateTimeInputs.includes('renderTitle')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(dateTimeInputs.includes('showTitle')).to.be.true;
@@ -328,18 +327,21 @@ export async function StorybookDateTimeTests() {
                             await storyBookPage.untilIsVisible(dateTime.MainExample_titleLabel);
                         });
                         break;
+
                     case 'textColor':
                         it(`it '${input}'`, async function () {
                             expect(dateTimeInputs.includes('textColor')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'type':
                         it(`it '${input}'`, async function () {
                             expect(dateTimeInputs.includes('type')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'xAlignment':
                         it(`validate input`, async function () {
                             expect(dateTimeInputs.includes('xAlignment')).to.be.true;

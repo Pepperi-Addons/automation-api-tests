@@ -10,4 +10,9 @@ export class DateTime extends StorybookComponent {
     public async doesDateTimeComponentFound(): Promise<void> {
         await this.doesComponentFound('date-time', 'Date & date-time');
     }
+
+    public async getMainExampleDateTimeValue(): Promise<string> {
+        const dateString = await (await this.browser.findElement(this.MainExampleDateTime)).getAttribute('value');
+        return dateString.trim();
+    }
 }

@@ -144,53 +144,54 @@ export async function StorybookLinkTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(linkInputsTitles.includes('value')).to.be.true;
                         });
-                        it(`making sure current value is "True"`, async function () {
-                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                        it(`making sure current value is "https://www.pepperi.com"`, async function () {
+                            const expectedValue = 'https://www.pepperi.com';
+                            await driver.click(link.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input default value = "https://www.pepperi.com"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(link.MainHeader);
-                            const mainExampleLink = await driver.findElement(link.MainExampleLink);
-                            const mainExampleLinkAriaChecked = await mainExampleLink.getAttribute('aria-checked');
-                            expect(mainExampleLinkAriaChecked).equals('true');
+                            const valueGotFromUi = await link.getMainExampleLinkValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`functional test [ control = "https://www.google.com" ] (+screenshot)`, async function () {
+                            const newValueToSet = 'https://www.google.com';
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input Changed to "false"`,
+                                title: `Value Input Change -> 'https://www.google.com'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(link.MainHeader);
-                            const mainExampleLink = await driver.findElement(link.MainExampleLink);
-                            const mainExampleLinkAriaChecked = await mainExampleLink.getAttribute('aria-checked');
-                            expect(mainExampleLinkAriaChecked).equals('false');
+                            const newValueGotFromUi = await link.getMainExampleLinkValue();
+                            expect(newValueGotFromUi).to.equal('https://www.google.com');
                         });
-                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`back to default [ control = "https://www.pepperi.com" ] (+screenshots)`, async function () {
+                            await driver.click(link.ResetControlsButton);
+                            const expectedValue = 'https://www.pepperi.com';
+                            await driver.click(link.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input changed back to default value = "true"`,
+                                title: `Value Input default value = "https://www.pepperi.com"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(link.MainHeader);
-                            const mainExampleLink = await driver.findElement(link.MainExampleLink);
-                            const mainExampleLinkAriaChecked = await mainExampleLink.getAttribute('aria-checked');
-                            expect(mainExampleLinkAriaChecked).equals('true');
+                            const valueGotFromUi = await link.getMainExampleLinkValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
+
                     case 'displayValue':
                         it(`it '${input}'`, async function () {
                             expect(linkInputsTitles.includes('displayValue')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(linkInputsTitles.includes('disabled')).to.be.true;
@@ -239,6 +240,7 @@ export async function StorybookLinkTests() {
                             expect(mainExampleLinkDisabled).to.not.include('mat-form-field-disabled');
                         });
                         break;
+
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(linkInputsTitles.includes('mandatory')).to.be.true;
@@ -271,30 +273,35 @@ export async function StorybookLinkTests() {
                             await storyBookPage.elemntDoNotExist(link.MainExample_mandatoryIcon);
                         });
                         break;
+
                     case 'maxFieldCharacters':
                         it(`it '${input}'`, async function () {
                             expect(linkInputsTitles.includes('maxFieldCharacters')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'renderError':
                         it(`it '${input}'`, async function () {
                             expect(linkInputsTitles.includes('renderError')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'renderSymbol':
                         it(`it '${input}'`, async function () {
                             expect(linkInputsTitles.includes('renderSymbol')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'renderTitle':
                         it(`it '${input}'`, async function () {
                             expect(linkInputsTitles.includes('renderTitle')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(linkInputsTitles.includes('showTitle')).to.be.true;
@@ -335,12 +342,14 @@ export async function StorybookLinkTests() {
                             await storyBookPage.untilIsVisible(link.MainExample_titleLabel);
                         });
                         break;
+
                     case 'textColor':
                         it(`it '${input}'`, async function () {
                             expect(linkInputsTitles.includes('textColor')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'xAlignment':
                         it(`validate input`, async function () {
                             expect(linkInputsTitles.includes('xAlignment')).to.be.true;

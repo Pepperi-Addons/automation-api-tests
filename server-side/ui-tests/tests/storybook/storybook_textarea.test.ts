@@ -212,47 +212,39 @@ export async function StorybookTextareaTests() {
                         it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('value')).to.be.true;
                         });
-                        it(`making sure current value is "True"`, async function () {
-                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                        it(`making sure current value is "A: Would you tell me, please, which way I ought to go from here?..."`, async function () {
+                            const expectedValue = `A: Would you tell me, please, which way I ought to go from here?\nCC: That depends a good deal on where you want to get to\nA: I don’t much care where\nCC: Then it doesn’t matter which way you go`;
+                            await driver.click(textarea.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input default value = "A: Would you tell me, please, which way I ought to go from here?..."`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(textarea.MainHeader);
-                            const mainExampleTextarea = await driver.findElement(textarea.MainExampleTextarea);
-                            const mainExampleTextareaAriaChecked = await mainExampleTextarea.getAttribute(
-                                'aria-checked',
-                            );
-                            expect(mainExampleTextareaAriaChecked).equals('true');
+                            const valueGotFromUi = await textarea.getMainExampleTextareaValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`functional test [ control = "Auto test" ] functional test (+screenshot)`, async function () {
+                            const newValueToSet = 'Auto test';
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input Changed to "false"`,
+                                title: `Value Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(textarea.MainHeader);
-                            const mainExampleTextarea = await driver.findElement(textarea.MainExampleTextarea);
-                            const mainExampleTextareaAriaChecked = await mainExampleTextarea.getAttribute(
-                                'aria-checked',
-                            );
-                            expect(mainExampleTextareaAriaChecked).equals('false');
+                            const newValueGotFromUi = await textarea.getMainExampleTextareaValue();
+                            expect(newValueGotFromUi).to.equal(newValueToSet);
                         });
-                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`back to default [ control = "A: Would you tell me, please, which way I ought to go from here?..." ](+screenshots)`, async function () {
+                            await driver.click(textarea.ResetControlsButton);
+                            const expectedValue = `A: Would you tell me, please, which way I ought to go from here?\nCC: That depends a good deal on where you want to get to\nA: I don’t much care where\nCC: Then it doesn’t matter which way you go`;
+                            await driver.click(textarea.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input changed back to default value = "true"`,
+                                title: `Value Input default value = "A: Would you tell me, please, which way I ought to go from here?..."`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(textarea.MainHeader);
-                            const mainExampleTextarea = await driver.findElement(textarea.MainExampleTextarea);
-                            const mainExampleTextareaAriaChecked = await mainExampleTextarea.getAttribute(
-                                'aria-checked',
-                            );
-                            expect(mainExampleTextareaAriaChecked).equals('true');
+                            const valueGotFromUi = await textarea.getMainExampleTextareaValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
                     case 'disabled':

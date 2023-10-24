@@ -259,15 +259,39 @@ export async function StorybookColorPickerTests() {
                         it(`validate input`, async function () {
                             expect(colorPickerInputs.includes('value')).to.be.true;
                         });
-                        it(`Functional test (+screenshot)`, async function () {
+                        it(`making sure current value is "transparent"`, async function () {
+                            const expectedValue = 'transparent';
+                            await driver.click(colorPicker.MainHeader);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = ""`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await colorPicker.getMainExampleColorPickerValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
+                        });
+                        it(`functional test [ control = "#1fbeb9" ] (+screenshot)`, async function () {
                             await storyBookPage.inputs.setColorValue('#1fbeb9');
-                            const currentColor = await colorPicker.getComponentColor();
+                            const currentColor = await colorPicker.getMainExampleColorPickerValue();
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Label Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            expect(currentColor).to.equal('(31, 190, 185)'); // same as "#1fbeb9" in RGB
+                            expect(currentColor).to.equal('rgb(31, 190, 185) !important'); // same as "#1fbeb9" in RGB
+                        });
+                        it(`back to default [ control = "" ] (+screenshots)`, async function () {
+                            await storyBookPage.inputs.setColorValue('');
+                            await driver.click(colorPicker.ResetControlsButton);
+                            const expectedValue = 'transparent';
+                            await driver.click(colorPicker.MainHeader);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = ""`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await colorPicker.getMainExampleColorPickerValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
 

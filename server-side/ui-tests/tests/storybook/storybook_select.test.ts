@@ -288,41 +288,39 @@ export async function StorybookSelectTests() {
                         it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('value')).to.be.true;
                         });
-                        it(`making sure current value is "True"`, async function () {
-                            // await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                        it(`making sure current value is "None"`, async function () {
+                            const expectedValue = 'None';
+                            await driver.click(select.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input default value = "true"`,
+                                title: `Value Input default value = "None"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(select.MainHeader);
-                            const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
-                            const mainExampleSelectAriaChecked = await mainExampleSelect.getAttribute('aria-checked');
-                            expect(mainExampleSelectAriaChecked).equals('true');
+                            const valueGotFromUi = await select.getMainExampleSelectValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`functional test [ control = "Auto test" ] functional test (+screenshot)`, async function () {
+                            const newValueToSet = 'Auto test';
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input Changed to "false"`,
+                                title: `Value Input Change`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(select.MainHeader);
-                            const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
-                            const mainExampleSelectAriaChecked = await mainExampleSelect.getAttribute('aria-checked');
-                            expect(mainExampleSelectAriaChecked).equals('false');
+                            const newValueGotFromUi = await select.getMainExampleSelectValue();
+                            expect(newValueGotFromUi).to.equal(newValueToSet);
                         });
-                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
-                            await storyBookPage.inputs.toggleValueControl();
+                        it(`back to default [ control = "None" ](+screenshots)`, async function () {
+                            await driver.click(select.ResetControlsButton);
+                            const expectedValue = 'None';
+                            await driver.click(select.MainHeader);
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Value Input changed back to default value = "true"`,
+                                title: `Value Input default value = "None"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await driver.click(select.MainHeader);
-                            const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
-                            const mainExampleSelectAriaChecked = await mainExampleSelect.getAttribute('aria-checked');
-                            expect(mainExampleSelectAriaChecked).equals('true');
+                            const valueGotFromUi = await select.getMainExampleSelectValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
                     case 'xAlignment':
