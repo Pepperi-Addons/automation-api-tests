@@ -150,6 +150,7 @@ export async function StorybookRichHtmlTextareaTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'rowSpan':
                         it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('rowSpan')).to.be.true;
@@ -224,6 +225,7 @@ export async function StorybookRichHtmlTextareaTests() {
                             expect(richHtmlTextareaComplexHeight.trim()).to.equal('384px');
                         });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('value')).to.be.true;
@@ -265,6 +267,7 @@ export async function StorybookRichHtmlTextareaTests() {
                             expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('disabled')).to.be.true;
@@ -368,12 +371,14 @@ export async function StorybookRichHtmlTextareaTests() {
                             expect(mainExampleRichHtmlTextareaDisabled).to.include('mat-form-field-disabled');
                         });
                         break;
+
                     case 'inlineMode':
                         it(`it '${input}'`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('inlineMode')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('mandatory')).to.be.true;
@@ -406,12 +411,14 @@ export async function StorybookRichHtmlTextareaTests() {
                             await storyBookPage.elemntDoNotExist(richHtmlTextarea.MainExample_mandatoryIcon);
                         });
                         break;
+
                     case 'maxFieldCharacters':
                         it(`it '${input}'`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('maxFieldCharacters')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('showTitle')).to.be.true;
@@ -454,12 +461,87 @@ export async function StorybookRichHtmlTextareaTests() {
                             await storyBookPage.untilIsVisible(richHtmlTextarea.MainExample_titleLabel);
                         });
                         break;
+
                     case 'visible':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('visible')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(richHtmlTextarea.MainHeader);
+                            const mainExamplePepRichHtmlTextarea = await driver.findElement(
+                                richHtmlTextarea.MainExamplePepRichHtmlTextarea,
+                            );
+                            const mainExamplePepRichHtmlTextareaClasses =
+                                await mainExamplePepRichHtmlTextarea.getAttribute('class');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of Visible Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExamplePepRichHtmlTextareaClasses).to.not.include('hidden-element');
+                        });
+                        it(`functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleVisibleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(richHtmlTextarea.MainHeader);
+                            try {
+                                const mainExamplePepRichHtmlTextarea = await driver.findElement(
+                                    richHtmlTextarea.MainExamplePepRichHtmlTextarea,
+                                );
+                                const mainExamplePepRichHtmlTextareaClasses =
+                                    await mainExamplePepRichHtmlTextarea.getAttribute('class');
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of Visible Input "false"`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(mainExamplePepRichHtmlTextareaClasses).to.include('hidden-element');
+                            } catch (error) {
+                                console.error(error);
+                                const theError = error as Error;
+                                console.info("Can't find Pep-RichHtmlTextarea");
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of Visible Input "false"`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(theError.message).contains(
+                                    `After wait time of: 15000, for selector of '//div[@id="story--components-rich-html-textarea--story-1"]//pep-rich-html-textarea', The test must end, The element is not visible`,
+                                );
+                            }
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleVisibleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(richHtmlTextarea.MainHeader);
+                            const mainExamplePepRichHtmlTextarea = await driver.findElement(
+                                richHtmlTextarea.MainExamplePepRichHtmlTextarea,
+                            );
+                            const mainExamplePepRichHtmlTextareaClasses =
+                                await mainExamplePepRichHtmlTextarea.getAttribute('class');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of Visible Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExamplePepRichHtmlTextareaClasses).to.not.include('hidden-element');
+                        });
                         break;
+
                     case 'xAlignment':
                         it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('xAlignment')).to.be.true;

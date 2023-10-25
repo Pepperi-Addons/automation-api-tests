@@ -635,7 +635,7 @@ export async function StorybookButtonTests() {
                             });
                             expect(mainExamplePepButtonClasses).equals('');
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                        it(`functional test [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleVisibleControl();
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {

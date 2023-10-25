@@ -191,6 +191,7 @@ export async function StorybookTextareaTests() {
                             expect(textareaComplexHeight.trim()).to.equal('144px');
                         });
                         break;
+
                     case 'label':
                         it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('label')).to.be.true;
@@ -208,6 +209,7 @@ export async function StorybookTextareaTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('value')).to.be.true;
@@ -247,6 +249,7 @@ export async function StorybookTextareaTests() {
                             expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('disabled')).to.be.true;
@@ -295,6 +298,7 @@ export async function StorybookTextareaTests() {
                             expect(mainExampleTextareaDisabled).to.be.null;
                         });
                         break;
+
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('mandatory')).to.be.true;
@@ -327,12 +331,14 @@ export async function StorybookTextareaTests() {
                             await storyBookPage.elemntDoNotExist(textarea.MainExample_mandatoryIcon);
                         });
                         break;
+
                     case 'maxFieldCharacters':
                         it(`it '${input}'`, async function () {
                             expect(textareaInputsTitles.includes('maxFieldCharacters')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('showTitle')).to.be.true;
@@ -373,18 +379,89 @@ export async function StorybookTextareaTests() {
                             await storyBookPage.untilIsVisible(textarea.MainExample_titleLabel);
                         });
                         break;
+
                     case 'textColor':
                         it(`it '${input}'`, async function () {
                             expect(textareaInputsTitles.includes('textColor')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'visible':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('visible')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            const mainExamplePepTextarea = await driver.findElement(textarea.MainExamplePepTextarea);
+                            const mainExamplePepTextareaClasses = await mainExamplePepTextarea.getAttribute('class');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of Visible Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExamplePepTextareaClasses).to.not.include('hidden-element');
+                        });
+                        it(`functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleVisibleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            try {
+                                const mainExamplePepTextarea = await driver.findElement(
+                                    textarea.MainExamplePepTextarea,
+                                );
+                                const mainExamplePepTextareaClasses = await mainExamplePepTextarea.getAttribute(
+                                    'class',
+                                );
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of Visible Input "false"`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(mainExamplePepTextareaClasses).to.include('hidden-element');
+                            } catch (error) {
+                                console.error(error);
+                                const theError = error as Error;
+                                console.info("Can't find Pep-Textarea");
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of Visible Input "false"`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(theError.message).contains(
+                                    `After wait time of: 15000, for selector of '//div[@id="story--components-textarea--story-1"]//pep-textarea', The test must end, The element is not visible`,
+                                );
+                            }
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleVisibleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            const mainExamplePepTextarea = await driver.findElement(textarea.MainExamplePepTextarea);
+                            const mainExamplePepTextareaClasses = await mainExamplePepTextarea.getAttribute('class');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of Visible Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExamplePepTextareaClasses).to.not.include('hidden-element');
+                        });
                         break;
+
                     case 'xAlignment':
                         it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('xAlignment')).to.be.true;
@@ -448,9 +525,9 @@ export async function StorybookTextareaTests() {
                     });
                 });
                 switch (output) {
-                    case 'fileChange':
+                    case 'valueChange':
                         it(`it '${output}'`, async function () {
-                            expect(textareaOutputsTitles.includes('fileChange')).to.be.true;
+                            expect(textareaOutputsTitles.includes('valueChange')).to.be.true;
                         });
                         // TODO
                         break;
