@@ -237,6 +237,7 @@ export async function StorybookImageFilmstripTests() {
                                 title: `Value Input Change -> 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-980x653.jpg'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            imageFilmstrip.pause(1 * 1000);
                             const newValueGotFromUi = await imageFilmstrip.getMainExampleImageFilmstripValue();
                             expect(newValueGotFromUi).to.equal(expectedValue);
                         });
