@@ -98,14 +98,6 @@ export async function StorybookLinkTests() {
         });
         linkInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await link.getInputRowSelectorByName(input));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${input}' input`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
                 it(`switch to iframe`, async function () {
                     try {
                         await driver.findElement(storyBookPage.StorybookIframe, 5000);
@@ -114,6 +106,14 @@ export async function StorybookLinkTests() {
                         console.error(error);
                         console.info('ALREADY ON IFRAME');
                     }
+                });
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await link.getInputRowSelectorByName(input));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
                 it(`open inputs if it's closed`, async function () {
                     const inputsMainTableRowElement = await driver.findElement(link.Inputs_mainTableRow);
@@ -152,36 +152,85 @@ export async function StorybookLinkTests() {
                         it(`making sure current value is "https://www.pepperi.com"`, async function () {
                             const expectedValue = 'https://www.pepperi.com';
                             await driver.click(link.MainHeader);
-                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            let base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Value Input default value = "https://www.pepperi.com"`,
-                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                             const valueGotFromUi = await link.getMainExampleLinkValue();
                             expect(valueGotFromUi).to.equal(expectedValue);
+                            const newUrl = await link.openMainExampleLink(); // opens new tab
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `default '${expectedValue}'- new tab after click`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.close(); // closes new tab
+                            await driver.switchToOtherTab(1);
+                            console.info('default image Url: ', newUrl);
+                            expect(newUrl).to.be.oneOf([expectedValue, expectedValue + '/']);
+                        });
+                        it(`switch to iframe`, async function () {
+                            try {
+                                await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                                await driver.switchTo(storyBookPage.StorybookIframe);
+                            } catch (error) {
+                                console.error(error);
+                                console.info('ALREADY ON IFRAME');
+                            }
                         });
                         it(`functional test [ control = "https://www.google.com" ] (+screenshot)`, async function () {
                             const newValueToSet = 'https://www.google.com';
+                            await driver.click(link.MainHeader);
                             await storyBookPage.inputs.changeValueControl(newValueToSet);
-                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            let base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Value Input Change -> 'https://www.google.com'`,
-                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                             const newValueGotFromUi = await link.getMainExampleLinkValue();
-                            expect(newValueGotFromUi).to.equal('https://www.google.com');
+                            expect(newValueGotFromUi).to.equal(newValueToSet);
+                            const newUrl = await link.openMainExampleLink(); // opens new tab
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `image of ${newValueToSet} - at new tab after click`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.close(); // closes new tab
+                            await driver.switchToOtherTab(1);
+                            console.info('default image Url: ', newUrl);
+                            expect(newUrl).to.be.oneOf([newValueToSet, newValueToSet + '/']);
+                        });
+                        it(`switch to iframe`, async function () {
+                            try {
+                                await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                                await driver.switchTo(storyBookPage.StorybookIframe);
+                            } catch (error) {
+                                console.error(error);
+                                console.info('ALREADY ON IFRAME');
+                            }
                         });
                         it(`back to default [ control = "https://www.pepperi.com" ] (+screenshots)`, async function () {
                             await driver.click(link.ResetControlsButton);
                             const expectedValue = 'https://www.pepperi.com';
                             await driver.click(link.MainHeader);
-                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            let base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Value Input default value = "https://www.pepperi.com"`,
-                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                             const valueGotFromUi = await link.getMainExampleLinkValue();
                             expect(valueGotFromUi).to.equal(expectedValue);
+                            const newUrl = await link.openMainExampleLink(); // opens new tab
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `default '${expectedValue}'- new tab after click`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.close(); // closes new tab
+                            await driver.switchToOtherTab(1);
+                            console.info('default image Url: ', newUrl);
+                            expect(newUrl).to.be.oneOf([expectedValue, expectedValue + '/']);
                         });
                         break;
 
