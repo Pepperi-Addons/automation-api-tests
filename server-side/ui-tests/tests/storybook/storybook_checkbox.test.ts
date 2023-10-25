@@ -441,20 +441,23 @@ export async function StorybookCheckboxTests() {
                             expect(checkboxInputsTitles.includes('visible')).to.be.true;
                         });
                         it(`making sure current value is "True"`, async function () {
+                            await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Visible Input default value = "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await driver.click(checkbox.MainHeader);
+                            const mainExamplePepCheckbox = await driver.findElement(checkbox.MainExamplePepCheckbox);
+                            const mainExamplePepCheckboxClasses = await mainExamplePepCheckbox.getAttribute('class');
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Upper View of Visible Input "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // await storyBookPage.untilIsVisible(checkbox.MainExample_pepTitle); // need to find the right indication
+                            expect(mainExamplePepCheckboxClasses).to.not.include('hidden-element');
                         });
-                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                        it(`functional test [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleVisibleControl();
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
@@ -462,27 +465,49 @@ export async function StorybookCheckboxTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await driver.click(checkbox.MainHeader);
-                            base64ImageComponentModal = await driver.saveScreenshots();
-                            addContext(this, {
-                                title: `Upper View of Visible Input "false"`,
-                                value: 'data:image/png;base64,' + base64ImageComponentModal,
-                            });
-                            // await storyBookPage.elemntDoNotExist(checkbox.MainExample_pepTitle); // need to find the right indication
+                            try {
+                                const mainExamplePepCheckbox = await driver.findElement(
+                                    checkbox.MainExamplePepCheckbox,
+                                );
+                                const mainExamplePepCheckboxClasses = await mainExamplePepCheckbox.getAttribute(
+                                    'class',
+                                );
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of Visible Input "false"`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(mainExamplePepCheckboxClasses).to.include('hidden-element');
+                            } catch (error) {
+                                console.error(error);
+                                const theError = error as Error;
+                                console.info("Can't find Pep-Checkbox");
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of Visible Input "false"`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(theError.message).contains(
+                                    `After wait time of: 15000, for selector of '//div[@id="story--components-checkbox--story-1"]//pep-checkbox', The test must end, The element is not visible`,
+                                );
+                            }
                         });
                         it(`back to default [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleVisibleControl();
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Visible Input changed back to default value = "true"`,
+                                title: `Visible Input default value = "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await driver.click(checkbox.MainHeader);
+                            const mainExamplePepCheckbox = await driver.findElement(checkbox.MainExamplePepCheckbox);
+                            const mainExamplePepCheckboxClasses = await mainExamplePepCheckbox.getAttribute('class');
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Upper View of Visible Input "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // await storyBookPage.untilIsVisible(checkbox.MainExample_pepTitle); // need to find the right indication
+                            expect(mainExamplePepCheckboxClasses).to.not.include('hidden-element');
                         });
                         break;
 

@@ -4,9 +4,8 @@ import { StorybookComponent } from './Base/StorybookComponent';
 export class RichHtmlTextarea extends StorybookComponent {
     public MainExampleDiv: By = By.xpath('//div[@id="story--components-rich-html-textarea--story-1"]');
     public MainExampleHeightDiv: By = By.xpath(`//pep-rich-html-textarea`);
-    public MainExampleRichHtmlTextarea: By = By.xpath(
-        `${this.MainExampleDiv.value}//pep-rich-html-textarea//mat-form-field`,
-    );
+    public MainExamplePepRichHtmlTextarea: By = By.xpath(`${this.MainExampleDiv.value}//pep-rich-html-textarea`);
+    public MainExampleRichHtmlTextarea: By = By.xpath(`${this.MainExamplePepRichHtmlTextarea.value}//mat-form-field`);
     public MainExampleRichHtmlTextarea_button: By = By.xpath(
         `${this.MainExampleRichHtmlTextarea.value}//pep-textbox-icon//button`,
     );

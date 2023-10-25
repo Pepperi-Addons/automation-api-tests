@@ -126,18 +126,89 @@ export async function StorybookSeparatorTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'layoutType':
                         it(`it '${input}'`, async function () {
                             expect(separatorInputsTitles.includes('layoutType')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'visible':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(separatorInputsTitles.includes('visible')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(separator.MainHeader);
+                            const mainExamplePepSeparator = await driver.findElement(separator.MainExamplePepSeparator);
+                            const mainExamplePepSeparatorClasses = await mainExamplePepSeparator.getAttribute('class');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of Visible Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExamplePepSeparatorClasses).to.not.include('hidden-element');
+                        });
+                        it(`functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleVisibleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(separator.MainHeader);
+                            try {
+                                const mainExamplePepSeparator = await driver.findElement(
+                                    separator.MainExamplePepSeparator,
+                                );
+                                const mainExamplePepSeparatorClasses = await mainExamplePepSeparator.getAttribute(
+                                    'class',
+                                );
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of Visible Input "false"`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(mainExamplePepSeparatorClasses).to.include('hidden-element');
+                            } catch (error) {
+                                console.error(error);
+                                const theError = error as Error;
+                                console.info("Can't find Pep-Separator");
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of Visible Input "false"`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(theError.message).contains(
+                                    `After wait time of: 15000, for selector of '//div[@id="story--components-separator--story-1"]//pep-separator', The test must end, The element is not visible`,
+                                );
+                            }
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleVisibleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(separator.MainHeader);
+                            const mainExamplePepSeparator = await driver.findElement(separator.MainExamplePepSeparator);
+                            const mainExamplePepSeparatorClasses = await mainExamplePepSeparator.getAttribute('class');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of Visible Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExamplePepSeparatorClasses).to.not.include('hidden-element');
+                        });
                         break;
+
                     case 'xAlignment':
                         it(`validate input`, async function () {
                             expect(separatorInputsTitles.includes('xAlignment')).to.be.true;

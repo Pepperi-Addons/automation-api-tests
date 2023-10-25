@@ -143,6 +143,7 @@ export async function StorybookQuantitySelectorTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('value')).to.be.true;
@@ -182,12 +183,14 @@ export async function StorybookQuantitySelectorTests() {
                             expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
+
                     case 'allowDecimal':
                         it(`it '${input}'`, async function () {
                             expect(quantitySelectorInputsTitles.includes('allowDecimal')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('disabled')).to.be.true;
@@ -248,6 +251,7 @@ export async function StorybookQuantitySelectorTests() {
                             expect(mainExampleQuantitySelectorDisabled).to.not.include('mat-form-field-disabled');
                         });
                         break;
+
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('mandatory')).to.be.true;
@@ -280,12 +284,14 @@ export async function StorybookQuantitySelectorTests() {
                             await storyBookPage.elemntDoNotExist(quantitySelector.MainExample_mandatoryIcon);
                         });
                         break;
+
                     case 'readonly':
                         it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('readonly')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('showTitle')).to.be.true;
@@ -328,24 +334,101 @@ export async function StorybookQuantitySelectorTests() {
                             await storyBookPage.untilIsVisible(quantitySelector.MainExample_titleLabel);
                         });
                         break;
+
                     case 'styleType':
                         it(`it '${input}'`, async function () {
                             expect(quantitySelectorInputsTitles.includes('styleType')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'textColor':
                         it(`it '${input}'`, async function () {
                             expect(quantitySelectorInputsTitles.includes('textColor')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'visible':
                         it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('visible')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(quantitySelector.MainHeader);
+                            const mainExamplePepQuantitySelector = await driver.findElement(
+                                quantitySelector.MainExamplePepQuantitySelector,
+                            );
+                            const mainExamplePepQuantitySelectorClasses =
+                                await mainExamplePepQuantitySelector.getAttribute('class');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of Visible Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExamplePepQuantitySelectorClasses).to.not.include('hidden-element');
+                        });
+                        it(`functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleVisibleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(quantitySelector.MainHeader);
+                            try {
+                                const mainExamplePepQuantitySelector = await driver.findElement(
+                                    quantitySelector.MainExamplePepQuantitySelector,
+                                );
+                                const mainExamplePepQuantitySelectorClasses =
+                                    await mainExamplePepQuantitySelector.getAttribute('class');
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of Visible Input "false"`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(mainExamplePepQuantitySelectorClasses).to.include('hidden-element');
+                            } catch (error) {
+                                console.error(error);
+                                const theError = error as Error;
+                                console.info("Can't find Pep-QuantitySelector");
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of Visible Input "false"`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(theError.message).contains(
+                                    `After wait time of: 15000, for selector of '//div[@id="story--components-quantity-selector--story-1"]//pep-quantity-selector', The test must end, The element is not visible`,
+                                );
+                            }
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleVisibleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Visible Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(quantitySelector.MainHeader);
+                            const mainExamplePepQuantitySelector = await driver.findElement(
+                                quantitySelector.MainExamplePepQuantitySelector,
+                            );
+                            const mainExamplePepQuantitySelectorClasses =
+                                await mainExamplePepQuantitySelector.getAttribute('class');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of Visible Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExamplePepQuantitySelectorClasses).to.not.include('hidden-element');
+                        });
                         break;
+
                     case 'xAlignment':
                         it(`it '${input}'`, async function () {
                             expect(quantitySelectorInputsTitles.includes('xAlignment')).to.be.true;
