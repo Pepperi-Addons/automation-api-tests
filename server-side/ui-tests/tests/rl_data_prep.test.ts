@@ -36,7 +36,9 @@ export async function RLdataPrep(varPass: string, client: Client) {
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
-    describe('Prerequisites Addons for Resource List Tests', () => {
+    describe(`Prerequisites Addons for Resource List Tests - ${
+        client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
+    }`, () => {
         //Resource List - for the 1st step: making sure 'Resource List' and 'Generic Resources' are installed, and 'Core Resources' and 'User Defined Collections' are not.
         const addonsList = Object.keys(testData);
 

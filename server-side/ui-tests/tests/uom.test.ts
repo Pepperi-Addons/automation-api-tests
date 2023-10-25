@@ -80,7 +80,9 @@ export async function UomTests(email: string, password: string, varPass: string,
 
     //#endregion Upgrade cpi-node & UOM
 
-    describe('UOM Tests Suite', async function () {
+    describe(`UOM Tests Suite - ${
+        client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
+    }`, async function () {
         describe('Prerequisites Addons for UOM Tests', () => {
             //Test Data
             //UOM

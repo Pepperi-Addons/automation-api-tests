@@ -159,7 +159,10 @@ export async function VFdataPrep(varPass: string, client: Client) {
 
     // #endregion Upgrade script dependencies
 
-    describe('Prerequisites Addons for Visit Flow Tests', async () => {
+    // describe(`Prerequisites Addons for Visit Flow Tests - ${client.BaseURL}`, async () => {
+    describe(`Prerequisites Addons for Visit Flow Tests - ${
+        client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
+    }`, async () => {
         isInstalledArr.forEach((isInstalled, index) => {
             it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                 expect(isInstalled).to.be.true;
