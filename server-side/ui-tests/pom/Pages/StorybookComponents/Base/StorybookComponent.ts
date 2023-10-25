@@ -186,6 +186,14 @@ export class StorybookComponent extends AddonPage {
         return txtAlignVal;
     }
 
+    public async openSource(selector: By, tabIndex = 2): Promise<string> {
+        await this.browser.click(selector);
+        await this.browser.switchToOtherTab(tabIndex);
+        this.browser.sleep(2 * 1000);
+        const currentUrl = await this.browser.getCurrentUrl();
+        return currentUrl;
+    }
+
     public async changeRowSpanControl(toNum: number): Promise<void> {
         await this.browser.sendKeys(this.RowSpanControlInput, Key.CONTROL + 'a' + Key.DELETE);
         await this.browser.sendKeys(this.RowSpanControlInput, toNum + Key.ENTER);
