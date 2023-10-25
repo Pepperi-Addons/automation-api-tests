@@ -886,26 +886,28 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it('API Data Cleansing: 3. pages', async function () {
                 //3. delete relevant pages
+                const surveyPageDeleteBody = { Hidden: true, Key: surveyBlockPageUUID };
                 const deleteSurveyPageResponse = await generalService.fetchStatus(
-                    `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${surveyBlockPageUUID}`,
+                    `/addons/api/84c999c3-84b7-454e-9a86-71b7abc96554/api/objects?addonUUID=50062e0c-9967-4ed4-9102-f2bc50602d41&name=Pages&scheme=drafts`,
                     {
                         method: 'POST',
-                        body: JSON.stringify({}),
+                        body: JSON.stringify(surveyPageDeleteBody),
                     },
                 );
                 expect(deleteSurveyPageResponse.Ok).to.equal(true);
                 expect(deleteSurveyPageResponse.Status).to.equal(200);
-                expect(deleteSurveyPageResponse.Body).to.equal(true);
+                expect(deleteSurveyPageResponse.Body.Key).to.equal(surveyBlockPageUUID);
+                const slideshowPageDeleteBody = { Hidden: true, Key: slideshowBlockPageUUID };
                 const deleteSlideShowPageResponse = await generalService.fetchStatus(
-                    `/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=${slideshowBlockPageUUID}`,
+                    `/addons/api/84c999c3-84b7-454e-9a86-71b7abc96554/api/objects?addonUUID=50062e0c-9967-4ed4-9102-f2bc50602d41&name=Pages&scheme=drafts`,
                     {
                         method: 'POST',
-                        body: JSON.stringify({}),
+                        body: JSON.stringify(slideshowPageDeleteBody),
                     },
                 );
                 expect(deleteSlideShowPageResponse.Ok).to.equal(true);
                 expect(deleteSlideShowPageResponse.Status).to.equal(200);
-                expect(deleteSlideShowPageResponse.Body).to.equal(true);
+                expect(deleteSlideShowPageResponse.Body.Key).to.equal(slideshowBlockPageUUID);
             });
             it('API Data Cleansing: 4. script', async function () {
                 //delete the script
