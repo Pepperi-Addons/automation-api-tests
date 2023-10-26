@@ -37,6 +37,7 @@ export async function StorybookButtonTests() {
     let allSizeTypes;
     let mainExampleButton;
     let mainExampleButtonHeight;
+    let mainExampleButtonStyle;
     let allStyleStateTypes;
     let allStyleTypes;
 
@@ -480,38 +481,51 @@ export async function StorybookButtonTests() {
                             console.info('allStyleStateTypes length: ', allStyleStateTypes.length);
                             expect(allStyleStateTypes.length).equals(styleStateTypeExpectedValues.length);
                         });
-                        // it(`validate current style state type is "system"`, async function () {
-                        // });
+                        it(`validate current style state type is "system"`, async function () {
+                            mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            mainExampleButtonStyle = await mainExampleButton.getCssValue('background');
+                            console.info('mainExampleButton: ', mainExampleButton);
+                            console.info('mainExampleButtonStyle: ', mainExampleButtonStyle);
+                            const backgroundColor = mainExampleButtonStyle.split('rgba(')[1].split(')')[0];
+                            console.info('backgroundColor: ', backgroundColor);
+                            expect(backgroundColor).to.equal('26, 26, 26, 0.12');
+                        });
                         styleStateTypeExpectedValues.forEach(async (title, index) => {
                             it(`'${title}' -- functional test (+screenshot)`, async function () {
                                 const styleStateType = allStyleStateTypes[index];
                                 await styleStateType.click();
-                                // mainExampleButton = await driver.findElement(button.MainExampleButton);
-                                // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
-                                // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                                mainExampleButton = await driver.findElement(button.MainExampleButton);
+                                mainExampleButtonStyle = await mainExampleButton.getCssValue('background');
+                                console.info('mainExampleButtonStyle: ', mainExampleButtonStyle);
                                 await driver.click(await button.getInputRowSelectorByName('styleType'));
                                 let base64ImageComponentModal = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `${title} (styleStateType) input change`,
                                     value: 'data:image/png;base64,' + base64ImageComponentModal,
                                 });
-                                // let expectedHeight;
+                                const backgroundColor = mainExampleButtonStyle.split('rgba(')[1].split(')')[0];
+                                console.info('backgroundColor: ', backgroundColor);
+                                let expectedBackgroundColor;
                                 switch (title) {
                                     case 'system':
                                         console.info(`At SYSTEM style state type`);
+                                        expectedBackgroundColor = '26, 26, 26, 0.12';
                                         break;
                                     case 'caution':
                                         console.info(`At CAUSION style state type`);
+                                        expectedBackgroundColor = '204, 0, 0, 0.12';
                                         break;
                                     case 'success':
                                         console.info(`At SUCCESS style state type`);
+                                        expectedBackgroundColor = '43, 128, 0, 0.12';
                                         break;
 
                                     default:
                                         console.info(`At DEFAULT style state type`);
+                                        expectedBackgroundColor = '';
                                         break;
                                 }
-                                // expect(mainExampleButtonHeight).to.equal(expectedHeight);
+                                expect(backgroundColor).to.equal(expectedBackgroundColor);
                                 await driver.click(button.MainHeader);
                                 driver.sleep(0.1 * 1000);
                                 base64ImageComponentModal = await driver.saveScreenshots();
@@ -529,17 +543,19 @@ export async function StorybookButtonTests() {
                                 title: `style state type changed to 'system'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // mainExampleButton = await driver.findElement(button.MainExampleButton);
-                            // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
-                            // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                            mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            mainExampleButtonStyle = await mainExampleButton.getCssValue('background');
+                            console.info('mainExampleButtonStyle: ', mainExampleButtonStyle);
                             await driver.click(button.MainHeader);
                             driver.sleep(0.1 * 1000);
+                            const backgroundColor = mainExampleButtonStyle.split('rgba(')[1].split(')')[0];
+                            console.info('backgroundColor: ', backgroundColor);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `upper screenshot: button with [style state type = 'system']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // expect(mainExampleButtonHeight).to.equal('40px');
+                            expect(backgroundColor).to.equal('26, 26, 26, 0.12');
                             await driver.click(button.MainHeader);
                         });
                         break;
