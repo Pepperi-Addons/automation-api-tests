@@ -27,12 +27,16 @@ export async function StorybookQuantitySelectorTests() {
     const quantitySelectorOutputs = ['elementClick', 'valueChange'];
     const quantitySelectorSubFoldersHeaders = ['Twist and shake', 'Shake and twist'];
     const alignExpectedValues = ['', 'center', 'right'];
+    const styleTypeExpectedValues = ['weak', 'weak-invert', 'regular', 'strong'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let quantitySelector: QuantitySelector;
     let quantitySelectorInputsTitles;
     let quantitySelectorOutputsTitles;
+    let allStyleTypes;
+    let mainExampleQuantitySelector;
+    let mainExampleQuantitySelectorStyle;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "QuantitySelector" Tests Suite', function () {
@@ -336,10 +340,115 @@ export async function StorybookQuantitySelectorTests() {
                         break;
 
                     case 'styleType':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('styleType')).to.be.true;
+                            await driver.click(await quantitySelector.getInputRowSelectorByName('visible'));
                         });
-                        // TODO
+                        it(`get all style types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allStyleTypes = await storyBookPage.inputs.getAllStyleTypes();
+                            driver.sleep(1 * 1000);
+                            console.info('allStyleTypes length: ', allStyleTypes.length);
+                            expect(allStyleTypes.length).equals(styleTypeExpectedValues.length);
+                        });
+                        it(`validate current style type is "regular"`, async function () {
+                            mainExampleQuantitySelector = await driver.findElement(
+                                quantitySelector.MainExampleQuantitySelector_style,
+                            );
+                            mainExampleQuantitySelectorStyle = await mainExampleQuantitySelector.getCssValue(
+                                'background',
+                            );
+                            console.info('mainExampleQuantitySelector: ', mainExampleQuantitySelector);
+                            console.info('mainExampleQuantitySelectorStyle: ', mainExampleQuantitySelectorStyle);
+                            const backgroundColor = mainExampleQuantitySelectorStyle.split('rgb(')[1].split(')')[0];
+                            console.info('backgroundColor: ', backgroundColor);
+                            expect(backgroundColor).to.equal('250, 250, 250');
+                        });
+                        styleTypeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const styleType = allStyleTypes[index];
+                                await styleType.click();
+                                mainExampleQuantitySelector = await driver.findElement(
+                                    quantitySelector.MainExampleQuantitySelector_style,
+                                );
+                                mainExampleQuantitySelectorStyle = await mainExampleQuantitySelector.getCssValue(
+                                    'background',
+                                );
+                                console.info('mainExampleQuantitySelectorStyle: ', mainExampleQuantitySelectorStyle);
+                                await driver.click(await quantitySelector.getInputRowSelectorByName('visible'));
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (styleType) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                const backgroundHue = mainExampleQuantitySelectorStyle.split('rgb')[1].split(')')[0];
+                                console.info('backgroundHue: ', backgroundHue);
+                                let expectedHue;
+                                switch (title) {
+                                    case 'weak':
+                                        console.info(`At WEAK style type`);
+                                        expectedHue = 'rgba(26, 26, 26, 0.12)';
+                                        break;
+                                    case 'weak-invert':
+                                        console.info(`At WEAK-INVERT style type`);
+                                        expectedHue = 'rgba(26, 26, 26, 0.12)';
+                                        break;
+                                    case 'regular':
+                                        console.info(`At REGULAR style type`);
+                                        expectedHue = 'rgb(250, 250, 250)';
+                                        break;
+                                    case 'strong':
+                                        console.info(`At STRONG style type`);
+                                        expectedHue = 'rgb(26, 26, 26)';
+                                        break;
+
+                                    default:
+                                        console.info(`At DEFAULT style type`);
+                                        expectedHue = '';
+                                        break;
+                                }
+                                expect('rgb' + backgroundHue + ')').to.equal(expectedHue);
+                                await driver.click(quantitySelector.MainHeader);
+                                driver.sleep(0.1 * 1000);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: quantitySelector with [style type = '${title}']`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
+                        it(`back to default [style type = "regular"]`, async function () {
+                            await driver.click(quantitySelector.ResetControlsButton);
+                            await driver.click(await quantitySelector.getInputRowSelectorByName('visible'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `style type changed to 'regular'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            mainExampleQuantitySelector = await driver.findElement(
+                                quantitySelector.MainExampleQuantitySelector_style,
+                            );
+                            mainExampleQuantitySelectorStyle = await mainExampleQuantitySelector.getCssValue(
+                                'background',
+                            );
+                            console.info('mainExampleQuantitySelector: ', mainExampleQuantitySelector);
+                            console.info('mainExampleQuantitySelectorStyle: ', mainExampleQuantitySelectorStyle);
+                            await driver.click(quantitySelector.MainHeader);
+                            driver.sleep(0.1 * 1000);
+                            const backgroundColor = mainExampleQuantitySelectorStyle.split('rgb(')[1].split(')')[0];
+                            console.info('backgroundColor: ', backgroundColor);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: quantitySelector with [style type = 'regular']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(backgroundColor).to.equal('250, 250, 250');
+                            await driver.click(quantitySelector.MainHeader);
+                        });
                         break;
 
                     case 'textColor':

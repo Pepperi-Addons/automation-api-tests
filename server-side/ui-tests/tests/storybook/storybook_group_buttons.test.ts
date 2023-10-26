@@ -29,6 +29,7 @@ export async function StorybookGroupButtonsTests() {
         'Toggle view type wo/ initial selection',
     ];
     const sizeTypesExpectedValues = ['xs', 'sm', 'md', 'lg', 'xl'];
+    const styleTypeExpectedValues = ['weak', 'weak-invert', 'regular', 'strong'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
@@ -38,6 +39,8 @@ export async function StorybookGroupButtonsTests() {
     let allSizeTypes;
     let mainExampleGroupButtons;
     let mainExampleGroupButtonsHeight;
+    let mainExampleGroupButtonsStyle;
+    let allStyleTypes;
 
     describe('Storybook "GroupButtons" Tests Suite', function () {
         this.retries(0);
@@ -242,10 +245,109 @@ export async function StorybookGroupButtonsTests() {
                         break;
 
                     case 'styleType':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(groupButtonsInputsTitles.includes('styleType')).to.be.true;
+                            await driver.click(await groupButtons.getInputRowSelectorByName('viewType'));
                         });
-                        // TODO
+                        it(`get all style types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allStyleTypes = await storyBookPage.inputs.getAllStyleTypes();
+                            driver.sleep(1 * 1000);
+                            console.info('allStyleTypes length: ', allStyleTypes.length);
+                            expect(allStyleTypes.length).equals(styleTypeExpectedValues.length);
+                        });
+                        it(`validate current style type is "weak"`, async function () {
+                            mainExampleGroupButtons = await driver.findElement(
+                                groupButtons.MainExampleGroupButtons_singleButton,
+                            );
+                            mainExampleGroupButtonsStyle = await mainExampleGroupButtons.getCssValue('background');
+                            console.info('mainExampleGroupButtons: ', mainExampleGroupButtons);
+                            console.info('mainExampleGroupButtonsStyle: ', mainExampleGroupButtonsStyle);
+                            const backgroundColor = mainExampleGroupButtonsStyle.split('rgba(')[1].split(')')[0];
+                            console.info('backgroundColor: ', backgroundColor);
+                            expect(backgroundColor).to.equal('26, 26, 26, 0.12');
+                        });
+                        styleTypeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const styleType = allStyleTypes[index];
+                                await styleType.click();
+                                mainExampleGroupButtons = await driver.findElement(
+                                    groupButtons.MainExampleGroupButtons_singleButton,
+                                );
+                                mainExampleGroupButtonsStyle = await mainExampleGroupButtons.getCssValue('background');
+                                console.info('mainExampleGroupButtonsStyle: ', mainExampleGroupButtonsStyle);
+                                await driver.click(await groupButtons.getInputRowSelectorByName('viewType'));
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (styleType) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                const backgroundHue = mainExampleGroupButtonsStyle.split('rgb')[1].split(')')[0];
+                                console.info('backgroundHue: ', backgroundHue);
+                                let expectedHue;
+                                switch (title) {
+                                    case 'weak':
+                                        console.info(`At WEAK style type`);
+                                        expectedHue = 'rgba(26, 26, 26, 0.12)';
+                                        break;
+                                    case 'weak-invert':
+                                        console.info(`At WEAK-INVERT style type`);
+                                        expectedHue = 'rgba(255, 255, 255, 0.5)';
+                                        break;
+                                    case 'regular':
+                                        console.info(`At REGULAR style type`);
+                                        expectedHue = 'rgb(250, 250, 250)';
+                                        break;
+                                    case 'strong':
+                                        console.info(`At STRONG style type`);
+                                        expectedHue = 'rgb(93, 129, 9)';
+                                        break;
+
+                                    default:
+                                        console.info(`At DEFAULT style type`);
+                                        expectedHue = '';
+                                        break;
+                                }
+                                expect('rgb' + backgroundHue + ')').to.equal(expectedHue);
+                                await driver.click(groupButtons.MainHeader);
+                                driver.sleep(0.1 * 1000);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: groupButtons with [style type = '${title}']`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
+                        it(`back to default [style type = "weak"]`, async function () {
+                            await driver.click(groupButtons.ResetControlsButton);
+                            await driver.click(await groupButtons.getInputRowSelectorByName('viewType'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `style type changed to 'weak'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            mainExampleGroupButtons = await driver.findElement(
+                                groupButtons.MainExampleGroupButtons_singleButton,
+                            );
+                            mainExampleGroupButtonsStyle = await mainExampleGroupButtons.getCssValue('background');
+                            console.info('mainExampleGroupButtons: ', mainExampleGroupButtons);
+                            console.info('mainExampleGroupButtonsStyle: ', mainExampleGroupButtonsStyle);
+                            await driver.click(groupButtons.MainHeader);
+                            driver.sleep(0.1 * 1000);
+                            const backgroundColor = mainExampleGroupButtonsStyle.split('rgba(')[1].split(')')[0];
+                            console.info('backgroundColor: ', backgroundColor);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: groupButtons with [style type = 'weak']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(backgroundColor).to.equal('26, 26, 26, 0.12');
+                            await driver.click(groupButtons.MainHeader);
+                        });
                         break;
 
                     case 'supportUnselect':

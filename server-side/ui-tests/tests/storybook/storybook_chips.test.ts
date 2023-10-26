@@ -36,6 +36,7 @@ export async function StorybookChipsTests() {
         'Orientation is vertical',
     ];
     const alignExpectedValues = ['left', 'center', 'right'];
+    const styleTypeExpectedValues = ['weak', 'weak-invert', 'regular', 'strong'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
@@ -43,6 +44,9 @@ export async function StorybookChipsTests() {
     let chipsInputsTitles;
     let chipsOutputsTitles;
     let chipsMethodsTitles;
+    let mainExampleChips;
+    let mainExampleChipsStyle;
+    let allStyleTypes;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "Chips" Tests Suite', function () {
@@ -176,7 +180,7 @@ export async function StorybookChipsTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             const newClassNamesGotFromUi = await (
-                                await driver.findElement(chips.MainExampleChips)
+                                await driver.findElement(chips.MainExampleChips_singleChip)
                             ).getAttribute('class');
                             console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
                             expect(newClassNamesGotFromUi).to.contain(newClassNamesToSet);
@@ -190,7 +194,7 @@ export async function StorybookChipsTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             const newClassNamesGotFromUi = await (
-                                await driver.findElement(chips.MainExampleChips)
+                                await driver.findElement(chips.MainExampleChips_singleChip)
                             ).getAttribute('class');
                             console.info('newClassNamesGotFromUi: ', JSON.stringify(newClassNamesGotFromUi, null, 2));
                             expect(newClassNamesGotFromUi).to.not.contain('rotate3d');
@@ -208,7 +212,7 @@ export async function StorybookChipsTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await driver.click(chips.MainHeader);
-                            const mainExampleChips = await driver.findElement(chips.MainExampleChips);
+                            const mainExampleChips = await driver.findElement(chips.MainExampleChips_singleChip);
                             const mainExampleChipsDisabled = await mainExampleChips.getAttribute('disabled');
                             console.info(
                                 'mainExampleChipsDisabled (false): ',
@@ -224,7 +228,7 @@ export async function StorybookChipsTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await driver.click(chips.MainHeader);
-                            const mainExampleChips = await driver.findElement(chips.MainExampleChips);
+                            const mainExampleChips = await driver.findElement(chips.MainExampleChips_singleChip);
                             const mainExampleChipsDisabled = await mainExampleChips.getAttribute('disabled');
                             console.info(
                                 'mainExampleChipsDisabled (true): ',
@@ -240,7 +244,7 @@ export async function StorybookChipsTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await driver.click(chips.MainHeader);
-                            const mainExampleChips = await driver.findElement(chips.MainExampleChips);
+                            const mainExampleChips = await driver.findElement(chips.MainExampleChips_singleChip);
                             const mainExampleChipsDisabled = await mainExampleChips.getAttribute('disabled');
                             expect(mainExampleChipsDisabled).to.be.null;
                         });
@@ -252,6 +256,7 @@ export async function StorybookChipsTests() {
                         });
                         // TODO
                         break;
+
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('mandatory')).to.be.true;
@@ -284,24 +289,28 @@ export async function StorybookChipsTests() {
                             await storyBookPage.elemntDoNotExist(chips.MainExample_mandatoryIcon);
                         });
                         break;
+
                     case 'orientation':
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('orientation')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'placeholder':
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('placeholder')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'renderTitle':
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('renderTitle')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('showTitle')).to.be.true;
@@ -342,18 +351,114 @@ export async function StorybookChipsTests() {
                             await storyBookPage.untilIsVisible(chips.MainExample_titleLabel);
                         });
                         break;
+
                     case 'styleType':
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('styleType')).to.be.true;
+                            await driver.click(await chips.getInputRowSelectorByName('xAlignment'));
                         });
-                        // TODO
+                        it(`get all style types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allStyleTypes = await storyBookPage.inputs.getAllStyleTypes();
+                            driver.sleep(1 * 1000);
+                            console.info('allStyleTypes length: ', allStyleTypes.length);
+                            expect(allStyleTypes.length).equals(styleTypeExpectedValues.length);
+                        });
+                        it(`validate current style type is "regular"`, async function () {
+                            mainExampleChips = await driver.findElement(chips.MainExampleChips_singleChip);
+                            mainExampleChipsStyle = await mainExampleChips.getCssValue('background');
+                            console.info('mainExampleChips: ', mainExampleChips);
+                            console.info('mainExampleChipsStyle: ', mainExampleChipsStyle);
+                            const backgroundColor = mainExampleChipsStyle.split('rgb(')[1].split(')')[0];
+                            console.info('backgroundColor: ', backgroundColor);
+                            expect(backgroundColor).to.equal('250, 250, 250');
+                        });
+                        styleTypeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const styleType = allStyleTypes[index];
+                                await styleType.click();
+                                mainExampleChips = await driver.findElement(chips.MainExampleChips_singleChip);
+                                mainExampleChipsStyle = await mainExampleChips.getCssValue('background');
+                                console.info('mainExampleChipsStyle: ', mainExampleChipsStyle);
+                                await driver.click(await chips.getInputRowSelectorByName('xAlignment'));
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (styleType) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                const backgroundHue = mainExampleChipsStyle.split('rgb')[1].split(')')[0];
+                                console.info('backgroundHue: ', backgroundHue);
+                                let expectedHue;
+                                switch (title) {
+                                    case 'weak':
+                                        console.info(`At WEAK style type`);
+                                        expectedHue = 'rgba(26, 26, 26, 0.12)';
+                                        break;
+                                    case 'weak-invert':
+                                        console.info(`At WEAK-INVERT style type`);
+                                        expectedHue = 'rgba(255, 255, 255, 0.5)';
+                                        break;
+                                    case 'regular':
+                                        console.info(`At REGULAR style type`);
+                                        expectedHue = 'rgb(250, 250, 250)';
+                                        break;
+                                    case 'strong':
+                                        console.info(`At STRONG style type`);
+                                        expectedHue = 'rgb(93, 129, 9)';
+                                        break;
+
+                                    default:
+                                        console.info(`At DEFAULT style type`);
+                                        expectedHue = '';
+                                        break;
+                                }
+                                expect('rgb' + backgroundHue + ')').to.equal(expectedHue);
+                                await driver.click(chips.MainHeader);
+                                driver.sleep(0.1 * 1000);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: chips with [style type = '${title}']`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
+                        it(`back to default [style type = "regular"]`, async function () {
+                            await driver.click(chips.ResetControlsButton);
+                            await driver.click(await chips.getInputRowSelectorByName('xAlignment'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `style type changed to 'regular'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            mainExampleChips = await driver.findElement(chips.MainExampleChips_singleChip);
+                            mainExampleChipsStyle = await mainExampleChips.getCssValue('background');
+                            console.info('mainExampleChips: ', mainExampleChips);
+                            console.info('mainExampleChipsStyle: ', mainExampleChipsStyle);
+                            await driver.click(chips.MainHeader);
+                            driver.sleep(0.1 * 1000);
+                            const backgroundColor = mainExampleChipsStyle.split('rgb(')[1].split(')')[0];
+                            console.info('backgroundColor: ', backgroundColor);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: chips with [style type = 'regular']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(backgroundColor).to.equal('250, 250, 250');
+                            await driver.click(chips.MainHeader);
+                        });
                         break;
+
                     case 'type':
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('type')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'xAlignment':
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('xAlignment')).to.be.true;
