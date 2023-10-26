@@ -23,12 +23,16 @@ export async function StorybookMenuTests() {
     ];
     const menuOutputs = ['menuClick', 'menuItemClick'];
     const menuSubFoldersHeaders = ['Action (default)', 'Action select', 'Select'];
+    const sizeTypesExpectedValues = ['xs', 'sm', 'md', 'lg', 'xl'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let menu: Menu;
     let menuInputsTitles;
     let menuOutputsTitles;
+    let allSizeTypes;
+    let mainExampleMenu;
+    let mainExampleMenuHeight;
 
     describe('Storybook "Menu" Tests Suite', function () {
         this.retries(0);
@@ -180,12 +184,14 @@ export async function StorybookMenuTests() {
                             );
                         });
                         break;
+
                     case 'items':
                         it(`it '${input}'`, async function () {
                             expect(menuInputsTitles.includes('items')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'classNames':
                         it(`validate input`, async function () {
                             expect(menuInputsTitles.includes('classNames')).to.be.true;
@@ -219,6 +225,7 @@ export async function StorybookMenuTests() {
                             expect(newClassNamesGotFromUi).to.not.contain('rotate3d');
                         });
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(menuInputsTitles.includes('disabled')).to.be.true;
@@ -267,30 +274,116 @@ export async function StorybookMenuTests() {
                             expect(mainExampleMenuDisabled).to.be.null;
                         });
                         break;
+
                     case 'selectedItem':
                         it(`it '${input}'`, async function () {
                             expect(menuInputsTitles.includes('selectedItem')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'sizeType':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(menuInputsTitles.includes('sizeType')).to.be.true;
+                            await driver.click(await menu.getInputRowSelectorByName('styleType'));
                         });
-                        // TODO
+                        it(`get all size types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allSizeTypes = await storyBookPage.inputs.getAllSizeTypes();
+                            driver.sleep(1 * 1000);
+                            console.info('allSizeTypes length: ', allSizeTypes.length);
+                            expect(allSizeTypes.length).equals(sizeTypesExpectedValues.length);
+                        });
+                        it(`validate current size type is "md"`, async function () {
+                            mainExampleMenu = await driver.findElement(menu.MainExampleMenu);
+                            mainExampleMenuHeight = await mainExampleMenu.getCssValue('height');
+                            console.info('mainExampleMenuHeight: ', mainExampleMenuHeight);
+                            expect(mainExampleMenuHeight).to.equal('40px');
+                        });
+                        sizeTypesExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const sizeType = allSizeTypes[index];
+                                await sizeType.click();
+                                mainExampleMenu = await driver.findElement(menu.MainExampleMenu);
+                                mainExampleMenuHeight = await mainExampleMenu.getCssValue('height');
+                                console.info('mainExampleMenuHeight: ', mainExampleMenuHeight);
+                                await driver.click(await menu.getInputRowSelectorByName('styleType'));
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (sizeType) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                let expectedHeight;
+                                switch (title) {
+                                    case 'xs':
+                                        expectedHeight = '24px';
+                                        break;
+                                    case 'sm':
+                                        expectedHeight = '32px';
+                                        break;
+                                    case 'md':
+                                        expectedHeight = '40px';
+                                        break;
+                                    case 'lg':
+                                        expectedHeight = '48px';
+                                        break;
+                                    case 'xl':
+                                        expectedHeight = '64px';
+                                        break;
+
+                                    default:
+                                        expectedHeight = '';
+                                        break;
+                                }
+                                expect(mainExampleMenuHeight).to.equal(expectedHeight);
+                                await driver.click(menu.MainHeader);
+                                driver.sleep(0.1 * 1000);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: menu with [size type = '${title}']`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
+                        it(`back to default [size type = "md"]`, async function () {
+                            await allSizeTypes[2].click();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `size type changed to 'md'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            mainExampleMenu = await driver.findElement(menu.MainExampleMenu);
+                            mainExampleMenuHeight = await mainExampleMenu.getCssValue('height');
+                            console.info('mainExampleMenuHeight: ', mainExampleMenuHeight);
+                            await driver.click(menu.MainHeader);
+                            driver.sleep(0.1 * 1000);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: menu with [size type = 'md']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(mainExampleMenuHeight).to.equal('40px');
+                        });
                         break;
+
                     case 'styleType':
                         it(`it '${input}'`, async function () {
                             expect(menuInputsTitles.includes('styleType')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'text':
                         it(`it '${input}'`, async function () {
                             expect(menuInputsTitles.includes('text')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'type':
                         it(`it '${input}'`, async function () {
                             expect(menuInputsTitles.includes('type')).to.be.true;

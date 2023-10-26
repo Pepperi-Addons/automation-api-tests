@@ -317,6 +317,7 @@ export async function StorybookButtonTests() {
                     case 'iconPosition':
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('iconPosition')).to.be.true;
+                            await driver.click(await button.getInputRowSelectorByName('styleStateType'));
                         });
                         it(`get all icon positions`, async function () {
                             const base64ImageComponent = await driver.saveScreenshots();
@@ -376,6 +377,7 @@ export async function StorybookButtonTests() {
                     case 'sizeType':
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('sizeType')).to.be.true;
+                            await driver.click(await button.getInputRowSelectorByName('styleStateType'));
                         });
                         it(`get all size types`, async function () {
                             const base64ImageComponent = await driver.saveScreenshots();
@@ -401,6 +403,7 @@ export async function StorybookButtonTests() {
                                 mainExampleButton = await driver.findElement(button.MainExampleButton);
                                 mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
                                 console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                                await driver.click(await button.getInputRowSelectorByName('styleStateType'));
                                 let base64ImageComponentModal = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `${title} (sizeType) input change`,
@@ -440,6 +443,7 @@ export async function StorybookButtonTests() {
                         });
                         it(`back to default [size type = "md"]`, async function () {
                             await allSizeTypes[2].click();
+                            await driver.click(await button.getInputRowSelectorByName('styleStateType'));
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `size type changed to 'md'`,
@@ -456,12 +460,14 @@ export async function StorybookButtonTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             expect(mainExampleButtonHeight).to.equal('40px');
+                            await driver.click(button.MainHeader);
                         });
                         break;
 
                     case 'styleStateType':
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('styleStateType')).to.be.true;
+                            await driver.click(await button.getInputRowSelectorByName('styleType'));
                         });
                         it(`get all style state types`, async function () {
                             const base64ImageComponent = await driver.saveScreenshots();
@@ -483,6 +489,7 @@ export async function StorybookButtonTests() {
                                 // mainExampleButton = await driver.findElement(button.MainExampleButton);
                                 // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
                                 // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                                await driver.click(await button.getInputRowSelectorByName('styleType'));
                                 let base64ImageComponentModal = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `${title} (styleStateType) input change`,
@@ -516,6 +523,7 @@ export async function StorybookButtonTests() {
                         });
                         it(`back to default [style state type = "system"]`, async function () {
                             await allStyleStateTypes[0].click();
+                            await driver.click(await button.getInputRowSelectorByName('styleType'));
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `style state type changed to 'system'`,
@@ -532,12 +540,14 @@ export async function StorybookButtonTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             // expect(mainExampleButtonHeight).to.equal('40px');
+                            await driver.click(button.MainHeader);
                         });
                         break;
 
                     case 'styleType':
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('styleType')).to.be.true;
+                            await driver.click(await button.getInputRowSelectorByName('visible'));
                         });
                         it(`get all style types`, async function () {
                             const base64ImageComponent = await driver.saveScreenshots();
@@ -559,6 +569,7 @@ export async function StorybookButtonTests() {
                                 // mainExampleButton = await driver.findElement(button.MainExampleButton);
                                 // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
                                 // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                                await driver.click(await button.getInputRowSelectorByName('visible'));
                                 let base64ImageComponentModal = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `${title} (styleType) input change`,
@@ -595,6 +606,7 @@ export async function StorybookButtonTests() {
                         });
                         it(`back to default [style type = "weak"]`, async function () {
                             await allStyleTypes[0].click();
+                            await driver.click(await button.getInputRowSelectorByName('visible'));
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `style type changed to 'weak'`,
@@ -611,12 +623,14 @@ export async function StorybookButtonTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             // expect(mainExampleButtonHeight).to.equal('40px');
+                            await driver.click(button.MainHeader);
                         });
                         break;
 
                     case 'visible':
                         it(`validate input`, async function () {
                             expect(buttonInputsTitles.includes('visible')).to.be.true;
+                            await driver.click(await button.getOutputRowSelectorByName('buttonClick'));
                         });
                         it(`making sure current value is "True"`, async function () {
                             await driver.click(await storyBookPage.inputs.getInputRowSelectorByName('visible'));
@@ -637,6 +651,7 @@ export async function StorybookButtonTests() {
                         });
                         it(`functional test [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleVisibleControl();
+                            await driver.click(await button.getOutputRowSelectorByName('buttonClick'));
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Visible Input Changed to "false"`,
@@ -668,6 +683,7 @@ export async function StorybookButtonTests() {
                         });
                         it(`back to default [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleVisibleControl();
+                            await driver.click(await button.getOutputRowSelectorByName('buttonClick'));
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Visible Input default value = "true"`,
@@ -682,6 +698,7 @@ export async function StorybookButtonTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             expect(mainExamplePepButtonClasses).equals('');
+                            await driver.click(button.MainHeader);
                         });
                         break;
 
@@ -693,6 +710,17 @@ export async function StorybookButtonTests() {
         });
         buttonOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
+                it(`open outputs if it's closed`, async function () {
+                    const outputsMainTableRowElement = await driver.findElement(button.Outputs_mainTableRow);
+                    if ((await outputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                        await outputsMainTableRowElement.click();
+                    }
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${output}' output`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
                 it(`SCREENSHOT`, async function () {
                     await driver.click(await button.getOutputRowSelectorByName(output));
                     const base64ImageComponent = await driver.saveScreenshots();
