@@ -576,41 +576,55 @@ export async function StorybookButtonTests() {
                             console.info('allStyleTypes length: ', allStyleTypes.length);
                             expect(allStyleTypes.length).equals(styleTypeExpectedValues.length);
                         });
-                        // it(`validate current style type is "weak"`, async function () {
-                        // });
+                        it(`validate current style type is "weak"`, async function () {
+                            mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            mainExampleButtonStyle = await mainExampleButton.getCssValue('background');
+                            console.info('mainExampleButton: ', mainExampleButton);
+                            console.info('mainExampleButtonStyle: ', mainExampleButtonStyle);
+                            const backgroundColor = mainExampleButtonStyle.split('rgba(')[1].split(')')[0];
+                            console.info('backgroundColor: ', backgroundColor);
+                            expect(backgroundColor).to.equal('26, 26, 26, 0.12');
+                        });
                         styleTypeExpectedValues.forEach(async (title, index) => {
                             it(`'${title}' -- functional test (+screenshot)`, async function () {
                                 const styleType = allStyleTypes[index];
                                 await styleType.click();
-                                // mainExampleButton = await driver.findElement(button.MainExampleButton);
-                                // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
-                                // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                                mainExampleButton = await driver.findElement(button.MainExampleButton);
+                                mainExampleButtonStyle = await mainExampleButton.getCssValue('background');
+                                console.info('mainExampleButtonStyle: ', mainExampleButtonStyle);
                                 await driver.click(await button.getInputRowSelectorByName('visible'));
                                 let base64ImageComponentModal = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `${title} (styleType) input change`,
                                     value: 'data:image/png;base64,' + base64ImageComponentModal,
                                 });
-                                // let expectedHeight;
+                                const backgroundHue = mainExampleButtonStyle.split('rgb')[1].split(')')[0];
+                                console.info('backgroundHue: ', backgroundHue);
+                                let expectedHue;
                                 switch (title) {
                                     case 'weak':
                                         console.info(`At WEAK style type`);
+                                        expectedHue = 'rgba(26, 26, 26, 0.12)';
                                         break;
                                     case 'weak-invert':
                                         console.info(`At WEAK-INVERT style type`);
+                                        expectedHue = 'rgba(255, 255, 255, 0.5)';
                                         break;
                                     case 'regular':
                                         console.info(`At REGULAR style type`);
+                                        expectedHue = 'rgb(250, 250, 250)';
                                         break;
                                     case 'strong':
                                         console.info(`At STRONG style type`);
+                                        expectedHue = 'rgb(93, 129, 9)';
                                         break;
 
                                     default:
                                         console.info(`At DEFAULT style type`);
+                                        expectedHue = '';
                                         break;
                                 }
-                                // expect(mainExampleButtonHeight).to.equal(expectedHeight);
+                                expect('rgb' + backgroundHue + ')').to.equal(expectedHue);
                                 await driver.click(button.MainHeader);
                                 driver.sleep(0.1 * 1000);
                                 base64ImageComponentModal = await driver.saveScreenshots();
@@ -621,24 +635,27 @@ export async function StorybookButtonTests() {
                             });
                         });
                         it(`back to default [style type = "weak"]`, async function () {
-                            await allStyleTypes[0].click();
+                            await driver.click(button.ResetControlsButton);
                             await driver.click(await button.getInputRowSelectorByName('visible'));
                             let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `style type changed to 'weak'`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // mainExampleButton = await driver.findElement(button.MainExampleButton);
-                            // mainExampleButtonHeight = await mainExampleButton.getCssValue('height');
-                            // console.info('mainExampleButtonHeight: ', mainExampleButtonHeight);
+                            mainExampleButton = await driver.findElement(button.MainExampleButton);
+                            mainExampleButtonStyle = await mainExampleButton.getCssValue('background');
+                            console.info('mainExampleButton: ', mainExampleButton);
+                            console.info('mainExampleButtonStyle: ', mainExampleButtonStyle);
                             await driver.click(button.MainHeader);
                             driver.sleep(0.1 * 1000);
+                            const backgroundColor = mainExampleButtonStyle.split('rgba(')[1].split(')')[0];
+                            console.info('backgroundColor: ', backgroundColor);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `upper screenshot: button with [style type = 'weak']`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // expect(mainExampleButtonHeight).to.equal('40px');
+                            expect(backgroundColor).to.equal('26, 26, 26, 0.12');
                             await driver.click(button.MainHeader);
                         });
                         break;

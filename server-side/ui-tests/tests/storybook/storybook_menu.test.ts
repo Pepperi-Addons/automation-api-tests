@@ -24,6 +24,7 @@ export async function StorybookMenuTests() {
     const menuOutputs = ['menuClick', 'menuItemClick'];
     const menuSubFoldersHeaders = ['Action (default)', 'Action select', 'Select'];
     const sizeTypesExpectedValues = ['xs', 'sm', 'md', 'lg', 'xl'];
+    const styleTypeExpectedValues = ['weak', 'weak-invert', 'regular', 'strong'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
@@ -33,6 +34,8 @@ export async function StorybookMenuTests() {
     let allSizeTypes;
     let mainExampleMenu;
     let mainExampleMenuHeight;
+    let mainExampleMenuStyle;
+    let allStyleTypes;
 
     describe('Storybook "Menu" Tests Suite', function () {
         this.retries(0);
@@ -371,10 +374,103 @@ export async function StorybookMenuTests() {
                         break;
 
                     case 'styleType':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(menuInputsTitles.includes('styleType')).to.be.true;
+                            await driver.click(await menu.getInputRowSelectorByName('type'));
                         });
-                        // TODO
+                        it(`get all style types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allStyleTypes = await storyBookPage.inputs.getAllStyleTypes();
+                            driver.sleep(1 * 1000);
+                            console.info('allStyleTypes length: ', allStyleTypes.length);
+                            expect(allStyleTypes.length).equals(styleTypeExpectedValues.length);
+                        });
+                        it(`validate current style type is "weak"`, async function () {
+                            mainExampleMenu = await driver.findElement(menu.MainExampleMenu);
+                            mainExampleMenuStyle = await mainExampleMenu.getCssValue('background');
+                            console.info('mainExampleMenu: ', mainExampleMenu);
+                            console.info('mainExampleMenuStyle: ', mainExampleMenuStyle);
+                            const backgroundColor = mainExampleMenuStyle.split('rgba(')[1].split(')')[0];
+                            console.info('backgroundColor: ', backgroundColor);
+                            expect(backgroundColor).to.equal('26, 26, 26, 0.12');
+                        });
+                        styleTypeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const styleType = allStyleTypes[index];
+                                await styleType.click();
+                                mainExampleMenu = await driver.findElement(menu.MainExampleMenu);
+                                mainExampleMenuStyle = await mainExampleMenu.getCssValue('background');
+                                console.info('mainExampleMenuStyle: ', mainExampleMenuStyle);
+                                await driver.click(await menu.getInputRowSelectorByName('type'));
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (styleType) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                const backgroundHue = mainExampleMenuStyle.split('rgb')[1].split(')')[0];
+                                console.info('backgroundHue: ', backgroundHue);
+                                let expectedHue;
+                                switch (title) {
+                                    case 'weak':
+                                        console.info(`At WEAK style type`);
+                                        expectedHue = 'rgba(26, 26, 26, 0.12)';
+                                        break;
+                                    case 'weak-invert':
+                                        console.info(`At WEAK-INVERT style type`);
+                                        expectedHue = 'rgba(255, 255, 255, 0.5)';
+                                        break;
+                                    case 'regular':
+                                        console.info(`At REGULAR style type`);
+                                        expectedHue = 'rgb(250, 250, 250)';
+                                        break;
+                                    case 'strong':
+                                        console.info(`At STRONG style type`);
+                                        expectedHue = 'rgb(93, 129, 9)';
+                                        break;
+
+                                    default:
+                                        console.info(`At DEFAULT style type`);
+                                        expectedHue = '';
+                                        break;
+                                }
+                                expect('rgb' + backgroundHue + ')').to.equal(expectedHue);
+                                await driver.click(menu.MainHeader);
+                                driver.sleep(0.1 * 1000);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `upper screenshot: menu with [style type = '${title}']`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
+                        it(`back to default [style type = "weak"]`, async function () {
+                            await driver.click(menu.ResetControlsButton);
+                            await driver.click(await menu.getInputRowSelectorByName('type'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `style type changed to 'weak'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            mainExampleMenu = await driver.findElement(menu.MainExampleMenu);
+                            mainExampleMenuStyle = await mainExampleMenu.getCssValue('background');
+                            console.info('mainExampleMenu: ', mainExampleMenu);
+                            console.info('mainExampleMenuStyle: ', mainExampleMenuStyle);
+                            await driver.click(menu.MainHeader);
+                            driver.sleep(0.1 * 1000);
+                            const backgroundColor = mainExampleMenuStyle.split('rgba(')[1].split(')')[0];
+                            console.info('backgroundColor: ', backgroundColor);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper screenshot: menu with [style type = 'weak']`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(backgroundColor).to.equal('26, 26, 26, 0.12');
+                            await driver.click(menu.MainHeader);
+                        });
                         break;
 
                     case 'text':
