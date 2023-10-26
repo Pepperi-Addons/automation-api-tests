@@ -55,7 +55,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
 
     // #endregion Upgrade script dependencies
 
-    describe(`Prerequisites Addons for Pricing Tests - ${
+    describe(`Prerequisites Addons for PRICING Tests - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
     }`, async () => {
         isInstalledArr.forEach((isInstalled, index) => {
