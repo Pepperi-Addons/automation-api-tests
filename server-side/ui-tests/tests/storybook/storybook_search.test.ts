@@ -14,6 +14,7 @@ export async function StorybookSearchTests() {
     const searchProperties = ['fadeState'];
     const searchOutputs = ['search'];
     const searchSubFoldersHeaders = ['Shrink', 'Shrink on small screens', 'Keydown'];
+    const sizeTypesExpectedValues = ['xs', 'sm', 'md', 'lg', 'xl'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
@@ -21,6 +22,9 @@ export async function StorybookSearchTests() {
     let searchInputsTitles;
     let searchPropertiesTitles;
     let searchOutputsTitles;
+    let allSizeTypes;
+    let mainExampleSearch;
+    let mainExampleSearchHeight;
 
     describe('Storybook "Search" Tests Suite', function () {
         this.retries(0);
@@ -154,18 +158,90 @@ export async function StorybookSearchTests() {
                             expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
+
                     case 'shrink':
                         it(`it '${input}'`, async function () {
                             expect(searchInputsTitles.includes('shrink')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'sizeType':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(searchInputsTitles.includes('sizeType')).to.be.true;
                         });
-                        // TODO
+                        it(`get all size types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allSizeTypes = await storyBookPage.inputs.getAllSizeTypes();
+                            driver.sleep(1 * 1000);
+                            console.info('allSizeTypes length: ', allSizeTypes.length);
+                            expect(allSizeTypes.length).equals(sizeTypesExpectedValues.length);
+                        });
+                        it(`validate current size type is "md"`, async function () {
+                            mainExampleSearch = await driver.findElement(search.MainExampleSearch);
+                            mainExampleSearchHeight = await mainExampleSearch.getCssValue('height');
+                            console.info('mainExampleSearchHeight: ', mainExampleSearchHeight);
+                            expect(mainExampleSearchHeight).to.equal('40px');
+                        });
+                        sizeTypesExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const sizeType = allSizeTypes[index];
+                                await sizeType.click();
+                                mainExampleSearch = await driver.findElement(search.MainExampleSearch);
+                                mainExampleSearchHeight = await mainExampleSearch.getCssValue('height');
+                                console.info('mainExampleSearchHeight: ', mainExampleSearchHeight);
+                                const base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (sizeType) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                let expectedHeight;
+                                switch (title) {
+                                    case 'xs':
+                                        expectedHeight = '24px';
+                                        break;
+                                    case 'sm':
+                                        expectedHeight = '32px';
+                                        break;
+                                    case 'md':
+                                        expectedHeight = '40px';
+                                        break;
+                                    case 'lg':
+                                        expectedHeight = '48px';
+                                        break;
+                                    case 'xl':
+                                        expectedHeight = '56px';
+                                        break;
+
+                                    default:
+                                        expectedHeight = '';
+                                        break;
+                                }
+                                expect(mainExampleSearchHeight).to.equal(expectedHeight);
+                                await driver.click(search.MainHeader);
+                                driver.sleep(0.1 * 1000);
+                            });
+                        });
+                        it(`back to default [size type = "md"]`, async function () {
+                            await allSizeTypes[2].click();
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `size type changed to 'md'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            mainExampleSearch = await driver.findElement(search.MainExampleSearch);
+                            mainExampleSearchHeight = await mainExampleSearch.getCssValue('height');
+                            console.info('mainExampleSearchHeight: ', mainExampleSearchHeight);
+                            await driver.click(search.MainHeader);
+                            driver.sleep(0.1 * 1000);
+                            expect(mainExampleSearchHeight).to.equal('40px');
+                        });
                         break;
+
                     case 'triggerOn':
                         it(`it '${input}'`, async function () {
                             expect(searchInputsTitles.includes('triggerOn')).to.be.true;

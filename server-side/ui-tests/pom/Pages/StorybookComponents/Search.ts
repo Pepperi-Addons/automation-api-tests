@@ -3,7 +3,7 @@ import { StorybookComponent } from './Base/StorybookComponent';
 
 export class Search extends StorybookComponent {
     public MainExampleDiv: By = By.xpath('//div[@id="story--components-search--story-1"]');
-    public MainExampleSearch: By = By.xpath(`${this.MainExampleDiv.value}//pep-files-uploader//img`);
+    public MainExampleSearch: By = By.xpath(`${this.MainExampleDiv.value}//pep-search//mat-form-field`);
     public MainExampleSearch_value: By = By.xpath(`${this.MainExampleDiv.value}//pep-search//input`);
 
     public async doesSearchComponentFound(): Promise<void> {
