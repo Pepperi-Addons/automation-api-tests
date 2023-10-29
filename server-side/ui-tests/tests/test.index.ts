@@ -3505,14 +3505,12 @@ function resolveUserPerTest(addonName): any[] {
             return ['PfsCpiTestEU@pepperitest.com', 'PfsCpiTestProd@pepperitest.com', 'PfsCpiTestSB@pepperitest.com'];
         case 'CONFIGURATIONS':
             return ['configEU@pepperitest.com', 'configProd@pepperitest.com', 'configSB@pepperitest.com'];
-        // case 'RELATED-ITEMS':
-        //     return [
-        //         'relatedItemsTestEU@pepperitest.com',
-        //         'relatedItemsTestProd@pepperitest.com',
-        //         'relatedItemsTestSB@pepperitest.com',
-        //     ];
         case 'RELATED-ITEMS':
-            return ['relatedItemsTestSB@pepperitest.com', 'relatedItemsTestProd@pepperitest.com'];
+            return [
+                'relatedItemsTestEU@pepperitest.com',
+                'relatedItemsTestProd@pepperitest.com',
+                'relatedItemsTestSB@pepperitest.com',
+            ];
         case 'UDB':
         case 'USER DEFINED BLOCKS':
             return [
