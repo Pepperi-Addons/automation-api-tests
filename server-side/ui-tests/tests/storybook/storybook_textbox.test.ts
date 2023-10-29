@@ -275,40 +275,83 @@ export async function StorybookTextboxTests() {
                         });
                         break;
                     case 'maxFieldCharacters':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('maxFieldCharacters')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'regex':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('regex')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'regexError':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('regexError')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'renderError':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('renderError')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'renderSymbol':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('renderSymbol')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'renderTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('renderTitle')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderTitle Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textbox.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of RenderTitle Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(textbox.MainExample_pepTitle);
+                        });
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleRenderTitleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderTitle Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textbox.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of RenderTitle Input "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(textbox.MainExample_pepTitle);
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleRenderTitleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderTitle Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textbox.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of RenderTitle Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(textbox.MainExample_pepTitle);
+                        });
                         break;
                     case 'showTitle':
                         it(`validate input`, async function () {
@@ -351,13 +394,13 @@ export async function StorybookTextboxTests() {
                         });
                         break;
                     case 'textColor':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('textColor')).to.be.true;
                         });
                         // TODO
                         break;
                     case 'type':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('type')).to.be.true;
                         });
                         // TODO

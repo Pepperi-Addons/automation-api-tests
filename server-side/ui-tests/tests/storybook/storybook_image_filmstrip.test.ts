@@ -256,14 +256,57 @@ export async function StorybookImageFilmstripTests() {
                         break;
 
                     case 'renderTitle':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('renderTitle')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderTitle Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(imageFilmstrip.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of RenderTitle Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(imageFilmstrip.MainExample_pepTitle);
+                        });
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleRenderTitleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderTitle Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(imageFilmstrip.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of RenderTitle Input "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.elemntDoNotExist(imageFilmstrip.MainExample_pepTitle);
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleRenderTitleControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderTitle Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(imageFilmstrip.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of RenderTitle Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(imageFilmstrip.MainExample_pepTitle);
+                        });
                         break;
 
                     case 'showThumbnails':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('showThumbnails')).to.be.true;
                         });
                         // TODO
@@ -313,7 +356,7 @@ export async function StorybookImageFilmstripTests() {
                         break;
 
                     case 'xAlignment':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('xAlignment')).to.be.true;
                         });
                         it(`get all xAlignments`, async function () {

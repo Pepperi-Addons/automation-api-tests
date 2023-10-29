@@ -8,6 +8,7 @@ export class Link extends StorybookComponent {
     public MainExampleLink_button: By = By.xpath(`${this.MainExampleLink.value}//button`);
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
+    public MainExample_pepTitle: By = By.xpath(`${this.MainExampleDiv.value}//pep-link${this.PepTitle.value}`);
 
     public async doesLinkComponentFound(): Promise<void> {
         await this.doesComponentFound('link', 'Link');

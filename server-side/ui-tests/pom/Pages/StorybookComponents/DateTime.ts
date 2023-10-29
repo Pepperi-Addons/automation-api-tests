@@ -6,6 +6,7 @@ export class DateTime extends StorybookComponent {
     public MainExampleDateTime: By = By.xpath(`${this.MainExampleDiv.value}//pep-date//input`);
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
+    public MainExample_pepTitle: By = By.xpath(`${this.MainExampleDiv.value}//pep-date${this.PepTitle.value}`);
 
     public async doesDateTimeComponentFound(): Promise<void> {
         await this.doesComponentFound('date-time', 'Date & date-time');

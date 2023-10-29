@@ -6,6 +6,9 @@ export class ImageFilmstrip extends StorybookComponent {
     public MainExampleImageFilmstrip: By = By.xpath(`${this.MainExampleDiv.value}//gallery-image/div`);
     public MainExampleHeightDiv: By = By.xpath(`//pep-images-filmstrip`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
+    public MainExample_pepTitle: By = By.xpath(
+        `${this.MainExampleDiv.value}//pep-images-filmstrip${this.PepTitle.value}`,
+    );
 
     public async doesImageFilmstripComponentFound(): Promise<void> {
         await this.doesComponentFound('image-filmstrip', 'Image filmstrip');

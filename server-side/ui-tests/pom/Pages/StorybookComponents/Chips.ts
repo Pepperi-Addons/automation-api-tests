@@ -8,6 +8,7 @@ export class Chips extends StorybookComponent {
     public MainExampleChips_singleChip: By = By.xpath(`${this.MainExampleChips.value}//mat-chip`);
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
+    public MainExample_pepTitle: By = By.xpath(`${this.MainExampleDiv.value}//pep-chips${this.PepTitle.value}`);
 
     public async doesChipsComponentFound(): Promise<void> {
         await this.doesComponentFound('chips', 'Chips');
