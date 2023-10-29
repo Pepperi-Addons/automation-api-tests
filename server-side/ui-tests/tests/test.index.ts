@@ -1355,11 +1355,17 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
         } else if (addonUUID === '4f9f10f3-cd7d-43f8-b969-5029dad9d02b') {
             //related items - shouldnt only on SB currently
-            const [sbUser] = resolveUserPerTest(addonName); //
+            const [sbUser, prodUser] = resolveUserPerTest(addonName); //
             console.log(`####################### Running For: ${addonName}(${addonUUID}) #######################`);
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
-            let latestVersionOfTestedAddonSb, addonEntryUUIDSb;
+            let latestVersionOfTestedAddonProd, addonEntryUUIDProd, latestVersionOfTestedAddonSb, addonEntryUUIDSb;
             try {
+                [latestVersionOfTestedAddonProd, addonEntryUUIDProd] = await generalService.getLatestAvailableVersion(
+                    addonUUID,
+                    varPass,
+                    null,
+                    'prod',
+                );
                 [latestVersionOfTestedAddonSb, addonEntryUUIDSb] = await generalService.getLatestAvailableVersion(
                     addonUUID,
                     varPassSB,
@@ -1371,17 +1377,49 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 const errorString = `Error: Couldn't Get Latest Available Versions Of ${addonName}: ${
                     (error as any).message
                 }`;
-                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonSb, errorString, service);
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
+                throw new Error(errorString);
+            }
+            if (latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonSb) {
+                const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}`;
+                debugger;
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
+                await Promise.all([
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDProd,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPass,
+                    ),
+                    unavailableAddonVersion(
+                        'stage',
+                        addonName,
+                        addonEntryUUIDSb,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassSB,
+                    ),
+                ]);
                 throw new Error(errorString);
             }
             console.log(
-                `####################### Running For: ${addonName}(${addonUUID}), version: ${latestVersionOfTestedAddonSb} #######################`,
+                `####################### Running For: ${addonName}(${addonUUID}), version: ${latestVersionOfTestedAddonProd} #######################`,
             );
             debugger;
-            await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonSb, generalService);
+            await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonProd, generalService);
             debugger;
             try {
                 await Promise.all([
+                    handleDevTestInstallation(
+                        prodUser,
+                        addonName,
+                        addonUUID,
+                        { describe, expect, it } as TesterFunctions,
+                        varPass,
+                        'prod',
+                    ),
                     handleDevTestInstallation(
                         sbUser,
                         addonName,
@@ -1394,13 +1432,21 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             } catch (error) {
                 debugger;
                 const errorString = (error as any).message;
-                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonSb, errorString, service);
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
                 await Promise.all([
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDProd,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPass,
+                    ),
                     unavailableAddonVersion(
                         'stage',
                         addonName,
                         addonEntryUUIDSb,
-                        latestVersionOfTestedAddonSb,
+                        latestVersionOfTestedAddonProd,
                         addonUUID,
                         varPassSB,
                     ),
@@ -1408,11 +1454,12 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
             console.log(
-                `####################### ${addonName} Version: ${latestVersionOfTestedAddonSb} #######################`,
+                `####################### ${addonName} Version: ${latestVersionOfTestedAddonProd} #######################`,
             );
 
             debugger;
             const isInstalled = await Promise.all([
+                validateLatestVersionOfAddonIsInstalled(prodUser, addonUUID, latestVersionOfTestedAddonProd, 'prod'),
                 validateLatestVersionOfAddonIsInstalled(sbUser, addonUUID, latestVersionOfTestedAddonSb, 'stage'),
             ]);
             const devPassingEnvs: any[] = [];
@@ -1421,7 +1468,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 const isTestedAddonInstalled = isInstalled[index];
                 if (isTestedAddonInstalled === false) {
                     throw new Error(
-                        `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddonSb}`,
+                        `Error: didn't install ${addonName} - ${addonUUID}, version: ${latestVersionOfTestedAddonProd}`,
                     );
                 }
             }
@@ -1437,18 +1484,17 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             try {
                 testsList = await getTestNames(
                     addonName,
-                    sbUser,
-                    'stage',
+                    prodUser,
+                    'prod',
                     latestVersionOfAutomationTemplateAddon,
                     addonUUID,
                 );
             } catch (error) {
                 debugger;
                 const errorString = `Error: got exception trying to get test Names: ${(error as any).message}`;
-                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonSb, errorString, service);
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
                 throw new Error(`Error: got exception trying to get test Names: ${(error as any).message} `);
             }
-            debugger;
             //4. iterate on all test names and call each
             for (let index = 0; index < testsList.length; index++) {
                 const currentTestName = testsList[index];
@@ -1459,12 +1505,20 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     }  #######################`,
                 );
                 let addonSk = null;
-                if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX') {
+                if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
                     addonSk = await service.getSecretfromKMS(email, pass, 'AutomationAddonSecretKey');
                 }
                 //4.1. call current test async->
-                const [devTestResponseSb] = await Promise.all([
+                const [devTestResponseProd, devTestResponseSb] = await Promise.all([
                     //devTestResponseEu,
+                    runDevTestOnCertainEnv(
+                        prodUser,
+                        'prod',
+                        latestVersionOfAutomationTemplateAddon,
+                        body,
+                        addonName,
+                        addonSk,
+                    ),
                     runDevTestOnCertainEnv(
                         sbUser,
                         'stage',
@@ -1474,68 +1528,64 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                         addonSk,
                     ),
                 ]);
-                if (devTestResponseSb === undefined) {
-                    const whichEnvs = devTestResponseSb === undefined ? 'SB' : '';
+                if (devTestResponseProd === undefined || devTestResponseSb === undefined) {
+                    let whichEnvs = devTestResponseProd === undefined ? 'PRDO,' : '';
+                    whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
                     const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
                     await reportToTeamsMessage(
                         addonName,
                         addonUUID,
-                        latestVersionOfTestedAddonSb,
+                        latestVersionOfTestedAddonProd,
                         errorString,
                         service,
                     );
-                    await Promise.all([
-                        unavailableAddonVersion(
-                            'stage',
-                            addonName,
-                            addonEntryUUIDSb,
-                            latestVersionOfTestedAddonSb,
-                            addonUUID,
-                            varPassSB,
-                        ),
-                    ]);
                     throw new Error(`${errorString}`);
                 }
-                if (devTestResponseSb.Body.URI === undefined) {
-                    const whichEnvs = devTestResponseSb.Body.URI === undefined ? 'SB' : '';
+                if (devTestResponseProd.Body.URI === undefined || devTestResponseSb.Body.URI === undefined) {
+                    let whichEnvs = devTestResponseProd.Body.URI === undefined ? 'PRDO,' : '';
+                    whichEnvs += devTestResponseSb.Body.URI === undefined ? 'SB' : '';
                     const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
                     await reportToTeamsMessage(
                         addonName,
                         addonUUID,
-                        latestVersionOfTestedAddonSb,
+                        latestVersionOfTestedAddonProd,
                         errorString,
                         service,
                     );
-                    await Promise.all([
-                        unavailableAddonVersion(
-                            'stage',
-                            addonName,
-                            addonEntryUUIDSb,
-                            latestVersionOfTestedAddonSb,
-                            addonUUID,
-                            varPassSB,
-                        ),
-                    ]);
                     throw new Error(`${errorString}`);
                 }
                 //4.2. poll audit log response for each env
                 console.log(
-                    `####################### ${currentTestName}: EXECUTION UUIDS:\nSB - ${devTestResponseSb.Body.URI}`,
+                    `####################### ${currentTestName}: EXECUTION UUIDS:\nPROD - ${devTestResponseProd.Body.URI}\nSB - ${devTestResponseSb.Body.URI}`,
                 );
                 const testObject = {
                     name: currentTestName,
+                    prodExecution: devTestResponseProd.Body.URI,
                     sbExecution: devTestResponseSb.Body.URI,
                 };
-                // debugger;
-                generalService.sleep(1000 * 15);
                 debugger;
+                generalService.sleep(1000 * 15);
+                const devTestResultsProd = await getTestResponseFromAuditLog(
+                    prodUser,
+                    'prod',
+                    devTestResponseProd.Body.URI,
+                );
                 const devTestResultsSb = await getTestResponseFromAuditLog(sbUser, 'stage', devTestResponseSb.Body.URI);
+                debugger;
                 if (
-                    devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
-                    devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after')
+                    (devTestResultsProd.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after')) ||
+                    (devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after'))
                 ) {
                     debugger;
                     let errorString = '';
+                    if (
+                        devTestResultsProd.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                        devTestResultsProd.AuditInfo.ErrorMessage.includes('Task timed out after')
+                    ) {
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                    }
                     if (
                         devTestResultsSb.AuditInfo.hasOwnProperty('ErrorMessage') &&
                         devTestResultsSb.AuditInfo.ErrorMessage.includes('Task timed out after')
@@ -1545,16 +1595,24 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     await reportToTeamsMessage(
                         addonName,
                         addonUUID,
-                        latestVersionOfTestedAddonSb,
+                        latestVersionOfTestedAddonProd,
                         errorString,
                         service,
                     );
                     await Promise.all([
                         unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
                             'stage',
                             addonName,
                             addonEntryUUIDSb,
-                            latestVersionOfTestedAddonSb,
+                            latestVersionOfTestedAddonProd,
                             addonUUID,
                             varPassSB,
                         ),
@@ -1563,28 +1621,41 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 }
                 debugger;
                 //4.3. parse the response
+                let testResultArrayProd;
                 let testResultArraySB;
                 try {
+                    testResultArrayProd = JSON.parse(devTestResultsProd.AuditInfo.ResultObject);
                     testResultArraySB = JSON.parse(devTestResultsSb.AuditInfo.ResultObject);
                 } catch (error) {
                     debugger;
                     let errorString = '';
+                    if (!devTestResultsProd.AuditInfo.ResultObject) {
+                        errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                    }
                     if (!devTestResultsSb.AuditInfo.ResultObject) {
                         errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                     }
                     await reportToTeamsMessage(
                         addonName,
                         addonUUID,
-                        latestVersionOfTestedAddonSb,
+                        latestVersionOfTestedAddonProd,
                         errorString,
                         service,
                     );
                     await Promise.all([
                         unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
                             'stage',
                             addonName,
                             addonEntryUUIDSb,
-                            latestVersionOfTestedAddonSb,
+                            latestVersionOfTestedAddonProd,
                             addonUUID,
                             varPassSB,
                         ),
@@ -1593,22 +1664,35 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 }
                 // debugger;
                 // debugger;
-                // debugger;
                 //4.4. print results to log
                 //4.5. print the results
+                let objectToPrintProd;
                 let objectToPrintSB;
                 let shouldAlsoPrintVer = false;
-                if (testResultArraySB.results === undefined && testResultArraySB.tests === undefined) {
-                    const errorString = `Cannot Parse Result Object, Recieved: SB: ${JSON.stringify(
-                        testResultArraySB,
+                if (
+                    testResultArrayProd.results === undefined &&
+                    testResultArraySB.results === undefined &&
+                    testResultArrayProd.tests === undefined &&
+                    testResultArraySB.tests === undefined
+                ) {
+                    const errorString = `Cannot Parse Result Object, Recieved: Prod: ${JSON.stringify(
+                        testResultArrayProd,
                     )}, SB: ${JSON.stringify(testResultArraySB)}, On: ${currentTestName} Test`;
                     debugger;
                     await Promise.all([
                         unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
                             'stage',
                             addonName,
                             addonEntryUUIDSb,
-                            latestVersionOfTestedAddonSb,
+                            latestVersionOfTestedAddonProd,
                             addonUUID,
                             varPassSB,
                         ),
@@ -1616,29 +1700,38 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     await reportToTeamsMessage(
                         addonName,
                         addonUUID,
-                        latestVersionOfTestedAddonSb,
+                        latestVersionOfTestedAddonProd,
                         errorString,
                         service,
                     );
                     throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
-                debugger;
                 if (
-                    testResultArraySB.results &&
-                    testResultArraySB.results[0].suites[0].suites &&
-                    testResultArraySB.results[0].suites[0].suites.length > 0
+                    testResultArrayProd.results &&
+                    testResultArrayProd.results[0].suites[0].suites &&
+                    testResultArrayProd.results[0].suites[0].suites.length > 0
                 ) {
                     shouldAlsoPrintVer = true;
+                    objectToPrintProd = testResultArrayProd.results[0].suites[0].suites;
                     objectToPrintSB = testResultArraySB.results[0].suites[0].suites;
-                } else if (testResultArraySB.results) {
+                } else if (testResultArrayProd.results) {
                     //add an if to catch the other result config also
+                    objectToPrintProd = testResultArrayProd.results[0].suites;
                     objectToPrintSB = testResultArraySB.results[0].suites;
                 } else {
+                    objectToPrintProd = testResultArrayProd.tests;
                     objectToPrintSB = testResultArraySB.tests;
                 }
-                if (objectToPrintSB === undefined) {
+                if (objectToPrintProd === undefined || objectToPrintSB === undefined) {
                     debugger;
                     let errorString = '';
+                    if (!objectToPrintProd) {
+                        errorString += `${prodUser} got the error: ${
+                            devTestResultsProd.AuditInfo.ErrorMessage
+                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                            devTestResultsProd.AuditInfo,
+                        )}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                    }
                     if (!objectToPrintSB) {
                         errorString += `${sbUser} got the error: ${
                             devTestResultsSb.AuditInfo.ErrorMessage
@@ -1649,46 +1742,79 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     await reportToTeamsMessage(
                         addonName,
                         addonUUID,
-                        latestVersionOfTestedAddonSb,
+                        latestVersionOfTestedAddonProd,
                         errorString,
                         service,
                     );
                     await Promise.all([
                         unavailableAddonVersion(
+                            'prod',
+                            addonName,
+                            addonEntryUUIDProd,
+                            latestVersionOfTestedAddonProd,
+                            addonUUID,
+                            varPass,
+                        ),
+                        unavailableAddonVersion(
                             'stage',
                             addonName,
                             addonEntryUUIDSb,
-                            latestVersionOfTestedAddonSb,
+                            latestVersionOfTestedAddonProd,
                             addonUUID,
                             varPassSB,
                         ),
                     ]);
                     throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
                 }
+                for (let index = 0; index < objectToPrintProd.length; index++) {
+                    const result = objectToPrintProd[index];
+                    console.log(`\n***${currentTestName} PROD result object: ${JSON.stringify(result)}***\n`);
+                }
                 for (let index = 0; index < objectToPrintSB.length; index++) {
                     const result = objectToPrintSB[index];
                     console.log(`\n***${currentTestName} SB result object: ${JSON.stringify(result)}***\n`);
                 }
+                const prodResults = await printResultsTestObject(
+                    objectToPrintProd,
+                    prodUser,
+                    'prod',
+                    addonUUID,
+                    latestVersionOfTestedAddonProd,
+                );
                 const sbResults = await printResultsTestObject(
                     objectToPrintSB,
                     sbUser,
                     'stage',
                     addonUUID,
-                    latestVersionOfTestedAddonSb,
+                    latestVersionOfTestedAddonProd,
                 );
                 if (shouldAlsoPrintVer) {
+                    objectToPrintProd = testResultArrayProd.results[0].suites[1].suites;
                     objectToPrintSB = testResultArraySB.results[0].suites[1].suites;
+                    await printResultsTestObject(
+                        objectToPrintProd,
+                        prodUser,
+                        'prod',
+                        addonUUID,
+                        latestVersionOfTestedAddonProd,
+                    );
                     await printResultsTestObject(
                         objectToPrintSB,
                         sbUser,
                         'stage',
                         addonUUID,
-                        latestVersionOfTestedAddonSb,
+                        latestVersionOfTestedAddonProd,
                     );
                 }
                 // debugger;
                 //4.6. create the array of passing / failing tests
                 // debugger;
+                if (prodResults.didSucceed) {
+                    devPassingEnvs.push('Production');
+                } else {
+                    devFailedEnvs.push('Production');
+                    failedSuitesProd.push({ testName: currentTestName, executionUUID: testObject.prodExecution });
+                }
                 if (sbResults.didSucceed) {
                     devPassingEnvs.push('Stage');
                 } else {
@@ -1699,6 +1825,14 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             // debugger;
             const devPassingEnvs2: string[] = [];
             const devFailedEnvs2: string[] = [];
+            if (
+                devPassingEnvs.filter((v) => v === 'Production').length === testsList.length &&
+                devFailedEnvs.filter((v) => v === 'Production').length === 0
+            ) {
+                devPassingEnvs2.push('PROD');
+            } else {
+                devFailedEnvs2.push('PROD');
+            }
             if (
                 devPassingEnvs.filter((v) => v === 'Stage').length === testsList.length &&
                 devFailedEnvs.filter((v) => v === 'Stage').length === 0
@@ -1722,10 +1856,18 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 debugger;
                 await Promise.all([
                     unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDProd,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPass,
+                    ),
+                    unavailableAddonVersion(
                         'stage',
                         addonName,
                         addonEntryUUIDSb,
-                        latestVersionOfTestedAddonSb,
+                        latestVersionOfTestedAddonProd,
                         addonUUID,
                         varPassSB,
                     ),
@@ -1736,11 +1878,11 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     pass,
                     addonName,
                     addonUUID,
-                    latestVersionOfTestedAddonSb,
+                    latestVersionOfTestedAddonProd,
                     devPassingEnvs2,
                     devFailedEnvs2,
                     true,
-                    [sbUser],
+                    [prodUser, sbUser],
                     failedSuitesProd,
                     failedSuitesEU,
                     failedSuitesSB,
@@ -1755,11 +1897,11 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     pass,
                     addonName,
                     addonUUID,
-                    latestVersionOfTestedAddonSb,
+                    latestVersionOfTestedAddonProd,
                     devPassingEnvs2,
                     devFailedEnvs2,
                     true,
-                    [sbUser],
+                    [prodUser, sbUser],
                     failedSuitesProd,
                     failedSuitesEU,
                     failedSuitesSB,
@@ -3925,7 +4067,7 @@ function resolveUserPerTest(addonName): any[] {
         //         'relatedItemsTestSB@pepperitest.com',
         //     ];
         case 'RELATED-ITEMS':
-            return ['relatedItemsTestSB@pepperitest.com'];
+            return ['relatedItemsTestSB@pepperitest.com', 'relatedItemsTestProd@pepperitest.com'];
         case 'UDB':
         case 'USER DEFINED BLOCKS':
             return [
