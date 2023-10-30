@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 
 export async function SchedulerTester(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -24,6 +25,12 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         varKey = request.body.varKeyPro;
     }
     await generalService.baseAddonVersionsInstallation(varKey);
+    const testData = {
+        Scheduler: ['8bc903d1-d97a-46b8-990b-50bea356e35b', ''],
+    };
+
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
     service['options'].addonUUID = '';
     const addonUUID = generalService['client'].BaseURL.includes('staging')
@@ -39,6 +46,35 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     await installAddonToDist();
 
     describe('Cron Expression Test Case', () => {
+        describe('Prerequisites Addons for Scheduler Tests', () => {
+            //Test Data
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
+        });
         it('Insert New AddonJob For Cron Verification Test: Finished', () => {
             assert(logcash.insertNewCJtoCronVerification, logcash.insertNewCJtoCronVerificationErrorMsg);
         });
