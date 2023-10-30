@@ -354,7 +354,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             },
             testerFunctions,
         );
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions), true;
     }
 
     if (tests.includes('Workflow')) {
