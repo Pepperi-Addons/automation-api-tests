@@ -342,7 +342,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     }
 
     if (tests.includes('Scheduler')) {
-        const testerFunctions = generalService.initiateTesterFunctions(client, 'Scheduler');
         await SchedulerTester(
             generalService,
             {
@@ -352,7 +351,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     varKeyEU: varPassEU,
                 },
             },
-            testerFunctions,
+            { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions, undefined, true);
     }

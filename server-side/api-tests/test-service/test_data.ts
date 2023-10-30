@@ -95,8 +95,9 @@ export async function TestDataTests(
             if (installedAddonsArr[index].Addon.Name == 'File Service Framework')
                 installedAddons['File Service Framework'] = installedAddonsArr[index].Version;
             if (isSchduler) {
-                if (installedAddonsArr[index].Addon.Name == 'Scheduler')
+                if (installedAddonsArr[index].Addon.Name == 'Scheduler') {
                     installedAddons['Scheduler'] = installedAddonsArr[index].Version;
+                }
             }
             //Cross Platform Engine
         }
@@ -229,8 +230,11 @@ export async function TestDataTests(
                 expect(regexMatched.length).to.be.above(2);
             });
             if (isSchduler) {
-                const regexMatched = installedAddons['Scheduler'].replace(regex, '');
-                expect(regexMatched.length).to.be.above(2);
+                it(`Scheduler | Version: ${installedAddons['Scheduler']}`, () => {
+                    //EVGENY
+                    const regexMatched = installedAddons['Scheduler'].replace(regex, '');
+                    expect(regexMatched.length).to.be.above(2);
+                });
             }
             if (options.IsAllAddons) {
                 it(`Item Trade Promotions | Version: ${installedAddons['Item Trade Promotions']}`, () => {
