@@ -38,12 +38,14 @@ export async function StorybookTextboxTests() {
         'Phone',
     ];
     const alignExpectedValues = ['', 'center', 'right'];
+    const typeExpectedValues = ['text', 'email', 'phone', 'int', 'percentage', 'currency', 'real'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let textbox: Textbox;
     let textboxInputsTitles;
     let textboxOutputsTitles;
+    let allTypes;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "Textbox" Tests Suite', function () {
@@ -155,6 +157,7 @@ export async function StorybookTextboxTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('value')).to.be.true;
@@ -194,6 +197,7 @@ export async function StorybookTextboxTests() {
                             expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('disabled')).to.be.true;
@@ -242,6 +246,7 @@ export async function StorybookTextboxTests() {
                             expect(mainExampleTextboxDisabled).to.be.null;
                         });
                         break;
+
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('mandatory')).to.be.true;
@@ -274,36 +279,42 @@ export async function StorybookTextboxTests() {
                             await storyBookPage.elemntDoNotExist(textbox.MainExample_mandatoryIcon);
                         });
                         break;
+
                     case 'maxFieldCharacters':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('maxFieldCharacters')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'regex':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('regex')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'regexError':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('regexError')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'renderError':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('renderError')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'renderSymbol':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('renderSymbol')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'renderTitle':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('renderTitle')).to.be.true;
@@ -353,6 +364,7 @@ export async function StorybookTextboxTests() {
                             await storyBookPage.untilIsVisible(textbox.MainExample_pepTitle);
                         });
                         break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('showTitle')).to.be.true;
@@ -393,18 +405,99 @@ export async function StorybookTextboxTests() {
                             await storyBookPage.untilIsVisible(textbox.MainExample_titleLabel);
                         });
                         break;
+
                     case 'textColor':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('textColor')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'type':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('type')).to.be.true;
                         });
-                        // TODO
+                        it(`get all types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allTypes = await storyBookPage.inputs.getAllTypeInputValues();
+                            driver.sleep(1 * 1000);
+                            console.info('allTypes length: ', allTypes.length);
+                            expect(allTypes.length).equals(typeExpectedValues.length);
+                        });
+                        it(`validate current type is "text"`, async function () {
+                            const textboxElement = await driver.findElement(textbox.MainExampleTextbox);
+                            const textboxElementType = await textboxElement.getAttribute('type');
+                            console.info('textboxElement: ', textboxElement);
+                            console.info('textboxElementType: ', textboxElementType);
+                            // expect(textboxElementType).to.equal('text');
+                        });
+                        typeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const type = allTypes[index];
+                                await type.click();
+                                // let mainExampleSelector;
+                                // switch (title) {
+                                //     case 'text':
+                                //         // mainExampleSelector = textbox.MainExampleBooleanText;
+                                //         break;
+                                //     case 'email':
+                                //         // mainExampleSelector = textbox.MainExampleBooleanText;
+                                //         break;
+                                //     case 'phone':
+                                //         // mainExampleSelector = textbox.MainExampleBooleanText;
+                                //         break;
+                                //     case 'int':
+                                //         // mainExampleSelector = textbox.MainExampleBooleanText;
+                                //         break;
+                                //     case 'percentage':
+                                //         // mainExampleSelector = textbox.MainExampleBooleanText;
+                                //         break;
+                                //     case 'currency':
+                                //         // mainExampleSelector = textbox.MainExampleBooleanText;
+                                //         break;
+                                //     case 'real':
+                                //         // mainExampleSelector = textbox.MainExampleBooleanText;
+                                //         break;
+
+                                //     default:
+                                //         mainExampleSelector = textbox.MainExampleTextbox;
+                                //         break;
+                                // }
+                                // await driver.findElement(mainExampleSelector);
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (type) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                await driver.click(textbox.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of '${title}' (Type Input)`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
+                        it(`back to default - validate type is "text"`, async function () {
+                            await driver.click(textbox.ResetControlsButton);
+                            const textboxElement = await driver.findElement(textbox.MainExampleTextbox);
+                            const textboxElementType_style = await textboxElement.getAttribute('style');
+                            // const textboxElementType_color = textboxElementType_style.split('background: ')[1].split(';')[0];
+                            console.info('textboxElement: ', textboxElement);
+                            console.info('textboxElementType_style: ', textboxElementType_style);
+                            // console.info('textboxElementType_color: ', textboxElementType_color);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `back to default`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            // expect(textboxElementType_color).to.equal('transparent');
+                        });
                         break;
+
                     case 'xAlignment':
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('xAlignment')).to.be.true;

@@ -234,24 +234,92 @@ export async function StorybookColorPickerTests() {
                             expect(colorPickerInputs.includes('type')).to.be.true;
                         });
                         it(`get all types`, async function () {
-                            allTypes = await storyBookPage.inputs.getAllTypes();
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allTypes = await storyBookPage.inputs.getAllTypeInputValues();
+                            driver.sleep(1 * 1000);
+                            console.info('allTypes length: ', allTypes.length);
+                            expect(allTypes.length).equals(typeExpectedValues.length);
                         });
-                        typeExpectedValues.forEach((title, index) => {
+                        it(`validate current type is "any"`, async function () {
+                            const colorPickerElement = await driver.findElement(colorPicker.MainExampleColorPicker);
+                            const colorPickerElementType_style = await colorPickerElement.getAttribute('style');
+                            const colorPickerElementType_color = colorPickerElementType_style
+                                .split('background: ')[1]
+                                .split(';')[0];
+                            console.info('colorPickerElement: ', colorPickerElement);
+                            console.info('colorPickerElementType_style: ', colorPickerElementType_style);
+                            console.info('colorPickerElementType_color: ', colorPickerElementType_color);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `validating default`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(colorPickerElementType_color).to.equal('transparent');
+                        });
+                        typeExpectedValues.forEach(async (title, index) => {
                             it(`'${title}' -- functional test (+screenshot)`, async function () {
                                 const type = allTypes[index];
                                 await type.click();
-                                const isComponentModalFullyShown = await colorPicker.testComponentModal();
-                                driver.sleep(1 * 1000);
-                                const base64ImageComponentModal = await driver.saveScreenshots();
+                                await colorPicker.openComonentModal();
+                                let base64ImageComponentModal = await driver.saveScreenshots();
                                 addContext(this, {
-                                    title: `${title} (type) input change`,
+                                    title: `Presented Component Modal`,
                                     value: 'data:image/png;base64,' + base64ImageComponentModal,
                                 });
+                                const isComponentModalFullyShown = await colorPicker.isModalFullyShown();
                                 expect(isComponentModalFullyShown).to.be.true;
+                                await colorPicker.okModal();
+                                colorPicker.pause(1 * 1000);
+                                const mainExampleStyleValueGotFromUi =
+                                    await colorPicker.getMainExampleColorPickerValue();
+                                let expectedColorPickerElementType_color;
+                                switch (title) {
+                                    case 'any':
+                                        expectedColorPickerElementType_color = 'rgb(118, 118, 118) !important';
+                                        break;
+                                    case 'main':
+                                        expectedColorPickerElementType_color = 'rgb(13, 13, 13) !important';
+                                        break;
+                                    case 'success':
+                                        expectedColorPickerElementType_color = 'rgb(73, 132, 44) !important';
+                                        break;
+                                    case 'caution':
+                                        expectedColorPickerElementType_color = 'rgb(223, 32, 32) !important';
+                                        break;
+
+                                    default:
+                                        throw new Error(`"${title}" is not covered in switch`);
+                                    // break;
+                                }
+                                expect(mainExampleStyleValueGotFromUi).to.equal(expectedColorPickerElementType_color);
+                                await driver.click(colorPicker.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of '${title}' (Type Input)`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
                             });
                         });
-                        it(`close`, async function () {
-                            await allTypes[0].click();
+                        it(`back to default - validate type is "any"`, async function () {
+                            await driver.click(colorPicker.ResetControlsButton);
+                            const colorPickerElement = await driver.findElement(colorPicker.MainExampleColorPicker);
+                            const colorPickerElementType_style = await colorPickerElement.getAttribute('style');
+                            const colorPickerElementType_color = colorPickerElementType_style
+                                .split('background: ')[1]
+                                .split(';')[0];
+                            console.info('colorPickerElement: ', colorPickerElement);
+                            console.info('colorPickerElementType_style: ', colorPickerElementType_style);
+                            console.info('colorPickerElementType_color: ', colorPickerElementType_color);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `back to default`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(colorPickerElementType_color).to.equal('transparent');
                         });
                         break;
 
