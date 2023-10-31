@@ -29,6 +29,7 @@ export async function TestDataTests(
     generalService: GeneralService,
     tester: TesterFunctions,
     options: TestDataOptions = { IsAllAddons: true, IsUUID: false },
+    isSchduler?: boolean,
 ) {
     const service = generalService;
     const describe = tester.describe;
@@ -93,6 +94,11 @@ export async function TestDataTests(
                 installedAddons['Cross Platform Engine'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'File Service Framework')
                 installedAddons['File Service Framework'] = installedAddonsArr[index].Version;
+            if (isSchduler) {
+                if (installedAddonsArr[index].Addon.Name == 'Scheduler') {
+                    installedAddons['Scheduler'] = installedAddonsArr[index].Version;
+                }
+            }
             //Cross Platform Engine
         }
     }
@@ -223,6 +229,13 @@ export async function TestDataTests(
                 const regexMatched = installedAddons['Cross Platform Engine Data'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
+            if (isSchduler) {
+                it(`Scheduler | Version: ${installedAddons['Scheduler']}`, () => {
+                    //EVGENY
+                    const regexMatched = installedAddons['Scheduler'].replace(regex, '');
+                    expect(regexMatched.length).to.be.above(2);
+                });
+            }
             if (options.IsAllAddons) {
                 it(`Item Trade Promotions | Version: ${installedAddons['Item Trade Promotions']}`, () => {
                     const regexMatched = installedAddons['Item Trade Promotions'].replace(regex, '');

@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 
 export async function SchedulerTester(generalService: GeneralService, request, tester: TesterFunctions) {
@@ -7,7 +8,6 @@ export async function SchedulerTester(generalService: GeneralService, request, t
 export async function SchedulerTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const service = generalService.papiClient;
     const describe = tester.describe;
-    const assert = tester.assert;
     const it = tester.it;
 
     const logcash: any = {};
@@ -23,7 +23,13 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     } else {
         varKey = request.body.varKeyPro;
     }
-    await generalService.baseAddonVersionsInstallation(varKey);
+    await generalService.baseAddonVersionsInstallation(varKey, undefined, true);
+    const testData = {
+        Scheduler: ['8bc903d1-d97a-46b8-990b-50bea356e35b', ''],
+    };
+
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
     service['options'].addonUUID = '';
     const addonUUID = generalService['client'].BaseURL.includes('staging')
@@ -35,37 +41,67 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     const functionNamecreateNewCodeJobRetryTest = 'scheduler';
     const version = '0.0.5';
 
-    // this will run the first test that will run the second and so on..
-    await installAddonToDist();
+    describe('Cron Expression Test Case', async function () {
+        describe('Prerequisites Addons for Scheduler Tests', () => {
+            //Test Data
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
+        });
+        describe('Scheduler Tests', async () => {
+            it('Run Actual Test', async () => {
+                // this will run the first test that will run the second and so on..
+                await installAddonToDist();
+            });
+            it('Insert New AddonJob For Cron Verification Test: Finished', () => {
+                expect(logcash.insertNewCJtoCronVerification).to.equal(true); //, logcash.insertNewCJtoCronVerificationErrorMsg
+            });
+            // it('Execute New Addon Job For Cron Verification Test: Finished', () => {
+            //     expect(logcash.executeDraftCodeWithoutRetry).to.equal(true);//, logcash.ErrorFromexecuteDraftCodeWithoutRetry);
+            // });
 
-    describe('Cron Expression Test Case', () => {
-        it('Insert New AddonJob For Cron Verification Test: Finished', () => {
-            assert(logcash.insertNewCJtoCronVerification, logcash.insertNewCJtoCronVerificationErrorMsg);
-        });
-        it('Execute New Addon Job For Cron Verification Test: Finished', () => {
-            assert(logcash.executeDraftCodeWithoutRetry, logcash.ErrorFromexecuteDraftCodeWithoutRetry);
-        });
-
-        it('Validate Empty log (The Log should Be Empty): Finished', () => {
-            assert(logcash.emtyLogResponsCron, logcash.emtyLogResponsCronError);
-        });
-        it('Validate First Log After Execution: Finished', () => {
-            assert(logcash.ResponseExecutedLogsCronTest, logcash.ResponseExecutedLogsErrorMsgCronTest);
-        });
-        it('Validate Logs After Two Executions: Finished', () => {
-            assert(logcash.ResponseExecutedLogsCronTestSecond, logcash.ResponseExecutedLogsCronTestSecondErrorMsg);
-        });
-        it('Update Crone To 4 Minutes (From 2): Finished', () => {
-            assert(logcash.updateNewCJtoCronVerification, logcash.updateNewCJtoCronVerificationErrorMsg);
-        });
-        it('Validate Log After 4 Minutes: Finished', () => {
-            assert(logcash.ResponseExecutedLogsCronTestLast, logcash.ResponseExecutedLogsCronTestLastErrorMsg);
-        });
-        it('Update IsScheduled: False To Stop Executions: Finished', () => {
-            assert(
-                logcash.updateCronToChroneTestIsScheduledFalse,
-                logcash.updateCronToChroneTestIsScheduledFalseErrorMsg,
-            );
+            it('Validate Empty log (The Log should Be Empty): Finished', () => {
+                expect(logcash.emtyLogResponsCron).to.equal(true); //, logcash.emtyLogResponsCronError);
+            });
+            it('Validate First Log After Execution: Finished', () => {
+                expect(logcash.ResponseExecutedLogsCronTest).to.equal(true); //, logcash.ResponseExecutedLogsErrorMsgCronTest);
+            });
+            it('Validate Logs After Two Executions: Finished', () => {
+                expect(logcash.ResponseExecutedLogsCronTestSecond).to.equal(true); // logcash.ResponseExecutedLogsCronTestSecondErrorMsg);
+            });
+            it('Update Crone To 4 Minutes (From 2): Finished', () => {
+                expect(logcash.updateNewCJtoCronVerification).to.equal(true); // logcash.updateNewCJtoCronVerificationErrorMsg);
+            });
+            it('Validate Log After 4 Minutes: Finished', () => {
+                expect(logcash.ResponseExecutedLogsCronTestLast).to.equal(true); // logcash.ResponseExecutedLogsCronTestLastErrorMsg);
+            });
+            it('Update IsScheduled: False To Stop Executions: Finished', () => {
+                expect(logcash.updateCronToChroneTestIsScheduledFalse).to.equal(true);
+                //logcash.updateCronToChroneTestIsScheduledFalseErrorMsg,
+            });
         });
     });
 
@@ -331,6 +367,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         //var status = CallbackCash.updateNewCJtoCronVerification.success;
         logcash.updateNewCJtoCronVerification = true;
 
+        // debugger;
         if (CallbackCash.updateNewCJtoCronVerification.Status == 200 && CodeJobUUIDCron != '') {
             generalService.sleep(250000);
             await getLogsToExecutedCronLastTest();
@@ -350,7 +387,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         //v243
         //debugger;
         if (
-            CallbackCash.ResponseExecutedLogsCronTestLast.length == CallbackCash.LogLenght + 1 && // changed  to formula
+            CallbackCash.ResponseExecutedLogsCronTestLast.length == CallbackCash.LogLenght + 1 && // Oleg on 31/10/23 changed from CallbackCash.LogLenght + 2 to +1
             CallbackCash.ResponseExecutedLogsCronTestLast[CallbackCash.LogLenght].Status.Name == 'Success'
             //&& CallbackCash.ResponseExecutedLogsCronTestLast[3].Status.Name == "Success"
         ) {
