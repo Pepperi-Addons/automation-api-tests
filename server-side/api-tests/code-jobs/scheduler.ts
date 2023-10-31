@@ -23,7 +23,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     } else {
         varKey = request.body.varKeyPro;
     }
-    await generalService.baseAddonVersionsInstallation(varKey);
+    await generalService.baseAddonVersionsInstallation(varKey, undefined, true);
     const testData = {
         Scheduler: ['8bc903d1-d97a-46b8-990b-50bea356e35b', ''],
     };

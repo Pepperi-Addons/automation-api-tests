@@ -1703,12 +1703,12 @@ export default class GeneralService {
         return latestSchema;
     }
 
-    async baseAddonVersionsInstallation(varPass: string, otherTestData?: any) {
+    async baseAddonVersionsInstallation(varPass: string, otherTestData?: any, isPhased?: boolean) {
         const isInstalledArr = await this.areAddonsInstalled(otherTestData ? otherTestData : testData);
         const chnageVersionResponseArr = await this.changeVersion(
             varPass,
             otherTestData ? otherTestData : testData,
-            false,
+            isPhased ? isPhased : false,
         );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }

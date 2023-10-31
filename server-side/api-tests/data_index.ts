@@ -1,6 +1,8 @@
 // import { ObjectsService } from './../services/objects.service';
 import { DataIndexService } from './../services/data-index.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
+// import { ObjectsService } from '../services/objects.service';
+// import { ElasticSearchService } from '../services/elastic-search.service';
 
 export async function DataIndexTests(generalService: GeneralService, request, tester: TesterFunctions) {
     // const objectsService = new ObjectsService(generalService);
@@ -531,7 +533,90 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             });
         });
 
-        describe('All Activities', () => {
+        describe('Bug Verification', () => {
+            // it('DI-25539 bug verification', async () => {
+            //     // debugger;
+            //     //1. create transaction with remark
+            //     const objectsService = new ObjectsService(generalService);
+            //     const atdArr = await objectsService.getATD('transactions');
+            //     debugger;
+            //     const transactionAccount = await objectsService.getAccounts({ page_size: 1 }).then((res) => {
+            //         return res[0];
+            //     });
+            //     const transactionExternalID =
+            //         'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
+            //     const firstRemark = generalService.generateRandomString(6);
+            //     const catalogArr = await generalService.getCatalogs();
+            //     const createdTransaction = await objectsService.createTransaction({
+            //         ExternalID: transactionExternalID,
+            //         ActivityTypeID: atdArr[0].TypeID,
+            //         Remark: firstRemark,
+            //         Status: 1,
+            //         Account: {
+            //             Data: {
+            //                 InternalID: transactionAccount.InternalID,
+            //             },
+            //         },
+            //         Catalog: {
+            //             Data: {
+            //                 ExternalID: catalogArr[0].ExternalID,
+            //             },
+            //         },
+            //     });
+            //     const getCreatedTransactionResponse = await objectsService.getTransaction({
+            //         where: `InternalID=${createdTransaction.InternalID}`,
+            //     });
+            //     expect(getCreatedTransactionResponse[0]).to.include({
+            //         ExternalID: transactionExternalID,
+            //         ActivityTypeID: atdArr[0].TypeID,
+            //         Status: 1,
+            //     });
+            //     expect(JSON.stringify(getCreatedTransactionResponse[0].Account)).equals(
+            //         JSON.stringify({
+            //             Data: {
+            //                 InternalID: transactionAccount.InternalID,
+            //                 UUID: transactionAccount.UUID,
+            //                 ExternalID: transactionAccount.ExternalID,
+            //             },
+            //             URI: '/accounts/' + transactionAccount.InternalID,
+            //         }),
+            //     );
+            //     expect(getCreatedTransactionResponse[0].InternalID).to.equal(createdTransaction.InternalID),
+            //         expect(getCreatedTransactionResponse[0].Remark).to.equal(firstRemark),
+            //         expect(getCreatedTransactionResponse[0].UUID).to.include(createdTransaction.UUID),
+            //         expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain(
+            //             new Date().toISOString().split('T')[0],
+            //         );
+            //     expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain('Z'),
+            //         expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain(
+            //             new Date().toISOString().split('T')[0],
+            //         );
+            //     expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain('Z'),
+            //         expect(getCreatedTransactionResponse[0].Archive).to.be.false,
+            //         expect(getCreatedTransactionResponse[0].Hidden).to.be.false,
+            //         expect(getCreatedTransactionResponse[0].StatusName).to.include('InCreation'),
+            //         expect(getCreatedTransactionResponse[0].Agent).to.be.null,
+            //         expect(getCreatedTransactionResponse[0].ContactPerson).to.be.null,
+            //         expect(getCreatedTransactionResponse[0].Creator).to.be.null,
+            //         expect(getCreatedTransactionResponse[0].OriginAccount).to.be.null,
+            //         expect(getCreatedTransactionResponse[0].TransactionLines).to.include({
+            //             URI: '/transaction_lines?where=TransactionInternalID=' + createdTransaction.InternalID,
+            //         });
+            //     debugger;
+            //     //2. see we can get the data using data index transaction AND transaction-line
+            //     const elasticSearchService = new ElasticSearchService(generalService);
+            //     try {
+            //         const getWhereData = await elasticSearchService.whereClause(
+            //             'Remark',
+            //             'Remark=' + firstRemark,
+            //         );
+            //     }catch(error){
+            //         debugger;
+            //     }
+            //     debugger;
+            //     //3. change the remark
+            //     //4. see it returns correctly on both transaction and transaction-line
+            // });
             // describe('CRUD Index of Fields', () => {
             //     for (let index = 0; index < all_activities_fields.length; index++) {
             //         const allActivitiesFieldName = all_activities_fields[index];
