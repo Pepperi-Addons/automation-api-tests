@@ -301,7 +301,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
             where: `AuditInfo.JobMessageData.CodeJobUUID='${CodeJobUUIDCron}'`,
         });
 
-        debugger;
+        //debugger;
         if (logTimeCount > logTimeRetryNum) {
             logcash.ResponseExecutedLogsCronTestSecond = false;
             logcash.ResponseExecutedLogsCronTestSecondErrorMsg =
@@ -387,7 +387,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         //v243
         //debugger;
         if (
-            CallbackCash.ResponseExecutedLogsCronTestLast.length == CallbackCash.LogLenght + 2 && // changed  to formula
+            CallbackCash.ResponseExecutedLogsCronTestLast.length == CallbackCash.LogLenght + 1 && // Oleg on 31/10/23 changed from CallbackCash.LogLenght + 2 to +1
             CallbackCash.ResponseExecutedLogsCronTestLast[CallbackCash.LogLenght].Status.Name == 'Success'
             //&& CallbackCash.ResponseExecutedLogsCronTestLast[3].Status.Name == "Success"
         ) {
