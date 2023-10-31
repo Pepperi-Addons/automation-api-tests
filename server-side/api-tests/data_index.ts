@@ -434,6 +434,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 expect(auditLogCreate).to.have.property('URI');
 
                 const auditLogResponse = await generalService.getAuditLogResultObjectIfValid(auditLogCreate.URI, 40);
+                generalService.sleep(2000);
                 expect(auditLogResponse.Status?.ID).to.be.equal(1);
 
                 const postFieldsResponse = await JSON.parse(auditLogResponse.AuditInfo.ResultObject);

@@ -218,6 +218,40 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
         await createNewCodeJobByName();
     }
 
+
+    //////////////   Stop Job DI-25055
+    async function stopJob() {
+        let stopBody = {KeyList:[cashCallJobsList[0].UUID]};
+        CallbackCash.stopJob = await generalService.fetchStatus('/addons/jobs/stop', {
+            method: 'POST',
+            body: stopBody.toString(),
+        });
+        await getListOfCallJobsSec();
+    }
+
+    async function getListOfCallJobsSec() {
+       let cashCallJobsListSec = await service.codeJobs
+            .iter({
+                include_deleted: false,
+                order_by: 'CodeJobName DESC',
+                page_size: 1000,
+            })
+            .toArray(); //iter is include_count: true
+        if(
+        listLength > cashCallJobsListSec.length){
+            CallbackCash.cashCallJobsListSecStatus = true;
+        }
+        else{
+            CallbackCash.cashCallJobsListSecStatus = false;
+            CallbackCash.cashCallJobsListSecError = 'the' + cashCallJobsList[0].UUID + 'job not stoped';
+        }
+        //Oren 1/3: 02/05/2021 - Start from TimeOut test and continue after 130 seconds, since TimeOut logs can take up to 7 minutes.
+        //await createNewCodeJobByName();
+        //await getEmailStatus();
+        await createNewCodeJobByName();
+    }
+
+
     //#region Upsert code jobs
     //////////////////////////////////////////////////////////////////////////////////
     //                          Create new CodeJob
