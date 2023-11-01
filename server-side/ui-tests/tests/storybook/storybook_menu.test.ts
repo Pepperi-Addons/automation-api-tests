@@ -25,6 +25,7 @@ export async function StorybookMenuTests() {
     const menuSubFoldersHeaders = ['Action (default)', 'Action select', 'Select'];
     const sizeTypesExpectedValues = ['xs', 'sm', 'md', 'lg', 'xl'];
     const styleTypeExpectedValues = ['weak', 'weak-invert', 'regular', 'strong'];
+    const typeExpectedValues = ['action', 'action-select', 'select'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
@@ -36,6 +37,7 @@ export async function StorybookMenuTests() {
     let mainExampleMenuHeight;
     let mainExampleMenuStyle;
     let allStyleTypes;
+    let allTypes;
 
     describe('Storybook "Menu" Tests Suite', function () {
         this.retries(0);
@@ -484,7 +486,58 @@ export async function StorybookMenuTests() {
                         it(`it '${input}'`, async function () {
                             expect(menuInputsTitles.includes('type')).to.be.true;
                         });
-                        // TODO
+                        it(`get all types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allTypes = await storyBookPage.inputs.getAllTypeInputValues();
+                            driver.sleep(1 * 1000);
+                            console.info('allTypes length: ', allTypes.length);
+                            expect(allTypes.length).equals(typeExpectedValues.length);
+                        });
+                        it(`validate current type is "action"`, async function () {
+                            const menuElement = await driver.findElement(menu.MainExampleMenu);
+                            const menuElementType = await menuElement.getAttribute('type');
+                            console.info('menuElement: ', menuElement);
+                            console.info('menuElementType: ', menuElementType);
+                            // expect(menuElementType).to.equal('action');
+                        });
+                        typeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const type = allTypes[index];
+                                await type.click();
+                                // let mainExampleSelector;
+                                // switch (title) {
+                                //     case 'action':
+                                //         // mainExampleSelector = menu.MainExampleBooleanText;
+                                //         break;
+                                //     case 'action-select':
+                                //         // mainExampleSelector = menu.MainExampleBooleanText;
+                                //         break;
+                                //     case 'select':
+                                //         // mainExampleSelector = menu.MainExampleBooleanText;
+                                //         break;
+
+                                //     default:
+                                //         mainExampleSelector = menu.MainExampleMenu;
+                                //         break;
+                                // }
+                                // await driver.findElement(mainExampleSelector);
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (type) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                await driver.click(menu.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of '${title}' (Type Input)`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
                         break;
 
                     default:
