@@ -22,4 +22,17 @@ export class Link extends StorybookComponent {
     public async openMainExampleLink(): Promise<string> {
         return await this.openSource(this.MainExampleLink_button);
     }
+
+    public async getMainExampleLinkTxtColor(): Promise<string> {
+        const colorDiv = await this.browser.findElement(this.MainExampleLink_value);
+        try {
+            const style = await colorDiv.getAttribute('style');
+            const txtColor = style.split('color:')[1].split(';')[0];
+            console.info('at getMainExampleLinkTxtColor, txtColor VALUE: ', txtColor);
+            return txtColor.trim();
+        } catch (error) {
+            console.error(error);
+            return '';
+        }
+    }
 }

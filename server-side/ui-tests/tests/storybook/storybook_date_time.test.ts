@@ -377,7 +377,59 @@ export async function StorybookDateTimeTests() {
                         it(`validate input`, async function () {
                             expect(dateTimeInputs.includes('textColor')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is ""`, async function () {
+                            const expectedValue = '';
+                            await driver.click(await dateTime.getInputRowSelectorByName('type'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `txtColor Input default value = ""`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of txtColor Input default value = ""`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await dateTime.getMainExampleDateTimeTxtColor();
+                            expect(valueGotFromUi).to.equal(expectedValue);
+                        });
+                        it(`functional test [ control = "#780f97" ] (+screenshot)`, async function () {
+                            await storyBookPage.inputs.setTxtColorValue('#780f97');
+                            await driver.click(await dateTime.getInputRowSelectorByName('type'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `txtColor Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const currentColor = await dateTime.getMainExampleDateTimeTxtColor();
+                            await driver.click(dateTime.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of txtColor Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(currentColor).to.equal('rgb(120, 15, 151)'); // same as "#780f97" in RGB
+                        });
+                        it(`back to default [ control = "" ] (+screenshots)`, async function () {
+                            await storyBookPage.inputs.setTxtColorValue('');
+                            await driver.click(await dateTime.getInputRowSelectorByName('type'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `back to default value = "" of txtColor Input`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.ResetControlsButton);
+                            const expectedValue = '';
+                            await driver.click(dateTime.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of back to default value = "" of txtColor Input`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await dateTime.getMainExampleDateTimeTxtColor();
+                            expect(valueGotFromUi).to.equal(expectedValue);
+                        });
                         break;
 
                     case 'type':

@@ -17,4 +17,17 @@ export class Textarea extends StorybookComponent {
         const inputValue = await (await this.browser.findElement(this.MainExampleTextarea)).getAttribute('value');
         return inputValue.trim();
     }
+
+    public async getMainExampleTextareaTxtColor(): Promise<string> {
+        const colorDiv = await this.browser.findElement(this.MainExampleTextarea);
+        try {
+            const style = await colorDiv.getAttribute('style');
+            const txtColor = style.split('color:')[1].split(';')[0];
+            console.info('at getMainExampleTextareaTxtColor, txtColor VALUE: ', txtColor);
+            return txtColor.trim();
+        } catch (error) {
+            console.error(error);
+            return '';
+        }
+    }
 }

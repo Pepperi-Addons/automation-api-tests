@@ -17,4 +17,17 @@ export class DateTime extends StorybookComponent {
         const dateString = await (await this.browser.findElement(this.MainExampleDateTime)).getAttribute('value');
         return dateString.trim();
     }
+
+    public async getMainExampleDateTimeTxtColor(): Promise<string> {
+        const colorDiv = await this.browser.findElement(this.MainExampleDateTime);
+        try {
+            const style = await colorDiv.getAttribute('style');
+            const txtColor = style.split('color:')[1].split(';')[0];
+            console.info('at getMainExampleDateTimeTxtColor, txtColor VALUE: ', txtColor);
+            return txtColor.trim();
+        } catch (error) {
+            console.error(error);
+            return '';
+        }
+    }
 }
