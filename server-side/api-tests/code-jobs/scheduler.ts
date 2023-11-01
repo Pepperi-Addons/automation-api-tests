@@ -11,7 +11,8 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     const it = tester.it;
 
     const logcash: any = {};
-    let logTimeCount = 0;
+    let logTimeCount1 = 0;
+    let logTimeCount2 = 0;
     const logTimeRetryNum = 19;
     const CallbackCash: any = {};
     let CodeJobBody: any = {};
@@ -244,14 +245,14 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         });
 
         //debugger;
-        if (logTimeCount > logTimeRetryNum) {
+        if (logTimeCount1 > logTimeRetryNum) {
             logcash.ResponseExecutedLogsCronTest = false;
             logcash.ResponseExecutedLogsErrorMsgCronTest =
                 'Executed logs API failed. ' + '\nCodeJobUUId : ' + CodeJobUUIDCron;
             await updateCronToChroneTestIsScheduledFalse();
         } else {
             if (CallbackCash.ResponseExecutedLogsCronTest.length == 0) {
-                logTimeCount = logTimeCount + 1;
+                logTimeCount1++;
                 generalService.sleep(20000);
                 await getLogsToExecutedCronTest();
             } else {
@@ -260,7 +261,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
                         .Status.Name == 'InProgress'
                 ) {
                     generalService.sleep(20000);
-                    logTimeCount = logTimeCount + 1;
+                    logTimeCount1++;
                     await getLogsToExecutedCronTest();
                     //logTimeCount = logTimeCount + 1;
                 }
@@ -276,7 +277,6 @@ export async function SchedulerTests(generalService: GeneralService, request, te
                     CallbackCash.ResponseExecutedLogsCronTest[0].AuditInfo.JobMessageData.CodeJobUUID == CodeJobUUIDCron
                 ) {
                     logcash.ResponseExecutedLogsCronTest = true;
-                    logTimeCount = 0;
                     generalService.sleep(100000); // test after 2 min instead of 4 06-07-20
                     await getLogsToExecutedCronSecondTest();
                 } else {
@@ -288,7 +288,6 @@ export async function SchedulerTests(generalService: GeneralService, request, te
                         CodeJobUUIDCron +
                         '\nDistributorUUID : ' +
                         CallbackCash.ResponseExecutedLogsCronTest[0].DistributorUUID;
-                    logTimeCount = 0; //added
                     await updateCronToChroneTestIsScheduledFalse();
                 }
             }
@@ -302,7 +301,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         });
 
         //debugger;
-        if (logTimeCount > logTimeRetryNum) {
+        if (logTimeCount2 > logTimeRetryNum) {
             logcash.ResponseExecutedLogsCronTestSecond = false;
             logcash.ResponseExecutedLogsCronTestSecondErrorMsg =
                 'The execution log not created after 10 minutes 45 sec wheiting . CodeJobUUID: ' + CodeJobUUIDCron;
@@ -312,7 +311,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
             if (CallbackCash.ResponseExecutedLogsCronTestSecond.length < 2) {
                 generalService.sleep(20000);
                 await getLogsToExecutedCronSecondTest();
-                logTimeCount = logTimeCount + 1;
+                logTimeCount2++;
             } else {
                 if (
                     // && CallbackCash.ResponseExecutedLogsCronTestSecond.length == 3
@@ -322,7 +321,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
                     // && CallbackCash.ResponseExecutedLogsCronTestSecond[2].Status.Name == "Success"
                 ) {
                     logcash.ResponseExecutedLogsCronTestSecond = true;
-                    logTimeCount = 0;
+                    // logTimeCount = 0;
                     CallbackCash.LogLenght = CallbackCash.ResponseExecutedLogsCronTestSecond.length;
                     await updateCronToChroneTest();
                 } else {
@@ -332,14 +331,13 @@ export async function SchedulerTests(generalService: GeneralService, request, te
                         // || CallbackCash.ResponseExecutedLogsCronTestSecond[2].Status.Name == "InProgress"
                     ) {
                         generalService.sleep(20000);
-                        logTimeCount = logTimeCount + 1;
+                        logTimeCount2++;
                         await getLogsToExecutedCronSecondTest();
                         //logTimeCount = logTimeCount + 1;
                     } else {
                         logcash.ResponseExecutedLogsCronTestSecond = false;
                         logcash.ResponseExecutedLogsCronTestSecondErrorMsg =
                             'Executed logs API failed. CodeJobUUId : ' + CodeJobUUIDCron;
-                        logTimeCount = 0; //added
                         CallbackCash.LogLenght = CallbackCash.ResponseExecutedLogsCronTestSecond.length; // added on 06-05-20
                         await updateCronToChroneTest();
                     }
@@ -352,6 +350,11 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     }
 
     async function updateCronToChroneTest() {
+        const nextRunTimePrebv = (
+            await generalService.fetchStatus('/code_jobs/' + CodeJobUUIDCron, {
+                method: 'GET',
+            })
+        ).Body.NextRunTime;
         // cerate new code about Cron test case
         CodeJobBody = {
             UUID: CodeJobUUIDCron,
@@ -364,11 +367,14 @@ export async function SchedulerTests(generalService: GeneralService, request, te
             method: 'POST',
             body: JSON.stringify(CodeJobBody),
         });
-        //var status = CallbackCash.updateNewCJtoCronVerification.success;
         logcash.updateNewCJtoCronVerification = true;
-
+        const nextRunTimeNew = CallbackCash.updateNewCJtoCronVerification.Body.NextRunTime;
         // debugger;
-        if (CallbackCash.updateNewCJtoCronVerification.Status == 200 && CodeJobUUIDCron != '') {
+        if (
+            CallbackCash.updateNewCJtoCronVerification.Status == 200 &&
+            CodeJobUUIDCron != '' &&
+            nextRunTimePrebv !== nextRunTimeNew
+        ) {
             generalService.sleep(250000);
             await getLogsToExecutedCronLastTest();
         } else {
@@ -380,16 +386,13 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     }
 
     async function getLogsToExecutedCronLastTest() {
-        //CallbackCash.ResponseExecutedLogsCronTestLast = API.Call.Sync("Get", "code_jobs/" + CodeJobUUIDCron + "/executions");
         CallbackCash.ResponseExecutedLogsCronTestLast = await service.auditLogs.find({
             where: `AuditInfo.JobMessageData.CodeJobUUID='${CodeJobUUIDCron}'`,
         });
         //v243
-        //debugger;
         if (
             CallbackCash.ResponseExecutedLogsCronTestLast.length == CallbackCash.LogLenght + 1 && // Oleg on 31/10/23 changed from CallbackCash.LogLenght + 2 to +1
             CallbackCash.ResponseExecutedLogsCronTestLast[CallbackCash.LogLenght].Status.Name == 'Success'
-            //&& CallbackCash.ResponseExecutedLogsCronTestLast[3].Status.Name == "Success"
         ) {
             logcash.ResponseExecutedLogsCronTestLast = true;
         } else {
