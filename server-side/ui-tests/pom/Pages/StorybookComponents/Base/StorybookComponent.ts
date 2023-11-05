@@ -33,12 +33,18 @@ export class StorybookComponent extends AddonPage {
     public OutputTitle: By = By.xpath(`${this.OutputRow.value}/td[1]/span`);
     public MethodTitle: By = By.xpath(`${this.MethodRow.value}/td[1]/span`);
     public PropertyTitle: By = By.xpath(`${this.PropertyRow.value}/td[1]/span`);
+    public ToggableInput_label: By = By.xpath(`/parent::label`);
+    public ErrorSpan: By = By.xpath(`//mat-error/span`);
     public LabelTxtAlign: By = By.xpath(`//div[contains(@id,'{placeholder}')]//pep-field-title//div`);
     public OutputDefaultValue_byOutputName: By = By.xpath(
         `//span[text()="{placeholder}"]/parent::td/following-sibling::td[2]/span`,
     );
     public RowSpanControlInput: By = By.xpath(`//input[@id="control-rowSpan"]`);
     public SrcControlInput: By = By.xpath(`//textarea[@id="control-src"]`);
+    public MainExample_PopupDialog_wrapperContainer: By = By.xpath(`//div[contains(@class,"cdk-overlay-container")]`);
+    public MainExample_PopupDialog_wrapperContainer_innerDiv: By = By.xpath(
+        `${this.MainExample_PopupDialog_wrapperContainer.value}/div[2]`,
+    );
 
     public async getMainExampleContentSelecor(componentText: string): Promise<By> {
         return By.xpath(`//div[contains(@id,'anchor')]//div[contains(@id,'${componentText}')]`);

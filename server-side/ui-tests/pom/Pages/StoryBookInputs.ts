@@ -18,6 +18,9 @@ export class StoryBookInpus extends AddonPage {
     public MandatoryToggler: By = By.xpath(`//input[contains(@name,'mandatory')]`);
     public ShowTitleToggler: By = By.xpath(`//input[contains(@name,'showTitle')]`);
     public RenderTitleToggler: By = By.xpath(`//input[contains(@name,'renderTitle')]`);
+    public RenderErrorToggler: By = By.xpath(`//input[contains(@id,'control-renderError')]`);
+    public RenderSymbolToggler: By = By.xpath(`//input[contains(@id,'control-renderSymbol')]`);
+    public ToggableInput_label: By = By.xpath(`/parent::label`);
     public CheckBoxElements: By = By.xpath(`//table//label//input[@type='radio']`);
     public RadioButtonElements: By = By.xpath(`//label//input[@type='radio']`);
     public ColorValue: By = By.xpath(`//input[contains(@id,'control-value')]`);
@@ -57,6 +60,14 @@ export class StoryBookInpus extends AddonPage {
 
     public async toggleValueControl(): Promise<void> {
         await this.browser.click(this.ValueInput_boolean);
+    }
+
+    public async toggleRenderErrorControl(): Promise<void> {
+        await this.browser.click(this.RenderErrorToggler);
+    }
+
+    public async toggleRenderSymbolControl(): Promise<void> {
+        await this.browser.click(this.RenderSymbolToggler);
     }
 
     public async selectIconName(toSelect: string): Promise<void> {
@@ -140,5 +151,28 @@ export class StoryBookInpus extends AddonPage {
     public async setTxtColorValue(color: string) {
         await this.browser.sendKeys(this.TxtColorValue, color);
         await this.browser.click(this.EmptySpaceToClick);
+    }
+
+    public async getTogglerStateByInputName(
+        inputName: 'Disable' | 'Visible' | 'Mandatory' | 'ShowTitle' | 'RenderTitle' | 'RenderError' | 'RenderSymbol',
+    ): Promise<boolean | Error> {
+        const inputTogglerSelector = this[`${inputName}Toggler`];
+        const togglerLabelSelector = By.xpath(`${inputTogglerSelector.value}${this.ToggableInput_label.value}`);
+        const inputControlLabel = await this.browser.findElement(togglerLabelSelector);
+        const labelText = await inputControlLabel.getAttribute('title');
+        let statusTextIndicator;
+        try {
+            statusTextIndicator = labelText.split('Change to ')[1];
+        } catch (error) {
+            const theError = error as Error;
+            return theError;
+        }
+        if (statusTextIndicator === 'false') {
+            return true;
+        }
+        if (statusTextIndicator === 'true') {
+            return false;
+        }
+        throw new Error(`expected text is not 'true' or 'false' but: '${statusTextIndicator}'`);
     }
 }

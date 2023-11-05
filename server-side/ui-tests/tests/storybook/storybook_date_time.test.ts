@@ -99,14 +99,6 @@ export async function StorybookDateTimeTests() {
         });
         dateTimeInputs.forEach(async (input) => {
             describe(`INPUT: '${input}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await dateTime.getInputRowSelectorByName(input));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${input}' input`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
                 it(`switch to iframe`, async function () {
                     try {
                         await driver.findElement(storyBookPage.StorybookIframe, 5000);
@@ -115,6 +107,14 @@ export async function StorybookDateTimeTests() {
                         console.error(error);
                         console.info('ALREADY ON IFRAME');
                     }
+                });
+                it(`SCREENSHOT`, async function () {
+                    await driver.click(await dateTime.getInputRowSelectorByName(input));
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `'${input}' input`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
                 it(`open inputs if it's closed`, async function () {
                     const inputsMainTableRowElement = await driver.findElement(dateTime.Inputs_mainTableRow);
@@ -272,7 +272,205 @@ export async function StorybookDateTimeTests() {
                         it(`validate input`, async function () {
                             expect(dateTimeInputs.includes('renderError')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderError Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const renderErrorControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'RenderError',
+                            );
+                            expect(renderErrorControlState).to.be.true;
+                            await driver.click(dateTime.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of RenderError Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainExampleDiv);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderError Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                        });
+                        it(`creating an error and making sure the error message is displayed`, async function () {
+                            await storyBookPage.inputs.changeValueControl('2020-1-0');
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `value control change to '2020-1-0' - to cause an error`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainExampleDateTime);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Select Date Time - was opened`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            driver.sleep(0.5 * 1000);
+                            const mainExamplePopup = await driver.findElement(dateTime.DateTimePicker_Popup);
+                            expect(mainExamplePopup).to.not.be.null.and.not.be.undefined;
+                            // closing dialog:
+                            await driver.click(dateTime.MainExample_PopupDialog_wrapperContainer_innerDiv);
+                            driver.sleep(2 * 1000);
+                            await storyBookPage.inputs.changeInput(dateTime.MainExampleDateTime, '0');
+                            const errorMessageSpan = await driver.findElement(dateTime.MainExample_ErrorMessageSpan);
+                            console.info('errorMessageSpan style: ', await errorMessageSpan.getCssValue('color'));
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Select Date Time - was closed`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(await errorMessageSpan.getText()).equals('date is not valid');
+                            expect(await errorMessageSpan.getCssValue('color')).equals('rgba(255, 255, 255, 1)');
+                        });
+                        it(`changing value control to valid input and making sure no error indication is displayed`, async function () {
+                            await storyBookPage.inputs.changeValueControl('2020-1-1');
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `value control change to '2020-1-1'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainExampleDateTime);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Select Date Time - was opened`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            driver.sleep(0.5 * 1000);
+                            const mainExamplePopup = await driver.isElementVisible(dateTime.DateTimePicker_Popup);
+                            expect(mainExamplePopup).to.be.true;
+                            // closing dialog:
+                            await driver.click(dateTime.MainExample_PopupDialog_wrapperContainer_innerDiv);
+                            driver.sleep(2 * 1000);
+                            await storyBookPage.inputs.changeInput(dateTime.MainExampleDateTime, '01/01/2020');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `No Error should be shown`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const errorMessageSpan = await driver.isElementVisible(
+                                dateTime.MainExample_ErrorMessageSpan,
+                            );
+                            expect(errorMessageSpan).to.be.false;
+                        });
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleRenderErrorControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderError Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const renderErrorControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'RenderError',
+                            );
+                            expect(renderErrorControlState).to.be.false;
+                            await driver.click(dateTime.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of RenderError Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                        });
+                        it(`changing value control to invalid input and expacting error message not to be displayed - but border line red`, async function () {
+                            await storyBookPage.inputs.changeValueControl('2020-1-0');
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `value control change to '2020-1-0' - to cause an error`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainExampleDateTime);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Select Date Time - was opened`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            driver.sleep(0.5 * 1000);
+                            const mainExamplePopup = await driver.findElement(dateTime.DateTimePicker_Popup);
+                            expect(mainExamplePopup).to.not.be.null.and.not.be.undefined;
+                            // closing dialog:
+                            await driver.click(dateTime.MainExample_PopupDialog_wrapperContainer_innerDiv);
+                            driver.sleep(2 * 1000);
+                            await storyBookPage.inputs.changeInput(dateTime.MainExampleDateTime, '0');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Select Date Time - was closed`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const errorMessageSpan = await driver.isElementVisible(
+                                dateTime.MainExample_ErrorMessageSpan,
+                            );
+                            expect(errorMessageSpan).to.be.false;
+                            const borderLineElement = await driver.findElement(dateTime.MainExample_BorderLineElement);
+                            const borderLineColor = await borderLineElement.getCssValue('border');
+                            console.info('borderLineColor: ', borderLineColor);
+                            expect(borderLineColor.trim()).equals('1px solid rgb(204, 0, 0)');
+                        });
+                        it(`changing value control to valid input and making sure no error indication is displayed`, async function () {
+                            await storyBookPage.inputs.changeValueControl('2020-1-1');
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `value control change to '2020-1-1'`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainExampleDateTime);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Select Date Time - was opened`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            driver.sleep(0.5 * 1000);
+                            const mainExamplePopup = await driver.isElementVisible(dateTime.DateTimePicker_Popup);
+                            expect(mainExamplePopup).to.be.true;
+                            // closing dialog:
+                            await driver.click(dateTime.MainExample_PopupDialog_wrapperContainer_innerDiv);
+                            driver.sleep(2 * 1000);
+                            await storyBookPage.inputs.changeInput(dateTime.MainExampleDateTime, '01/01/2020');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `No Error should be shown`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const errorMessageSpan = await driver.isElementVisible(
+                                dateTime.MainExample_ErrorMessageSpan,
+                            );
+                            expect(errorMessageSpan).to.be.false;
+                            const borderLineElement = await driver.findElement(dateTime.MainExample_BorderLineElement);
+                            const borderLineColor = await borderLineElement.getCssValue('border');
+                            console.info('borderLineColor: ', borderLineColor);
+                            expect(borderLineColor.trim()).equals('0px none rgb(0, 0, 0)');
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleRenderErrorControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderError Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainHeader);
+                            const renderErrorControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'RenderError',
+                            );
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of RenderError Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(renderErrorControlState).to.be.true;
+                        });
+                        it(`reset controls`, async function () {
+                            await driver.click(dateTime.ResetControlsButton);
+                            const expectedValue = '01/01/2020';
+                            await driver.click(dateTime.MainHeader);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "${expectedValue}"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await dateTime.getMainExampleDateTimeValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
+                        });
                         break;
 
                     case 'renderSymbol':
