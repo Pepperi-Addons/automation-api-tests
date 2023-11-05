@@ -305,7 +305,211 @@ export async function StorybookTextboxTests() {
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('renderError')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderError Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const renderErrorControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'RenderError',
+                            );
+                            expect(renderErrorControlState).to.be.true;
+                            await driver.click(textbox.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of RenderError Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textbox.MainExampleDiv);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderError Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                        });
+                        it(`creating an error and making sure the error message is displayed`, async function () {
+                            // changing mandatory to true:
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            // validating mandatory to be true:
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
+                            expect(mandatoryControlState).to.be.true;
+                            // changing value to be empty:
+                            await storyBookPage.inputs.changeValueControl('');
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `value control change to '' - to cause an error`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // click textbox:
+                            await textbox.click(textbox.MainExampleTextbox);
+                            await textbox.click(textbox.MainExampleDiv);
+                            textbox.pause(1 * 1000);
+                            const errorMessageSpan = await driver.findElement(textbox.MainExample_ErrorMessageSpan);
+                            const mainExample_matLabel = await driver.findElement(textbox.MainExample_titleLabel);
+                            const mainExample_matLabel_text = await mainExample_matLabel.getText();
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Select Date Time - was closed`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(await errorMessageSpan.getText()).equals(
+                                `${mainExample_matLabel_text} is mandatory`,
+                            );
+                            expect(await errorMessageSpan.getCssValue('color')).equals('rgba(255, 255, 255, 1)');
+                        });
+                        it(`changing value control to VALID input and making sure no error is displayed`, async function () {
+                            const newValueToSet = 'Auto Test';
+                            await driver.click(textbox.MainHeader);
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input Change -> '${newValueToSet}'`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const newValueGotFromUi = await textbox.getMainExampleTextboxValue();
+                            expect(newValueGotFromUi).to.equal(newValueToSet);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `image of ${newValueToSet} - at new tab after click`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const errorMessageSpan = await driver.isElementVisible(
+                                textbox.MainExample_ErrorMessageSpan,
+                            );
+                            textbox.pause(1 * 1000);
+                            expect(errorMessageSpan).to.be.false;
+                        });
+                        it(`switch to iframe`, async function () {
+                            try {
+                                await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                                await driver.switchTo(storyBookPage.StorybookIframe);
+                            } catch (error) {
+                                console.error(error);
+                                console.info('ALREADY ON IFRAME');
+                            }
+                        });
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleRenderErrorControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderError Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const renderErrorControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'RenderError',
+                            );
+                            expect(renderErrorControlState).to.be.false;
+                            await driver.click(textbox.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of RenderError Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                        });
+                        it(`changing value control to INVALID input and expacting error message NOT to be displayed`, async function () {
+                            // validating mandatory to be true:
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
+                            expect(mandatoryControlState).to.be.true;
+                            // changing value to be empty:
+                            await storyBookPage.inputs.changeValueControl('');
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `value control change to '' - to cause an error`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textbox.MainExampleTextbox);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Select Date Time - was opened`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // click textbox:
+                            await textbox.click(textbox.MainExampleTextbox);
+                            textbox.pause(0.2 * 1000);
+                            await textbox.click(textbox.MainExampleDiv);
+                            const errorMessageSpan = await driver.isElementVisible(
+                                textbox.MainExample_ErrorMessageSpan,
+                            );
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Select Date Time - was closed`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(errorMessageSpan).to.be.false;
+                        });
+                        it(`changing value control to VALID input and making sure no error indication is displayed`, async function () {
+                            // changing mandatory to false:
+                            await storyBookPage.inputs.toggleMandatoryControl();
+                            // validating mandatory to be true:
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
+                            expect(mandatoryControlState).to.be.false;
+                            // changing value to valid input:
+                            const newValueToSet = 'Auto Test';
+                            await driver.click(textbox.MainHeader);
+                            await storyBookPage.inputs.changeValueControl(newValueToSet);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input Change -> '${newValueToSet}'`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const newValueGotFromUi = await textbox.getMainExampleTextboxValue();
+                            expect(newValueGotFromUi).to.equal(newValueToSet);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `No Error should be shown`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const errorMessageSpan = await driver.isElementVisible(
+                                textbox.MainExample_ErrorMessageSpan,
+                            );
+                            expect(errorMessageSpan).to.be.false;
+                        });
+                        it(`switch to iframe`, async function () {
+                            try {
+                                await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                                await driver.switchTo(storyBookPage.StorybookIframe);
+                            } catch (error) {
+                                console.error(error);
+                                console.info('ALREADY ON IFRAME');
+                            }
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleRenderErrorControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderError Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textbox.MainHeader);
+                            const renderErrorControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'RenderError',
+                            );
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of RenderError Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(renderErrorControlState).to.be.true;
+                        });
+                        it(`reset controls`, async function () {
+                            await driver.click(textbox.ResetControlsButton);
+                            const expectedValue = 'Not all who wander are lost';
+                            await driver.click(textbox.MainHeader);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "${expectedValue}"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await textbox.getMainExampleTextboxValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
+                        });
                         break;
 
                     case 'renderSymbol':
