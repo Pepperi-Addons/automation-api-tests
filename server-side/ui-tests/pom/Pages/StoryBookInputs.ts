@@ -21,6 +21,7 @@ export class StoryBookInpus extends AddonPage {
     public CheckBoxElements: By = By.xpath(`//table//label//input[@type='radio']`);
     public RadioButtonElements: By = By.xpath(`//label//input[@type='radio']`);
     public ColorValue: By = By.xpath(`//input[contains(@id,'control-value')]`);
+    public TxtColorValue: By = By.xpath(`//input[contains(@id,'control-textColor')]`);
 
     public async getInputRowSelectorByName(inputTitle: string): Promise<By> {
         return By.xpath(`${this.InputTitle.value}[text()='${inputTitle}']`);
@@ -133,6 +134,11 @@ export class StoryBookInpus extends AddonPage {
 
     public async setColorValue(color: string) {
         await this.browser.sendKeys(this.ColorValue, color);
+        await this.browser.click(this.EmptySpaceToClick);
+    }
+
+    public async setTxtColorValue(color: string) {
+        await this.browser.sendKeys(this.TxtColorValue, color);
         await this.browser.click(this.EmptySpaceToClick);
     }
 }

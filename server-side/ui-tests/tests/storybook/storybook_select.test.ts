@@ -30,12 +30,14 @@ export async function StorybookSelectTests() {
         'Disabled',
     ];
     const alignExpectedValues = ['', 'center', 'right'];
+    const typeExpectedValues = ['select', 'multi'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let select: Select;
     let selectInputsTitles;
     let selectOutputsTitles;
+    let allTypes;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "Select" Tests Suite', function () {
@@ -146,12 +148,14 @@ export async function StorybookSelectTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'options':
                         it(`it '${input}'`, async function () {
                             expect(selectInputsTitles.includes('options')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('disabled')).to.be.true;
@@ -200,6 +204,7 @@ export async function StorybookSelectTests() {
                             expect(mainExampleSelectDisabled).to.not.include('mat-form-field-disabled');
                         });
                         break;
+
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('mandatory')).to.be.true;
@@ -232,12 +237,14 @@ export async function StorybookSelectTests() {
                             await storyBookPage.elemntDoNotExist(select.MainExample_mandatoryIcon);
                         });
                         break;
+
                     case 'readonly':
                         it(`it '${input}'`, async function () {
                             expect(selectInputsTitles.includes('readonly')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('showTitle')).to.be.true;
@@ -278,12 +285,77 @@ export async function StorybookSelectTests() {
                             await storyBookPage.untilIsVisible(select.MainExample_titleLabel);
                         });
                         break;
+
                     case 'type':
                         it(`it '${input}'`, async function () {
                             expect(selectInputsTitles.includes('type')).to.be.true;
                         });
-                        // TODO
+                        it(`get all types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allTypes = await storyBookPage.inputs.getAllTypeInputValues();
+                            driver.sleep(1 * 1000);
+                            console.info('allTypes length: ', allTypes.length);
+                            expect(allTypes.length).equals(typeExpectedValues.length);
+                        });
+                        it(`validate current type is "select"`, async function () {
+                            const selectElement = await driver.findElement(select.MainExampleSelect);
+                            const selectElementType = await selectElement.getAttribute('type');
+                            console.info('selectElement: ', selectElement);
+                            console.info('selectElementType: ', selectElementType);
+                            // expect(selectElementType).to.equal('select');
+                        });
+                        typeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const type = allTypes[index];
+                                await type.click();
+                                // let mainExampleSelector;
+                                // switch (title) {
+                                //     case 'select':
+                                //         // mainExampleSelector = select.MainExampleBooleanText;
+                                //         break;
+                                //     case 'multi':
+                                //         // mainExampleSelector = select.MainExampleBooleanText;
+                                //         break;
+
+                                //     default:
+                                //         mainExampleSelector = select.MainExampleSelect;
+                                //         break;
+                                // }
+                                // await driver.findElement(mainExampleSelector);
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (type) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                await driver.click(select.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of '${title}' (Type Input)`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
+                        it(`back to default - validate type is "any"`, async function () {
+                            await driver.click(select.ResetControlsButton);
+                            const selectElement = await driver.findElement(select.MainExampleSelect);
+                            const selectElementType_style = await selectElement.getAttribute('style');
+                            // const selectElementType_color = selectElementType_style.split('background: ')[1].split(';')[0];
+                            console.info('selectElement: ', selectElement);
+                            console.info('selectElementType_style: ', selectElementType_style);
+                            // console.info('selectElementType_color: ', selectElementType_color);
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `back to default`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            // expect(selectElementType_color).to.equal('transparent');
+                        });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('value')).to.be.true;
@@ -323,6 +395,7 @@ export async function StorybookSelectTests() {
                             expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
+
                     case 'xAlignment':
                         it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('xAlignment')).to.be.true;

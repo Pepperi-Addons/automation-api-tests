@@ -27,12 +27,14 @@ export async function StorybookDateTimeTests() {
     const dateTimeOutputs = ['valueChange'];
     const dateTimeSubFoldersHeaders = ['Empty date-time'];
     const alignExpectedValues = ['', 'center', 'right'];
+    const typeExpectedValues = ['date', 'datetime'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
     let dateTime: DateTime;
     let dateTimeInputsTitles;
     let dateTimeOutputsTitles;
+    let allTypes;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "DateTime" Tests Suite', function () {
@@ -375,14 +377,115 @@ export async function StorybookDateTimeTests() {
                         it(`validate input`, async function () {
                             expect(dateTimeInputs.includes('textColor')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is ""`, async function () {
+                            const expectedValue = '';
+                            await driver.click(await dateTime.getInputRowSelectorByName('type'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `txtColor Input default value = ""`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of txtColor Input default value = ""`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await dateTime.getMainExampleDateTimeTxtColor();
+                            expect(valueGotFromUi).to.equal(expectedValue);
+                        });
+                        it(`functional test [ control = "#780f97" ] (+screenshot)`, async function () {
+                            await storyBookPage.inputs.setTxtColorValue('#780f97');
+                            await driver.click(await dateTime.getInputRowSelectorByName('type'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `txtColor Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const currentColor = await dateTime.getMainExampleDateTimeTxtColor();
+                            await driver.click(dateTime.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of txtColor Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(currentColor).to.equal('rgb(120, 15, 151)'); // same as "#780f97" in RGB
+                        });
+                        it(`back to default [ control = "" ] (+screenshots)`, async function () {
+                            await storyBookPage.inputs.setTxtColorValue('');
+                            await driver.click(await dateTime.getInputRowSelectorByName('type'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `back to default value = "" of txtColor Input`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.ResetControlsButton);
+                            const expectedValue = '';
+                            await driver.click(dateTime.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of back to default value = "" of txtColor Input`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await dateTime.getMainExampleDateTimeTxtColor();
+                            expect(valueGotFromUi).to.equal(expectedValue);
+                        });
                         break;
 
                     case 'type':
                         it(`validate input`, async function () {
                             expect(dateTimeInputs.includes('type')).to.be.true;
                         });
-                        // TODO
+                        it(`get all types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allTypes = await storyBookPage.inputs.getAllTypeInputValues();
+                            driver.sleep(1 * 1000);
+                            console.info('allTypes length: ', allTypes.length);
+                            expect(allTypes.length).equals(typeExpectedValues.length);
+                        });
+                        it(`validate current type is "date"`, async function () {
+                            const dateTimeElement = await driver.findElement(dateTime.MainExampleDateTime);
+                            const dateTimeElementType = await dateTimeElement.getAttribute('title');
+                            console.info('dateTimeElement: ', dateTimeElement);
+                            expect(dateTimeElementType).to.equal('01/01/2020');
+                        });
+                        typeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const type = allTypes[index];
+                                await type.click();
+                                const pepDate = await driver.findElement(dateTime.MainExampleDateTime);
+                                const dateContent = await pepDate.getAttribute('title');
+                                let expectedDateContent;
+                                switch (title) {
+                                    case 'date':
+                                        expectedDateContent = '01/01/2020';
+                                        break;
+                                    case 'datetime':
+                                        expectedDateContent = '01/01/2020 12:00 AM';
+                                        break;
+
+                                    default:
+                                        expectedDateContent = '';
+                                        break;
+                                }
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (type) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                await driver.click(dateTime.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of '${title}' (Type Input)`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                expect(dateContent).to.equal(expectedDateContent);
+                            });
+                        });
                         break;
 
                     case 'xAlignment':
