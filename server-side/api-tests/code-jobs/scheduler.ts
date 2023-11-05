@@ -24,9 +24,9 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     } else {
         varKey = request.body.varKeyPro;
     }
-    await generalService.baseAddonVersionsInstallation(varKey, undefined, true);
+    // await generalService.baseAddonVersionsInstallation(varKey, undefined, true);
     const testData = {
-        Scheduler: ['8bc903d1-d97a-46b8-990b-50bea356e35b', ''],
+        // Scheduler: ['8bc903d1-d97a-46b8-990b-50bea356e35b', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
@@ -126,7 +126,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
             CodeJobName: 'New CodeJob with IsScheduled true',
             Description: 'Cron verification',
             Owner: '',
-            CronExpression: '*/2 * * * *',
+            CronExpression: '*/3 * * * *',
             NextRunTime: null,
             IsScheduled: true,
             // FailureAlertEmailTo: ['qa@pepperi.com'],
@@ -145,12 +145,21 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         };
 
         CallbackCash.insertNewCJtoCronVerification = await service.codeJobs.upsert(CodeJobBody);
+        const codeJobResponse = (
+            await generalService.fetchStatus('/code_jobs/' + CallbackCash.insertNewCJtoCronVerification.UUID, {
+                method: 'GET',
+            })
+        ).Body;
 
         //var status = CallbackCash.insertNewCJtoCronVerification.success;
         //CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;
         logcash.insertNewCJtoCronVerification = true;
-        //debugger;
-        if (CallbackCash.insertNewCJtoCronVerification.CodeJobName == CodeJobBody.CodeJobName) {
+        // debugger;
+        if (
+            CallbackCash.insertNewCJtoCronVerification.CodeJobName == CodeJobBody.CodeJobName &&
+            codeJobResponse.CodeJobIsHidden === false &&
+            codeJobResponse.IsScheduled === true
+        ) {
             // CodeJobUUIDCron != "" removed from IF
             CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;
             //await executeDraftCodeWithoutRetry();
@@ -234,7 +243,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         } catch (error) {
             logcash.emtyLogResponsCron = true; //when log is empty get failure exeption
         }
-        generalService.sleep(100000);
+        generalService.sleep(165000);
         await getLogsToExecutedCronTest();
     }
 
@@ -253,14 +262,14 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         } else {
             if (CallbackCash.ResponseExecutedLogsCronTest.length == 0) {
                 logTimeCount1++;
-                generalService.sleep(20000);
+                generalService.sleep(30000);
                 await getLogsToExecutedCronTest();
             } else {
                 if (
                     CallbackCash.ResponseExecutedLogsCronTest[CallbackCash.ResponseExecutedLogsCronTest.length - 1]
                         .Status.Name == 'InProgress'
                 ) {
-                    generalService.sleep(20000);
+                    generalService.sleep(30000);
                     logTimeCount1++;
                     await getLogsToExecutedCronTest();
                     //logTimeCount = logTimeCount + 1;
@@ -277,7 +286,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
                     CallbackCash.ResponseExecutedLogsCronTest[0].AuditInfo.JobMessageData.CodeJobUUID == CodeJobUUIDCron
                 ) {
                     logcash.ResponseExecutedLogsCronTest = true;
-                    generalService.sleep(100000); // test after 2 min instead of 4 06-07-20
+                    generalService.sleep(165000); // test after 2 min instead of 4 06-07-20
                     await getLogsToExecutedCronSecondTest();
                 } else {
                     logcash.ResponseExecutedLogsCronTest = false; //changed from CallbackCash.ResponseExecutedLogsCronTest[0].AuditLogUUID
@@ -309,7 +318,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         } else {
             // if (CallbackCash.ResponseExecutedLogsCronTestSecond.length < 3 )
             if (CallbackCash.ResponseExecutedLogsCronTestSecond.length < 2) {
-                generalService.sleep(20000);
+                generalService.sleep(30000);
                 await getLogsToExecutedCronSecondTest();
                 logTimeCount2++;
             } else {
@@ -330,7 +339,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
                         CallbackCash.ResponseExecutedLogsCronTestSecond[1].Status.Name == 'InProgress'
                         // || CallbackCash.ResponseExecutedLogsCronTestSecond[2].Status.Name == "InProgress"
                     ) {
-                        generalService.sleep(20000);
+                        generalService.sleep(30000);
                         logTimeCount2++;
                         await getLogsToExecutedCronSecondTest();
                         //logTimeCount = logTimeCount + 1;
@@ -358,24 +367,36 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         // cerate new code about Cron test case
         CodeJobBody = {
             UUID: CodeJobUUIDCron,
-            CodeJobName: 'Cron updating t 4 minutes',
+            CodeJobName: 'Cron updating t 7 minutes',
             Description: 'Cron verification',
-            CronExpression: '*/4 * * * *', // cron updated to 4 min
+            CronExpression: '*/7 * * * *', // cron updated to 4 min
         };
-
         CallbackCash.updateNewCJtoCronVerification = await generalService.fetchStatus('/code_jobs', {
             method: 'POST',
             body: JSON.stringify(CodeJobBody),
         });
         logcash.updateNewCJtoCronVerification = true;
         const nextRunTimeNew = CallbackCash.updateNewCJtoCronVerification.Body.NextRunTime;
-        // debugger;
+        const codeJobResponse = (
+            await generalService.fetchStatus('/code_jobs/' + CodeJobUUIDCron, {
+                method: 'GET',
+            })
+        ).Body;
+        console.log(
+            `GOTTEN CODE JOB AFTER UPDATING NAME, DESC AND CRON EXPRESSION IS:\n${JSON.stringify(codeJobResponse)}`,
+        );
+        const codeJobResponseScheduled = codeJobResponse.IsScheduled;
+        const codeJobResponseCron = codeJobResponse.CronExpression;
+        const codeJobResponseHidden = codeJobResponse.CodeJobIsHidden;
         if (
             CallbackCash.updateNewCJtoCronVerification.Status == 200 &&
             CodeJobUUIDCron != '' &&
-            nextRunTimePrebv !== nextRunTimeNew
+            nextRunTimePrebv !== nextRunTimeNew &&
+            codeJobResponseScheduled === true &&
+            codeJobResponseCron === '*/7 * * * *' &&
+            codeJobResponseHidden === false
         ) {
-            generalService.sleep(250000);
+            generalService.sleep(420000);
             await getLogsToExecutedCronLastTest();
         } else {
             logcash.updateNewCJtoCronVerification = false;
