@@ -70,6 +70,18 @@ export class StoryBookInpus extends AddonPage {
         await this.browser.click(this.RenderSymbolToggler);
     }
 
+    public async toggleMandatoryControl(): Promise<void> {
+        await this.browser.click(this.MandatoryToggler);
+    }
+
+    public async toggleShowTitleControl(): Promise<void> {
+        await this.browser.click(this.ShowTitleToggler);
+    }
+
+    public async toggleRenderTitleControl(): Promise<void> {
+        await this.browser.click(this.RenderTitleToggler);
+    }
+
     public async selectIconName(toSelect: string): Promise<void> {
         await this.selectByOption(this.IconNameInputControl, toSelect);
     }
@@ -86,18 +98,6 @@ export class StoryBookInpus extends AddonPage {
         const matOptionWithStringInjected: string = this.SelectOption_byText.value.replace('{placeholder}', option);
         await this.browser.click(By.xpath(matOptionWithStringInjected));
         return;
-    }
-
-    public async toggleMandatoryControl(): Promise<void> {
-        await this.browser.click(this.MandatoryToggler);
-    }
-
-    public async toggleShowTitleControl(): Promise<void> {
-        await this.browser.click(this.ShowTitleToggler);
-    }
-
-    public async toggleRenderTitleControl(): Promise<void> {
-        await this.browser.click(this.RenderTitleToggler);
     }
 
     public async getAllTypes() {

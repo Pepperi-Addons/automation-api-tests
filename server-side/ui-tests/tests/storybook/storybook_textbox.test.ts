@@ -516,7 +516,62 @@ export async function StorybookTextboxTests() {
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('renderSymbol')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "True"`, async function () {
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderSymbol Input default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const renderSymbolTogglerState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'RenderSymbol',
+                            );
+                            await driver.click(textbox.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of RenderSymbol Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(renderSymbolTogglerState).to.be.true;
+                            // await storyBookPage.untilIsVisible(textbox.MainExample_pepSymbol); // https://pepperi.atlassian.net/browse/DI-25637
+                        });
+                        it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleRenderSymbolControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderSymbol Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const renderSymbolTogglerState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'RenderSymbol',
+                            );
+                            await driver.click(textbox.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of RenderSymbol Input "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(renderSymbolTogglerState).to.be.false;
+                            await storyBookPage.elemntDoNotExist(textbox.MainExample_pepSymbol);
+                        });
+                        it(`back to default [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleRenderSymbolControl();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `RenderSymbol Input changed back to default value = "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const renderSymbolTogglerState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'RenderSymbol',
+                            );
+                            await driver.click(textbox.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Upper View of RenderSymbol Input "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(renderSymbolTogglerState).to.be.true;
+                            // await storyBookPage.untilIsVisible(textbox.MainExample_pepSymbol); // https://pepperi.atlassian.net/browse/DI-25637
+                        });
                         break;
 
                     case 'renderTitle':
@@ -529,12 +584,16 @@ export async function StorybookTextboxTests() {
                                 title: `RenderTitle Input default value = "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            const renderTitleTogglerState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'RenderTitle',
+                            );
                             await driver.click(textbox.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Upper View of RenderTitle Input "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(renderTitleTogglerState).to.be.true;
                             await storyBookPage.untilIsVisible(textbox.MainExample_pepTitle);
                         });
                         it(`Functional test [ control = 'False' ](+screenshots)`, async function () {
@@ -544,12 +603,16 @@ export async function StorybookTextboxTests() {
                                 title: `RenderTitle Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            const renderTitleTogglerState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'RenderTitle',
+                            );
                             await driver.click(textbox.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Upper View of RenderTitle Input "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(renderTitleTogglerState).to.be.false;
                             await storyBookPage.elemntDoNotExist(textbox.MainExample_pepTitle);
                         });
                         it(`back to default [ control = 'True' ](+screenshots)`, async function () {
@@ -559,12 +622,16 @@ export async function StorybookTextboxTests() {
                                 title: `RenderTitle Input changed back to default value = "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            const renderTitleTogglerState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'RenderTitle',
+                            );
                             await driver.click(textbox.MainHeader);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Upper View of RenderTitle Input "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(renderTitleTogglerState).to.be.true;
                             await storyBookPage.untilIsVisible(textbox.MainExample_pepTitle);
                         });
                         break;
