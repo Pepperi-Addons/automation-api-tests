@@ -7,6 +7,7 @@ export class Textbox extends StorybookComponent {
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
     public MainExample_pepTitle: By = By.xpath(`${this.MainExampleDiv.value}//pep-textbox${this.PepTitle.value}`);
+    public MainExample_pepSymbol: By = By.xpath(`${this.MainExampleDiv.value}//pep-textbox//pep-textbox-icon`);
     public MainExample_ErrorMessageSpan: By = By.xpath(`${this.MainExampleDiv.value}${this.ErrorSpan.value}`);
     public MainExample_BorderLineElement: By = By.xpath(
         `${this.MainExampleDiv.value}//div[contains(@class,"mat-form-field-flex")]`,
