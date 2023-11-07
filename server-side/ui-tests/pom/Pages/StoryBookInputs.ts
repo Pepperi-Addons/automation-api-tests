@@ -20,6 +20,7 @@ export class StoryBookInpus extends AddonPage {
     public RenderTitleToggler: By = By.xpath(`//input[contains(@name,'renderTitle')]`);
     public RenderErrorToggler: By = By.xpath(`//input[contains(@id,'control-renderError')]`);
     public RenderSymbolToggler: By = By.xpath(`//input[contains(@id,'control-renderSymbol')]`);
+    public ReadonlyToggler: By = By.xpath(`//input[contains(@id,'control-readonly')]`);
     public ToggableInput_label: By = By.xpath(`/parent::label`);
     public CheckBoxElements: By = By.xpath(`//table//label//input[@type='radio']`);
     public RadioButtonElements: By = By.xpath(`//label//input[@type='radio']`);
@@ -80,6 +81,10 @@ export class StoryBookInpus extends AddonPage {
 
     public async toggleRenderTitleControl(): Promise<void> {
         await this.browser.click(this.RenderTitleToggler);
+    }
+
+    public async toggleReadonlyControl(): Promise<void> {
+        await this.browser.click(this.ReadonlyToggler);
     }
 
     public async selectIconName(toSelect: string): Promise<void> {
@@ -154,7 +159,15 @@ export class StoryBookInpus extends AddonPage {
     }
 
     public async getTogglerStateByInputName(
-        inputName: 'Disable' | 'Visible' | 'Mandatory' | 'ShowTitle' | 'RenderTitle' | 'RenderError' | 'RenderSymbol',
+        inputName:
+            | 'Disable'
+            | 'Visible'
+            | 'Mandatory'
+            | 'ShowTitle'
+            | 'RenderTitle'
+            | 'RenderError'
+            | 'RenderSymbol'
+            | 'Readonly',
     ): Promise<boolean | Error> {
         const inputTogglerSelector = this[`${inputName}Toggler`];
         const togglerLabelSelector = By.xpath(`${inputTogglerSelector.value}${this.ToggableInput_label.value}`);
