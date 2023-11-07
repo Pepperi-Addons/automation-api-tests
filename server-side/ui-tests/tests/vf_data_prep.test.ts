@@ -122,10 +122,10 @@ export async function VFdataPrep(varPass: string, client: Client) {
         // Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.6.26'], // current phased version 0.6.26 | dependency > 0.6.3
         // 'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', '0.0.8'],
         // 'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', '0.8.34'], // UDC current phased version 0.8.29 | dependency > 0.8.11
-        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '1.0.%'], // current phased version 0.9.38 | dependency > 0.9.31
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], // current phased version 0.9.38 | dependency > 0.9.31
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''], // current phased version 1.0.23 | dependency > 1.0.23
-        // survey: ['dd0a85ea-7ef0-4bc1-b14f-959e0372877a', '0.6.1'],
-        // 'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', '0.7.36'],
+        survey: ['dd0a85ea-7ef0-4bc1-b14f-959e0372877a', ''],
+        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''],
         // Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', '1.1.23'],
         // 'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', '0.0.793'], //OUR TESTING ADDON --
         // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.24'], // PAPI
