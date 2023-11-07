@@ -258,8 +258,12 @@ export async function FileStorageTests(generalService: GeneralService, tester: T
                     it('Read the first added file content again after updated the new file (DI-17885)', async () => {
                         //Get the created file content
                         const fileContent = await generalService.fetchStatus(uriStr).then((res) => res.Body);
-                        expect(fileContent.Text).to.contain('<Message>Access Denied</Message>');
-                        //expect(fileContent.Text).to.contain('ABCD');
+                        //EVGENY 6/11/23: SB env has been updated while other envs still hasn't -- so SB will WORK but other envs WONT for now (will change in the future god willing)
+                        //EVGENY2: commented out as wont pass on Jenkins
+                        // if (generalService.papiClient['options'].baseURL.includes('staging'))
+                        //     expect(fileContent.Text).to.contain('ABCD');
+                        //else
+                        expect(fileContent.Text).to.contain('<Message>Access Denied</Message>'); //EVGENY: 6/11/23
                     });
 
                     it('Make sure files removed in the end of the tests', async () => {
