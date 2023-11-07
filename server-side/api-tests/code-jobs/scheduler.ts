@@ -388,6 +388,18 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         const codeJobResponseScheduled = codeJobResponse.IsScheduled;
         const codeJobResponseCron = codeJobResponse.CronExpression;
         const codeJobResponseHidden = codeJobResponse.CodeJobIsHidden;
+        if (nextRunTimePrebv === nextRunTimeNew) {
+            console.log(`ERROR: Next Run Time Didn't Change, Was: ${nextRunTimePrebv}, Now: ${nextRunTimeNew}`);
+        }
+        if (codeJobResponseScheduled == false) {
+            console.log(`ERROR: IsScheduled Returned Fasle!`);
+        }
+        if (codeJobResponseCron !== '*/7 * * * *') {
+            console.log(`ERROR: CronExpression Returned As: ${codeJobResponseCron}`);
+        }
+        if (codeJobResponseHidden == true) {
+            console.log(`ERROR: Code Job Returned IsHidden = True`);
+        }
         if (
             CallbackCash.updateNewCJtoCronVerification.Status == 200 &&
             CodeJobUUIDCron != '' &&
