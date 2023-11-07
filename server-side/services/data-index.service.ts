@@ -78,4 +78,97 @@ export class DataIndexService {
             '/addons/api/async/10979a11-d7f4-41df-8993-f06bfd778304/data_index/transaction_lines_polling',
         );
     }
+
+    async cleanDataIndexAsInUI() {
+        return await this.generalService.fetchStatus(
+            '/addons/api/10979a11-d7f4-41df-8993-f06bfd778304/data_index_ui_api/delete_index',
+            {
+                method: 'POST',
+                body: JSON.stringify({}),
+            },
+        );
+    }
+
+    async publishDataIndex() {
+        const hardcodedBody = {
+            all_activities_fields: [
+                { fieldID: 'InternalID', type: 'Integer' },
+                { fieldID: 'UUID', type: 'String' },
+                { fieldID: 'Type', type: 'String' },
+                { fieldID: 'StatusName', type: 'String' },
+                { fieldID: 'ActionDateTime', type: 'DateTime' },
+                { fieldID: 'Account.InternalID', type: 'Integer' },
+                { fieldID: 'Account.UUID', type: 'String' },
+                { fieldID: 'Account.ExternalID', type: 'String' },
+                { fieldID: 'Account.Name', type: 'String' },
+                { fieldID: 'Agent.InternalID', type: 'Integer' },
+                { fieldID: 'Agent.Name', type: 'String' },
+                { fieldID: 'ExternalID', type: 'String' },
+                { fieldID: 'TaxPercentage', type: 'Double' },
+                { fieldID: 'Remark', type: 'String' },
+                { fieldID: 'CreationDateTime', type: 'DateTime' },
+                { fieldID: 'SubTotal', type: 'Double' },
+                { fieldID: 'Status', type: 'Integer' },
+                { fieldID: 'DiscountPercentage', type: 'Double' },
+                { fieldID: 'Account.City', type: 'String' },
+                { fieldID: 'Account.Country', type: 'String' },
+                { fieldID: 'Account.Status', type: 'Integer' },
+                { fieldID: 'Agent.ExternalID', type: 'String' },
+                { fieldID: 'Agent.FirstName', type: 'String' },
+                { fieldID: 'Agent.Mobile', type: 'String' },
+            ],
+            transaction_lines_fields: [
+                { fieldID: 'InternalID', type: 'Integer' },
+                { fieldID: 'UUID', type: 'String' },
+                { fieldID: 'Item.InternalID', type: 'Integer' },
+                { fieldID: 'Item.ExternalID', type: 'String' },
+                { fieldID: 'Item.Name', type: 'String' },
+                { fieldID: 'Item.MainCategory', type: 'String' },
+                { fieldID: 'Transaction.InternalID', type: 'Integer' },
+                { fieldID: 'Transaction.StatusName', type: 'String' },
+                { fieldID: 'Transaction.ActionDateTime', type: 'DateTime' },
+                { fieldID: 'Transaction.Account.InternalID', type: 'Integer' },
+                { fieldID: 'Transaction.Account.UUID', type: 'String' },
+                { fieldID: 'Transaction.Account.ExternalID', type: 'String' },
+                { fieldID: 'Transaction.Account.Name', type: 'String' },
+                { fieldID: 'Transaction.Type', type: 'String' },
+                { fieldID: 'Transaction.Agent.InternalID', type: 'Integer' },
+                { fieldID: 'Transaction.Agent.Name', type: 'String' },
+                { fieldID: 'LineNumber', type: 'String' },
+                { fieldID: 'TotalUnitsPriceAfterDiscount', type: 'Double' },
+                { fieldID: 'TotalUnitsPriceBeforeDiscount', type: 'Double' },
+                { fieldID: 'UnitDiscountPercentage', type: 'Double' },
+                { fieldID: 'CreationDateTime', type: 'DateTime' },
+                { fieldID: 'Transaction.ExternalID', type: 'String' },
+                { fieldID: 'Transaction.Remark', type: 'String' },
+                { fieldID: 'Transaction.CreationDateTime', type: 'DateTime' },
+                { fieldID: 'Transaction.SubTotal', type: 'Double' },
+                { fieldID: 'Transaction.Status', type: 'Integer' },
+                { fieldID: 'Transaction.DiscountPercentage', type: 'Double' },
+                { fieldID: 'Transaction.Account.ZipCode', type: 'String' },
+                { fieldID: 'Transaction.Account.Status', type: 'Integer' },
+                { fieldID: 'Transaction.Account.City', type: 'String' },
+                { fieldID: 'Transaction.Agent.ExternalID', type: 'String' },
+                { fieldID: 'Transaction.Agent.FirstName', type: 'String' },
+                { fieldID: 'Transaction.Agent.Mobile', type: 'String' },
+            ],
+            RunTime: null,
+        };
+        return await this.generalService.fetchStatus(
+            '/addons/api/10979a11-d7f4-41df-8993-f06bfd778304/data_index_ui_api/publish',
+            {
+                method: 'POST',
+                body: JSON.stringify(hardcodedBody),
+            },
+        );
+    }
+
+    async getProgressOfDataIndexBuilding() {
+        return await this.generalService.fetchStatus(
+            '/addons/api/10979a11-d7f4-41df-8993-f06bfd778304/data_index_ui_api/get_ui_data',
+            {
+                method: 'GET',
+            },
+        );
+    }
 }
