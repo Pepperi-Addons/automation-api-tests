@@ -233,6 +233,18 @@ export async function StorybookDateTimeTests() {
                             const mainExampleDateTimeDisabled = await mainExampleDateTime.getAttribute('disabled');
                             expect(mainExampleDateTimeDisabled).to.be.null;
                         });
+                        it(`reset controls`, async function () {
+                            await driver.click(dateTime.ResetControlsButton);
+                            const expectedValue = '01/01/2020';
+                            await driver.click(dateTime.MainHeader);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "${expectedValue}"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await dateTime.getMainExampleDateTimeValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
+                        });
                         break;
 
                     case 'mandatory':
@@ -241,30 +253,87 @@ export async function StorybookDateTimeTests() {
                             driver.sleep(1 * 1000);
                         });
                         it(`making sure current value is "False"`, async function () {
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
+                            expect(mandatoryControlState).to.be.false;
+                            const errorMessageSpan = await driver.isElementVisible(
+                                dateTime.MainExample_ErrorMessageSpan,
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `Mandatory Input Changed to "false"`,
+                                title: `Mandatory Input is set to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             await storyBookPage.elemntDoNotExist(dateTime.MainExample_mandatoryIcon);
+                            expect(errorMessageSpan).to.be.false;
                         });
-                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                        it(`Functional test [ control = "True" ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
-                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            let base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
+                            expect(mandatoryControlState).to.be.true;
+                            await storyBookPage.inputs.changeValueControl('');
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input Changed to ""`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(dateTime.MainExampleDateTime);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Popup Dialog Select Date Time - was opened`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            driver.sleep(0.5 * 1000);
+                            const mainExamplePopup = await driver.findElement(dateTime.DateTimePicker_Popup);
+                            expect(mainExamplePopup).to.not.be.null.and.not.be.undefined;
+                            await driver.click(dateTime.MainExample_PopupDialog_wrapperContainer_innerDiv);
+                            driver.sleep(2 * 1000);
+                            await storyBookPage.inputs.changeInput(dateTime.MainExampleDateTime, '');
+                            const mainExample_matLabel = await driver.findElement(dateTime.MainExample_titleLabel);
+                            const mainExample_matLabel_text = await mainExample_matLabel.getText();
+                            console.info('mainExample_matLabel_text: ', mainExample_matLabel_text);
+                            const errorMessageSpan = await driver.findElement(dateTime.MainExample_ErrorMessageSpan);
                             await storyBookPage.untilIsVisible(dateTime.MainExample_mandatoryIcon);
+                            // closing the dialog chooses value and then the manover of clearing the input creates a different error message and the assertion is wrong
+                            // expect(await errorMessageSpan.getText()).equals(`${mainExample_matLabel_text} input is mandatory`);
+                            expect(await errorMessageSpan.getCssValue('color')).equals('rgba(255, 255, 255, 1)');
                         });
-                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                        it(`back to default [ control = "False" ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
+                            const errorMessageSpan = await driver.isElementVisible(
+                                dateTime.MainExample_ErrorMessageSpan,
+                            );
                             await storyBookPage.elemntDoNotExist(dateTime.MainExample_mandatoryIcon);
+                            expect(errorMessageSpan).to.be.false;
+                        });
+                        it(`reset controls`, async function () {
+                            await driver.click(dateTime.ResetControlsButton);
+                            const expectedValue = '01/01/2020';
+                            await driver.click(dateTime.MainHeader);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "${expectedValue}"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await dateTime.getMainExampleDateTimeValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
                         });
                         break;
 

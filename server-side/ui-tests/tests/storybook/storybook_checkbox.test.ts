@@ -258,15 +258,23 @@ export async function StorybookCheckboxTests() {
                             expect(checkboxInputsTitles.includes('mandatory')).to.be.true;
                         });
                         it(`making sure current value is "False"`, async function () {
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disabled Input default value = "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
                             await storyBookPage.elemntDoNotExist(checkbox.MainExample_mandatoryIcon);
                         });
                         it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
+                            expect(mandatoryControlState).to.be.true;
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disabled Input Changed to "true"`,
@@ -276,11 +284,15 @@ export async function StorybookCheckboxTests() {
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Disable Input changed back to default value = "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
                             await storyBookPage.elemntDoNotExist(checkbox.MainExample_mandatoryIcon);
                         });
                         break;
