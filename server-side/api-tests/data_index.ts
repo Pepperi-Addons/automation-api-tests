@@ -1,8 +1,6 @@
-// import { ObjectsService } from './../services/objects.service';
 import { DataIndexService } from './../services/data-index.service';
 import GeneralService, { TesterFunctions } from '../services/general.service';
-// import { ObjectsService } from '../services/objects.service';
-// import { ElasticSearchService } from '../services/elastic-search.service';
+import { ObjectsService } from '../services/objects.service';
 
 export async function DataIndexTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const dataIndexService = new DataIndexService(generalService);
@@ -502,86 +500,192 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         });
 
         describe('Bug Verification', () => {
-            // it('DI-25539 bug verification', async () => {
-            //     // debugger;
-            //     //1. create transaction with remark
-            //     const objectsService = new ObjectsService(generalService);
-            //     const atdArr = await objectsService.getATD('transactions');
-            //     debugger;
-            //     const transactionAccount = await objectsService.getAccounts({ page_size: 1 }).then((res) => {
-            //         return res[0];
-            //     });
-            //     const transactionExternalID =
-            //         'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
-            //     const firstRemark = generalService.generateRandomString(6);
-            //     const catalogArr = await generalService.getCatalogs();
-            //     const createdTransaction = await objectsService.createTransaction({
-            //         ExternalID: transactionExternalID,
-            //         ActivityTypeID: atdArr[0].TypeID,
-            //         Remark: firstRemark,
-            //         Status: 1,
-            //         Account: {
-            //             Data: {
-            //                 InternalID: transactionAccount.InternalID,
-            //             },
-            //         },
-            //         Catalog: {
-            //             Data: {
-            //                 ExternalID: catalogArr[0].ExternalID,
-            //             },
-            //         },
-            //     });
-            //     const getCreatedTransactionResponse = await objectsService.getTransaction({
-            //         where: `InternalID=${createdTransaction.InternalID}`,
-            //     });
-            //     expect(getCreatedTransactionResponse[0]).to.include({
-            //         ExternalID: transactionExternalID,
-            //         ActivityTypeID: atdArr[0].TypeID,
-            //         Status: 1,
-            //     });
-            //     expect(JSON.stringify(getCreatedTransactionResponse[0].Account)).equals(
-            //         JSON.stringify({
-            //             Data: {
-            //                 InternalID: transactionAccount.InternalID,
-            //                 UUID: transactionAccount.UUID,
-            //                 ExternalID: transactionAccount.ExternalID,
-            //             },
-            //             URI: '/accounts/' + transactionAccount.InternalID,
-            //         }),
-            //     );
-            //     expect(getCreatedTransactionResponse[0].InternalID).to.equal(createdTransaction.InternalID),
-            //         expect(getCreatedTransactionResponse[0].Remark).to.equal(firstRemark),
-            //         expect(getCreatedTransactionResponse[0].UUID).to.include(createdTransaction.UUID),
-            //         expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain(
-            //             new Date().toISOString().split('T')[0],
-            //         );
-            //     expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain('Z'),
-            //         expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain(
-            //             new Date().toISOString().split('T')[0],
-            //         );
-            //     expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain('Z'),
-            //         expect(getCreatedTransactionResponse[0].Archive).to.be.false,
-            //         expect(getCreatedTransactionResponse[0].Hidden).to.be.false,
-            //         expect(getCreatedTransactionResponse[0].StatusName).to.include('InCreation'),
-            //         expect(getCreatedTransactionResponse[0].Agent).to.be.null,
-            //         expect(getCreatedTransactionResponse[0].ContactPerson).to.be.null,
-            //         expect(getCreatedTransactionResponse[0].Creator).to.be.null,
-            //         expect(getCreatedTransactionResponse[0].OriginAccount).to.be.null,
-            //         expect(getCreatedTransactionResponse[0].TransactionLines).to.include({
-            //             URI: '/transaction_lines?where=TransactionInternalID=' + createdTransaction.InternalID,
-            //         });
-            //     debugger;
-            //     //2. see we can get the data using data index transaction AND transaction-line
-            //     const elasticSearchService = new ElasticSearchService(generalService);
-            //     try {
-            //         const getWhereData = await elasticSearchService.whereClause('Remark', 'Remark=' + firstRemark);
-            //     } catch (error) {
-            //         debugger;
-            //     }
-            //     debugger;
-            //     //3. change the remark
-            //     //4. see it returns correctly on both transaction and transaction-line
-            // });
+            it('DI-25539 bug verification', async () => {
+                // debugger;
+                //1. create transaction with remark & transaction lines
+                const objectsService = new ObjectsService(generalService);
+                const [firstRemark, createdTransaction] = await createTransaction(
+                    objectsService,
+                    generalService,
+                    expect,
+                );
+                await addTransLines(objectsService, createdTransaction, expect);
+                const transactionInternalID = createdTransaction.InternalID;
+                const allActivitiesURL =
+                    '/addons/shared_index/index/papi_data_index/search/10979a11-d7f4-41df-8993-f06bfd778304/all_activities';
+                const transactionLinesURL =
+                    '/addons/shared_index/index/papi_data_index/search/10979a11-d7f4-41df-8993-f06bfd778304/transaction_lines';
+                //2. see we can get the data using data index transaction AND transaction-line
+                const allActivitiesBody = {
+                    Where: `InternalID=${transactionInternalID}`,
+                    Fields: ['Remark'],
+                };
+                const allActivitiesResponse = await generalService.fetchStatus(allActivitiesURL, {
+                    method: 'POST',
+                    body: JSON.stringify(allActivitiesBody),
+                });
+                expect(allActivitiesResponse.Body.Objects[0].Remark).to.equal(firstRemark);
+                const transLinesBody = {
+                    Where: `Transaction.InternalID=${transactionInternalID}`,
+                    Fields: ['Transaction.Remark'],
+                };
+                const transLinesResponse = await generalService.fetchStatus(transactionLinesURL, {
+                    method: 'POST',
+                    body: JSON.stringify(transLinesBody),
+                });
+                expect(transLinesResponse.Body.Objects[0]['Transaction.Remark']).to.equal(firstRemark);
+                //3. change the remark
+                const secondRemark = await updateTransaction(generalService, createdTransaction, expect);
+                //4. see it returns correctly on both transaction and transaction-line
+                const allActivitiesResponseAfterUpdate = await generalService.fetchStatus(allActivitiesURL, {
+                    method: 'POST',
+                    body: JSON.stringify(allActivitiesBody),
+                });
+                expect(allActivitiesResponseAfterUpdate.Body.Objects[0].Remark).to.equal(secondRemark);
+                const transLinesResponseAfterUpdate = await generalService.fetchStatus(transactionLinesURL, {
+                    method: 'POST',
+                    body: JSON.stringify(transLinesBody),
+                });
+                expect(transLinesResponseAfterUpdate.Body.Objects[0]['Transaction.Remark']).to.equal(secondRemark);
+            });
         });
     });
+}
+
+async function createTransaction(objectsService, generalService, expect) {
+    const atdArr = await objectsService.getATD('transactions');
+    const transactionAccount = await objectsService.getAccounts({ page_size: 1 }).then((res) => {
+        return res[0];
+    });
+    const transactionExternalID = 'Automated API Transaction ' + Math.floor(Math.random() * 1000000).toString();
+    const firstRemark = generalService.generateRandomString(6);
+    const catalogArr = await generalService.getCatalogs();
+    const createdTransaction = await objectsService.createTransaction({
+        ExternalID: transactionExternalID,
+        ActivityTypeID: atdArr[0].TypeID,
+        Remark: firstRemark,
+        Status: 1,
+        Account: {
+            Data: {
+                InternalID: transactionAccount.InternalID,
+            },
+        },
+        Catalog: {
+            Data: {
+                ExternalID: catalogArr[0].ExternalID,
+            },
+        },
+    });
+    const getCreatedTransactionResponse = await objectsService.getTransaction({
+        where: `InternalID=${createdTransaction.InternalID}`,
+    });
+    expect(getCreatedTransactionResponse[0]).to.include({
+        ExternalID: transactionExternalID,
+        ActivityTypeID: atdArr[0].TypeID,
+        Status: 1,
+    });
+    expect(JSON.stringify(getCreatedTransactionResponse[0].Account)).equals(
+        JSON.stringify({
+            Data: {
+                InternalID: transactionAccount.InternalID,
+                UUID: transactionAccount.UUID,
+                ExternalID: transactionAccount.ExternalID,
+            },
+            URI: '/accounts/' + transactionAccount.InternalID,
+        }),
+    );
+    expect(getCreatedTransactionResponse[0].InternalID).to.equal(createdTransaction.InternalID),
+        expect(getCreatedTransactionResponse[0].Remark).to.equal(firstRemark),
+        expect(getCreatedTransactionResponse[0].UUID).to.include(createdTransaction.UUID),
+        expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+    expect(getCreatedTransactionResponse[0].CreationDateTime).to.contain('Z'),
+        expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain(
+            new Date().toISOString().split('T')[0],
+        );
+    expect(getCreatedTransactionResponse[0].ModificationDateTime).to.contain('Z'),
+        expect(getCreatedTransactionResponse[0].Archive).to.be.false,
+        expect(getCreatedTransactionResponse[0].Hidden).to.be.false,
+        expect(getCreatedTransactionResponse[0].StatusName).to.include('InCreation'),
+        expect(getCreatedTransactionResponse[0].Agent).to.be.null,
+        expect(getCreatedTransactionResponse[0].ContactPerson).to.be.null,
+        expect(getCreatedTransactionResponse[0].Creator).to.be.null,
+        expect(getCreatedTransactionResponse[0].OriginAccount).to.be.null,
+        expect(getCreatedTransactionResponse[0].TransactionLines).to.include({
+            URI: '/transaction_lines?where=TransactionInternalID=' + createdTransaction.InternalID,
+        });
+    return [firstRemark, createdTransaction];
+}
+
+async function addTransLines(objectsService, createdTransaction, expect) {
+    const items = await objectsService.getItems();
+    const createdTransactionLines = await objectsService.createTransactionLine({
+        TransactionInternalID: createdTransaction.InternalID,
+        LineNumber: 0,
+        ItemExternalID: items[0].ExternalID,
+        UnitsQuantity: 1,
+    });
+
+    const getCreatedTransactionLine = await objectsService.getTransactionLines({
+        where: `TransactionInternalID=${createdTransaction.InternalID}`,
+    });
+
+    expect(getCreatedTransactionLine[0]).to.include({
+        LineNumber: 0,
+        UnitsQuantity: 1.0,
+        TotalUnitsPriceAfterDiscount: 0.0,
+        TotalUnitsPriceBeforeDiscount: 0.0,
+        UnitDiscountPercentage: 0.0,
+        UnitPrice: 0.0,
+        UnitPriceAfterDiscount: 0.0,
+    });
+    expect(JSON.stringify(getCreatedTransactionLine[0].Item)).equals(
+        JSON.stringify({
+            Data: {
+                InternalID: items[0].InternalID,
+                UUID: items[0].UUID,
+                ExternalID: items[0].ExternalID,
+            },
+            URI: '/items/' + items[0].InternalID,
+        }),
+    );
+    expect(JSON.stringify(getCreatedTransactionLine[0].Transaction)).equals(
+        JSON.stringify({
+            Data: {
+                InternalID: createdTransaction.InternalID,
+                UUID: createdTransaction.UUID,
+                ExternalID: createdTransaction.ExternalID,
+            },
+            URI: '/transactions/' + createdTransaction.InternalID,
+        }),
+    );
+    expect(getCreatedTransactionLine[0].InternalID).to.equal(createdTransactionLines.InternalID);
+    expect(getCreatedTransactionLine[0].UUID).to.include(createdTransactionLines.UUID);
+    expect(getCreatedTransactionLine[0].CreationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+    expect(getCreatedTransactionLine[0].CreationDateTime).to.contain('Z');
+    expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain(new Date().toISOString().split('T')[0]);
+    expect(getCreatedTransactionLine[0].ModificationDateTime).to.contain('Z');
+    expect(getCreatedTransactionLine[0].Archive).to.be.false;
+    expect(getCreatedTransactionLine[0].Hidden).to.be.false;
+    expect(
+        await objectsService.getTransactionLines({
+            where: `TransactionInternalID=${createdTransaction.InternalID}`,
+        }),
+    )
+        .to.be.an('array')
+        .with.lengthOf(1);
+}
+
+async function updateTransaction(generalService, createdTransaction, expect) {
+    const secondRemark = generalService.generateRandomString(6);
+    const bodyToSend = { Remark: secondRemark, InternalID: createdTransaction.InternalID };
+    const updateResponse = await generalService.fetchStatus(`/transactions`, {
+        method: 'POST',
+        body: JSON.stringify(bodyToSend),
+    });
+    expect(updateResponse.Ok).to.equal(true);
+    expect(updateResponse.Status).to.equal(200);
+    expect(updateResponse.Body.InternalID).to.equal(createdTransaction.InternalID);
+    expect(updateResponse.Body.Remark).to.equal(secondRemark);
+    generalService.sleep(1000 * 15);
+    return secondRemark;
 }
