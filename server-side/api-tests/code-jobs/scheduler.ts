@@ -24,9 +24,10 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     } else {
         varKey = request.body.varKeyPro;
     }
-    await generalService.baseAddonVersionsInstallation(varKey, undefined, true);
+    // await generalService.baseAddonVersionsInstallation(varKey, undefined, true);
     const testData = {
         Scheduler: ['8bc903d1-d97a-46b8-990b-50bea356e35b', ''],
+        'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
@@ -258,6 +259,12 @@ export async function SchedulerTests(generalService: GeneralService, request, te
             logcash.ResponseExecutedLogsCronTest = false;
             logcash.ResponseExecutedLogsErrorMsgCronTest =
                 'Executed logs API failed. ' + '\nCodeJobUUId : ' + CodeJobUUIDCron;
+            console.log(
+                'ERROR:' +
+                    logcash.ResponseExecutedLogsErrorMsgCronTest +
+                    'DIDNT RUN, RECIVED THE NEXT JOB ARRAY:' +
+                    CallbackCash.ResponseExecutedLogsCronTest,
+            );
             await updateCronToChroneTestIsScheduledFalse();
         } else {
             if (CallbackCash.ResponseExecutedLogsCronTest.length == 0) {
@@ -297,6 +304,31 @@ export async function SchedulerTests(generalService: GeneralService, request, te
                         CodeJobUUIDCron +
                         '\nDistributorUUID : ' +
                         CallbackCash.ResponseExecutedLogsCronTest[0].DistributorUUID;
+                    if (
+                        CallbackCash.ResponseExecutedLogsCronTest[CallbackCash.ResponseExecutedLogsCronTest.length - 1]
+                            .Status.Name != 'Success'
+                    )
+                        console.log(
+                            'ERORR MESSAGE RECIVED:' +
+                                (CallbackCash.ResponseExecutedLogsCronTest[
+                                    CallbackCash.ResponseExecutedLogsCronTest.length - 1
+                                ].AuditInfo.ErrorMessage
+                                    ? CallbackCash.ResponseExecutedLogsCronTest[
+                                          CallbackCash.ResponseExecutedLogsCronTest.length - 1
+                                      ].AuditInfo.ErrorMessage
+                                    : ''),
+                        );
+                    if (CallbackCash.ResponseExecutedLogsCronTest[0].Status.Name != 'Success')
+                        console.log(
+                            'ERORR MESSAGE RECIVED:' +
+                                (CallbackCash.ResponseExecutedLogsCronTest[0].AuditInfo.ErrorMessage
+                                    ? CallbackCash.ResponseExecutedLogsCronTest[0].AuditInfo.ErrorMessage
+                                    : ''),
+                        );
+                    if (CallbackCash.ResponseExecutedLogsCronTest.length != 1)
+                        console.log(
+                            'GOT: ' + CallbackCash.ResponseExecutedLogsCronTest.length + 'RESPONSES INSTEAD OF ONE',
+                        );
                     await updateCronToChroneTestIsScheduledFalse();
                 }
             }
