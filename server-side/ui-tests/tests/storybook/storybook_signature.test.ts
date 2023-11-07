@@ -287,15 +287,23 @@ export async function StorybookSignatureTests() {
                             driver.sleep(1 * 1000);
                         });
                         it(`making sure current value is "False"`, async function () {
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
                             await storyBookPage.elemntDoNotExist(signature.MainExample_mandatoryIcon);
                         });
                         it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
+                            expect(mandatoryControlState).to.be.true;
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "true"`,
@@ -305,11 +313,15 @@ export async function StorybookSignatureTests() {
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
                             await storyBookPage.elemntDoNotExist(signature.MainExample_mandatoryIcon);
                         });
                         break;

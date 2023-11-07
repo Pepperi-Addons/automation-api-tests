@@ -72,7 +72,6 @@ export class StoryBookPage extends Page {
             '{placeholder}',
             subFolderName,
         );
-        // console.info('at chooseSubFolder -> xpathQueryForComponent: ', xpathQueryForComponent);
         await this.browser.click(By.xpath(xpathQueryForComponent));
         this.browser.sleep(0.5 * 1000);
     }
@@ -106,18 +105,6 @@ export class StoryBookPage extends Page {
             | 'textarea'
             | 'textbox',
     ): Promise<void> {
-        // choose component by name
-        // let xpathQueryForComponent: string;
-        // if (componentName === 'textarea' || componentName === 'select') {
-        //     xpathQueryForComponent = this.GenericFolderById.valueOf()['value'].replace('{placeholder}', componentName);
-        // } else {
-        //     xpathQueryForComponent = this.GenericComponentButton.valueOf()['value'].replace(
-        //         '{placeholder}',
-        //         componentName,
-        //     );
-        // }
-        // await this.browser.click(By.xpath(xpathQueryForComponent));
-        // this.browser.sleep(5000);
         switch (componentName) {
             case 'query-builder':
             case 'smart-filters':
@@ -142,13 +129,6 @@ export class StoryBookPage extends Page {
             | 'typography'
             | 'z-index',
     ): Promise<void> {
-        // choose abstract by name
-        // const xpathQueryForComponent: string = this.GenericSubFolder.valueOf()['value'].replace(
-        //     '{placeholder}',
-        //     abstractName,
-        // );
-        // await this.browser.click(By.xpath(xpathQueryForComponent));
-        // this.browser.sleep(5000);
         switch (abstractName) {
             case 'intro':
             case 'colors':

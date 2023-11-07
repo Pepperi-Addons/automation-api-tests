@@ -262,15 +262,23 @@ export async function StorybookQuantitySelectorTests() {
                             driver.sleep(1 * 1000);
                         });
                         it(`making sure current value is "False"`, async function () {
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
                             await storyBookPage.elemntDoNotExist(quantitySelector.MainExample_mandatoryIcon);
                         });
                         it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
+                            expect(mandatoryControlState).to.be.true;
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "true"`,
@@ -280,11 +288,15 @@ export async function StorybookQuantitySelectorTests() {
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
                             await storyBookPage.elemntDoNotExist(quantitySelector.MainExample_mandatoryIcon);
                         });
                         break;
@@ -293,7 +305,51 @@ export async function StorybookQuantitySelectorTests() {
                         it(`validate input`, async function () {
                             expect(quantitySelectorInputsTitles.includes('readonly')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const readonlyControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Readonly',
+                            );
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Readonly Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(readonlyControlState).to.be.false;
+                            const mainExampleQuantitySelector = await driver.findElement(
+                                quantitySelector.MainExampleQuantitySelector,
+                            );
+                            const mainExampleQuantitySelectorDisabled = await mainExampleQuantitySelector.getAttribute(
+                                'class',
+                            );
+                            console.info('mainExampleQuantitySelectorDisabled: ', mainExampleQuantitySelectorDisabled);
+                            // await storyBookPage.elemntDoNotExist(quantitySelector.MainExample_readonlyIcon);
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleReadonlyControl();
+                            const readonlyControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Readonly',
+                            );
+                            expect(readonlyControlState).to.be.true;
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Readonly Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // await storyBookPage.untilIsVisible(quantitySelector.MainExample_readonlyIcon);
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleReadonlyControl();
+                            const readonlyControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Readonly',
+                            );
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Readonly Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(readonlyControlState).to.be.false;
+                            // await storyBookPage.elemntDoNotExist(quantitySelector.MainExample_readonlyIcon);
+                        });
                         break;
 
                     case 'showTitle':
