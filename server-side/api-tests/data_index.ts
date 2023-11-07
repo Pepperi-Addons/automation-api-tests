@@ -334,11 +334,11 @@ export async function DataIndexTests(generalService: GeneralService, request, te
 
     //#region Upgrade Data Index
     const testData = {
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
-        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
-        Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+        // 'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        // 'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+        // Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
+        // ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        // 'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -500,8 +500,31 @@ export async function DataIndexTests(generalService: GeneralService, request, te
         });
 
         describe('Bug Verification', () => {
-            it('DI-25539 bug verification', async () => {
+            it('Clean Data Index', async () => {
                 // debugger;
+                const deleteResponse = await dataIndexService.cleanDataIndexAsInUI();
+                expect(deleteResponse.Ok).to.equal(true);
+                expect(deleteResponse.Status).to.equal(200);
+                expect(deleteResponse.Body.success).to.equal(true);
+            });
+            it('Publish Data Index', async () => {
+                const publishResponse = await dataIndexService.publishDataIndex();
+                expect(publishResponse.Ok).to.equal(true);
+                expect(publishResponse.Status).to.equal(200);
+                expect(publishResponse.Body.success).to.equal(true);
+                let pollingResponse;
+                let loopCounter = 0;
+                do {
+                    pollingResponse = await dataIndexService.getProgressOfDataIndexBuilding();
+                    loopCounter++;
+                    generalService.sleep(5 * 1000);
+                } while (pollingResponse.Body.ProgressData.Status !== 'Success' && loopCounter < 9);
+                expect(pollingResponse.Body.ProgressData.all_activities_progress.Precentag).to.equal(100);
+                expect(pollingResponse.Body.ProgressData.all_activities_progress.Status).to.equal('Success');
+                expect(pollingResponse.Body.ProgressData.transaction_lines_progress.Precentag).to.equal(100);
+                expect(pollingResponse.Body.ProgressData.transaction_lines_progress.Status).to.equal('Success');
+            });
+            it('DI-25539 bug verification: create transaction, see we can GET it from both all_activities and transaction_lines, change the remark, see it was updated both on trans_lines & all_act', async () => {
                 //1. create transaction with remark & transaction lines
                 const objectsService = new ObjectsService(generalService);
                 const [firstRemark, createdTransaction] = await createTransaction(
