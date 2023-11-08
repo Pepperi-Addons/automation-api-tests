@@ -391,6 +391,7 @@ export class PageBuilder extends AddonPage {
     }
 
     public async removePageByKey(pageKey: string, client: Client) {
+        // suiting 1.0.% versions
         // POST https://papi.pepperi.com/V1.0/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=0c03353e-bb17-4b37-8220-56cf9a8a4523
         const generalService = new GeneralService(client);
         const deleteResponse = await generalService.fetchStatus(
@@ -407,6 +408,19 @@ export class PageBuilder extends AddonPage {
         //         body: JSON.stringify({}),
         //     },
         // );
+        return deleteResponse;
+    }
+
+    public async removePageByUUID(pageUUID: string, client: Client) {
+        // suiting 2.0.% versions
+        const generalService = new GeneralService(client);
+        const deleteResponse = await generalService.fetchStatus(
+            `/addons/api/84c999c3-84b7-454e-9a86-71b7abc96554/api/objects?addonUUID=50062e0c-9967-4ed4-9102-f2bc50602d41&name=Pages&scheme=drafts`,
+            {
+                method: 'POST',
+                body: JSON.stringify({ Hidden: true, Key: pageUUID }),
+            },
+        );
         return deleteResponse;
     }
 }

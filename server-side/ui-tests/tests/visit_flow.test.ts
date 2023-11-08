@@ -131,7 +131,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 console.info(`pagesOfAutoTest: ${JSON.stringify(pagesOfAutoTest, null, 4)}`);
                 const deleteAutoPagesResponse: FetchStatusResponse[] = await Promise.all(
                     pagesOfAutoTest.map(async (autoPage) => {
-                        const deleteAutoPageResponse = await pageBuilder.removePageByKey(autoPage.Key, client);
+                        const deleteAutoPageResponse = await pageBuilder.removePageByUUID(autoPage.Key, client);
                         console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
                         return deleteAutoPageResponse;
                     }),
@@ -155,7 +155,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 console.info(`blankPages: ${JSON.stringify(blankPages, null, 4)}`);
                 const deleteBlankPagesResponse: FetchStatusResponse[] = await Promise.all(
                     blankPages.map(async (blankPage) => {
-                        const deleteAutoPageResponse = await pageBuilder.removePageByKey(blankPage.Key, client);
+                        const deleteAutoPageResponse = await pageBuilder.removePageByUUID(blankPage.Key, client);
                         console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
                         return deleteAutoPageResponse;
                     }),
