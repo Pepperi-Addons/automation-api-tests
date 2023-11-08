@@ -120,21 +120,15 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await driver.quit();
             });
 
-            it('Pages Leftovers Cleanup', async () => {
+            it('Pages (starting with "VisitFlow Page Auto_") Leftovers Cleanup', async () => {
                 const allPages = await pageBuilder.getAllPages(client);
                 const pagesOfAutoTest = allPages?.Body.filter((page) => {
                     if (page.Name.includes('VisitFlow Page Auto_')) {
                         return page.Key;
                     }
                 });
-                const blankPages = allPages?.Body.filter((page) => {
-                    if (page.Name.includes('Blank ')) {
-                        return page.Key;
-                    }
-                });
                 console.info(`allPages: ${JSON.stringify(allPages.Body, null, 4)}`);
                 console.info(`pagesOfAutoTest: ${JSON.stringify(pagesOfAutoTest, null, 4)}`);
-                console.info(`blankPages: ${JSON.stringify(blankPages, null, 4)}`);
                 const deleteAutoPagesResponse: FetchStatusResponse[] = await Promise.all(
                     pagesOfAutoTest.map(async (autoPage) => {
                         const deleteAutoPageResponse = await pageBuilder.removePageByKey(autoPage.Key, client);
@@ -142,11 +136,23 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         return deleteAutoPageResponse;
                     }),
                 );
-                // pagesOfAutoTest.forEach(async (page) => {
-                //     const deleteAutoPageResponse = await pageBuilder.removePageByKey(page.Key, client);
-                //     console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
-                //     deleteAutoPagesResponse.push(deleteAutoPageResponse);
-                // });
+                console.info(`deleteAutoPagesResponse: ${JSON.stringify(deleteAutoPagesResponse, null, 4)}`);
+                generalService.sleep(5 * 1000);
+                const allPagesAfterCleanup = await pageBuilder.getAllPages(client);
+                const findAutoPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) => page.Name.includes('Auto_'));
+                console.info(`findAutoPageAfterCleanup: ${JSON.stringify(findAutoPageAfterCleanup, null, 4)}`);
+                expect(findAutoPageAfterCleanup).to.be.undefined;
+            });
+
+            it('Pages (starting with "Blank") Leftovers Cleanup', async () => {
+                const allPages = await pageBuilder.getAllPages(client);
+                const blankPages = allPages?.Body.filter((page) => {
+                    if (page.Name.includes('Blank ')) {
+                        return page.Key;
+                    }
+                });
+                console.info(`allPages: ${JSON.stringify(allPages.Body, null, 4)}`);
+                console.info(`blankPages: ${JSON.stringify(blankPages, null, 4)}`);
                 const deleteBlankPagesResponse: FetchStatusResponse[] = await Promise.all(
                     blankPages.map(async (blankPage) => {
                         const deleteAutoPageResponse = await pageBuilder.removePageByKey(blankPage.Key, client);
@@ -154,23 +160,13 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         return deleteAutoPageResponse;
                     }),
                 );
-                // blankPages.forEach(async (page) => {
-                //     // debugger
-                //     const deleteBlankPageResponse = await pageBuilder.removePageByKey(page.Key, client);
-                //     console.info(`deleteBlankPageResponse: ${JSON.stringify(deleteBlankPageResponse, null, 4)}`);
-                //     deleteBlankPagesResponse.push(deleteBlankPageResponse);
-                // });
-                console.info(`deleteAutoPagesResponse: ${JSON.stringify(deleteAutoPagesResponse, null, 4)}`);
                 console.info(`deleteBlankPagesResponse: ${JSON.stringify(deleteBlankPagesResponse, null, 4)}`);
                 generalService.sleep(5 * 1000);
                 const allPagesAfterCleanup = await pageBuilder.getAllPages(client);
-                const findAutoPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) => page.Name.includes('Auto_'));
                 const findBlankPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) =>
                     page.Name.includes('Blank'),
                 );
-                console.info(`findAutoPageAfterCleanup: ${JSON.stringify(findAutoPageAfterCleanup, null, 4)}`);
                 console.info(`findBlankPageAfterCleanup: ${JSON.stringify(findBlankPageAfterCleanup, null, 4)}`);
-                expect(findAutoPageAfterCleanup).to.be.undefined;
                 expect(findBlankPageAfterCleanup).to.be.undefined;
             });
 
