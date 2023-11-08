@@ -1,6 +1,7 @@
+import { expect } from 'chai';
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 
-export async function AddonJobsTests(generalService: GeneralService, tester: TesterFunctions) {
+export async function AddonJobsTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const service = generalService.papiClient;
     const describe = tester.describe;
     const assert = tester.assert;
@@ -12,23 +13,15 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
         : '78696fc6-a04f-4f82-aadf-8f823776473f';
     const jsFileName = 'test.js';
-    // let functionName = 'ido';
-    //const functionNameUpdateDrafrCodeWithoutResult = 'updateDrafrCodeWithoutResult';
     const functionNameUpdateCodeJob = 'UpdateCodeJob';
     const version = '0.0.4';
-    // const functionNameCreateNewCJToBudgetTest = 'createNewCJToBudgetTest';
 
     const logcash: any = {};
-    //let logTimeCount = 0;
-    //const logTimeRetryNum = 19;
     let cashCallJobsList: any = {};
     let listLength;
-    // const cacheLog: any = {};
     const CallbackCash: any = {};
     let JobName: any = {};
     let parsedData;
-    //let UserUUID;
-    //let UserID;
     let CodeJobUUID = '';
     const defaultValues = {
         UUID: CodeJobUUID,
@@ -38,156 +31,82 @@ export async function AddonJobsTests(generalService: GeneralService, tester: Tes
         CronExpression: '',
         NextRunTime: null,
         IsScheduled: false,
-        // FailureAlertEmailTo: [],
-        // FailureAlertEmailSubject: '',
-        // ExecutedCode: '',
-        // DraftCode: '',
         CodeJobIsHidden: false,
         CreationDateTime: '',
         ModificationDateTime: '',
-        // ExecutionMemoryLevel: 4,
         NumberOfTries: 1,
     };
     let updateValues: any = {};
-    // const CodJobeBodyBudgetTest: any = {};
-    // const codeJobUUIDforBudget: any = {};
-    //let UpdateDraftCodeWithoutResult: any = {};
-
     //#region AllTests log and return object
 
-    // this will run the first test that will run the second and so on..
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
 
-    await installAddonToDist();
+    const testData = {
+        Scheduler: ['8bc903d1-d97a-46b8-990b-50bea356e35b', ''],
+        'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
+    };
+
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+
     describe('Insert New AddonJob', () => {
+        describe('Prerequisites Addons for Scheduler Tests', () => {
+            //Test Data
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
+        });
+        it('install Addon On Dist', async () => {
+            await installAddonToDist();
+        });
         it('Insert New AddonJob With Manadatory Parameter: Name', () => {
-            assert(logcash.statusA, 'Insert new AddonJob with CodeJobName failed');
+            //'Insert new AddonJob with CodeJobName failed'
+            expect(logcash.statusA).to.equal(true);
         });
         it('Get Single AddonJob With Mandatory Parameter CodeJobName: Name', () => {
-            assert(logcash.statusb, logcash.errorMessageb);
+            expect(logcash.statusb).to.equal(true);
         });
         it('Update AddonJob Params (From Default Values): Finished', () => {
-            assert(logcash.statusc, 'Update AddonJob failed');
+            expect(logcash.statusc).to.equal(true);
         });
         it('Get Single AddonJob After Update: Name', () => {
-            assert(logcash.statusd, logcash.errorMessaged);
+            expect(logcash.statusd).to.equal(true);
         });
-        // it('Create CodeJob with Values: Finished', () => {
-        //     assert(logcash.statuse, 'CodeJob creation with inserted values failed');
-        // });
-        // it('Create CodeJob With Parameters: Finished', () => {
-        //     assert(logcash.statusf, logcash.errorMessagef);
-        // });
     });
-    // describe('Publish Code Job With/Without Draft Code', () => {
-    // it('Insert New Code Job With Draft Code: Finished', () => {
-    //     assert(logcash.statusPublishinsert, 'Insert new Code Job failed');
-    // });
-    // it('Publish Code Job With Draft Code: Finished', () => {
-    //     assert(logcash.statusAfterFirstPublish, logcash.errorMessageAfterFirstPublish);
-    // });
-    //     it('Publish Code Job Without Draft Code: Finished', () => {
-    //         assert(CallbackCash.StatusWithoutDraft, logcash.ErrorWithoutDraft);
-    //     });
-    // });
     describe('Get List Of AddonJobs, Phase 1 (Phase 2 Will Be Done On The End Of All Tests)', () => {
         it('Get List Of AddonJobs (https://api.pepperi.com/v1.0/code_jobs) Phase 1: Finished', () => {
             const statusA = cashCallJobsList.status;
             assert(statusA, cashCallJobsList.message);
         });
     });
-    // describe('Execute Job Using Draft Code + single execution log and Code job execution logs verification', () => {
-    // it('Execute job (one time) using DraftCode field: Finished', () => {
-    //     assert(logcash.executeDraftCodeJobOnce1, logcash.ErrorFromExecute);
-    // });
-    //     it('Get Single Execution Log: Finished', () => {
-    //         assert(executionLog.Status, executionLog.Error);
-    //     });
-    // });
-    // describe('Execute Job Using Published Code + Logs Verification', () => {
-    // it('Create New CodeJob: Finished', () => {
-    //     assert(logcash.createNewCJToPublish, logcash.createNewCJToPublishErrorMsg);
-    // });
-    // it('Publish Created CodeJob: Finished', () => {
-    //     assert(CallbackCash.StatusPublished, CallbackCash.ErrorAfterPublish);
-    // });
-    // it('Udate Draft Code: Finished', () => {
-    //     assert(logcash.UpdatedDraftCode, logcash.UpdatedDraftCode);
-    // });
-    // it('Execute CodeJob (Execution Code Will Run): Finished', () => {
-    //     assert(logcash.executeWithDiff, logcash.executeWithDiffError);
-    // });
-    // it('Get CodeJob Execiotions Logs To Verify Log Format And Execution Result: Finished', () => {
-    //     assert(logcash.ResponseExecutedLogs, logcash.ResponseExecutedLogsErrorMsg);
-    // });
-
-    //     it('The Verification Between Executed Code And Draft Code After Publish (Will Be Same): Finished', () => {
-    //         assert(logcash.CheckBetveenDraftAndExecutedLastStatus, logcash.CheckBetveenDraftAndExecutedLastError);
-    //     });
-    // });
-    // describe('Restore Executed CodeJob', () => {
-    // it('Restore Executed CodeJob Negative Test - Restore With Wrong CodeJobUUID: Finished', () => {
-    //     assert(
-    //         CallbackCash.restoreNegativeWithWrongCodeJobUUIDStatus,
-    //         CallbackCash.restoreNegativeWithWrongCodeJobUUIDErrorMsg,
-    //     );
-    // });
-    // it('Restore Executed CodeJob Negative Test - AuditLogUUID Not Found (Wrong): Finished', () => {
-    //     assert(
-    //         CallbackCash.restoreNegativeAuditLogNotFoundStatus,
-    //         CallbackCash.restoreNegativeAuditLogNotFoundErrorMsg,
-    //     );
-    // });
-    // it('Restore Executed CodeJob Negative Test - AuditLogUUID From Wrong Status (Insert Instead Of Publish): Finished', () => {
-    //     assert(
-    //         CallbackCash.restoreNegativeAuditLogNotPublishStatus,
-    //         CallbackCash.restoreNegativeAuditLogNotPublishErrorMsg,
-    //     );
-    // });
-
-    // it('Restore Executed CodeJob: Finished', () => {
-    //     assert(logcash.CheckBetveenDraftAndExecutedLastStatus, logcash.CheckBetveenDraftAndExecutedLastError);
-    // });
-    // });
-    // describe('CodeJob Audit Log Verification', () => {
-    //     it('CodeJob Audit Log Verification On Status: Insert, Publish, Update, Rollback: Finished', () => {
-    //         assert(CallbackCash.auditLogStatus, CallbackCash.auditLogErrMsg);
-    //     });
-    // });
-    // describe('Insert New CodJob Without Mandatory Field CodeJob Name', () => {
-    //     it('Insert new CodJob Without Mandatory Field CodeJob Name: Finished', () => {
-    //         assert(logcash.MandatoryCheck, logcash.MandatoryCheckError);
-    //     });
-    // });
-    // describe('TimeOut From Executed Draft Code', () => {
-    //     it('Test Case TimeOut From Executed Draft Code: Finished', () => {
-    //         assert(logcash.ResponseExecutedTimeoutTest, logcash.ResponseExecutedTimeoutTestErrorMsg);
-    //     });
-    // });
-    // describe('Distributor Execution. Budget Updating (not 0)', () => {
-    //     it('Get Distributor Budget Function: Finished', () => {
-    //         assert(logcash.getDistributorBudgetTest, logcash.getDistributorBudgetTestErrorMsg);
-    //     });
-    //     it('Insert New CodeJob To Budget Verification: Finished', () => {
-    //         assert(logcash.insertNewCodJobToBudgetTest, logcash.insertNewCodJobToBudgetTestErrorMsg);
-    //     });
-    //     it('Get Distributor Budget Function: Finished', () => {
-    //         assert(logcash.getDistributorBudgetTestThird, logcash.getDistributorBudgetTestThirdErrorMsg);
-    //     });
-    // });
-    // describe('Distributor Execution Budget = 0', () => {
-    //     // it('Execute Draft Code With No Distributor Budget: Finished', () => {
-    //     //     assert(logcash.LogToEmptyBudgetTest, logcash.LogToEmptyBudgetTestError);
-    //     // });
-    //     it('Execute Draft Code After Budget Updated To 2 min: Finished', () => {
-    //         assert(logcash.LogToLastBudgetTest, logcash.LogToLastBudgetTestError);
-    //     });
-    // });
-    // describe('Call To PAPI From Executed Draft Code', () => {
-    //     it('Single log Execution Verification (with Result From Draft Code): Finished', () => {
-    //         assert(logcash.ResponseExecutedLogsPapiTest, logcash.ResponseExecutedLogsPapiTestErrorMsg);
-    //     });
-    // });
-    //#endregion
 
     async function installAddonToDist() {
         await generalService.fetchStatus('/addons/installed_addons/' + addonUUID + '/install' + '/' + version, {
