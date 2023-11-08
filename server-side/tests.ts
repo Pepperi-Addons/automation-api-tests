@@ -598,23 +598,23 @@ export async function scheduler(client: Client, request: Request, testerFunction
     return await testerFunctions.run();
 }
 
-export async function code_jobs(client: Client, testerFunctions: TesterFunctions) {
+export async function code_jobs(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Code_Jobs';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    await AddonJobsTests(service, testerFunctions);
+    await AddonJobsTests(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
 }
 
-export async function addon_jobs(client: Client, testerFunctions: TesterFunctions) {
+export async function addon_jobs(client: Client, request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Addon_Jobs';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    await AddonJobsTests(service, testerFunctions);
+    await AddonJobsTests(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
