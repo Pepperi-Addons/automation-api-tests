@@ -543,6 +543,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                     Where: `InternalID=${transactionInternalID}`,
                     Fields: ['Remark'],
                 };
+                // debugger;
                 const allActivitiesResponse = await generalService.fetchStatus(allActivitiesURL, {
                     method: 'POST',
                     body: JSON.stringify(allActivitiesBody),

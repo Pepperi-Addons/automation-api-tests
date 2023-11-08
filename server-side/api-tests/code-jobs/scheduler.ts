@@ -28,6 +28,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     const testData = {
         Scheduler: ['8bc903d1-d97a-46b8-990b-50bea356e35b', ''],
         'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
+        // 'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '0.1.456'],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
@@ -38,8 +39,6 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
         : '78696fc6-a04f-4f82-aadf-8f823776473f';
     const jsFileName = 'test_functions.js'; //'test.js';
-    // let functionName = 'ido';
-    //const functionNameUpdateDrafrCodeWithoutResult = 'updateDrafrCodeWithoutResult';
     const functionNamecreateNewCodeJobRetryTest = 'scheduler';
     const version = '0.0.5';
 
@@ -81,10 +80,6 @@ export async function SchedulerTests(generalService: GeneralService, request, te
             it('Insert New AddonJob For Cron Verification Test: Finished', () => {
                 expect(logcash.insertNewCJtoCronVerification).to.equal(true); //, logcash.insertNewCJtoCronVerificationErrorMsg
             });
-            // it('Execute New Addon Job For Cron Verification Test: Finished', () => {
-            //     expect(logcash.executeDraftCodeWithoutRetry).to.equal(true);//, logcash.ErrorFromexecuteDraftCodeWithoutRetry);
-            // });
-
             it('Validate Empty log (The Log should Be Empty): Finished', () => {
                 expect(logcash.emtyLogResponsCron).to.equal(true); //, logcash.emtyLogResponsCronError);
             });
@@ -104,6 +99,103 @@ export async function SchedulerTests(generalService: GeneralService, request, te
                 expect(logcash.updateCronToChroneTestIsScheduledFalse).to.equal(true);
                 //logcash.updateCronToChroneTestIsScheduledFalseErrorMsg,
             });
+            //TODO:
+            // it('Testing /jobs/stop: Stopping A Running Code Job', async () => {
+            //     //1. create a code job to use cpi automation test file
+            //     const longCodeJob = {
+            //         UUID: '',
+            //         CodeJobName: 'long code job',
+            //         Description: 'automation testing',
+            //         Owner: '',
+            //         CronExpression: '*/2 * * * *',
+            //         NextRunTime: undefined,
+            //         IsScheduled: true,
+            //         Type: 'AddonJob',
+            //         CodeJobIsHidden: false,
+            //         ExecutionMemoryLevel: 1,
+            //         AddonPath: 'test.js',
+            //         AddonUUID: '2b39d63e-0982-4ada-8cbb-737b03b9ee58', // Only for AddonJob
+            //         FunctionName: 'longTest',
+            //     };
+            //     const upsertCodeJobResponse = await service.codeJobs.upsert(longCodeJob);
+            //     //2. validate everything is created successfully
+            //     expect(upsertCodeJobResponse).to.haveOwnProperty('UUID');
+            //     const longCodeJobUUID = upsertCodeJobResponse.UUID;
+            //     console.log(longCodeJobUUID);
+            //     expect(upsertCodeJobResponse.CronExpression).to.equal('*/2 * * * *');
+            //     expect(upsertCodeJobResponse.CodeJobIsHidden).to.equal(false);
+            //     expect(upsertCodeJobResponse.IsScheduled).to.equal(true);
+            //     expect(upsertCodeJobResponse.NextRunTime).to.not.equal(undefined);
+            //     expect(upsertCodeJobResponse.NextRunTime).to.not.equal(null);
+            //     //3. sleep for 2.4 minutes
+            //     generalService.sleep(144000);
+            //     //4. stop the job
+            //     const stopBody = { KeyList: [longCodeJobUUID] };
+            //     const stopResponse = await generalService.fetchStatus('/addons/jobs/stop', {
+            //         method: 'POST',
+            //         body: JSON.stringify(stopBody)
+            //     });
+            //     debugger;
+            //     const bodyToHide = {
+            //         "UUID": longCodeJobUUID,
+            //         "IsScheduled": false,
+            //         "CodeJobIsHidden": true
+            //     };
+            //     const hideCodeJob = await generalService.fetchStatus('/code_jobs', {
+            //         method: 'POST',
+            //         body: JSON.stringify(bodyToHide)
+            //     });
+            //     expect(hideCodeJob.Body.UUID).to.equal(longCodeJobUUID);
+            //     expect(hideCodeJob.Body.IsScheduled).to.equal(false);
+            //     expect(hideCodeJob.Body.CodeJobIsHidden).to.equal(true);
+            // });
+            // it('Testing /jobs/restart: Restarting A Finished CodeJob', async () => {
+            //     //1. create a code job to basic test file
+            //     const restartCodeJob = {
+            //         UUID: '',
+            //         CodeJobName: 'restart test',
+            //         Description: 'automation testing',
+            //         Owner: '',
+            //         CronExpression: '*/10 * * * *',
+            //         NextRunTime: undefined,
+            //         IsScheduled: true,
+            //         Type: 'AddonJob',
+            //         CodeJobIsHidden: false,
+            //         ExecutionMemoryLevel: 1,
+            //         AddonPath: jsFileName, // Only for AddonJob
+            //         AddonUUID: addonUUID, // Only for AddonJob
+            //         FunctionName: functionNamecreateNewCodeJobRetryTest,
+            //     };
+            //     const upsertCodeJobResponse = await service.codeJobs.upsert(restartCodeJob);
+            //     //2. validate everything is created successfully
+            //     expect(upsertCodeJobResponse).to.haveOwnProperty('UUID');
+            //     const restartCodeJobUUID = upsertCodeJobResponse.UUID;
+            //     console.log(restartCodeJobUUID);
+            //     expect(upsertCodeJobResponse.CronExpression).to.equal('*/10 * * * *');
+            //     expect(upsertCodeJobResponse.CodeJobIsHidden).to.equal(false);
+            //     expect(upsertCodeJobResponse.IsScheduled).to.equal(true);
+            //     expect(upsertCodeJobResponse.NextRunTime).to.not.equal(undefined);
+            //     expect(upsertCodeJobResponse.NextRunTime).to.not.equal(null);
+            //     //3. restart the job
+            //     const restartBody = { Key: restartCodeJobUUID, NumnerOfTries: 1 };
+            //     const restartResponse = await generalService.fetchStatus('/addons/jobs/restart', {
+            //         method: 'POST',
+            //         body: JSON.stringify(restartBody)
+            //     });
+            //     debugger;
+            //     const bodyToHide = {
+            //         "UUID": restartCodeJobUUID,
+            //         "IsScheduled": false,
+            //         "CodeJobIsHidden": true
+            //     };
+            //     const hideCodeJob = await generalService.fetchStatus('/code_jobs', {
+            //         method: 'POST',
+            //         body: JSON.stringify(bodyToHide)
+            //     });
+            //     expect(hideCodeJob.Body.UUID).to.equal(restartCodeJobUUID);
+            //     expect(hideCodeJob.Body.IsScheduled).to.equal(false);
+            //     expect(hideCodeJob.Body.CodeJobIsHidden).to.equal(true);
+            // });
         });
     });
 
@@ -130,12 +222,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
             CronExpression: '*/3 * * * *',
             NextRunTime: null,
             IsScheduled: true,
-            // FailureAlertEmailTo: ['qa@pepperi.com'],
-            // FailureAlertEmailSubject: 'Execution section',
-            // ExecutedCode: '',
             Type: 'AddonJob',
-            // DraftCode:
-            //     'exports.main=async(Client)=>{\r\nvar response;\r\nClient.addLogEntry("Info", "multiplyResult");\r\nresponse={success:"true",errorMessage:"",resultObject:{}};\r\nfunction multiply(a=2,b=3){\r\nvar res = {\'multiplyResult\':a*b};\r\nClient.addLogEntry("Info","Start Funcion multiply =" + res);\r\nresponse.resultObject=res;\r\nresponse.errorMessage="test msg";\r\nresponse.success=true;\r\nreturn(response);\r\n}\r\nreturn multiply(2,3);\r\n};',
             CodeJobIsHidden: false,
             CreationDateTime: '',
             ModificationDateTime: '',
