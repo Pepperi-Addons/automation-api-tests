@@ -304,8 +304,8 @@ export async function StorybookRichHtmlTextareaTests() {
                             );
                             expect(mainExamplePopup).to.not.be.null.and.not.be.undefined;
                             // closing dialog:
-                            await driver.click(richHtmlTextarea.MainExample_PopupDialog_wrapperContainer);
-                            await driver.click(richHtmlTextarea.MainExample_PopupDialog_wrapperContainer);
+                            await driver.click(richHtmlTextarea.OverlayContainer);
+                            await driver.click(richHtmlTextarea.OverlayContainer);
                             driver.sleep(2 * 1000);
                             base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
