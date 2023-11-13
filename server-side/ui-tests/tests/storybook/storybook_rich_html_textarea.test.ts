@@ -428,7 +428,58 @@ export async function StorybookRichHtmlTextareaTests() {
                         it(`it '${input}'`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('maxFieldCharacters')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is NaN`, async function () {
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control default value = NaN`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(richHtmlTextarea.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control default value = NaN`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.elemntDoNotExist(richHtmlTextarea.MainExample_numOfCharacters);
+                        });
+                        it(`functional test [ control = 3 ] (+screenshot)`, async function () {
+                            await driver.click(await richHtmlTextarea.getInputRowSelectorByName('showTitle'));
+                            const newValueToSet = 3;
+                            await storyBookPage.inputs.changeMaxFieldCharactersControl(newValueToSet);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control Change -> 3`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(richHtmlTextarea.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control Change -> 3`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.untilIsVisible(richHtmlTextarea.MainExample_numOfCharacters);
+                            // await storyBookPage.inputs.changeInput(
+                            //     richHtmlTextarea.MainExampleLink_value,
+                            //     'https://www.google.com',
+                            // );
+                        });
+                        it(`back to non-functional value [ control = 0 ] (+screenshots)`, async function () {
+                            await driver.click(await richHtmlTextarea.getInputRowSelectorByName('showTitle'));
+                            const newValueToSet = 0;
+                            await storyBookPage.inputs.changeMaxFieldCharactersControl(newValueToSet);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control value = 0`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(richHtmlTextarea.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control value = 0`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.elemntDoNotExist(richHtmlTextarea.MainExample_numOfCharacters);
+                        });
                         break;
 
                     case 'showTitle':
