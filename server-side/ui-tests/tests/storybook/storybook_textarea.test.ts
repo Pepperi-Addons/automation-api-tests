@@ -73,6 +73,7 @@ export async function StorybookTextareaTests() {
                 });
             });
             it(`Enter ** Textarea ** Component StoryBook - SCREENSHOT`, async function () {
+                await driver.scrollToElement(storyBookPage.SidebarServicesHeader); // for the purpose of navigating to the area of 'textarea' at sidebar menu
                 await storyBookPage.chooseComponent('textarea');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -348,7 +349,58 @@ export async function StorybookTextareaTests() {
                         it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('maxFieldCharacters')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is NaN`, async function () {
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control default value = NaN`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control default value = NaN`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.elemntDoNotExist(textarea.MainExample_numOfCharacters);
+                        });
+                        it(`functional test [ control = 3 ] (+screenshot)`, async function () {
+                            await driver.click(await textarea.getInputRowSelectorByName('showTitle'));
+                            const newValueToSet = 3;
+                            await storyBookPage.inputs.changeMaxFieldCharactersControl(newValueToSet);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control Change -> 3`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control Change -> 3`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.untilIsVisible(textarea.MainExample_numOfCharacters);
+                            await storyBookPage.inputs.changeInput(
+                                textarea.MainExampleTextarea,
+                                'https://www.google.com',
+                            );
+                        });
+                        it(`back to non-functional value [ control = 0 ] (+screenshots)`, async function () {
+                            await driver.click(await textarea.getInputRowSelectorByName('showTitle'));
+                            const newValueToSet = 0;
+                            await storyBookPage.inputs.changeMaxFieldCharactersControl(newValueToSet);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control value = 0`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control value = 0`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.elemntDoNotExist(textarea.MainExample_numOfCharacters);
+                        });
                         break;
 
                     case 'showTitle':
