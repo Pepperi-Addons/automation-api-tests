@@ -73,7 +73,7 @@ export async function StorybookTextareaTests() {
                 });
             });
             it(`Enter ** Textarea ** Component StoryBook - SCREENSHOT`, async function () {
-                await driver.scrollToElement(storyBookPage.SidebarServicesHeader); // for the purpose of navigating to the area of 'textarea' at sidebar menu
+                await driver.scrollToElement(storyBookPage.SidebarExampleHeader); // for the purpose of navigating to the area of 'textarea' at sidebar menu
                 await storyBookPage.chooseComponent('textarea');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
