@@ -24,6 +24,9 @@ export class RichHtmlTextarea extends StorybookComponent {
     public MainExampleRichHtmlTextarea_value: By = By.xpath(
         `${this.MainExampleRichHtmlTextarea.value}//div[contains(@class,"rich-text-cont")]`,
     );
+    public MainExample_numOfCharacters: By = By.xpath(
+        `${this.MainExampleDiv.value}${this.NumOfCharacters_displaySpan.value}`,
+    );
 
     public async doesRichHtmlTextareaComponentFound(): Promise<void> {
         await this.doesComponentFound('rich-html-textarea', 'Rich HTML textarea');

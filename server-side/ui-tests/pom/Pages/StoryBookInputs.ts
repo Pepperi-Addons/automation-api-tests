@@ -11,6 +11,7 @@ export class StoryBookInpus extends AddonPage {
     public ValueInput_boolean: By = By.xpath(`//input[contains(@name,'value')]`);
     public ClassNamesInput: By = By.xpath(`//textarea[contains(@name,'classNames')]`);
     public IconNameInputControl: By = By.xpath(`//select[contains(@id,'control-iconName')]`);
+    public MaxFieldCharactersInputControl: By = By.xpath(`//input[contains(@id,'control-maxFieldCharacters')]`);
     public SelectOption_byText: By = By.xpath(`//option[text()="{placeholder}"]`);
     public EmptySpaceToClick: By = By.xpath(`//h1[contains(@class,'title')]`);
     public DisableToggler: By = By.xpath(`//input[contains(@name,'disabled')]`);
@@ -49,6 +50,10 @@ export class StoryBookInpus extends AddonPage {
 
     public async changeClassNamesControl(value: string): Promise<void> {
         await this.changeInput(this.ClassNamesInput, value);
+    }
+
+    public async changeMaxFieldCharactersControl(value: number): Promise<void> {
+        await this.changeInput(this.MaxFieldCharactersInputControl, value);
     }
 
     public async toggleDisableControl(): Promise<void> {

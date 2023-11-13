@@ -12,6 +12,9 @@ export class Textbox extends StorybookComponent {
     public MainExample_BorderLineElement: By = By.xpath(
         `${this.MainExampleDiv.value}//div[contains(@class,"mat-form-field-flex")]`,
     );
+    public MainExample_numOfCharacters: By = By.xpath(
+        `${this.MainExampleDiv.value}${this.NumOfCharacters_displaySpan.value}`,
+    );
 
     public async doesTextboxComponentFound(): Promise<void> {
         await this.doesComponentFound('textbox', 'Textbox');

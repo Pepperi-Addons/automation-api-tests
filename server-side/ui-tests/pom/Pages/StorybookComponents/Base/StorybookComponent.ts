@@ -11,6 +11,7 @@ export class StorybookComponent extends AddonPage {
     public MainHeader: By = By.xpath(`//h1[contains(@class,'title')]`);
     public MandatoryIcon: By = By.xpath(`//pep-icon[@name="system_must"]`);
     public PepTitle: By = By.xpath(`//pep-field-title`);
+    public NumOfCharacters_displaySpan: By = By.xpath(`${this.PepTitle.value}//span[2]`);
     public PepCheckboxContainer: By = By.xpath(`//div[contains(@class,'pep-checkbox-container')]`);
     public PepChipsAlignmentElement: By = By.xpath(`//pep-field-title/div`);
     public PepSeparatorContainer: By = By.xpath(`//pep-separator//div`);
