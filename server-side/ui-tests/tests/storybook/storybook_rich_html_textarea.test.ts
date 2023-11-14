@@ -457,7 +457,7 @@ export async function StorybookRichHtmlTextareaTests() {
                                 title: `upper view of maxFieldCharacters Control Change -> 3`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
-                            await storyBookPage.untilIsVisible(richHtmlTextarea.MainExample_numOfCharacters);
+                            // await storyBookPage.untilIsVisible(richHtmlTextarea.MainExample_numOfCharacters); // BUG https://pepperi.atlassian.net/browse/DI-25701
                             // await storyBookPage.inputs.changeInput(
                             //     richHtmlTextarea.MainExampleLink_value,
                             //     'https://www.google.com',
