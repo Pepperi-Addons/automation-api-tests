@@ -296,7 +296,58 @@ export async function StorybookTextboxTests() {
                         it(`validate input`, async function () {
                             expect(textboxInputsTitles.includes('maxFieldCharacters')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is NaN`, async function () {
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control default value = NaN`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(textbox.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control default value = NaN`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.elemntDoNotExist(textbox.MainExample_numOfCharacters);
+                        });
+                        it(`functional test [ control = 3 ] (+screenshot)`, async function () {
+                            await driver.click(await textbox.getInputRowSelectorByName('regex'));
+                            const newValueToSet = 3;
+                            await storyBookPage.inputs.changeMaxFieldCharactersControl(newValueToSet);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control Change -> 3`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(textbox.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control Change -> 3`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.untilIsVisible(textbox.MainExample_numOfCharacters);
+                            await storyBookPage.inputs.changeInput(
+                                textbox.MainExampleTextbox,
+                                'https://www.google.com',
+                            );
+                        });
+                        it(`back to non-functional value [ control = 0 ] (+screenshots)`, async function () {
+                            await driver.click(await textbox.getInputRowSelectorByName('regex'));
+                            const newValueToSet = 0;
+                            await storyBookPage.inputs.changeMaxFieldCharactersControl(newValueToSet);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control value = 0`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(textbox.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control value = 0`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.elemntDoNotExist(textbox.MainExample_numOfCharacters);
+                        });
                         break;
 
                     case 'regex':

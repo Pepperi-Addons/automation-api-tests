@@ -8,6 +8,9 @@ export class Textarea extends StorybookComponent {
     public MainExampleTextarea: By = By.xpath(`${this.MainExamplePepTextarea.value}//textarea`);
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
+    public MainExample_numOfCharacters: By = By.xpath(
+        `${this.MainExampleDiv.value}${this.NumOfCharacters_displaySpan.value}`,
+    );
 
     public async doesTextareaComponentFound(): Promise<void> {
         await this.doesComponentFound('textarea', 'Textarea');

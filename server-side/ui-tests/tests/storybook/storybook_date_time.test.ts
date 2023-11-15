@@ -294,7 +294,7 @@ export async function StorybookDateTimeTests() {
                             driver.sleep(0.5 * 1000);
                             const mainExamplePopup = await driver.findElement(dateTime.DateTimePicker_Popup);
                             expect(mainExamplePopup).to.not.be.null.and.not.be.undefined;
-                            await driver.click(dateTime.MainExample_PopupDialog_wrapperContainer_innerDiv);
+                            await driver.click(dateTime.OverlayContainer_innerDiv);
                             driver.sleep(2 * 1000);
                             await storyBookPage.inputs.changeInput(dateTime.MainExampleDateTime, '');
                             const mainExample_matLabel = await driver.findElement(dateTime.MainExample_titleLabel);
@@ -381,7 +381,7 @@ export async function StorybookDateTimeTests() {
                             const mainExamplePopup = await driver.findElement(dateTime.DateTimePicker_Popup);
                             expect(mainExamplePopup).to.not.be.null.and.not.be.undefined;
                             // closing dialog:
-                            await driver.click(dateTime.MainExample_PopupDialog_wrapperContainer_innerDiv);
+                            await driver.click(dateTime.OverlayContainer_innerDiv);
                             driver.sleep(2 * 1000);
                             await storyBookPage.inputs.changeInput(dateTime.MainExampleDateTime, '0');
                             const errorMessageSpan = await driver.findElement(dateTime.MainExample_ErrorMessageSpan);
@@ -411,7 +411,7 @@ export async function StorybookDateTimeTests() {
                             const mainExamplePopup = await driver.isElementVisible(dateTime.DateTimePicker_Popup);
                             expect(mainExamplePopup).to.be.true;
                             // closing dialog:
-                            await driver.click(dateTime.MainExample_PopupDialog_wrapperContainer_innerDiv);
+                            await driver.click(dateTime.OverlayContainer_innerDiv);
                             driver.sleep(2 * 1000);
                             await storyBookPage.inputs.changeInput(dateTime.MainExampleDateTime, '01/01/2020');
                             base64ImageComponentModal = await driver.saveScreenshots();
@@ -459,7 +459,7 @@ export async function StorybookDateTimeTests() {
                             const mainExamplePopup = await driver.findElement(dateTime.DateTimePicker_Popup);
                             expect(mainExamplePopup).to.not.be.null.and.not.be.undefined;
                             // closing dialog:
-                            await driver.click(dateTime.MainExample_PopupDialog_wrapperContainer_innerDiv);
+                            await driver.click(dateTime.OverlayContainer_innerDiv);
                             driver.sleep(2 * 1000);
                             await storyBookPage.inputs.changeInput(dateTime.MainExampleDateTime, '0');
                             base64ImageComponentModal = await driver.saveScreenshots();
@@ -493,7 +493,7 @@ export async function StorybookDateTimeTests() {
                             const mainExamplePopup = await driver.isElementVisible(dateTime.DateTimePicker_Popup);
                             expect(mainExamplePopup).to.be.true;
                             // closing dialog:
-                            await driver.click(dateTime.MainExample_PopupDialog_wrapperContainer_innerDiv);
+                            await driver.click(dateTime.OverlayContainer_innerDiv);
                             driver.sleep(2 * 1000);
                             await storyBookPage.inputs.changeInput(dateTime.MainExampleDateTime, '01/01/2020');
                             base64ImageComponentModal = await driver.saveScreenshots();

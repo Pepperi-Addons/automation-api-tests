@@ -1,8 +1,16 @@
+import { Browser } from '../../../../utilities/browser';
 import { By, Key } from 'selenium-webdriver';
 import { AddonPage } from '../../..';
 import { expect } from 'chai';
+import { StoryBookInpus } from '../../StoryBookInputs';
 
 export class StorybookComponent extends AddonPage {
+    constructor(browser: Browser) {
+        super(browser);
+        this.inputs = new StoryBookInpus(browser);
+    }
+
+    public inputs: StoryBookInpus;
     public IframeElement: By = By.xpath(`//iframe`);
     public RootDiv: By = By.id('docs-root');
     public DocsDiv: By = By.xpath(`//div[contains(@class, 'sbdoc')]`);
@@ -11,6 +19,7 @@ export class StorybookComponent extends AddonPage {
     public MainHeader: By = By.xpath(`//h1[contains(@class,'title')]`);
     public MandatoryIcon: By = By.xpath(`//pep-icon[@name="system_must"]`);
     public PepTitle: By = By.xpath(`//pep-field-title`);
+    public NumOfCharacters_displaySpan: By = By.xpath(`${this.PepTitle.value}//span[2]`);
     public PepCheckboxContainer: By = By.xpath(`//div[contains(@class,'pep-checkbox-container')]`);
     public PepChipsAlignmentElement: By = By.xpath(`//pep-field-title/div`);
     public PepSeparatorContainer: By = By.xpath(`//pep-separator//div`);
@@ -41,10 +50,8 @@ export class StorybookComponent extends AddonPage {
     );
     public RowSpanControlInput: By = By.xpath(`//input[@id="control-rowSpan"]`);
     public SrcControlInput: By = By.xpath(`//textarea[@id="control-src"]`);
-    public MainExample_PopupDialog_wrapperContainer: By = By.xpath(`//div[contains(@class,"cdk-overlay-container")]`);
-    public MainExample_PopupDialog_wrapperContainer_innerDiv: By = By.xpath(
-        `${this.MainExample_PopupDialog_wrapperContainer.value}/div[2]`,
-    );
+    public OverlayContainer: By = By.xpath(`//div[contains(@class,"cdk-overlay-container")]`);
+    public OverlayContainer_innerDiv: By = By.xpath(`${this.OverlayContainer.value}/div[2]`);
 
     public async getMainExampleContentSelecor(componentText: string): Promise<By> {
         return By.xpath(`//div[contains(@id,'anchor')]//div[contains(@id,'${componentText}')]`);
