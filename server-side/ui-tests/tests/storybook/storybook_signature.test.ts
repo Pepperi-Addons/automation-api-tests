@@ -329,7 +329,50 @@ export async function StorybookSignatureTests() {
                         it(`validate input`, async function () {
                             expect(signatureInputsTitles.includes('readonly')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const readonlyControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Readonly',
+                            );
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Readonly Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(readonlyControlState).to.be.false;
+                            const mainExampleSignature = await driver.findElement(signature.MainExampleSignature);
+                            const mainExampleSignatureDisabled = await mainExampleSignature.getAttribute('class');
+                            console.info('mainExampleSignatureDisabled: ', mainExampleSignatureDisabled);
+                            // await signature.untilIsVisible(signature.MainExampleSignature);
+                            // await storyBookPage.elemntDoNotExist(signature.MainExampleSignatureReadonly);
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleReadonlyControl();
+                            const readonlyControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Readonly',
+                            );
+                            expect(readonlyControlState).to.be.true;
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Readonly Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // await signature.untilIsVisible(signature.MainExampleSignatureReadonly);
+                            // await storyBookPage.elemntDoNotExist(signature.MainExampleSignature);
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleReadonlyControl();
+                            const readonlyControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Readonly',
+                            );
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Readonly Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(readonlyControlState).to.be.false;
+                            // await signature.untilIsVisible(signature.MainExampleSignature);
+                            // await storyBookPage.elemntDoNotExist(signature.MainExampleSignatureReadonly);
+                        });
                         break;
                     case 'showTitle':
                         it(`validate input`, async function () {

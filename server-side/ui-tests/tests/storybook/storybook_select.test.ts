@@ -254,7 +254,50 @@ export async function StorybookSelectTests() {
                         it(`it '${input}'`, async function () {
                             expect(selectInputsTitles.includes('readonly')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const readonlyControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Readonly',
+                            );
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Readonly Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(readonlyControlState).to.be.false;
+                            const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
+                            const mainExampleSelectDisabled = await mainExampleSelect.getAttribute('class');
+                            console.info('mainExampleSelectDisabled: ', mainExampleSelectDisabled);
+                            // await select.untilIsVisible(select.MainExampleSelect);
+                            // await storyBookPage.elemntDoNotExist(select.MainExampleSelectReadonly);
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleReadonlyControl();
+                            const readonlyControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Readonly',
+                            );
+                            expect(readonlyControlState).to.be.true;
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Readonly Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // await select.untilIsVisible(select.MainExampleSelectReadonly);
+                            // await storyBookPage.elemntDoNotExist(select.MainExampleSelect);
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleReadonlyControl();
+                            const readonlyControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Readonly',
+                            );
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Readonly Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(readonlyControlState).to.be.false;
+                            // await select.untilIsVisible(select.MainExampleSelect);
+                            // await storyBookPage.elemntDoNotExist(select.MainExampleSelectReadonly);
+                        });
                         break;
 
                     case 'showTitle':
