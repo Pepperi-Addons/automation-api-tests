@@ -31,6 +31,7 @@ export class StoryBookInpus extends AddonPage {
     public ControlTd: By = By.xpath(`/td[4]`);
     public ItemsInput_span: By = By.xpath(`/div/div/div/span[2]`);
     public ItemsInput_RAW_button: By = By.xpath(`${this.ControlTd.value}//button`);
+    public OptionsInput_span: By = By.xpath(`/div/textarea`);
 
     public async getInputRowSelectorByName(inputTitle: string): Promise<By> {
         return By.xpath(`${this.InputTitle.value}[text()='${inputTitle}']/ancestor::tr`);
@@ -171,6 +172,21 @@ export class StoryBookInpus extends AddonPage {
     public async getItemsControlContent(): Promise<any> {
         const selector: By = By.xpath(
             `${(await this.getInputRowSelectorByName('items')).value}${this.ControlTd.value}${
+                this.ItemsInput_span.value
+            }`,
+        );
+        const itemsInputControl_valueElement = await this.browser.findElement(selector);
+        const itemsInputControl_valueElement_innerHTML = await itemsInputControl_valueElement.getAttribute('innerHTML');
+        console.info(
+            'at getItemsControlContent -> await itemsInputControl_valueElement.getAttribute("innerHTML"): ',
+            itemsInputControl_valueElement_innerHTML,
+        );
+        return itemsInputControl_valueElement_innerHTML;
+    }
+
+    public async getOptionsControlContent(): Promise<any> {
+        const selector: By = By.xpath(
+            `${(await this.getInputRowSelectorByName('options')).value}${this.ControlTd.value}${
                 this.ItemsInput_span.value
             }`,
         );

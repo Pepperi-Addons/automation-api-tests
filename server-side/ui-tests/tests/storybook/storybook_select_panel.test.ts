@@ -142,6 +142,7 @@ export async function StorybookSelectPanelTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('value')).to.be.true;
@@ -203,18 +204,184 @@ export async function StorybookSelectPanelTests() {
                             expect(tealValueGotFromUi).to.be.false;
                         });
                         break;
+
                     case 'options':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('options')).to.be.true;
                         });
-                        // TODO
+                        // it(`making sure current value is 8 options object`, async function () {
+                        //     const expectedOptions = `<span class="rejt-not-collapsed-delimiter">[</span><svg viewBox="0 0 1024 1024" class="rejt-plus-selectPanel css-1sq7n9w"><path d="M512-.2a512 512 0 110 1024 512 512 0 010-1024zm0 91.4c-112.3 0-218 43.8-297.4 123.2A417.8 417.8 0 0091.4 511.8c0 112.4 43.8 218 123.2 297.4A417.8 417.8 0 00512 932.4c112.3 0 218-43.8 297.4-123.2a417.8 417.8 0 00123.2-297.4c0-112.3-43.8-218-123.2-297.4A417.8 417.8 0 00512 91.2zm1.1 129.2a45.7 45.7 0 0145.7 45.7v201.1H760a45.7 45.7 0 010 91.5H558.8v201.1a45.7 45.7 0 11-91.4 0V558.7H266.3a45.7 45.7 0 110-91.5h201.1V266.1a45.7 45.7 0 0145.7-45.7z" class="css-kqzqgg"></path></svg><ul class="rejt-not-collapsed-list" style="list-style: none; margin: 0px 0px 0px 1rem; padding: 0px;"><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">0 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 2 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">1 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 3 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">2 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 2 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">3 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 2 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">4 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 2 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">5 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 3 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">6 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 3 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">7 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 3 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">8 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 3 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div></ul><span class="rejt-not-collapsed-delimiter">]</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg>`;
+                        //     let base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `options Control default value`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     const optionsControlContent = await selectPanel.inputs.getOptionsControlContent();
+                        //     await driver.click(selectPanel.MainHeader);
+                        //     base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `upper view of options Control default value`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     expect(optionsControlContent).equals(expectedOptions);
+                        //     await driver.click(selectPanel.MainExampleSelectPanel);
+                        //     base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `Open SelectPanel`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     const selectPanelContent = await selectPanel.getSelectPanelOptions();
+                        //     const selectPanelContentButtons = await selectPanel.getButtonsOutOfSelectPanelContent();
+                        //     expect(selectPanelContent).to.not.equal('<!---->');
+                        //     expect(selectPanelContentButtons).to.be.an('array').with.lengthOf(8);
+                        //     await driver.click(selectPanel.OverlayContainer);
+                        // });
+                        // it(`functional test [ control = [] ] (+screenshot)`, async function () {
+                        //     await driver.click(await selectPanel.getInputRowSelectorByName('classNames'));
+                        //     const newValueToSet = '[]';
+                        //     let base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `Before Items RAW Button Click`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     await selectPanel.inputs.toggleItemsControlRawButton();
+                        //     selectPanel.pause(0.5 * 1000);
+                        //     base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `After Items RAW Button is Clicked`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     await selectPanel.inputs.changeItemsControl(newValueToSet);
+                        //     base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `After Items Control is Changed`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     await driver.click(selectPanel.MainHeader);
+                        //     base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `upper view of Items Control Change`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     await driver.click(selectPanel.MainExampleSelectPanel);
+                        //     base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `Open SelectPanel`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     const selectPanelContent = await selectPanel.getSelectPanelOptions();
+                        //     expect(selectPanelContent).equals('<!---->');
+                        //     await driver.click(selectPanel.OverlayContainer);
+                        // });
+                        // it(`back to non-functional value [ control = 0 ] (+screenshots)`, async function () {
+                        //     await driver.click(await selectPanel.getInputRowSelectorByName('classNames'));
+                        //     const newValueToSet = `[
+                        //         {
+                        //           "key": "N",
+                        //           "text": "Tramontana",
+                        //           "parent": null,
+                        //           "selected": true
+                        //         },
+                        //         {
+                        //           "key": "NE",
+                        //           "text": "Gregale",
+                        //           "disabled": true,
+                        //           "parent": null,
+                        //           "selected": false
+                        //         },
+                        //         {
+                        //           "key": "E",
+                        //           "text": "Levante",
+                        //           "parent": null,
+                        //           "selected": false
+                        //         },
+                        //         {
+                        //           "key": "SE",
+                        //           "text": "Scirocco",
+                        //           "parent": null,
+                        //           "selected": false
+                        //         },
+                        //         {
+                        //           "key": "sep",
+                        //           "type": "splitter",
+                        //           "parent": null,
+                        //           "selected": false
+                        //         },
+                        //         {
+                        //           "key": "S",
+                        //           "text": "Ostro",
+                        //           "iconName": "system_link",
+                        //           "parent": null,
+                        //           "selected": false
+                        //         },
+                        //         {
+                        //           "key": "SW",
+                        //           "text": "Libeccio",
+                        //           "iconName": "system_lock",
+                        //           "parent": null,
+                        //           "selected": false
+                        //         },
+                        //         {
+                        //           "key": "W",
+                        //           "text": "Ponente",
+                        //           "iconName": "system_logic",
+                        //           "parent": null,
+                        //           "selected": false
+                        //         },
+                        //         {
+                        //           "key": "NW",
+                        //           "text": "Mistral",
+                        //           "iconName": "system_map",
+                        //           "parent": null,
+                        //           "selected": false
+                        //         }
+                        //     ]`;
+                        //     let base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `Before Items Control is Changed`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     await storyBookPage.inputs.changeItemsControl(newValueToSet);
+                        //     base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `After Items Control is Changed`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     await driver.click(selectPanel.MainHeader);
+                        //     base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `upper view of After Items Control is Changed`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     await driver.click(selectPanel.MainExampleSelectPanel);
+                        //     base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `Open SelectPanel`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        //     const selectPanelContent = await selectPanel.getSelectPanelOptions();
+                        //     const selectPanelContentButtons = await selectPanel.getButtonsOutOfSelectPanelContent();
+                        //     expect(selectPanelContent).to.not.equal('<!---->');
+                        //     expect(selectPanelContentButtons).to.be.an('array').with.lengthOf(8);
+                        //     await driver.click(selectPanel.OverlayContainer);
+                        // });
+                        // it(`toggle RAW button`, async function () {
+                        //     await selectPanel.inputs.toggleItemsControlRawButton();
+                        //     const base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `upper view of options Control default value`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        // });
                         break;
+
                     case 'isMultiSelect':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('isMultiSelect')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'classNames':
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('classNames')).to.be.true;
@@ -248,6 +415,7 @@ export async function StorybookSelectPanelTests() {
                             expect(newClassNamesGotFromUi).to.not.contain('rotate3d');
                         });
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('disabled')).to.be.true;
@@ -296,6 +464,7 @@ export async function StorybookSelectPanelTests() {
                             expect(mainExampleSelectPanelDisabled).to.not.include('disable');
                         });
                         break;
+
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('mandatory')).to.be.true;
@@ -340,12 +509,14 @@ export async function StorybookSelectPanelTests() {
                             await storyBookPage.elemntDoNotExist(selectPanel.MainExample_mandatoryIcon);
                         });
                         break;
+
                     case 'numOfCol':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('numOfCol')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('showTitle')).to.be.true;
@@ -386,6 +557,7 @@ export async function StorybookSelectPanelTests() {
                             await storyBookPage.untilIsVisible(selectPanel.MainExample_titleLabel);
                         });
                         break;
+
                     case 'xAlignment':
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('xAlignment')).to.be.true;

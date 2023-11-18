@@ -388,7 +388,9 @@ export default class E2EUtils extends BasePomObject {
 
     public async getUUIDfromURL() {
         const currentUrl = (await this.browser.getCurrentUrl()).split('/');
-        return currentUrl[currentUrl.length - 1];
+        const pageUUID = currentUrl[currentUrl.length - 1].split('?')[0]; // added for Page Builder version 2.0.42 (Hagit, Nov 23)
+        console.info('AT getUUIDfromURL -> pageUUID: ', pageUUID);
+        return pageUUID;
     }
 
     public async addToMappedSlugs(slugsPagesPairsToAdd: { slug_path: string; pageUUID: string }[], client: Client) {
