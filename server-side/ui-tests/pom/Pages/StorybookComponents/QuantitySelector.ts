@@ -5,6 +5,9 @@ export class QuantitySelector extends StorybookComponent {
     public MainExampleDiv: By = By.xpath('//div[@id="story--components-quantity-selector--story-1"]');
     public MainExamplePepQuantitySelector: By = By.xpath(`${this.MainExampleDiv.value}//pep-quantity-selector`);
     public MainExampleQuantitySelector: By = By.xpath(`${this.MainExamplePepQuantitySelector.value}//mat-form-field`);
+    public MainExampleQuantitySelectorReadonly: By = By.xpath(
+        `${this.MainExamplePepQuantitySelector.value}/div/button`,
+    );
     public MainExampleQuantitySelector_style: By = By.xpath(`${this.MainExampleQuantitySelector.value}/div/div`);
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);

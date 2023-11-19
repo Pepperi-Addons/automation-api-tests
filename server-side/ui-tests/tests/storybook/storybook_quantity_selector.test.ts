@@ -322,7 +322,8 @@ export async function StorybookQuantitySelectorTests() {
                                 'class',
                             );
                             console.info('mainExampleQuantitySelectorDisabled: ', mainExampleQuantitySelectorDisabled);
-                            // await storyBookPage.elemntDoNotExist(quantitySelector.MainExample_readonlyIcon);
+                            await quantitySelector.untilIsVisible(quantitySelector.MainExampleQuantitySelector);
+                            await storyBookPage.elemntDoNotExist(quantitySelector.MainExampleQuantitySelectorReadonly);
                         });
                         it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleReadonlyControl();
@@ -335,7 +336,8 @@ export async function StorybookQuantitySelectorTests() {
                                 title: `Readonly Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // await storyBookPage.untilIsVisible(quantitySelector.MainExample_readonlyIcon);
+                            await quantitySelector.untilIsVisible(quantitySelector.MainExampleQuantitySelectorReadonly);
+                            await storyBookPage.elemntDoNotExist(quantitySelector.MainExampleQuantitySelector);
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleReadonlyControl();
@@ -348,7 +350,8 @@ export async function StorybookQuantitySelectorTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             expect(readonlyControlState).to.be.false;
-                            // await storyBookPage.elemntDoNotExist(quantitySelector.MainExample_readonlyIcon);
+                            await quantitySelector.untilIsVisible(quantitySelector.MainExampleQuantitySelector);
+                            await storyBookPage.elemntDoNotExist(quantitySelector.MainExampleQuantitySelectorReadonly);
                         });
                         break;
 
