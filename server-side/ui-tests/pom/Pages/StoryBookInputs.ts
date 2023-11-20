@@ -23,6 +23,7 @@ export class StoryBookInpus extends AddonPage {
     public ReadonlyToggler: By = By.xpath(`//input[contains(@id,'control-readonly')]`);
     public MaxFieldCharactersInputControl: By = By.xpath(`//input[contains(@id,'control-maxFieldCharacters')]`);
     public ItemsRawTextareaControl: By = By.xpath(`//textarea[contains(@id,'control-items')]`);
+    public OptionsRawTextareaControl: By = By.xpath(`//textarea[contains(@id,'control-options')]`);
     public ColorValue: By = By.xpath(`//input[contains(@id,'control-value')]`);
     public TxtColorValue: By = By.xpath(`//input[contains(@id,'control-textColor')]`);
     public ToggableInput_label: By = By.xpath(`/parent::label`);
@@ -30,7 +31,7 @@ export class StoryBookInpus extends AddonPage {
     public RadioButtonElements: By = By.xpath(`//label//input[@type='radio']`);
     public ControlTd: By = By.xpath(`/td[4]`);
     public ItemsInput_span: By = By.xpath(`/div/div/div/span[2]`);
-    public ItemsInput_RAW_button: By = By.xpath(`${this.ControlTd.value}//button`);
+    public Input_RAW_button: By = By.xpath(`${this.ControlTd.value}//button`);
     public OptionsInput_span: By = By.xpath(`/div/textarea`);
 
     public async getInputRowSelectorByName(inputTitle: string): Promise<By> {
@@ -63,6 +64,10 @@ export class StoryBookInpus extends AddonPage {
 
     public async changeItemsControl(value: string): Promise<void> {
         await this.changeInput(this.ItemsRawTextareaControl, value);
+    }
+
+    public async changeOptionsControl(value: string): Promise<void> {
+        await this.changeInput(this.OptionsRawTextareaControl, value);
     }
 
     public async toggleDisableControl(): Promise<void> {
@@ -103,7 +108,14 @@ export class StoryBookInpus extends AddonPage {
 
     public async toggleItemsControlRawButton(): Promise<void> {
         const selector: By = By.xpath(
-            `${(await this.getInputRowSelectorByName('items')).value}${this.ItemsInput_RAW_button.value}`,
+            `${(await this.getInputRowSelectorByName('items')).value}${this.Input_RAW_button.value}`,
+        );
+        await this.browser.click(selector);
+    }
+
+    public async toggleOptionsControlRawButton(): Promise<void> {
+        const selector: By = By.xpath(
+            `${(await this.getInputRowSelectorByName('options')).value}${this.Input_RAW_button.value}`,
         );
         await this.browser.click(selector);
     }

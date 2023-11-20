@@ -9,7 +9,7 @@ export class Select extends StorybookComponent {
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
     public SelectContent: By = By.xpath('//div[@role="listbox"]/mat-option');
-    public SelectContentOptions: By = By.xpath('//div[@role="listbox"]/mat-option');
+    public SelectContentOptions: By = By.xpath('//div[@role="listbox"]/mat-option/span');
 
     public async doesSelectComponentFound(): Promise<void> {
         await this.doesComponentFound('select', 'Select');
@@ -33,6 +33,12 @@ export class Select extends StorybookComponent {
     public async getOptionsOutOfSelectContent(): Promise<any> {
         const selectOptionsElement = await this.browser.findElements(this.SelectContentOptions);
         console.info('at getButtonsOutOfMenuContent -> selectOptionsElement: ', selectOptionsElement);
-        return selectOptionsElement;
+        const optionsTitles: string[] = await Promise.all(
+            selectOptionsElement.map(async (optionElem) => {
+                return await optionElem.getText();
+            }),
+        );
+        console.info('at getButtonsOutOfMenuContent -> optionsTitles: ', optionsTitles);
+        return optionsTitles;
     }
 }
