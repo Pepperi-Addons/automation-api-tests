@@ -2865,9 +2865,11 @@ export async function AddonDataImportExportTests(generalService: GeneralService,
                                 relationOriginalResponse.URI,
                                 90,
                             );
-                            expect(dimxExport.AuditInfo.ResultObject).to.equal(
+                            expect(dimxExport.AuditInfo.ResultObject).to.be.oneOf([
+                                // EVGENY 20/11/23: changed on DIMX 1.1.40 - but is made this way to support all versions
+                                '{"success":false,"ErrorMessage":"Delimiter length must be 1. Given delimiter:&&&"}',
                                 '{"Success":false,"ErrorMessage":"Delimiter length must be 1. Given delimiter:&&&"}',
-                            );
+                            ]);
                         });
                     }
                 });
