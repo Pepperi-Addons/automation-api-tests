@@ -309,7 +309,44 @@ export async function StorybookImageFilmstripTests() {
                         it(`validate input`, async function () {
                             expect(imageFilmstripInputsTitles.includes('showThumbnails')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const showThumbnailsControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'ShowThumbnails',
+                            );
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `showThumbnails Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(showThumbnailsControlState).to.be.false;
+                            await storyBookPage.elemntDoNotExist(imageFilmstrip.MainExampleGalleryThumbs);
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleShowThumbnailsControl();
+                            const showThumbnailsControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'ShowThumbnails',
+                            );
+                            expect(showThumbnailsControlState).to.be.true;
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `showThumbnails Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await storyBookPage.untilIsVisible(imageFilmstrip.MainExampleGalleryThumbs);
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleShowThumbnailsControl();
+                            const showThumbnailsControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'ShowThumbnails',
+                            );
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `showThumbnails Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(showThumbnailsControlState).to.be.false;
+                            await storyBookPage.elemntDoNotExist(imageFilmstrip.MainExampleGalleryThumbs);
+                        });
                         break;
 
                     case 'showTitle':
