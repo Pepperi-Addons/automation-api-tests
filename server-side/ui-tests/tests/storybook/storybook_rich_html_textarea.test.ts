@@ -56,7 +56,7 @@ export async function StorybookRichHtmlTextareaTests() {
             await driver.quit();
         });
 
-        describe('* RichHtmlTextarea Component * Initial Testing', () => {
+        describe('* RichHtmlTextarea Component * Initial Testing - ***BUGS: DI-25701 "maxFieldCharacters" & DI-25456 "rowSpan"', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -103,15 +103,40 @@ export async function StorybookRichHtmlTextareaTests() {
             });
         });
         richHtmlTextareaInputs.forEach(async (input) => {
-            describe(`INPUT: '${input}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await richHtmlTextarea.getInputRowSelectorByName(input));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${input}' input`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
+            describe(`INPUT: '${
+                input === 'rowSpan'
+                    ? input + ' - ***BUG: DI-25456'
+                    : input === 'maxFieldCharacters'
+                    ? input + ' - ***BUG: DI-25701'
+                    : input
+            }'`, async function () {
+                switch (
+                    input // to be removed when the bug is fixed
+                ) {
+                    case 'rowSpan':
+                        it(`***BUG: https://pepperi.atlassian.net/browse/DI-25456`, async function () {
+                            // https://pepperi.atlassian.net/browse/DI-25456
+                            expect(richHtmlTextareaInputsTitles.includes('rowSpan')).to.be.true;
+                        });
+                        break;
+                    case 'maxFieldCharacters':
+                        it(`***BUG: https://pepperi.atlassian.net/browse/DI-25701'`, async function () {
+                            // https://pepperi.atlassian.net/browse/DI-25701
+                            expect(richHtmlTextareaInputsTitles.includes('maxFieldCharacters')).to.be.true;
+                        });
+                        break;
+
+                    default:
+                        it(`SCREENSHOT`, async function () {
+                            await driver.click(await richHtmlTextarea.getInputRowSelectorByName(input));
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
+                        break;
+                }
                 it(`switch to iframe`, async function () {
                     try {
                         await driver.findElement(storyBookPage.StorybookIframe, 5000);
@@ -152,7 +177,8 @@ export async function StorybookRichHtmlTextareaTests() {
                         break;
 
                     case 'rowSpan':
-                        it(`validate input`, async function () {
+                        it(`validate input - ***BUG: DI-25456`, async function () {
+                            // https://pepperi.atlassian.net/browse/DI-25456
                             expect(richHtmlTextareaInputsTitles.includes('rowSpan')).to.be.true;
                         });
                         it(`default height [ control = 6 ] measurement (+screenshot)`, async function () {
@@ -373,7 +399,7 @@ export async function StorybookRichHtmlTextareaTests() {
                         break;
 
                     case 'inlineMode':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(richHtmlTextareaInputsTitles.includes('inlineMode')).to.be.true;
                         });
                         // TODO
@@ -425,7 +451,8 @@ export async function StorybookRichHtmlTextareaTests() {
                         break;
 
                     case 'maxFieldCharacters':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input - ***BUG: DI-25701'`, async function () {
+                            // https://pepperi.atlassian.net/browse/DI-25701
                             expect(richHtmlTextareaInputsTitles.includes('maxFieldCharacters')).to.be.true;
                         });
                         it(`making sure current value is NaN`, async function () {

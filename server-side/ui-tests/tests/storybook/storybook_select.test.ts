@@ -101,15 +101,28 @@ export async function StorybookSelectTests() {
             });
         });
         selectInputs.forEach(async (input) => {
-            describe(`INPUT: '${input}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await select.getInputRowSelectorByName(input));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${input}' input`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
+            describe(`INPUT: '${input === 'readonly' ? input + ' - ***BUG: DI-25776' : input}'`, async function () {
+                switch (
+                    input // to be removed when the bug is fixed
+                ) {
+                    case 'readonly':
+                        it(`***BUG: https://pepperi.atlassian.net/browse/DI-25776`, async function () {
+                            // https://pepperi.atlassian.net/browse/DI-25776
+                            expect(selectInputsTitles.includes('readonly')).to.be.true;
+                        });
+                        break;
+
+                    default:
+                        it(`SCREENSHOT`, async function () {
+                            await driver.click(await select.getInputRowSelectorByName(input));
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
+                        break;
+                }
                 it(`switch to iframe`, async function () {
                     try {
                         await driver.findElement(storyBookPage.StorybookIframe, 5000);
@@ -425,8 +438,7 @@ export async function StorybookSelectTests() {
                             const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
                             const mainExampleSelectDisabled = await mainExampleSelect.getAttribute('class');
                             console.info('mainExampleSelectDisabled: ', mainExampleSelectDisabled);
-                            // await select.untilIsVisible(select.MainExampleSelect);
-                            // await storyBookPage.elemntDoNotExist(select.MainExampleSelectReadonly);
+                            // relevant assertion needs to be added
                         });
                         it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleReadonlyControl();
@@ -439,8 +451,7 @@ export async function StorybookSelectTests() {
                                 title: `Readonly Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            // await select.untilIsVisible(select.MainExampleSelectReadonly);
-                            // await storyBookPage.elemntDoNotExist(select.MainExampleSelect);
+                            // relevant assertion needs to be added after BUG DI-25776 is fixed
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleReadonlyControl();
@@ -453,8 +464,7 @@ export async function StorybookSelectTests() {
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
                             expect(readonlyControlState).to.be.false;
-                            // await select.untilIsVisible(select.MainExampleSelect);
-                            // await storyBookPage.elemntDoNotExist(select.MainExampleSelectReadonly);
+                            // relevant assertion needs to be added
                         });
                         break;
 
