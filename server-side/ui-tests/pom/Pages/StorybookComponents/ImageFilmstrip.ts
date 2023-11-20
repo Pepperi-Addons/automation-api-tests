@@ -6,6 +6,10 @@ export class ImageFilmstrip extends StorybookComponent {
     public MainExampleImageFilmstrip: By = By.xpath(`${this.MainExampleDiv.value}//gallery-image/div`);
     public MainExampleHeightDiv: By = By.xpath(`//pep-images-filmstrip`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
+    public MainExampleGalleryThumbs: By = By.xpath(
+        `${this.MainExampleDiv.value}${this.MainExampleHeightDiv.value}//gallery-thumbs`,
+    );
+    public MainExample_singleThumb: By = By.xpath(`${this.MainExampleGalleryThumbs.value}//gallery-thumb`);
     public MainExample_pepTitle: By = By.xpath(
         `${this.MainExampleDiv.value}//pep-images-filmstrip${this.PepTitle.value}`,
     );

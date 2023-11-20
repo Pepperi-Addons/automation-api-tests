@@ -21,6 +21,7 @@ export class StoryBookInpus extends AddonPage {
     public RenderErrorToggler: By = By.xpath(`//input[contains(@id,'control-renderError')]`);
     public RenderSymbolToggler: By = By.xpath(`//input[contains(@id,'control-renderSymbol')]`);
     public ReadonlyToggler: By = By.xpath(`//input[contains(@id,'control-readonly')]`);
+    public ShowThumbnailsToggler: By = By.xpath(`//input[contains(@id,'control-showThumbnails')]`);
     public MaxFieldCharactersInputControl: By = By.xpath(`//input[contains(@id,'control-maxFieldCharacters')]`);
     public ItemsRawTextareaControl: By = By.xpath(`//textarea[contains(@id,'control-items')]`);
     public OptionsRawTextareaControl: By = By.xpath(`//textarea[contains(@id,'control-options')]`);
@@ -104,6 +105,10 @@ export class StoryBookInpus extends AddonPage {
 
     public async toggleReadonlyControl(): Promise<void> {
         await this.browser.click(this.ReadonlyToggler);
+    }
+
+    public async toggleShowThumbnailsControl(): Promise<void> {
+        await this.browser.click(this.ShowThumbnailsToggler);
     }
 
     public async toggleItemsControlRawButton(): Promise<void> {
@@ -230,7 +235,8 @@ export class StoryBookInpus extends AddonPage {
             | 'RenderTitle'
             | 'RenderError'
             | 'RenderSymbol'
-            | 'Readonly',
+            | 'Readonly'
+            | 'ShowThumbnails',
     ): Promise<boolean | Error> {
         const inputTogglerSelector = this[`${inputName}Toggler`];
         const togglerLabelSelector = By.xpath(`${inputTogglerSelector.value}${this.ToggableInput_label.value}`);
