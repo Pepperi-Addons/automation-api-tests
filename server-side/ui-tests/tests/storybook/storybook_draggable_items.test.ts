@@ -42,7 +42,7 @@ export async function StorybookDraggableItemsTests() {
             await driver.quit();
         });
 
-        describe('* DraggableItems Component * Initial Testing', () => {
+        describe('* DraggableItems Component * Initial Testing - ***BUG: DI-25773 at "items" input', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -89,84 +89,99 @@ export async function StorybookDraggableItemsTests() {
             });
         });
         draggableItemsInputs.forEach(async (input) => {
-            describe(`INPUT: '${input}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await draggableItems.getInputRowSelectorByName(input));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${input}' input`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
-                it(`switch to iframe`, async function () {
-                    try {
-                        await driver.findElement(storyBookPage.StorybookIframe, 5000);
-                        await driver.switchTo(storyBookPage.StorybookIframe);
-                    } catch (error) {
-                        console.error(error);
-                        console.info('ALREADY ON IFRAME');
-                    }
-                });
-                it(`open inputs if it's closed`, async function () {
-                    const inputsMainTableRowElement = await driver.findElement(draggableItems.Inputs_mainTableRow);
-                    if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
-                        await inputsMainTableRowElement.click();
-                    }
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${input}' input`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
-                switch (input) {
-                    case 'containerId':
-                        it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('containerId')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'dropAreaIds':
-                        it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('dropAreaIds')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'items':
-                        it(`it '${input}'`, async function () {
+            switch (input) {
+                case 'items': // to be removed when the bug is fixed
+                    describe(`INPUT: '${input} - ***BUG: DI-25773'`, async function () {
+                        it(`https://pepperi.atlassian.net/browse/DI-25773`, async function () {
+                            // https://pepperi.atlassian.net/browse/DI-25773
                             expect(draggableItemsInputsTitles.includes('items')).to.be.true;
                         });
-                        // TODO
-                        break;
-                    case 'showSearch':
-                        it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('showSearch')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'title':
-                        it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('title')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'titleSizeType':
-                        it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('titleSizeType')).to.be.true;
-                        });
-                        // TODO
-                        break;
-                    case 'titleType':
-                        it(`it '${input}'`, async function () {
-                            expect(draggableItemsInputsTitles.includes('titleType')).to.be.true;
-                        });
-                        // TODO
-                        break;
+                    });
+                    break;
 
-                    default:
-                        throw new Error(`Input: "${input}" is not covered in switch!`);
-                    // break;
-                }
-            });
+                default:
+                    describe(`INPUT: '${input}'`, async function () {
+                        it(`SCREENSHOT`, async function () {
+                            await driver.click(await draggableItems.getInputRowSelectorByName(input));
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
+                        it(`switch to iframe`, async function () {
+                            try {
+                                await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                                await driver.switchTo(storyBookPage.StorybookIframe);
+                            } catch (error) {
+                                console.error(error);
+                                console.info('ALREADY ON IFRAME');
+                            }
+                        });
+                        it(`open inputs if it's closed`, async function () {
+                            const inputsMainTableRowElement = await driver.findElement(
+                                draggableItems.Inputs_mainTableRow,
+                            );
+                            if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                                await inputsMainTableRowElement.click();
+                            }
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
+                        switch (input) {
+                            case 'containerId':
+                                it(`it '${input}'`, async function () {
+                                    expect(draggableItemsInputsTitles.includes('containerId')).to.be.true;
+                                });
+                                // TODO
+                                break;
+                            case 'dropAreaIds':
+                                it(`it '${input}'`, async function () {
+                                    expect(draggableItemsInputsTitles.includes('dropAreaIds')).to.be.true;
+                                });
+                                // TODO
+                                break;
+                            case 'items':
+                                it(`it '${input}'`, async function () {
+                                    expect(draggableItemsInputsTitles.includes('items')).to.be.true;
+                                });
+                                // TODO when BUG DI-25773 is fixed - based on input 'items' at 'menu' component
+                                break;
+                            case 'showSearch':
+                                it(`it '${input}'`, async function () {
+                                    expect(draggableItemsInputsTitles.includes('showSearch')).to.be.true;
+                                });
+                                // TODO
+                                break;
+                            case 'title':
+                                it(`it '${input}'`, async function () {
+                                    expect(draggableItemsInputsTitles.includes('title')).to.be.true;
+                                });
+                                // TODO
+                                break;
+                            case 'titleSizeType':
+                                it(`it '${input}'`, async function () {
+                                    expect(draggableItemsInputsTitles.includes('titleSizeType')).to.be.true;
+                                });
+                                // TODO
+                                break;
+                            case 'titleType':
+                                it(`it '${input}'`, async function () {
+                                    expect(draggableItemsInputsTitles.includes('titleType')).to.be.true;
+                                });
+                                // TODO
+                                break;
+
+                            default:
+                                throw new Error(`Input: "${input}" is not covered in switch!`);
+                            // break;
+                        }
+                    });
+                    break;
+            }
         });
         draggableItemsOutputs.forEach(async (output) => {
             describe(`OUTPUT: '${output}'`, async function () {
