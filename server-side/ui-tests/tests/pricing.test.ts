@@ -37,6 +37,7 @@ export async function PricingTests(email: string, password: string, client: Clie
             pricingData = new PricingData05();
             break;
         case '6':
+        case '7':
             pricingData = new PricingData06();
             break;
 

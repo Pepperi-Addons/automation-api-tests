@@ -105,6 +105,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                     // await uploadConfiguration(pricingData.config_05);
                     break;
                 case '6':
+                case '7':
                     console.info('AT installedPricingVersion CASE 6');
                     pricingData = new PricingData06();
                     break;
