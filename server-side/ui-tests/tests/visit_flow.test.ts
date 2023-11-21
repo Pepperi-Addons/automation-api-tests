@@ -271,7 +271,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
                     const newPageExist = await pageBuilder.checkPageExist(pageName);
                     console.info('newPageExist: ', JSON.stringify(typeof newPageExist, null, 4));
-                    // expect(typeof newPageExist).to.equal('WebElement');
                 });
             });
 
@@ -382,7 +381,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
                     await slugs.isSpinnerDone();
                     await slugs.waitTillVisible(slugs.MappedSlugs_Title, 15000);
-                    // await slugs.clickTab('Slugs_Tab');
                     driver.sleep(2 * 1000);
                     await e2eUtils.logOutLogIn(email, password);
                     await webAppHomePage.isSpinnerDone();
@@ -485,7 +483,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
 
                 it('Checking off "Start"', async function () {
-                    // debugger
                     await visitFlow.isSpinnerDone();
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_Groups_Content, 15000);
                     await visitFlow.clickElement('VisitFlow_GroupButton_Start');
@@ -568,7 +565,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                     // Choosing an item in Order Center:
-                    // debugger
                     await driver.untilIsVisible(webAppList.ListCardViewElement);
                     await orderPage.searchInOrderCenter(salesOrderItemName);
                     base64ImageComponent = await driver.saveScreenshots();
@@ -602,7 +598,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
 
                 it('Checking off "End"', async function () {
-                    // debugger;
                     await visitFlow.clickElement('VisitFlow_GroupButton_End');
                     visitFlow.pause(0.2 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_EndVisit, 15000);
@@ -614,7 +609,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
                     await visitFlow.clickElement('VisitFlow_StepButton_EndVisit');
                     await visitFlow.isSpinnerDone();
-                    // await visitFlow.click(visitFlow.HtmlBody);
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
                     base64ImageComponent = await driver.saveScreenshots();
@@ -624,11 +618,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     });
                     await visitFlow.click(visitFlow.HtmlBody);
                     visitFlow.pause(1 * 1000);
-                    // await visitFlow.insertTextToInputElement(
-                    //     `Automated test (${randomString}) finished Visit`,
-                    //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
-                    // );
-                    // visitFlow.pause(0.5 * 1000);
                     if (email.startsWith('visit.flow.eu')) {
                         await visitFlow.waitTillVisible(
                             visitFlow.VisitFlowMainActivity_FormPage_Header_SubmitButton,
@@ -642,16 +631,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         );
                         await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_DoneButton');
                     }
-                    // await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
-                    // await visitFlow.waitTillVisible(
-                    //     visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
-                    //     15000,
-                    // );
-                    // await visitFlow.waitTillVisible(
-                    //     visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
-                    //     15000,
-                    // );
-                    // await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
                     await visitFlow.isSpinnerDone();
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
@@ -727,12 +706,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
 
                 it('Performing Manual Sync', async () => {
-                    // driver.sleep(20 * 1000);
                     await e2eUtils.performManualSync(client);
                 });
 
                 it('Loging Out and Loging In as Rep', async () => {
-                    // await e2eUtils.logOutLogIn(`${email.split('@')[0]}.rep@pepperitest.com`, password);
                     await e2eUtils.logOutLogIn(repEmail, password);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
@@ -759,7 +736,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
 
                 it('If more than one visit - Choosing a Visit Flow', async function () {
-                    // debugger
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
                         await visitFlow.click(visitFlow.getSelectorOfVisitFlowButtonByName(visitFlowName));
@@ -820,7 +796,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
 
                 it('Checking off "Survey"', async function () {
-                    // debugger
                     await visitFlow.clickElement('VisitFlow_GroupButton_Surveys');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_Survey, 15000);
                     visitFlow.pause(0.5 * 1000);
@@ -839,7 +814,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
 
                 it('Checking off "End"', async function () {
-                    // debugger
                     await visitFlow.clickElement('VisitFlow_GroupButton_End');
                     await visitFlow.waitTillVisible(visitFlow.VisitFlow_StepButton_EndVisit, 15000);
                     visitFlow.pause(0.5 * 1000);
@@ -853,10 +827,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await visitFlow.waitTillVisible(visitFlow.VisitFlowMainActivity_FormPage_FormContent, 15000);
                     visitFlow.pause(0.5 * 1000);
                     await visitFlow.click(visitFlow.HtmlBody);
-                    // await visitFlow.insertTextToInputElement(
-                    //     'Automated test finished Visit',
-                    //     visitFlow.VisitFlowMainActivity_FormPage_TitleInput,
-                    // );
                     visitFlow.pause(1 * 1000);
                     if (email.includes('.eu@')) {
                         await visitFlow.waitTillVisible(
@@ -871,16 +841,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                         );
                         await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_DoneButton');
                     }
-                    // await visitFlow.clickElement('VisitFlowMainActivity_FormPage_Header_CancelButton');
-                    // await visitFlow.waitTillVisible(
-                    //     visitFlow.VisitFlowMainActivity_CancelDialog_Notice_Headline,
-                    //     15000,
-                    // );
-                    // await visitFlow.waitTillVisible(
-                    //     visitFlow.VisitFlowMainActivity_CancelDialog_SaveChanges_Button,
-                    //     15000,
-                    // );
-                    // await visitFlow.clickElement('VisitFlowMainActivity_CancelDialog_SaveChanges_Button');
                     await visitFlow.isSpinnerDone();
                     if (await driver.isElementVisible(visitFlow.VisitFlow_SelectVisit_Title)) {
                         visitFlow.pause(1.5 * 1000);
@@ -898,8 +858,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
 
                 it('Deleting Activities', async function () {
                     await e2eUtils.logOutLogIn(repEmail, password);
-                    // await driver.refresh();
-                    // await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');
                     driver.sleep(0.5 * 1000);
@@ -932,10 +890,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             });
 
             describe('Teardown', () => {
-                it('Unconfiguring Slug from Account Dashboard', async () => {
-                    await accountDashboardLayout.unconfigureFromAccountMenuRepCard(driver, slug_path, '_auto_');
-                });
-
                 it('Getting VF_VisitFlowMainActivity activity (via API)', async () => {
                     getCreatedVisitFlowMainActivity = await objectsService.getActivity({
                         where: `'TSASubject="Automated test (${randomString}) of Visit Flow started"'`,
@@ -946,6 +900,10 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     getCreatedSalesOrderTransaction = await objectsService.getTransaction({
                         order_by: `CreationDateTime DESC`,
                     });
+                });
+
+                it('Unconfiguring Slug from Account Dashboard', async () => {
+                    await accountDashboardLayout.unconfigureFromAccountMenuRepCard(driver, slug_path, '_auto_');
                 });
 
                 it('Deleting Survey Template via API', async () => {
@@ -960,10 +918,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     expect(res.Body.success).to.be.true;
                     expect(await (await slugs.getSlugs(client)).Body.find((item) => item.Slug === slug_path)).to.be
                         .undefined;
-
-                    // to be removed when DI-22793 is resolved:
-                    // const clearMappedSlugsUpsertResponse = await e2eUtils.runOverMappedSlugs([], client);
-                    // console.info(`existingMappedSlugs: ${JSON.stringify(clearMappedSlugsUpsertResponse, null, 4)}`);
                 });
 
                 it('Deleting Page via UI', async function () {
@@ -985,51 +939,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     await driver.click(pageBuilder.PageBuilder_Search_Clear);
                 });
 
-                // it('Deleting Pages leftovers via UI', async () => {
-                //     pageBuilder.pause(0.1 * 1000);
-                //     try {
-                //         const allPages = await driver.findElements(pageBuilder.Page_Listing_aLink);
-                //         do {
-                //             const page = allPages.pop();
-                //             if (page) {
-                //                 const pageName = await page.getAttribute('title');
-                //                 await pageBuilder.searchForPageByName(pageName);
-                //                 pageBuilder.pause(0.2 * 1000);
-                //                 await pageBuilder.deleteFromListByName(pageName);
-                //                 await pageBuilder.searchForPageByName(pageName);
-                //                 expect(
-                //                     await (
-                //                         await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)
-                //                     ).getText(),
-                //                 ).to.contain('No results were found.');
-                //                 await pageBuilder.isSpinnerDone();
-                //                 pageBuilder.pause(0.1 * 1000);
-                //                 await driver.click(pageBuilder.PageBuilder_Search_Clear);
-                //             }
-                //         } while (allPages.length);
-                //         pageBuilder.pause(0.1 * 1000);
-                //     } catch (error) {
-                //         console.error(error);
-                //     }
-                // });
-
-                // it('Verifying Mapped Slugs were cleared', async function () {
-                //     await e2eUtils.logOutLogIn(email, password);
-                //     await e2eUtils.navigateTo('Slugs');
-                //     await slugs.clickTab('Mapping_Tab');
-                //     await pageBuilder.isSpinnerDone();
-                //     await slugs.waitTillVisible(lugs.EditPage_ConfigProfileCard_Rep_EmptyContent, 15000);
-                //     const repCard_editButton = await driver.findElement(
-                //         slugs.EditPage_ConfigProfileCard_EditButton_Rep,
-                //         15000,
-                //     );
-                //     await repCard_editButton.click();
-                //     await slugs.isSpinnerDone();
-                //     await slugs.waitTillVisible(lugs.MappedSlugs_Title, 15000);
-                //     await slugs.waitTillVisible(lugs.MappedSlugs_Container, 15000);
-                //     await slugs.waitTillVisible(lugs.MappedSlugs_Empty, 15000);
-                // });
-
                 it('Verifying VF_VisitFlowMainActivity activity was formed', async () => {
                     console.info(
                         `getCreatedVisitFlowMainActivity: ${JSON.stringify(getCreatedVisitFlowMainActivity, null, 4)}`,
@@ -1041,10 +950,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                     expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('TSAVisitSelectedGroup');
                     expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('Title');
                     expect(getCreatedVisitFlowMainActivity[0].Title).to.contain(`Automated test (${randomString}) `);
-                    // expect(getCreatedVisitFlowMainActivity[0]).to.haveOwnProperty('TSASubject');
-                    // expect(getCreatedVisitFlowMainActivity[0].TSASubject).to.equal(
-                    //     `Automated test (${randomString}) of Visit Flow started`,
-                    // );
                 });
 
                 it('Verifying Sales Order transaction was formed', async () => {
