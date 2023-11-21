@@ -1146,26 +1146,29 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         Delimiter: ',',
                     };
                     console.log(`Running The Test On:${collectionName},fields:${bodyToSend.Fields}`);
-                    const a = await generalService.fetchStatus(
+                    const exportJobStartingResponse = await generalService.fetchStatus(
                         `/addons/data/export/file/122c0e9d-c240-4865-b446-f37ece866c22/${collectionName}`,
                         {
                             method: 'POST',
                             body: JSON.stringify(bodyToSend),
                         },
                     );
-                    expect(a.Ok).to.equal(true);
-                    expect(a.Status).to.equal(200);
-                    const b = await generalService.getAuditLogResultObjectIfValid(a.Body.URI, 90);
+                    expect(exportJobStartingResponse.Ok).to.equal(true);
+                    expect(exportJobStartingResponse.Status).to.equal(200);
+                    const exportAuditLogResponse = await generalService.getAuditLogResultObjectIfValid(
+                        exportJobStartingResponse.Body.URI,
+                        90,
+                    );
                     if (collectionName.includes('SchemeOnlyTesting')) {
-                        const parsedResponse = JSON.parse(b.AuditInfo.ResultObject);
-                        expect(parsedResponse.Success).to.equal(false);
+                        const parsedResponse = JSON.parse(exportAuditLogResponse.AuditInfo.ResultObject);
+                        expect(parsedResponse.success).to.equal(false);
                         expect(parsedResponse.ErrorMessage).to.include('Unsupported schema type contained');
                     } else {
-                        if (b.Status) {
-                            expect(b.Status.ID).to.equal(1);
-                            expect(b.Status.Name).to.equal('Success');
+                        if (exportAuditLogResponse.Status) {
+                            expect(exportAuditLogResponse.Status.ID).to.equal(1);
+                            expect(exportAuditLogResponse.Status.Name).to.equal('Success');
                         } else {
-                            expect(b).to.haveOwnProperty('Status');
+                            expect(exportAuditLogResponse).to.haveOwnProperty('Status');
                         }
                         let uriToLookFor = ``;
                         let distUUIDToLookFor = ``;
@@ -1191,9 +1194,13 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                                 distUUIDToLookFor = '0b0522d6-9e40-4a89-bf8e-e4027362db66';
                             }
                         }
-                        expect(b.AuditInfo.ResultObject).to.contain(uriToLookFor);
-                        expect(b.AuditInfo.ResultObject).to.contain(`"DistributorUUID":"${distUUIDToLookFor}"`);
-                        const resultURL = b.AuditInfo.ResultObject.split(`,"V`)[0].split(`:"`)[1].replace('"', '');
+                        expect(exportAuditLogResponse.AuditInfo.ResultObject).to.contain(uriToLookFor);
+                        expect(exportAuditLogResponse.AuditInfo.ResultObject).to.contain(
+                            `"DistributorUUID":"${distUUIDToLookFor}"`,
+                        );
+                        const resultURL = exportAuditLogResponse.AuditInfo.ResultObject.split(`,"V`)[0]
+                            .split(`:"`)[1]
+                            .replace('"', '');
                         const c = await generalService.fetchStatus(`${resultURL}`, {
                             method: 'GET',
                         });
