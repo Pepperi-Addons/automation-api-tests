@@ -247,15 +247,15 @@ export class UDCService {
         return { objects: response.Body.Objects, count: response.Body.Count };
     }
 
-    async getAllObjectFromCollection(collectionName) {
-        const response = await this.generalService.fetchStatus(
-            `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${collectionName}?page_size=-1`,
-            {
-                method: 'GET',
-            },
-        );
-        return { objects: response.Body.Objects, count: response.Body.Count };
-    }
+    // async getAllObjectFromCollection(collectionName) {
+    //     const response = await this.generalService.fetchStatus(
+    //         `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${collectionName}?page_size=-1`,
+    //         {
+    //             method: 'POST',
+    //         },
+    //     );
+    //     return { objects: response.Body.Objects, count: response.Body.Count };
+    // }
 
     async hideObjectInACollection(collectionName, key) {
         const body = { Key: key, Hidden: true };
