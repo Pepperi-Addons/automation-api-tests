@@ -164,7 +164,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
 
     const testData = {
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
-        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.31'], //PAPI has to be on version 9.6.x|||| EVGENY 19/11/23: trying to roll back to eliminate issues
+        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x|||| EVGENY 19/11/23: trying to roll back to eliminate issues
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.36'], //Evgeny - 19/11/23: other CPAPI versions are broken
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'],

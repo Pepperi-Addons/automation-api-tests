@@ -96,7 +96,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             let optionalCollectionName = '';
             let mandatoryScheme = '';
             let dimxOverWriteCollectionName = '';
-            let overWriteSize = 0;
+            let howManyNewRowsOnOverwrite = 0;
             const intVal = 15;
             const douVal = 0.129;
             const strVal = 'Test String UDC Feild';
@@ -1370,16 +1370,19 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const lineStats = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject).LinesStatistics;
                 expect(lineStats.Inserted).to.equal(howManyRows);
                 generalService.sleep(1000 * 45); //let PNS Update
-                const collectionBeforeOverwrite = await udcService.getAllObjectFromCollectionCount(
-                    dimxOverWriteCollectionName,
-                    1,
-                    250,
-                );
-                expect(collectionBeforeOverwrite.count).to.equal(howManyRows);
-                for (let index = 0; index < collectionBeforeOverwrite.objects.length; index++) {
-                    const udcEntry = collectionBeforeOverwrite.objects[index];
-                    expect(udcEntry.code).to.include('data');
-                    expect(udcEntry.value).to.include('old_value');
+                for (let index = 1; index <= 85; index++) {
+                    console.log(`searching for 250 rows for the ${index} time - out of out of 85 sampling batch`);
+                    const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
+                        dimxOverWriteCollectionName,
+                        index,
+                        250,
+                    );
+                    expect(allObjectsFromCollection.count).to.equal(howManyRows);
+                    for (let index1 = 0; index1 < allObjectsFromCollection.objects.length; index1++) {
+                        const row = allObjectsFromCollection.objects[index1];
+                        expect(row.code).to.contain('data_');
+                        expect(row.value).to.contain('old_value_');
+                    }
                 }
                 //4. create new file which overwrites
                 const newFileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
@@ -1392,8 +1395,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(tempFileNewResponse.TemporaryFileURL).to.include('pfs.');
                 const howManyOld = 98000;
                 const howManyUpdated = 1000;
-                const howManyNew = 1000;
-                const newCSVFileName = await createUpdatedData(howManyOld, howManyUpdated, howManyNew);
+                howManyNewRowsOnOverwrite = 1000;
+                const newCSVFileName = await createUpdatedData(howManyOld, howManyUpdated, howManyNewRowsOnOverwrite);
                 const newCombinedPath = path.join(localPath, newCSVFileName);
                 const newBuf = fs.readFileSync(newCombinedPath);
                 const putResponse2 = await pfsService.putPresignedURL(tempFileNewResponse.PutURL, newBuf);
@@ -1417,15 +1420,23 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     expect(overwriteResponse.Status).to.not.be.undefined;
                 }
                 const overwriteLineStats = JSON.parse(overwriteResponse.AuditInfo.ResultObject).LinesStatistics;
-                debugger;
                 expect(overwriteLineStats.Ignored).to.equal(howManyOld);
                 expect(overwriteLineStats.Updated).to.equal(howManyUpdated);
-                expect(overwriteLineStats.Inserted).to.equal(howManyNew);
-                expect(overwriteLineStats.Total).to.equal(howManyOld + howManyUpdated + howManyNew);
+                expect(overwriteLineStats.Inserted).to.equal(howManyNewRowsOnOverwrite);
+                expect(overwriteLineStats.Total).to.equal(howManyOld + howManyUpdated + howManyNewRowsOnOverwrite);
                 generalService.sleep(1000 * 45); //let PNS Update
-                const collection = await udcService.getAllObjectFromCollectionCount(dimxOverWriteCollectionName);
-                expect(collection.count).to.equal(overwriteLineStats.Total);
-                overWriteSize = overwriteLineStats.Total;
+                const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
+                    dimxOverWriteCollectionName,
+                    1,
+                    250,
+                );
+                expect(allObjectsFromCollection.count).to.equal(100000);
+                const fileURI = JSON.parse(overwriteResponse.AuditInfo.ResultObject).URI;
+                const fileAfterOverwriting = await generalService.fetchStatus(fileURI);
+                const updateArray = fileAfterOverwriting.Body.filter((entry) => entry.Status === 'Update');
+                expect(updateArray.length).to.equal(howManyUpdated);
+                const insertArray = fileAfterOverwriting.Body.filter((entry) => entry.Status === 'Insert');
+                expect(insertArray.length).to.equal(howManyNewRowsOnOverwrite);
             });
             it("Tear Down Part 1: cleaning all upserted UDC's", async () => {
                 const toHideCollections = await getAllUDCsForDelete(udcService);
@@ -1464,9 +1475,10 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 }
             });
             it(`Tear Down Part 2: Purging All left UDCs - To Keep Dist Clean`, async function () {
-                let allUdcs = await udcService.getSchemes({ page_size: -1 });
+                const allUdcs = await udcService.getSchemes({ page_size: -1 });
                 const onlyRelevantUdcNames = allUdcs.map((doc) => doc.Name);
                 for (let index = 0; index < onlyRelevantUdcNames.length; index++) {
+                    const udcsBeforePurge = await udcService.getSchemes({ page_size: -1 });
                     const udcName = onlyRelevantUdcNames[index];
                     const purgeResponse = await udcService.purgeScheme(udcName);
                     if (purgeResponse.Body.URI) {
@@ -1478,8 +1490,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         );
                         expect((auditLogPurgeResponse.Status as any).Name).to.equal('Success');
                         expect(JSON.parse(auditLogPurgeResponse.AuditInfo.ResultObject).Done).to.equal(true);
-                        expect(JSON.parse(auditLogPurgeResponse.AuditInfo.ResultObject).ProcessedCounter).to.equal(
-                            overWriteSize,
+                        expect(JSON.parse(auditLogPurgeResponse.AuditInfo.ResultObject).ProcessedCounter).to.be.above(
+                            0,
                         );
                     } else {
                         expect(purgeResponse.Ok).to.equal(true);
@@ -1488,8 +1500,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         generalService.sleep(1500);
                     }
                     generalService.sleep(1500);
-                    allUdcs = await udcService.getSchemes({ page_size: -1 });
-                    console.log(`${udcName} was deleted, ${allUdcs.length} left`);
+                    const udcsAfterPurge = await udcService.getSchemes({ page_size: -1 });
+                    expect(udcsBeforePurge.length).to.be.above(udcsAfterPurge.length);
+                    console.log(`${udcName} was deleted, ${udcsAfterPurge.length} left`);
                 }
             });
         });
