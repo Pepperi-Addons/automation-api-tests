@@ -92,6 +92,7 @@ import { Import200KToAdalFromDimx } from './import_200k_DIMX.test';
 import { Import150KToAdalFromDimx } from './import_150k_DIMX.test';
 import { SyncTests } from './sync.test';
 import { TestDataTestsNewSync } from '../../api-tests/test-service/test_data_new_sync';
+import { UDC300KTestser } from '../../api-tests/user_defined_collections_300K_overwrite';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -295,6 +296,21 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
     if (tests.includes('UDCImportExport')) {
         await UDCImportExportTests(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        ); //
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('UDC300KOverwrite')) {
+        await UDC300KTestser(
             generalService,
             {
                 body: {
