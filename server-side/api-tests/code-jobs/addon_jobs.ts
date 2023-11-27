@@ -4,7 +4,6 @@ import GeneralService, { TesterFunctions } from '../../services/general.service'
 export async function AddonJobsTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const service = generalService.papiClient;
     const describe = tester.describe;
-    const assert = tester.assert;
     const it = tester.it;
 
     service['options'].addonUUID = '';
@@ -54,8 +53,8 @@ export async function AddonJobsTests(generalService: GeneralService, request, te
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
-    describe('Insert New AddonJob', () => {
-        describe('Prerequisites Addons for Scheduler Tests', () => {
+    describe('AddonJob: Code Jobs Testing', () => {
+        describe('Prerequisites Addons for Code Jobs Tests', () => {
             //Test Data
             isInstalledArr.forEach((isInstalled, index) => {
                 it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
@@ -84,27 +83,29 @@ export async function AddonJobsTests(generalService: GeneralService, request, te
                 });
             }
         });
-        it('install Addon On Dist', async () => {
-            await installAddonToDist();
+        describe('Prerequisites Addons for Code Jobs Tests', () => {
+            it('install Addon On Dist', async () => {
+                await installAddonToDist();
+            });
+            it('Insert New AddonJob With Manadatory Parameter: Name', () => {
+                //'Insert new AddonJob with CodeJobName failed'
+                expect(logcash.statusA).to.equal(true);
+            });
+            it('Get Single AddonJob With Mandatory Parameter CodeJobName: Name', () => {
+                expect(logcash.statusb).to.equal(true);
+            });
+            it('Update AddonJob Params (From Default Values): Finished', () => {
+                expect(logcash.statusc).to.equal(true);
+            });
+            it('Get Single AddonJob After Update: Name', () => {
+                expect(logcash.statusd).to.equal(true);
+            });
         });
-        it('Insert New AddonJob With Manadatory Parameter: Name', () => {
-            //'Insert new AddonJob with CodeJobName failed'
-            expect(logcash.statusA).to.equal(true);
-        });
-        it('Get Single AddonJob With Mandatory Parameter CodeJobName: Name', () => {
-            expect(logcash.statusb).to.equal(true);
-        });
-        it('Update AddonJob Params (From Default Values): Finished', () => {
-            expect(logcash.statusc).to.equal(true);
-        });
-        it('Get Single AddonJob After Update: Name', () => {
-            expect(logcash.statusd).to.equal(true);
-        });
-    });
-    describe('Get List Of AddonJobs, Phase 1 (Phase 2 Will Be Done On The End Of All Tests)', () => {
-        it('Get List Of AddonJobs (https://api.pepperi.com/v1.0/code_jobs) Phase 1: Finished', () => {
-            const statusA = cashCallJobsList.status;
-            assert(statusA, cashCallJobsList.message);
+        describe('Get List Of AddonJobs, Phase 1 (Phase 2 Will Be Done On The End Of All Tests)', () => {
+            it('Get List Of AddonJobs (https://api.pepperi.com/v1.0/code_jobs) Phase 1: Finished', () => {
+                const statusA = cashCallJobsList.status;
+                expect(statusA).to.equal(true);
+            });
         });
     });
 

@@ -232,6 +232,27 @@ export async function StorybookLinkTests() {
                             console.info('default image Url: ', newUrl);
                             expect(newUrl).to.be.oneOf([expectedValue, expectedValue + '/']);
                         });
+                        it(`switch to iframe`, async function () {
+                            try {
+                                await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                                await driver.switchTo(storyBookPage.StorybookIframe);
+                            } catch (error) {
+                                console.error(error);
+                                console.info('ALREADY ON IFRAME');
+                            }
+                        });
+                        it(`reset controls`, async function () {
+                            await driver.click(link.ResetControlsButton);
+                            const expectedValue = 'https://www.pepperi.com';
+                            await driver.click(link.MainHeader);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "${expectedValue}"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await link.getMainExampleLinkValue();
+                            expect(valueGotFromUi).to.equal(expectedValue);
+                        });
                         break;
 
                     case 'displayValue':
@@ -339,7 +360,58 @@ export async function StorybookLinkTests() {
                         it(`validate input`, async function () {
                             expect(linkInputsTitles.includes('maxFieldCharacters')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is NaN`, async function () {
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control default value = NaN`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(link.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control default value = NaN`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.elemntDoNotExist(link.MainExample_numOfCharacters);
+                        });
+                        it(`functional test [ control = 3 ] (+screenshot)`, async function () {
+                            await driver.click(await link.getInputRowSelectorByName('renderError'));
+                            const newValueToSet = 3;
+                            await storyBookPage.inputs.changeMaxFieldCharactersControl(newValueToSet);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control Change -> 3`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(link.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control Change -> 3`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.untilIsVisible(link.MainExample_numOfCharacters);
+                            await storyBookPage.inputs.changeInput(
+                                link.MainExampleLink_value,
+                                'https://www.google.com',
+                            );
+                        });
+                        it(`back to non-functional value [ control = 0 ] (+screenshots)`, async function () {
+                            await driver.click(await link.getInputRowSelectorByName('renderError'));
+                            const newValueToSet = 0;
+                            await storyBookPage.inputs.changeMaxFieldCharactersControl(newValueToSet);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control value = 0`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(link.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control value = 0`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.elemntDoNotExist(link.MainExample_numOfCharacters);
+                        });
                         break;
 
                     case 'renderError':

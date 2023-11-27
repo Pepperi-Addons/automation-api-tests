@@ -5,6 +5,11 @@ import { StoryBookInpus } from './StoryBookInputs';
 import { expect } from 'chai';
 
 export class StoryBookPage extends Page {
+    constructor(browser: Browser) {
+        super(browser, 'https://www.chromatic.com/library?appId=60ae3e9eff8e4c003b2f90d4&branch=master');
+        this.inputs = new StoryBookInpus(browser);
+    }
+
     public inputs: StoryBookInpus;
     public ChooseBuildDropDown: By = By.xpath(`//span[@role='button' and @trigger='click']`);
     public LatestBuildDropDownOption: By = By.xpath(
@@ -13,6 +18,7 @@ export class StoryBookPage extends Page {
     public ViewStoryBookButton: By = By.xpath(`//span[contains(text(),'View Storybook')]`);
     public SidebarComponentsHeader: By = By.xpath(`//button[text()="Components"]`);
     public SidebarServicesHeader: By = By.xpath(`//button[text()="Services"]`);
+    public SidebarExampleHeader: By = By.xpath(`//button[text()="Example"]`);
     public GenericComponentButton: By = By.xpath(`//button[contains(@data-item-id,"{placeholder}")]`);
     public GenericFolder: By = By.xpath(`//button[contains(@data-item-id,"{placeholder}")]`);
     public GenericFolderById: By = By.xpath(`//button[@id="components-{placeholder}"]`);
@@ -30,11 +36,6 @@ export class StoryBookPage extends Page {
     public BorderRadiusL: By = By.xpath(`//storybook-border-radius/div/div/div[3]`);
     public BorderRadiusXL: By = By.xpath(`//storybook-border-radius/div/div/div[4]`);
     public StorybookIframe: By = By.css('iframe#storybook-preview-iframe');
-
-    constructor(browser: Browser) {
-        super(browser, 'https://www.chromatic.com/library?appId=60ae3e9eff8e4c003b2f90d4&branch=master');
-        this.inputs = new StoryBookInpus(browser);
-    }
 
     public async navigateToStoryBook(): Promise<void> {
         return await this.browser.navigate(super.url);
@@ -68,10 +69,7 @@ export class StoryBookPage extends Page {
 
     public async chooseSubFolder(subFolderName: string): Promise<void> {
         // choose abstract by name
-        const xpathQueryForComponent: string = this.GenericSubFolderById.valueOf()['value'].replace(
-            '{placeholder}',
-            subFolderName,
-        );
+        const xpathQueryForComponent: string = this.GenericSubFolderById.value.replace('{placeholder}', subFolderName);
         await this.browser.click(By.xpath(xpathQueryForComponent));
         this.browser.sleep(0.5 * 1000);
     }

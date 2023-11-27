@@ -7,6 +7,9 @@ export class Link extends StorybookComponent {
     public MainExampleLink_value: By = By.xpath(`${this.MainExampleLink.value}//input`);
     public MainExampleLink_button: By = By.xpath(`${this.MainExampleLink.value}//button`);
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
+    public MainExample_numOfCharacters: By = By.xpath(
+        `${this.MainExampleDiv.value}${this.NumOfCharacters_displaySpan.value}`,
+    );
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
     public MainExample_pepTitle: By = By.xpath(`${this.MainExampleDiv.value}//pep-link${this.PepTitle.value}`);
     public MainExample_pepSymbol: By = By.xpath(`${this.MainExampleDiv.value}//pep-link//pep-textbox-icon`);

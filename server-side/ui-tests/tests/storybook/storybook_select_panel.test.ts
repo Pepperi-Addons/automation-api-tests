@@ -48,7 +48,7 @@ export async function StorybookSelectPanelTests() {
             await driver.quit();
         });
 
-        describe('* SelectPanel Component * Initial Testing', () => {
+        describe('* SelectPanel Component * Initial Testing - ***BUG: DI-25512 at "classNames" input', () => {
             afterEach(async function () {
                 await webAppHomePage.collectEndTestData(this);
             });
@@ -95,15 +95,28 @@ export async function StorybookSelectPanelTests() {
             });
         });
         selectPanelInputs.forEach(async (input) => {
-            describe(`INPUT: '${input}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await selectPanel.getInputRowSelectorByName(input));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${input}' input`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
+            describe(`INPUT: '${input === 'classNames' ? input + ' - ***BUG: DI-25512' : input}'`, async function () {
+                switch (
+                    input // to be removed when the bug is fixed
+                ) {
+                    case 'classNames':
+                        it(`***BUG: https://pepperi.atlassian.net/browse/DI-25512`, async function () {
+                            // https://pepperi.atlassian.net/browse/DI-25512
+                            expect(selectPanelInputsTitles.includes('classNames')).to.be.true;
+                        });
+                        break;
+
+                    default:
+                        it(`SCREENSHOT`, async function () {
+                            await driver.click(await selectPanel.getInputRowSelectorByName(input));
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
+                        break;
+                }
                 it(`switch to iframe`, async function () {
                     try {
                         await driver.findElement(storyBookPage.StorybookIframe, 5000);
@@ -142,6 +155,7 @@ export async function StorybookSelectPanelTests() {
                             expect(newLabelGotFromUi).to.equal(newLabelToSet);
                         });
                         break;
+
                     case 'value':
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('value')).to.be.true;
@@ -203,18 +217,168 @@ export async function StorybookSelectPanelTests() {
                             expect(tealValueGotFromUi).to.be.false;
                         });
                         break;
+
                     case 'options':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('options')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is 11 options array of objects`, async function () {
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `options Control default value`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(selectPanel.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of options Control default value`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const selectPanelContentButtons = await selectPanel.getOptionsOutOfSelectPanelContent();
+                            expect(selectPanelContentButtons).to.be.an('array').with.lengthOf(11);
+                            expect(selectPanelContentButtons).eql([
+                                'Red',
+                                'Blue',
+                                'Black',
+                                'Purple',
+                                'Green',
+                                'Yellow',
+                                'Brown',
+                                'White',
+                                'Orange',
+                                'Gray',
+                                'Teal',
+                            ]);
+                        });
+                        it(`functional test [ control = [] ] (+screenshot)`, async function () {
+                            await driver.click(await selectPanel.getInputRowSelectorByName('isMultiSelect'));
+                            const newValueToSet = '[]';
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Before Items RAW Button Click`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await selectPanel.inputs.toggleOptionsControlRawButton();
+                            selectPanel.pause(0.5 * 1000);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After Items RAW Button is Clicked`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await selectPanel.inputs.changeOptionsControl(newValueToSet);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After Items Control is Changed`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(selectPanel.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of Items Control Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const selectPanelContent = await selectPanel.getSelectPanelOptions();
+                            await storyBookPage.elemntDoNotExist(selectPanel.SelectPanelContentOptions);
+                            expect(selectPanelContent).equals('<!---->');
+                        });
+                        it(`back to non-functional value [ control = "[{"key": "red", "value": "Red"}, ..]" (array of objects with key-value pairs) ] (+screenshots)`, async function () {
+                            await driver.click(await selectPanel.getInputRowSelectorByName('isMultiSelect'));
+                            const newValueToSet = `[
+                                {
+                                  "key": "red",
+                                  "value": "Red"
+                                },
+                                {
+                                  "key": "blue",
+                                  "value": "Blue"
+                                },
+                                {
+                                  "key": "black",
+                                  "value": "Black"
+                                },
+                                {
+                                  "key": "purple",
+                                  "value": "Purple "
+                                },
+                                {
+                                  "key": "green",
+                                  "value": "Green"
+                                },
+                                {
+                                  "key": "yellow",
+                                  "value": "Yellow"
+                                },
+                                {
+                                  "key": "brown",
+                                  "value": "Brown"
+                                },
+                                {
+                                  "key": "white",
+                                  "value": "White"
+                                },
+                                {
+                                  "key": "orange",
+                                  "value": "Orange"
+                                },
+                                {
+                                  "key": "grey",
+                                  "value": "Gray"
+                                },
+                                {
+                                  "key": "teal",
+                                  "value": "Teal"
+                                }
+                            ]`;
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Before Items Control is Changed`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.inputs.changeOptionsControl(newValueToSet);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After Items Control is Changed`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(selectPanel.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of After Items Control is Changed`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const selectPanelContentButtons = await selectPanel.getOptionsOutOfSelectPanelContent();
+                            expect(selectPanelContentButtons).to.be.an('array').with.lengthOf(11);
+                            expect(selectPanelContentButtons).eql([
+                                'Red',
+                                'Blue',
+                                'Black',
+                                'Purple',
+                                'Green',
+                                'Yellow',
+                                'Brown',
+                                'White',
+                                'Orange',
+                                'Gray',
+                                'Teal',
+                            ]);
+                        });
+                        it(`toggle RAW button`, async function () {
+                            await selectPanel.inputs.toggleOptionsControlRawButton();
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of options Control default value`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
                         break;
+
                     case 'isMultiSelect':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('isMultiSelect')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'classNames':
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('classNames')).to.be.true;
@@ -248,6 +412,7 @@ export async function StorybookSelectPanelTests() {
                             expect(newClassNamesGotFromUi).to.not.contain('rotate3d');
                         });
                         break;
+
                     case 'disabled':
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('disabled')).to.be.true;
@@ -296,6 +461,7 @@ export async function StorybookSelectPanelTests() {
                             expect(mainExampleSelectPanelDisabled).to.not.include('disable');
                         });
                         break;
+
                     case 'mandatory':
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('mandatory')).to.be.true;
@@ -340,12 +506,14 @@ export async function StorybookSelectPanelTests() {
                             await storyBookPage.elemntDoNotExist(selectPanel.MainExample_mandatoryIcon);
                         });
                         break;
+
                     case 'numOfCol':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('numOfCol')).to.be.true;
                         });
                         // TODO
                         break;
+
                     case 'showTitle':
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('showTitle')).to.be.true;
@@ -386,6 +554,7 @@ export async function StorybookSelectPanelTests() {
                             await storyBookPage.untilIsVisible(selectPanel.MainExample_titleLabel);
                         });
                         break;
+
                     case 'xAlignment':
                         it(`validate input`, async function () {
                             expect(selectPanelInputsTitles.includes('xAlignment')).to.be.true;

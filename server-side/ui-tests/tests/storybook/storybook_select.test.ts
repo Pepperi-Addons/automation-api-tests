@@ -101,15 +101,28 @@ export async function StorybookSelectTests() {
             });
         });
         selectInputs.forEach(async (input) => {
-            describe(`INPUT: '${input}'`, async function () {
-                it(`SCREENSHOT`, async function () {
-                    await driver.click(await select.getInputRowSelectorByName(input));
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `'${input}' input`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
+            describe(`INPUT: '${input === 'readonly' ? input + ' - ***BUG: DI-25776' : input}'`, async function () {
+                switch (
+                    input // to be removed when the bug is fixed
+                ) {
+                    case 'readonly':
+                        it(`***BUG: https://pepperi.atlassian.net/browse/DI-25776`, async function () {
+                            // https://pepperi.atlassian.net/browse/DI-25776
+                            expect(selectInputsTitles.includes('readonly')).to.be.true;
+                        });
+                        break;
+
+                    default:
+                        it(`SCREENSHOT`, async function () {
+                            await driver.click(await select.getInputRowSelectorByName(input));
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
+                        break;
+                }
                 it(`switch to iframe`, async function () {
                     try {
                         await driver.findElement(storyBookPage.StorybookIframe, 5000);
@@ -150,10 +163,168 @@ export async function StorybookSelectTests() {
                         break;
 
                     case 'options':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('options')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is 9 options array of objects`, async function () {
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `options Control default value`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(select.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of options Control default value`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(select.MainExampleSelect);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Open Select`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const selectContent = await select.getSelectOptions();
+                            const selectContentButtons = await select.getOptionsOutOfSelectContent();
+                            await driver.click(select.OverlayContainer);
+                            expect(selectContent).to.not.equal('<!---->');
+                            expect(selectContentButtons).to.be.an('array').with.lengthOf(9);
+                            expect(selectContentButtons).eql([
+                                'None',
+                                'Tramontana',
+                                'Gregale',
+                                'Levante',
+                                'Scirocco',
+                                'Ostro',
+                                'Libeccio',
+                                'Ponente',
+                                'Mistral',
+                            ]);
+                        });
+                        it(`functional test [ control = [] ] (+screenshot)`, async function () {
+                            await driver.click(await select.getInputRowSelectorByName('disabled'));
+                            const newValueToSet = '[]';
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Before Items RAW Button Click`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await select.inputs.toggleOptionsControlRawButton();
+                            select.pause(0.5 * 1000);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After Items RAW Button is Clicked`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await select.inputs.changeOptionsControl(newValueToSet);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After Items Control is Changed`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(select.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of Items Control Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(select.MainExampleSelect);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Open Select`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const selectContent = await select.getSelectOptions();
+                            const selectContentButtons = await select.getOptionsOutOfSelectContent();
+                            await driver.click(select.OverlayContainer);
+                            expect(selectContent).to.not.equal('<!---->');
+                            expect(selectContentButtons).to.be.an('array').with.lengthOf(1);
+                            expect(selectContentButtons).eql(['None']);
+                        });
+                        it(`back to non-functional value [ control = "[{"key": "N", "value": "Tramontana"}, ..]" (array of objects with key-value pairs) ] (+screenshots)`, async function () {
+                            await driver.click(await select.getInputRowSelectorByName('disabled'));
+                            const newValueToSet = `[
+                                {
+                                  "key": "N",
+                                  "value": "Tramontana"
+                                },
+                                {
+                                  "key": "NE",
+                                  "value": "Gregale"
+                                },
+                                {
+                                  "key": "E",
+                                  "value": "Levante"
+                                },
+                                {
+                                  "key": "SE",
+                                  "value": "Scirocco"
+                                },
+                                {
+                                  "key": "S",
+                                  "value": "Ostro"
+                                },
+                                {
+                                  "key": "SW",
+                                  "value": "Libeccio"
+                                },
+                                {
+                                  "key": "W",
+                                  "value": "Ponente"
+                                },
+                                {
+                                  "key": "NW",
+                                  "value": "Mistral"
+                                }
+                            ]`;
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Before Items Control is Changed`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.inputs.changeOptionsControl(newValueToSet);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After Items Control is Changed`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(select.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of After Items Control is Changed`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(select.MainExampleSelect);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Open Select`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const selectContent = await select.getSelectOptions();
+                            const selectContentButtons = await select.getOptionsOutOfSelectContent();
+                            await driver.click(select.OverlayContainer);
+                            expect(selectContent).to.not.equal('<!---->');
+                            expect(selectContentButtons).to.be.an('array').with.lengthOf(9);
+                            expect(selectContentButtons).eql([
+                                'None',
+                                'Tramontana',
+                                'Gregale',
+                                'Levante',
+                                'Scirocco',
+                                'Ostro',
+                                'Libeccio',
+                                'Ponente',
+                                'Mistral',
+                            ]);
+                        });
+                        it(`toggle RAW button`, async function () {
+                            await select.inputs.toggleOptionsControlRawButton();
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of options Control default value`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
                         break;
 
                     case 'disabled':
@@ -251,10 +422,50 @@ export async function StorybookSelectTests() {
                         break;
 
                     case 'readonly':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('readonly')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is "False"`, async function () {
+                            const readonlyControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Readonly',
+                            );
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Readonly Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(readonlyControlState).to.be.false;
+                            const mainExampleSelect = await driver.findElement(select.MainExampleSelect);
+                            const mainExampleSelectDisabled = await mainExampleSelect.getAttribute('class');
+                            console.info('mainExampleSelectDisabled: ', mainExampleSelectDisabled);
+                            // relevant assertion needs to be added
+                        });
+                        it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleReadonlyControl();
+                            const readonlyControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Readonly',
+                            );
+                            expect(readonlyControlState).to.be.true;
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Readonly Input Changed to "true"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            // relevant assertion needs to be added after BUG DI-25776 is fixed
+                        });
+                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                            await storyBookPage.inputs.toggleReadonlyControl();
+                            const readonlyControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Readonly',
+                            );
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Readonly Input Changed to "false"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(readonlyControlState).to.be.false;
+                            // relevant assertion needs to be added
+                        });
                         break;
 
                     case 'showTitle':
@@ -299,7 +510,7 @@ export async function StorybookSelectTests() {
                         break;
 
                     case 'type':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(selectInputsTitles.includes('type')).to.be.true;
                         });
                         it(`get all types`, async function () {

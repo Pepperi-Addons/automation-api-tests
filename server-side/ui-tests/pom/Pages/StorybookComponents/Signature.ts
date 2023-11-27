@@ -4,13 +4,13 @@ import { StorybookComponent } from './Base/StorybookComponent';
 export class Signature extends StorybookComponent {
     public MainExampleDiv: By = By.xpath('//div[@id="story--components-signature--story-1"]');
     public MainExampleHeightDiv: By = By.xpath(`//pep-signature`);
-    public MainExample_image: By = By.xpath(`${this.MainExampleDiv.value}//pep-signature//img`);
+    public MainExamplePepSignature: By = By.xpath(`${this.MainExampleDiv.value}//pep-signature`);
+    public MainExample_image: By = By.xpath(`${this.MainExamplePepSignature.value}//img`);
     public MainExample_imagePopup: By = By.xpath(`//pep-dialog`);
     public MainExample_imagePopup_closeButton: By = By.xpath(`//pep-dialog//button[contains(@class,"dialog-close")]`);
     public MainExample_deleteButton: By = By.xpath(`${this.MainExampleDiv.value}//button[contains(@class,"delete")]`);
-    public MainExampleSignature: By = By.xpath(
-        `${this.MainExampleDiv.value}//pep-signature//img/parent::div/parent::div`,
-    );
+    public MainExampleSignature: By = By.xpath(`${this.MainExamplePepSignature.value}//img/parent::div/parent::div`);
+    // public MainExampleSignatureReadonly: By = By.xpath(`${this.MainExamplePepSignature.value}//img`);
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
 
