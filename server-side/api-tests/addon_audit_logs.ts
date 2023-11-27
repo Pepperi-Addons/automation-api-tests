@@ -11,12 +11,12 @@ export async function AddonAuditLogsTests(generalService: GeneralService, reques
     const expect = tester.expect;
     const it = tester.it;
 
-    let varKey;
-    if (generalService.papiClient['options'].baseURL.includes('staging')) {
-        varKey = request.body.varKeyStage;
-    } else {
-        varKey = request.body.varKeyPro;
-    }
+    // let varKey;
+    // if (generalService.papiClient['options'].baseURL.includes('staging')) {
+    //     varKey = request.body.varKeyStage;
+    // } else {
+    //     varKey = request.body.varKeyPro;
+    // }
 
     //#region Prerequisites for Audit Logs Tests
     //TestData
@@ -362,7 +362,7 @@ export async function AddonAuditLogsTests(generalService: GeneralService, reques
                     tempObj.Event.User.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
                     tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[2] == tempObj.DistributorUUID ||
                     tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[2] ==
-                    tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+                        tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
                     tempObj.Event.User.UUID != generalService.getClientData('UserUUID')
                 ) {
                     return 'Error in UUID in Code Job API Response';
