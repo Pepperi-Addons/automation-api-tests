@@ -6,10 +6,17 @@ interface TestResults {
 }
 
 // All Fields Tests
-export async function AddonAuditLogsTests(generalService: GeneralService, tester: TesterFunctions) {
+export async function AddonAuditLogsTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
     const expect = tester.expect;
     const it = tester.it;
+
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
 
     //#region Prerequisites for Audit Logs Tests
     //TestData
@@ -355,7 +362,7 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
                     tempObj.Event.User.UUID == tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
                     tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[2] == tempObj.DistributorUUID ||
                     tempObj.AuditInfo.JobMessageData.FunctionPath.split('/')[2] ==
-                        tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
+                    tempObj.AuditInfo.JobMessageData.CodeJobUUID ||
                     tempObj.Event.User.UUID != generalService.getClientData('UserUUID')
                 ) {
                     return 'Error in UUID in Code Job API Response';
@@ -444,7 +451,8 @@ export async function AddonAuditLogsTests(generalService: GeneralService, tester
                     headers: {
                         Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
                         //X-Pepperi-OwnerID is the ID of the Addon
-                        'X-Pepperi-OwnerID': '9b00d684-4615-4293-9727-63da81802a8d',
+                        'X-Pepperi-OwnerID': addonUUID,
+                        // 'X-Pepperi-SecretKey': await generalService.getSecretKey(addonUUID, varKey)
                     },
                 });
 
