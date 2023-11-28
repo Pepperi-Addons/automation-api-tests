@@ -93,6 +93,7 @@ import { Import150KToAdalFromDimx } from './import_150k_DIMX.test';
 import { SyncTests } from './sync.test';
 import { TestDataTestsNewSync } from '../../api-tests/test-service/test_data_new_sync';
 import { UDC300KTestser } from '../../api-tests/user_defined_collections_300K_overwrite';
+import { ImportLimitCSVAdalFromDimx } from './import_300k_DIMX.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -321,6 +322,17 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             },
             { describe, expect, it } as TesterFunctions,
         ); //
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('Dimx300KUpload')) {
+        await ImportLimitCSVAdalFromDimx(client, {
+            body: {
+                varKeyStage: varPass,
+                varKeyPro: varPass,
+                varKeyEU: varPassEU,
+            },
+        }); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
