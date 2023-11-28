@@ -88,7 +88,7 @@ export async function UDC300KTests(generalService: GeneralService, request, test
             it('Positive Test: DIMX overwrite test: 300K rows API import to new UDC then overwriting the data using DIMX', async () => {
                 dimxOverWriteCollectionName = 'DimxOverwrite' + generalService.generateRandomString(15);
                 const pfsService = new PFSService(generalService);
-                const howManyRows = 300000;
+                const howManyRows = 327680;
                 //1. create the file to import
                 const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
                 const mime = 'text/csv';
@@ -220,7 +220,7 @@ export async function UDC300KTests(generalService: GeneralService, request, test
                     1,
                     250,
                 );
-                expect(allObjectsFromCollection.count).to.equal(300000);
+                expect(allObjectsFromCollection.count).to.equal(327680);
                 const fileURI = JSON.parse(overwriteResponse.AuditInfo.ResultObject).URI;
                 const fileAfterOverwriting = await generalService.fetchStatus(fileURI);
                 const updateArray = fileAfterOverwriting.Body.filter((entry) => entry.Status === 'Update');
