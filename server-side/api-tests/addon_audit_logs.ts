@@ -11,12 +11,12 @@ export async function AddonAuditLogsTests(generalService: GeneralService, reques
     const expect = tester.expect;
     const it = tester.it;
 
-    // let varKey;
-    // if (generalService.papiClient['options'].baseURL.includes('staging')) {
-    //     varKey = request.body.varKeyStage;
-    // } else {
-    //     varKey = request.body.varKeyPro;
-    // }
+    let varKey;
+    if (generalService.papiClient['options'].baseURL.includes('staging')) {
+        varKey = request.body.varKeyStage;
+    } else {
+        varKey = request.body.varKeyPro;
+    }
 
     //#region Prerequisites for Audit Logs Tests
     //TestData
@@ -452,7 +452,7 @@ export async function AddonAuditLogsTests(generalService: GeneralService, reques
                         Authorization: `Bearer ${generalService['client'].OAuthAccessToken}`,
                         //X-Pepperi-OwnerID is the ID of the Addon
                         'X-Pepperi-OwnerID': addonUUID,
-                        // 'X-Pepperi-SecretKey': await generalService.getSecretKey(addonUUID, varKey)
+                        'X-Pepperi-SecretKey': await generalService.getSecretKey(addonUUID, varKey),
                     },
                 });
 
