@@ -4,10 +4,10 @@ import fs from 'fs';
 import { UdcField, UDCService } from '../services/user-defined-collections.service';
 import * as path from 'path';
 
-export async function UDC300KTestser(generalService: GeneralService, request, tester: TesterFunctions) {
-    await UDC300KTests(generalService, request, tester);
+export async function UDC150KOverwriteTestser(generalService: GeneralService, request, tester: TesterFunctions) {
+    await UDC150KOverwrite(generalService, request, tester);
 }
-export async function UDC300KTests(generalService: GeneralService, request, tester: TesterFunctions) {
+export async function UDC150KOverwrite(generalService: GeneralService, request, tester: TesterFunctions) {
     const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
     const udcService = new UDCService(generalService);
     const describe = tester.describe;
@@ -88,7 +88,7 @@ export async function UDC300KTests(generalService: GeneralService, request, test
             it('Positive Test: DIMX overwrite test: 300K rows API import to new UDC then overwriting the data using DIMX', async () => {
                 dimxOverWriteCollectionName = 'DimxOverwrite' + generalService.generateRandomString(15);
                 const pfsService = new PFSService(generalService);
-                const howManyRows = 327680;
+                const howManyRows = 150000;
                 //1. create the file to import
                 const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
                 const mime = 'text/csv';
@@ -220,7 +220,7 @@ export async function UDC300KTests(generalService: GeneralService, request, test
                     1,
                     250,
                 );
-                expect(allObjectsFromCollection.count).to.equal(327680);
+                expect(allObjectsFromCollection.count).to.equal(150000);
                 const fileURI = JSON.parse(overwriteResponse.AuditInfo.ResultObject).URI;
                 const fileAfterOverwriting = await generalService.fetchStatus(fileURI);
                 const updateArray = fileAfterOverwriting.Body.filter((entry) => entry.Status === 'Update');
