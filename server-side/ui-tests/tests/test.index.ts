@@ -94,7 +94,8 @@ import { SyncTests } from './sync.test';
 import { TestDataTestsNewSync } from '../../api-tests/test-service/test_data_new_sync';
 import { UDC300KTestser } from '../../api-tests/user_defined_collections_300K_overwrite';
 import { ImportLimitCSVAdalFromDimx } from './import_300k_DIMX.test';
-import { UDC150KOverwriteTestser } from '../../api-tests/user_defined_collections_150K_overwrite copy';
+import { UDC150KOverwriteTestser } from '../../api-tests/user_defined_collections_150K_overwrite';
+import { UDC100KOverwriteTestser } from '../../api-tests/user_defined_collections_100K_overwrite';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -330,6 +331,21 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
     if (tests.includes('UDC150KOverwrite')) {
         await UDC150KOverwriteTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        ); //
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('UDC100KOverwrite')) {
+        await UDC100KOverwriteTestser(
             generalService,
             {
                 body: {
