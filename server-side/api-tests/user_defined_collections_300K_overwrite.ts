@@ -159,7 +159,7 @@ export async function UDC300KTests(generalService: GeneralService, request, test
                 }
                 const lineStats = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject).LinesStatistics;
                 expect(lineStats.Inserted).to.equal(howManyRows);
-                generalService.sleep(1000 * 60); //let PNS Update
+                generalService.sleep(1000 * 90); //let PNS Update
                 for (let index = 1; index <= 100; index++) {
                     console.log(`searching for 250 rows for the ${index} time - out of out of 100 sampling batch`);
                     const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
