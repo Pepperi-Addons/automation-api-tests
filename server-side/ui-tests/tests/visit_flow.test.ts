@@ -145,9 +145,12 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             });
 
             it('Pages (starting with "Blank") Leftovers Cleanup', async () => {
-                const allPages = await pageBuilder.getAllPages(client);
+                const allPages = await pageBuilder.getDraftPages(client);
+                console.info(
+                    `allPages.Body.length (looking for Blank Page): ${JSON.stringify(allPages.Body.length, null, 4)}`,
+                );
                 const blankPages = allPages?.Body.filter((page) => {
-                    if (page.Name.includes('Blank ')) {
+                    if (page.Name.includes('Blank Page ')) {
                         return page.Key;
                     }
                 });
@@ -162,9 +165,9 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 );
                 console.info(`deleteBlankPagesResponse: ${JSON.stringify(deleteBlankPagesResponse, null, 4)}`);
                 generalService.sleep(5 * 1000);
-                const allPagesAfterCleanup = await pageBuilder.getAllPages(client);
+                const allPagesAfterCleanup = await pageBuilder.getDraftPages(client);
                 const findBlankPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) =>
-                    page.Name.includes('Blank'),
+                    page.Name.includes('Blank Page'),
                 );
                 console.info(`findBlankPageAfterCleanup: ${JSON.stringify(findBlankPageAfterCleanup, null, 4)}`);
                 expect(findBlankPageAfterCleanup).to.be.undefined;
@@ -231,7 +234,13 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                             documentToUpsert,
                             collectionName,
                         );
-                        console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
+                        console.info(
+                            `Insertion to Visit Flow Groups Response: ${JSON.stringify(
+                                upsertingValues_Response,
+                                null,
+                                4,
+                            )}`,
+                        );
                         expect(upsertingValues_Response.Ok).to.be.true;
                         expect(upsertingValues_Response.Status).to.equal(200);
                         expect(upsertingValues_Response.Error).to.eql({});
@@ -344,7 +353,9 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                             documentToUpsert,
                             collectionName,
                         );
-                        console.info(`Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`);
+                        console.info(
+                            `Insertion to VisitFlows Response: ${JSON.stringify(upsertingValues_Response, null, 4)}`,
+                        );
                         expect(upsertingValues_Response.Ok).to.be.true;
                         expect(upsertingValues_Response.Status).to.equal(200);
                         expect(upsertingValues_Response.Error).to.eql({});

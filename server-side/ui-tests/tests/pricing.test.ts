@@ -1,6 +1,6 @@
 import { describe, it, before, after, Context } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../services/general.service';
+import GeneralService, { ConsoleColors } from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
@@ -155,6 +155,10 @@ export async function PricingTests(email: string, password: string, client: Clie
                         title: `New Slaes Order trasaction started`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
+                    const duration = await (await driver.findElement(orderPage.Duration_Span)).getAttribute('title');
+                    console.info(`DURATION at Sales Order Load: ${duration}`, [
+                        ConsoleColors.PageMessage.split('color: ')[1],
+                    ]);
                 });
 
                 it(`switch to 'Line View'`, async function () {
@@ -170,6 +174,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                     describe(`ORDER CENTER "${state}"`, () => {
                         testItems.forEach((item) => {
                             it(`checking item "${item}"`, async function () {
+                                let duration;
                                 await searchInOrderCenter.bind(this)(item);
                                 switch (
                                     state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
@@ -180,6 +185,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             item,
                                             1,
                                         );
+                                        duration = await (
+                                            await driver.findElement(orderPage.Duration_Span)
+                                        ).getAttribute('title');
+                                        console.log(`DURATION after Quantity change (to 1 unit): ${duration}`, [
+                                            ConsoleColors.PageMessage,
+                                        ]);
                                         break;
                                     case '3units':
                                         await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
@@ -187,6 +198,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             item,
                                             3,
                                         );
+                                        duration = await (
+                                            await driver.findElement(orderPage.Duration_Span)
+                                        ).getAttribute('title');
+                                        console.log(`DURATION after Quantity change (to 3 units): ${duration}`, [
+                                            ConsoleColors.PageMessage,
+                                        ]);
                                         break;
                                     case '1case(6units)':
                                         await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
@@ -194,6 +211,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             item,
                                             1,
                                         );
+                                        duration = await (
+                                            await driver.findElement(orderPage.Duration_Span)
+                                        ).getAttribute('title');
+                                        console.log(`DURATION after Quantity change (to 1 case): ${duration}`, [
+                                            ConsoleColors.PageMessage,
+                                        ]);
                                         break;
                                     case '4cases(24units)':
                                         await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
@@ -201,6 +224,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             item,
                                             4,
                                         );
+                                        duration = await (
+                                            await driver.findElement(orderPage.Duration_Span)
+                                        ).getAttribute('title');
+                                        console.log(`DURATION after Quantity change (to 4 cases): ${duration}`, [
+                                            ConsoleColors.PageMessage,
+                                        ]);
                                         break;
 
                                     default:
