@@ -16,7 +16,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
     //#region Upgrade script dependencies
     const testData = {
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+        // Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
         'Generic Resources': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
