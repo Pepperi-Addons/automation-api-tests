@@ -399,19 +399,19 @@ export async function audit_logs(client: Client, testerFunctions: TesterFunction
     }
 }
 
-export async function addon_audit_logs(client: Client, testerFunctions: TesterFunctions) {
+export async function addon_audit_logs(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     if (testName != 'Addon_Audit_Logs' && testName != 'Sanity') {
         testName = 'Addon_Audit_Logs';
         service.PrintMemoryUseToLog('Start', testName);
         testerFunctions = service.initiateTesterFunctions(client, testName);
-        await AddonAuditLogsTests(service, testerFunctions);
+        await AddonAuditLogsTests(service, request, testerFunctions);
         await test_data(client, testerFunctions);
         service.PrintMemoryUseToLog('End', testName);
         testName = '';
         return await testerFunctions.run();
     } else {
-        return AddonAuditLogsTests(service, testerFunctions);
+        return AddonAuditLogsTests(service, request, testerFunctions);
     }
 }
 
