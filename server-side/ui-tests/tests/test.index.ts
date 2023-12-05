@@ -1493,65 +1493,65 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             debugger;
             await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonProd, generalService);
             debugger;
-            try {
-                await Promise.all([
-                    handleDevTestInstallation(
-                        euUser,
-                        addonName,
-                        addonUUID,
-                        { describe, expect, it } as TesterFunctions,
-                        varPass,
-                        'prod',
-                    ),
-                    handleDevTestInstallation(
-                        prodUser,
-                        addonName,
-                        addonUUID,
-                        { describe, expect, it } as TesterFunctions,
-                        varPass,
-                        'prod',
-                    ),
-                    handleDevTestInstallation(
-                        sbUser,
-                        addonName,
-                        addonUUID,
-                        { describe, expect, it } as TesterFunctions,
-                        varPassSB,
-                        'stage',
-                    ),
-                ]);
-            } catch (error) {
-                debugger;
-                const errorString = (error as any).message;
-                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
-                await Promise.all([
-                    unavailableAddonVersion(
-                        'prod',
-                        addonName,
-                        addonEntryUUIDEU,
-                        latestVersionOfTestedAddonProd,
-                        addonUUID,
-                        varPassEU,
-                    ),
-                    unavailableAddonVersion(
-                        'prod',
-                        addonName,
-                        addonEntryUUIDProd,
-                        latestVersionOfTestedAddonProd,
-                        addonUUID,
-                        varPass,
-                    ),
-                    unavailableAddonVersion(
-                        'stage',
-                        addonName,
-                        addonEntryUUIDSb,
-                        latestVersionOfTestedAddonProd,
-                        addonUUID,
-                        varPassSB,
-                    ),
-                ]);
-                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
-            }
+            // try {
+            //     await Promise.all([
+            //         handleDevTestInstallation(
+            //             euUser,
+            //             addonName,
+            //             addonUUID,
+            //             { describe, expect, it } as TesterFunctions,
+            //             varPass,
+            //             'prod',
+            //         ),
+            //         handleDevTestInstallation(
+            //             prodUser,
+            //             addonName,
+            //             addonUUID,
+            //             { describe, expect, it } as TesterFunctions,
+            //             varPass,
+            //             'prod',
+            //         ),
+            //         handleDevTestInstallation(
+            //             sbUser,
+            //             addonName,
+            //             addonUUID,
+            //             { describe, expect, it } as TesterFunctions,
+            //             varPassSB,
+            //             'stage',
+            //         ),
+            //     ]);
+            // } catch (error) {
+            //     debugger;
+            //     const errorString = (error as any).message;
+            //     await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
+            //     await Promise.all([
+            //         unavailableAddonVersion(
+            //             'prod',
+            //             addonName,
+            //             addonEntryUUIDEU,
+            //             latestVersionOfTestedAddonProd,
+            //             addonUUID,
+            //             varPassEU,
+            //         ),
+            //         unavailableAddonVersion(
+            //             'prod',
+            //             addonName,
+            //             addonEntryUUIDProd,
+            //             latestVersionOfTestedAddonProd,
+            //             addonUUID,
+            //             varPass,
+            //         ),
+            //         unavailableAddonVersion(
+            //             'stage',
+            //             addonName,
+            //             addonEntryUUIDSb,
+            //             latestVersionOfTestedAddonProd,
+            //             addonUUID,
+            //             varPassSB,
+            //         ),
+            //     ]);
+            //     throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            // }
             console.log(
                 `####################### ${addonName} Version: ${latestVersionOfTestedAddonProd} #######################`,
             );
@@ -1579,7 +1579,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 varPass,
             );
             console.log(entryUUID);
-            // debugger;
+            debugger;
             //3.1 get test names
             try {
                 testsList = await getTestNames(
@@ -3859,11 +3859,11 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getConfifurationsTests(user, 'prod');
     } else if (addonName === 'RELATED-ITEMS') {
         return await getRelatedItemsTests(user, env);
-    } else if (addonName === 'PEPPERI-FILE-STORAGE' || 'PFS') {
+    } else if (addonName === 'PEPPERI-FILE-STORAGE' || addonName === 'PFS') {
         return await getPFSTests(user, 'prod');
-    } else if (addonName === 'JOURNEY-TRACKER' || 'JOURNEY') {
+    } else if (addonName === 'JOURNEY-TRACKER' || addonName === 'JOURNEY') {
         return await getJourneyTests(user, 'prod');
-    } else if (addonName === 'CPI-NODE' || 'NODE') {
+    } else if (addonName === 'CPI-NODE' || addonName === 'NODE') {
         return await getCPINodeTests(user, 'prod');
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
