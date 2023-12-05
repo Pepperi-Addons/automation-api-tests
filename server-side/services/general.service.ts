@@ -2282,6 +2282,9 @@ export default class GeneralService {
             case 'PEPPERI-FILE-STORAGE':
             case 'PFS':
                 return '00000000-0000-0000-0000-0000000f11e5';
+            case 'JOURNEY':
+            case 'JOURNEY-TRACKER':
+                return '41011fbf-debf-40d8-8990-767738b8af03';
             default:
                 return 'none';
         }

@@ -2772,6 +2772,9 @@ export async function handleTeamsURL(addonName, service, email, pass) {
         case 'PAPI-DATA-INDEX':
         case 'PAPI INDEX': //evgeny todo
             return await service.getSecretfromKMS(email, pass, 'PapiDataIndexWebHook');
+        case 'JOURNEY':
+        case 'JOURNEY-TRACKER':
+            return await service.getSecretfromKMS(email, pass, 'JourneyTeamsWebHook');
         case 'SYNC':
             return await service.getSecretfromKMS(email, pass, 'SyncTeamsWebHook');
         case 'ADAL': //new teams
@@ -3578,6 +3581,13 @@ function resolveUserPerTest(addonName): any[] {
                 'UserDefinedBlocksEUApp2@pepperitest.com',
                 'UserDefinedBlocksEUApp5@pepperitest.com',
                 'UserDefinedBlocksSBApp2@pepperitest.com',
+            ];
+        case 'JOURNEY-TRACKER':
+        case 'JOURNEY':
+            return [
+                'JourneyTrackerTesterEU@pepperitest.com',
+                'JourneyTrackerTesterProd@pepperitest.com',
+                'JourneyTrackerTesterSB@pepperitest.com',
             ];
         default:
             return [];
