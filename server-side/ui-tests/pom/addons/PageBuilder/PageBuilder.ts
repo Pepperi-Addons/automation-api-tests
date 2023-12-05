@@ -51,6 +51,7 @@ export class PageBuilder extends AddonPage {
     // Add Section
     public EditSideBar_AddSection_Button: By = this.getSelectorOfButtonAtEditPageByDataQa('Add Section'); //By.xpath('//button[@data-qa="Add Section"]');
     public Section_Frame: By = By.xpath('//div[contains(@id,"_column_")]');
+    public InnerPageBuilder: By = By.xpath('//page-builder-internal/div');
     // Notice Popup
     public NoticePopup_Title: By = By.xpath('//span[contains(@class,"dialog-title")][contains(text(), "Notice")]');
     public NoticePopup_LeavePage_Button: By = By.xpath(
@@ -105,7 +106,8 @@ export class PageBuilder extends AddonPage {
         if (extraSection) {
             await this.clickElement('EditSideBar_AddSection_Button');
         }
-        await this.waitTillVisible(this.Section_Frame, 5000);
+        // await this.waitTillVisible(this.Section_Frame, 5000);
+        await this.waitTillVisible(this.InnerPageBuilder, 5000);
         await this.clickElement('EditPage_EditMenu_Button_Publish');
         this.pause(1500);
     }
@@ -296,6 +298,13 @@ export class PageBuilder extends AddonPage {
     public async getAllPages(client: Client) {
         const generalService = new GeneralService(client);
         return await generalService.fetchStatus('/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/api/pages');
+    }
+
+    public async getDraftPages(client: Client) {
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus(
+            '/addons/api/84c999c3-84b7-454e-9a86-71b7abc96554/api/objects?addonUUID=50062e0c-9967-4ed4-9102-f2bc50602d41&name=Pages&scheme=drafts',
+        );
     }
 
     public async getPageByUUID(pageUUID: string, client: Client) {

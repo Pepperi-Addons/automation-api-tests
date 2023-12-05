@@ -13,6 +13,7 @@ export class OrderPage extends WebAppList {
     public ViewTypeOption: By = By.xpath(`//span[text()='|textToFill|']`);
 
     // Specific selectors for Pricing //
+    public Duration_Span: By = By.xpath('//span[@id="TSAduration"]');
     public Search_Input: By = By.xpath('//input[@id="searchInput"]');
     public Search_Magnifier_Button: By = By.xpath('//search//pep-icon[@name="system_search"]');
     public Search_X_Button: By = By.xpath('//search//pep-icon[@name="system_close"]');
