@@ -2816,6 +2816,9 @@ export async function handleTeamsURL(addonName, service, email, pass) {
         case 'GENERIC-RESOURCE': //new teams
         case 'GENERIC RESOURCE':
             return await service.getSecretfromKMS(email, pass, 'GenericResourceTeamsWebHook');
+        case 'NODE': //new teams
+        case 'CPI-NODE':
+            return await service.getSecretfromKMS(email, pass, 'CPINodeTeamsWebHook');
     }
 }
 
@@ -3589,6 +3592,13 @@ function resolveUserPerTest(addonName): any[] {
                 'JourneyTrackerTesterProd@pepperitest.com',
                 'JourneyTrackerTesterSB@pepperitest.com',
             ];
+        case 'CPI-NODE':
+        case 'NODE':
+            return [
+                'CpiNodeTesterEU@pepperitest.com',
+                'CpiNodeTesterProd@pepperitest.com',
+                'CpiNodeTesterSB@pepperitest.com',
+            ];
         default:
             return [];
     }
@@ -3723,6 +3733,32 @@ async function getPFSTests(userName, env) {
     return toReturn;
 }
 
+async function getJourneyTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/41011fbf-debf-40d8-8990-767738b8af03/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
+async function getCPINodeTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/bb6ee826-1c6b-4a11-9758-40a46acb69c5/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function getUDBTests(userName, env) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
@@ -3771,6 +3807,10 @@ async function runDevTestOnCertainEnv(
         urlToCall = '/addons/api/async/9abbb634-9df5-49ab-91d1-41ad7a2632a6/tests/tests';
     } else if (addonName === 'PFS' || addonName === 'PEPPERI-FILE-STORAGE') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-0000000f11e5/tests/tests';
+    } else if (addonName === 'JOURNEY' || addonName === 'JOURNEY-TRACKER') {
+        urlToCall = '/addons/api/async/41011fbf-debf-40d8-8990-767738b8af03/tests/tests';
+    } else if (addonName === 'NODE' || addonName === 'CPI-NODE') {
+        urlToCall = '/addons/api/async/bb6ee826-1c6b-4a11-9758-40a46acb69c5/tests/tests';
     } else {
         urlToCall = `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`;
     }
@@ -3821,6 +3861,10 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getRelatedItemsTests(user, env);
     } else if (addonName === 'PEPPERI-FILE-STORAGE' || 'PFS') {
         return await getPFSTests(user, 'prod');
+    } else if (addonName === 'JOURNEY-TRACKER' || 'JOURNEY') {
+        return await getJourneyTests(user, 'prod');
+    } else if (addonName === 'CPI-NODE' || 'NODE') {
+        return await getCPINodeTests(user, 'prod');
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
         const service = new GeneralService(client);
@@ -3856,7 +3900,11 @@ function prepareTestBody(addonName, currentTestName) {
         addonName === 'RELATED-ITEMS' ||
         addonName === 'USER DEFINED BLOCKS' ||
         addonName === 'PFS' ||
-        addonName === 'PEPPERI-FILE-STORAGE'
+        addonName === 'PEPPERI-FILE-STORAGE' ||
+        addonName === 'JOURNEY' ||
+        addonName === 'JOURNEY-TRACKER' ||
+        addonName === 'NODE' ||
+        addonName === 'CPI-NODE'
     ) {
         body = {
             Name: currentTestName,
