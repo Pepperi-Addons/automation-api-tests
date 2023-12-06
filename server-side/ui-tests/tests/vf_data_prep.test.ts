@@ -118,7 +118,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
         VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
         // Nebula: ['00000000-0000-0000-0000-000000006a91', '1.1.61'],
         // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.0.14'], // dependency > 0.2.58
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
         // 'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', '0.5.12'], // current phased version 0.5.10 | dependency > 0.5.7
         // Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.6.26'], // current phased version 0.6.26 | dependency > 0.6.3
         // 'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', '0.0.8'],
@@ -129,10 +129,10 @@ export async function VFdataPrep(varPass: string, client: Client) {
         'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''],
         // Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', '1.1.23'],
         // 'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', '0.0.793'], //OUR TESTING ADDON --
-        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.34'], // PAPI
-        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.41'], // CPAPI
+        // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.34'], // PAPI
+        // 'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.41'], // CPAPI
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.20.10'], // CPAS
-        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.30.%'], // CPAS
+        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''], // CPAS
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''], // CPAS
         // 'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.16.137'],
         // 'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.6.369'],
@@ -150,7 +150,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
         // 'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', '6.3.77'],
         // 'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', '6.4.64'],
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.4.19'], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.5.%'], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
         // 'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.15'], // CPI_Node_data current phased version 0.6.14 | dependency > 0.6.11
         // 'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.6.52'], // current phased version 0.6.48 | dependency > 0.6.41
