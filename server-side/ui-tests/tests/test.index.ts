@@ -1493,65 +1493,65 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             debugger;
             await reportBuildStarted(addonName, addonUUID, latestVersionOfTestedAddonProd, generalService);
             debugger;
-            // try {
-            //     await Promise.all([
-            //         handleDevTestInstallation(
-            //             euUser,
-            //             addonName,
-            //             addonUUID,
-            //             { describe, expect, it } as TesterFunctions,
-            //             varPass,
-            //             'prod',
-            //         ),
-            //         handleDevTestInstallation(
-            //             prodUser,
-            //             addonName,
-            //             addonUUID,
-            //             { describe, expect, it } as TesterFunctions,
-            //             varPass,
-            //             'prod',
-            //         ),
-            //         handleDevTestInstallation(
-            //             sbUser,
-            //             addonName,
-            //             addonUUID,
-            //             { describe, expect, it } as TesterFunctions,
-            //             varPassSB,
-            //             'stage',
-            //         ),
-            //     ]);
-            // } catch (error) {
-            //     debugger;
-            //     const errorString = (error as any).message;
-            //     await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
-            //     await Promise.all([
-            //         unavailableAddonVersion(
-            //             'prod',
-            //             addonName,
-            //             addonEntryUUIDEU,
-            //             latestVersionOfTestedAddonProd,
-            //             addonUUID,
-            //             varPassEU,
-            //         ),
-            //         unavailableAddonVersion(
-            //             'prod',
-            //             addonName,
-            //             addonEntryUUIDProd,
-            //             latestVersionOfTestedAddonProd,
-            //             addonUUID,
-            //             varPass,
-            //         ),
-            //         unavailableAddonVersion(
-            //             'stage',
-            //             addonName,
-            //             addonEntryUUIDSb,
-            //             latestVersionOfTestedAddonProd,
-            //             addonUUID,
-            //             varPassSB,
-            //         ),
-            //     ]);
-            //     throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
-            // }
+            try {
+                await Promise.all([
+                    handleDevTestInstallation(
+                        euUser,
+                        addonName,
+                        addonUUID,
+                        { describe, expect, it } as TesterFunctions,
+                        varPass,
+                        'prod',
+                    ),
+                    handleDevTestInstallation(
+                        prodUser,
+                        addonName,
+                        addonUUID,
+                        { describe, expect, it } as TesterFunctions,
+                        varPass,
+                        'prod',
+                    ),
+                    handleDevTestInstallation(
+                        sbUser,
+                        addonName,
+                        addonUUID,
+                        { describe, expect, it } as TesterFunctions,
+                        varPassSB,
+                        'stage',
+                    ),
+                ]);
+            } catch (error) {
+                debugger;
+                const errorString = (error as any).message;
+                await reportToTeamsMessage(addonName, addonUUID, latestVersionOfTestedAddonProd, errorString, service);
+                await Promise.all([
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDEU,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassEU,
+                    ),
+                    unavailableAddonVersion(
+                        'prod',
+                        addonName,
+                        addonEntryUUIDProd,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPass,
+                    ),
+                    unavailableAddonVersion(
+                        'stage',
+                        addonName,
+                        addonEntryUUIDSb,
+                        latestVersionOfTestedAddonProd,
+                        addonUUID,
+                        varPassSB,
+                    ),
+                ]);
+                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            }
             console.log(
                 `####################### ${addonName} Version: ${latestVersionOfTestedAddonProd} #######################`,
             );
