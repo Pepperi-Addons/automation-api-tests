@@ -1052,7 +1052,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     [accField],
                     'automation testing UDC',
                     undefined,
-                    true,
+                    false,
                 );
                 expect(response.Fail).to.be.undefined;
                 expect(response.myAcc.Type).to.equal('Resource');
