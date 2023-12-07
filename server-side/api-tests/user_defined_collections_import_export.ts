@@ -131,7 +131,7 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                     [accField, val1Field, val2Field],
                     'automation testing UDC',
                     undefined,
-                    undefined,
+                    true,
                     [accField, val1Field, val2Field],
                 );
                 expect(response.Fail).to.be.undefined;
