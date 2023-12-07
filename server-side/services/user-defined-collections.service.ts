@@ -35,15 +35,15 @@ export interface CollectionDefinition {
     descriptionOfCollection?: string;
     syncDefinitionOfCollection?: { Sync: boolean; SyncFieldLevel?: boolean };
     typeOfCollection?:
-        | 'data'
-        | 'meta_data'
-        | 'indexed_data'
-        | 'index'
-        | 'shared_index'
-        | 'pfs'
-        | 'contained'
-        | 'papi'
-        | 'abstract';
+    | 'data'
+    | 'meta_data'
+    | 'indexed_data'
+    | 'index'
+    | 'shared_index'
+    | 'pfs'
+    | 'contained'
+    | 'papi'
+    | 'abstract';
 }
 
 const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
@@ -78,7 +78,7 @@ export class UDCService {
             (response.Body.message && response.Body.message === 'Endpoint request timed out') ||
             (response.Body.fault &&
                 response.Body.fault.faultstring ===
-                    `Failed due to exception: Cannot set properties of null (setting 'dataSourcePurgeResult')`)
+                `Failed due to exception: Cannot set properties of null (setting 'dataSourcePurgeResult')`)
         ) {
             response = await this.generalService.fetchStatus(`/addons/data/schemes/${udcName}/purge`, {
                 method: 'POST',
@@ -377,7 +377,7 @@ export class UDCService {
                 Columns: arrayOfColumns,
             },
             SyncData: {
-                Sync: isOnlineOnly === true ? false : true,
+                Sync: (isOnlineOnly === true || isOnlineOnly === undefined) ? false : true,
                 SyncFieldLevel: false,
             },
             GenericResource: true,
@@ -449,8 +449,7 @@ export class UDCService {
                 }
                 if (udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name] !== field.Value) {
                     console.log(
-                        `UDC Returned Wrong Value: ${
-                            udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
+                        `UDC Returned Wrong Value: ${udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
                         } instaed of: ${field.Value}`,
                     );
                     udcUpsertItemResponse[udcUpsertItemResponse.length - 1]['Fail'] =
@@ -639,8 +638,7 @@ export class UDCService {
                 }
                 if (udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name] !== field.Value) {
                     console.log(
-                        `UDC Returned Wrong Value: ${
-                            udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
+                        `UDC Returned Wrong Value: ${udcUpsertItemResponse[udcUpsertItemResponse.length - 1].Body[field.Name]
                         } instaed of: ${field.Value}`,
                     );
                     udcUpsertItemResponse[udcUpsertItemResponse.length - 1]['Fail'] =
