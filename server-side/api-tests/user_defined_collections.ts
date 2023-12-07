@@ -326,7 +326,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     'Failed due to exception: str is not of a type(s) string\nstr is not one of enum values: a,b,c',
                 );
             });
-            it('Positive Test: - upload values which are members of the optional values - should work', async () => {
+            it('Positive Test: upload values which are members of the optional values - should work', async () => {
                 const strValue_a = {
                     str: 'a',
                 };
@@ -1051,6 +1051,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     accResourceCollectionName,
                     [accField],
                     'automation testing UDC',
+                    undefined,
+                    true,
                 );
                 expect(response.Fail).to.be.undefined;
                 expect(response.myAcc.Type).to.equal('Resource');
