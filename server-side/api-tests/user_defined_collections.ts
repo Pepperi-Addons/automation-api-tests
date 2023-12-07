@@ -1051,6 +1051,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     accResourceCollectionName,
                     [accField],
                     'automation testing UDC',
+                    undefined,
+                    true,
                 );
                 expect(response.Fail).to.be.undefined;
                 expect(response.myAcc.Type).to.equal('Resource');
