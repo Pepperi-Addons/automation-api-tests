@@ -367,6 +367,10 @@ export class UDCService {
             Extends['AddonUUID'] = inheritFieldsFrom.AddonUUID;
             Extends['Name'] = inheritFieldsFrom.Name;
         }
+        let isOnlineOnlyForUse = true;
+        if (isOnlineOnly !== undefined && isOnlineOnly === false) {
+            isOnlineOnlyForUse = true;
+        }
         const bodyToSendCollection = {
             Name: collecitonName,
             DocumentKey,
@@ -377,7 +381,7 @@ export class UDCService {
                 Columns: arrayOfColumns,
             },
             SyncData: {
-                Sync: isOnlineOnly === true || isOnlineOnly === undefined ? false : true,
+                Sync: isOnlineOnlyForUse,
                 SyncFieldLevel: false,
             },
             GenericResource: true,
