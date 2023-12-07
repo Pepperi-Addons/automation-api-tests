@@ -17,6 +17,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     const CallbackCash: any = {};
     let CodeJobBody: any = {};
     let CodeJobUUIDCron;
+    let didRunOnce = false;
 
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -548,6 +549,11 @@ export async function SchedulerTests(generalService: GeneralService, request, te
         ) {
             logcash.ResponseExecutedLogsCronTestLast = true;
         } else {
+            if (!didRunOnce) {
+                didRunOnce = true;
+                generalService.sleep(1000 * 45);
+                await getLogsToExecutedCronLastTest();
+            }
             logcash.ResponseExecutedLogsCronTestLast = false;
             logcash.ResponseExecutedLogsCronTestLastErrorMsg =
                 'Executed logs API failed. ' +
