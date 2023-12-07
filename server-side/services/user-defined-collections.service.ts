@@ -377,7 +377,7 @@ export class UDCService {
                 Columns: arrayOfColumns,
             },
             SyncData: {
-                Sync: isOnlineOnly === true ? false : true,
+                Sync: isOnlineOnly === true || isOnlineOnly === undefined ? false : true,
                 SyncFieldLevel: false,
             },
             GenericResource: true,
