@@ -983,6 +983,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     Type: 'Double',
                 };
                 const allFieldsToCreate = [fieldInt, fieldStr, fieldBool, fieldDou];
+                debugger;
                 const response = await udcService.createUDCWithFields(
                     basicOnlineCollectionName,
                     allFieldsToCreate,
