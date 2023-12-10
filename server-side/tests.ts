@@ -1340,15 +1340,6 @@ export async function handleDevTestInstallation(
     service.PrintMemoryUseToLog('Start', testName);
     //2. upgrade dependencys - basic: correct for all addons
     await service.baseAddonVersionsInstallation(varPass);
-    //2.1 install template automation addon
-    const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, {
-        automation_template_addon: ['d541b959-87af-4d18-9215-1b30dbe1bcf4', ''],
-    });
-    if (templateAddonResponse[0] != true) {
-        throw new Error(
-            `Error: can't install automation_template_addon, got the exception: ${templateAddonResponse} from audit log`,
-        );
-    }
     //3. get dependencys of tested addon
     const addonDep = await getDependenciesOfAddon(service, addonUUID, varPass);
     //4. install on dist
@@ -1362,8 +1353,11 @@ export async function handleDevTestInstallation(
             addonDep.push(depObjNebula);
             addonDep.push(depObjSync);
         }
-        if (addonUUID === '41011fbf-debf-40d8-8990-767738b8af03') {
-            //Journey
+        if (
+            addonUUID !== '5122dc6d-745b-4f46-bb8e-bd25225d350a' &&
+            addonDep.map((dep) => Object.keys(dep)[0]).includes('sync')
+        ) {
+            //New sync dependecy in case were not in sync addon but have to install it
             const depObjSync = {};
             depObjSync['pepperi-pack'] = ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''];
             addonDep.splice(0, 0, depObjSync);
