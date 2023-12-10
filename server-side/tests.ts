@@ -1362,6 +1362,12 @@ export async function handleDevTestInstallation(
             addonDep.push(depObjNebula);
             addonDep.push(depObjSync);
         }
+        if (addonUUID === '41011fbf-debf-40d8-8990-767738b8af03') {
+            //Journey
+            const depObjSync = {};
+            depObjSync['pepperi-pack'] = ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''];
+            addonDep.splice(0, 0, depObjSync);
+        }
         if (
             addonUUID === '00000000-0000-0000-0000-000000006a91' //Nebula
         ) {

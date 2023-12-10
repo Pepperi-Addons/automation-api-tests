@@ -29,7 +29,6 @@ export async function SchedulerTests(generalService: GeneralService, request, te
     const testData = {
         Scheduler: ['8bc903d1-d97a-46b8-990b-50bea356e35b', ''],
         'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
-        // 'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '0.1.456'],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
@@ -209,6 +208,11 @@ export async function SchedulerTests(generalService: GeneralService, request, te
             'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, version],
         };
         CallbackCash.installAddonToDist = await generalService.changeToAnyAvailableVersion(testData);
+        expect(CallbackCash.installAddonToDist['Pepperitest (Jenkins Special Addon) - Code Jobs'][1]).to.equal(version);
+        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+            .eventually.to.have.property('Version')
+            .a('string')
+            .that.is.equal(version);
         //#endregion Upgrade Pepperitest (Jenkins Special Addon)
         //debugger;
         await createNewCJToChroneTest();
@@ -484,6 +488,7 @@ export async function SchedulerTests(generalService: GeneralService, request, te
                 method: 'GET',
             })
         ).Body.NextRunTime;
+        debugger;
         // cerate new code about Cron test case
         CodeJobBody = {
             UUID: CodeJobUUIDCron,
