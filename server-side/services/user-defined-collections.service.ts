@@ -367,6 +367,10 @@ export class UDCService {
             Extends['AddonUUID'] = inheritFieldsFrom.AddonUUID;
             Extends['Name'] = inheritFieldsFrom.Name;
         }
+        let shouldSync = false;
+        if (isOnlineOnly !== undefined && isOnlineOnly === false) {
+            shouldSync = true;
+        }
         const bodyToSendCollection = {
             Name: collecitonName,
             DocumentKey,
@@ -377,7 +381,7 @@ export class UDCService {
                 Columns: arrayOfColumns,
             },
             SyncData: {
-                Sync: isOnlineOnly === true || isOnlineOnly === undefined ? false : true,
+                Sync: shouldSync,
                 SyncFieldLevel: false,
             },
             GenericResource: true,
@@ -554,6 +558,10 @@ export class UDCService {
             Extends['AddonUUID'] = inheritFieldsFrom.AddonUUID;
             Extends['Name'] = inheritFieldsFrom.Name;
         }
+        let shouldSync = false;
+        if (isOnlineOnly !== undefined && isOnlineOnly === false) {
+            shouldSync = true;
+        }
         const bodyToSendCollection = {
             Name: collecitonName,
             DocumentKey,
@@ -564,7 +572,7 @@ export class UDCService {
                 Columns: arrayOfColumns,
             },
             SyncData: {
-                Sync: isOnlineOnly === true ? false : true,
+                Sync: shouldSync,
                 SyncFieldLevel: false,
             },
             GenericResource: true,

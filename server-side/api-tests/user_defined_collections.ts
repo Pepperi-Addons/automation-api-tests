@@ -983,6 +983,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     Type: 'Double',
                 };
                 const allFieldsToCreate = [fieldInt, fieldStr, fieldBool, fieldDou];
+                debugger;
                 const response = await udcService.createUDCWithFields(
                     basicOnlineCollectionName,
                     allFieldsToCreate,
@@ -1052,7 +1053,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     [accField],
                     'automation testing UDC',
                     undefined,
-                    true,
+                    false,
                 );
                 expect(response.Fail).to.be.undefined;
                 expect(response.myAcc.Type).to.equal('Resource');
