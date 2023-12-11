@@ -213,6 +213,10 @@ export async function SchedulerTests(generalService: GeneralService, request, te
             .eventually.to.have.property('Version')
             .a('string')
             .that.is.equal(version);
+        const installedVersion = await (
+            await generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get()
+        ).Version;
+        console.log(`installed version ${installedVersion} of testing addon ${addonUUID}`);
         //#endregion Upgrade Pepperitest (Jenkins Special Addon)
         //debugger;
         await createNewCJToChroneTest();
