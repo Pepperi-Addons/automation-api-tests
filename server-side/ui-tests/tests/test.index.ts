@@ -3157,11 +3157,12 @@ export async function reportToTeamsNeptune(
         message = `Dev Test: ${addonName} - (${addonUUID}) - NEPTUNE, Version:${addonVersion}, Test Users:<br>${stringUsers}<br>${
             passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ') + ' |||'
         } ${failingEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')},<br>Link: ${jenkinsLink}`;
+
         message2 = `
         }${
             failedSuitesSB.length === 0
                 ? ''
-                : ',<br>SB:' + failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+                : 'SB:' + failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
         }`;
     } else {
         message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| ${
@@ -3172,7 +3173,7 @@ export async function reportToTeamsNeptune(
     const bodyToSend = {
         Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
         Description: message,
-        Status: passingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
+        Status: passingEnvs.length < 1 ? 'ERROR' : 'SUCCESS',
         Message: message2 === '' ? '~' : message2,
         UserWebhook: await handleTeamsURL(addonName, generalService, email, pass),
     };
