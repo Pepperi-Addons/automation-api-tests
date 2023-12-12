@@ -60,7 +60,7 @@ export const testDataWithNewSync = {
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'],
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
 };
 
 export const testDataForInitUser = {

@@ -1349,7 +1349,7 @@ export async function handleDevTestInstallation(
             const depObjNebula = {};
             depObjNebula['Nebula'] = ['00000000-0000-0000-0000-000000006a91', ''];
             const depObjSync = {};
-            depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.107'];
+            depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''];
             addonDep.push(depObjNebula);
             addonDep.push(depObjSync);
         }
