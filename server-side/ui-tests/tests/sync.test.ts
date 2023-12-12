@@ -61,7 +61,7 @@ export async function SyncTests(email: string, password: string, client: Client,
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], //has to remain untouched - latest 0.7.x
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
