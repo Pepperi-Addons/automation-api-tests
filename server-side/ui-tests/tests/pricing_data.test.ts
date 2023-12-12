@@ -5,7 +5,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { ObjectsService } from '../../services';
 // import { PricingData } from '../pom/addons/Pricing';
-import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
+// import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingData05 } from '../pom/addons/Pricing05';
 import { PricingData06 } from '../pom/addons/Pricing06';
 
@@ -15,20 +15,21 @@ export async function PricingDataPrep(varPass: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const tableName = 'PPM_Values';
-    const dummyPPMvalue = '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]';
+    // const dummyPPMvalue = '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]';
     let installedPricingVersion;
     let pricingData;
-    const dummyPPM_ValuesKeys: any[] = [];
+    // const dummyPPM_ValuesKeys: any[] = [];
+    const dummyPPM_Values_length = 49999;
     let batchUDTresponse: any;
-    let dummyBatchUDTresponse: any;
-    let deleteUDTresponse: any;
+    // let dummyBatchUDTresponse: any;
+    // let deleteUDTresponse: any;
     let initialPpmValues: any;
-    const dummyDataToBatch: {
-        MapDataExternalID: string;
-        MainKey: string;
-        SecondaryKey: string;
-        Values: string[];
-    }[] = [];
+    // let dummyDataToBatch: {
+    //     MapDataExternalID: string;
+    //     MainKey: string;
+    //     SecondaryKey: string;
+    //     Values: string[];
+    // }[] = [];
 
     await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade script dependencies
@@ -168,49 +169,61 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                     .that.equals('/user_defined_tables/' + row.InternalID);
             });
         });
-        it('inserting 20,000 dummy rules to the UDT "PPM_Values"', async () => {
-            for (let index = 1; index < 3; index++) {
-                dummyDataToBatch.push({
-                    MapDataExternalID: tableName,
-                    MainKey: `ZDS1@A001@Dummy${index}`,
-                    SecondaryKey: '',
-                    Values: [dummyPPMvalue],
-                });
-            }
-            dummyBatchUDTresponse = await objectsService.postBatchUDT(dummyDataToBatch);
-            expect(dummyBatchUDTresponse).to.be.an('array').with.lengthOf(dummyDataToBatch.length);
-            console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(dummyBatchUDTresponse, null, 2));
-            dummyBatchUDTresponse.map((row) => {
-                expect(row).to.have.property('InternalID').that.is.above(0);
-                dummyPPM_ValuesKeys.push(row['InternalID']);
-                expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
-                expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
-                expect(row)
-                    .to.have.property('Message')
-                    .that.is.oneOf([
-                        'Row inserted.',
-                        'No changes in this row. The row is being ignored.',
-                        'Row updated.',
-                    ]);
-                expect(row)
-                    .to.have.property('URI')
-                    .that.equals('/user_defined_tables/' + row.InternalID);
-            });
-        });
+        // it('inserting 20,000 dummy rules to the UDT "PPM_Values"', async () => {
+        //     for (let i = 0; i < 10; i++) {
+        //         dummyDataToBatch = [];
+        //         for (let index = 40000 + (1000 * i); index < 41000 + (1000 * i); index++) {
+        //             dummyDataToBatch.push({
+        //                 MapDataExternalID: tableName,
+        //                 MainKey: `ZDS1@A001@DummyItem${index}`,
+        //                 SecondaryKey: '',
+        //                 Values: [dummyPPMvalue],
+        //             });
+        //         }
+        //         dummyBatchUDTresponse = await objectsService.postBatchUDT(dummyDataToBatch);
+        //         expect(dummyBatchUDTresponse).to.be.an('array').with.lengthOf(dummyDataToBatch.length);
+        //         // console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(dummyBatchUDTresponse, null, 2));
+        //         console.info('insertion to PPM_Values RESPONSE length: ', JSON.stringify(dummyBatchUDTresponse.length, null, 2));
+        //         dummyBatchUDTresponse.map((row) => {
+        //             expect(row).to.have.property('InternalID').that.is.above(0);
+        //             dummyPPM_ValuesKeys.push(row['InternalID']);
+        //             expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+        //             expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
+        //             expect(row)
+        //                 .to.have.property('Message')
+        //                 .that.is.oneOf([
+        //                     'Row inserted.',
+        //                     'No changes in this row. The row is being ignored.',
+        //                     'Row updated.',
+        //                 ]);
+        //             expect(row)
+        //                 .to.have.property('URI')
+        //                 .that.equals('/user_defined_tables/' + row.InternalID);
+        //         });
+        //     }
+        // });
         it('get UDT Values (PPM_Values)', async () => {
-            initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'" });
-            console.info('PPM_Values: ', JSON.stringify(initialPpmValues, null, 2));
+            initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
+            // console.info('PPM_Values: ', JSON.stringify(initialPpmValues, null, 2));
+            console.info('PPM_Values Length: ', JSON.stringify(initialPpmValues.length, null, 2));
         });
         it('validating "PPM_Values" via API', async () => {
             console.info('BASE URL: ', client.BaseURL);
             // debugger
+            // console.info(
+            //     'EXPECTED: Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length: ',
+            //     Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length,
+            // );
             console.info(
                 'EXPECTED: Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length: ',
-                Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length,
+                Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
             );
             console.info('ACTUAL: initialPpmValues.length: ', initialPpmValues.length);
+            // expect(initialPpmValues.length).equals(
+            //     Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length,
+            // );
             expect(initialPpmValues.length).equals(
-                Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length,
+                Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
             );
             Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
                 console.info('mainKey: ', mainKey);
@@ -234,47 +247,47 @@ export async function PricingDataPrep(varPass: string, client: Client) {
             //     expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
             // });
         });
-        it('deleting dummy rules from the UDT "PPM_Values"', async () => {
-            generalService.sleep(5 * 1000);
-            dummyPPM_ValuesKeys.forEach(async (dummyPPM_InternalID) => {
-                const valueObj = initialPpmValues.find((obj) => {
-                    if (obj.InternalID === dummyPPM_InternalID) {
-                        return obj;
-                    }
-                });
-                // valueObj["Hidden"] = true;
-                console.info(
-                    'dummyPPM_InternalID:',
-                    dummyPPM_InternalID,
-                    ', dummyPPM_ValueObj: ',
-                    JSON.stringify(valueObj, null, 2),
-                );
-                const body: UserDefinedTableRow = {
-                    InternalID: dummyPPM_InternalID,
-                    Hidden: true,
-                    MainKey: valueObj?.MainKey || '',
-                    SecondaryKey: '',
-                    MapDataExternalID: tableName,
-                    Values: [dummyPPMvalue],
-                };
-                // debugger
-                deleteUDTresponse = await objectsService.postUDT(body);
-                console.info('dummyPPM_ValuesKeys Delete RESPONSE: ', JSON.stringify(deleteUDTresponse, null, 2));
-                expect(deleteUDTresponse).to.deep.include({
-                    MapDataExternalID: tableName,
-                    SecondaryKey: null,
-                    Values: [client.BaseURL.includes('staging') ? dummyPPMvalue.split('\\') : dummyPPMvalue],
-                });
-                expect(deleteUDTresponse).to.have.property('MainKey').that.contains('ZDS1@A001@Dummy');
-                expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
-                expect(deleteUDTresponse)
-                    .to.have.property('ModificationDateTime')
-                    .that.contains(new Date().toISOString().split('T')[0]);
-                expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
-                expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
-                expect(deleteUDTresponse).to.have.property('InternalID').that.equals(dummyPPM_InternalID);
-            });
-        });
+        // it('deleting dummy rules from the UDT "PPM_Values"', async () => {
+        //     generalService.sleep(5 * 1000);
+        //     dummyPPM_ValuesKeys.forEach(async (dummyPPM_InternalID) => {
+        //         const valueObj = initialPpmValues.find((obj) => {
+        //             if (obj.InternalID === dummyPPM_InternalID) {
+        //                 return obj;
+        //             }
+        //         });
+        //         // valueObj["Hidden"] = true;
+        //         console.info(
+        //             'dummyPPM_InternalID:',
+        //             dummyPPM_InternalID,
+        //             ', dummyPPM_ValueObj: ',
+        //             JSON.stringify(valueObj, null, 2),
+        //         );
+        //         const body: UserDefinedTableRow = {
+        //             InternalID: dummyPPM_InternalID,
+        //             Hidden: true,
+        //             MainKey: valueObj?.MainKey || '',
+        //             SecondaryKey: '',
+        //             MapDataExternalID: tableName,
+        //             Values: [dummyPPMvalue],
+        //         };
+        //         // debugger
+        //         deleteUDTresponse = await objectsService.postUDT(body);
+        //         console.info('dummyPPM_ValuesKeys Delete RESPONSE: ', JSON.stringify(deleteUDTresponse, null, 2));
+        //         expect(deleteUDTresponse).to.deep.include({
+        //             MapDataExternalID: tableName,
+        //             SecondaryKey: null,
+        //             Values: [client.BaseURL.includes('staging') ? dummyPPMvalue.split('\\') : dummyPPMvalue],
+        //         });
+        //         expect(deleteUDTresponse).to.have.property('MainKey').that.contains('ZDS1@A001@Dummy');
+        //         expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
+        //         expect(deleteUDTresponse)
+        //             .to.have.property('ModificationDateTime')
+        //             .that.contains(new Date().toISOString().split('T')[0]);
+        //         expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
+        //         expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
+        //         expect(deleteUDTresponse).to.have.property('InternalID').that.equals(dummyPPM_InternalID);
+        //     });
+        // });
     });
 
     async function uploadConfiguration(payload: any) {

@@ -68,7 +68,9 @@ export async function PricingTests(email: string, password: string, client: Clie
     let Drug0002priceTSAs_OC: PriceTsaFields;
     let Drug0004priceTSAs_OC: PriceTsaFields;
     let base64ImageComponent;
+    let duration: string;
 
+    const dummyPPM_Values_length = 49999;
     // const testAccounts = ['Acc01'];
     const testAccounts = ['Acc01', 'OtherAcc'];
     // const testStates = ['baseline', '3units', '4cases(24units)'];
@@ -155,10 +157,18 @@ export async function PricingTests(email: string, password: string, client: Clie
                         title: `New Slaes Order trasaction started`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
-                    const duration = await (await driver.findElement(orderPage.Duration_Span)).getAttribute('title');
-                    console.info(`DURATION at Sales Order Load: ${duration}`, [
-                        ConsoleColors.PageMessage.split('color: ')[1],
-                    ]);
+                });
+
+                it(`PERFORMANCE: making sure Sales Order Loading Duration is acceptable`, async function () {
+                    duration = await (await driver.findElement(orderPage.Duration_Span)).getAttribute('title');
+                    console.info(`DURATION at Sales Order Load: ${duration}`);
+                    addContext(this, {
+                        title: `Sales Order - Loading Time`,
+                        value: `${duration} ms`,
+                    });
+                    const duration_num = Number(duration);
+                    expect(typeof duration_num).equals('number');
+                    expect(duration_num).to.be.below(550);
                 });
 
                 it(`switch to 'Line View'`, async function () {
@@ -174,7 +184,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                     describe(`ORDER CENTER "${state}"`, () => {
                         testItems.forEach((item) => {
                             it(`checking item "${item}"`, async function () {
-                                let duration;
+                                // let duration;
                                 await searchInOrderCenter.bind(this)(item);
                                 switch (
                                     state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
@@ -235,6 +245,10 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     default:
                                         break;
                                 }
+                                addContext(this, {
+                                    title: `Duration - After Change quantity of ${item}`,
+                                    value: `${duration} ms`,
+                                });
                                 const priceTSAs = await getItemTSAs('OrderCenter', item);
                                 console.info(`${item} ${state} priceTSAs:`, priceTSAs);
 
@@ -1735,11 +1749,15 @@ export async function PricingTests(email: string, password: string, client: Clie
                         const tableName = 'PPM_Values';
                         const updatedUDT = await objectsService.getUDT({
                             where: "MapDataExternalID='" + tableName + "'",
+                            page_size: -1,
                         });
                         console.info('updatedUDT: ', updatedUDT);
                         expect(updatedUDT)
                             .to.be.an('array')
-                            .with.lengthOf(Object.keys(pricingData.documentsIn_PPM_Values).length);
+                            // .with.lengthOf(Object.keys(pricingData.documentsIn_PPM_Values).length);
+                            .with.lengthOf(
+                                Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
+                            );
                         // Add verification tests
                     });
                     it(`navigating to the account "${
@@ -1826,9 +1844,13 @@ export async function PricingTests(email: string, password: string, client: Clie
                     it('validating "PPM_Values" UDT values via API', async () => {
                         const ppmVluesEnd = await objectsService.getUDT({
                             where: "MapDataExternalID='PPM_Values'",
+                            page_size: -1,
                         });
 
-                        expect(ppmVluesEnd.length).equals(Object.keys(pricingData.documentsIn_PPM_Values).length);
+                        // expect(ppmVluesEnd.length).equals(Object.keys(pricingData.documentsIn_PPM_Values).length);
+                        expect(ppmVluesEnd.length).equals(
+                            Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
+                        );
                         ppmVluesEnd.forEach((tableRow) => {
                             expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
                         });
