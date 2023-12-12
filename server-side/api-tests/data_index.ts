@@ -436,7 +436,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             });
 
             it('All Activities Polling', async () => {
-                // debugger;
+                debugger;
                 let pollingResponse;
                 let maxLoopsCounter = 90;
                 do {
@@ -512,6 +512,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 expect(publishResponse.Ok).to.equal(true);
                 expect(publishResponse.Status).to.equal(200);
                 expect(publishResponse.Body.success).to.equal(true);
+                debugger;
                 let pollingResponse;
                 let loopCounter = 0;
                 do {
