@@ -48,15 +48,19 @@ export const testData = {
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-    'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', ''], //23/12/23: EVGENY - new Dep. of pages
-    'pepperi-pack': ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''], //19/9/23: add for pages 0.9.x as its a dependency
+    'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', ''],
     Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
 };
+
+//this is done because sync installations are using "phased=false"
+const testDataWithSync = testData;
+testDataWithSync['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', '1.0.53'];
+testDataWithSync['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.2.28'];
 
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
 export const testDataWithNewSync = {
     configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
-    ...testData,
+    ...testDataWithSync,
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
@@ -1173,7 +1177,6 @@ export default class GeneralService {
                 addonName == 'sync' || //
                 addonName == 'Core Data Source Interface' || //
                 addonName == 'Core Resources' || //
-                addonName == 'pepperi-pack' || //EVGENY123
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
