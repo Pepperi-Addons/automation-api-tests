@@ -116,7 +116,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
 
     const testData = {
         VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', '1.1.105'],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
         // 'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', '0.5.12'], // current phased version 0.5.10 | dependency > 0.5.7
