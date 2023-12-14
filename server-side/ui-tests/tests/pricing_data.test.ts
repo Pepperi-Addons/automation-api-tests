@@ -108,7 +108,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                     break;
                 case '6':
                 case '7':
-                    console.info('AT installedPricingVersion CASE 6');
+                    console.info('AT installedPricingVersion CASE 6 or 7');
                     pricingData = new PricingData06();
                     break;
 
