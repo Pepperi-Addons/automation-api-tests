@@ -115,6 +115,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
     //#regression Upgrade visit flow dependencies
 
     const testData = {
+        'pepperi-pack': ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''],
         VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
