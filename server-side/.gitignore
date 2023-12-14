@@ -3,3 +3,4 @@ build/**
 publish/*.js
 mochawesome-report/*
 *.csv
+xfas
