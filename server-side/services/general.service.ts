@@ -53,9 +53,25 @@ export const testData = {
 };
 
 //this is done because sync installations are using "phased=false"
+const testDataWithSyncForCpi = testData;
+testDataWithSyncForCpi['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', '1.0.53'];
+testDataWithSyncForCpi['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.2.28'];
+
+//this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
+export const testDataWithNewSyncForCpiRegression = {
+    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+    ...testDataWithSyncForCpi,
+    'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+    'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
+    'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+    Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
+};
+
+//this is done because sync installations are using "phased=false"
 const testDataWithSync = testData;
 testDataWithSync['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', '1.0.53'];
-testDataWithSync['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.2.28'];
+testDataWithSync['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', ''];
 
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
 export const testDataWithNewSync = {
@@ -366,6 +382,7 @@ export default class GeneralService {
         this.setOfAddonsForE2EusersWithNewSync = setOfAddonsForE2EusersWithNewSync;
         this.setOfAddonsForCpiNodeTesting = setOfAddonsForCpiNodeTesting;
         this.testData = testData;
+        this.testDataWithNewSyncForCpiRegression = testDataWithNewSyncForCpiRegression;
         this.testDataWithNewSync = testDataWithNewSync;
         this.testDataForInitUser = testDataForInitUser;
         this.ConsoleColors = ConsoleColors;
@@ -374,6 +391,7 @@ export default class GeneralService {
     public setOfAddonsForCpiNodeTesting;
     public testData;
     public testDataWithNewSync;
+    public testDataWithNewSyncForCpiRegression;
     public testDataForInitUser;
     public ConsoleColors;
 
@@ -1714,6 +1732,18 @@ export default class GeneralService {
             varPass,
             otherTestData ? otherTestData : testData,
             isPhased ? isPhased : false,
+        );
+        return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
+    }
+
+    async baseAddonVersionsInstallationNewSyncForCpiRegression(varPass: string, otherTestData?: any) {
+        const isInstalledArr = await this.areAddonsInstalled(
+            otherTestData ? otherTestData : testDataWithNewSyncForCpiRegression,
+        );
+        const chnageVersionResponseArr = await this.changeVersion(
+            varPass,
+            otherTestData ? otherTestData : testDataWithNewSyncForCpiRegression,
+            false,
         );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
