@@ -1914,15 +1914,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                             valueObj.Hidden = true;
                             return await objectsService.postUDT(valueObj);
                         }
-                        // const body: UserDefinedTableRow = {
-                        //     InternalID: dummyPPM_InternalID,
-                        //     Hidden: true,
-                        //     MainKey: valueObj?.MainKey || '',
-                        //     SecondaryKey: '',
-                        //     MapDataExternalID: tableName,
-                        //     Values: [dummyPPMvalue],
-                        // };
-                        // debugger
                     }),
                 );
                 expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
@@ -1937,7 +1928,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         expect(deleteUDTresponse).to.deep.include({
                             MapDataExternalID: tableName,
                             SecondaryKey: null,
-                            Values: [client.BaseURL.includes('staging') ? PPMvalue.split('\\') : PPMvalue],
+                            Values: [PPMvalue],
                         });
                         expect(deleteUDTresponse).to.have.property('MainKey');
                         expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
