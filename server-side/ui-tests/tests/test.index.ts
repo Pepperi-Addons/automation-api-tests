@@ -2612,6 +2612,8 @@ export async function handleTeamsURL(addonName, service, email, pass) {
         case 'NODE': //new teams
         case 'CPI-NODE':
             return await service.getSecretfromKMS(email, pass, 'CPINodeTeamsWebHook');
+        case 'CRAWLER':
+            return await service.getSecretfromKMS(email, pass, 'CRAWLERTeamsWebHook');
     }
 }
 
@@ -3383,6 +3385,12 @@ function resolveUserPerTest(addonName): any[] {
                 'CpiNodeTesterProd@pepperitest.com',
                 'CpiNodeTesterSB@pepperitest.com',
             ];
+        case 'CRAWLER':
+            return [
+                'crawlerTesterEU@pepperitest.com',
+                'crawlerTesterProd@pepperitest.com',
+                'crawlerTesterSB@pepperitest.com',
+            ];
         default:
             return [];
     }
@@ -3500,6 +3508,19 @@ async function getRelatedItemsTests(userName, env) {
     return toReturn;
 }
 
+async function getCrawlerTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/f489d076-381f-4cf7-aa63-33c6489eb017/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function getPFSTests(userName, env) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
@@ -3576,6 +3597,8 @@ async function runDevTestOnCertainEnv(
         urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
     } else if (addonName === 'RELATED-ITEMS') {
         urlToCall = '/addons/api/async/4f9f10f3-cd7d-43f8-b969-5029dad9d02b/tests/tests';
+    } else if (addonName === 'CRAWLER') {
+        urlToCall = '/addons/api/async/f489d076-381f-4cf7-aa63-33c6489eb017/tests/tests';
     } else if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests';
         headers = {
@@ -3639,6 +3662,8 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getConfifurationsTests(user, 'prod');
     } else if (addonName === 'RELATED-ITEMS') {
         return await getRelatedItemsTests(user, env);
+    } else if (addonName === 'CRAWLER') {
+        return await getCrawlerTests(user, env);
     } else if (addonName === 'PEPPERI-FILE-STORAGE' || addonName === 'PFS') {
         return await getPFSTests(user, 'prod');
     } else if (addonName === 'JOURNEY-TRACKER' || addonName === 'JOURNEY') {
@@ -3684,7 +3709,8 @@ function prepareTestBody(addonName, currentTestName) {
         addonName === 'JOURNEY' ||
         addonName === 'JOURNEY-TRACKER' ||
         addonName === 'NODE' ||
-        addonName === 'CPI-NODE'
+        addonName === 'CPI-NODE' ||
+        addonName === 'CRAWLER'
     ) {
         body = {
             Name: currentTestName,
