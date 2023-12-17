@@ -2323,6 +2323,8 @@ export default class GeneralService {
             case 'NODE':
             case 'CPI-NODE':
                 return 'bb6ee826-1c6b-4a11-9758-40a46acb69c5';
+            case 'CRAWLER':
+                return 'f489d076-381f-4cf7-aa63-33c6489eb017';
             default:
                 return 'none';
         }
