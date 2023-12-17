@@ -411,6 +411,7 @@ export async function UomTests(email: string, password: string, varPass: string,
             it('Adding ATD to Home Page', async function () {
                 await webAppHomePage.returnToHomePage();
                 await webAppHeader.openSettings();
+                await uom.isSpinnerDone();
                 //4. add the ATD to home screen
                 await brandedApp.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
                 await webAppHomePage.manualResync(client);

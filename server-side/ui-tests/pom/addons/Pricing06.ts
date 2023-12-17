@@ -49,7 +49,7 @@ export class PricingData06 {
                     },
                     {
                         Key: 'Discount2',
-                        ConditionsOrder: ['ZDS4', 'ZDS5'],
+                        ConditionsOrder: ['ZDS4', 'ZDS5', 'ZDS6', 'ZDS7'],
                         InitialPrice: {
                             Type: 'Block',
                             Name: 'Base',
@@ -59,6 +59,18 @@ export class PricingData06 {
                             Name: 'Base',
                         },
                     },
+                    // {
+                    //     Key: 'Discount3',
+                    //     ConditionsOrder: ['ZDS6', 'ZDS7'],
+                    //     InitialPrice: {
+                    //         Type: 'Block',
+                    //         Name: 'Base',
+                    //     },
+                    //     CalculatedOfPrice: {
+                    //         Type: 'Block',
+                    //         Name: 'Base',
+                    //     },
+                    // },
                     {
                         Key: 'GroupDiscount',
                         Group: true,
@@ -110,6 +122,10 @@ export class PricingData06 {
                     {
                         Condition: 'ZDS1',
                         ExcludeConditions: ['ZDS4'],
+                    },
+                    {
+                        Condition: 'ZDS6',
+                        ExcludeConditions: ['ZDS7'],
                     },
                 ],
                 CalculatedItemFields: [
@@ -281,6 +297,16 @@ export class PricingData06 {
                 TablesSearchOrder: ['A001'],
             },
             {
+                Key: 'ZDS6',
+                Name: 'ZDS5',
+                TablesSearchOrder: ['A003', 'A004', 'A001'],
+            },
+            {
+                Key: 'ZDS7',
+                Name: 'ZDS5',
+                TablesSearchOrder: ['A002', 'A004', 'A003'],
+            },
+            {
                 Key: 'ZGD1',
                 Name: 'ZGD1',
                 TablesSearchOrder: ['A002', 'A003'],
@@ -349,6 +375,8 @@ export class PricingData06 {
             '[[true,"1555891200000","1704067200000","1","1","ZDS4_A001",[[0,"D",10,"%"]]],[true,"1701388800000","","1","1","ZDS4_A001",[[0,"D",5,"%"]]]]',
         'ZDS5@A001@Frag007':
             '[[true,"1555891200000","1704067200000","1","1","ZDS5_A001",[[0,"D",10,"%"]]],[true,"1701388800000","","1","1","ZDS5_A001",[[0,"D",5,"%"]]]]',
+        'ZBASE@A003@Acc01@Hand Cosmetics':
+            '[[true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",10,"P"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",50,"P"]],"CS","CS"]]',
     };
 
     public testItemsValues = {

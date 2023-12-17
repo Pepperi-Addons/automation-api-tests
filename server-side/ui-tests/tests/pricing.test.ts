@@ -12,6 +12,7 @@ import { Key } from 'selenium-webdriver';
 // import { PricingData } from '../pom/addons/Pricing';
 import { PricingData05 } from '../pom/addons/Pricing05';
 import { PricingData06 } from '../pom/addons/Pricing06';
+import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 
 interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;
@@ -69,7 +70,9 @@ export async function PricingTests(email: string, password: string, client: Clie
     let Drug0004priceTSAs_OC: PriceTsaFields;
     let base64ImageComponent;
     let duration: string;
+    let ppmVluesEnd: UserDefinedTableRow[];
 
+    const tableName = 'PPM_Values';
     const dummyPPM_Values_length = 49999;
     // const testAccounts = ['Acc01'];
     const testAccounts = ['Acc01', 'OtherAcc'];
@@ -1713,8 +1716,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                         expect(latestActivityStatus).to.equal('Submitted');
                     });
                     it('changing values in "PPM_Values" UDT', async () => {
-                        const tableName = 'PPM_Values';
-
                         updatedUDTRowPOST = await objectsService.postUDT({
                             MapDataExternalID: tableName,
                             MainKey: 'ZDS3@A001@Drug0004',
@@ -1746,7 +1747,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                         await webAppHomePage.manualResync(client);
                     });
                     it('validating "PPM_Values" UDT values via API', async () => {
-                        const tableName = 'PPM_Values';
                         const updatedUDT = await objectsService.getUDT({
                             where: "MapDataExternalID='" + tableName + "'",
                             page_size: -1,
@@ -1810,7 +1810,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                     });
                     it('reverting values in "PPM_Values" UDT to the original values', async () => {
-                        const tableName = 'PPM_Values';
                         updatedUDTRowPOST = await objectsService.postUDT({
                             MapDataExternalID: tableName,
                             MainKey: 'ZDS3@A001@Drug0004',
@@ -1842,8 +1841,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                         await webAppHomePage.manualResync(client);
                     });
                     it('validating "PPM_Values" UDT values via API', async () => {
-                        const ppmVluesEnd = await objectsService.getUDT({
-                            where: "MapDataExternalID='PPM_Values'",
+                        ppmVluesEnd = await objectsService.getUDT({
+                            where: `MapDataExternalID='${tableName}'`,
                             page_size: -1,
                         });
 
@@ -1893,6 +1892,78 @@ export async function PricingTests(email: string, password: string, client: Clie
                         console.info('List is EMPTY - no activities found');
                     }
                 }
+            });
+
+            it('deleting valid rules from the UDT "PPM_Values"', async () => {
+                const valueObjs: UserDefinedTableRow[] = [];
+                const validPPM_ValuesKeys = Object.keys(pricingData.documentsIn_PPM_Values);
+                const deleteResponses = await Promise.all(
+                    validPPM_ValuesKeys.map(async (validPPM_Key) => {
+                        const valueObj: UserDefinedTableRow | undefined = ppmVluesEnd.find((listing) => {
+                            if (listing.MainKey === validPPM_Key) return listing;
+                        });
+                        console.info(
+                            'validPPM_Key:',
+                            validPPM_Key,
+                            ', validPPM_ValueObj: ',
+                            JSON.stringify(valueObj, null, 2),
+                        );
+                        if (valueObj) {
+                            console.info('valueObj EXIST!');
+                            valueObjs.push(valueObj);
+                            valueObj.Hidden = true;
+                            return await objectsService.postUDT(valueObj);
+                        }
+                        // const body: UserDefinedTableRow = {
+                        //     InternalID: dummyPPM_InternalID,
+                        //     Hidden: true,
+                        //     MainKey: valueObj?.MainKey || '',
+                        //     SecondaryKey: '',
+                        //     MapDataExternalID: tableName,
+                        //     Values: [dummyPPMvalue],
+                        // };
+                        // debugger
+                    }),
+                );
+                expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
+                deleteResponses.forEach((deleteUDTresponse) => {
+                    console.info(
+                        `${deleteUDTresponse?.MainKey} Delete RESPONSE: `,
+                        JSON.stringify(deleteUDTresponse, null, 2),
+                    );
+                    if (deleteUDTresponse) {
+                        console.info('UDT delete response exist!');
+                        const PPMvalue = pricingData.documentsIn_PPM_Values[deleteUDTresponse.MainKey];
+                        expect(deleteUDTresponse).to.deep.include({
+                            MapDataExternalID: tableName,
+                            SecondaryKey: null,
+                            Values: [client.BaseURL.includes('staging') ? PPMvalue.split('\\') : PPMvalue],
+                        });
+                        expect(deleteUDTresponse).to.have.property('MainKey');
+                        expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
+                        expect(deleteUDTresponse)
+                            .to.have.property('ModificationDateTime')
+                            .that.contains(new Date().toISOString().split('T')[0]);
+                        expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
+                        expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
+                        expect(deleteUDTresponse).to.have.property('InternalID');
+                    }
+                });
+            });
+
+            it('performing sync', async () => {
+                await webAppHeader.goHome();
+                driver.sleep(0.2 * 1000);
+                await webAppHomePage.isSpinnerDone();
+                await webAppHomePage.manualResync(client);
+            });
+
+            it('validating "PPM_Values" UDT values via API', async () => {
+                ppmVluesEnd = await objectsService.getUDT({
+                    where: `MapDataExternalID='${tableName}'`,
+                    page_size: -1,
+                });
+                expect(ppmVluesEnd.length).equals(dummyPPM_Values_length);
             });
         });
     });
