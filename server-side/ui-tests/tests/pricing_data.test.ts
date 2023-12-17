@@ -108,7 +108,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                     break;
                 case '6':
                 case '7':
-                    console.info('AT installedPricingVersion CASE 6');
+                    console.info('AT installedPricingVersion CASE 6 or 7');
                     pricingData = new PricingData06();
                     break;
 
@@ -117,6 +117,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
             }
             await uploadConfiguration(pricingData.config);
         });
+
         // it('sending configuration object to end point', async () => {
         //     pricingData = new PricingData();
         //     switch (installedPricingVersion) {
@@ -134,6 +135,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
         //     }
         //     // pricingData = new PricingData05();
         // });
+
         it('inserting valid rules to the UDT "PPM_Values"', async () => {
             // const tableName = 'PPM_Values';
             const dataToBatch: {
@@ -169,6 +171,9 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                     .that.equals('/user_defined_tables/' + row.InternalID);
             });
         });
+
+        // The following code uses for ONE-TIME insertion of values to PPM_Values UDT
+
         // it('inserting 20,000 dummy rules to the UDT "PPM_Values"', async () => {
         //     for (let i = 0; i < 10; i++) {
         //         dummyDataToBatch = [];
@@ -202,11 +207,13 @@ export async function PricingDataPrep(varPass: string, client: Client) {
         //         });
         //     }
         // });
+
         it('get UDT Values (PPM_Values)', async () => {
             initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
             // console.info('PPM_Values: ', JSON.stringify(initialPpmValues, null, 2));
             console.info('PPM_Values Length: ', JSON.stringify(initialPpmValues.length, null, 2));
         });
+
         it('validating "PPM_Values" via API', async () => {
             console.info('BASE URL: ', client.BaseURL);
             // debugger
@@ -243,10 +250,12 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                         : matchingRowOfinitialPpmValues['Values'][0],
                 );
             });
+
             // initialPpmValues.forEach((tableRow) => {
             //     expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
             // });
         });
+
         // it('deleting dummy rules from the UDT "PPM_Values"', async () => {
         //     generalService.sleep(5 * 1000);
         //     dummyPPM_ValuesKeys.forEach(async (dummyPPM_InternalID) => {

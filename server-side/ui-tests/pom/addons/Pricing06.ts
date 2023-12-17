@@ -3,7 +3,7 @@ export class PricingData06 {
         PPM_General: {
             QuantityCriteriaField: 'UnitsQuantity',
             PriceCriteriaField: 'TSATotalLinePrice',
-            CalcDateField: '',
+            CalcDateField: 'TransactionTSAPricingDate',
             UOM: {
                 ConfigurationField: 'TSAUOMConfig',
                 AllowedUomsField: 'TSAUOMAllowedUOMs',
@@ -47,6 +47,30 @@ export class PricingData06 {
                             Name: 'Base',
                         },
                     },
+                    {
+                        Key: 'Discount2',
+                        ConditionsOrder: ['ZDS4', 'ZDS5', 'ZDS6', 'ZDS7'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                    },
+                    // {
+                    //     Key: 'Discount3',
+                    //     ConditionsOrder: ['ZDS6', 'ZDS7'],
+                    //     InitialPrice: {
+                    //         Type: 'Block',
+                    //         Name: 'Base',
+                    //     },
+                    //     CalculatedOfPrice: {
+                    //         Type: 'Block',
+                    //         Name: 'Base',
+                    //     },
+                    // },
                     {
                         Key: 'GroupDiscount',
                         Group: true,
@@ -92,6 +116,16 @@ export class PricingData06 {
                             Type: 'Block',
                             Name: 'ManualLine',
                         },
+                    },
+                ],
+                ExclusionRules: [
+                    {
+                        Condition: 'ZDS1',
+                        ExcludeConditions: ['ZDS4'],
+                    },
+                    {
+                        Condition: 'ZDS6',
+                        ExcludeConditions: ['ZDS7'],
                     },
                 ],
                 CalculatedItemFields: [
@@ -155,6 +189,75 @@ export class PricingData06 {
                             UomIndex: 1,
                         },
                     },
+                    {
+                        Name: 'TSAPriceDiscount2UnitPriceAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Discount2',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 1,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceTaxTotal',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Tax',
+                        },
+                        BlockPriceField: {
+                            Type: 'Total',
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceTaxTotalPercent',
+                        Type: '%',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Tax',
+                        },
+                        Operand2: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        BlockPriceField: {
+                            Type: 'Total',
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceTaxTotalDiff',
+                        Type: '-',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Tax',
+                        },
+                        Operand2: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        BlockPriceField: {
+                            Type: 'Total',
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceTaxUnitDiff',
+                        Type: '-',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'Tax',
+                        },
+                        Operand2: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 1,
+                        },
+                    },
                 ],
                 AdditionalItemPricing: {
                     BasedOnBlock: 'Base',
@@ -182,6 +285,26 @@ export class PricingData06 {
                 Key: 'ZDS3',
                 Name: 'ZDS3',
                 TablesSearchOrder: ['A001'],
+            },
+            {
+                Key: 'ZDS4',
+                Name: 'ZDS4',
+                TablesSearchOrder: ['A001'],
+            },
+            {
+                Key: 'ZDS5',
+                Name: 'ZDS5',
+                TablesSearchOrder: ['A001'],
+            },
+            {
+                Key: 'ZDS6',
+                Name: 'ZDS5',
+                TablesSearchOrder: ['A003', 'A004', 'A001'],
+            },
+            {
+                Key: 'ZDS7',
+                Name: 'ZDS5',
+                TablesSearchOrder: ['A002', 'A004', 'A003'],
             },
             {
                 Key: 'ZGD1',
@@ -252,7 +375,10 @@ export class PricingData06 {
             '[[true,"1555891200000","1704067200000","1","1","ZDS4_A001",[[0,"D",10,"%"]]],[true,"1701388800000","","1","1","ZDS4_A001",[[0,"D",5,"%"]]]]',
         'ZDS5@A001@Frag007':
             '[[true,"1555891200000","1704067200000","1","1","ZDS5_A001",[[0,"D",10,"%"]]],[true,"1701388800000","","1","1","ZDS5_A001",[[0,"D",5,"%"]]]]',
+        'ZBASE@A003@Acc01@Hand Cosmetics':
+            '[[true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",10,"P"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",50,"P"]],"CS","CS"]]',
     };
+
     public testItemsValues = {
         'Lipstick no.1': {
             ItemPrice: 27.75,

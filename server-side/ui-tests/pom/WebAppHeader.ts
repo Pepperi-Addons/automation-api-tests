@@ -21,7 +21,7 @@ export class WebAppHeader extends Page {
 
     public async openSettings() {
         await this.browser.click(this.Settings);
-        this.browser.sleep(1800);
+        this.browser.sleep(2.5 * 1000);
         return;
     }
 
