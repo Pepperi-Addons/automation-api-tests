@@ -70,6 +70,10 @@ export class OrderPage extends WebAppList {
         return By.xpath(`//span[@id="ItemExternalID"][contains(@title,"${name}")]/ancestor::mat-grid-list`);
     }
 
+    public getSelectorOfSidebarSectionInOrderCenterByName(name: string) {
+        return By.xpath(`//mat-tree//span[text()="${name}"]/parent::li/parent::mat-tree-node`);
+    }
+
     public getSelectorOfCustomFieldInOrderCenterByItemName(fieldName: string, itemName: string) {
         return By.xpath(`${this.getSelectorOfItemInOrderCenterByName(itemName).value}${this[fieldName].value}`);
     }

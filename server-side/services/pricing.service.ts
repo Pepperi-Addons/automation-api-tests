@@ -190,7 +190,7 @@ export class PricingService {
 
     public async changeSelectedQuantityOfSpecificItemInOrderCenter(
         this: Context,
-        uomValue: 'Each' | 'Case',
+        uomValue: string,
         nameOfItem: string,
         quantityOfItem: number,
         driver: Browser,
