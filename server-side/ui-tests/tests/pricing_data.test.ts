@@ -12,6 +12,7 @@ import { PricingData06 } from '../pom/addons/Pricing06';
 chai.use(promised);
 
 export async function PricingDataPrep(varPass: string, client: Client) {
+    const dateTime = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const tableName = 'PPM_Values';
@@ -61,7 +62,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
 
     describe(`Prerequisites Addons for PRICING Tests - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-    }`, async () => {
+    } | Date Time: ${dateTime}`, async () => {
         isInstalledArr.forEach((isInstalled, index) => {
             it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
                 expect(isInstalled).to.be.true;

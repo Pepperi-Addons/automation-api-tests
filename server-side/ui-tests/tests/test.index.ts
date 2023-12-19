@@ -499,11 +499,12 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     if (tests === 'Pricing') {
         await PricingDataPrep(varPass, client);
         await PricingTests(email, pass, client);
+        await Pricing06Tests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Pricing06')) {
-        await Pricing06DataPrep(varPass, client);
+        // await Pricing06DataPrep(varPass, client);
         await Pricing06Tests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }

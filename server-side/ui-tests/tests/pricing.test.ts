@@ -27,9 +27,10 @@ chai.use(promised);
 export async function PricingTests(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
-    const installedPricingVersion = (await generalService.getInstalledAddons())
-        .find((addon) => addon.Addon.Name == 'pricing')
-        ?.Version?.split('.')[1];
+    const installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'pricing',
+    )?.Version;
+    const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
     let pricingData;
     switch (installedPricingVersion) {
@@ -105,7 +106,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         'PriceTaxUnitPriceAfter1',
     ];
 
-    describe('Pricing UI tests', () => {
+    describe(`Pricing UI tests | Ver ${installedPricingVersionLong}`, () => {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
