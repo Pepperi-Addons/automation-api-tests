@@ -106,7 +106,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         'PriceTaxUnitPriceAfter1',
     ];
 
-    describe('Pricing UI tests', () => {
+    describe(`Pricing UI tests | Ver ${installedPricingVersionLong}`, () => {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
