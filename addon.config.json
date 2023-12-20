@@ -27,5 +27,9 @@
     "CPISide": [
       "addon-cpi-simcha.ts"
     ]
-  }
+  },
+  "AddonPackage": 
+  {
+      "ClientZip": false                                     
+   }
 }
