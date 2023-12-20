@@ -163,14 +163,17 @@ export async function SurveyTests(email: string, password: string, client: Clien
     // #region Upgrade survey dependencies
 
     const testData = {
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
+        'application-header': ['9bc8af38-dd67-4d33-beb0-7d6b39a6e98d', ''],
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'],
-        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''], //currently locked as this version will make rep and buyer work
-        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], //has to remain untouched - latest 0.7.x
+        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', '1.1.115'],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
@@ -181,6 +184,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+        'pepperi-pack': ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''],
         'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''],
         Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', ''],
     };
