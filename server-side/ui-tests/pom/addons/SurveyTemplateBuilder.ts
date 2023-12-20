@@ -146,6 +146,7 @@ export class SurveyTemplateBuilder extends AddonPage {
     public SelectQuestionDropDown: By = By.xpath(`//mat-option[contains(@title,'{placeholder}')]`);
     public QuestionToFilterByDropDownValue: By = By.xpath(`//pep-multi-select-filter`);
     public ValueFromDropDownOfSearchingValues: By = By.xpath(`//mat-option//span[contains(text(),'{placeholder}')]`);
+    public ShowIfDropdownElement: By = By.xpath('//div[@role="listbox"]');
     public EmptySpaceToSaveValue: By = By.xpath(`//div[@class='cdk-overlay-container']`);
     public SaveFilterButton: By = By.xpath(`//mat-dialog-container//pep-button//button[@data-qa="Save"]`);
 
@@ -255,7 +256,7 @@ export class SurveyTemplateBuilder extends AddonPage {
 
     public async enterSurveyBuilderSettingsPage(): Promise<boolean> {
         const webAppHeader = new WebAppHeader(this.browser);
-        await webAppHeader.openSettings();
+        await webAppHeader.webApp18_openSettings();
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Sales Activities');
         await this.browser.click(webAppSettingsSidePanel.SurveysEditor);
@@ -468,7 +469,7 @@ export class SurveyTemplateBuilder extends AddonPage {
                     await this.browser.click(By.xpath(xpathQueryForValueFromDropDown));
                 }
                 this.browser.sleep(1500);
-                await this.browser.click(this.EmptySpaceToSaveValue);
+                await this.browser.sendKeysNoClear(this.ShowIfDropdownElement, Key.ESCAPE);
                 this.browser.sleep(1500);
                 if (index < question.ShowIf.FilterData.length - 1) {
                     await this.browser.click(this.AddFilterButton);

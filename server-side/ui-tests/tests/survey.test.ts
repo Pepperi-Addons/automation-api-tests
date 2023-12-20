@@ -241,7 +241,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
             it(`1. Create A UDC Which Extends 'surveys' Scheme Before Creating A Survey`, async function () {
-                debugger;
                 const udcService = new UDCService(generalService);
                 const newSurveyUDCName = 'NewSurveyCollection' + generalService.generateRandomString(4);
                 const response = await udcService.createUDCWithFields(
@@ -353,6 +352,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                         }
                     }
                 }
+                // debugger;
                 await webAppLoginPage.logout();
             });
             it('3. ADMIN Set Up: Login Again - Edit The Survey And See API Respose Is Changed', async function () {
