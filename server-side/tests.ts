@@ -89,10 +89,11 @@ import {
 import { SingleMaintenanceAndDependenciesAddonsTestsPart3 } from './api-tests/addons';
 import { DataIndexDor } from './api-tests/dor_data_index_tests';
 import SurveyBuilderTest from './cpi-tester/addonsTests/surveyBuilder';
-import { UpgradeDependenciesTestsWithNewSync } from './api-tests/test-service/upgrade_dependencies_with_new_sync';
+import { UpgradeDependenciesTestsWithNewSyncForCpiRegression } from './api-tests/test-service/upgrade_dependencies_with_new_sync_for_cpi_regression';
 import { OldLegacyResourcesTests } from './api-tests/old_legacy_resources';
 import { Adal40KImportAndPurgeTest } from './api-tests/adal_40k_import_export_and_purge';
 import { UnistallAddonFromAllUsers } from './api-tests/uninstall_addon_from_all_auto_users';
+import { UpgradeDependenciesTestsWithNewSync } from './api-tests/test-service/upgrade_dependencies_with_new_sync';
 // import { PapiClient } from '@pepperi-addons/papi-sdk'; WIP - dev tests
 // import { checkVersionsTest } from './api-tests/check_versions';
 
@@ -120,6 +121,21 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await UpgradeDependenciesTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function upgrade_dependencies_with_new_sync_for_cpi_regression(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Upgrade_Dependencies_New_Sync_Included';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await UpgradeDependenciesTestsWithNewSyncForCpiRegression(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();

@@ -26,7 +26,9 @@ export class OrderPage extends WebAppList {
         '//pep-quantity-selector//button[@id="TSAAOQMQuantity1"]',
     );
     public ItemQuantity_Minus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[3]/button');
+    public ItemQuantity2_Minus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[3]/button');
     public ItemQuantity_Plus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[5]/button');
+    public ItemQuantity2_Plus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[5]/button');
 
     public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
     public Cart_Totals: By = By.xpath('//list-totals-view');
@@ -38,7 +40,9 @@ export class OrderPage extends WebAppList {
     public TransactionID: By = By.id('WrntyID');
 
     public UnitOfMeasure_Selector_Value: By = By.xpath('//span[@id="TSAAOQMUOM1"]');
+    public UnitOfMeasure2_Selector_Value: By = By.xpath('//span[@id="TSAAOQMUOM2"]');
     public Cart_UnitOfMeasure_Selector_Value: By = By.xpath('//*[@id="TSAAOQMUOM1"]');
+    public Cart_UnitOfMeasure2_Selector_Value: By = By.xpath('//*[@id="TSAAOQMUOM2"]');
 
     public PriceBaseUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceBaseUnitPriceAfter1"]');
     public PriceDiscountUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceDiscountUnitPriceAfter1"]');
@@ -54,28 +58,44 @@ export class OrderPage extends WebAppList {
         '//mat-tree//span[text()="Beauty Make Up"]/parent::li/parent::mat-tree-node',
     );
 
-    public getSelectorOfUnitOfMeasureOptionByText(text: string) {
-        return By.xpath(`//div[@id="TSAAOQMUOM1-panel"][@role="listbox"]/mat-option[@title="${text}"]`);
+    public getSelectorOfUnitOfMeasureOptionByText(text: string, uomIndex?: number) {
+        const path = `//div[@id="TSAAOQMUOM1-panel"][@role="listbox"]/mat-option[@title="${text}"]`;
+        if (uomIndex && uomIndex === 2) {
+            path.replace('1', '2');
+        }
+        return By.xpath(path);
     }
 
     public getSelectorOfItemInOrderCenterByName(name: string) {
         return By.xpath(`//span[@id="ItemExternalID"][contains(@title,"${name}")]/ancestor::mat-grid-list`);
     }
 
+    public getSelectorOfSidebarSectionInOrderCenterByName(name: string) {
+        return By.xpath(`//mat-tree//span[text()="${name}"]/parent::li/parent::mat-tree-node`);
+    }
+
     public getSelectorOfCustomFieldInOrderCenterByItemName(fieldName: string, itemName: string) {
         return By.xpath(`${this.getSelectorOfItemInOrderCenterByName(itemName).value}${this[fieldName].value}`);
     }
 
-    public getSelectorOfItemQuantityPlusButtonInOrderCenterByName(itemName: string) {
-        return By.xpath(
-            `${this.getSelectorOfItemInOrderCenterByName(itemName).value}${this.ItemQuantity_Plus_Button.value}`,
-        );
+    public getSelectorOfItemQuantityPlusButtonInOrderCenterByName(itemName: string, uomIndex?: number) {
+        let path: string = this.getSelectorOfItemInOrderCenterByName(itemName).value;
+        if (uomIndex && uomIndex === 2) {
+            path += this.ItemQuantity2_Plus_Button.value;
+        } else {
+            path += this.ItemQuantity_Plus_Button.value;
+        }
+        return By.xpath(path);
     }
 
-    public getSelectorOfItemQuantityMinusButtonInOrderCenterByName(itemName: string) {
-        return By.xpath(
-            `${this.getSelectorOfItemInOrderCenterByName(itemName).value}${this.ItemQuantity_Minus_Button.value}`,
-        );
+    public getSelectorOfItemQuantityMinusButtonInOrderCenterByName(itemName: string, uomIndex?: number) {
+        let path: string = this.getSelectorOfItemInOrderCenterByName(itemName).value;
+        if (uomIndex && uomIndex === 2) {
+            path += this.ItemQuantity2_Minus_Button.value;
+        } else {
+            path += this.ItemQuantity_Minus_Button.value;
+        }
+        return By.xpath(path);
     }
 
     public getSelectorOfItemQuantityPlusButtonInCartByName(itemName: string) {
