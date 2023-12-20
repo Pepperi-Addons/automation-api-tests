@@ -46,7 +46,7 @@ export const testData = {
     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
-    'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''], 
+    'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', ''],
     Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
