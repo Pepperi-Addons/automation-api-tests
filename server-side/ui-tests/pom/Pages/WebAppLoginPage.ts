@@ -17,6 +17,7 @@ export class WebAppLoginPage extends Page {
     public Password: By = By.css('input[type="password"]');
     public Next: By = By.css('#nextBtn');
     public LoginBtn: By = By.css('#loginBtn');
+    public UserBtn_Web18: By = By.css('[data-qa="SystemAvatar"]');
     public UserBtn: By = By.css('[data-qa="systemAvatar"]');
     public signOutBtn: By = By.id('btnSignOut');
 
@@ -90,6 +91,14 @@ export class WebAppLoginPage extends Page {
 
     public async logout(): Promise<void> {
         await this.browser.click(this.UserBtn);
+        await expect(this.untilIsVisible(this.signOutBtn, 50000)).eventually.to.be.true;
+        await this.browser.click(this.signOutBtn);
+        await expect(this.untilIsVisible(this.Next, 90000)).eventually.to.be.true;
+        console.log('got to IDP page');
+    }
+
+    public async logout_Web18(): Promise<void> {
+        await this.browser.click(this.UserBtn_Web18);
         await expect(this.untilIsVisible(this.signOutBtn, 50000)).eventually.to.be.true;
         await this.browser.click(this.signOutBtn);
         await expect(this.untilIsVisible(this.Next, 90000)).eventually.to.be.true;

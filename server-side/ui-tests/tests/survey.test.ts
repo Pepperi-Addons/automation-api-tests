@@ -353,7 +353,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     }
                 }
                 // debugger;
-                await webAppLoginPage.logout();
+                await webAppLoginPage.logout_Web18();
             });
             it('3. ADMIN Set Up: Login Again - Edit The Survey And See API Respose Is Changed', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
@@ -384,7 +384,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const resourceListUtils = new E2EUtils(driver);
                 const resourceViews = new ResourceViews(driver);
                 // Configure View - Accounts
-                await resourceListUtils.addView({
+                await resourceListUtils.addView_Web18({
                     nameOfView: 'Accounts',
                     descriptionOfView: 'Acc',
                     nameOfResource: 'accounts',
@@ -402,7 +402,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 });
                 await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
                 // Configure View - Survey
-                await resourceListUtils.addView({
+                await resourceListUtils.addView_Web18({
                     nameOfView: 'Surveys',
                     descriptionOfView: 'Sur',
                     nameOfResource: 'MySurveyTemplates',
@@ -426,7 +426,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             it('5. ADMIN Set Up: Create Page With Survey Block Inside It', async function () {
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveyBlockPage';
-                surveyBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
+                surveyBlockPageUUID = await e2eUtils.addPageNoSections_Web18(surveyBlockPageName, 'tests');
                 const pageBuilder = new PageBuilder(driver);
                 const createdPage = await pageBuilder.getPageByUUID(surveyBlockPageUUID, client);
                 const surveyBlockInstance = new SurveyBlock();
@@ -441,7 +441,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             it('6. ADMIN Set Up: Create Slug And Map It To Show The Page With Survey Block', async function () {
                 surveySlugDisplayName = `survey_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = surveySlugDisplayName;
-                await CreateSlug(
+                await CreateSlug_Web18(
                     email,
                     password,
                     driver,
@@ -464,13 +464,13 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
                 const scriptEditor = new ScriptEditor(driver);
-                scriptUUID = await scriptEditor.configureScriptForSurvey(script3, generalService);
+                scriptUUID = await scriptEditor.configureScriptForSurvey_Web18(script3, generalService);
                 await webAppHeader.goHome();
             });
             it('8. ADMIN Set Up: Create Page With SlideShow Which Will Run The Script', async function () {
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveySlideShow';
-                slideshowBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
+                slideshowBlockPageUUID = await e2eUtils.addPageNoSections_Web18(surveyBlockPageName, 'tests');
                 const pageBuilder = new PageBuilder(driver);
                 const createdPage = await pageBuilder.getPageByUUID(slideshowBlockPageUUID, client);
                 const SlideShowBlockInstance = new SlideShowBlock(scriptUUID);
@@ -485,7 +485,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
             it('9. ADMIN Set Up: Create A Slug For The Slideshow Page And Set It To Show On Homepage', async function () {
                 slideshowSlugDisplayName = `slideshow_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = slideshowSlugDisplayName;
-                await CreateSlug(
+                debugger;
+                await CreateSlug_Web18(
                     email,
                     password,
                     driver,
@@ -496,7 +497,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 );
                 driver.sleep(5000);
                 const webAppHeader = new WebAppHeader(driver);
-                await webAppHeader.openSettings();
+                await webAppHeader.webApp18_openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.addRepHomePageButtons(slideshowSlugDisplayName);
@@ -505,7 +506,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     await webAppHomePage.manualResync(client);
                 }
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slideshowSlugDisplayName);
-                debugger;
             });
         });
         describe('UI Test Configured Survey: Admin, Rep, Buyer', () => {
@@ -628,7 +628,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it('1.1. Admin Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.logout();
+                await webAppLoginPage.logout_Web18();
             });
             it('2. Rep Testing: Fill Survey Via UI, See Is Synced To Admin UDC', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
@@ -737,7 +737,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it('2.1. Rep Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.logout();
+                await webAppLoginPage.logout_Web18();
             });
             it('3. Buyer Testing: Fill Survey Via UI, See Is Synced To Admin UDC', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
@@ -846,7 +846,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it('3.1. Buyer Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.logout();
+                await webAppLoginPage.logout_Web18();
             });
             it('API Data Cleansing: 1. survey template', async function () {
                 //1. delete survey template
@@ -1026,6 +1026,56 @@ async function CreateSlug(
     const webAppHomePage = new WebAppHomePage(driver);
     await webAppHomePage.isSpinnerDone();
     await e2eUiService.navigateTo('Slugs');
+    await slugs.clickTab('Mapping_Tab');
+    driver.sleep(15 * 1000);
+    const webAppHeader = new WebAppHeader(driver);
+    await webAppHeader.goHome();
+}
+
+async function CreateSlug_Web18(
+    email: string,
+    password: string,
+    driver: Browser,
+    generalService: GeneralService,
+    slugDisplayName: string,
+    slug_path: string,
+    pageToMapToKey: string,
+) {
+    // const slugDisplayName = 'slideshow_slug';
+    // const slug_path = 'slideshow_slug';
+    const e2eUiService = new E2EUtils(driver);
+    await e2eUiService.navigateTo_Web18('Slugs');
+    const slugs: Slugs = new Slugs(driver);
+    driver.sleep(2000);
+    if (await driver.isElementVisible(slugs.SlugMappingScreenTitle)) {
+        await slugs.clickTab('Slugs_Tab');
+    }
+    driver.sleep(2000);
+    await slugs.createSlugEvgeny(slugDisplayName, slug_path, 'for testing');
+    driver.sleep(1000);
+    await slugs.clickTab('Mapping_Tab');
+    driver.sleep(1000);
+    await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
+    await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
+    await slugs.isSpinnerDone();
+    driver.sleep(2500);
+    const dataViewsService = new DataViewsService(generalService.papiClient);
+    const existingMappedSlugs = await slugs.getExistingMappedSlugsList(dataViewsService);
+    const slugsFields: MenuDataViewField[] = e2eUiService.prepareDataForDragAndDropAtSlugs(
+        [{ slug_path: slug_path, pageUUID: pageToMapToKey }],
+        existingMappedSlugs,
+    );
+    console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`);
+    const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
+    console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`);
+    const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
+    console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
+    driver.sleep(2 * 1000);
+    await e2eUiService.logOutLogIn_Web18(email, password);
+    const webAppHomePage = new WebAppHomePage(driver);
+    await webAppHomePage.isSpinnerDone();
+    await e2eUiService.navigateTo_Web18('Slugs');
+    driver.sleep(4 * 1000);
     await slugs.clickTab('Mapping_Tab');
     driver.sleep(15 * 1000);
     const webAppHeader = new WebAppHeader(driver);
