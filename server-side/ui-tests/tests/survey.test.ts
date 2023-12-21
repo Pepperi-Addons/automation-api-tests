@@ -970,7 +970,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHeader = new WebAppHeader(driver);
-                await webAppHeader.openSettings();
+                await webAppHeader.webApp18_openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.removeRepHomePageButtons(slideshowSlugDisplayName);
