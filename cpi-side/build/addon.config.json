@@ -1,6 +1,6 @@
 {
     "AddonUUID": "eb26afcd-3cf2-482e-9ab1-b53c41a6adbe",
-    "AddonVersion": "0.0.779",
+    "AddonVersion": "0.0.824",
     "DebugPort": 4400,
     "WebappBaseUrl": "https://app.sandbox.pepperi.com",
     "DefaultEditor": "editor",
@@ -27,5 +27,8 @@
         "CPISide": [
             "addon-cpi-simcha.ts"
         ]
+    },
+    "AddonPackage": {
+        "ClientZip": false
     }
 }
