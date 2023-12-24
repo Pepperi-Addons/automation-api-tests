@@ -89,10 +89,11 @@ import {
 import { SingleMaintenanceAndDependenciesAddonsTestsPart3 } from './api-tests/addons';
 import { DataIndexDor } from './api-tests/dor_data_index_tests';
 import SurveyBuilderTest from './cpi-tester/addonsTests/surveyBuilder';
-import { UpgradeDependenciesTestsWithNewSync } from './api-tests/test-service/upgrade_dependencies_with_new_sync';
+import { UpgradeDependenciesTestsWithNewSyncForCpiRegression } from './api-tests/test-service/upgrade_dependencies_with_new_sync_for_cpi_regression';
 import { OldLegacyResourcesTests } from './api-tests/old_legacy_resources';
 import { Adal40KImportAndPurgeTest } from './api-tests/adal_40k_import_export_and_purge';
 import { UnistallAddonFromAllUsers } from './api-tests/uninstall_addon_from_all_auto_users';
+import { UpgradeDependenciesTestsWithNewSync } from './api-tests/test-service/upgrade_dependencies_with_new_sync';
 // import { PapiClient } from '@pepperi-addons/papi-sdk'; WIP - dev tests
 // import { checkVersionsTest } from './api-tests/check_versions';
 
@@ -120,6 +121,21 @@ export async function upgrade_dependencies(client: Client, request: Request, tes
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await UpgradeDependenciesTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function upgrade_dependencies_with_new_sync_for_cpi_regression(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Upgrade_Dependencies_New_Sync_Included';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await UpgradeDependenciesTestsWithNewSyncForCpiRegression(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
@@ -399,19 +415,19 @@ export async function audit_logs(client: Client, testerFunctions: TesterFunction
     }
 }
 
-export async function addon_audit_logs(client: Client, testerFunctions: TesterFunctions) {
+export async function addon_audit_logs(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     if (testName != 'Addon_Audit_Logs' && testName != 'Sanity') {
         testName = 'Addon_Audit_Logs';
         service.PrintMemoryUseToLog('Start', testName);
         testerFunctions = service.initiateTesterFunctions(client, testName);
-        await AddonAuditLogsTests(service, testerFunctions);
+        await AddonAuditLogsTests(service, request, testerFunctions);
         await test_data(client, testerFunctions);
         service.PrintMemoryUseToLog('End', testName);
         testName = '';
         return await testerFunctions.run();
     } else {
-        return AddonAuditLogsTests(service, testerFunctions);
+        return AddonAuditLogsTests(service, request, testerFunctions);
     }
 }
 
@@ -598,23 +614,23 @@ export async function scheduler(client: Client, request: Request, testerFunction
     return await testerFunctions.run();
 }
 
-export async function code_jobs(client: Client, testerFunctions: TesterFunctions) {
+export async function code_jobs(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Code_Jobs';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    await AddonJobsTests(service, testerFunctions);
+    await AddonJobsTests(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
 }
 
-export async function addon_jobs(client: Client, testerFunctions: TesterFunctions) {
+export async function addon_jobs(client: Client, request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Addon_Jobs';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    await AddonJobsTests(service, testerFunctions);
+    await AddonJobsTests(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
@@ -1340,15 +1356,6 @@ export async function handleDevTestInstallation(
     service.PrintMemoryUseToLog('Start', testName);
     //2. upgrade dependencys - basic: correct for all addons
     await service.baseAddonVersionsInstallation(varPass);
-    //2.1 install template automation addon
-    const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, {
-        automation_template_addon: ['d541b959-87af-4d18-9215-1b30dbe1bcf4', ''],
-    });
-    if (templateAddonResponse[0] != true) {
-        throw new Error(
-            `Error: can't install automation_template_addon, got the exception: ${templateAddonResponse} from audit log`,
-        );
-    }
     //3. get dependencys of tested addon
     const addonDep = await getDependenciesOfAddon(service, addonUUID, varPass);
     //4. install on dist
@@ -1358,9 +1365,18 @@ export async function handleDevTestInstallation(
             const depObjNebula = {};
             depObjNebula['Nebula'] = ['00000000-0000-0000-0000-000000006a91', ''];
             const depObjSync = {};
-            depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.84'];
+            depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''];
             addonDep.push(depObjNebula);
             addonDep.push(depObjSync);
+        }
+        if (
+            addonUUID !== '5122dc6d-745b-4f46-bb8e-bd25225d350a' &&
+            addonDep.map((dep) => Object.keys(dep)[0]).includes('sync')
+        ) {
+            //New sync dependecy in case were not in sync addon but have to install it
+            const depObjSync = {};
+            depObjSync['pepperi-pack'] = ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''];
+            addonDep.splice(0, 0, depObjSync);
         }
         if (
             addonUUID === '00000000-0000-0000-0000-000000006a91' //Nebula

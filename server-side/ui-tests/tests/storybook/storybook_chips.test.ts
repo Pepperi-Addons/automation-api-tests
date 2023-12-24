@@ -37,6 +37,7 @@ export async function StorybookChipsTests() {
     ];
     const alignExpectedValues = ['left', 'center', 'right'];
     const styleTypeExpectedValues = ['weak', 'weak-invert', 'regular', 'strong'];
+    const typeExpectedValues = ['input', 'select'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
@@ -47,6 +48,7 @@ export async function StorybookChipsTests() {
     let mainExampleChips;
     let mainExampleChipsStyle;
     let allStyleTypes;
+    let allTypes;
     let allAlignments: WebElement[] = [];
 
     describe('Storybook "Chips" Tests Suite', function () {
@@ -263,15 +265,23 @@ export async function StorybookChipsTests() {
                             driver.sleep(1 * 1000);
                         });
                         it(`making sure current value is "False"`, async function () {
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
                             await storyBookPage.elemntDoNotExist(chips.MainExample_mandatoryIcon);
                         });
                         it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
+                            expect(mandatoryControlState).to.be.true;
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "true"`,
@@ -281,11 +291,15 @@ export async function StorybookChipsTests() {
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
                             await storyBookPage.elemntDoNotExist(chips.MainExample_mandatoryIcon);
                         });
                         break;
@@ -499,7 +513,59 @@ export async function StorybookChipsTests() {
                         it(`validate input`, async function () {
                             expect(chipsInputsTitles.includes('type')).to.be.true;
                         });
-                        // TODO
+                        it(`get all types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allTypes = await storyBookPage.inputs.getAllTypeInputValues();
+                            driver.sleep(1 * 1000);
+                            console.info('allTypes length: ', allTypes.length);
+                            expect(allTypes.length).equals(typeExpectedValues.length);
+                        });
+                        // it(`validate current type is "input"`, async function () {
+                        //     try {
+                        //         const chipsElement = await driver.findElement(chips.MainExampleChips_input);
+                        //         const chipsElementType = await chipsElement.getAttribute('outerHTML');
+                        //         console.info('chipsElement: ', chipsElement);
+                        //         expect(chipsElementType).to.equal('input');
+                        //     } catch (error) {
+                        //         console.error(error);
+                        //         throw new Error('Default type is not INPUT!')
+                        //     }
+                        // });
+                        typeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const type = allTypes[index];
+                                await type.click();
+                                let mainExampleSelector;
+                                switch (title) {
+                                    case 'input':
+                                        mainExampleSelector = chips.MainExampleChips_input;
+                                        break;
+                                    case 'select':
+                                        mainExampleSelector = chips.MainExampleChips_select;
+                                        break;
+
+                                    default:
+                                        mainExampleSelector = chips.MainExampleChips;
+                                        break;
+                                }
+                                await driver.findElement(mainExampleSelector);
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (type) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                await driver.click(chips.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of '${title}' (Type Input)`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
                         break;
 
                     case 'xAlignment':

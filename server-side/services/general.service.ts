@@ -24,8 +24,8 @@ export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON --
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version --
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi --
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.20.%'], //CPAS --
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.4.%'], //cpi-node (Cross Platform Engine) --
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.30.%'], //CPAS --
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'], //EVGENY 21/12/23: new node version
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
@@ -46,21 +46,42 @@ export const testData = {
     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
-    'Audit Log': ['00000000-0000-0000-0000-00000da1a109', '1.0.38'], //13/12: evgeny added this after daily with ido
+    'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-    'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', ''], //19/9/23: add for pages 0.9.x as its a dependency
+    'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', ''],
     Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
 };
 
+//this is done because sync installations are using "phased=false"
+const testDataWithSyncForCpi = testData;
+testDataWithSyncForCpi['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', '1.0.53'];
+testDataWithSyncForCpi['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.2.28'];
+
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
-export const testDataWithNewSync = {
+export const testDataWithNewSyncForCpiRegression = {
     configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
-    ...testData,
+    ...testDataWithSyncForCpi,
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'],
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
+};
+
+//this is done because sync installations are using "phased=false"
+const testDataWithSync = testData;
+testDataWithSync['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', '1.0.53'];
+testDataWithSync['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', ''];
+
+//this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
+export const testDataWithNewSync = {
+    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+    ...testDataWithSync,
+    'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+    'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
+    'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+    Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
 };
 
 export const testDataForInitUser = {
@@ -361,6 +382,7 @@ export default class GeneralService {
         this.setOfAddonsForE2EusersWithNewSync = setOfAddonsForE2EusersWithNewSync;
         this.setOfAddonsForCpiNodeTesting = setOfAddonsForCpiNodeTesting;
         this.testData = testData;
+        this.testDataWithNewSyncForCpiRegression = testDataWithNewSyncForCpiRegression;
         this.testDataWithNewSync = testDataWithNewSync;
         this.testDataForInitUser = testDataForInitUser;
         this.ConsoleColors = ConsoleColors;
@@ -369,6 +391,7 @@ export default class GeneralService {
     public setOfAddonsForCpiNodeTesting;
     public testData;
     public testDataWithNewSync;
+    public testDataWithNewSyncForCpiRegression;
     public testDataForInitUser;
     public ConsoleColors;
 
@@ -1703,11 +1726,23 @@ export default class GeneralService {
         return latestSchema;
     }
 
-    async baseAddonVersionsInstallation(varPass: string, otherTestData?: any) {
+    async baseAddonVersionsInstallation(varPass: string, otherTestData?: any, isPhased?: boolean) {
         const isInstalledArr = await this.areAddonsInstalled(otherTestData ? otherTestData : testData);
         const chnageVersionResponseArr = await this.changeVersion(
             varPass,
             otherTestData ? otherTestData : testData,
+            isPhased ? isPhased : false,
+        );
+        return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
+    }
+
+    async baseAddonVersionsInstallationNewSyncForCpiRegression(varPass: string, otherTestData?: any) {
+        const isInstalledArr = await this.areAddonsInstalled(
+            otherTestData ? otherTestData : testDataWithNewSyncForCpiRegression,
+        );
+        const chnageVersionResponseArr = await this.changeVersion(
+            varPass,
+            otherTestData ? otherTestData : testDataWithNewSyncForCpiRegression,
             false,
         );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
@@ -2282,6 +2317,14 @@ export default class GeneralService {
             case 'PEPPERI-FILE-STORAGE':
             case 'PFS':
                 return '00000000-0000-0000-0000-0000000f11e5';
+            case 'JOURNEY':
+            case 'JOURNEY-TRACKER':
+                return '41011fbf-debf-40d8-8990-767738b8af03';
+            case 'NODE':
+            case 'CPI-NODE':
+                return 'bb6ee826-1c6b-4a11-9758-40a46acb69c5';
+            case 'CRAWLER':
+                return 'f489d076-381f-4cf7-aa63-33c6489eb017';
             default:
                 return 'none';
         }

@@ -73,6 +73,7 @@ export async function StorybookTextareaTests() {
                 });
             });
             it(`Enter ** Textarea ** Component StoryBook - SCREENSHOT`, async function () {
+                await driver.scrollToElement(storyBookPage.SidebarExampleHeader); // for the purpose of navigating to the area of 'textarea' at sidebar menu
                 await storyBookPage.chooseComponent('textarea');
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -305,15 +306,23 @@ export async function StorybookTextareaTests() {
                             driver.sleep(1 * 1000);
                         });
                         it(`making sure current value is "False"`, async function () {
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
                             await storyBookPage.elemntDoNotExist(textarea.MainExample_mandatoryIcon);
                         });
                         it(`Functional test [ control = 'True' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
+                            expect(mandatoryControlState).to.be.true;
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "true"`,
@@ -323,20 +332,75 @@ export async function StorybookTextareaTests() {
                         });
                         it(`back to default [ control = 'False' ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
                             await storyBookPage.elemntDoNotExist(textarea.MainExample_mandatoryIcon);
                         });
                         break;
 
                     case 'maxFieldCharacters':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('maxFieldCharacters')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is NaN`, async function () {
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control default value = NaN`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control default value = NaN`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.elemntDoNotExist(textarea.MainExample_numOfCharacters);
+                        });
+                        it(`functional test [ control = 3 ] (+screenshot)`, async function () {
+                            await driver.click(await textarea.getInputRowSelectorByName('showTitle'));
+                            const newValueToSet = 3;
+                            await storyBookPage.inputs.changeMaxFieldCharactersControl(newValueToSet);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control Change -> 3`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control Change -> 3`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.untilIsVisible(textarea.MainExample_numOfCharacters);
+                            await storyBookPage.inputs.changeInput(
+                                textarea.MainExampleTextarea,
+                                'https://www.google.com',
+                            );
+                        });
+                        it(`back to non-functional value [ control = 0 ] (+screenshots)`, async function () {
+                            await driver.click(await textarea.getInputRowSelectorByName('showTitle'));
+                            const newValueToSet = 0;
+                            await storyBookPage.inputs.changeMaxFieldCharactersControl(newValueToSet);
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `maxFieldCharacters Control value = 0`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of maxFieldCharacters Control value = 0`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.elemntDoNotExist(textarea.MainExample_numOfCharacters);
+                        });
                         break;
 
                     case 'showTitle':
@@ -381,10 +445,62 @@ export async function StorybookTextareaTests() {
                         break;
 
                     case 'textColor':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(textareaInputsTitles.includes('textColor')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is ""`, async function () {
+                            const expectedValue = '';
+                            await driver.click(await textarea.getInputRowSelectorByName('visible'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `txtColor Input default value = ""`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textarea.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of txtColor Input default value = ""`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await textarea.getMainExampleTextareaTxtColor();
+                            expect(valueGotFromUi).to.equal(expectedValue);
+                        });
+                        it(`functional test [ control = "#780f97" ] (+screenshot)`, async function () {
+                            await storyBookPage.inputs.setTxtColorValue('#780f97');
+                            await driver.click(await textarea.getInputRowSelectorByName('visible'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `txtColor Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const currentColor = await textarea.getMainExampleTextareaTxtColor();
+                            await driver.click(textarea.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of txtColor Input Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            expect(currentColor).to.equal('rgb(120, 15, 151)'); // same as "#780f97" in RGB
+                        });
+                        it(`back to default [ control = "" ] (+screenshots)`, async function () {
+                            await storyBookPage.inputs.setTxtColorValue('');
+                            await driver.click(await textarea.getInputRowSelectorByName('visible'));
+                            let base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `back to default value = "" of txtColor Input`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            await driver.click(textarea.ResetControlsButton);
+                            const expectedValue = '';
+                            await driver.click(textarea.MainHeader);
+                            base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of back to default value = "" of txtColor Input`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const valueGotFromUi = await textarea.getMainExampleTextareaTxtColor();
+                            expect(valueGotFromUi).to.equal(expectedValue);
+                        });
                         break;
 
                     case 'visible':

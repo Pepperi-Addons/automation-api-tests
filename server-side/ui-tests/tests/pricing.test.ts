@@ -1,6 +1,6 @@
-import { describe, it, before, after, Context } from 'mocha';
+import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../services/general.service';
+import GeneralService, { ConsoleColors } from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
@@ -8,10 +8,10 @@ import { Browser } from '../utilities/browser';
 import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../pom';
 import { ObjectsService } from '../../services';
 import { OrderPage } from '../pom/Pages/OrderPage';
-import { Key } from 'selenium-webdriver';
-// import { PricingData } from '../pom/addons/Pricing';
 import { PricingData05 } from '../pom/addons/Pricing05';
 import { PricingData06 } from '../pom/addons/Pricing06';
+import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
+import { PricingService } from '../../services/pricing.service';
 
 interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;
@@ -27,9 +27,10 @@ chai.use(promised);
 export async function PricingTests(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
-    const installedPricingVersion = (await generalService.getInstalledAddons())
-        .find((addon) => addon.Addon.Name == 'pricing')
-        ?.Version?.split('.')[1];
+    const installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'pricing',
+    )?.Version;
+    const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
     let pricingData;
     switch (installedPricingVersion) {
@@ -37,6 +38,7 @@ export async function PricingTests(email: string, password: string, client: Clie
             pricingData = new PricingData05();
             break;
         case '6':
+        case '7':
             pricingData = new PricingData06();
             break;
 
@@ -46,6 +48,7 @@ export async function PricingTests(email: string, password: string, client: Clie
     }
 
     let driver: Browser;
+    let pricingService: PricingService;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
@@ -67,12 +70,13 @@ export async function PricingTests(email: string, password: string, client: Clie
     let Drug0002priceTSAs_OC: PriceTsaFields;
     let Drug0004priceTSAs_OC: PriceTsaFields;
     let base64ImageComponent;
+    let duration: string;
+    let ppmVluesEnd: UserDefinedTableRow[];
 
-    // const testAccounts = ['Acc01'];
+    const tableName = 'PPM_Values';
+    const dummyPPM_Values_length = 49999;
     const testAccounts = ['Acc01', 'OtherAcc'];
-    // const testStates = ['baseline', '3units', '4cases(24units)'];
     const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
-    // const testItems = ['Lipstick no.1', 'Spring Loaded Frizz-Fighting Conditioner', 'Frag005'];
     const testItems = [
         'Lipstick no.1',
         'Spring Loaded Frizz-Fighting Conditioner',
@@ -102,7 +106,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         'PriceTaxUnitPriceAfter1',
     ];
 
-    describe('Pricing UI tests', () => {
+    describe(`Pricing UI tests | Ver ${installedPricingVersionLong}`, () => {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
@@ -112,6 +116,16 @@ export async function PricingTests(email: string, password: string, client: Clie
             webAppTopBar = new WebAppTopBar(driver);
             webAppDialog = new WebAppDialog(driver);
             orderPage = new OrderPage(driver);
+            pricingService = new PricingService(
+                driver,
+                webAppLoginPage,
+                webAppHomePage,
+                webAppHeader,
+                webAppList,
+                webAppTopBar,
+                webAppDialog,
+                orderPage,
+            );
         });
 
         after(async function () {
@@ -137,14 +151,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                     switch (account) {
                         case 'Acc01':
                             accountName = 'My Store';
-                            transactionUUID_Acc01 = await startNewSalesOrderTransaction(accountName);
+                            transactionUUID_Acc01 = await pricingService.startNewSalesOrderTransaction(accountName);
                             console.info('transactionUUID_Acc01:', transactionUUID_Acc01);
                             transactionUUID = transactionUUID_Acc01;
                             break;
 
                         default:
                             accountName = 'Account for order scenarios';
-                            transactionUUID_OtherAcc = await startNewSalesOrderTransaction(accountName);
+                            transactionUUID_OtherAcc = await pricingService.startNewSalesOrderTransaction(accountName);
                             console.info('transactionUUID_OtherAcc:', transactionUUID_OtherAcc);
                             transactionUUID = transactionUUID_OtherAcc;
                             break;
@@ -154,6 +168,18 @@ export async function PricingTests(email: string, password: string, client: Clie
                         title: `New Slaes Order trasaction started`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
+                });
+
+                it(`PERFORMANCE: making sure Sales Order Loading Duration is acceptable`, async function () {
+                    duration = await (await driver.findElement(orderPage.Duration_Span)).getAttribute('title');
+                    console.info(`DURATION at Sales Order Load: ${duration}`);
+                    addContext(this, {
+                        title: `Sales Order - Loading Time`,
+                        value: `${duration} ms`,
+                    });
+                    const duration_num = Number(duration);
+                    expect(typeof duration_num).equals('number');
+                    expect(duration_num).to.be.below(550);
                 });
 
                 it(`switch to 'Line View'`, async function () {
@@ -169,43 +195,63 @@ export async function PricingTests(email: string, password: string, client: Clie
                     describe(`ORDER CENTER "${state}"`, () => {
                         testItems.forEach((item) => {
                             it(`checking item "${item}"`, async function () {
-                                await searchInOrderCenter.bind(this)(item);
+                                await pricingService.searchInOrderCenter.bind(this)(item, driver);
                                 switch (
                                     state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
                                 ) {
                                     case '1unit':
-                                        await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
-                                            'Each',
-                                            item,
-                                            1,
-                                        );
+                                        await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                            this,
+                                        )('Each', item, 1, driver);
+                                        duration = await (
+                                            await driver.findElement(orderPage.Duration_Span)
+                                        ).getAttribute('title');
+                                        console.log(`DURATION after Quantity change (to 1 unit): ${duration}`, [
+                                            ConsoleColors.PageMessage,
+                                        ]);
                                         break;
                                     case '3units':
-                                        await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
-                                            'Each',
-                                            item,
-                                            3,
-                                        );
+                                        await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                            this,
+                                        )('Each', item, 3, driver);
+                                        duration = await (
+                                            await driver.findElement(orderPage.Duration_Span)
+                                        ).getAttribute('title');
+                                        console.log(`DURATION after Quantity change (to 3 units): ${duration}`, [
+                                            ConsoleColors.PageMessage,
+                                        ]);
                                         break;
                                     case '1case(6units)':
-                                        await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
-                                            'Case',
-                                            item,
-                                            1,
-                                        );
+                                        await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                            this,
+                                        )('Case', item, 1, driver);
+                                        duration = await (
+                                            await driver.findElement(orderPage.Duration_Span)
+                                        ).getAttribute('title');
+                                        console.log(`DURATION after Quantity change (to 1 case): ${duration}`, [
+                                            ConsoleColors.PageMessage,
+                                        ]);
                                         break;
                                     case '4cases(24units)':
-                                        await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
-                                            'Case',
-                                            item,
-                                            4,
-                                        );
+                                        await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                            this,
+                                        )('Case', item, 4, driver);
+                                        duration = await (
+                                            await driver.findElement(orderPage.Duration_Span)
+                                        ).getAttribute('title');
+                                        console.log(`DURATION after Quantity change (to 4 cases): ${duration}`, [
+                                            ConsoleColors.PageMessage,
+                                        ]);
                                         break;
 
                                     default:
                                         break;
                                 }
-                                const priceTSAs = await getItemTSAs('OrderCenter', item);
+                                addContext(this, {
+                                    title: `Duration - After Change quantity of ${item}`,
+                                    value: `${duration} ms`,
+                                });
+                                const priceTSAs = await pricingService.getItemTSAs('OrderCenter', item);
                                 console.info(`${item} ${state} priceTSAs:`, priceTSAs);
 
                                 expect(typeof priceTSAs).equals('object');
@@ -239,7 +285,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     );
                                 });
                                 driver.sleep(0.2 * 1000);
-                                await clearOrderCenterSearch();
+                                await pricingService.clearOrderCenterSearch();
                             });
                         });
                     });
@@ -271,7 +317,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 });
                                 testItems.forEach(async (item) => {
                                     it(`checking item "${item}"`, async () => {
-                                        const priceTSAs = await getItemTSAs('Cart', item);
+                                        const priceTSAs = await pricingService.getItemTSAs('Cart', item);
                                         console.info(`Cart ${item} priceTSAs:`, priceTSAs);
 
                                         priceFields.forEach((priceField) => {
@@ -317,12 +363,13 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     switch (unitAmount) {
                                         case '4 Each':
                                             driver.sleep(1 * 1000);
-                                            await searchInOrderCenter.bind(this)(item_forFreeGoods);
-                                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
-                                                'Each',
+                                            await pricingService.searchInOrderCenter.bind(this)(
                                                 item_forFreeGoods,
-                                                4,
+                                                driver,
                                             );
+                                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                                this,
+                                            )('Each', item_forFreeGoods, 4, driver);
                                             break;
 
                                         case '5 Each':
@@ -340,17 +387,18 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             break;
 
                                         case '20 Each':
-                                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
-                                                'Each',
-                                                item_forFreeGoods,
-                                                20,
-                                            );
+                                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                                this,
+                                            )('Each', item_forFreeGoods, 20, driver);
                                             break;
 
                                         default:
                                             break;
                                     }
-                                    ToBr55priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
+                                    ToBr55priceTSAs_OC = await pricingService.getItemTSAs(
+                                        'OrderCenter',
+                                        item_forFreeGoods,
+                                    );
                                     console.info(`ToBr55priceTSAs_OC (${unitAmount}): `, ToBr55priceTSAs_OC);
 
                                     expect(typeof ToBr55priceTSAs_OC).equals('object');
@@ -382,13 +430,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
 
                             it('Back to 4 Each', async function () {
-                                await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                                await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                     'Each',
                                     item_forFreeGoods,
                                     4,
+                                    driver,
                                 );
                                 driver.sleep(0.5 * 1000);
-                                ToBr55priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
+                                ToBr55priceTSAs_OC = await pricingService.getItemTSAs('OrderCenter', item_forFreeGoods);
                                 console.info('ToBr55priceTSAs_OC (4 Each): ', ToBr55priceTSAs_OC);
 
                                 expect(typeof ToBr55priceTSAs_OC).equals('object');
@@ -410,7 +459,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         pricingData.testItemsValues[item_forFreeGoods][priceField][account]['baseline'],
                                     );
                                 });
-                                await clearOrderCenterSearch();
+                                await pricingService.clearOrderCenterSearch();
                                 driver.sleep(0.5 * 1000);
                             });
                         });
@@ -421,12 +470,13 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     const states = ['9case(54units)', '10cases(60units)'];
                                     switch (unitAmount) {
                                         case '9 Cases':
-                                            await searchInOrderCenter.bind(this)(item_forFreeGoods);
-                                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
-                                                'Case',
+                                            await pricingService.searchInOrderCenter.bind(this)(
                                                 item_forFreeGoods,
-                                                9,
+                                                driver,
                                             );
+                                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                                this,
+                                            )('Case', item_forFreeGoods, 9, driver);
                                             break;
 
                                         case '10 Cases':
@@ -446,7 +496,10 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         default:
                                             break;
                                     }
-                                    Drug0002priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
+                                    Drug0002priceTSAs_OC = await pricingService.getItemTSAs(
+                                        'OrderCenter',
+                                        item_forFreeGoods,
+                                    );
                                     console.info(`Drug0002priceTSAs_OC (${unitAmount}): `, Drug0002priceTSAs_OC);
 
                                     expect(typeof Drug0002priceTSAs_OC).equals('object');
@@ -489,7 +542,10 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     title: `At Order Center - after Minus Button clicked`,
                                     value: 'data:image/png;base64,' + base64ImageComponent,
                                 });
-                                Drug0002priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
+                                Drug0002priceTSAs_OC = await pricingService.getItemTSAs(
+                                    'OrderCenter',
+                                    item_forFreeGoods,
+                                );
                                 console.info('Drug0002priceTSAs_OC (9 Cases): ', Drug0002priceTSAs_OC);
 
                                 expect(typeof Drug0002priceTSAs_OC).equals('object');
@@ -511,7 +567,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         pricingData.testItemsValues[item_forFreeGoods][priceField][account]['baseline'],
                                     );
                                 });
-                                await clearOrderCenterSearch();
+                                await pricingService.clearOrderCenterSearch();
                                 driver.sleep(0.5 * 1000);
                             });
                         });
@@ -523,12 +579,13 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     switch (unitAmount) {
                                         case '2 Cases':
                                             driver.sleep(1 * 1000);
-                                            await searchInOrderCenter.bind(this)(item_forFreeGoods);
-                                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
-                                                'Case',
+                                            await pricingService.searchInOrderCenter.bind(this)(
                                                 item_forFreeGoods,
-                                                2,
+                                                driver,
                                             );
+                                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                                this,
+                                            )('Case', item_forFreeGoods, 2, driver);
                                             break;
 
                                         case '3 Cases':
@@ -548,7 +605,10 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         default:
                                             break;
                                     }
-                                    Drug0004priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
+                                    Drug0004priceTSAs_OC = await pricingService.getItemTSAs(
+                                        'OrderCenter',
+                                        item_forFreeGoods,
+                                    );
                                     console.info(`Drug0004priceTSAs_OC (${unitAmount}): `, Drug0004priceTSAs_OC);
 
                                     expect(typeof Drug0004priceTSAs_OC).equals('object');
@@ -591,7 +651,10 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     title: `At Order Center - after Minus Button clicked`,
                                     value: 'data:image/png;base64,' + base64ImageComponent,
                                 });
-                                Drug0004priceTSAs_OC = await getItemTSAs('OrderCenter', item_forFreeGoods);
+                                Drug0004priceTSAs_OC = await pricingService.getItemTSAs(
+                                    'OrderCenter',
+                                    item_forFreeGoods,
+                                );
                                 console.info(`Drug0004priceTSAs_OC (2 cases): `, Drug0004priceTSAs_OC);
 
                                 expect(typeof Drug0004priceTSAs_OC).equals('object');
@@ -613,7 +676,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         pricingData.testItemsValues[item_forFreeGoods][priceField][account]['baseline'],
                                     );
                                 });
-                                await clearOrderCenterSearch();
+                                await pricingService.clearOrderCenterSearch();
                                 driver.sleep(0.5 * 1000);
                             });
                         });
@@ -731,17 +794,32 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('changing the amount of "ToBr55" to produce free goods', async function () {
                             const item = 'ToBr55';
-                            await changeSelectedQuantityOfSpecificItemInCart.bind(this)('Each', item, 5);
+                            await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
+                                'Each',
+                                item,
+                                5,
+                                driver,
+                            );
                             driver.sleep(0.2 * 1000);
                         });
                         it('changing the amount of "Drug0002" to produce free goods', async function () {
                             const item = 'Drug0002';
-                            await changeSelectedQuantityOfSpecificItemInCart.bind(this)('Case', item, 10);
+                            await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
+                                'Case',
+                                item,
+                                10,
+                                driver,
+                            );
                             driver.sleep(0.2 * 1000);
                         });
                         it('changing the amount of "Drug0004" to produce free goods', async function () {
                             const item = 'Drug0004';
-                            await changeSelectedQuantityOfSpecificItemInCart.bind(this)('Case', item, 3);
+                            await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
+                                'Case',
+                                item,
+                                3,
+                                driver,
+                            );
                             driver.sleep(0.2 * 1000);
                         });
                         it('verifying that the sum total of items after the free goods were received is correct', async function () {
@@ -778,7 +856,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     'background-color: rgb(165, 235, 255);',
                                 );
 
-                                const Drug0002_priceTSAsCart = await getItemTSAs('Cart', item, 'Free', index);
+                                const Drug0002_priceTSAsCart = await pricingService.getItemTSAs(
+                                    'Cart',
+                                    item,
+                                    'Free',
+                                    index,
+                                );
                                 priceFields.forEach((priceField) => {
                                     switch (priceField) {
                                         case 'PriceBaseUnitPriceAfter1':
@@ -827,7 +910,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     expect(await ToBr10_item.getAttribute('style')).to.equal(
                                         'background-color: rgb(165, 235, 255);',
                                     );
-                                    const ToBr10_priceTSAsCart = await getItemTSAs('Cart', item, 'Free');
+                                    const ToBr10_priceTSAsCart = await pricingService.getItemTSAs('Cart', item, 'Free');
                                     priceFields.forEach((priceField) => {
                                         switch (priceField) {
                                             case 'PriceBaseUnitPriceAfter1':
@@ -876,7 +959,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                             it('increase quantity of item "ToBr55" over 20 units (Each) and see the additional item change to 1 case of "ToBr55"', async function () {
                                 const item = 'ToBr55';
-                                await changeSelectedQuantityOfSpecificItemInCart.bind(this)('Case', item, 4);
+                                await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
+                                    'Case',
+                                    item,
+                                    4,
+                                    driver,
+                                );
                             });
                             it('verify additional item type have changed', async () => {
                                 let item = 'ToBr55';
@@ -895,7 +983,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 expect(await ToBr55_freeItem[0].getAttribute('style')).to.equal(
                                     'background-color: rgb(165, 235, 255);',
                                 );
-                                const ToBr55_priceTSAsCart = await getItemTSAs('Cart', item, 'Free');
+                                const ToBr55_priceTSAsCart = await pricingService.getItemTSAs('Cart', item, 'Free');
                                 priceFields.forEach((priceField) => {
                                     switch (priceField) {
                                         case 'PriceBaseUnitPriceAfter1':
@@ -970,13 +1058,13 @@ export async function PricingTests(email: string, password: string, client: Clie
 
                         ['MakeUp001', 'MakeUp002'].forEach(function (item) {
                             it(`Checking ${item} at Baseline`, async function () {
-                                await searchInOrderCenter.bind(this)(item);
+                                await pricingService.searchInOrderCenter.bind(this)(item, driver);
                                 driver.sleep(0.1 * 1000);
-                                const MakeUpItem_priceTSAsCart = await getItemTSAs('OrderCenter', item);
+                                const MakeUpItem_priceTSAsCart = await pricingService.getItemTSAs('OrderCenter', item);
                                 driver.sleep(0.1 * 1000);
                                 expect(MakeUpItem_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                 driver.sleep(0.1 * 1000);
-                                await clearOrderCenterSearch();
+                                await pricingService.clearOrderCenterSearch();
                                 driver.sleep(0.5 * 1000);
                                 base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
@@ -993,7 +1081,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     title: `Group Rules item - before adding`,
                                     value: 'data:image/png;base64,' + base64ImageComponent,
                                 });
-                                await searchInOrderCenter.bind(this)(item);
+                                await pricingService.searchInOrderCenter.bind(this)(item, driver);
                                 driver.sleep(0.1 * 1000);
                                 const itemContainer = await driver.findElement(
                                     orderPage.getSelectorOfItemInOrderCenterByName(item),
@@ -1031,24 +1119,28 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 driver.sleep(0.5 * 1000);
                                 expect(Number(numberByUOM)).equals(1);
                                 driver.sleep(0.1 * 1000);
-                                const MakeUpItem_priceTSAsCart = await getItemTSAs('OrderCenter', item);
+                                const MakeUpItem_priceTSAsCart = await pricingService.getItemTSAs('OrderCenter', item);
                                 driver.sleep(0.2 * 1000);
                                 expect(MakeUpItem_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                 driver.sleep(0.1 * 1000);
-                                await clearOrderCenterSearch();
+                                await pricingService.clearOrderCenterSearch();
                                 driver.sleep(0.5 * 1000);
                             });
                         });
 
                         it('Adding "MakeUp003" at quantity of 1 Each and Checking at Order Center (3 units in group)', async function () {
                             item_forGroupRules = 'MakeUp003';
-                            await searchInOrderCenter.bind(this)(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                            await pricingService.searchInOrderCenter.bind(this)(item_forGroupRules, driver);
+                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                 'Each',
                                 item_forGroupRules,
                                 1,
+                                driver,
                             );
-                            const MakeUp003_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
+                            const MakeUp003_priceTSAsCart = await pricingService.getItemTSAs(
+                                'OrderCenter',
+                                item_forGroupRules,
+                            );
                             driver.sleep(0.1 * 1000);
                             switch (account) {
                                 case 'Acc01':
@@ -1088,14 +1180,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
                             }
                             driver.sleep(0.1 * 1000);
-                            await clearOrderCenterSearch();
+                            await pricingService.clearOrderCenterSearch();
                             driver.sleep(0.5 * 1000);
                         });
 
                         ['MakeUp001', 'MakeUp002'].forEach((item) => {
                             it(`Checking ${item} after amount of 3 in the group at Order Center`, async () => {
-                                await searchInOrderCenter.bind(this)(item);
-                                const MakeUpItem_priceTSAsCart = await getItemTSAs('OrderCenter', item);
+                                await pricingService.searchInOrderCenter.bind(this)(item, driver);
+                                const MakeUpItem_priceTSAsCart = await pricingService.getItemTSAs('OrderCenter', item);
                                 driver.sleep(0.1 * 1000);
                                 switch (account) {
                                     case 'Acc01':
@@ -1136,20 +1228,24 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         break;
                                 }
                                 driver.sleep(0.1 * 1000);
-                                await clearOrderCenterSearch();
+                                await pricingService.clearOrderCenterSearch();
                                 driver.sleep(0.5 * 1000);
                             });
                         });
 
                         it('Adding "MakeUp018" at quantity of 1 Each and Checking at Order Center (4 units in group)', async function () {
                             item_forGroupRules = 'MakeUp018';
-                            await searchInOrderCenter.bind(this)(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                            await pricingService.searchInOrderCenter.bind(this)(item_forGroupRules, driver);
+                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                 'Each',
                                 item_forGroupRules,
                                 1,
+                                driver,
                             );
-                            const MakeUp018_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
+                            const MakeUp018_priceTSAsCart = await pricingService.getItemTSAs(
+                                'OrderCenter',
+                                item_forGroupRules,
+                            );
                             driver.sleep(0.1 * 1000);
                             switch (account) {
                                 case 'Acc01':
@@ -1189,19 +1285,23 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
                             }
                             driver.sleep(0.1 * 1000);
-                            await clearOrderCenterSearch();
+                            await pricingService.clearOrderCenterSearch();
                             driver.sleep(0.5 * 1000);
                         });
 
                         it('Changing "MakeUp018" value to 2 Each and Checking at Order Center (5 units in group)', async function () {
                             item_forGroupRules = 'MakeUp018';
-                            await searchInOrderCenter.bind(this)(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                            await pricingService.searchInOrderCenter.bind(this)(item_forGroupRules, driver);
+                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                 'Each',
                                 item_forGroupRules,
                                 2,
+                                driver,
                             );
-                            const MakeUp018_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
+                            const MakeUp018_priceTSAsCart = await pricingService.getItemTSAs(
+                                'OrderCenter',
+                                item_forGroupRules,
+                            );
                             driver.sleep(0.1 * 1000);
                             switch (account) {
                                 case 'Acc01':
@@ -1241,19 +1341,23 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
                             }
                             driver.sleep(0.1 * 1000);
-                            await clearOrderCenterSearch();
+                            await pricingService.clearOrderCenterSearch();
                             driver.sleep(0.5 * 1000);
                         });
 
                         it('Changing "MakeUp001" value to 2 Each and Checking at Order Center (6 units in group)', async function () {
                             item_forGroupRules = 'MakeUp001';
-                            await searchInOrderCenter.bind(this)(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                            await pricingService.searchInOrderCenter.bind(this)(item_forGroupRules, driver);
+                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                 'Each',
                                 item_forGroupRules,
                                 2,
+                                driver,
                             );
-                            const MakeUp001_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
+                            const MakeUp001_priceTSAsCart = await pricingService.getItemTSAs(
+                                'OrderCenter',
+                                item_forGroupRules,
+                            );
                             driver.sleep(0.1 * 1000);
                             switch (account) {
                                 case 'Acc01':
@@ -1293,19 +1397,23 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
                             }
                             driver.sleep(0.1 * 1000);
-                            await clearOrderCenterSearch();
+                            await pricingService.clearOrderCenterSearch();
                             driver.sleep(0.5 * 1000);
                         });
 
                         it('Changing "MakeUp002" value to 2 Each and Checking at Order Center (7 units in group)', async function () {
                             item_forGroupRules = 'MakeUp002';
-                            await searchInOrderCenter.bind(this)(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                            await pricingService.searchInOrderCenter.bind(this)(item_forGroupRules, driver);
+                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                 'Each',
                                 item_forGroupRules,
                                 2,
+                                driver,
                             );
-                            const MakeUp002_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
+                            const MakeUp002_priceTSAsCart = await pricingService.getItemTSAs(
+                                'OrderCenter',
+                                item_forGroupRules,
+                            );
                             driver.sleep(0.1 * 1000);
                             switch (account) {
                                 case 'Acc01':
@@ -1345,19 +1453,23 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
                             }
                             driver.sleep(0.1 * 1000);
-                            await clearOrderCenterSearch();
+                            await pricingService.clearOrderCenterSearch();
                             driver.sleep(0.5 * 1000);
                         });
 
                         it('Changing "MakeUp003" value to 5 Each and Checking at Order Center (11 units in group)', async function () {
                             item_forGroupRules = 'MakeUp003';
-                            await searchInOrderCenter.bind(this)(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                            await pricingService.searchInOrderCenter.bind(this)(item_forGroupRules, driver);
+                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                 'Each',
                                 item_forGroupRules,
                                 5,
+                                driver,
                             );
-                            const MakeUp003_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
+                            const MakeUp003_priceTSAsCart = await pricingService.getItemTSAs(
+                                'OrderCenter',
+                                item_forGroupRules,
+                            );
                             driver.sleep(0.1 * 1000);
                             switch (account) {
                                 case 'Acc01':
@@ -1398,19 +1510,23 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
                             }
                             driver.sleep(0.1 * 1000);
-                            await clearOrderCenterSearch();
+                            await pricingService.clearOrderCenterSearch();
                             driver.sleep(0.5 * 1000);
                         });
 
                         it('Adding "MakeUp006" at quantity of 1 Each and Checking at Order Center (12 units in group)', async function () {
                             item_forGroupRules = 'MakeUp006';
-                            await searchInOrderCenter.bind(this)(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                            await pricingService.searchInOrderCenter.bind(this)(item_forGroupRules, driver);
+                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                 'Each',
                                 item_forGroupRules,
                                 1,
+                                driver,
                             );
-                            const MakeUp006_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
+                            const MakeUp006_priceTSAsCart = await pricingService.getItemTSAs(
+                                'OrderCenter',
+                                item_forGroupRules,
+                            );
                             driver.sleep(0.1 * 1000);
                             switch (account) {
                                 case 'Acc01':
@@ -1455,19 +1571,23 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
                             }
                             driver.sleep(0.1 * 1000);
-                            await clearOrderCenterSearch();
+                            await pricingService.clearOrderCenterSearch();
                             driver.sleep(0.5 * 1000);
                         });
 
                         it('Changing "MakeUp003" value to 10 Each and Checking at Order Center (additional item from singular rule)', async function () {
                             item_forGroupRules = 'MakeUp003';
-                            await searchInOrderCenter.bind(this)(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                            await pricingService.searchInOrderCenter.bind(this)(item_forGroupRules, driver);
+                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                 'Each',
                                 item_forGroupRules,
                                 10,
+                                driver,
                             );
-                            const MakeUp003_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
+                            const MakeUp003_priceTSAsCart = await pricingService.getItemTSAs(
+                                'OrderCenter',
+                                item_forGroupRules,
+                            );
                             driver.sleep(0.1 * 1000);
                             switch (account) {
                                 case 'Acc01':
@@ -1517,14 +1637,17 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
                             }
                             driver.sleep(0.1 * 1000);
-                            await clearOrderCenterSearch();
+                            await pricingService.clearOrderCenterSearch();
                             driver.sleep(0.5 * 1000);
                         });
 
                         it('Checking "MakeUp002" at Order Center (7 units in group)', async () => {
                             item_forGroupRules = 'MakeUp002';
-                            await searchInOrderCenter.bind(this)(item_forGroupRules);
-                            const MakeUp002_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
+                            await pricingService.searchInOrderCenter.bind(this)(item_forGroupRules, driver);
+                            const MakeUp002_priceTSAsCart = await pricingService.getItemTSAs(
+                                'OrderCenter',
+                                item_forGroupRules,
+                            );
                             driver.sleep(0.1 * 1000);
                             switch (account) {
                                 case 'Acc01':
@@ -1560,19 +1683,23 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
                             }
                             driver.sleep(0.1 * 1000);
-                            await clearOrderCenterSearch();
+                            await pricingService.clearOrderCenterSearch();
                             driver.sleep(0.5 * 1000);
                         });
 
                         it('Adding "MakeUp019" at quantity of 5 Each and Checking at Order Center (12 units in group)', async function () {
                             item_forGroupRules = 'MakeUp019';
-                            await searchInOrderCenter.bind(this)(item_forGroupRules);
-                            await changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
+                            await pricingService.searchInOrderCenter.bind(this)(item_forGroupRules, driver);
+                            await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(this)(
                                 'Each',
                                 item_forGroupRules,
                                 5,
+                                driver,
                             );
-                            const MakeUp019_priceTSAsCart = await getItemTSAs('OrderCenter', item_forGroupRules);
+                            const MakeUp019_priceTSAsCart = await pricingService.getItemTSAs(
+                                'OrderCenter',
+                                item_forGroupRules,
+                            );
                             driver.sleep(0.1 * 1000);
                             switch (account) {
                                 case 'Acc01':
@@ -1609,7 +1736,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     break;
                             }
                             driver.sleep(0.1 * 1000);
-                            await clearOrderCenterSearch();
+                            await pricingService.clearOrderCenterSearch();
                             driver.sleep(0.5 * 1000);
                         });
                     });
@@ -1669,8 +1796,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                         expect(latestActivityStatus).to.equal('Submitted');
                     });
                     it('changing values in "PPM_Values" UDT', async () => {
-                        const tableName = 'PPM_Values';
-
                         updatedUDTRowPOST = await objectsService.postUDT({
                             MapDataExternalID: tableName,
                             MainKey: 'ZDS3@A001@Drug0004',
@@ -1702,14 +1827,16 @@ export async function PricingTests(email: string, password: string, client: Clie
                         await webAppHomePage.manualResync(client);
                     });
                     it('validating "PPM_Values" UDT values via API', async () => {
-                        const tableName = 'PPM_Values';
                         const updatedUDT = await objectsService.getUDT({
                             where: "MapDataExternalID='" + tableName + "'",
+                            page_size: -1,
                         });
                         console.info('updatedUDT: ', updatedUDT);
                         expect(updatedUDT)
                             .to.be.an('array')
-                            .with.lengthOf(Object.keys(pricingData.documentsIn_PPM_Values).length);
+                            .with.lengthOf(
+                                Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
+                            );
                         // Add verification tests
                     });
                     it(`navigating to the account "${
@@ -1762,7 +1889,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                     });
                     it('reverting values in "PPM_Values" UDT to the original values', async () => {
-                        const tableName = 'PPM_Values';
                         updatedUDTRowPOST = await objectsService.postUDT({
                             MapDataExternalID: tableName,
                             MainKey: 'ZDS3@A001@Drug0004',
@@ -1794,14 +1920,16 @@ export async function PricingTests(email: string, password: string, client: Clie
                         await webAppHomePage.manualResync(client);
                     });
                     it('validating "PPM_Values" UDT values via API', async () => {
-                        const ppmVluesEnd = await objectsService.getUDT({
-                            where: "MapDataExternalID='PPM_Values'",
+                        ppmVluesEnd = await objectsService.getUDT({
+                            where: `MapDataExternalID='${tableName}'`,
+                            page_size: -1,
                         });
-
-                        expect(ppmVluesEnd.length).equals(Object.keys(pricingData.documentsIn_PPM_Values).length);
-                        ppmVluesEnd.forEach((tableRow) => {
-                            expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
-                        });
+                        expect(ppmVluesEnd.length).equals(
+                            Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
+                        );
+                        // ppmVluesEnd.forEach((tableRow) => {  // needs to be converted
+                        //     expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
+                        // });
                     });
                 });
             });
@@ -1823,7 +1951,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                 try {
                     await webAppList.checkAllListElements();
                     driver.sleep(0.1 * 1000);
-                    // await webAppList.clickOnPencilMenuButton();
                     await webAppList.clickOnListActionsButton();
                     driver.sleep(0.1 * 1000);
                     await webAppList.selectUnderPencilMenu('Delete');
@@ -1842,271 +1969,69 @@ export async function PricingTests(email: string, password: string, client: Clie
                     }
                 }
             });
+
+            it('deleting valid rules from the UDT "PPM_Values"', async () => {
+                const valueObjs: UserDefinedTableRow[] = [];
+                const validPPM_ValuesKeys = Object.keys(pricingData.documentsIn_PPM_Values);
+                const deleteResponses = await Promise.all(
+                    validPPM_ValuesKeys.map(async (validPPM_Key) => {
+                        const valueObj: UserDefinedTableRow | undefined = ppmVluesEnd.find((listing) => {
+                            if (listing.MainKey === validPPM_Key) return listing;
+                        });
+                        console.info(
+                            'validPPM_Key:',
+                            validPPM_Key,
+                            ', validPPM_ValueObj: ',
+                            JSON.stringify(valueObj, null, 2),
+                        );
+                        if (valueObj) {
+                            console.info('valueObj EXIST!');
+                            valueObjs.push(valueObj);
+                            valueObj.Hidden = true;
+                            return await objectsService.postUDT(valueObj);
+                        }
+                    }),
+                );
+                expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
+                deleteResponses.forEach((deleteUDTresponse) => {
+                    console.info(
+                        `${deleteUDTresponse?.MainKey} Delete RESPONSE: `,
+                        JSON.stringify(deleteUDTresponse, null, 2),
+                    );
+                    if (deleteUDTresponse) {
+                        console.info('UDT delete response exist!');
+                        const PPMvalue = pricingData.documentsIn_PPM_Values[deleteUDTresponse.MainKey];
+                        expect(deleteUDTresponse).to.deep.include({
+                            MapDataExternalID: tableName,
+                            SecondaryKey: null,
+                            Values: [PPMvalue],
+                        });
+                        expect(deleteUDTresponse).to.have.property('MainKey');
+                        expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
+                        expect(deleteUDTresponse)
+                            .to.have.property('ModificationDateTime')
+                            .that.contains(new Date().toISOString().split('T')[0]);
+                        expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
+                        expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
+                        expect(deleteUDTresponse).to.have.property('InternalID');
+                    }
+                });
+            });
+
+            it('performing sync', async () => {
+                await webAppHeader.goHome();
+                driver.sleep(0.2 * 1000);
+                await webAppHomePage.isSpinnerDone();
+                await webAppHomePage.manualResync(client);
+            });
+
+            it('validating "PPM_Values" UDT values via API', async () => {
+                ppmVluesEnd = await objectsService.getUDT({
+                    where: `MapDataExternalID='${tableName}'`,
+                    page_size: -1,
+                });
+                expect(ppmVluesEnd.length).equals(dummyPPM_Values_length);
+            });
         });
     });
-
-    async function startNewSalesOrderTransaction(nameOfAccount: string): Promise<string> {
-        await webAppHeader.goHome();
-        await webAppHomePage.isSpinnerDone();
-        await webAppHomePage.click(webAppHomePage.MainHomePageBtn);
-        driver.sleep(0.1 * 1000);
-        await webAppHeader.isSpinnerDone();
-        await webAppList.clickOnFromListRowWebElementByName(nameOfAccount);
-        driver.sleep(0.1 * 1000);
-        await webAppHeader.click(webAppTopBar.DoneBtn);
-        await webAppHeader.isSpinnerDone();
-        if (await webAppHeader.safeUntilIsVisible(webAppDialog.Dialog, 5000)) {
-            driver.sleep(0.1 * 1000);
-            await webAppDialog.selectDialogBoxBeforeNewOrder();
-        }
-        driver.sleep(0.1 * 1000);
-        await webAppHeader.isSpinnerDone();
-        await driver.untilIsVisible(orderPage.Cart_Button);
-        await driver.untilIsVisible(orderPage.TransactionUUID);
-        const trnUUID = await (await driver.findElement(orderPage.TransactionUUID)).getText();
-        driver.sleep(0.1 * 1000);
-        return trnUUID;
-    }
-
-    async function getItemTSAs(
-        at: 'OrderCenter' | 'Cart',
-        nameOfItem: string,
-        freeItem?: 'Free',
-        locationInElementsArray?: number,
-    ): Promise<PriceTsaFields> {
-        const findSelectorOfItem = `getSelectorOfCustomFieldIn${at}By${freeItem ? freeItem : ''}ItemName`;
-        let NPMCalcMessage_Value;
-        const PriceBaseUnitPriceAfter1_Selector = orderPage[findSelectorOfItem](
-            'PriceBaseUnitPriceAfter1_Value',
-            nameOfItem,
-        );
-        const PriceBaseUnitPriceAfter1_Values = await driver.findElements(PriceBaseUnitPriceAfter1_Selector);
-        const PriceBaseUnitPriceAfter1_Value = locationInElementsArray
-            ? await PriceBaseUnitPriceAfter1_Values[locationInElementsArray].getText()
-            : await PriceBaseUnitPriceAfter1_Values[0].getText();
-        console.info(`${nameOfItem} PriceBaseUnitPriceAfter1_Value: `, PriceBaseUnitPriceAfter1_Value);
-
-        const PriceDiscountUnitPriceAfter1_Selector = orderPage[findSelectorOfItem](
-            'PriceDiscountUnitPriceAfter1_Value',
-            nameOfItem,
-        );
-        const PriceDiscountUnitPriceAfter1_Values = await driver.findElements(PriceDiscountUnitPriceAfter1_Selector);
-        const PriceDiscountUnitPriceAfter1_Value = locationInElementsArray
-            ? await PriceDiscountUnitPriceAfter1_Values[locationInElementsArray].getText()
-            : await PriceDiscountUnitPriceAfter1_Values[0].getText();
-        console.info(`${nameOfItem} PriceDiscountUnitPriceAfter1_Value: `, PriceDiscountUnitPriceAfter1_Value);
-
-        const PriceGroupDiscountUnitPriceAfter1_Selector = orderPage[findSelectorOfItem](
-            'PriceGroupDiscountUnitPriceAfter1_Value',
-            nameOfItem,
-        );
-        const PriceGroupDiscountUnitPriceAfter1_Values = await driver.findElements(
-            PriceGroupDiscountUnitPriceAfter1_Selector,
-        );
-        const PriceGroupDiscountUnitPriceAfter1_Value = locationInElementsArray
-            ? await PriceGroupDiscountUnitPriceAfter1_Values[locationInElementsArray].getText()
-            : await PriceGroupDiscountUnitPriceAfter1_Values[0].getText();
-        console.info(
-            `${nameOfItem} PriceGroupDiscountUnitPriceAfter1_Value: `,
-            PriceGroupDiscountUnitPriceAfter1_Value,
-        );
-
-        const PriceManualLineUnitPriceAfter1_Selector = orderPage[findSelectorOfItem](
-            'PriceManualLineUnitPriceAfter1_Value',
-            nameOfItem,
-        );
-        const PriceManualLineUnitPriceAfter1_Values = await driver.findElements(
-            PriceManualLineUnitPriceAfter1_Selector,
-        );
-        const PriceManualLineUnitPriceAfter1_Value = locationInElementsArray
-            ? await PriceManualLineUnitPriceAfter1_Values[locationInElementsArray].getText()
-            : await PriceManualLineUnitPriceAfter1_Values[0].getText();
-        console.info(`${nameOfItem} PriceManualLineUnitPriceAfter1_Value: `, PriceManualLineUnitPriceAfter1_Value);
-
-        const PriceTaxUnitPriceAfter1_Selector = orderPage[findSelectorOfItem](
-            'PriceTaxUnitPriceAfter1_Value',
-            nameOfItem,
-        );
-        const PriceTaxUnitPriceAfter1_Values = await driver.findElements(PriceTaxUnitPriceAfter1_Selector);
-        const PriceTaxUnitPriceAfter1_Value = locationInElementsArray
-            ? await PriceTaxUnitPriceAfter1_Values[locationInElementsArray].getText()
-            : await PriceTaxUnitPriceAfter1_Values[0].getText();
-        console.info(`${nameOfItem} PriceTaxUnitPriceAfter1_Value: `, PriceTaxUnitPriceAfter1_Value);
-
-        if (at === 'OrderCenter') {
-            const NPMCalcMessage_Selector = orderPage[findSelectorOfItem]('NPMCalcMessage_Value', nameOfItem);
-            NPMCalcMessage_Value = await (await driver.findElement(NPMCalcMessage_Selector)).getText();
-            console.info(`${nameOfItem} NPMCalcMessage_Value: `, NPMCalcMessage_Value);
-        }
-        driver.sleep(0.1 * 1000);
-        return {
-            PriceBaseUnitPriceAfter1: Number(PriceBaseUnitPriceAfter1_Value.split(' ')[1].trim()),
-            PriceDiscountUnitPriceAfter1: Number(PriceDiscountUnitPriceAfter1_Value.split(' ')[1].trim()),
-            PriceGroupDiscountUnitPriceAfter1: Number(PriceGroupDiscountUnitPriceAfter1_Value.split(' ')[1].trim()),
-            PriceManualLineUnitPriceAfter1: Number(PriceManualLineUnitPriceAfter1_Value.split(' ')[1].trim()),
-            PriceTaxUnitPriceAfter1: Number(PriceTaxUnitPriceAfter1_Value.split(' ')[1].trim()),
-            NPMCalcMessage: at === 'OrderCenter' ? JSON.parse(NPMCalcMessage_Value) : null,
-        };
-    }
-
-    async function searchInOrderCenter(this: Context, nameOfItem: string): Promise<void> {
-        await orderPage.isSpinnerDone();
-        const searchInput = await driver.findElement(orderPage.Search_Input);
-        await searchInput.clear();
-        driver.sleep(0.1 * 1000);
-        await searchInput.sendKeys(nameOfItem + '\n');
-        driver.sleep(0.5 * 1000);
-        await driver.click(orderPage.HtmlBody);
-        driver.sleep(0.1 * 1000);
-        await driver.click(orderPage.Search_Magnifier_Button);
-        driver.sleep(0.1 * 1000);
-        await orderPage.isSpinnerDone();
-        await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(nameOfItem));
-        base64ImageComponent = await driver.saveScreenshots();
-        addContext(this, {
-            title: `At Order Center - after Search`,
-            value: 'data:image/png;base64,' + base64ImageComponent,
-        });
-    }
-
-    async function changeSelectedQuantityOfSpecificItemInOrderCenter(
-        this: Context,
-        uomValue: 'Each' | 'Case',
-        nameOfItem: string,
-        quantityOfItem: number,
-    ): Promise<void> {
-        const itemContainer = await driver.findElement(orderPage.getSelectorOfItemInOrderCenterByName(nameOfItem));
-        driver.sleep(0.05 * 1000);
-        let itemUomValue = await driver.findElement(orderPage.UnitOfMeasure_Selector_Value);
-        if ((await itemUomValue.getText()) !== uomValue) {
-            await driver.click(orderPage.UnitOfMeasure_Selector_Value);
-            driver.sleep(0.05 * 1000);
-            await driver.click(orderPage.getSelectorOfUnitOfMeasureOptionByText(uomValue));
-            driver.sleep(0.1 * 1000);
-            await itemContainer.click();
-            driver.sleep(0.1 * 1000);
-            itemUomValue = await driver.findElement(orderPage.UnitOfMeasure_Selector_Value);
-        }
-        driver.sleep(0.05 * 1000);
-        await orderPage.isSpinnerDone();
-        expect(await itemUomValue.getText()).equals(uomValue);
-        const uomXnumber = await driver.findElement(
-            orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
-                'ItemQuantity_byUOM_InteractableNumber',
-                nameOfItem,
-            ),
-        );
-        await itemContainer.click();
-        for (let i = 0; i < 6; i++) {
-            await uomXnumber.sendKeys(Key.BACK_SPACE);
-            driver.sleep(0.01 * 1000);
-        }
-        driver.sleep(0.05 * 1000);
-        await uomXnumber.sendKeys(quantityOfItem);
-        await orderPage.isSpinnerDone();
-        driver.sleep(0.05 * 1000);
-        await itemContainer.click();
-        driver.sleep(1 * 1000);
-        const numberByUOM = await uomXnumber.getAttribute('title');
-        driver.sleep(0.5 * 1000);
-        await orderPage.isSpinnerDone();
-        expect(Number(numberByUOM)).equals(quantityOfItem);
-        driver.sleep(1 * 1000);
-        const numberOfUnits = await (
-            await driver.findElement(orderPage.ItemQuantity_NumberOfUnits_Readonly)
-        ).getAttribute('title');
-        driver.sleep(0.5 * 1000);
-        await orderPage.isSpinnerDone();
-        switch (uomValue) {
-            case 'Each':
-                expect(numberOfUnits).equals(numberByUOM);
-                break;
-            case 'Case':
-                expect(Number(numberOfUnits)).equals(Number(numberByUOM) * 6);
-                break;
-            default:
-                break;
-        }
-        driver.sleep(0.05 * 1000);
-        await itemContainer.click();
-        base64ImageComponent = await driver.saveScreenshots();
-        addContext(this, {
-            title: `At Order Center - after Quantity change`,
-            value: 'data:image/png;base64,' + base64ImageComponent,
-        });
-    }
-
-    async function changeSelectedQuantityOfSpecificItemInCart(
-        this: Context,
-        uomValue: 'Each' | 'Case',
-        nameOfItem: string,
-        quantityOfItem: number,
-    ): Promise<void> {
-        driver.sleep(0.05 * 1000);
-        let itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
-        if ((await itemUomValue.getText()) !== uomValue) {
-            await itemUomValue.click();
-            driver.sleep(0.05 * 1000);
-            await driver.click(orderPage.getSelectorOfUnitOfMeasureOptionByText(uomValue));
-            driver.sleep(0.1 * 1000);
-            await driver.click(orderPage.HtmlBody);
-            driver.sleep(0.1 * 1000);
-            itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
-        }
-        driver.sleep(0.05 * 1000);
-        await orderPage.isSpinnerDone();
-        expect(await itemUomValue.getText()).equals(uomValue);
-        let uomXnumber = await driver.findElement(
-            orderPage.getSelectorOfCustomFieldInCartByItemName('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
-        );
-        for (let i = 0; i < 6; i++) {
-            await uomXnumber.sendKeys(Key.BACK_SPACE);
-            driver.sleep(0.01 * 1000);
-        }
-        driver.sleep(0.05 * 1000);
-        await uomXnumber.sendKeys(quantityOfItem);
-        await orderPage.isSpinnerDone();
-        driver.sleep(0.05 * 1000);
-        await driver.click(orderPage.HtmlBody);
-        driver.sleep(1 * 1000);
-        uomXnumber = await driver.findElement(
-            orderPage.getSelectorOfCustomFieldInCartByItemName('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
-        );
-        driver.sleep(1 * 1000);
-        await orderPage.isSpinnerDone();
-        expect(Number(await uomXnumber.getAttribute('title'))).equals(quantityOfItem);
-        driver.sleep(0.2 * 1000);
-        const numberOfUnits = await driver.findElement(
-            orderPage.getSelectorOfNumberOfUnitsInCartByItemName(nameOfItem),
-        );
-        driver.sleep(1 * 1000);
-        switch (uomValue) {
-            case 'Each':
-                expect(Number(await numberOfUnits.getAttribute('title'))).equals(
-                    Number(await uomXnumber.getAttribute('title')),
-                );
-                break;
-            case 'Case':
-                expect(Number(await numberOfUnits.getAttribute('title'))).equals(
-                    Number(await uomXnumber.getAttribute('title')) * 6,
-                );
-                break;
-            default:
-                break;
-        }
-        await orderPage.isSpinnerDone();
-        driver.sleep(0.1 * 1000);
-        base64ImageComponent = await driver.saveScreenshots();
-        addContext(this, {
-            title: `At Cart - after Quantity change`,
-            value: 'data:image/png;base64,' + base64ImageComponent,
-        });
-    }
-
-    async function clearOrderCenterSearch(): Promise<void> {
-        await orderPage.isSpinnerDone();
-        await driver.click(orderPage.Search_X_Button);
-        driver.sleep(0.1 * 1000);
-        await orderPage.isSpinnerDone();
-    }
 }

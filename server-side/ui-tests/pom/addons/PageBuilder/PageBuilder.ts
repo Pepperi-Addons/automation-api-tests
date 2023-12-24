@@ -51,6 +51,7 @@ export class PageBuilder extends AddonPage {
     // Add Section
     public EditSideBar_AddSection_Button: By = this.getSelectorOfButtonAtEditPageByDataQa('Add Section'); //By.xpath('//button[@data-qa="Add Section"]');
     public Section_Frame: By = By.xpath('//div[contains(@id,"_column_")]');
+    public InnerPageBuilder: By = By.xpath('//page-builder-internal/div');
     // Notice Popup
     public NoticePopup_Title: By = By.xpath('//span[contains(@class,"dialog-title")][contains(text(), "Notice")]');
     public NoticePopup_LeavePage_Button: By = By.xpath(
@@ -105,7 +106,8 @@ export class PageBuilder extends AddonPage {
         if (extraSection) {
             await this.clickElement('EditSideBar_AddSection_Button');
         }
-        await this.waitTillVisible(this.Section_Frame, 5000);
+        // await this.waitTillVisible(this.Section_Frame, 5000);
+        await this.waitTillVisible(this.InnerPageBuilder, 5000);
         await this.clickElement('EditPage_EditMenu_Button_Publish');
         this.pause(1500);
     }
@@ -298,6 +300,13 @@ export class PageBuilder extends AddonPage {
         return await generalService.fetchStatus('/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/api/pages');
     }
 
+    public async getDraftPages(client: Client) {
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus(
+            '/addons/api/84c999c3-84b7-454e-9a86-71b7abc96554/api/objects?addonUUID=50062e0c-9967-4ed4-9102-f2bc50602d41&name=Pages&scheme=drafts',
+        );
+    }
+
     public async getPageByUUID(pageUUID: string, client: Client) {
         const generalService = new GeneralService(client);
         const pageBuilderData = await generalService.fetchStatus(
@@ -391,6 +400,7 @@ export class PageBuilder extends AddonPage {
     }
 
     public async removePageByKey(pageKey: string, client: Client) {
+        // suiting 1.0.% versions
         // POST https://papi.pepperi.com/V1.0/addons/api/50062e0c-9967-4ed4-9102-f2bc50602d41/internal_api/remove_page?key=0c03353e-bb17-4b37-8220-56cf9a8a4523
         const generalService = new GeneralService(client);
         const deleteResponse = await generalService.fetchStatus(
@@ -407,6 +417,19 @@ export class PageBuilder extends AddonPage {
         //         body: JSON.stringify({}),
         //     },
         // );
+        return deleteResponse;
+    }
+
+    public async removePageByUUID(pageUUID: string, client: Client) {
+        // suiting 2.0.% versions
+        const generalService = new GeneralService(client);
+        const deleteResponse = await generalService.fetchStatus(
+            `/addons/api/84c999c3-84b7-454e-9a86-71b7abc96554/api/objects?addonUUID=50062e0c-9967-4ed4-9102-f2bc50602d41&name=Pages&scheme=drafts`,
+            {
+                method: 'POST',
+                body: JSON.stringify({ Hidden: true, Key: pageUUID }),
+            },
+        );
         return deleteResponse;
     }
 }

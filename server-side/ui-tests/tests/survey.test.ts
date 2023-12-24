@@ -163,14 +163,17 @@ export async function SurveyTests(email: string, password: string, client: Clien
     // #region Upgrade survey dependencies
 
     const testData = {
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
+        'application-header': ['9bc8af38-dd67-4d33-beb0-7d6b39a6e98d', ''],
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
-        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI has to be on version 9.6.x
-        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //to match sync version
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.4.%'],
+        'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
+        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', ''],
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'],
-        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''], //currently locked as this version will make rep and buyer work
-        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '0.7.%'], //has to remain untouched - latest 0.7.x
+        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', '1.1.115'],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
@@ -181,7 +184,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
-        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''], //evgeny from 3/9: 0.8.x is avaliable but 0.7.x should be tested
+        'pepperi-pack': ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''],
+        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', '0.8.%'],
         Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', ''],
     };
 
@@ -237,7 +241,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
             it(`1. Create A UDC Which Extends 'surveys' Scheme Before Creating A Survey`, async function () {
-                debugger;
                 const udcService = new UDCService(generalService);
                 const newSurveyUDCName = 'NewSurveyCollection' + generalService.generateRandomString(4);
                 const response = await udcService.createUDCWithFields(
@@ -349,7 +352,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
                         }
                     }
                 }
-                await webAppLoginPage.logout();
+                // debugger;
+                await webAppLoginPage.logout_Web18();
             });
             it('3. ADMIN Set Up: Login Again - Edit The Survey And See API Respose Is Changed', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
@@ -380,7 +384,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const resourceListUtils = new E2EUtils(driver);
                 const resourceViews = new ResourceViews(driver);
                 // Configure View - Accounts
-                await resourceListUtils.addView({
+                await resourceListUtils.addView_Web18({
                     nameOfView: 'Accounts',
                     descriptionOfView: 'Acc',
                     nameOfResource: 'accounts',
@@ -398,7 +402,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 });
                 await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
                 // Configure View - Survey
-                await resourceListUtils.addView({
+                await resourceListUtils.addView_Web18({
                     nameOfView: 'Surveys',
                     descriptionOfView: 'Sur',
                     nameOfResource: 'MySurveyTemplates',
@@ -422,7 +426,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             it('5. ADMIN Set Up: Create Page With Survey Block Inside It', async function () {
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveyBlockPage';
-                surveyBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
+                surveyBlockPageUUID = await e2eUtils.addPageNoSections_Web18(surveyBlockPageName, 'tests');
                 const pageBuilder = new PageBuilder(driver);
                 const createdPage = await pageBuilder.getPageByUUID(surveyBlockPageUUID, client);
                 const surveyBlockInstance = new SurveyBlock();
@@ -437,7 +441,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             it('6. ADMIN Set Up: Create Slug And Map It To Show The Page With Survey Block', async function () {
                 surveySlugDisplayName = `survey_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = surveySlugDisplayName;
-                await CreateSlug(
+                await CreateSlug_Web18(
                     email,
                     password,
                     driver,
@@ -460,13 +464,13 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
                 const scriptEditor = new ScriptEditor(driver);
-                scriptUUID = await scriptEditor.configureScriptForSurvey(script3, generalService);
+                scriptUUID = await scriptEditor.configureScriptForSurvey_Web18(script3, generalService);
                 await webAppHeader.goHome();
             });
             it('8. ADMIN Set Up: Create Page With SlideShow Which Will Run The Script', async function () {
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveySlideShow';
-                slideshowBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
+                slideshowBlockPageUUID = await e2eUtils.addPageNoSections_Web18(surveyBlockPageName, 'tests');
                 const pageBuilder = new PageBuilder(driver);
                 const createdPage = await pageBuilder.getPageByUUID(slideshowBlockPageUUID, client);
                 const SlideShowBlockInstance = new SlideShowBlock(scriptUUID);
@@ -481,7 +485,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
             it('9. ADMIN Set Up: Create A Slug For The Slideshow Page And Set It To Show On Homepage', async function () {
                 slideshowSlugDisplayName = `slideshow_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = slideshowSlugDisplayName;
-                await CreateSlug(
+                debugger;
+                await CreateSlug_Web18(
                     email,
                     password,
                     driver,
@@ -492,7 +497,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 );
                 driver.sleep(5000);
                 const webAppHeader = new WebAppHeader(driver);
-                await webAppHeader.openSettings();
+                await webAppHeader.webApp18_openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.addRepHomePageButtons(slideshowSlugDisplayName);
@@ -501,7 +506,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     await webAppHomePage.manualResync(client);
                 }
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slideshowSlugDisplayName);
-                debugger;
             });
         });
         describe('UI Test Configured Survey: Admin, Rep, Buyer', () => {
@@ -624,7 +628,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it('1.1. Admin Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.logout();
+                await webAppLoginPage.logout_Web18();
             });
             it('2. Rep Testing: Fill Survey Via UI, See Is Synced To Admin UDC', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
@@ -733,7 +737,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it('2.1. Rep Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.logout();
+                await webAppLoginPage.logout_Web18();
             });
             it('3. Buyer Testing: Fill Survey Via UI, See Is Synced To Admin UDC', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
@@ -842,7 +846,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it('3.1. Buyer Testing: Logout From User - Done This Way To Prevent Failure In Next User Login', async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.logout();
+                await webAppLoginPage.logout_Web18();
             });
             it('API Data Cleansing: 1. survey template', async function () {
                 //1. delete survey template
@@ -966,7 +970,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHeader = new WebAppHeader(driver);
-                await webAppHeader.openSettings();
+                await webAppHeader.webApp18_openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.removeRepHomePageButtons(slideshowSlugDisplayName);
@@ -1022,6 +1026,56 @@ async function CreateSlug(
     const webAppHomePage = new WebAppHomePage(driver);
     await webAppHomePage.isSpinnerDone();
     await e2eUiService.navigateTo('Slugs');
+    await slugs.clickTab('Mapping_Tab');
+    driver.sleep(15 * 1000);
+    const webAppHeader = new WebAppHeader(driver);
+    await webAppHeader.goHome();
+}
+
+async function CreateSlug_Web18(
+    email: string,
+    password: string,
+    driver: Browser,
+    generalService: GeneralService,
+    slugDisplayName: string,
+    slug_path: string,
+    pageToMapToKey: string,
+) {
+    // const slugDisplayName = 'slideshow_slug';
+    // const slug_path = 'slideshow_slug';
+    const e2eUiService = new E2EUtils(driver);
+    await e2eUiService.navigateTo_Web18('Slugs');
+    const slugs: Slugs = new Slugs(driver);
+    driver.sleep(2000);
+    if (await driver.isElementVisible(slugs.SlugMappingScreenTitle)) {
+        await slugs.clickTab('Slugs_Tab');
+    }
+    driver.sleep(2000);
+    await slugs.createSlugEvgeny(slugDisplayName, slug_path, 'for testing');
+    driver.sleep(1000);
+    await slugs.clickTab('Mapping_Tab');
+    driver.sleep(1000);
+    await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
+    await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
+    await slugs.isSpinnerDone();
+    driver.sleep(2500);
+    const dataViewsService = new DataViewsService(generalService.papiClient);
+    const existingMappedSlugs = await slugs.getExistingMappedSlugsList(dataViewsService);
+    const slugsFields: MenuDataViewField[] = e2eUiService.prepareDataForDragAndDropAtSlugs(
+        [{ slug_path: slug_path, pageUUID: pageToMapToKey }],
+        existingMappedSlugs,
+    );
+    console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 2)}`);
+    const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
+    console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 2)}`);
+    const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
+    console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
+    driver.sleep(2 * 1000);
+    await e2eUiService.logOutLogIn_Web18(email, password);
+    const webAppHomePage = new WebAppHomePage(driver);
+    await webAppHomePage.isSpinnerDone();
+    await e2eUiService.navigateTo_Web18('Slugs');
+    driver.sleep(4 * 1000);
     await slugs.clickTab('Mapping_Tab');
     driver.sleep(15 * 1000);
     const webAppHeader = new WebAppHeader(driver);

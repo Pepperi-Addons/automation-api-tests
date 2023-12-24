@@ -16,7 +16,6 @@ export class RichHtmlTextarea extends StorybookComponent {
     public MainExample_PopupDialog_editMode: By = By.xpath(
         `${this.MainExample_PopupDialog_container.value}//quill-editor`,
     );
-    public MainExample_PopupDialog_wrapperContainer: By = By.xpath(`//div[contains(@class,"cdk-overlay-container")]`);
     public MainExample_PopupDialog_closeButton: By = By.xpath(
         `${this.MainExample_PopupDialog_container.value}//pep-icon[@name="system_close"]/ancestor::button`,
     );
@@ -24,6 +23,9 @@ export class RichHtmlTextarea extends StorybookComponent {
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
     public MainExampleRichHtmlTextarea_value: By = By.xpath(
         `${this.MainExampleRichHtmlTextarea.value}//div[contains(@class,"rich-text-cont")]`,
+    );
+    public MainExample_numOfCharacters: By = By.xpath(
+        `${this.MainExampleDiv.value}${this.NumOfCharacters_displaySpan.value}`,
     );
 
     public async doesRichHtmlTextareaComponentFound(): Promise<void> {

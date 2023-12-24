@@ -9,6 +9,7 @@ export class Attachment extends StorybookComponent {
     public MainExample_deleteButton: By = By.xpath(`${this.MainExampleDiv.value}//button[contains(@class,"delete")]`);
     public MainExample_mandatoryIcon: By = By.xpath(`${this.MainExampleDiv.value}${this.MandatoryIcon.value}`);
     public MainExample_titleLabel: By = By.xpath(`${this.MainExampleDiv.value}//pep-field-title//mat-label`);
+    public MainExample_fileInput: By = By.xpath(`${this.MainExampleDiv.value}//input[@type="file"]`);
     public LabelControlInput: By = By.xpath(`//textarea[@id="control-label"]`);
 
     public async doesAttachmentComponentFound(): Promise<void> {
@@ -22,5 +23,11 @@ export class Attachment extends StorybookComponent {
 
     public async openMainExampleSource(): Promise<string> {
         return await this.openSource(this.MainExample_aHref);
+    }
+
+    public async changeMainExampleSrc(src: string): Promise<void> {
+        this.browser.sleep(0.1 * 1000);
+        await this.browser.sendKeys(this.MainExample_fileInput, src);
+        await this.browser.click(this.MainExampleDiv);
     }
 }

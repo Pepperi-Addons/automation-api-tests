@@ -15,6 +15,7 @@ export async function RLdataPrep(varPass: string, client: Client) {
     await generalService.baseAddonVersionsInstallation(varPass);
     //#region Upgrade script dependencies
     const testData = {
+        'pepperi-pack': ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''],
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],

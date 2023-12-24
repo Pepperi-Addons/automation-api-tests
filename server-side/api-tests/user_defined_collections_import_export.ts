@@ -131,7 +131,7 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                     [accField, val1Field, val2Field],
                     'automation testing UDC',
                     undefined,
-                    undefined,
+                    false,
                     [accField, val1Field, val2Field],
                 );
                 expect(response.Fail).to.be.undefined;
@@ -226,7 +226,7 @@ export async function UDCImportExportTests(generalService: GeneralService, reque
                 ).to.equal(10000);
             });
             it('Iterate Through All 10K Rows And See Values Are Okay', async function () {
-                generalService.sleep(1000 * 10); //10 seconds sleep before GETing the data - to allow PNS to update the collection
+                generalService.sleep(1000 * 30); //10 seconds sleep before GETing the data - to allow PNS to update the collection
                 for (let index = 1; index <= 40; index++) {
                     const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
                         udcName,

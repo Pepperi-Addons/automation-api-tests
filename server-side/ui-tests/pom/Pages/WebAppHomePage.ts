@@ -60,6 +60,8 @@ export class WebAppHomePage extends WebAppPage {
         await this.browser.click(this.SupportMenuPopup_Refresh);
         await this.browser.untilIsVisible(this.SupportMenuPopup_RefreshData);
         await this.browser.click(this.SupportMenuPopup_RefreshData);
+        this.browser.sleep(3 * 1000);
+        await this.isSpinnerDone();
         await this.longerIsSpinnerDone();
     }
 

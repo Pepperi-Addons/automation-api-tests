@@ -18,12 +18,25 @@ export class StoryBookInpus extends AddonPage {
     public MandatoryToggler: By = By.xpath(`//input[contains(@name,'mandatory')]`);
     public ShowTitleToggler: By = By.xpath(`//input[contains(@name,'showTitle')]`);
     public RenderTitleToggler: By = By.xpath(`//input[contains(@name,'renderTitle')]`);
+    public RenderErrorToggler: By = By.xpath(`//input[contains(@id,'control-renderError')]`);
+    public RenderSymbolToggler: By = By.xpath(`//input[contains(@id,'control-renderSymbol')]`);
+    public ReadonlyToggler: By = By.xpath(`//input[contains(@id,'control-readonly')]`);
+    public ShowThumbnailsToggler: By = By.xpath(`//input[contains(@id,'control-showThumbnails')]`);
+    public MaxFieldCharactersInputControl: By = By.xpath(`//input[contains(@id,'control-maxFieldCharacters')]`);
+    public ItemsRawTextareaControl: By = By.xpath(`//textarea[contains(@id,'control-items')]`);
+    public OptionsRawTextareaControl: By = By.xpath(`//textarea[contains(@id,'control-options')]`);
+    public ColorValue: By = By.xpath(`//input[contains(@id,'control-value')]`);
+    public TxtColorValue: By = By.xpath(`//input[contains(@id,'control-textColor')]`);
+    public ToggableInput_label: By = By.xpath(`/parent::label`);
     public CheckBoxElements: By = By.xpath(`//table//label//input[@type='radio']`);
     public RadioButtonElements: By = By.xpath(`//label//input[@type='radio']`);
-    public ColorValue: By = By.xpath(`//input[contains(@id,'control-value')]`);
+    public ControlTd: By = By.xpath(`/td[4]`);
+    public ItemsInput_span: By = By.xpath(`/div/div/div/span[2]`);
+    public Input_RAW_button: By = By.xpath(`${this.ControlTd.value}//button`);
+    public OptionsInput_span: By = By.xpath(`/div/textarea`);
 
     public async getInputRowSelectorByName(inputTitle: string): Promise<By> {
-        return By.xpath(`${this.InputTitle.value}[text()='${inputTitle}']`);
+        return By.xpath(`${this.InputTitle.value}[text()='${inputTitle}']/ancestor::tr`);
     }
 
     public async changeInput(selector: By, changeTo: string | number): Promise<void> {
@@ -46,6 +59,18 @@ export class StoryBookInpus extends AddonPage {
         await this.changeInput(this.ClassNamesInput, value);
     }
 
+    public async changeMaxFieldCharactersControl(value: number): Promise<void> {
+        await this.changeInput(this.MaxFieldCharactersInputControl, value);
+    }
+
+    public async changeItemsControl(value: string): Promise<void> {
+        await this.changeInput(this.ItemsRawTextareaControl, value);
+    }
+
+    public async changeOptionsControl(value: string): Promise<void> {
+        await this.changeInput(this.OptionsRawTextareaControl, value);
+    }
+
     public async toggleDisableControl(): Promise<void> {
         await this.browser.click(this.DisableToggler);
     }
@@ -56,6 +81,48 @@ export class StoryBookInpus extends AddonPage {
 
     public async toggleValueControl(): Promise<void> {
         await this.browser.click(this.ValueInput_boolean);
+    }
+
+    public async toggleRenderErrorControl(): Promise<void> {
+        await this.browser.click(this.RenderErrorToggler);
+    }
+
+    public async toggleRenderSymbolControl(): Promise<void> {
+        await this.browser.click(this.RenderSymbolToggler);
+    }
+
+    public async toggleMandatoryControl(): Promise<void> {
+        await this.browser.click(this.MandatoryToggler);
+    }
+
+    public async toggleShowTitleControl(): Promise<void> {
+        await this.browser.click(this.ShowTitleToggler);
+    }
+
+    public async toggleRenderTitleControl(): Promise<void> {
+        await this.browser.click(this.RenderTitleToggler);
+    }
+
+    public async toggleReadonlyControl(): Promise<void> {
+        await this.browser.click(this.ReadonlyToggler);
+    }
+
+    public async toggleShowThumbnailsControl(): Promise<void> {
+        await this.browser.click(this.ShowThumbnailsToggler);
+    }
+
+    public async toggleItemsControlRawButton(): Promise<void> {
+        const selector: By = By.xpath(
+            `${(await this.getInputRowSelectorByName('items')).value}${this.Input_RAW_button.value}`,
+        );
+        await this.browser.click(selector);
+    }
+
+    public async toggleOptionsControlRawButton(): Promise<void> {
+        const selector: By = By.xpath(
+            `${(await this.getInputRowSelectorByName('options')).value}${this.Input_RAW_button.value}`,
+        );
+        await this.browser.click(selector);
     }
 
     public async selectIconName(toSelect: string): Promise<void> {
@@ -74,18 +141,6 @@ export class StoryBookInpus extends AddonPage {
         const matOptionWithStringInjected: string = this.SelectOption_byText.value.replace('{placeholder}', option);
         await this.browser.click(By.xpath(matOptionWithStringInjected));
         return;
-    }
-
-    public async toggleMandatoryControl(): Promise<void> {
-        await this.browser.click(this.MandatoryToggler);
-    }
-
-    public async toggleShowTitleControl(): Promise<void> {
-        await this.browser.click(this.ShowTitleToggler);
-    }
-
-    public async toggleRenderTitleControl(): Promise<void> {
-        await this.browser.click(this.RenderTitleToggler);
     }
 
     public async getAllTypes() {
@@ -131,8 +186,75 @@ export class StoryBookInpus extends AddonPage {
         return await this.getAllRadioButtons('type');
     }
 
+    public async getItemsControlContent(): Promise<any> {
+        const selector: By = By.xpath(
+            `${(await this.getInputRowSelectorByName('items')).value}${this.ControlTd.value}${
+                this.ItemsInput_span.value
+            }`,
+        );
+        const itemsInputControl_valueElement = await this.browser.findElement(selector);
+        const itemsInputControl_valueElement_innerHTML = await itemsInputControl_valueElement.getAttribute('innerHTML');
+        console.info(
+            'at getItemsControlContent -> await itemsInputControl_valueElement.getAttribute("innerHTML"): ',
+            itemsInputControl_valueElement_innerHTML,
+        );
+        return itemsInputControl_valueElement_innerHTML;
+    }
+
+    public async getOptionsControlContent(): Promise<any> {
+        const selector: By = By.xpath(
+            `${(await this.getInputRowSelectorByName('options')).value}${this.ControlTd.value}${
+                this.ItemsInput_span.value
+            }`,
+        );
+        const itemsInputControl_valueElement = await this.browser.findElement(selector);
+        const itemsInputControl_valueElement_innerHTML = await itemsInputControl_valueElement.getAttribute('innerHTML');
+        console.info(
+            'at getItemsControlContent -> await itemsInputControl_valueElement.getAttribute("innerHTML"): ',
+            itemsInputControl_valueElement_innerHTML,
+        );
+        return itemsInputControl_valueElement_innerHTML;
+    }
+
     public async setColorValue(color: string) {
         await this.browser.sendKeys(this.ColorValue, color);
         await this.browser.click(this.EmptySpaceToClick);
+    }
+
+    public async setTxtColorValue(color: string) {
+        await this.browser.sendKeys(this.TxtColorValue, color);
+        await this.browser.click(this.EmptySpaceToClick);
+    }
+
+    public async getTogglerStateByInputName(
+        inputName:
+            | 'Disable'
+            | 'Visible'
+            | 'Mandatory'
+            | 'ShowTitle'
+            | 'RenderTitle'
+            | 'RenderError'
+            | 'RenderSymbol'
+            | 'Readonly'
+            | 'ShowThumbnails',
+    ): Promise<boolean | Error> {
+        const inputTogglerSelector = this[`${inputName}Toggler`];
+        const togglerLabelSelector = By.xpath(`${inputTogglerSelector.value}${this.ToggableInput_label.value}`);
+        const inputControlLabel = await this.browser.findElement(togglerLabelSelector);
+        const labelText = await inputControlLabel.getAttribute('title');
+        let statusTextIndicator;
+        try {
+            statusTextIndicator = labelText.split('Change to ')[1];
+        } catch (error) {
+            const theError = error as Error;
+            return theError;
+        }
+        if (statusTextIndicator === 'false') {
+            return true;
+        }
+        if (statusTextIndicator === 'true') {
+            return false;
+        }
+        throw new Error(`expected text is not 'true' or 'false' but: '${statusTextIndicator}'`);
     }
 }

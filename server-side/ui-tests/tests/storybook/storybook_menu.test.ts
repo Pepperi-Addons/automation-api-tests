@@ -25,6 +25,7 @@ export async function StorybookMenuTests() {
     const menuSubFoldersHeaders = ['Action (default)', 'Action select', 'Select'];
     const sizeTypesExpectedValues = ['xs', 'sm', 'md', 'lg', 'xl'];
     const styleTypeExpectedValues = ['weak', 'weak-invert', 'regular', 'strong'];
+    const typeExpectedValues = ['action', 'action-select', 'select'];
     let driver: Browser;
     let webAppHomePage: WebAppHomePage;
     let storyBookPage: StoryBookPage;
@@ -36,6 +37,7 @@ export async function StorybookMenuTests() {
     let mainExampleMenuHeight;
     let mainExampleMenuStyle;
     let allStyleTypes;
+    let allTypes;
 
     describe('Storybook "Menu" Tests Suite', function () {
         this.retries(0);
@@ -186,13 +188,196 @@ export async function StorybookMenuTests() {
                                 'M16 3a2 2 0 012 2v14a2 2 0 01-2 2H8a2 2 0 01-2-2V5a2 2 0 012-2h8zm-1 2H9a1 1 0 00-1 1v12a1 1 0 001 1h6a1 1 0 001-1V6a1 1 0 00-1-1zm-1 11a1 1 0 010 2h-4a1 1 0 010-2h4z',
                             );
                         });
+                        it(`reset controls`, async function () {
+                            await driver.click(menu.ResetControlsButton);
+                            const expectedValue = '01/01/2020';
+                            await driver.click(menu.MainHeader);
+                            const base64ImageComponentModal = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Value Input default value = "${expectedValue}"`,
+                                value: 'data:image/png;base64,' + base64ImageComponentModal,
+                            });
+                            const mainExampleMenuIconSvgValue = await (
+                                await driver.findElement(menu.MainExampleMenu_iconSvgValue)
+                            ).getAttribute('d');
+                            console.info(
+                                'mainExampleMenuIconSvgValue: ',
+                                JSON.stringify(mainExampleMenuIconSvgValue, null, 2),
+                            );
+                            expect(mainExampleMenuIconSvgValue).equals(
+                                `M19 16a1 1 0 010 2H5a1 1 0 010-2h14zm0-5a1 1 0 010 2H5a1 1 0 010-2h14zm0-5a1 1 0 010 2H5a1 1 0 110-2h14z`,
+                            );
+                        });
                         break;
 
                     case 'items':
-                        it(`it '${input}'`, async function () {
+                        it(`validate input`, async function () {
                             expect(menuInputsTitles.includes('items')).to.be.true;
                         });
-                        // TODO
+                        it(`making sure current value is 8 items object`, async function () {
+                            const expectedItemsContent = `<span class="rejt-not-collapsed-delimiter">[</span><svg viewBox="0 0 1024 1024" class="rejt-plus-menu css-1sq7n9w"><path d="M512-.2a512 512 0 110 1024 512 512 0 010-1024zm0 91.4c-112.3 0-218 43.8-297.4 123.2A417.8 417.8 0 0091.4 511.8c0 112.4 43.8 218 123.2 297.4A417.8 417.8 0 00512 932.4c112.3 0 218-43.8 297.4-123.2a417.8 417.8 0 00123.2-297.4c0-112.3-43.8-218-123.2-297.4A417.8 417.8 0 00512 91.2zm1.1 129.2a45.7 45.7 0 0145.7 45.7v201.1H760a45.7 45.7 0 010 91.5H558.8v201.1a45.7 45.7 0 11-91.4 0V558.7H266.3a45.7 45.7 0 110-91.5h201.1V266.1a45.7 45.7 0 0145.7-45.7z" class="css-kqzqgg"></path></svg><ul class="rejt-not-collapsed-list" style="list-style: none; margin: 0px 0px 0px 1rem; padding: 0px;"><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">0 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 2 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">1 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 3 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">2 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 2 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">3 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 2 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">4 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 2 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">5 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 3 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">6 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 3 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">7 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 3 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div><div class="rejt-object-node"><span><span class="rejt-name" style="color: rgb(209, 65, 0);">8 : </span></span><span class="rejt-collapsed"><span class="rejt-collapsed-text" style="color: rgb(102, 102, 102);">{...} 3 keys</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg></span></div></ul><span class="rejt-not-collapsed-delimiter">]</span><svg viewBox="0 0 1024 1024" class="rejt-minus-menu css-1tclqig"><path d="M512 0a512 512 0 110 1024A512 512 0 01512 0zm4 94A418 418 0 0094 515a418 418 0 00422 422 418 418 0 00421-422A418 418 0 00516 94zm244 372a46 46 0 010 92H264a46 46 0 110-92z" class="css-kqzqgg"></path></svg>`;
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `items Control default value`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const itemsControlContent = await menu.inputs.getItemsControlContent();
+                            await driver.click(menu.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of items Control default value`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(itemsControlContent).equals(expectedItemsContent);
+                            await driver.click(menu.MainExampleMenu);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Open Menu`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const menuContent = await menu.getMenuContent();
+                            const menuContentButtons = await menu.getButtonsOutOfMenuContent();
+                            expect(menuContent).to.not.equal('<!---->');
+                            expect(menuContentButtons).to.be.an('array').with.lengthOf(8);
+                            await driver.click(menu.OverlayContainer);
+                        });
+                        it(`functional test [ control = [] ] (+screenshot)`, async function () {
+                            await driver.click(await menu.getInputRowSelectorByName('classNames'));
+                            const newValueToSet = '[]';
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Before Items RAW Button Click`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await menu.inputs.toggleItemsControlRawButton();
+                            menu.pause(0.5 * 1000);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After Items RAW Button is Clicked`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await menu.inputs.changeItemsControl(newValueToSet);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After Items Control is Changed`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(menu.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of Items Control Change`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(menu.MainExampleMenu);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Open Menu`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const menuContent = await menu.getMenuContent();
+                            expect(menuContent).equals('<!---->');
+                            await driver.click(menu.OverlayContainer);
+                        });
+                        it(`back to non-functional value [ control = 0 ] (+screenshots)`, async function () {
+                            await driver.click(await menu.getInputRowSelectorByName('classNames'));
+                            const newValueToSet = `[
+                                {
+                                  "key": "N",
+                                  "text": "Tramontana",
+                                  "parent": null,
+                                  "selected": true
+                                },
+                                {
+                                  "key": "NE",
+                                  "text": "Gregale",
+                                  "disabled": true,
+                                  "parent": null,
+                                  "selected": false
+                                },
+                                {
+                                  "key": "E",
+                                  "text": "Levante",
+                                  "parent": null,
+                                  "selected": false
+                                },
+                                {
+                                  "key": "SE",
+                                  "text": "Scirocco",
+                                  "parent": null,
+                                  "selected": false
+                                },
+                                {
+                                  "key": "sep",
+                                  "type": "splitter",
+                                  "parent": null,
+                                  "selected": false
+                                },
+                                {
+                                  "key": "S",
+                                  "text": "Ostro",
+                                  "iconName": "system_link",
+                                  "parent": null,
+                                  "selected": false
+                                },
+                                {
+                                  "key": "SW",
+                                  "text": "Libeccio",
+                                  "iconName": "system_lock",
+                                  "parent": null,
+                                  "selected": false
+                                },
+                                {
+                                  "key": "W",
+                                  "text": "Ponente",
+                                  "iconName": "system_logic",
+                                  "parent": null,
+                                  "selected": false
+                                },
+                                {
+                                  "key": "NW",
+                                  "text": "Mistral",
+                                  "iconName": "system_map",
+                                  "parent": null,
+                                  "selected": false
+                                }
+                            ]`;
+                            let base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Before Items Control is Changed`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await storyBookPage.inputs.changeItemsControl(newValueToSet);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After Items Control is Changed`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(menu.MainHeader);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of After Items Control is Changed`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await driver.click(menu.MainExampleMenu);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Open Menu`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const menuContent = await menu.getMenuContent();
+                            const menuContentButtons = await menu.getButtonsOutOfMenuContent();
+                            expect(menuContent).to.not.equal('<!---->');
+                            expect(menuContentButtons).to.be.an('array').with.lengthOf(8);
+                            await driver.click(menu.OverlayContainer);
+                        });
+                        it(`toggle RAW button`, async function () {
+                            await menu.inputs.toggleItemsControlRawButton();
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `upper view of items Control default value`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
                         break;
 
                     case 'classNames':
@@ -484,7 +669,58 @@ export async function StorybookMenuTests() {
                         it(`it '${input}'`, async function () {
                             expect(menuInputsTitles.includes('type')).to.be.true;
                         });
-                        // TODO
+                        it(`get all types`, async function () {
+                            const base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `'${input}' input`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            allTypes = await storyBookPage.inputs.getAllTypeInputValues();
+                            driver.sleep(1 * 1000);
+                            console.info('allTypes length: ', allTypes.length);
+                            expect(allTypes.length).equals(typeExpectedValues.length);
+                        });
+                        it(`validate current type is "action"`, async function () {
+                            const menuElement = await driver.findElement(menu.MainExampleMenu);
+                            const menuElementType = await menuElement.getAttribute('type');
+                            console.info('menuElement: ', menuElement);
+                            console.info('menuElementType: ', menuElementType);
+                            // expect(menuElementType).to.equal('action');
+                        });
+                        typeExpectedValues.forEach(async (title, index) => {
+                            it(`'${title}' -- functional test (+screenshot)`, async function () {
+                                const type = allTypes[index];
+                                await type.click();
+                                // let mainExampleSelector;
+                                // switch (title) {
+                                //     case 'action':
+                                //         // mainExampleSelector = menu.MainExampleBooleanText;
+                                //         break;
+                                //     case 'action-select':
+                                //         // mainExampleSelector = menu.MainExampleBooleanText;
+                                //         break;
+                                //     case 'select':
+                                //         // mainExampleSelector = menu.MainExampleBooleanText;
+                                //         break;
+
+                                //     default:
+                                //         mainExampleSelector = menu.MainExampleMenu;
+                                //         break;
+                                // }
+                                // await driver.findElement(mainExampleSelector);
+                                let base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `${title} (type) input change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                                await driver.click(menu.MainHeader);
+                                base64ImageComponentModal = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Upper View of '${title}' (Type Input)`,
+                                    value: 'data:image/png;base64,' + base64ImageComponentModal,
+                                });
+                            });
+                        });
                         break;
 
                     default:

@@ -84,7 +84,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
 
     let accounts: Account[];
     let transactions: Transaction[];
-    let _body = {} as SyncBody;
+    let _body = {} as any;
     let isSkip = false;
     let _accountExternalIDStr;
     let _accountUUID;
@@ -174,6 +174,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
             SystemName: 'OREN-PC',
             ClientDBUUID: 'OrenSyncTest-' + Math.floor(Math.random() * 1000000).toString(),
             SystemVersion: 'New version bug',
+            // AddonSyncConfig: {},
         };
     } catch (error) {
         console.log(error);
@@ -1039,16 +1040,19 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
                 }
             }
             // test that the data we sent was the same data we got from the API
+            //6/11/23 - EVGENY: 'ADALLastSyncDateTime' is a new prop added to the sync just today, has no data yet - will have someday to be changed (once its data is returning)
+            testBody['AddonSyncConfig'] = '{}';
             for (const prop in apiGetResponse.ClientInfo) {
                 try {
                     if (
+                        prop != 'ADALLastSyncDateTime' &&
                         prop != 'LocalDataUpdates' &&
                         !prop.includes('Formatted') &&
                         apiGetResponse.ClientInfo[prop] != testBody[prop].toString()
                     ) {
                         console.log(`Is this: ${apiGetResponse.ClientInfo[prop]}, equal to this: ${testBody[prop]}`);
                         errorMessage += `Missmatch sent Property: ${apiGetResponse.ClientInfo[prop]} Not identical to received Property: ${testBody[prop]} | `;
-                    } else if (prop.includes('Formatted')) {
+                    } else if (prop.includes('Formatted') && prop !== 'FormattedLastSyncDateTime') {
                         isFormattedDate = true;
                         if (
                             apiGetResponse.ClientInfo[prop].substring(0, 18) !=

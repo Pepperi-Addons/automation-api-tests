@@ -247,15 +247,15 @@ export class UDCService {
         return { objects: response.Body.Objects, count: response.Body.Count };
     }
 
-    async getAllObjectFromCollection(collectionName) {
-        const response = await this.generalService.fetchStatus(
-            `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${collectionName}?page_size=-1`,
-            {
-                method: 'GET',
-            },
-        );
-        return { objects: response.Body.Objects, count: response.Body.Count };
-    }
+    // async getAllObjectFromCollection(collectionName) {
+    //     const response = await this.generalService.fetchStatus(
+    //         `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${collectionName}?page_size=-1`,
+    //         {
+    //             method: 'POST',
+    //         },
+    //     );
+    //     return { objects: response.Body.Objects, count: response.Body.Count };
+    // }
 
     async hideObjectInACollection(collectionName, key) {
         const body = { Key: key, Hidden: true };
@@ -367,6 +367,10 @@ export class UDCService {
             Extends['AddonUUID'] = inheritFieldsFrom.AddonUUID;
             Extends['Name'] = inheritFieldsFrom.Name;
         }
+        let shouldSync = false;
+        if (isOnlineOnly !== undefined && isOnlineOnly === false) {
+            shouldSync = true;
+        }
         const bodyToSendCollection = {
             Name: collecitonName,
             DocumentKey,
@@ -377,7 +381,7 @@ export class UDCService {
                 Columns: arrayOfColumns,
             },
             SyncData: {
-                Sync: isOnlineOnly === true ? false : true,
+                Sync: shouldSync,
                 SyncFieldLevel: false,
             },
             GenericResource: true,
@@ -554,6 +558,10 @@ export class UDCService {
             Extends['AddonUUID'] = inheritFieldsFrom.AddonUUID;
             Extends['Name'] = inheritFieldsFrom.Name;
         }
+        let shouldSync = false;
+        if (isOnlineOnly !== undefined && isOnlineOnly === false) {
+            shouldSync = true;
+        }
         const bodyToSendCollection = {
             Name: collecitonName,
             DocumentKey,
@@ -564,7 +572,7 @@ export class UDCService {
                 Columns: arrayOfColumns,
             },
             SyncData: {
-                Sync: isOnlineOnly === true ? false : true,
+                Sync: shouldSync,
                 SyncFieldLevel: false,
             },
             GenericResource: true,

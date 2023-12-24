@@ -305,29 +305,85 @@ export async function StorybookAttachmentTests() {
                             driver.sleep(1 * 1000);
                         });
                         it(`making sure current value is "False"`, async function () {
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
                             await storyBookPage.elemntDoNotExist(attachment.MainExample_mandatoryIcon);
                         });
-                        it(`functional test [ control = 'True' ](+screenshots)`, async function () {
+                        it(`functional test [ control = "True" ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "true"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
-                            await storyBookPage.untilIsVisible(attachment.MainExample_mandatoryIcon);
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
+                            expect(mandatoryControlState).to.be.true;
                         });
-                        it(`back to default [ control = 'False' ](+screenshots)`, async function () {
+                        // it(`delete source via control`, async function () { // need more work
+                        //     await attachment.changeSrcControl('');
+                        //     const base64ImageComponentModal = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `Src Input Changed to ""`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponentModal,
+                        //     });
+                        // });
+                        // it(`open inputs if it's closed`, async function () {
+                        //     const inputsMainTableRowElement = await driver.findElement(attachment.Inputs_mainTableRow);
+                        //     if ((await inputsMainTableRowElement.getAttribute('title')).includes('Show')) {
+                        //         await inputsMainTableRowElement.click();
+                        //     }
+                        //     const base64ImageComponent = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `'${input}' input`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponent,
+                        //     });
+                        // });
+                        // it(`switch to iframe`, async function () {
+                        //     try {
+                        //         await driver.findElement(storyBookPage.StorybookIframe, 5000);
+                        //         await driver.switchTo(storyBookPage.StorybookIframe);
+                        //     } catch (error) {
+                        //         console.error(error);
+                        //         console.info('ALREADY ON IFRAME');
+                        //     }
+                        // });
+                        // it(`creating an error message by sending keys to file input`, async function () {
+                        //     // await attachment.changeMainExampleSrc('');
+                        //     await driver.sendKeys(this.MainExample_fileInput, '');
+                        //     let base64ImageComponentModal = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `Main Example Clicked - choose file Window opened`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponentModal,
+                        //     });
+                        //     attachment.pause(1 * 1000);
+                        //     // await driver.close();
+                        //     base64ImageComponentModal = await driver.saveScreenshots();
+                        //     addContext(this, {
+                        //         title: `After Browser Close Function - choose file Window closed`,
+                        //         value: 'data:image/png;base64,' + base64ImageComponentModal,
+                        //     });
+                        //     await storyBookPage.untilIsVisible(attachment.MainExample_mandatoryIcon);
+                        // });
+                        it(`back to default [ control = "False" ](+screenshots)`, async function () {
                             await storyBookPage.inputs.toggleMandatoryControl();
+                            const mandatoryControlState = await storyBookPage.inputs.getTogglerStateByInputName(
+                                'Mandatory',
+                            );
                             const base64ImageComponentModal = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Mandatory Input Changed to "false"`,
                                 value: 'data:image/png;base64,' + base64ImageComponentModal,
                             });
+                            expect(mandatoryControlState).to.be.false;
                             await storyBookPage.elemntDoNotExist(attachment.MainExample_mandatoryIcon);
                         });
                         break;

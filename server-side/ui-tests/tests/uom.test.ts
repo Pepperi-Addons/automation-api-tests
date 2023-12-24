@@ -71,7 +71,7 @@ export async function UomTests(email: string, password: string, varPass: string,
         // 'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.7'],
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''], //latest
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+        // Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         // 'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.1.22'],
     };
 
@@ -411,6 +411,7 @@ export async function UomTests(email: string, password: string, varPass: string,
             it('Adding ATD to Home Page', async function () {
                 await webAppHomePage.returnToHomePage();
                 await webAppHeader.openSettings();
+                await uom.isSpinnerDone();
                 //4. add the ATD to home screen
                 await brandedApp.addAdminHomePageButtons(_TEST_DATA_ATD_NAME);
                 await webAppHomePage.manualResync(client);

@@ -299,161 +299,171 @@ export async function MockTest(email: string, password: string, client: Client) 
             //         'false',
             //     );
             // });
-            it('1. Creating a UDC of "Account Filter Reference Account" with API', async () => {
-                // Collection:  ====>   AccountFilterReferenceAccountAuto   <====        //
-                const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                    nameOfCollection: 'AccountFilterReferenceAccountAuto',
-                    descriptionOfCollection: 'Created with Automation',
-                    fieldsOfCollection: [
-                        {
-                            classType: 'Resource',
-                            fieldName: 'an_account',
-                            fieldTitle: '',
-                            field: {
-                                Type: 'Resource',
-                                Resource: 'accounts',
-                                Description: '',
-                                Mandatory: false,
-                                Indexed: true,
-                                ApplySystemFilter: true,
-                                IndexedFields: {
-                                    Email: { Indexed: true, Type: 'String' },
-                                    Name: { Indexed: true, Type: 'String' },
-                                    UUID: { Indexed: true, Type: 'String' },
-                                },
-                                Items: { Description: '', Mandatory: false, Type: 'String' },
-                                OptionalValues: [],
-                                AddonUUID: coreResourcesUUID,
-                            },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'best_seller_item',
-                            fieldTitle: '',
-                            field: {
-                                Type: 'String',
-                                Description: '',
-                                AddonUUID: '',
-                                ApplySystemFilter: false,
-                                Mandatory: false,
-                                Indexed: false,
-                                IndexedFields: {},
-                                OptionalValues: [
-                                    'A',
-                                    'B',
-                                    'C',
-                                    'D',
-                                    'Hair dryer',
-                                    'Roller',
-                                    'Cart',
-                                    'Mask',
-                                    'Shirt',
-                                    '',
-                                ],
-                            },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'max_quantity',
-                            fieldTitle: '',
-                            field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'discount_rate',
-                            fieldTitle: '',
-                            field: { Type: 'Double', Mandatory: false, Indexed: false, Description: '' },
-                        },
-                        {
-                            classType: 'Array',
-                            fieldName: 'offered_discount_location',
-                            fieldTitle: '',
-                            field: {
-                                Type: 'String',
-                                Mandatory: false,
-                                Indexed: false,
-                                Description: '',
-                                OptionalValues: ['store', 'on-line', 'rep'],
-                            },
-                        },
-                    ],
-                });
-                const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
-                console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
-            });
-            it('2. Adding Values to Collection: "AccountFilterReferenceAccountAuto"', async () => {
-                // Collection:  ====>   AccountFilterReferenceAccountAuto   <====        //
-                const acc01UUID = '5737a507-fa00-4c32-a26a-8bc32572e24d'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
-                const acc02UUID = '56363496-f8ce-42e8-9305-de5d28737e66'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
-                const acc03UUID = '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
-                // const bestSellerOptions = ['Cart', 'Hair dryer', 'Mask', 'Shirt']
-                // let dataAccountFilterReferenceAccountAuto: {}[] = [];
-                // for (let index = 0; index < 3450; index++) {
-                //     dataAccountFilterReferenceAccountAuto.push({ an_account: acc01UUID, best_seller_item: `Cart_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['rep'] });
-                //     dataAccountFilterReferenceAccountAuto.push({ an_account: acc02UUID, best_seller_item: `Mask_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['store'] });
-                //     dataAccountFilterReferenceAccountAuto.push({ an_account: acc03UUID, best_seller_item: `Shirt_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['on-line'] });
-                // }
-                const dataAccountFilterReferenceAccountAuto = [
-                    { an_account: acc03UUID, best_seller_item: 'Cart', max_quantity: 1500 },
-                    {
-                        an_account: '',
-                        best_seller_item: '',
-                        max_quantity: 100000,
-                        discount_rate: 0.1,
-                        offered_discount_location: ['store', 'rep'],
-                    },
-                    {
-                        an_account: acc02UUID,
-                        best_seller_item: '',
-                        max_quantity: 1,
-                        discount_rate: 0.1,
-                        offered_discount_location: ['rep'],
-                    },
-                    {
-                        an_account: acc01UUID,
-                        best_seller_item: 'Hair dryer',
-                        max_quantity: 0,
-                        discount_rate: 0.4,
-                        offered_discount_location: ['store', 'on-line', 'rep'],
-                    },
-                    {
-                        an_account: acc02UUID,
-                        best_seller_item: 'Mask',
-                        max_quantity: 40000,
-                        discount_rate: 0.15,
-                        offered_discount_location: ['store', 'on-line'],
-                    },
-                    { an_account: acc03UUID, max_quantity: 600, discount_rate: 0.1, offered_discount_location: [] },
-                    { an_account: acc01UUID, best_seller_item: 'Shirt', max_quantity: 55, discount_rate: 0.22 },
-                    {
-                        an_account: acc03UUID,
-                        best_seller_item: 'item2',
-                        discount_rate: 0.3,
-                        offered_discount_location: ['store', 'on-line', 'rep'],
-                    },
-                    {
-                        best_seller_item: 'A',
-                        max_quantity: 111,
-                        discount_rate: 0.35,
-                        offered_discount_location: ['on-line', 'rep'],
-                    },
-                ];
-                dataAccountFilterReferenceAccountAuto.forEach(async (listing) => {
-                    const upsertingValues_Response = await udcService.upsertValuesToCollection(
-                        listing,
-                        'AccountFilterReferenceAccountAuto',
-                    );
-                    console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
-                    expect(upsertingValues_Response.Ok).to.be.true;
-                    expect(upsertingValues_Response.Status).to.equal(200);
-                    expect(upsertingValues_Response.Error).to.eql({});
-                });
+            // it('1. Creating a UDC of "Account Filter Reference Account" with API', async () => {
+            //     // Collection:  ====>   AccountFilterReferenceAccountAuto   <====        //
+            //     const bodyOfCollection = udcService.prepareDataForUdcCreation({
+            //         nameOfCollection: 'AccountFilterReferenceAccountAuto',
+            //         descriptionOfCollection: 'Created with Automation',
+            //         fieldsOfCollection: [
+            //             {
+            //                 classType: 'Resource',
+            //                 fieldName: 'an_account',
+            //                 fieldTitle: '',
+            //                 field: {
+            //                     Type: 'Resource',
+            //                     Resource: 'accounts',
+            //                     Description: '',
+            //                     Mandatory: false,
+            //                     Indexed: true,
+            //                     ApplySystemFilter: true,
+            //                     IndexedFields: {
+            //                         Email: { Indexed: true, Type: 'String' },
+            //                         Name: { Indexed: true, Type: 'String' },
+            //                         UUID: { Indexed: true, Type: 'String' },
+            //                     },
+            //                     Items: { Description: '', Mandatory: false, Type: 'String' },
+            //                     OptionalValues: [],
+            //                     AddonUUID: coreResourcesUUID,
+            //                 },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'best_seller_item',
+            //                 fieldTitle: '',
+            //                 field: {
+            //                     Type: 'String',
+            //                     Description: '',
+            //                     AddonUUID: '',
+            //                     ApplySystemFilter: false,
+            //                     Mandatory: false,
+            //                     Indexed: false,
+            //                     IndexedFields: {},
+            //                     OptionalValues: [
+            //                         'A',
+            //                         'B',
+            //                         'C',
+            //                         'D',
+            //                         'Hair dryer',
+            //                         'Roller',
+            //                         'Cart',
+            //                         'Mask',
+            //                         'Shirt',
+            //                         '',
+            //                     ],
+            //                 },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'max_quantity',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Primitive',
+            //                 fieldName: 'discount_rate',
+            //                 fieldTitle: '',
+            //                 field: { Type: 'Double', Mandatory: false, Indexed: false, Description: '' },
+            //             },
+            //             {
+            //                 classType: 'Array',
+            //                 fieldName: 'offered_discount_location',
+            //                 fieldTitle: '',
+            //                 field: {
+            //                     Type: 'String',
+            //                     Mandatory: false,
+            //                     Indexed: false,
+            //                     Description: '',
+            //                     OptionalValues: ['store', 'on-line', 'rep'],
+            //                 },
+            //             },
+            //         ],
+            //     });
+            //     const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+            //     console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+            // });
+            // it('2. Adding Values to Collection: "AccountFilterReferenceAccountAuto"', async () => {
+            //     // Collection:  ====>   AccountFilterReferenceAccountAuto   <====        //
+            //     const acc01UUID = '5737a507-fa00-4c32-a26a-8bc32572e24d'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
+            //     const acc02UUID = '56363496-f8ce-42e8-9305-de5d28737e66'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
+            //     const acc03UUID = '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
+            //     // const bestSellerOptions = ['Cart', 'Hair dryer', 'Mask', 'Shirt']
+            //     // let dataAccountFilterReferenceAccountAuto: {}[] = [];
+            //     // for (let index = 0; index < 3450; index++) {
+            //     //     dataAccountFilterReferenceAccountAuto.push({ an_account: acc01UUID, best_seller_item: `Cart_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['rep'] });
+            //     //     dataAccountFilterReferenceAccountAuto.push({ an_account: acc02UUID, best_seller_item: `Mask_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['store'] });
+            //     //     dataAccountFilterReferenceAccountAuto.push({ an_account: acc03UUID, best_seller_item: `Shirt_${index}`, max_quantity: index, discount_rate: 0.1, offered_discount_location: ['on-line'] });
+            //     // }
+            //     const dataAccountFilterReferenceAccountAuto = [
+            //         { an_account: acc03UUID, best_seller_item: 'Cart', max_quantity: 1500 },
+            //         {
+            //             an_account: '',
+            //             best_seller_item: '',
+            //             max_quantity: 100000,
+            //             discount_rate: 0.1,
+            //             offered_discount_location: ['store', 'rep'],
+            //         },
+            //         {
+            //             an_account: acc02UUID,
+            //             best_seller_item: '',
+            //             max_quantity: 1,
+            //             discount_rate: 0.1,
+            //             offered_discount_location: ['rep'],
+            //         },
+            //         {
+            //             an_account: acc01UUID,
+            //             best_seller_item: 'Hair dryer',
+            //             max_quantity: 0,
+            //             discount_rate: 0.4,
+            //             offered_discount_location: ['store', 'on-line', 'rep'],
+            //         },
+            //         {
+            //             an_account: acc02UUID,
+            //             best_seller_item: 'Mask',
+            //             max_quantity: 40000,
+            //             discount_rate: 0.15,
+            //             offered_discount_location: ['store', 'on-line'],
+            //         },
+            //         { an_account: acc03UUID, max_quantity: 600, discount_rate: 0.1, offered_discount_location: [] },
+            //         { an_account: acc01UUID, best_seller_item: 'Shirt', max_quantity: 55, discount_rate: 0.22 },
+            //         {
+            //             an_account: acc03UUID,
+            //             best_seller_item: 'item2',
+            //             discount_rate: 0.3,
+            //             offered_discount_location: ['store', 'on-line', 'rep'],
+            //         },
+            //         {
+            //             best_seller_item: 'A',
+            //             max_quantity: 111,
+            //             discount_rate: 0.35,
+            //             offered_discount_location: ['on-line', 'rep'],
+            //         },
+            //     ];
+            //     dataAccountFilterReferenceAccountAuto.forEach(async (listing) => {
+            //         const upsertingValues_Response = await udcService.upsertValuesToCollection(
+            //             listing,
+            //             'AccountFilterReferenceAccountAuto',
+            //         );
+            //         console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+            //         expect(upsertingValues_Response.Ok).to.be.true;
+            //         expect(upsertingValues_Response.Status).to.equal(200);
+            //         expect(upsertingValues_Response.Error).to.eql({});
+            //     });
+            //     await generalService.createCSVFile(
+            //         'Data',
+            //         25,
+            //         'an_account,best_seller_item,max_quantity,discount_rate,offered_discount_location,Hidden',
+            //         acc01UUID,
+            //         ['Candy_index', 'index', '0.index1', '["on-line"]'],
+            //         'false',
+            //     );
+            // });
+            it('Creating a Dummy Items File for Pricing', async () => {
                 await generalService.createCSVFile(
                     'Data',
-                    25,
-                    'an_account,best_seller_item,max_quantity,discount_rate,offered_discount_location,Hidden',
-                    acc01UUID,
-                    ['Candy_index', 'index', '0.index1', '["on-line"]'],
+                    2000,
+                    'MainCategoryID,ExternalID',
+                    'dummyItem',
+                    ['Dummyindex'],
                     'false',
                 );
             });
