@@ -94,6 +94,7 @@ import { OldLegacyResourcesTests } from './api-tests/old_legacy_resources';
 import { Adal40KImportAndPurgeTest } from './api-tests/adal_40k_import_export_and_purge';
 import { UnistallAddonFromAllUsers } from './api-tests/uninstall_addon_from_all_auto_users';
 import { UpgradeDependenciesTestsWithNewSync } from './api-tests/test-service/upgrade_dependencies_with_new_sync';
+import { SchedulerTests_Part2 } from './api-tests/code-jobs/scheduler_DI_23872';
 // import { PapiClient } from '@pepperi-addons/papi-sdk'; WIP - dev tests
 // import { checkVersionsTest } from './api-tests/check_versions';
 
@@ -609,6 +610,23 @@ export async function scheduler(client: Client, request: Request, testerFunction
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await SchedulerTests(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function DI_21585(client: Client) {
+    const service = new GeneralService(client);
+    const charBiggerThan128KB = service.generateRandomString(140000);
+    return charBiggerThan128KB;
+}
+
+export async function scheduler_part2(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Scheduler';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await SchedulerTests_Part2(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();

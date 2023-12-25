@@ -96,6 +96,7 @@ import { UDC300KTestser } from '../../api-tests/user_defined_collections_300K_ov
 import { ImportLimitCSVAdalFromDimx } from './import_300k_DIMX.test';
 import { UDC150KOverwriteTestser } from '../../api-tests/user_defined_collections_150K_overwrite';
 import { UDC100KOverwriteTestser } from '../../api-tests/user_defined_collections_100K_overwrite';
+import { SchedulerTester_Part2 } from '../../api-tests/code-jobs/scheduler_DI_23872';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -693,6 +694,21 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
     if (tests.includes('AsyncAddonGetRemoveCodeJobsCLI')) {
         await AsyncAddonGetRemoveTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests.includes('Scheduler_Part2')) {
+        await SchedulerTester_Part2(
             generalService,
             {
                 body: {

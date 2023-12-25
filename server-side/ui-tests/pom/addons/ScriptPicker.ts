@@ -241,6 +241,57 @@ export class ScriptEditor extends AddonPage {
         await expect(this.untilIsVisible(this.PencilMenuBtn, 90000)).eventually.to.be.true;
     }
 
+    public async configureScriptForSurvey_Web18(sciptText: string, generalService: GeneralService) {
+        const webAppHeader = new WebAppHeader(this.browser);
+        await webAppHeader.webApp18_openSettings();
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Configuration');
+        await this.browser.click(webAppSettingsSidePanel.ScriptsEditor);
+        this.browser.sleep(5000);
+        const scriptEditor = new ScriptEditor(this.browser);
+        await this.browser.click(scriptEditor.addScriptButton);
+        const isModalFound = await this.browser.isElementVisible(scriptEditor.addScriptModal);
+        const isMainTitleFound = await this.browser.isElementVisible(scriptEditor.addScriptMainTitle);
+        expect(isModalFound).to.equal(true);
+        expect(isMainTitleFound).to.equal(true);
+        //1. give name
+        await this.browser.sendKeys(scriptEditor.NameInput, 'SurveyScript');
+        //2. give desc
+        await this.browser.sendKeys(scriptEditor.DescInput, 'script for survey');
+        //3. push code of script instead of the code found in the UI
+        const selectAll = Key.chord(Key.CONTROL, 'a'); //
+        await this.browser.sendKeys(scriptEditor.CodeTextArea, selectAll);
+        await this.browser.sendKeys(scriptEditor.CodeTextArea, Key.DELETE);
+        debugger;
+        await this.browser.sendKeys(scriptEditor.CodeTextArea, sciptText);
+        this.browser.sleep(4500);
+        //4. save
+        await this.browser.click(scriptEditor.SaveBtn);
+        this.browser.sleep(5000);
+        await this.browser.untilIsVisible(scriptEditor.ModalCloseBtn, 6000);
+        await this.browser.click(scriptEditor.ModalCloseBtn);
+        this.browser.sleep(1000);
+        //5. validate script is found in list
+        const webAppList = new WebAppList(this.browser);
+        const allListElemsText = await webAppList.getAllListElementsTextValue();
+        expect(allListElemsText.length).to.be.at.least(1);
+        const foundScript = allListElemsText.find((elem) => elem.includes('SurveyScript'));
+        expect(foundScript).to.not.be.undefined;
+        expect(foundScript).to.include('SurveyScript');
+        const allScripts = await generalService.fetchStatus(
+            '/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts',
+            {
+                method: 'GET',
+            },
+        );
+        let surveyScript;
+        for (let index = 0; index < allScripts.Body.length; index++) {
+            const script = allScripts.Body[index];
+            if (script.Name === 'SurveyScript') surveyScript = script;
+        }
+        return surveyScript.Key;
+    }
+
     public async configureScriptForSurvey(sciptText: string, generalService: GeneralService) {
         const webAppHeader = new WebAppHeader(this.browser);
         await webAppHeader.openSettings();

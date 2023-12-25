@@ -11,6 +11,7 @@ export class WebAppHeader extends Page {
 
     public CompanyLogo: By = By.css('[data-qa="orgLogo"]'); //'app-root header pepperi-header #header'
     public Settings: By = By.css('[data-qa="systemSettings"]');
+    public WebApp18_Settings: By = By.xpath('//application-header//pep-button[@data-qa="Settings"]');
     public Help: By = By.css('[data-qa="systemSuppot"]');
     public UserBtn: By = By.css('[data-qa="systemAvatar"]');
     public Home: By = By.css('[data-qa="systemHome"]');
@@ -21,6 +22,12 @@ export class WebAppHeader extends Page {
 
     public async openSettings() {
         await this.browser.click(this.Settings);
+        this.browser.sleep(2.5 * 1000);
+        return;
+    }
+
+    public async webApp18_openSettings() {
+        await this.browser.click(this.WebApp18_Settings);
         this.browser.sleep(2.5 * 1000);
         return;
     }
