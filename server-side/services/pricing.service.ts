@@ -96,6 +96,13 @@ export class PricingService {
             'PriceBaseUnitPriceAfter1_Value',
             nameOfItem,
         );
+        // let PriceBaseUnitPriceAfter1_Values;
+        // if (at === 'Cart') {
+        //     PriceBaseUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getCssValue('background')) !== 'rgb(165, 235, 255)') { return webElement } });
+        //     console.info('background-color: ', await PriceBaseUnitPriceAfter1_Values[0].getCssValue('background-color'));
+        // } else {
+        //     PriceBaseUnitPriceAfter1_Values = await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector);
+        // }
         const PriceBaseUnitPriceAfter1_Values = await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector);
         const PriceBaseUnitPriceAfter1_Value = locationInElementsArray
             ? await PriceBaseUnitPriceAfter1_Values[locationInElementsArray].getText()
@@ -106,6 +113,12 @@ export class PricingService {
             'PriceDiscountUnitPriceAfter1_Value',
             nameOfItem,
         );
+        // let PriceDiscountUnitPriceAfter1_Values;
+        // if (at === 'Cart') {
+        //     PriceDiscountUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceDiscountUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceDiscountUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
+        // } else {
+        //     PriceDiscountUnitPriceAfter1_Values = await this.browser.findElements(PriceDiscountUnitPriceAfter1_Selector);
+        // }
         const PriceDiscountUnitPriceAfter1_Values = await this.browser.findElements(
             PriceDiscountUnitPriceAfter1_Selector,
         );
@@ -118,6 +131,12 @@ export class PricingService {
             'PriceGroupDiscountUnitPriceAfter1_Value',
             nameOfItem,
         );
+        // let PriceGroupDiscountUnitPriceAfter1_Values;
+        // if (at === 'Cart') {
+        //     PriceGroupDiscountUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceGroupDiscountUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceGroupDiscountUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
+        // } else {
+        //     PriceGroupDiscountUnitPriceAfter1_Values = await this.browser.findElements(PriceGroupDiscountUnitPriceAfter1_Selector);
+        // }
         const PriceGroupDiscountUnitPriceAfter1_Values = await this.browser.findElements(
             PriceGroupDiscountUnitPriceAfter1_Selector,
         );
@@ -133,6 +152,12 @@ export class PricingService {
             'PriceManualLineUnitPriceAfter1_Value',
             nameOfItem,
         );
+        // let PriceManualLineUnitPriceAfter1_Values;
+        // if (at === 'Cart') {
+        //     PriceManualLineUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceManualLineUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceManualLineUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
+        // } else {
+        //     PriceManualLineUnitPriceAfter1_Values = await this.browser.findElements(PriceManualLineUnitPriceAfter1_Selector);
+        // }
         const PriceManualLineUnitPriceAfter1_Values = await this.browser.findElements(
             PriceManualLineUnitPriceAfter1_Selector,
         );
@@ -145,6 +170,12 @@ export class PricingService {
             'PriceTaxUnitPriceAfter1_Value',
             nameOfItem,
         );
+        // let PriceTaxUnitPriceAfter1_Values;
+        // if (at === 'Cart') {
+        //     PriceTaxUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
+        // } else {
+        //     PriceTaxUnitPriceAfter1_Values = await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector);
+        // }
         const PriceTaxUnitPriceAfter1_Values = await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector);
         const PriceTaxUnitPriceAfter1_Value = locationInElementsArray
             ? await PriceTaxUnitPriceAfter1_Values[locationInElementsArray].getText()

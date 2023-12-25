@@ -993,6 +993,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                             it('increase quantity of item "ToBr55" over 20 units (Each) and see the additional item change to 1 case of "ToBr55"', async function () {
                                 const item = 'ToBr55';
+                                driver.sleep(2 * 1000);
+                                await orderPage.isSpinnerDone();
                                 await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
                                     'Case',
                                     item,
@@ -2170,6 +2172,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         driver.sleep(0.5 * 1000);
                                         break;
                                     case readonlyCartItem === 'Drug0002':
+                                        // priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem);
                                         priceTSAs = await pricingService.getItemTSAs(
                                             'Cart',
                                             readonlyCartItem,
@@ -2182,15 +2185,15 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         );
                                         break;
                                     case readonlyCartItem === 'MakeUp018':
-                                        if (client.BaseURL.includes('staging')) {
-                                            priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem);
-                                        } else {
+                                        if (!client.BaseURL.includes('staging') && account === 'Acc01') {
                                             priceTSAs = await pricingService.getItemTSAs(
                                                 'Cart',
                                                 readonlyCartItem,
                                                 undefined,
                                                 1,
                                             );
+                                        } else {
+                                            priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem);
                                         }
                                         console.info(
                                             `Cart ${readonlyCartItem} priceTSAs:`,
