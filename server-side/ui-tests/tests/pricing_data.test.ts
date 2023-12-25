@@ -8,6 +8,7 @@ import { ObjectsService } from '../../services';
 // import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingData05 } from '../pom/addons/Pricing05';
 import { PricingData06 } from '../pom/addons/Pricing06';
+import { PricingData07 } from '../pom/addons/Pricing07';
 
 chai.use(promised);
 
@@ -108,9 +109,12 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                     // await uploadConfiguration(pricingData.config_05);
                     break;
                 case '6':
-                case '7':
-                    console.info('AT installedPricingVersion CASE 6 or 7');
+                    console.info('AT installedPricingVersion CASE 6');
                     pricingData = new PricingData06();
+                    break;
+                case '7':
+                    console.info('AT installedPricingVersion CASE 7');
+                    pricingData = new PricingData07();
                     break;
 
                 default:
