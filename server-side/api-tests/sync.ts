@@ -533,7 +533,7 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
         let countHiddenTransactions = 0;
         let countFailedToHideTransactions = 0;
         const allActivitiesArr: GeneralActivity | Transaction = await service.papiClient.allActivities.find({
-            where: "CreationDateTime>'2020-07-07Z'",
+            where: "CreationDateTime>'2023-07-07Z'", //Changed date from '2020-07-07Z' (Yoni)
             page_size: -1,
             order_by: 'ModificationDateTime DESC',
         });
