@@ -259,7 +259,7 @@ export async function SchedulerTests_Part2(generalService: GeneralService, reque
                 expect(CallbackCash.updateCronToChroneTestIsScheduledFalse.Ok).to.equal(true);
                 expect(CallbackCash.updateCronToChroneTestIsScheduledFalse.Body.UUID).to.equal(CodeJobUUIDCron);
                 expect(CallbackCash.updateCronToChroneTestIsScheduledFalse.Body.CodeJobIsHidden).to.equal(true);
-                //-- clean user from testing code jobs (not sure it wont delete needed jobs also lo so use use wisely)
+                //-- clean user from ALL testing code jobs (not sure it wont delete needed jobs also so use wisely)
                 // const allCodeJobs = await generalService.fetchStatus('/code_jobs?page_size=-1', { method: "GET" });
                 // const allTestCodeJobs = allCodeJobs.Body.filter(codeJob => codeJob.SupportAdminUUID === 'a8f60b30-0066-41fd-8a56-2f43fb5ab8b0' &&codeJob.Type === 'AddonJob');
                 // for (let index = 0; index < allTestCodeJobs.length; index++) {
