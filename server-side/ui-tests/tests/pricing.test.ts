@@ -12,6 +12,7 @@ import { PricingData05 } from '../pom/addons/Pricing05';
 import { PricingData06 } from '../pom/addons/Pricing06';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingService } from '../../services/pricing.service';
+import { PricingData07 } from '../pom/addons/Pricing07';
 
 interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;
@@ -38,8 +39,10 @@ export async function PricingTests(email: string, password: string, client: Clie
             pricingData = new PricingData05();
             break;
         case '6':
-        case '7':
             pricingData = new PricingData06();
+            break;
+        case '7':
+            pricingData = new PricingData07();
             break;
 
         default:
@@ -98,6 +101,37 @@ export async function PricingTests(email: string, password: string, client: Clie
             { Drug0004_3cases: { freeItem: 'Drug0002', amount: 2 } },
         ],
     };
+    const groupRulesItems = [
+        'MakeUp001',
+        'MakeUp002',
+        'MakeUp003',
+        'MakeUp006',
+        'MakeUp018',
+        'MakeUp018 Free',
+        'MakeUp019',
+    ];
+    const readonlyCartItems = [
+        'MakeUp019',
+        'MakeUp018 Free',
+        'MakeUp006',
+        'MakeUp018',
+        'MakeUp003',
+        'MakeUp002',
+        'MakeUp001',
+        'Drug0004',
+        'Drug0002 Free Each',
+        'Drug0002',
+        'Drug0002 Free Case',
+        'ToBr55',
+        'ToBr55 Free',
+        'Drug0003',
+        'Drug0001',
+        // 'ToBr56',
+        // 'Frag012',
+        // 'Frag005',
+        // 'Spring Loaded Frizz-Fighting Conditioner',
+        // 'Lipstick no.1',
+    ];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
         'PriceDiscountUnitPriceAfter1',
@@ -778,7 +812,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                     });
                     describe('CART', () => {
-                        it('verifying that the sum total of items in the cart is correct', async () => {
+                        it('verifying that the sum total of items in the cart is correct', async function () {
                             base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Cart`,
@@ -959,12 +993,15 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                             it('increase quantity of item "ToBr55" over 20 units (Each) and see the additional item change to 1 case of "ToBr55"', async function () {
                                 const item = 'ToBr55';
+                                driver.sleep(2 * 1000);
+                                await orderPage.isSpinnerDone();
                                 await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
                                     'Case',
                                     item,
                                     4,
                                     driver,
                                 );
+                                driver.sleep(0.2 * 1000);
                             });
                             it('verify additional item type have changed', async () => {
                                 let item = 'ToBr55';
@@ -1742,18 +1779,134 @@ export async function PricingTests(email: string, password: string, client: Clie
                     });
 
                     describe('CART', () => {
-                        it('Entering and verifying being in Cart', async () => {
+                        it('Entering and verifying being in Cart', async function () {
                             driver.sleep(0.1 * 1000);
                             await driver.click(orderPage.HtmlBody);
                             await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
                             driver.sleep(0.1 * 1000);
                             await driver.click(orderPage.Cart_Button);
                             await driver.untilIsVisible(orderPage.Cart_Totals);
-                            driver.sleep(0.1 * 1000);
-                        });
-                        it('Checking Cart', async () => {
-                            // TODO
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `At Cart`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                             driver.sleep(1 * 1000);
+                        });
+                        it('verifying that the sum total of items in the cart is correct', async function () {
+                            let numberOfItemsInCart =
+                                testItems.length +
+                                itemsAddedToGetFreeGoods.length +
+                                freeGoodsReceived[account].length +
+                                groupRulesItems.length;
+                            if (account === 'OtherAcc') {
+                                numberOfItemsInCart--;
+                            }
+                            const itemsInCart = await (
+                                await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                            ).getText();
+                            driver.sleep(0.2 * 1000);
+                            addContext(this, {
+                                title: `Number of Items in Cart`,
+                                value: `form UI: ${itemsInCart} , expected: ${numberOfItemsInCart}`,
+                            });
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `At Cart`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
+                            driver.sleep(1 * 1000);
+                        });
+                        groupRulesItems.forEach((groupRuleItem) => {
+                            it(`checking item "${groupRuleItem}"`, async function () {
+                                let priceTSAs;
+                                switch (groupRuleItem) {
+                                    case 'MakeUp018':
+                                        if (account === 'Acc01' && !client.BaseURL.includes('staging')) {
+                                            priceTSAs = await pricingService.getItemTSAs(
+                                                'Cart',
+                                                groupRuleItem,
+                                                undefined,
+                                                1,
+                                            );
+                                        } else {
+                                            priceTSAs = await pricingService.getItemTSAs('Cart', groupRuleItem);
+                                        }
+                                        console.info(
+                                            `Cart ${groupRuleItem} priceTSAs:`,
+                                            JSON.stringify(priceTSAs, null, 2),
+                                        );
+                                        break;
+                                    case 'MakeUp018 Free':
+                                        if (account === 'Acc01') {
+                                            priceTSAs = await pricingService.getItemTSAs('Cart', 'MakeUp018', 'Free');
+                                            console.info(
+                                                `Cart ${groupRuleItem} priceTSAs:`,
+                                                JSON.stringify(priceTSAs, null, 2),
+                                            );
+                                            priceFields.forEach((priceField) => {
+                                                switch (priceField) {
+                                                    case 'PriceBaseUnitPriceAfter1':
+                                                        const expectedValue =
+                                                            pricingData.testItemsValues['MakeUp018']['ItemPrice'];
+                                                        addContext(this, {
+                                                            title: `TSA field "${priceField}" Values`,
+                                                            value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                                        });
+                                                        expect(priceTSAs[priceField]).equals(expectedValue);
+                                                        break;
+
+                                                    default:
+                                                        addContext(this, {
+                                                            title: `TSA field "${priceField}" Values`,
+                                                            value: `form UI: ${priceTSAs[priceField]} , expected: ${0}`,
+                                                        });
+                                                        expect(priceTSAs[priceField]).equals(0);
+                                                        break;
+                                                }
+                                            });
+                                            driver.sleep(0.5 * 1000);
+                                        }
+                                        break;
+
+                                    default:
+                                        priceTSAs = await pricingService.getItemTSAs('Cart', groupRuleItem);
+                                        console.info(
+                                            `Cart ${groupRuleItem} priceTSAs:`,
+                                            JSON.stringify(priceTSAs, null, 2),
+                                        );
+                                        break;
+                                }
+                                if (groupRuleItem !== 'MakeUp018 Free') {
+                                    let expectedValue;
+                                    priceFields.forEach((priceField) => {
+                                        switch (priceField) {
+                                            case 'PriceGroupDiscountUnitPriceAfter1':
+                                                expectedValue =
+                                                    pricingData.testItemsValues[groupRuleItem][priceField][account][
+                                                        'cart'
+                                                    ];
+                                                addContext(this, {
+                                                    title: `TSA field "${priceField}" Values`,
+                                                    value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                                });
+                                                expect(priceTSAs[priceField]).equals(expectedValue);
+                                                break;
+
+                                            default:
+                                                expectedValue = pricingData.testItemsValues[groupRuleItem]['ItemPrice'];
+                                                addContext(this, {
+                                                    title: `TSA field "${priceField}" Values`,
+                                                    value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                                });
+                                                expect(priceTSAs[priceField]).equals(expectedValue);
+                                                break;
+                                        }
+                                    });
+                                }
+                                driver.sleep(1 * 1000);
+                            });
                         });
                         it('Click "Submit" button', async () => {
                             await orderPage.isSpinnerDone();
@@ -1765,171 +1918,405 @@ export async function PricingTests(email: string, password: string, client: Clie
                 });
 
                 describe('Read Only', () => {
-                    it('entering the same transaction post submission, checking the latest activity - ID', async function () {
-                        await webAppList.isSpinnerDone();
-                        await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
-                        const latestActivityID = await (
-                            await driver.findElement(webAppList.Activities_TopActivityInList_ID)
-                        ).getAttribute('title');
-                        await driver.click(webAppList.HtmlBody);
-                        expect(Number(latestActivityID)).to.equal(transactionInternalID);
-                    });
-                    it('checking the latest activity - type: Sales Order', async function () {
-                        base64ImageComponent = await driver.saveScreenshots();
-                        addContext(this, {
-                            title: `Checking the latest activity`,
-                            value: 'data:image/png;base64,' + base64ImageComponent,
+                    describe('Validating Submission & UTD Changes via API', () => {
+                        it('entering the same transaction post submission, checking the latest activity - ID', async function () {
+                            await webAppList.isSpinnerDone();
+                            await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
+                            const latestActivityID = await (
+                                await driver.findElement(webAppList.Activities_TopActivityInList_ID)
+                            ).getAttribute('title');
+                            await driver.click(webAppList.HtmlBody);
+                            expect(Number(latestActivityID)).to.equal(transactionInternalID);
                         });
-                        await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Type);
-                        const latestActivityType = await (
-                            await driver.findElement(webAppList.Activities_TopActivityInList_Type)
-                        ).getAttribute('title');
-                        await driver.click(webAppList.HtmlBody);
-                        expect(latestActivityType).to.equal('Sales Order');
-                    });
-                    it('checking the latest activity - status: Submitted', async () => {
-                        await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Status);
-                        const latestActivityStatus = await (
-                            await driver.findElement(webAppList.Activities_TopActivityInList_Status)
-                        ).getAttribute('title');
-                        await driver.click(webAppList.HtmlBody);
-                        expect(latestActivityStatus).to.equal('Submitted');
-                    });
-                    it('changing values in "PPM_Values" UDT', async () => {
-                        updatedUDTRowPOST = await objectsService.postUDT({
-                            MapDataExternalID: tableName,
-                            MainKey: 'ZDS3@A001@Drug0004',
-                            SecondaryKey: '',
-                            Values: [
-                                '[[true,"1555891200000","2534022144999","1","","additionalItem",[[6,"D",100,"%","",1,"EA","Drug0002",0]],"EA"]]',
-                            ],
+                        it('checking the latest activity - type: Sales Order', async function () {
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Checking the latest activity`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Type);
+                            const latestActivityType = await (
+                                await driver.findElement(webAppList.Activities_TopActivityInList_Type)
+                            ).getAttribute('title');
+                            await driver.click(webAppList.HtmlBody);
+                            expect(latestActivityType).to.equal('Sales Order');
                         });
-                        expect(updatedUDTRowPOST).to.deep.include({
-                            MapDataExternalID: tableName,
-                            MainKey: 'ZDS3@A001@Drug0004',
-                            SecondaryKey: null,
-                            Values: [
-                                '[[true,"1555891200000","2534022144999","1","","additionalItem",[[6,"D",100,"%","",1,"EA","Drug0002",0]],"EA"]]',
-                            ],
+                        it('checking the latest activity - status: Submitted', async () => {
+                            await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Status);
+                            const latestActivityStatus = await (
+                                await driver.findElement(webAppList.Activities_TopActivityInList_Status)
+                            ).getAttribute('title');
+                            await driver.click(webAppList.HtmlBody);
+                            expect(latestActivityStatus).to.equal('Submitted');
                         });
-                        expect(updatedUDTRowPOST).to.have.property('CreationDateTime').that.contains('Z');
-                        expect(updatedUDTRowPOST)
-                            .to.have.property('ModificationDateTime')
-                            .that.contains(new Date().toISOString().split('T')[0]);
-                        expect(updatedUDTRowPOST).to.have.property('ModificationDateTime').that.contains('Z');
-                        expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
-                        expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
-                    });
-                    it('performing sync', async () => {
-                        await webAppHeader.goHome();
-                        driver.sleep(0.2 * 1000);
-                        await webAppHomePage.isSpinnerDone();
-                        await webAppHomePage.manualResync(client);
-                    });
-                    it('validating "PPM_Values" UDT values via API', async () => {
-                        const updatedUDT = await objectsService.getUDT({
-                            where: "MapDataExternalID='" + tableName + "'",
-                            page_size: -1,
+                        it('changing value of group discount rule in "PPM_Values" UDT', async () => {
+                            updatedUDTRowPOST = await objectsService.postUDT({
+                                MapDataExternalID: tableName,
+                                MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
+                                SecondaryKey: '',
+                                Values: [
+                                    '[[true,"1555891200000","2534022144999","1","","ZGD2_A003",[[3,"D",1,"%"],[7,"D",2,"%"]],"EA"]]',
+                                ],
+                            });
+                            expect(updatedUDTRowPOST).to.deep.include({
+                                MapDataExternalID: tableName,
+                                MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
+                                SecondaryKey: null,
+                                Values: [
+                                    '[[true,"1555891200000","2534022144999","1","","ZGD2_A003",[[3,"D",1,"%"],[7,"D",2,"%"]],"EA"]]',
+                                ],
+                            });
+                            expect(updatedUDTRowPOST).to.have.property('CreationDateTime').that.contains('Z');
+                            expect(updatedUDTRowPOST)
+                                .to.have.property('ModificationDateTime')
+                                .that.contains(new Date().toISOString().split('T')[0]);
+                            expect(updatedUDTRowPOST).to.have.property('ModificationDateTime').that.contains('Z');
+                            expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
+                            expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
                         });
-                        console.info('updatedUDT: ', updatedUDT);
-                        expect(updatedUDT)
-                            .to.be.an('array')
-                            .with.lengthOf(
+                        it('changing value of additional item rule in "PPM_Values" UDT', async () => {
+                            updatedUDTRowPOST = await objectsService.postUDT({
+                                MapDataExternalID: tableName,
+                                MainKey: 'ZDS3@A001@Drug0004',
+                                SecondaryKey: '',
+                                Values: [
+                                    '[[true,"1555891200000","2534022144999","1","","additionalItem",[[6,"D",100,"%","",1,"EA","Drug0002",0]],"EA"]]',
+                                ],
+                            });
+                            expect(updatedUDTRowPOST).to.deep.include({
+                                MapDataExternalID: tableName,
+                                MainKey: 'ZDS3@A001@Drug0004',
+                                SecondaryKey: null,
+                                Values: [
+                                    '[[true,"1555891200000","2534022144999","1","","additionalItem",[[6,"D",100,"%","",1,"EA","Drug0002",0]],"EA"]]',
+                                ],
+                            });
+                            expect(updatedUDTRowPOST).to.have.property('CreationDateTime').that.contains('Z');
+                            expect(updatedUDTRowPOST)
+                                .to.have.property('ModificationDateTime')
+                                .that.contains(new Date().toISOString().split('T')[0]);
+                            expect(updatedUDTRowPOST).to.have.property('ModificationDateTime').that.contains('Z');
+                            expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
+                            expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
+                        });
+                        it('performing sync', async () => {
+                            await webAppHeader.goHome();
+                            driver.sleep(0.2 * 1000);
+                            await webAppHomePage.isSpinnerDone();
+                            await webAppHomePage.manualResync(client);
+                        });
+                        it('validating "PPM_Values" UDT values via API', async () => {
+                            const updatedUDT = await objectsService.getUDT({
+                                where: "MapDataExternalID='" + tableName + "'",
+                                page_size: -1,
+                            });
+                            console.info('updatedUDT: ', updatedUDT);
+                            expect(updatedUDT)
+                                .to.be.an('array')
+                                .with.lengthOf(
+                                    Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
+                                );
+                            // Add verification tests
+                        });
+                        it(`navigating to the account "${
+                            account == 'Acc01' ? 'My Store' : 'Account for order scenarios'
+                        }"`, async function () {
+                            await webAppHomePage.clickOnBtn('Accounts');
+                            await webAppHeader.isSpinnerDone();
+                            driver.sleep(0.1 * 1000);
+                            addContext(this, {
+                                title: `About to select account "${account}"`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await webAppList.clickOnFromListRowWebElementByName(accountName);
+                            await webAppList.isSpinnerDone();
+                            await webAppList.clickOnLinkFromListRowWebElementByText(`${accountName}`);
+                            await webAppList.isSpinnerDone();
+                            base64ImageComponent = await driver.saveScreenshots();
+                        });
+                        it('entering the same transaction through activity list', async function () {
+                            await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `At activity list - before entering the trasaction`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            await webAppList.clickOnLinkFromListRowWebElement();
+                            await webAppList.isSpinnerDone();
+                            await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName(''));
+                            try {
+                                await driver.findElement(orderPage.Cart_Submit_Button);
+                            } catch (error) {
+                                const caughtError: any = error;
+                                expect(caughtError.message).to.equal(
+                                    `After wait time of: 15000, for selector of '//button[@data-qa="Submit"]', The test must end, The element is: undefined`,
+                                );
+                            }
+                            try {
+                                await driver.findElement(orderPage.Cart_ContinueOrdering_Button);
+                            } catch (error) {
+                                const caughtError: any = error;
+                                expect(caughtError.message).to.equal(
+                                    `After wait time of: 15000, for selector of '//button[@data-qa="Continue ordering"]', The test must end, The element is: undefined`,
+                                );
+                            }
+                            driver.sleep(0.1 * 1000);
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Entered the trasaction`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
+                    });
+                    describe('CART', function () {
+                        it('verifying that the sum total of items in the cart is correct', async function () {
+                            await driver.untilIsVisible(orderPage.Cart_Totals); // Verify being in Cart
+                            let numberOfItemsInCart =
+                                testItems.length +
+                                itemsAddedToGetFreeGoods.length +
+                                freeGoodsReceived[account].length +
+                                groupRulesItems.length;
+                            if (account === 'OtherAcc') {
+                                numberOfItemsInCart--;
+                            }
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `At Cart`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const itemsInCart = await (
+                                await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                            ).getText();
+                            driver.sleep(0.2 * 1000);
+                            addContext(this, {
+                                title: `Number of Items in Cart`,
+                                value: `form UI: ${itemsInCart} , expected: ${numberOfItemsInCart}`,
+                            });
+                            expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
+                            driver.sleep(1 * 1000);
+                        });
+                        readonlyCartItems.forEach((readonlyCartItem) => {
+                            it(`checking item "${readonlyCartItem}"`, async function () {
+                                let priceTSAs;
+                                switch (true) {
+                                    case readonlyCartItem.includes('Free'):
+                                        const readonlyCartItemSplit = readonlyCartItem.split(' ');
+                                        const itemName = readonlyCartItemSplit[0];
+                                        const ifFreePlusUOM = readonlyCartItemSplit[1];
+                                        let expectedValue;
+                                        switch (true) {
+                                            case ifFreePlusUOM.includes('Each'):
+                                                priceTSAs = await pricingService.getItemTSAs(
+                                                    'Cart',
+                                                    itemName,
+                                                    'Free',
+                                                    0,
+                                                );
+                                                break;
+                                            case ifFreePlusUOM.includes('Case'):
+                                                priceTSAs = await pricingService.getItemTSAs(
+                                                    'Cart',
+                                                    itemName,
+                                                    'Free',
+                                                    1,
+                                                );
+                                                break;
+                                            case itemName === 'ToBr55':
+                                            case itemName === 'MakeUp018':
+                                                if (account === 'Acc01') {
+                                                    priceTSAs = await pricingService.getItemTSAs(
+                                                        'Cart',
+                                                        itemName,
+                                                        'Free',
+                                                    );
+                                                } else {
+                                                    priceTSAs = [];
+                                                }
+                                                break;
+
+                                            default:
+                                                priceTSAs = await pricingService.getItemTSAs('Cart', itemName, 'Free');
+                                                break;
+                                        }
+                                        console.info(
+                                            `Cart ${readonlyCartItem} priceTSAs:`,
+                                            JSON.stringify(priceTSAs, null, 2),
+                                        );
+                                        if (priceTSAs.length) {
+                                            priceFields.forEach((priceField) => {
+                                                switch (priceField) {
+                                                    case 'PriceBaseUnitPriceAfter1':
+                                                        expectedValue =
+                                                            pricingData.testItemsValues[itemName][priceField][account][
+                                                                'additional'
+                                                            ]['Each'];
+                                                        if (ifFreePlusUOM && ifFreePlusUOM.includes('Case')) {
+                                                            expectedValue =
+                                                                pricingData.testItemsValues[itemName][priceField][
+                                                                    account
+                                                                ]['additional']['Case'];
+                                                        }
+                                                        break;
+
+                                                    default:
+                                                        expectedValue = 0;
+                                                        break;
+                                                }
+                                                addContext(this, {
+                                                    title: `TSA field "${priceField}" Values`,
+                                                    value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                                });
+                                                expect(priceTSAs[priceField]).equals(expectedValue);
+                                            });
+                                        }
+                                        driver.sleep(0.5 * 1000);
+                                        break;
+                                    case readonlyCartItem === 'Drug0002':
+                                        // priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem);
+                                        priceTSAs = await pricingService.getItemTSAs(
+                                            'Cart',
+                                            readonlyCartItem,
+                                            undefined,
+                                            1,
+                                        );
+                                        console.info(
+                                            `Cart ${readonlyCartItem} priceTSAs:`,
+                                            JSON.stringify(priceTSAs, null, 2),
+                                        );
+                                        break;
+                                    case readonlyCartItem === 'MakeUp018':
+                                        if (!client.BaseURL.includes('staging') && account === 'Acc01') {
+                                            priceTSAs = await pricingService.getItemTSAs(
+                                                'Cart',
+                                                readonlyCartItem,
+                                                undefined,
+                                                1,
+                                            );
+                                        } else {
+                                            priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem);
+                                        }
+                                        console.info(
+                                            `Cart ${readonlyCartItem} priceTSAs:`,
+                                            JSON.stringify(priceTSAs, null, 2),
+                                        );
+                                        break;
+
+                                    default:
+                                        priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem);
+                                        console.info(
+                                            `Cart ${readonlyCartItem} priceTSAs:`,
+                                            JSON.stringify(priceTSAs, null, 2),
+                                        );
+                                        break;
+                                }
+                                if (readonlyCartItem.includes('Free') === false) {
+                                    let expectedValue;
+                                    switch (readonlyCartItem) {
+                                        case 'ToBr56':
+                                        case 'Frag012':
+                                            if (account === 'OtherAcc') {
+                                                priceFields.forEach((priceField) => {
+                                                    expectedValue =
+                                                        pricingData.testItemsValues[readonlyCartItem][priceField][
+                                                            account
+                                                        ]['cart'];
+                                                    addContext(this, {
+                                                        title: `TSA field "${priceField}" Values`,
+                                                        value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                                    });
+                                                    expect(priceTSAs[priceField]).equals(expectedValue);
+                                                });
+                                            }
+                                            break;
+
+                                        default:
+                                            priceFields.forEach((priceField) => {
+                                                expectedValue =
+                                                    pricingData.testItemsValues[readonlyCartItem][priceField][account][
+                                                        'cart'
+                                                    ];
+                                                addContext(this, {
+                                                    title: `TSA field "${priceField}" Values`,
+                                                    value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                                });
+                                                expect(priceTSAs[priceField]).equals(expectedValue);
+                                            });
+                                            break;
+                                    }
+                                }
+                                driver.sleep(1 * 1000);
+                            });
+                        });
+                    });
+                    describe('Reset', () => {
+                        it('reverting value of group discount rule in "PPM_Values" UDT to the original value', async () => {
+                            updatedUDTRowPOST = await objectsService.postUDT({
+                                MapDataExternalID: tableName,
+                                MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
+                                SecondaryKey: '',
+                                Values: [
+                                    '[[true,"1555891200000","2534022144999","1","","ZGD2_A003",[[3,"D",3,"%"],[7,"D",7,"%"]],"EA"]]',
+                                ],
+                            });
+                            expect(updatedUDTRowPOST).to.deep.include({
+                                MapDataExternalID: tableName,
+                                MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
+                                SecondaryKey: null,
+                                Values: [
+                                    '[[true,"1555891200000","2534022144999","1","","ZGD2_A003",[[3,"D",3,"%"],[7,"D",7,"%"]],"EA"]]',
+                                ],
+                            });
+                            expect(updatedUDTRowPOST).to.have.property('CreationDateTime').that.contains('Z');
+                            expect(updatedUDTRowPOST)
+                                .to.have.property('ModificationDateTime')
+                                .that.contains(new Date().toISOString().split('T')[0]);
+                            expect(updatedUDTRowPOST).to.have.property('ModificationDateTime').that.contains('Z');
+                            expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
+                            expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
+                        });
+                        it('reverting value of additional item rule in "PPM_Values" UDT to the original value', async () => {
+                            updatedUDTRowPOST = await objectsService.postUDT({
+                                MapDataExternalID: tableName,
+                                MainKey: 'ZDS3@A001@Drug0004',
+                                SecondaryKey: '',
+                                Values: [
+                                    '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"CS"]]',
+                                ],
+                            });
+                            expect(updatedUDTRowPOST).to.deep.include({
+                                MapDataExternalID: tableName,
+                                MainKey: 'ZDS3@A001@Drug0004',
+                                SecondaryKey: null,
+                                Values: [
+                                    '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"CS"]]',
+                                ],
+                            });
+                            expect(updatedUDTRowPOST).to.have.property('CreationDateTime').that.contains('Z');
+                            expect(updatedUDTRowPOST)
+                                .to.have.property('ModificationDateTime')
+                                .that.contains(new Date().toISOString().split('T')[0]);
+                            expect(updatedUDTRowPOST).to.have.property('ModificationDateTime').that.contains('Z');
+                            expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
+                            expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
+                        });
+                        it('performing sync', async () => {
+                            await webAppHeader.goHome();
+                            driver.sleep(0.2 * 1000);
+                            await webAppHomePage.isSpinnerDone();
+                            await webAppHomePage.manualResync(client);
+                        });
+                        it('validating "PPM_Values" UDT values via API', async () => {
+                            ppmVluesEnd = await objectsService.getUDT({
+                                where: `MapDataExternalID='${tableName}'`,
+                                page_size: -1,
+                            });
+                            expect(ppmVluesEnd.length).equals(
                                 Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
                             );
-                        // Add verification tests
-                    });
-                    it(`navigating to the account "${
-                        account == 'Acc01' ? 'My Store' : 'Account for order scenarios'
-                    }"`, async function () {
-                        await webAppHomePage.clickOnBtn('Accounts');
-                        await webAppHeader.isSpinnerDone();
-                        driver.sleep(0.1 * 1000);
-                        addContext(this, {
-                            title: `About to select account "${account}"`,
-                            value: 'data:image/png;base64,' + base64ImageComponent,
+                            // ppmVluesEnd.forEach((tableRow) => {  // needs to be converted
+                            //     expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
+                            // });
                         });
-                        await webAppList.clickOnFromListRowWebElementByName(accountName);
-                        await webAppList.isSpinnerDone();
-                        await webAppList.clickOnLinkFromListRowWebElementByText(`${accountName}`);
-                        await webAppList.isSpinnerDone();
-                        base64ImageComponent = await driver.saveScreenshots();
-                    });
-                    it('entering the same transaction through activity list', async function () {
-                        await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
-                        base64ImageComponent = await driver.saveScreenshots();
-                        addContext(this, {
-                            title: `At activity list - before entering the trasaction`,
-                            value: 'data:image/png;base64,' + base64ImageComponent,
-                        });
-                        await webAppList.clickOnLinkFromListRowWebElement();
-                        await webAppList.isSpinnerDone();
-                        await driver.untilIsVisible(orderPage.getSelectorOfItemInCartByName(''));
-                        try {
-                            await driver.findElement(orderPage.Cart_Submit_Button);
-                        } catch (error) {
-                            const caughtError: any = error;
-                            expect(caughtError.message).to.equal(
-                                `After wait time of: 15000, for selector of '//button[@data-qa="Submit"]', The test must end, The element is: undefined`,
-                            );
-                        }
-                        try {
-                            await driver.findElement(orderPage.Cart_ContinueOrdering_Button);
-                        } catch (error) {
-                            const caughtError: any = error;
-                            expect(caughtError.message).to.equal(
-                                `After wait time of: 15000, for selector of '//button[@data-qa="Continue ordering"]', The test must end, The element is: undefined`,
-                            );
-                        }
-                        driver.sleep(0.1 * 1000);
-                        base64ImageComponent = await driver.saveScreenshots();
-                        addContext(this, {
-                            title: `Entered the trasaction`,
-                            value: 'data:image/png;base64,' + base64ImageComponent,
-                        });
-                    });
-                    it('reverting values in "PPM_Values" UDT to the original values', async () => {
-                        updatedUDTRowPOST = await objectsService.postUDT({
-                            MapDataExternalID: tableName,
-                            MainKey: 'ZDS3@A001@Drug0004',
-                            SecondaryKey: '',
-                            Values: [
-                                '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"CS"]]',
-                            ],
-                        });
-                        expect(updatedUDTRowPOST).to.deep.include({
-                            MapDataExternalID: tableName,
-                            MainKey: 'ZDS3@A001@Drug0004',
-                            SecondaryKey: null,
-                            Values: [
-                                '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"CS"]]',
-                            ],
-                        });
-                        expect(updatedUDTRowPOST).to.have.property('CreationDateTime').that.contains('Z');
-                        expect(updatedUDTRowPOST)
-                            .to.have.property('ModificationDateTime')
-                            .that.contains(new Date().toISOString().split('T')[0]);
-                        expect(updatedUDTRowPOST).to.have.property('ModificationDateTime').that.contains('Z');
-                        expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
-                        expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
-                    });
-                    it('performing sync', async () => {
-                        await webAppHeader.goHome();
-                        driver.sleep(0.2 * 1000);
-                        await webAppHomePage.isSpinnerDone();
-                        await webAppHomePage.manualResync(client);
-                    });
-                    it('validating "PPM_Values" UDT values via API', async () => {
-                        ppmVluesEnd = await objectsService.getUDT({
-                            where: `MapDataExternalID='${tableName}'`,
-                            page_size: -1,
-                        });
-                        expect(ppmVluesEnd.length).equals(
-                            Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
-                        );
-                        // ppmVluesEnd.forEach((tableRow) => {  // needs to be converted
-                        //     expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
-                        // });
                     });
                 });
             });
