@@ -707,7 +707,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
-    if (tests.includes('Scheduler_Part2')) {
+    if (tests.includes('Async_Part2')) {
         await SchedulerTester_Part2(
             generalService,
             {
