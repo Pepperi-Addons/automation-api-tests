@@ -1135,7 +1135,7 @@ export class PricingData06 {
                     '4cases(24units)': 105.6,
                 },
                 OtherAcc: {
-                    cart: 50 * 6,
+                    cart: 40 * 6,
                     baseline: 50 * 6,
                     '1unit': 50,
                     '3units': 40,
@@ -1153,7 +1153,7 @@ export class PricingData06 {
                     '4cases(24units)': 105.6,
                 },
                 OtherAcc: {
-                    cart: 50 * 6,
+                    cart: 40 * 6,
                     baseline: 50 * 6,
                     '1unit': 50,
                     '3units': 40,
@@ -3169,6 +3169,35 @@ export class PricingData06 {
                     '2 Box': 55.25,
                     '3 Box': 55.25,
                     '4 Box': 55.25,
+                },
+            },
+        },
+        MaFa24: {
+            // UOMs - additional item just for Acc01
+            ItemPrice: 34.5,
+            PriceBaseUnitPriceAfter1: {
+                Acc01: {
+                    cart: 34.5,
+                },
+            },
+            PriceDiscountUnitPriceAfter1: {
+                Acc01: {
+                    cart: 0.0,
+                },
+            },
+            PriceGroupDiscountUnitPriceAfter1: {
+                Acc01: {
+                    cart: 0.0,
+                },
+            },
+            PriceManualLineUnitPriceAfter1: {
+                Acc01: {
+                    cart: 0.0,
+                },
+            },
+            PriceTaxUnitPriceAfter1: {
+                Acc01: {
+                    cart: 0.0,
                 },
             },
         },
