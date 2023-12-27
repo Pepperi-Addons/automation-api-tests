@@ -64,6 +64,12 @@ export async function Pricing06Tests(email: string, password: string, client: Cl
         '4 Box',
     ];
     const uomTestItems = ['Hair001', 'Hair002', 'Hair012'];
+    const uomTestCartItems = [
+        { name: 'Hair001', amount: 96 },
+        { name: 'Hair002', amount: 96 },
+        { name: 'Hair012', amount: 96 },
+        { name: 'MaFa24 Free Case', amount: 6 },
+    ];
     // const totalsTestItems = ['MaNa14', 'MaNa23'];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
@@ -313,10 +319,117 @@ export async function Pricing06Tests(email: string, password: string, client: Cl
                                 });
                             });
                         });
+                        describe('CART', function () {
+                            it('entering and verifying being in cart', async function () {
+                                await driver.click(orderPage.Cart_Button);
+                                await orderPage.isSpinnerDone();
+                                driver.sleep(1 * 1000);
+                                await driver.untilIsVisible(orderPage.Cart_List_container);
+                            });
+                            it('verifying that the sum total of items in the cart is correct', async function () {
+                                let numberOfItemsInCart = uomTestCartItems.length;
+                                if (account === 'OtherAcc') {
+                                    numberOfItemsInCart--;
+                                }
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At Cart`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
+                                const itemsInCart = await (
+                                    await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                ).getText();
+                                driver.sleep(0.2 * 1000);
+                                addContext(this, {
+                                    title: `Number of Items in Cart`,
+                                    value: `form UI: ${itemsInCart} , expected: ${numberOfItemsInCart}`,
+                                });
+                                expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
+                                driver.sleep(1 * 1000);
+                            });
+                            uomTestCartItems.forEach((uomTestCartItem) => {
+                                it(`${
+                                    uomTestCartItem.name.includes('Free') && account === 'OtherAcc'
+                                        ? 'no additional item found'
+                                        : `checking item "${uomTestCartItem.name}"`
+                                }`, async function () {
+                                    const state = '4 Box';
+                                    const uomTestCartItemSplited = uomTestCartItem.name.split(' ');
+                                    const itemName = uomTestCartItemSplited[0];
+                                    const isFreePlusUOM = uomTestCartItemSplited[1];
+                                    let totalUnitsAmount: number;
+                                    let priceTSAs;
+                                    switch (true) {
+                                        case isFreePlusUOM != undefined:
+                                            if (account === 'Acc01') {
+                                                totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                                    'Cart',
+                                                    itemName,
+                                                );
+                                                priceTSAs = await pricingService.getItemTSAs('Cart', itemName);
+                                            } else {
+                                                totalUnitsAmount = 0;
+                                                const additionalItems = await driver.isElementVisible(
+                                                    orderPage.getSelectorOfFreeItemInCartByName(''),
+                                                );
+                                                expect(additionalItems).equals(false);
+                                            }
+                                            break;
+
+                                        default:
+                                            totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                                'Cart',
+                                                itemName,
+                                            );
+                                            priceTSAs = await pricingService.getItemTSAs('Cart', itemName);
+                                            break;
+                                    }
+                                    if (totalUnitsAmount > 0) {
+                                        console.info(`Cart ${itemName} totalUnitsAmount: ${totalUnitsAmount}`);
+                                        console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
+                                        addContext(this, {
+                                            title: `Total Units amount of item`,
+                                            value: `form UI: ${totalUnitsAmount} , expected: ${uomTestCartItem.amount}`,
+                                        });
+                                        priceFields.forEach((priceField) => {
+                                            const expectedValue =
+                                                pricingData.testItemsValues[itemName][priceField][account][
+                                                    isFreePlusUOM ? 'cart' : state
+                                                ];
+                                            addContext(this, {
+                                                title: `TSA field "${priceField}" Values`,
+                                                value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                            });
+                                            expect(priceTSAs[priceField]).equals(expectedValue);
+                                        });
+                                        expect(totalUnitsAmount).equals(uomTestCartItem.amount);
+                                    }
+                                    driver.sleep(1 * 1000);
+                                });
+                            });
+                        });
                     });
 
                     describe('Totals', () => {
                         describe('ORDER CENTER', () => {
+                            it('Click "Continue ordering" button', async function () {
+                                await driver.click(orderPage.Cart_ContinueOrdering_Button);
+                                await orderPage.isSpinnerDone();
+                                await orderPage.changeOrderCenterPageView('Line View');
+                                await orderPage.isSpinnerDone();
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `After "Line View" was selected`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
+                                await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
+                                driver.sleep(1 * 1000);
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `Order Center - Loaded`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
+                            });
                             it('Navigating to "Hand Cosmetics" at Sidebar', async () => {
                                 await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                                 await driver.click(

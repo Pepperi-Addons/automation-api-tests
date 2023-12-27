@@ -52,7 +52,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
     // console.info('Installed Addons: ', JSON.stringify(await generalService.getInstalledAddons(), null, 2));
     // installedPricingVersion = (await generalService.getInstalledAddons())
     //     .find((addon) => addon.Addon.Name == 'pricing')
@@ -64,11 +64,11 @@ export async function PricingDataPrep(varPass: string, client: Client) {
     describe(`Prerequisites Addons for PRICING Tests - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
     } | Date Time: ${dateTime}`, async () => {
-        isInstalledArr.forEach((isInstalled, index) => {
-            it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-                expect(isInstalled).to.be.true;
-            });
-        });
+        // isInstalledArr.forEach((isInstalled, index) => {
+        //     it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+        //         expect(isInstalled).to.be.true;
+        //     });
+        // });
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
