@@ -122,7 +122,7 @@ export async function SchedulerTests_Part2(generalService: GeneralService, reque
                 expect(codeJobResponse.NumberOfTries).to.equal(CodeJobBody.NumberOfTries);
                 CodeJobUUIDCron = CallbackCash.insertNewCJtoCronVerification.UUID;
             });
-            it(`3. Excute The  Job`, async () => {
+            it(`3. Excute The Job`, async () => {
                 codeJobExecuteResponse = (
                     await generalService.fetchStatus(
                         '/code_jobs/async/' + CallbackCash.insertNewCJtoCronVerification.UUID + '/execute',
@@ -139,17 +139,16 @@ export async function SchedulerTests_Part2(generalService: GeneralService, reque
                 );
             });
             it(`4. See It Returns A Run Entry On Audit Log - Poll Untill Its Status Is 4 => InRetry`, async () => {
-                let codeJobResponse = await generalService.fetchStatus(
-                    '/audit_logs/' + codeJobExecuteResponse.ExecutionUUID,
-                    { method: 'GET' },
-                );
-                while (codeJobResponse.Body.Status.ID !== 4) {
-                    generalService.sleep(1000);
+                let codeJobResponse;
+                let numberOfRuns = 0;
+                do {
+                    generalService.sleep(10000);
                     codeJobResponse = await generalService.fetchStatus(
                         '/audit_logs/' + codeJobExecuteResponse.ExecutionUUID,
                         { method: 'GET' },
                     );
-                }
+                    numberOfRuns++;
+                } while (numberOfRuns < 21 && codeJobResponse.Body.Status.ID !== 4);
                 expect(codeJobResponse.Body.Status.ID).to.equal(4);
                 expect(codeJobResponse.Body.Status.Name).to.equal('InRetry');
                 expect(codeJobResponse.Body.AuditInfo.JobMessageData.NumberOfTry).to.equal(2);
@@ -158,57 +157,88 @@ export async function SchedulerTests_Part2(generalService: GeneralService, reque
                     'Failed due to exception: Nofar Test',
                 );
             });
-            it(`4. Stop The Code Job And Get It To See That: numOfTry = numOfTries+1`, async () => {
-                const bodyToSend = { KeyList: [CodeJobUUIDCron] };
+            it(`4. Stop The Code Job, Wait Until Audit Log Returns The Job Is Stopped, Then Get It & See That: numOfTry = numOfTries+1`, async () => {
+                const bodyToSend = { KeyList: [codeJobExecuteResponse.ExecutionUUID] };
                 const codeJobResponse = await generalService.fetchStatus('/addons/jobs/stop', {
                     method: 'POST',
                     body: JSON.stringify(bodyToSend),
                 });
                 expect(codeJobResponse.Ok).to.equal(true);
                 expect(codeJobResponse.Status).to.equal(200);
-                expect(codeJobResponse.Body).to.deep.equal({});
-                const codeJobGet = await service.auditLogs.find({
-                    where: `AuditInfo.JobMessageData.CodeJobUUID='${CodeJobUUIDCron}'`,
-                });
-                expect(codeJobGet[0].AuditInfo.JobMessageData.NumberOfTry).to.equal(
-                    codeJobGet[0].AuditInfo.JobMessageData.NumberOfTries + 1,
+                expect(codeJobResponse.Body.length).to.equal(1);
+                expect(codeJobResponse.Body[0].Key).to.equal(codeJobExecuteResponse.ExecutionUUID);
+                expect(codeJobResponse.Body[0].Status).to.equal('Update');
+                const codeJobGet = await generalService.fetchStatus(
+                    '/addons/jobs/' + codeJobExecuteResponse.ExecutionUUID,
+                    {
+                        method: 'GET',
+                    },
                 );
+                expect(codeJobGet.Body.NumberOfTry).to.equal(codeJobGet.Body.NumberOfTries + 1);
+                //DI-26138 [https://pepperi.atlassian.net/browse/DI-26138]
+                expect(codeJobGet.Body.ExpirationDateTime).to.not.be.null;
+                let codeJobAuditResponse;
+                let howManyRuns = 0;
+                do {
+                    generalService.sleep(20000);
+                    console.log(
+                        `waiting for the job status to become 'Failure', running for the ${howManyRuns + 1} time`,
+                    );
+                    codeJobAuditResponse = await service.auditLogs.find({
+                        where: `AuditInfo.JobMessageData.CodeJobUUID='${CodeJobUUIDCron}'`,
+                    });
+                    howManyRuns++;
+                } while (
+                    howManyRuns < 25 &&
+                    codeJobAuditResponse[0].Status.Name !== 'Failure' &&
+                    codeJobAuditResponse[0].Status.ID !== 0
+                );
+                console.log(howManyRuns);
+                expect(codeJobAuditResponse[0].AuditInfo.ErrorMessage).to.equal('Job was stopped by user');
             });
-            it(`5. Wait For 3 Minutes - And See The Job Execution Is 'Frozen'`, async () => {
-                generalService.sleep(180000);
+            it(`5. Wait For 5 Minutes - And See The Job Execution Is 'Frozen'`, async () => {
+                generalService.sleep(300000); //5 minutes
                 const codeJobResponse = await service.auditLogs.find({
                     where: `AuditInfo.JobMessageData.CodeJobUUID='${CodeJobUUIDCron}'`,
                 });
                 expect(codeJobResponse.length).to.equal(1);
-                expect((codeJobResponse[0] as any).Status.ID).to.equal(4);
-                expect((codeJobResponse[0] as any).Status.Name).to.equal('InRetry');
+                expect((codeJobResponse[0] as any).Status.ID).to.equal(0);
+                expect((codeJobResponse[0] as any).Status.Name).to.equal('Failure');
                 expect((codeJobResponse[0] as any).AuditInfo.JobMessageData.NumberOfTry).to.equal(2);
                 expect((codeJobResponse[0] as any).AuditInfo.JobMessageData.NumberOfTries).to.equal(10);
                 expect(JSON.parse((codeJobResponse[0] as any).AuditInfo.ResultObject).errorMessage).to.equal(
-                    'Failed due to exception: Nofar Test',
+                    'Job was stopped by user',
                 );
             });
             it(`6. Call Restart On This Job`, async () => {
-                const bodyToSend = { KeyList: [CodeJobUUIDCron] };
+                const bodyToSend = { Key: codeJobExecuteResponse.ExecutionUUID };
                 const codeJobResponse = await generalService.fetchStatus('/addons/jobs/restart', {
                     method: 'POST',
                     body: JSON.stringify(bodyToSend),
                 });
                 expect(codeJobResponse.Ok).to.equal(true);
                 expect(codeJobResponse.Status).to.equal(200);
-                expect(codeJobResponse.Body).to.deep.equal({});
+                expect(codeJobResponse.Body.AddonFunctionName).to.equal(CodeJobBody.FunctionName);
+                expect(codeJobResponse.Body.AddonPath).to.equal(CodeJobBody.AddonPath);
+                expect(codeJobResponse.Body.AddonUUID).to.equal(CodeJobBody.AddonUUID);
+                expect(codeJobResponse.Body.CodeJobUUID).to.equal(CallbackCash.insertNewCJtoCronVerification.UUID);
+                expect(codeJobResponse.Body.ErrorMessage).to.equal('Job was stopped by user');
+                expect(codeJobResponse.Body.Key).to.equal(codeJobExecuteResponse.ExecutionUUID);
+                expect(codeJobResponse.Body.NumberOfTries).to.equal(10);
+                expect(codeJobResponse.Body.NumberOfTry).to.equal(1);
+                expect(codeJobResponse.Body.Status).to.equal('Failure');
             });
-            it(`7. Wait For 2 Minutes & See The Job Is Back Running`, async () => {
-                generalService.sleep(160000);
+            it(`7. Wait For 4 Minutes & See The Job Is Back Running, Then Wait For Another 4 Minutes To See It Really Indeed Keeps Running Now`, async () => {
+                generalService.sleep(240000);
                 CallbackCash.ResponseEmptyExecutedLogsCronTest = await service.auditLogs.find({
                     where: `AuditInfo.JobMessageData.CodeJobUUID='${CodeJobUUIDCron}'`,
                 });
                 expect(
                     CallbackCash.ResponseEmptyExecutedLogsCronTest[0].AuditInfo.JobMessageData.NumberOfTry,
-                ).to.be.above(2);
+                ).to.be.above(1);
                 const prevNumOfTry =
                     CallbackCash.ResponseEmptyExecutedLogsCronTest[0].AuditInfo.JobMessageData.NumberOfTry;
-                generalService.sleep(160000);
+                generalService.sleep(240000);
                 CallbackCash.ResponseEmptyExecutedLogsCronTest = await service.auditLogs.find({
                     where: `AuditInfo.JobMessageData.CodeJobUUID='${CodeJobUUIDCron}'`,
                 });
@@ -229,6 +259,7 @@ export async function SchedulerTests_Part2(generalService: GeneralService, reque
                 expect(CallbackCash.updateCronToChroneTestIsScheduledFalse.Ok).to.equal(true);
                 expect(CallbackCash.updateCronToChroneTestIsScheduledFalse.Body.UUID).to.equal(CodeJobUUIDCron);
                 expect(CallbackCash.updateCronToChroneTestIsScheduledFalse.Body.CodeJobIsHidden).to.equal(true);
+                //-- clean user from testing code jobs (not sure it wont delete needed jobs also lo so use use wisely)
                 // const allCodeJobs = await generalService.fetchStatus('/code_jobs?page_size=-1', { method: "GET" });
                 // const allTestCodeJobs = allCodeJobs.Body.filter(codeJob => codeJob.SupportAdminUUID === 'a8f60b30-0066-41fd-8a56-2f43fb5ab8b0' &&codeJob.Type === 'AddonJob');
                 // for (let index = 0; index < allTestCodeJobs.length; index++) {
