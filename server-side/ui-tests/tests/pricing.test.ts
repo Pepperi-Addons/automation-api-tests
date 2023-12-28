@@ -102,35 +102,47 @@ export async function PricingTests(email: string, password: string, client: Clie
         ],
     };
     const groupRulesItems = [
-        { name: 'MakeUp001', amount: 2 },
-        { name: 'MakeUp002', amount: 2 },
-        { name: 'MakeUp003', amount: 10 },
-        { name: 'MakeUp006', amount: 1 },
-        { name: 'MakeUp018', amount: 2 },
-        { name: 'MakeUp018 Free', amount: 1 },
-        { name: 'MakeUp019', amount: 5 },
+        { name: 'MakeUp001', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        { name: 'MakeUp002', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        { name: 'MakeUp003', Acc01: { uom: 'Each', unitQuantity: 10 }, OtherAcc: { uom: 'Each', unitQuantity: 10 } },
+        { name: 'MakeUp006', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
+        { name: 'MakeUp018', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        { name: 'MakeUp018 Free', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
+        { name: 'MakeUp019', Acc01: { uom: 'Each', unitQuantity: 5 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
     ];
     const readonlyCartItems = [
-        { name: 'MakeUp019', amount: 5 },
-        { name: 'MakeUp018 Free', amount: 1 },
-        { name: 'MakeUp006', amount: 1 },
-        { name: 'MakeUp018', amount: 2 },
-        { name: 'MakeUp003', amount: 10 },
-        { name: 'MakeUp002', amount: 2 },
-        { name: 'MakeUp001', amount: 2 },
-        { name: 'Drug0004', amount: 18 },
-        { name: 'Drug0002 Free Each', amount: 2 },
-        { name: 'Drug0002', amount: 60 },
-        { name: 'Drug0002 Free Case', amount: 12 },
-        { name: 'ToBr55', amount: 30 },
-        { name: 'ToBr55 Free', amount: 6 },
-        { name: 'Drug0003', amount: 24 },
-        { name: 'Drug0001', amount: 24 },
-        { name: 'ToBr56', amount: 24 },
-        // { name: 'Frag012', amount: 24 },
-        // { name: 'Frag005', amount: 24 },
-        // { name: 'Spring Loaded Frizz-Fighting Conditioner', amount: 24 },
-        // { name: 'Lipstick no.1', amount: 24 },
+        { name: 'MakeUp019', Acc01: { uom: 'Each', unitQuantity: 5 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
+        { name: 'MakeUp018 Free', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
+        { name: 'MakeUp006', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
+        { name: 'MakeUp018', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        { name: 'MakeUp003', Acc01: { uom: 'Each', unitQuantity: 10 }, OtherAcc: { uom: 'Each', unitQuantity: 10 } },
+        { name: 'MakeUp002', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        { name: 'MakeUp001', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        { name: 'Drug0004', Acc01: { uom: 'Case', unitQuantity: 18 }, OtherAcc: { uom: 'Case', unitQuantity: 18 } },
+        {
+            name: 'Drug0002 Free Each',
+            Acc01: { uom: 'Each', unitQuantity: 2 },
+            OtherAcc: { uom: 'Each', unitQuantity: 2 },
+        },
+        { name: 'Drug0002', Acc01: { uom: 'Case', unitQuantity: 60 }, OtherAcc: { uom: 'Case', unitQuantity: 60 } },
+        {
+            name: 'Drug0002 Free Case',
+            Acc01: { uom: 'Case', unitQuantity: 12 },
+            OtherAcc: { uom: 'Case', unitQuantity: 12 },
+        },
+        { name: 'ToBr55', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
+        { name: 'ToBr55 Free', Acc01: { uom: 'Case', unitQuantity: 6 }, OtherAcc: { uom: 'Each', unitQuantity: 6 } },
+        { name: 'Drug0003', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
+        { name: 'Drug0001', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
+        { name: 'ToBr56', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
+        { name: 'Frag012', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
+        { name: 'Frag005', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
+        {
+            name: 'Spring Loaded Frizz-Fighting Conditioner',
+            Acc01: { uom: 'Case', unitQuantity: 24 },
+            OtherAcc: { uom: 'Case', unitQuantity: 24 },
+        },
+        // { name: 'Lipstick no.1', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
     ];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
@@ -1012,8 +1024,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                             it('increase quantity of item "ToBr55" over 20 units (Each) and see the additional item change to 1 case of "ToBr55"', async function () {
                                 const item = 'ToBr55';
-                                driver.sleep(2 * 1000);
+                                driver.refresh();
                                 await orderPage.isSpinnerDone();
+                                driver.sleep(0.2 * 1000);
                                 await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
                                     'Case',
                                     item,
@@ -1898,7 +1911,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             'Cart',
                                             groupRuleItem.name,
                                         );
-                                        if (account === 'Acc01' && !client.BaseURL.includes('staging')) {
+                                        // if (account === 'Acc01' && !client.BaseURL.includes('staging')) {
+                                        if (account === 'Acc01') {
                                             priceTSAs = await pricingService.getItemTSAs(
                                                 'Cart',
                                                 groupRuleItem.name,
@@ -1931,9 +1945,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             );
                                             addContext(this, {
                                                 title: `Total Units amount of item`,
-                                                value: `form UI: ${totalUnitsAmount} , expected: ${groupRuleItem.amount}`,
+                                                value: `form UI: ${totalUnitsAmount} , expected: ${groupRuleItem[account].unitQuantity}`,
                                             });
-                                            expect(totalUnitsAmount).equals(groupRuleItem.amount);
+                                            expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
                                             priceFields.forEach((priceField) => {
                                                 switch (priceField) {
                                                     case 'PriceBaseUnitPriceAfter1':
@@ -1977,9 +1991,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     let expectedValue;
                                     addContext(this, {
                                         title: `Total Units amount of item`,
-                                        value: `form UI: ${totalUnitsAmount} , expected: ${groupRuleItem.amount}`,
+                                        value: `form UI: ${totalUnitsAmount} , expected: ${groupRuleItem[account].unitQuantity}`,
                                     });
-                                    expect(totalUnitsAmount).equals(groupRuleItem.amount);
+                                    expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
                                     priceFields.forEach((priceField) => {
                                         switch (priceField) {
                                             case 'PriceGroupDiscountUnitPriceAfter1':
@@ -2212,14 +2226,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                     'Cart',
                                                     itemName,
                                                     'Free',
-                                                    0,
                                                 );
-                                                priceTSAs = await pricingService.getItemTSAs(
-                                                    'Cart',
-                                                    itemName,
-                                                    'Free',
-                                                    0,
-                                                );
+                                                priceTSAs = await pricingService.getItemTSAs('Cart', itemName, 'Free');
                                                 break;
                                             case ifFreePlusUOM.includes('Case'):
                                                 totalUnitsAmount = await pricingService.getItemTotalAmount(
@@ -2248,8 +2256,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                         itemName,
                                                         'Free',
                                                     );
-                                                } else {
-                                                    priceTSAs = [];
                                                 }
                                                 break;
 
@@ -2268,10 +2274,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
                                         addContext(this, {
                                             title: `Total Units amount of item`,
-                                            value: `form UI: ${totalUnitsAmount} , expected: ${readonlyCartItem.amount}`,
+                                            value: `form UI: ${totalUnitsAmount} , expected: ${readonlyCartItem[account].unitQuantity}`,
                                         });
-                                        expect(totalUnitsAmount).equals(readonlyCartItem.amount);
-                                        if (priceTSAs.length) {
+                                        if (priceTSAs != undefined) {
                                             priceFields.forEach((priceField) => {
                                                 switch (priceField) {
                                                     case 'PriceBaseUnitPriceAfter1':
@@ -2297,6 +2302,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 });
                                                 expect(priceTSAs[priceField]).equals(expectedValue);
                                             });
+                                            expect(totalUnitsAmount).equals(readonlyCartItem[account].unitQuantity);
                                         }
                                         driver.sleep(0.5 * 1000);
                                         break;
@@ -2304,6 +2310,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         totalUnitsAmount = await pricingService.getItemTotalAmount(
                                             'Cart',
                                             readonlyCartItem.name,
+                                            undefined,
+                                            1,
                                         );
                                         // priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem);
                                         priceTSAs = await pricingService.getItemTSAs(
@@ -2318,10 +2326,13 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         );
                                         break;
                                     case readonlyCartItem.name === 'MakeUp018':
-                                        if (!client.BaseURL.includes('staging') && account === 'Acc01') {
+                                        // if (!client.BaseURL.includes('staging') && account === 'Acc01') {
+                                        if (account === 'Acc01') {
                                             totalUnitsAmount = await pricingService.getItemTotalAmount(
                                                 'Cart',
                                                 readonlyCartItem.name,
+                                                undefined,
+                                                1,
                                             );
                                             priceTSAs = await pricingService.getItemTSAs(
                                                 'Cart',
@@ -2373,9 +2384,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 });
                                                 addContext(this, {
                                                     title: `Total Units amount of item`,
-                                                    value: `form UI: ${totalUnitsAmount} , expected: ${readonlyCartItem.amount}`,
+                                                    value: `form UI: ${totalUnitsAmount} , expected: ${readonlyCartItem[account].unitQuantity}`,
                                                 });
-                                                expect(totalUnitsAmount).equals(readonlyCartItem.amount);
+                                                expect(totalUnitsAmount).equals(readonlyCartItem[account].unitQuantity);
                                             }
                                             break;
 
@@ -2393,9 +2404,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             });
                                             addContext(this, {
                                                 title: `Total Units amount of item`,
-                                                value: `form UI: ${totalUnitsAmount} , expected: ${readonlyCartItem.amount}`,
+                                                value: `form UI: ${totalUnitsAmount} , expected: ${readonlyCartItem[account].unitQuantity}`,
                                             });
-                                            expect(totalUnitsAmount).equals(readonlyCartItem.amount);
+                                            expect(totalUnitsAmount).equals(readonlyCartItem[account].unitQuantity);
                                             break;
                                     }
                                 }
