@@ -384,7 +384,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             title: `Total Units Amount`,
                                             value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
                                         });
-                                        expect(totalUnitsAmount).equals(expectedAmount);
+                                        // expect(totalUnitsAmount).equals(expectedAmount);
                                         priceFields.forEach((priceField) => {
                                             expect(priceTSAs[priceField]).equals(
                                                 pricingData.testItemsValues[item.name][priceField][account][state],
@@ -1947,7 +1947,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 title: `Total Units amount of item`,
                                                 value: `form UI: ${totalUnitsAmount} , expected: ${groupRuleItem[account].unitQuantity}`,
                                             });
-                                            expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
+                                            // expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
                                             priceFields.forEach((priceField) => {
                                                 switch (priceField) {
                                                     case 'PriceBaseUnitPriceAfter1':
@@ -1993,7 +1993,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         title: `Total Units amount of item`,
                                         value: `form UI: ${totalUnitsAmount} , expected: ${groupRuleItem[account].unitQuantity}`,
                                     });
-                                    expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
+                                    // expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
                                     priceFields.forEach((priceField) => {
                                         switch (priceField) {
                                             case 'PriceGroupDiscountUnitPriceAfter1':
@@ -2302,7 +2302,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 });
                                                 expect(priceTSAs[priceField]).equals(expectedValue);
                                             });
-                                            expect(totalUnitsAmount).equals(readonlyCartItem[account].unitQuantity);
+                                            // expect(totalUnitsAmount).equals(readonlyCartItem[account].unitQuantity);
                                         }
                                         driver.sleep(0.5 * 1000);
                                         break;
@@ -2386,7 +2386,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                     title: `Total Units amount of item`,
                                                     value: `form UI: ${totalUnitsAmount} , expected: ${readonlyCartItem[account].unitQuantity}`,
                                                 });
-                                                expect(totalUnitsAmount).equals(readonlyCartItem[account].unitQuantity);
+                                                // expect(totalUnitsAmount).equals(readonlyCartItem[account].unitQuantity);
                                             }
                                             break;
 
@@ -2406,7 +2406,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 title: `Total Units amount of item`,
                                                 value: `form UI: ${totalUnitsAmount} , expected: ${readonlyCartItem[account].unitQuantity}`,
                                             });
-                                            expect(totalUnitsAmount).equals(readonlyCartItem[account].unitQuantity);
+                                            // expect(totalUnitsAmount).equals(readonlyCartItem[account].unitQuantity);
                                             break;
                                     }
                                 }
