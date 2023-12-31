@@ -2011,6 +2011,51 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 addonVersionSbEx = addonVersionSb;
                 break;
             }
+            case 'ASYNCADDON': {
+                addonUUID = '00000000-0000-0000-0000-0000000a594c';
+                const buildToken = 'ASYNCApprovmentTests';
+                const jobPathPROD =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20L1%20Production%20-%20Async%20Addon%20Stop%20Restart%20-%20CLI';
+                const jobPathEU =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20L1%20EU%20-%20Async%20Addon%20Stop%20Restart%20-%20CLI';
+                const jobPathSB =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20L1%20Stage%20-%20Async%20Addon%20Stop%20Restart%20-%20CLI';
+                const {
+                    JenkinsBuildResultsAllEnvs,
+                    latestRunProd,
+                    latestRunEU,
+                    latestRunSB,
+                    addonEntryUUIDProd,
+                    addonEntryUUIDEu,
+                    addonEntryUUIDSb,
+                    addonVersionProd,
+                    addonVersionEU,
+                    addonVersionSb,
+                } = await runnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
+                    addonName,
+                    addonUUID,
+                    jobPathPROD,
+                    jobPathEU,
+                    jobPathSB,
+                    buildToken,
+                );
+                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
+                latestRunProdEx = latestRunProd;
+                latestRunEUEx = latestRunEU;
+                latestRunSBEx = latestRunSB;
+                pathProdEx = jobPathPROD;
+                pathEUEx = jobPathEU;
+                pathSBEx = jobPathSB;
+                addonEntryUUIDProdEx = addonEntryUUIDProd;
+                addonEntryUUIDEuEx = addonEntryUUIDEu;
+                addonEntryUUIDSbEx = addonEntryUUIDSb;
+                addonVersionProdEx = addonVersionProd;
+                addonVersionEUEx = addonVersionEU;
+                addonVersionSbEx = addonVersionSb;
+                break;
+            }
             case 'PAPI-DATA-INDEX':
             case 'PAPI INDEX': {
                 addonUUID = '10979a11-d7f4-41df-8993-f06bfd778304';
