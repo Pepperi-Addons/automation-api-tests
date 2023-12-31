@@ -857,6 +857,13 @@ export async function pfs(client: Client, request: Request, testerFunctions: Tes
     return await testerFunctions.run();
 }
 
+export async function return_128KB(client: Client, request: Request) {
+    const size = Buffer.byteLength(JSON.stringify(request.body));
+    console.log(size / 1000 + 'KB');
+    const service = new GeneralService(client);
+    return service.generateRandomString(131069);
+}
+
 export async function permissions(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Permissions';
