@@ -686,7 +686,7 @@ export class PricingData06 {
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
-                    cart: 27.0,
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -694,7 +694,7 @@ export class PricingData06 {
                     '4cases(24units)': 27 * 0.85,
                 },
                 OtherAcc: {
-                    cart: 27.0,
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -722,7 +722,7 @@ export class PricingData06 {
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
-                    cart: 27.0,
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -730,7 +730,7 @@ export class PricingData06 {
                     '4cases(24units)': 27 * 0.85,
                 },
                 OtherAcc: {
-                    cart: 27.0,
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -740,7 +740,7 @@ export class PricingData06 {
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
-                    cart: 27.0,
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -748,7 +748,7 @@ export class PricingData06 {
                     '4cases(24units)': 27 * 0.85,
                 },
                 OtherAcc: {
-                    cart: 27.0,
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -1135,7 +1135,7 @@ export class PricingData06 {
                     '4cases(24units)': 105.6,
                 },
                 OtherAcc: {
-                    cart: 50 * 6,
+                    cart: 40 * 6,
                     baseline: 50 * 6,
                     '1unit': 50,
                     '3units': 40,
@@ -1153,7 +1153,7 @@ export class PricingData06 {
                     '4cases(24units)': 105.6,
                 },
                 OtherAcc: {
-                    cart: 50 * 6,
+                    cart: 40 * 6,
                     baseline: 50 * 6,
                     '1unit': 50,
                     '3units': 40,
@@ -3170,6 +3170,235 @@ export class PricingData06 {
                     '3 Box': 55.25,
                     '4 Box': 55.25,
                 },
+            },
+        },
+        MaFa24: {
+            // UOMs - additional item just for Acc01
+            ItemPrice: 34.5,
+            PriceBaseUnitPriceAfter1: {
+                Acc01: {
+                    cart: 34.5,
+                },
+            },
+            PriceDiscountUnitPriceAfter1: {
+                Acc01: {
+                    cart: 0.0,
+                },
+            },
+            PriceGroupDiscountUnitPriceAfter1: {
+                Acc01: {
+                    cart: 0.0,
+                },
+            },
+            PriceManualLineUnitPriceAfter1: {
+                Acc01: {
+                    cart: 0.0,
+                },
+            },
+            PriceTaxUnitPriceAfter1: {
+                Acc01: {
+                    cart: 0.0,
+                },
+            },
+        },
+        MaNa14: {
+            // totals
+            ItemPrice: 37.75,
+            baseline: {
+                uom1: 'Case',
+                qty1: 0,
+                uom2: 'Each',
+                qty2: 0,
+                unitQuantity: 0,
+                PriceTaxTotal: 0.0,
+                PriceTaxTotalDiff: 0.0,
+                PriceTaxTotalPercent: 0.0,
+                PriceTaxUnitDiff: 0.0,
+                PriceBaseUnitPriceAfter1: 40.0,
+                PriceDiscountUnitPriceAfter1: 40.0,
+                PriceGroupDiscountUnitPriceAfter1: 40.0,
+                PriceManualLineUnitPriceAfter1: 40.0,
+                PriceTaxUnitPriceAfter1: 40.0,
+                PriceDiscount2UnitPriceAfter1: 40.0,
+                PriceBaseUnitPriceAfter2: 8.0,
+                PriceDiscountUnitPriceAfter2: 8.0,
+                PriceTaxUnitPriceAfter2: 8.0,
+                NPMCalcMessage: [
+                    {
+                        Name: 'Base',
+                        Base: 0,
+                        Conditions: [
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                        ],
+                        New: 0,
+                        Amount: 0,
+                    },
+                ],
+            },
+            state1: {
+                uom1: 'Case',
+                qty1: 1,
+                uom2: 'Each',
+                qty2: 1,
+                unitQuantity: 7,
+                PriceTaxTotal: 0.0,
+                PriceTaxTotalDiff: 0.0,
+                PriceTaxTotalPercent: 0.0,
+                PriceTaxUnitDiff: 0.0,
+                PriceBaseUnitPriceAfter1: 40.0,
+                PriceDiscountUnitPriceAfter1: 40.0,
+                PriceGroupDiscountUnitPriceAfter1: 40.0,
+                PriceManualLineUnitPriceAfter1: 40.0,
+                PriceTaxUnitPriceAfter1: 40.0,
+                PriceDiscount2UnitPriceAfter1: 40.0,
+                PriceBaseUnitPriceAfter2: 8.0,
+                PriceDiscountUnitPriceAfter2: 8.0,
+                PriceTaxUnitPriceAfter2: 8.0,
+                NPMCalcMessage: [
+                    {
+                        Name: 'Base',
+                        Base: 0,
+                        Conditions: [
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                        ],
+                        New: 0,
+                        Amount: 0,
+                    },
+                ],
+            },
+            state2: {
+                uom1: 'Case',
+                qty1: 1,
+                uom2: 'Each',
+                qty2: 1,
+                unitQuantity: 7,
+                PriceTaxTotal: 0.0,
+                PriceTaxTotalDiff: 0.0,
+                PriceTaxTotalPercent: 0.0,
+                PriceTaxUnitDiff: 0.0,
+                PriceBaseUnitPriceAfter1: 40.0,
+                PriceDiscountUnitPriceAfter1: 40.0,
+                PriceGroupDiscountUnitPriceAfter1: 40.0,
+                PriceManualLineUnitPriceAfter1: 40.0,
+                PriceTaxUnitPriceAfter1: 40.0,
+                PriceDiscount2UnitPriceAfter1: 40.0,
+                PriceBaseUnitPriceAfter2: 8.0,
+                PriceDiscountUnitPriceAfter2: 8.0,
+                PriceTaxUnitPriceAfter2: 8.0,
+                NPMCalcMessage: [
+                    {
+                        Name: 'Base',
+                        Base: 0,
+                        Conditions: [
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                        ],
+                        New: 0,
+                        Amount: 0,
+                    },
+                ],
+            },
+        },
+        MaNa23: {
+            // totals
+            ItemPrice: 40.25,
+            baseline: {
+                uom1: 'Case',
+                qty1: 0,
+                uom2: 'Each',
+                qty2: 0,
+                unitQuantity: 0,
+                PriceTaxTotal: 0.0,
+                PriceTaxTotalDiff: 0.0,
+                PriceTaxTotalPercent: 0.0,
+                PriceTaxUnitDiff: 0.0,
+                PriceBaseUnitPriceAfter1: 40.0,
+                PriceDiscountUnitPriceAfter1: 40.0,
+                PriceGroupDiscountUnitPriceAfter1: 40.0,
+                PriceManualLineUnitPriceAfter1: 40.0,
+                PriceTaxUnitPriceAfter1: 40.0,
+                PriceDiscount2UnitPriceAfter1: 40.0,
+                PriceBaseUnitPriceAfter2: 8.0,
+                PriceDiscountUnitPriceAfter2: 8.0,
+                PriceTaxUnitPriceAfter2: 8.0,
+                NPMCalcMessage: [
+                    {
+                        Name: 'Base',
+                        Base: 0,
+                        Conditions: [
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                        ],
+                        New: 0,
+                        Amount: 0,
+                    },
+                ],
+            },
+            state1: {
+                uom1: 'Case',
+                qty1: 1,
+                uom2: 'Each',
+                qty2: 1,
+                unitQuantity: 7,
+                PriceTaxTotal: 75.5,
+                PriceTaxTotalDiff: 37.75,
+                PriceTaxTotalPercent: 50.0,
+                PriceTaxUnitDiff: 0.0,
+                PriceBaseUnitPriceAfter1: 40.0,
+                PriceDiscountUnitPriceAfter1: 40.0,
+                PriceGroupDiscountUnitPriceAfter1: 40.0,
+                PriceManualLineUnitPriceAfter1: 40.0,
+                PriceTaxUnitPriceAfter1: 40.0,
+                PriceDiscount2UnitPriceAfter1: 40.0,
+                PriceBaseUnitPriceAfter2: 8.0,
+                PriceDiscountUnitPriceAfter2: 8.0,
+                PriceTaxUnitPriceAfter2: 8.0,
+                NPMCalcMessage: [
+                    {
+                        Name: 'Base',
+                        Base: 0,
+                        Conditions: [
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                        ],
+                        New: 0,
+                        Amount: 0,
+                    },
+                ],
+            },
+            state2: {
+                uom1: 'Case',
+                qty1: 1,
+                uom2: 'Each',
+                qty2: 1,
+                unitQuantity: 7,
+                PriceTaxTotal: 75.5,
+                PriceTaxTotalDiff: 37.75,
+                PriceTaxTotalPercent: 50.0,
+                PriceTaxUnitDiff: 0.0,
+                PriceBaseUnitPriceAfter1: 40.0,
+                PriceDiscountUnitPriceAfter1: 40.0,
+                PriceGroupDiscountUnitPriceAfter1: 40.0,
+                PriceManualLineUnitPriceAfter1: 40.0,
+                PriceTaxUnitPriceAfter1: 40.0,
+                PriceDiscount2UnitPriceAfter1: 40.0,
+                PriceBaseUnitPriceAfter2: 8.0,
+                PriceDiscountUnitPriceAfter2: 8.0,
+                PriceTaxUnitPriceAfter2: 8.0,
+                NPMCalcMessage: [
+                    {
+                        Name: 'Base',
+                        Base: 0,
+                        Conditions: [
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                        ],
+                        New: 0,
+                        Amount: 0,
+                    },
+                ],
             },
         },
     };

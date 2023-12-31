@@ -51,6 +51,17 @@ export class OrderPage extends WebAppList {
     public PriceTaxUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceTaxUnitPriceAfter1"]');
     public NPMCalcMessage_Value: By = By.xpath('//span[@id="TSANPMCalcMessage"]');
 
+    public PriceDiscount2UnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceDiscount2UnitPriceAfter1"]');
+
+    public PriceBaseUnitPriceAfter2_Value: By = By.xpath('//span[@id="TSAPriceBaseUnitPriceAfter2"]');
+    public PriceDiscountUnitPriceAfter2_Value: By = By.xpath('//span[@id="TSAPriceDiscountUnitPriceAfter2"]');
+    public PriceTaxUnitPriceAfter2_Value: By = By.xpath('//span[@id="TSAPriceTaxUnitPriceAfter2"]');
+
+    public PriceTaxTotal_Value: By = By.xpath('//span[@id="TSAPriceTaxTotal"]');
+    public PriceTaxTotalPercent_Value: By = By.xpath('//span[@id="TSAPriceTaxTotalPercent"]');
+    public PriceTaxTotalDiff_Value: By = By.xpath('//span[@id="TSAPriceTaxTotalDiff"]');
+    public PriceTaxUnitDiff_Value: By = By.xpath('//span[@id="TSAPriceTaxUnitDiff"]');
+
     public Cart_ContinueOrdering_Button: By = By.xpath('//button[@data-qa="Continue ordering"]');
     public Cart_Headline_Results_Number: By = By.xpath('//pep-list-total//span[contains(@class,"bold number")]');
     public OrderCenter_Headline_Results_Number: By = By.xpath('//list-total//span[contains(@class,"bold number")]');
@@ -133,6 +144,18 @@ export class OrderPage extends WebAppList {
     public getSelectorOfNumberOfUnitsInCartByItemName(name: string) {
         return By.xpath(
             `${this.getSelectorOfItemInCartByName(name).value}${this.ItemQuantity_NumberOfUnits_Readonly.value}`,
+        );
+    }
+
+    public getSelectorOfNumberOfUnitsInCartByFreeItemName(name: string) {
+        return By.xpath(
+            `${this.getSelectorOfFreeItemInCartByName(name).value}${this.ItemQuantity_NumberOfUnits_Readonly.value}`,
+        );
+    }
+
+    public getSelectorOfNumberOfUnitsInOrderCenterByItemName(name: string) {
+        return By.xpath(
+            `${this.getSelectorOfItemInOrderCenterByName(name).value}${this.ItemQuantity_NumberOfUnits_Readonly.value}`,
         );
     }
 
