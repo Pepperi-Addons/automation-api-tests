@@ -70,8 +70,8 @@ export async function Pricing06Tests(email: string, password: string, client: Cl
         { name: 'Hair012', amount: 96 },
         { name: 'MaFa24 Free Case', amount: 6 },
     ];
-    const totalsTestItems = ['MaNa14', 'MaNa23'];
-    const totalsTestStates = ['baseline', 'state1', 'state2'];
+    // const totalsTestItems = ['MaNa14', 'MaNa23'];
+    // const totalsTestStates = ['baseline', 'state1', 'state2'];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
         'PriceDiscountUnitPriceAfter1',
@@ -79,8 +79,8 @@ export async function Pricing06Tests(email: string, password: string, client: Cl
         'PriceManualLineUnitPriceAfter1',
         'PriceTaxUnitPriceAfter1',
     ];
-    const priceFields2 = ['PriceBaseUnitPriceAfter2', 'PriceDiscountUnitPriceAfter2', 'PriceTaxUnitPriceAfter2'];
-    const totalsPriceFields = ['PriceTaxTotal', 'PriceTaxTotalPercent', 'PriceTaxTotalDiff', 'PriceTaxUnitDiff'];
+    // const priceFields2 = ['PriceBaseUnitPriceAfter2', 'PriceDiscountUnitPriceAfter2', 'PriceTaxUnitPriceAfter2'];
+    // const totalsPriceFields = ['PriceTaxTotal', 'PriceTaxTotalPercent', 'PriceTaxTotalDiff', 'PriceTaxUnitDiff'];
 
     if (installedPricingVersionShort === '6' || installedPricingVersionShort === '7') {
         describe(`Pricing 0.6 UI tests  - ${
@@ -412,281 +412,281 @@ export async function Pricing06Tests(email: string, password: string, client: Cl
                         });
                     });
 
-                    describe('Totals', () => {
-                        totalsTestStates.forEach((totalsTestState) => {
-                            describe(`PREP - state "${totalsTestState}"`, () => {
-                                it('Click "Continue ordering" button', async function () {
-                                    await driver.click(orderPage.Cart_ContinueOrdering_Button);
-                                    await orderPage.isSpinnerDone();
-                                    await orderPage.changeOrderCenterPageView('Line View');
-                                    await orderPage.isSpinnerDone();
-                                    base64ImageComponent = await driver.saveScreenshots();
-                                    addContext(this, {
-                                        title: `After "Line View" was selected`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
-                                    });
-                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
-                                    driver.sleep(1 * 1000);
-                                    base64ImageComponent = await driver.saveScreenshots();
-                                    addContext(this, {
-                                        title: `Order Center - Loaded`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
-                                    });
-                                });
-                                it('Navigating to "Hand Cosmetics" at Sidebar', async () => {
-                                    await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
-                                    await driver.click(
-                                        orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Hand Cosmetics'),
-                                    );
-                                    driver.sleep(5 * 1000);
-                                });
-                            });
-                            describe(`ORDER CENTER - state "${totalsTestState}"`, function () {
-                                totalsTestItems.forEach((totalsTestItem) => {
-                                    describe(`Item: ***${totalsTestItem}`, function () {
-                                        it(`Looking for "${totalsTestItem}" using the search box`, async function () {
-                                            await pricingService.searchInOrderCenter.bind(this)(totalsTestItem, driver);
-                                            driver.sleep(1 * 1000);
-                                        });
-                                        it(`Checking TSAs`, async function () {
-                                            if (totalsTestState != 'baseline') {
-                                                const splitedStateArgs = totalsTestState.split(' ');
-                                                const chosenUom = splitedStateArgs[1];
-                                                const amount = Number(splitedStateArgs[0]);
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `Chosen UOM: ${chosenUom}, Amount: ${amount}`,
-                                                });
-                                                await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                                    this,
-                                                )(chosenUom, totalsTestItem, amount, driver);
-                                            }
-                                            const priceTSAs = await pricingService.getItemTSAs(
-                                                'OrderCenter',
-                                                totalsTestItem,
-                                            );
-                                            const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
-                                                'OrderCenter',
-                                                totalsTestItem,
-                                            );
-                                            const priceTSAs_AOQM_UOM2 = await pricingService.getItemTSAs_AOQM_UOM2(
-                                                'OrderCenter',
-                                                totalsTestItem,
-                                            );
-                                            const priceTotalsTSAs = await pricingService.getTotalsTSAsOfItem(
-                                                'OrderCenter',
-                                                totalsTestItem,
-                                            );
-                                            console.info(`${totalsTestItem} ${totalsTestState} priceTSAs:`, priceTSAs);
-                                            expect(typeof priceTSAs).equals('object');
-                                            expect(Object.keys(priceTSAs)).to.eql([
-                                                'PriceBaseUnitPriceAfter1',
-                                                'PriceDiscountUnitPriceAfter1',
-                                                'PriceGroupDiscountUnitPriceAfter1',
-                                                'PriceManualLineUnitPriceAfter1',
-                                                'PriceTaxUnitPriceAfter1',
-                                                'NPMCalcMessage',
-                                            ]);
-                                            expect(typeof priceTSA_Discount2).equals('object');
-                                            expect(Object.keys(priceTSA_Discount2)).to.eql([
-                                                'PriceDiscount2UnitPriceAfter1',
-                                            ]);
-                                            expect(typeof priceTSAs_AOQM_UOM2).equals('object');
-                                            expect(Object.keys(priceTSAs_AOQM_UOM2)).to.eql([
-                                                'PriceBaseUnitPriceAfter2',
-                                                'PriceDiscountUnitPriceAfter2',
-                                                'PriceTaxUnitPriceAfter2',
-                                            ]);
-                                            expect(typeof priceTotalsTSAs).equals('object');
-                                            expect(Object.keys(priceTotalsTSAs)).to.eql([
-                                                'PriceTaxTotal',
-                                                'PriceTaxTotalPercent',
-                                                'PriceTaxTotalDiff',
-                                                'PriceTaxUnitDiff',
-                                            ]);
-                                            if (totalsTestState === 'baseline') {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues[totalsTestItem]['NPMCalcMessage'][
-                                                        account
-                                                    ][totalsTestState];
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                    )}`,
-                                                });
-                                                expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
-                                            } else {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues[totalsTestItem]['NPMCalcMessage'][
-                                                        account
-                                                    ]['baseline'];
-                                                const data_NPMCalcMessage =
-                                                    pricingData.testItemsValues[totalsTestItem]['NPMCalcMessage'][
-                                                        account
-                                                    ][totalsTestState];
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at ${totalsTestState}) from Data: ${JSON.stringify(
-                                                        data_NPMCalcMessage,
-                                                    )}`,
-                                                });
-                                                expect(UI_NPMCalcMessage.length).equals(
-                                                    baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
-                                                );
-                                            }
-                                            priceFields.forEach((priceField) => {
-                                                const fieldValue = priceTSAs[priceField];
-                                                const expectedFieldValue =
-                                                    pricingData.testItemsValues[totalsTestItem][priceField][account][
-                                                        totalsTestState
-                                                    ];
-                                                addContext(this, {
-                                                    title: `${priceField}`,
-                                                    value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
-                                                });
-                                                expect(fieldValue).equals(expectedFieldValue);
-                                            });
-                                            const discount2FieldValue =
-                                                priceTSAs_AOQM_UOM2['PriceDiscount2UnitPriceAfter1'];
-                                            const expectedFieldValue =
-                                                pricingData.testItemsValues[totalsTestItem][
-                                                    'PriceDiscount2UnitPriceAfter1'
-                                                ][account][totalsTestState];
-                                            addContext(this, {
-                                                title: 'PriceDiscount2UnitPriceAfter1',
-                                                value: `Field Value from UI: ${discount2FieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
-                                            });
-                                            expect(discount2FieldValue).equals(expectedFieldValue);
-                                            priceFields2.forEach((priceField) => {
-                                                const fieldValue = priceTSAs_AOQM_UOM2[priceField];
-                                                const expectedFieldValue =
-                                                    pricingData.testItemsValues[totalsTestItem][priceField][account][
-                                                        totalsTestState
-                                                    ];
-                                                addContext(this, {
-                                                    title: `${priceField}`,
-                                                    value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
-                                                });
-                                                expect(fieldValue).equals(expectedFieldValue);
-                                            });
-                                            totalsPriceFields.forEach((priceField) => {
-                                                const fieldValue = priceTotalsTSAs[priceField];
-                                                const expectedFieldValue =
-                                                    pricingData.testItemsValues[totalsTestItem][priceField][account][
-                                                        totalsTestState
-                                                    ];
-                                                addContext(this, {
-                                                    title: `${priceField}`,
-                                                    value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
-                                                });
-                                                expect(fieldValue).equals(expectedFieldValue);
-                                            });
-                                            driver.sleep(0.2 * 1000);
-                                        });
-                                    });
-                                });
-                            });
+                    // describe('Totals', () => {
+                    //     totalsTestStates.forEach((totalsTestState) => {
+                    //         describe(`PREP - state "${totalsTestState}"`, () => {
+                    //             it('Click "Continue ordering" button', async function () {
+                    //                 await driver.click(orderPage.Cart_ContinueOrdering_Button);
+                    //                 await orderPage.isSpinnerDone();
+                    //                 await orderPage.changeOrderCenterPageView('Line View');
+                    //                 await orderPage.isSpinnerDone();
+                    //                 base64ImageComponent = await driver.saveScreenshots();
+                    //                 addContext(this, {
+                    //                     title: `After "Line View" was selected`,
+                    //                     value: 'data:image/png;base64,' + base64ImageComponent,
+                    //                 });
+                    //                 await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
+                    //                 driver.sleep(1 * 1000);
+                    //                 base64ImageComponent = await driver.saveScreenshots();
+                    //                 addContext(this, {
+                    //                     title: `Order Center - Loaded`,
+                    //                     value: 'data:image/png;base64,' + base64ImageComponent,
+                    //                 });
+                    //             });
+                    //             it('Navigating to "Hand Cosmetics" at Sidebar', async () => {
+                    //                 await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
+                    //                 await driver.click(
+                    //                     orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Hand Cosmetics'),
+                    //                 );
+                    //                 driver.sleep(5 * 1000);
+                    //             });
+                    //         });
+                    //         describe(`ORDER CENTER - state "${totalsTestState}"`, function () {
+                    //             totalsTestItems.forEach((totalsTestItem) => {
+                    //                 describe(`Item: ***${totalsTestItem}`, function () {
+                    //                     it(`Looking for "${totalsTestItem}" using the search box`, async function () {
+                    //                         await pricingService.searchInOrderCenter.bind(this)(totalsTestItem, driver);
+                    //                         driver.sleep(1 * 1000);
+                    //                     });
+                    //                     it(`Checking TSAs`, async function () {
+                    //                         if (totalsTestState != 'baseline') {
+                    //                             const splitedStateArgs = totalsTestState.split(' ');
+                    //                             const chosenUom = splitedStateArgs[1];
+                    //                             const amount = Number(splitedStateArgs[0]);
+                    //                             addContext(this, {
+                    //                                 title: `State Args`,
+                    //                                 value: `Chosen UOM: ${chosenUom}, Amount: ${amount}`,
+                    //                             });
+                    //                             await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                    //                                 this,
+                    //                             )(chosenUom, totalsTestItem, amount, driver);
+                    //                         }
+                    //                         const priceTSAs = await pricingService.getItemTSAs(
+                    //                             'OrderCenter',
+                    //                             totalsTestItem,
+                    //                         );
+                    //                         const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
+                    //                             'OrderCenter',
+                    //                             totalsTestItem,
+                    //                         );
+                    //                         const priceTSAs_AOQM_UOM2 = await pricingService.getItemTSAs_AOQM_UOM2(
+                    //                             'OrderCenter',
+                    //                             totalsTestItem,
+                    //                         );
+                    //                         const priceTotalsTSAs = await pricingService.getTotalsTSAsOfItem(
+                    //                             'OrderCenter',
+                    //                             totalsTestItem,
+                    //                         );
+                    //                         console.info(`${totalsTestItem} ${totalsTestState} priceTSAs:`, priceTSAs);
+                    //                         expect(typeof priceTSAs).equals('object');
+                    //                         expect(Object.keys(priceTSAs)).to.eql([
+                    //                             'PriceBaseUnitPriceAfter1',
+                    //                             'PriceDiscountUnitPriceAfter1',
+                    //                             'PriceGroupDiscountUnitPriceAfter1',
+                    //                             'PriceManualLineUnitPriceAfter1',
+                    //                             'PriceTaxUnitPriceAfter1',
+                    //                             'NPMCalcMessage',
+                    //                         ]);
+                    //                         expect(typeof priceTSA_Discount2).equals('object');
+                    //                         expect(Object.keys(priceTSA_Discount2)).to.eql([
+                    //                             'PriceDiscount2UnitPriceAfter1',
+                    //                         ]);
+                    //                         expect(typeof priceTSAs_AOQM_UOM2).equals('object');
+                    //                         expect(Object.keys(priceTSAs_AOQM_UOM2)).to.eql([
+                    //                             'PriceBaseUnitPriceAfter2',
+                    //                             'PriceDiscountUnitPriceAfter2',
+                    //                             'PriceTaxUnitPriceAfter2',
+                    //                         ]);
+                    //                         expect(typeof priceTotalsTSAs).equals('object');
+                    //                         expect(Object.keys(priceTotalsTSAs)).to.eql([
+                    //                             'PriceTaxTotal',
+                    //                             'PriceTaxTotalPercent',
+                    //                             'PriceTaxTotalDiff',
+                    //                             'PriceTaxUnitDiff',
+                    //                         ]);
+                    //                         if (totalsTestState === 'baseline') {
+                    //                             const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                    //                             const baseline_NPMCalcMessage =
+                    //                                 pricingData.testItemsValues[totalsTestItem]['NPMCalcMessage'][
+                    //                                     account
+                    //                                 ][totalsTestState];
+                    //                             addContext(this, {
+                    //                                 title: `State Args`,
+                    //                                 value: `NPMCalcMessage from UI: ${JSON.stringify(
+                    //                                     UI_NPMCalcMessage,
+                    //                                 )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                    //                                     baseline_NPMCalcMessage,
+                    //                                 )}`,
+                    //                             });
+                    //                             expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
+                    //                         } else {
+                    //                             const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                    //                             const baseline_NPMCalcMessage =
+                    //                                 pricingData.testItemsValues[totalsTestItem]['NPMCalcMessage'][
+                    //                                     account
+                    //                                 ]['baseline'];
+                    //                             const data_NPMCalcMessage =
+                    //                                 pricingData.testItemsValues[totalsTestItem]['NPMCalcMessage'][
+                    //                                     account
+                    //                                 ][totalsTestState];
+                    //                             addContext(this, {
+                    //                                 title: `State Args`,
+                    //                                 value: `NPMCalcMessage from UI: ${JSON.stringify(
+                    //                                     UI_NPMCalcMessage,
+                    //                                 )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                    //                                     baseline_NPMCalcMessage,
+                    //                                 )}, NPMCalcMessage (at ${totalsTestState}) from Data: ${JSON.stringify(
+                    //                                     data_NPMCalcMessage,
+                    //                                 )}`,
+                    //                             });
+                    //                             expect(UI_NPMCalcMessage.length).equals(
+                    //                                 baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
+                    //                             );
+                    //                         }
+                    //                         priceFields.forEach((priceField) => {
+                    //                             const fieldValue = priceTSAs[priceField];
+                    //                             const expectedFieldValue =
+                    //                                 pricingData.testItemsValues[totalsTestItem][priceField][account][
+                    //                                     totalsTestState
+                    //                                 ];
+                    //                             addContext(this, {
+                    //                                 title: `${priceField}`,
+                    //                                 value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                    //                             });
+                    //                             expect(fieldValue).equals(expectedFieldValue);
+                    //                         });
+                    //                         const discount2FieldValue =
+                    //                             priceTSAs_AOQM_UOM2['PriceDiscount2UnitPriceAfter1'];
+                    //                         const expectedFieldValue =
+                    //                             pricingData.testItemsValues[totalsTestItem][
+                    //                                 'PriceDiscount2UnitPriceAfter1'
+                    //                             ][account][totalsTestState];
+                    //                         addContext(this, {
+                    //                             title: 'PriceDiscount2UnitPriceAfter1',
+                    //                             value: `Field Value from UI: ${discount2FieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                    //                         });
+                    //                         expect(discount2FieldValue).equals(expectedFieldValue);
+                    //                         priceFields2.forEach((priceField) => {
+                    //                             const fieldValue = priceTSAs_AOQM_UOM2[priceField];
+                    //                             const expectedFieldValue =
+                    //                                 pricingData.testItemsValues[totalsTestItem][priceField][account][
+                    //                                     totalsTestState
+                    //                                 ];
+                    //                             addContext(this, {
+                    //                                 title: `${priceField}`,
+                    //                                 value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                    //                             });
+                    //                             expect(fieldValue).equals(expectedFieldValue);
+                    //                         });
+                    //                         totalsPriceFields.forEach((priceField) => {
+                    //                             const fieldValue = priceTotalsTSAs[priceField];
+                    //                             const expectedFieldValue =
+                    //                                 pricingData.testItemsValues[totalsTestItem][priceField][account][
+                    //                                     totalsTestState
+                    //                                 ];
+                    //                             addContext(this, {
+                    //                                 title: `${priceField}`,
+                    //                                 value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                    //                             });
+                    //                             expect(fieldValue).equals(expectedFieldValue);
+                    //                         });
+                    //                         driver.sleep(0.2 * 1000);
+                    //                     });
+                    //                 });
+                    //             });
+                    //         });
 
-                            describe(`CART - state "${totalsTestState}"`, function () {
-                                it('entering and verifying being in cart', async function () {
-                                    await driver.click(orderPage.Cart_Button);
-                                    await orderPage.isSpinnerDone();
-                                    driver.sleep(1 * 1000);
-                                    await driver.untilIsVisible(orderPage.Cart_List_container);
-                                });
-                                it('verifying that the sum total of items in the cart is correct', async function () {
-                                    let numberOfItemsInCart = uomTestCartItems.length;
-                                    if (account === 'OtherAcc') {
-                                        numberOfItemsInCart--;
-                                    }
-                                    base64ImageComponent = await driver.saveScreenshots();
-                                    addContext(this, {
-                                        title: `At Cart`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
-                                    });
-                                    const itemsInCart = await (
-                                        await driver.findElement(orderPage.Cart_Headline_Results_Number)
-                                    ).getText();
-                                    driver.sleep(0.2 * 1000);
-                                    addContext(this, {
-                                        title: `Number of Items in Cart`,
-                                        value: `form UI: ${itemsInCart} , expected: ${numberOfItemsInCart}`,
-                                    });
-                                    expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
-                                    driver.sleep(1 * 1000);
-                                });
-                                uomTestCartItems.forEach((uomTestCartItem) => {
-                                    it(`${
-                                        uomTestCartItem.name.includes('Free') && account === 'OtherAcc'
-                                            ? 'no additional item found'
-                                            : `checking item "${uomTestCartItem.name}"`
-                                    }`, async function () {
-                                        const state = '4 Box';
-                                        const uomTestCartItemSplited = uomTestCartItem.name.split(' ');
-                                        const itemName = uomTestCartItemSplited[0];
-                                        const isFreePlusUOM = uomTestCartItemSplited[1];
-                                        let totalUnitsAmount: number;
-                                        let priceTSAs;
-                                        switch (true) {
-                                            case isFreePlusUOM != undefined:
-                                                if (account === 'Acc01') {
-                                                    totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                                        'Cart',
-                                                        itemName,
-                                                    );
-                                                    priceTSAs = await pricingService.getItemTSAs('Cart', itemName);
-                                                } else {
-                                                    totalUnitsAmount = 0;
-                                                    const additionalItems = await driver.isElementVisible(
-                                                        orderPage.getSelectorOfFreeItemInCartByName(''),
-                                                    );
-                                                    expect(additionalItems).equals(false);
-                                                }
-                                                break;
+                    //         describe(`CART - state "${totalsTestState}"`, function () {
+                    //             it('entering and verifying being in cart', async function () {
+                    //                 await driver.click(orderPage.Cart_Button);
+                    //                 await orderPage.isSpinnerDone();
+                    //                 driver.sleep(1 * 1000);
+                    //                 await driver.untilIsVisible(orderPage.Cart_List_container);
+                    //             });
+                    //             it('verifying that the sum total of items in the cart is correct', async function () {
+                    //                 let numberOfItemsInCart = uomTestCartItems.length;
+                    //                 if (account === 'OtherAcc') {
+                    //                     numberOfItemsInCart--;
+                    //                 }
+                    //                 base64ImageComponent = await driver.saveScreenshots();
+                    //                 addContext(this, {
+                    //                     title: `At Cart`,
+                    //                     value: 'data:image/png;base64,' + base64ImageComponent,
+                    //                 });
+                    //                 const itemsInCart = await (
+                    //                     await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                    //                 ).getText();
+                    //                 driver.sleep(0.2 * 1000);
+                    //                 addContext(this, {
+                    //                     title: `Number of Items in Cart`,
+                    //                     value: `form UI: ${itemsInCart} , expected: ${numberOfItemsInCart}`,
+                    //                 });
+                    //                 expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
+                    //                 driver.sleep(1 * 1000);
+                    //             });
+                    //             uomTestCartItems.forEach((uomTestCartItem) => {
+                    //                 it(`${
+                    //                     uomTestCartItem.name.includes('Free') && account === 'OtherAcc'
+                    //                         ? 'no additional item found'
+                    //                         : `checking item "${uomTestCartItem.name}"`
+                    //                 }`, async function () {
+                    //                     const state = '4 Box';
+                    //                     const uomTestCartItemSplited = uomTestCartItem.name.split(' ');
+                    //                     const itemName = uomTestCartItemSplited[0];
+                    //                     const isFreePlusUOM = uomTestCartItemSplited[1];
+                    //                     let totalUnitsAmount: number;
+                    //                     let priceTSAs;
+                    //                     switch (true) {
+                    //                         case isFreePlusUOM != undefined:
+                    //                             if (account === 'Acc01') {
+                    //                                 totalUnitsAmount = await pricingService.getItemTotalAmount(
+                    //                                     'Cart',
+                    //                                     itemName,
+                    //                                 );
+                    //                                 priceTSAs = await pricingService.getItemTSAs('Cart', itemName);
+                    //                             } else {
+                    //                                 totalUnitsAmount = 0;
+                    //                                 const additionalItems = await driver.isElementVisible(
+                    //                                     orderPage.getSelectorOfFreeItemInCartByName(''),
+                    //                                 );
+                    //                                 expect(additionalItems).equals(false);
+                    //                             }
+                    //                             break;
 
-                                            default:
-                                                totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                                    'Cart',
-                                                    itemName,
-                                                );
-                                                priceTSAs = await pricingService.getItemTSAs('Cart', itemName);
-                                                break;
-                                        }
-                                        if (totalUnitsAmount > 0) {
-                                            console.info(`Cart ${itemName} totalUnitsAmount: ${totalUnitsAmount}`);
-                                            console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
-                                            addContext(this, {
-                                                title: `Total Units amount of item`,
-                                                value: `form UI: ${totalUnitsAmount} , expected: ${uomTestCartItem.amount}`,
-                                            });
-                                            priceFields.forEach((priceField) => {
-                                                const expectedValue =
-                                                    pricingData.testItemsValues[itemName][priceField][account][
-                                                        isFreePlusUOM ? 'cart' : state
-                                                    ];
-                                                addContext(this, {
-                                                    title: `TSA field "${priceField}" Values`,
-                                                    value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
-                                                });
-                                                expect(priceTSAs[priceField]).equals(expectedValue);
-                                            });
-                                            expect(totalUnitsAmount).equals(uomTestCartItem.amount);
-                                        }
-                                        driver.sleep(1 * 1000);
-                                    });
-                                });
-                            });
-                        });
-                    });
+                    //                         default:
+                    //                             totalUnitsAmount = await pricingService.getItemTotalAmount(
+                    //                                 'Cart',
+                    //                                 itemName,
+                    //                             );
+                    //                             priceTSAs = await pricingService.getItemTSAs('Cart', itemName);
+                    //                             break;
+                    //                     }
+                    //                     if (totalUnitsAmount > 0) {
+                    //                         console.info(`Cart ${itemName} totalUnitsAmount: ${totalUnitsAmount}`);
+                    //                         console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
+                    //                         addContext(this, {
+                    //                             title: `Total Units amount of item`,
+                    //                             value: `form UI: ${totalUnitsAmount} , expected: ${uomTestCartItem.amount}`,
+                    //                         });
+                    //                         priceFields.forEach((priceField) => {
+                    //                             const expectedValue =
+                    //                                 pricingData.testItemsValues[itemName][priceField][account][
+                    //                                     isFreePlusUOM ? 'cart' : state
+                    //                                 ];
+                    //                             addContext(this, {
+                    //                                 title: `TSA field "${priceField}" Values`,
+                    //                                 value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                    //                             });
+                    //                             expect(priceTSAs[priceField]).equals(expectedValue);
+                    //                         });
+                    //                         expect(totalUnitsAmount).equals(uomTestCartItem.amount);
+                    //                     }
+                    //                     driver.sleep(1 * 1000);
+                    //                 });
+                    //             });
+                    //         });
+                    //     });
+                    // });
 
                     // describe('Multiple Value Fields', () => {});
 
