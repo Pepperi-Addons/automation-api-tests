@@ -1906,29 +1906,29 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 let totalUnitsAmount;
                                 let priceTSAs;
                                 switch (groupRuleItem.name) {
-                                    case 'MakeUp018':
-                                        totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                            'Cart',
-                                            groupRuleItem.name,
-                                        );
-                                        // if (account === 'Acc01' && !client.BaseURL.includes('staging')) {
-                                        if (account === 'Acc01') {
-                                            priceTSAs = await pricingService.getItemTSAs(
-                                                'Cart',
-                                                groupRuleItem.name,
-                                                undefined,
-                                                1,
-                                            );
-                                        } else {
-                                            priceTSAs = await pricingService.getItemTSAs('Cart', groupRuleItem.name);
-                                        }
-                                        console.info(
-                                            `Cart ${groupRuleItem.name} priceTSAs:`,
-                                            JSON.stringify(priceTSAs, null, 2),
-                                            'totalUnitsAmount:',
-                                            totalUnitsAmount,
-                                        );
-                                        break;
+                                    // case 'MakeUp018':
+                                    //     totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                    //         'Cart',
+                                    //         groupRuleItem.name,
+                                    //     );
+                                    //     // if (account === 'Acc01' && !client.BaseURL.includes('staging')) {
+                                    //     if (account === 'Acc01') {
+                                    //         priceTSAs = await pricingService.getItemTSAs(
+                                    //             'Cart',
+                                    //             groupRuleItem.name,
+                                    //             undefined,
+                                    //             1,
+                                    //         );
+                                    //     } else {
+                                    //         priceTSAs = await pricingService.getItemTSAs('Cart', groupRuleItem.name);
+                                    //     }
+                                    //     console.info(
+                                    //         `Cart ${groupRuleItem.name} priceTSAs:`,
+                                    //         JSON.stringify(priceTSAs, null, 2),
+                                    //         'totalUnitsAmount:',
+                                    //         totalUnitsAmount,
+                                    //     );
+                                    //     break;
                                     case 'MakeUp018 Free':
                                         if (account === 'Acc01') {
                                             totalUnitsAmount = await pricingService.getItemTotalAmount(
@@ -2325,33 +2325,33 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             JSON.stringify(priceTSAs, null, 2),
                                         );
                                         break;
-                                    case readonlyCartItem.name === 'MakeUp018':
-                                        // if (!client.BaseURL.includes('staging') && account === 'Acc01') {
-                                        if (account === 'Acc01') {
-                                            totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                                'Cart',
-                                                readonlyCartItem.name,
-                                                undefined,
-                                                1,
-                                            );
-                                            priceTSAs = await pricingService.getItemTSAs(
-                                                'Cart',
-                                                readonlyCartItem.name,
-                                                undefined,
-                                                1,
-                                            );
-                                        } else {
-                                            totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                                'Cart',
-                                                readonlyCartItem.name,
-                                            );
-                                            priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem.name);
-                                        }
-                                        console.info(
-                                            `Cart ${readonlyCartItem.name} priceTSAs:`,
-                                            JSON.stringify(priceTSAs, null, 2),
-                                        );
-                                        break;
+                                    // case readonlyCartItem.name === 'MakeUp018':
+                                    //     // if (!client.BaseURL.includes('staging') && account === 'Acc01') {
+                                    //     if (account === 'Acc01') {
+                                    //         totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                    //             'Cart',
+                                    //             readonlyCartItem.name,
+                                    //             undefined,
+                                    //             1,
+                                    //         );
+                                    //         priceTSAs = await pricingService.getItemTSAs(
+                                    //             'Cart',
+                                    //             readonlyCartItem.name,
+                                    //             undefined,
+                                    //             1,
+                                    //         );
+                                    //     } else {
+                                    //         totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                    //             'Cart',
+                                    //             readonlyCartItem.name,
+                                    //         );
+                                    //         priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem.name);
+                                    //     }
+                                    //     console.info(
+                                    //         `Cart ${readonlyCartItem.name} priceTSAs:`,
+                                    //         JSON.stringify(priceTSAs, null, 2),
+                                    //     );
+                                    //     break;
 
                                     default:
                                         totalUnitsAmount = await pricingService.getItemTotalAmount(
