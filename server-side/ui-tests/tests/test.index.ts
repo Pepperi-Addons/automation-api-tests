@@ -2011,6 +2011,51 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 addonVersionSbEx = addonVersionSb;
                 break;
             }
+            case 'ASYNCADDON': {
+                addonUUID = '00000000-0000-0000-0000-0000000a594c';
+                const buildToken = 'ASYNCApprovmentTests';
+                const jobPathPROD =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20L1%20Production%20-%20Async%20Addon%20Stop%20Restart%20-%20CLI';
+                const jobPathEU =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20L1%20EU%20-%20Async%20Addon%20Stop%20Restart%20-%20CLI';
+                const jobPathSB =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20L1%20Stage%20-%20Async%20Addon%20Stop%20Restart%20-%20CLI';
+                const {
+                    JenkinsBuildResultsAllEnvs,
+                    latestRunProd,
+                    latestRunEU,
+                    latestRunSB,
+                    addonEntryUUIDProd,
+                    addonEntryUUIDEu,
+                    addonEntryUUIDSb,
+                    addonVersionProd,
+                    addonVersionEU,
+                    addonVersionSb,
+                } = await runnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
+                    addonName,
+                    addonUUID,
+                    jobPathPROD,
+                    jobPathEU,
+                    jobPathSB,
+                    buildToken,
+                );
+                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
+                latestRunProdEx = latestRunProd;
+                latestRunEUEx = latestRunEU;
+                latestRunSBEx = latestRunSB;
+                pathProdEx = jobPathPROD;
+                pathEUEx = jobPathEU;
+                pathSBEx = jobPathSB;
+                addonEntryUUIDProdEx = addonEntryUUIDProd;
+                addonEntryUUIDEuEx = addonEntryUUIDEu;
+                addonEntryUUIDSbEx = addonEntryUUIDSb;
+                addonVersionProdEx = addonVersionProd;
+                addonVersionEUEx = addonVersionEU;
+                addonVersionSbEx = addonVersionSb;
+                break;
+            }
             case 'PAPI-DATA-INDEX':
             case 'PAPI INDEX': {
                 addonUUID = '10979a11-d7f4-41df-8993-f06bfd778304';
@@ -2631,6 +2676,8 @@ export async function handleTeamsURL(addonName, service, email, pass) {
             return await service.getSecretfromKMS(email, pass, 'CPINodeTeamsWebHook');
         case 'CRAWLER':
             return await service.getSecretfromKMS(email, pass, 'CRAWLERTeamsWebHook');
+        case 'ASYNCADDON':
+            return await service.getSecretfromKMS(email, pass, 'ASYNCTeamsWebHook');
     }
 }
 
@@ -3408,6 +3455,12 @@ function resolveUserPerTest(addonName): any[] {
                 'crawlerTesterProd@pepperitest.com',
                 'crawlerTesterSB@pepperitest.com',
             ];
+        case 'ASYNCADDON':
+            return [
+                'AsyncCiCdTesterEU@pepperitest.com',
+                'AsyncCiCdTesterProd@pepperitest.com',
+                'AsyncCiCdTesterSB@pepperitest.com',
+            ];
         default:
             return [];
     }
@@ -3577,6 +3630,19 @@ async function getCPINodeTests(userName, env) {
     return toReturn;
 }
 
+async function getAsyncAddonTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/00000000-0000-0000-0000-0000000a594c/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function getUDBTests(userName, env) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
@@ -3631,6 +3697,8 @@ async function runDevTestOnCertainEnv(
         urlToCall = '/addons/api/async/41011fbf-debf-40d8-8990-767738b8af03/tests/tests';
     } else if (addonName === 'NODE' || addonName === 'CPI-NODE') {
         urlToCall = '/addons/api/async/bb6ee826-1c6b-4a11-9758-40a46acb69c5/tests/tests';
+    } else if (addonName === 'ASYNCADDON') {
+        urlToCall = '/addons/api/async/00000000-0000-0000-0000-0000000a594c/tests/tests';
     } else {
         urlToCall = `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`;
     }
@@ -3687,6 +3755,8 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getJourneyTests(user, 'prod');
     } else if (addonName === 'CPI-NODE' || addonName === 'NODE') {
         return await getCPINodeTests(user, 'prod');
+    } else if (addonName === 'ASYNCADDON') {
+        return await getAsyncAddonTests(user, 'prod');
     } else {
         const client = await initiateTester(user, 'Aa123456', env);
         const service = new GeneralService(client);
@@ -3727,7 +3797,8 @@ function prepareTestBody(addonName, currentTestName) {
         addonName === 'JOURNEY-TRACKER' ||
         addonName === 'NODE' ||
         addonName === 'CPI-NODE' ||
-        addonName === 'CRAWLER'
+        addonName === 'CRAWLER' ||
+        addonName === 'ASYNCADDON'
     ) {
         body = {
             Name: currentTestName,
