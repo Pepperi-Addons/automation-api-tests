@@ -499,7 +499,7 @@ export class PricingData05 {
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
-                    cart: 27.0,
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -507,7 +507,7 @@ export class PricingData05 {
                     '4cases(24units)': 27 * 0.85,
                 },
                 OtherAcc: {
-                    cart: 27.0,
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -535,7 +535,7 @@ export class PricingData05 {
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
-                    cart: 27.0,
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -543,7 +543,7 @@ export class PricingData05 {
                     '4cases(24units)': 27 * 0.85,
                 },
                 OtherAcc: {
-                    cart: 27.0,
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -553,7 +553,7 @@ export class PricingData05 {
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
-                    cart: 27.0,
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -561,7 +561,7 @@ export class PricingData05 {
                     '4cases(24units)': 27 * 0.85,
                 },
                 OtherAcc: {
-                    cart: 27.0,
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,

@@ -81,13 +81,13 @@ export async function PricingTests(email: string, password: string, client: Clie
     const testAccounts = ['Acc01', 'OtherAcc'];
     const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
     const testItems = [
-        'Lipstick no.1',
-        'Spring Loaded Frizz-Fighting Conditioner',
-        'Frag005',
-        'Frag012',
-        'ToBr56',
-        'Drug0001',
-        'Drug0003',
+        { name: 'Lipstick no.1', cartAmount: 24 },
+        { name: 'Spring Loaded Frizz-Fighting Conditioner', cartAmount: 24 },
+        { name: 'Frag005', cartAmount: 24 },
+        { name: 'Frag012', cartAmount: 24 },
+        { name: 'ToBr56', cartAmount: 24 },
+        { name: 'Drug0001', cartAmount: 24 },
+        { name: 'Drug0003', cartAmount: 24 },
     ];
     const itemsAddedToGetFreeGoods = ['ToBr55', 'Drug0002', 'Drug0004'];
     const freeGoodsReceived = {
@@ -102,35 +102,47 @@ export async function PricingTests(email: string, password: string, client: Clie
         ],
     };
     const groupRulesItems = [
-        'MakeUp001',
-        'MakeUp002',
-        'MakeUp003',
-        'MakeUp006',
-        'MakeUp018',
-        'MakeUp018 Free',
-        'MakeUp019',
+        { name: 'MakeUp001', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        { name: 'MakeUp002', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        { name: 'MakeUp003', Acc01: { uom: 'Each', unitQuantity: 10 }, OtherAcc: { uom: 'Each', unitQuantity: 10 } },
+        { name: 'MakeUp006', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
+        { name: 'MakeUp018', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        { name: 'MakeUp018 Free', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
+        { name: 'MakeUp019', Acc01: { uom: 'Each', unitQuantity: 5 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
     ];
     const readonlyCartItems = [
-        'MakeUp019',
-        'MakeUp018 Free',
-        'MakeUp006',
-        'MakeUp018',
-        'MakeUp003',
-        'MakeUp002',
-        'MakeUp001',
-        'Drug0004',
-        'Drug0002 Free Each',
-        'Drug0002',
-        'Drug0002 Free Case',
-        'ToBr55',
-        'ToBr55 Free',
-        'Drug0003',
-        'Drug0001',
-        // 'ToBr56',
-        // 'Frag012',
-        // 'Frag005',
-        // 'Spring Loaded Frizz-Fighting Conditioner',
-        // 'Lipstick no.1',
+        { name: 'MakeUp019', Acc01: { uom: 'Each', unitQuantity: 5 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
+        { name: 'MakeUp018 Free', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
+        { name: 'MakeUp006', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
+        { name: 'MakeUp018', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        { name: 'MakeUp003', Acc01: { uom: 'Each', unitQuantity: 10 }, OtherAcc: { uom: 'Each', unitQuantity: 10 } },
+        { name: 'MakeUp002', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        { name: 'MakeUp001', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        { name: 'Drug0004', Acc01: { uom: 'Case', unitQuantity: 18 }, OtherAcc: { uom: 'Case', unitQuantity: 18 } },
+        {
+            name: 'Drug0002 Free Each',
+            Acc01: { uom: 'Each', unitQuantity: 2 },
+            OtherAcc: { uom: 'Each', unitQuantity: 2 },
+        },
+        { name: 'Drug0002', Acc01: { uom: 'Case', unitQuantity: 60 }, OtherAcc: { uom: 'Case', unitQuantity: 60 } },
+        {
+            name: 'Drug0002 Free Case',
+            Acc01: { uom: 'Case', unitQuantity: 12 },
+            OtherAcc: { uom: 'Case', unitQuantity: 12 },
+        },
+        { name: 'ToBr55', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
+        { name: 'ToBr55 Free', Acc01: { uom: 'Case', unitQuantity: 6 }, OtherAcc: { uom: 'Each', unitQuantity: 6 } },
+        { name: 'Drug0003', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
+        { name: 'Drug0001', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
+        { name: 'ToBr56', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
+        { name: 'Frag012', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
+        { name: 'Frag005', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
+        {
+            name: 'Spring Loaded Frizz-Fighting Conditioner',
+            Acc01: { uom: 'Case', unitQuantity: 24 },
+            OtherAcc: { uom: 'Case', unitQuantity: 24 },
+        },
+        // { name: 'Lipstick no.1', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
     ];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
@@ -228,15 +240,15 @@ export async function PricingTests(email: string, password: string, client: Clie
                 testStates.forEach((state) => {
                     describe(`ORDER CENTER "${state}"`, () => {
                         testItems.forEach((item) => {
-                            it(`checking item "${item}"`, async function () {
-                                await pricingService.searchInOrderCenter.bind(this)(item, driver);
+                            it(`checking item "${item.name}"`, async function () {
+                                await pricingService.searchInOrderCenter.bind(this)(item.name, driver);
                                 switch (
                                     state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
                                 ) {
                                     case '1unit':
                                         await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                             this,
-                                        )('Each', item, 1, driver);
+                                        )('Each', item.name, 1, driver);
                                         duration = await (
                                             await driver.findElement(orderPage.Duration_Span)
                                         ).getAttribute('title');
@@ -247,7 +259,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     case '3units':
                                         await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                             this,
-                                        )('Each', item, 3, driver);
+                                        )('Each', item.name, 3, driver);
                                         duration = await (
                                             await driver.findElement(orderPage.Duration_Span)
                                         ).getAttribute('title');
@@ -258,7 +270,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     case '1case(6units)':
                                         await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                             this,
-                                        )('Case', item, 1, driver);
+                                        )('Case', item.name, 1, driver);
                                         duration = await (
                                             await driver.findElement(orderPage.Duration_Span)
                                         ).getAttribute('title');
@@ -269,7 +281,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     case '4cases(24units)':
                                         await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                             this,
-                                        )('Case', item, 4, driver);
+                                        )('Case', item.name, 4, driver);
                                         duration = await (
                                             await driver.findElement(orderPage.Duration_Span)
                                         ).getAttribute('title');
@@ -282,11 +294,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         break;
                                 }
                                 addContext(this, {
-                                    title: `Duration - After Change quantity of ${item}`,
+                                    title: `Duration - After Change quantity of ${item.name}`,
                                     value: `${duration} ms`,
                                 });
-                                const priceTSAs = await pricingService.getItemTSAs('OrderCenter', item);
-                                console.info(`${item} ${state} priceTSAs:`, priceTSAs);
+                                const priceTSAs = await pricingService.getItemTSAs('OrderCenter', item.name);
+                                console.info(`${item.name} ${state} priceTSAs:`, priceTSAs);
 
                                 expect(typeof priceTSAs).equals('object');
                                 expect(Object.keys(priceTSAs)).to.eql([
@@ -300,22 +312,24 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 switch (state) {
                                     case 'baseline':
                                         expect(priceTSAs['NPMCalcMessage'].length).equals(
-                                            pricingData.testItemsValues[item]['NPMCalcMessage'][account][state].length,
+                                            pricingData.testItemsValues[item.name]['NPMCalcMessage'][account][state]
+                                                .length,
                                         );
                                         break;
 
                                     default:
                                         expect(priceTSAs['NPMCalcMessage'].length).equals(
-                                            pricingData.testItemsValues[item]['NPMCalcMessage'][account]['baseline']
-                                                .length +
-                                                pricingData.testItemsValues[item]['NPMCalcMessage'][account][state]
+                                            pricingData.testItemsValues[item.name]['NPMCalcMessage'][account][
+                                                'baseline'
+                                            ].length +
+                                                pricingData.testItemsValues[item.name]['NPMCalcMessage'][account][state]
                                                     .length,
                                         );
                                         break;
                                 }
                                 priceFields.forEach((priceField) => {
                                     expect(priceTSAs[priceField]).equals(
-                                        pricingData.testItemsValues[item][priceField][account][state],
+                                        pricingData.testItemsValues[item.name][priceField][account][state],
                                     );
                                 });
                                 driver.sleep(0.2 * 1000);
@@ -350,13 +364,30 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     driver.sleep(1 * 1000);
                                 });
                                 testItems.forEach(async (item) => {
-                                    it(`checking item "${item}"`, async () => {
-                                        const priceTSAs = await pricingService.getItemTSAs('Cart', item);
-                                        console.info(`Cart ${item} priceTSAs:`, priceTSAs);
-
+                                    it(`checking item "${item.name}"`, async () => {
+                                        const totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                            'Cart',
+                                            item.name,
+                                        );
+                                        const priceTSAs = await pricingService.getItemTSAs('Cart', item.name);
+                                        console.info(`Cart ${item.name} totalUnitsAmount:`, totalUnitsAmount);
+                                        console.info(`priceTSAs:`, priceTSAs);
+                                        const expectedAmount =
+                                            state === '1unit'
+                                                ? 1
+                                                : state === '3units'
+                                                ? 3
+                                                : state === '1case(6units)'
+                                                ? 6
+                                                : item.cartAmount;
+                                        addContext(this, {
+                                            title: `Total Units Amount`,
+                                            value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
+                                        });
+                                        // expect(totalUnitsAmount).equals(expectedAmount);
                                         priceFields.forEach((priceField) => {
                                             expect(priceTSAs[priceField]).equals(
-                                                pricingData.testItemsValues[item][priceField][account][state],
+                                                pricingData.testItemsValues[item.name][priceField][account][state],
                                             );
                                         });
                                     });
@@ -993,8 +1024,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                             it('increase quantity of item "ToBr55" over 20 units (Each) and see the additional item change to 1 case of "ToBr55"', async function () {
                                 const item = 'ToBr55';
-                                driver.sleep(2 * 1000);
+                                driver.refresh();
                                 await orderPage.isSpinnerDone();
+                                driver.sleep(0.2 * 1000);
                                 await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
                                     'Case',
                                     item,
@@ -1086,6 +1118,57 @@ export async function PricingTests(email: string, password: string, client: Clie
                 });
 
                 describe('Group Rules', () => {
+                    /*
+                     _________________ 
+                     _________________ Brief:
+                      
+                        * group count -> discount given just for one spesific item
+                        * group count -> discount given to each of the group items
+                        * group count -> the discount given to each group item EXCLUDES a singular discount
+                        * group count -> the discount given to a singular item EXCLUDES a discount for each item in the group
+                        * group count -> discount given to each of the group items + an additional item (just one)
+                     _________________ 
+                     _________________ The Relevant Rules:
+                      
+                     . 'ZGD1@A002@Acc01@MakeUp003':
+                        '[[true,"1555891200000","2534022144999","1","","ZGD1_A002",[[10,"D",20,"%"]],"EA"]]',
+
+                     . 'ZGD1@A003@Acc01@Beauty Make Up':
+                        '[[true,"1555891200000","2534022144999","1","","additionalItem",[[12,"D",100,"%","",1,"EA","MakeUp018",0]],"EA"]]',
+
+                     . 'ZGD2@A002@Acc01@MakeUp018':
+                        '[[true,"1555891200000","2534022144999","1","","additionalItem",[[2,"D",100,"%","",1,"EA","MakeUp018",0]],"EA"]]',
+
+                     . 'ZGD2@A003@Acc01@Beauty Make Up':
+                        '[[true,"1555891200000","2534022144999","1","","ZGD2_A003",[[3,"D",3,"%"],[7,"D",7,"%"]],"EA"]]',
+                     _________________ 
+                     _________________ Order Of Actions:
+                      
+                        1. MakeUp001 - clicking plus button once
+                        2. MakeUp002 - clicking plus button once
+                        3. MakeUp003 - changing value to 1
+                        ----> checking that discount for total of 3 group items is applied
+
+                        4. MakeUp018 - clicking plus button once
+                        5. MakeUp018 - changing value to 2
+                        6. MakeUp001 - changing value to 2
+                        7. MakeUp002 - changing value to 2
+                        ----> checking that discount for total of 7 group items is applied
+
+                        8. MakeUp003 - changing value to 5
+                        9. MakeUp006 - clicking plus button once
+                        ----> checking that an additional item (MakeUp018) is given for group total of 12 items
+
+                        10. MakeUp003 - changing value to 10
+                        ----> checking that group total count is reduced to 7 because a singular rule for MakeUp003 excludes the item from the group
+                              (additional item disappear and discount is calculated 7% for each of the group items + 20% discount is calculated for MakeUp003 specifically)
+                        
+                        11. MakeUp019 - changing value to 5
+                        ----> checking that group total count is 10 (MakeUp018 is excluded from the group and given an additional item of the same due to singular rule)
+                               making sure the additional item do not appear twice
+                     _________________ 
+                     _________________ 
+                    */
                     describe('ORDER CENTER', () => {
                         it('Adding Group Rules Items', async () => {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
@@ -1819,32 +1902,52 @@ export async function PricingTests(email: string, password: string, client: Clie
                             driver.sleep(1 * 1000);
                         });
                         groupRulesItems.forEach((groupRuleItem) => {
-                            it(`checking item "${groupRuleItem}"`, async function () {
+                            it(`checking item "${groupRuleItem.name}"`, async function () {
+                                let totalUnitsAmount;
                                 let priceTSAs;
-                                switch (groupRuleItem) {
-                                    case 'MakeUp018':
-                                        if (account === 'Acc01' && !client.BaseURL.includes('staging')) {
-                                            priceTSAs = await pricingService.getItemTSAs(
-                                                'Cart',
-                                                groupRuleItem,
-                                                undefined,
-                                                1,
-                                            );
-                                        } else {
-                                            priceTSAs = await pricingService.getItemTSAs('Cart', groupRuleItem);
-                                        }
-                                        console.info(
-                                            `Cart ${groupRuleItem} priceTSAs:`,
-                                            JSON.stringify(priceTSAs, null, 2),
-                                        );
-                                        break;
+                                switch (groupRuleItem.name) {
+                                    // case 'MakeUp018':
+                                    //     totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                    //         'Cart',
+                                    //         groupRuleItem.name,
+                                    //     );
+                                    //     // if (account === 'Acc01' && !client.BaseURL.includes('staging')) {
+                                    //     if (account === 'Acc01') {
+                                    //         priceTSAs = await pricingService.getItemTSAs(
+                                    //             'Cart',
+                                    //             groupRuleItem.name,
+                                    //             undefined,
+                                    //             1,
+                                    //         );
+                                    //     } else {
+                                    //         priceTSAs = await pricingService.getItemTSAs('Cart', groupRuleItem.name);
+                                    //     }
+                                    //     console.info(
+                                    //         `Cart ${groupRuleItem.name} priceTSAs:`,
+                                    //         JSON.stringify(priceTSAs, null, 2),
+                                    //         'totalUnitsAmount:',
+                                    //         totalUnitsAmount,
+                                    //     );
+                                    //     break;
                                     case 'MakeUp018 Free':
                                         if (account === 'Acc01') {
+                                            totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                                'Cart',
+                                                'MakeUp018',
+                                                'Free',
+                                            );
                                             priceTSAs = await pricingService.getItemTSAs('Cart', 'MakeUp018', 'Free');
                                             console.info(
-                                                `Cart ${groupRuleItem} priceTSAs:`,
+                                                `Cart ${groupRuleItem.name} priceTSAs:`,
                                                 JSON.stringify(priceTSAs, null, 2),
+                                                'totalUnitsAmount:',
+                                                totalUnitsAmount,
                                             );
+                                            addContext(this, {
+                                                title: `Total Units amount of item`,
+                                                value: `form UI: ${totalUnitsAmount} , expected: ${groupRuleItem[account].unitQuantity}`,
+                                            });
+                                            // expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
                                             priceFields.forEach((priceField) => {
                                                 switch (priceField) {
                                                     case 'PriceBaseUnitPriceAfter1':
@@ -1871,22 +1974,33 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         break;
 
                                     default:
-                                        priceTSAs = await pricingService.getItemTSAs('Cart', groupRuleItem);
+                                        totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                            'Cart',
+                                            groupRuleItem.name,
+                                        );
+                                        priceTSAs = await pricingService.getItemTSAs('Cart', groupRuleItem.name);
                                         console.info(
-                                            `Cart ${groupRuleItem} priceTSAs:`,
+                                            `Cart ${groupRuleItem.name} priceTSAs:`,
                                             JSON.stringify(priceTSAs, null, 2),
+                                            'totalUnitsAmount:',
+                                            totalUnitsAmount,
                                         );
                                         break;
                                 }
-                                if (groupRuleItem !== 'MakeUp018 Free') {
+                                if (groupRuleItem.name !== 'MakeUp018 Free') {
                                     let expectedValue;
+                                    addContext(this, {
+                                        title: `Total Units amount of item`,
+                                        value: `form UI: ${totalUnitsAmount} , expected: ${groupRuleItem[account].unitQuantity}`,
+                                    });
+                                    // expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
                                     priceFields.forEach((priceField) => {
                                         switch (priceField) {
                                             case 'PriceGroupDiscountUnitPriceAfter1':
                                                 expectedValue =
-                                                    pricingData.testItemsValues[groupRuleItem][priceField][account][
-                                                        'cart'
-                                                    ];
+                                                    pricingData.testItemsValues[groupRuleItem.name][priceField][
+                                                        account
+                                                    ]['cart'];
                                                 addContext(this, {
                                                     title: `TSA field "${priceField}" Values`,
                                                     value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
@@ -1895,7 +2009,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 break;
 
                                             default:
-                                                expectedValue = pricingData.testItemsValues[groupRuleItem]['ItemPrice'];
+                                                expectedValue =
+                                                    pricingData.testItemsValues[groupRuleItem.name]['ItemPrice'];
                                                 addContext(this, {
                                                     title: `TSA field "${priceField}" Values`,
                                                     value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
@@ -2096,24 +2211,31 @@ export async function PricingTests(email: string, password: string, client: Clie
                             driver.sleep(1 * 1000);
                         });
                         readonlyCartItems.forEach((readonlyCartItem) => {
-                            it(`checking item "${readonlyCartItem}"`, async function () {
+                            it(`checking item "${readonlyCartItem.name}"`, async function () {
+                                let totalUnitsAmount;
                                 let priceTSAs;
                                 switch (true) {
-                                    case readonlyCartItem.includes('Free'):
-                                        const readonlyCartItemSplit = readonlyCartItem.split(' ');
+                                    case readonlyCartItem.name.includes('Free'):
+                                        const readonlyCartItemSplit = readonlyCartItem.name.split(' ');
                                         const itemName = readonlyCartItemSplit[0];
                                         const ifFreePlusUOM = readonlyCartItemSplit[1];
                                         let expectedValue;
                                         switch (true) {
                                             case ifFreePlusUOM.includes('Each'):
-                                                priceTSAs = await pricingService.getItemTSAs(
+                                                totalUnitsAmount = await pricingService.getItemTotalAmount(
                                                     'Cart',
                                                     itemName,
                                                     'Free',
-                                                    0,
                                                 );
+                                                priceTSAs = await pricingService.getItemTSAs('Cart', itemName, 'Free');
                                                 break;
                                             case ifFreePlusUOM.includes('Case'):
+                                                totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                                    'Cart',
+                                                    itemName,
+                                                    'Free',
+                                                    1,
+                                                );
                                                 priceTSAs = await pricingService.getItemTSAs(
                                                     'Cart',
                                                     itemName,
@@ -2124,25 +2246,37 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             case itemName === 'ToBr55':
                                             case itemName === 'MakeUp018':
                                                 if (account === 'Acc01') {
+                                                    totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                                        'Cart',
+                                                        itemName,
+                                                        'Free',
+                                                    );
                                                     priceTSAs = await pricingService.getItemTSAs(
                                                         'Cart',
                                                         itemName,
                                                         'Free',
                                                     );
-                                                } else {
-                                                    priceTSAs = [];
                                                 }
                                                 break;
 
                                             default:
+                                                totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                                    'Cart',
+                                                    itemName,
+                                                );
                                                 priceTSAs = await pricingService.getItemTSAs('Cart', itemName, 'Free');
                                                 break;
                                         }
                                         console.info(
-                                            `Cart ${readonlyCartItem} priceTSAs:`,
-                                            JSON.stringify(priceTSAs, null, 2),
+                                            `Cart ${readonlyCartItem.name} totalUnitsAmount:`,
+                                            totalUnitsAmount,
                                         );
-                                        if (priceTSAs.length) {
+                                        console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
+                                        addContext(this, {
+                                            title: `Total Units amount of item`,
+                                            value: `form UI: ${totalUnitsAmount} , expected: ${readonlyCartItem[account].unitQuantity}`,
+                                        });
+                                        if (priceTSAs != undefined) {
                                             priceFields.forEach((priceField) => {
                                                 switch (priceField) {
                                                     case 'PriceBaseUnitPriceAfter1':
@@ -2168,56 +2302,78 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 });
                                                 expect(priceTSAs[priceField]).equals(expectedValue);
                                             });
+                                            // expect(totalUnitsAmount).equals(readonlyCartItem[account].unitQuantity);
                                         }
                                         driver.sleep(0.5 * 1000);
                                         break;
-                                    case readonlyCartItem === 'Drug0002':
+                                    case readonlyCartItem.name === 'Drug0002':
+                                        totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                            'Cart',
+                                            readonlyCartItem.name,
+                                            undefined,
+                                            1,
+                                        );
                                         // priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem);
                                         priceTSAs = await pricingService.getItemTSAs(
                                             'Cart',
-                                            readonlyCartItem,
+                                            readonlyCartItem.name,
                                             undefined,
                                             1,
                                         );
                                         console.info(
-                                            `Cart ${readonlyCartItem} priceTSAs:`,
+                                            `Cart ${readonlyCartItem.name} priceTSAs:`,
                                             JSON.stringify(priceTSAs, null, 2),
                                         );
                                         break;
-                                    case readonlyCartItem === 'MakeUp018':
-                                        if (!client.BaseURL.includes('staging') && account === 'Acc01') {
-                                            priceTSAs = await pricingService.getItemTSAs(
-                                                'Cart',
-                                                readonlyCartItem,
-                                                undefined,
-                                                1,
-                                            );
-                                        } else {
-                                            priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem);
-                                        }
-                                        console.info(
-                                            `Cart ${readonlyCartItem} priceTSAs:`,
-                                            JSON.stringify(priceTSAs, null, 2),
-                                        );
-                                        break;
+                                    // case readonlyCartItem.name === 'MakeUp018':
+                                    //     // if (!client.BaseURL.includes('staging') && account === 'Acc01') {
+                                    //     if (account === 'Acc01') {
+                                    //         totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                    //             'Cart',
+                                    //             readonlyCartItem.name,
+                                    //             undefined,
+                                    //             1,
+                                    //         );
+                                    //         priceTSAs = await pricingService.getItemTSAs(
+                                    //             'Cart',
+                                    //             readonlyCartItem.name,
+                                    //             undefined,
+                                    //             1,
+                                    //         );
+                                    //     } else {
+                                    //         totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                    //             'Cart',
+                                    //             readonlyCartItem.name,
+                                    //         );
+                                    //         priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem.name);
+                                    //     }
+                                    //     console.info(
+                                    //         `Cart ${readonlyCartItem.name} priceTSAs:`,
+                                    //         JSON.stringify(priceTSAs, null, 2),
+                                    //     );
+                                    //     break;
 
                                     default:
-                                        priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem);
+                                        totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                            'Cart',
+                                            readonlyCartItem.name,
+                                        );
+                                        priceTSAs = await pricingService.getItemTSAs('Cart', readonlyCartItem.name);
                                         console.info(
-                                            `Cart ${readonlyCartItem} priceTSAs:`,
+                                            `Cart ${readonlyCartItem.name} priceTSAs:`,
                                             JSON.stringify(priceTSAs, null, 2),
                                         );
                                         break;
                                 }
-                                if (readonlyCartItem.includes('Free') === false) {
+                                if (!readonlyCartItem.name.includes('Free')) {
                                     let expectedValue;
-                                    switch (readonlyCartItem) {
+                                    switch (readonlyCartItem.name) {
                                         case 'ToBr56':
                                         case 'Frag012':
                                             if (account === 'OtherAcc') {
                                                 priceFields.forEach((priceField) => {
                                                     expectedValue =
-                                                        pricingData.testItemsValues[readonlyCartItem][priceField][
+                                                        pricingData.testItemsValues[readonlyCartItem.name][priceField][
                                                             account
                                                         ]['cart'];
                                                     addContext(this, {
@@ -2226,21 +2382,31 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                     });
                                                     expect(priceTSAs[priceField]).equals(expectedValue);
                                                 });
+                                                addContext(this, {
+                                                    title: `Total Units amount of item`,
+                                                    value: `form UI: ${totalUnitsAmount} , expected: ${readonlyCartItem[account].unitQuantity}`,
+                                                });
+                                                // expect(totalUnitsAmount).equals(readonlyCartItem[account].unitQuantity);
                                             }
                                             break;
 
                                         default:
                                             priceFields.forEach((priceField) => {
                                                 expectedValue =
-                                                    pricingData.testItemsValues[readonlyCartItem][priceField][account][
-                                                        'cart'
-                                                    ];
+                                                    pricingData.testItemsValues[readonlyCartItem.name][priceField][
+                                                        account
+                                                    ]['cart'];
                                                 addContext(this, {
                                                     title: `TSA field "${priceField}" Values`,
                                                     value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
                                                 });
                                                 expect(priceTSAs[priceField]).equals(expectedValue);
                                             });
+                                            addContext(this, {
+                                                title: `Total Units amount of item`,
+                                                value: `form UI: ${totalUnitsAmount} , expected: ${readonlyCartItem[account].unitQuantity}`,
+                                            });
+                                            // expect(totalUnitsAmount).equals(readonlyCartItem[account].unitQuantity);
                                             break;
                                     }
                                 }
