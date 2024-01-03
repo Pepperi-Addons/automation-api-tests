@@ -659,7 +659,8 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             for (let index = 0; index < logcash.getDataADALbyName.length - 1; index++) {
                 if (
                     Object.entries(logcash.getDataADALbyName[index]).length == 2 &&
-                    Object.entries(logcash.getDataADALbyName[index])[1][1] == 'insert ' + index //&&
+                    logcash.getDataADALbyName[index]['Key'] == 'insert ' + index
+                    // Object.entries(logcash.getDataADALbyName[index])[1][1] == 'insert ' + index //&&
                     // logcash.getDataDedicated[index]["TestDateTime"] != '' &&
                     // logcash.getDataDedicated[index]["testString"] != '' &&
                     // logcash.getDataDedicated[index]["TestDouble"] != '' &&
@@ -705,7 +706,8 @@ export async function SchemaTypeDataIndexedTests(generalService: GeneralService,
             for (let index = 0; index < logcash.getDataADALbyName2.length - 1; index++) {
                 if (
                     Object.entries(logcash.getDataADALbyName2[index]).length == 3 &&
-                    Object.entries(logcash.getDataADALbyName2[index])[2][1] == 'insert ' + index //&&
+                    logcash.getDataADALbyName[index]['Key'] == 'insert ' + index
+                    //Object.entries(logcash.getDataADALbyName2[index])[2][1] == 'insert ' + index //&&
                     // logcash.getDataDedicated[index]["TestDateTime"] != '' &&
                     // logcash.getDataDedicated[index]["testString"] != '' &&
                     // logcash.getDataDedicated[index]["TestDouble"] != '' &&
