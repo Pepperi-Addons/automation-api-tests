@@ -48,6 +48,9 @@ export class ResourceList extends AddonPage {
     public Search_Tab: By = this.getSelectorOfResourceListSettingsTab('Search');
     // List
     public GenericList_Content: By = By.xpath('//pep-generic-list/pep-page-layout/div[@class="pep-page-main-layout"]');
+    public GenericList_Title: By = By.xpath(
+        '//pep-generic-list//div[contains(@class,"header-content")]//div[contains(@class,"title")]/span',
+    );
     public Add_Button: By = By.xpath('//span[@title="Add"]/ancestor::button');
     public AddonSettingsContent_ListTitle: By = By.xpath('//pep-top-bar //div[contains(@class,"title")]');
     public List_NoDataFound: By = By.xpath('//pep-list/div/p[contains(@class, "no-data")]');
@@ -658,5 +661,18 @@ export class ResourceEditors extends ResourceList {
             const uiElementTextValue = await uiElement.getAttribute('title');
             expect(uiElementTextValue).to.be.oneOf(allFieldsNames);
         }
+    }
+
+    public async deleteEditorViaAPI(resourceUUID: string, client: Client) {
+        const generalService = new GeneralService(client);
+        const body = { Key: resourceUUID, Hidden: true };
+        const deleteResourceRLResponse = await generalService.fetchStatus(
+            `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/editors`,
+            {
+                method: 'POST',
+                body: JSON.stringify(body),
+            },
+        );
+        return deleteResourceRLResponse;
     }
 }
