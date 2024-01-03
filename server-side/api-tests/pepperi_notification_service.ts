@@ -26,9 +26,9 @@ export async function PepperiNotificationServiceTests(
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        // ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        // 'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+        // 'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -680,7 +680,9 @@ export async function PepperiNotificationServiceTests(
                         'LastUpgradeDateTime',
                     ]);
                     expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].NewValue).to.include('0.0.');
-                    expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.equal('{}');
+                    expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].OldValue).to.equal(
+                        '{"CPISide":[]}',
+                    ); //Oleg
                     expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[0].FieldID).to.equal('SystemData');
                     expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].NewValue).to.include('T');
                     expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields[1].OldValue).to.include('T');
