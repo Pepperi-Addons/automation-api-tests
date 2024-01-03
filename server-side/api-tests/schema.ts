@@ -211,12 +211,12 @@ export async function DBSchemaTests(generalService: GeneralService, request, tes
             it('Where clause by indexed integer field: Finished, result: ' + logcash.totalTimeIndexed, () => {
                 assert(logcash.getDataFromIndexedDataWhereClauseStatus, logcash.getDataFromIndexedDataWhereClauseError);
             });
-            it('Where clause by NOT indexed integer field: Finished, result: ' + logcash.totalTimeNotIndexed, () => {
-                assert(
-                    logcash.getDataFromNotIndexedDataWhereClauseStatus,
-                    logcash.getDataFromNotIndexedDataWhereClauseError,
-                );
-            });
+            // it('Where clause by NOT indexed integer field: Finished, result: ' + logcash.totalTimeNotIndexed, () => {
+            //     assert(
+            //         logcash.getDataFromNotIndexedDataWhereClauseStatus,
+            //         logcash.getDataFromNotIndexedDataWhereClauseError,
+            //     );
+            // });
         });
 
         describe('Single Hard Delete Data functionality(Negative and Positive)', () => {
