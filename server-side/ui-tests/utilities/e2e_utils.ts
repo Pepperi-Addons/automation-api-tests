@@ -475,6 +475,26 @@ export default class E2EUtils extends BasePomObject {
         return { previouslyExistingMappedSlugs: existingMappedSlugs, postResponse: upsertFieldsToMappedSlugs };
     }
 
+    public async changePageAtMappedSlugs(
+        slugsPagesPairsToAdd: { slug_path: string; pageUUID: string }[],
+        client: Client,
+    ) {
+        // TODO
+        const generalService = new GeneralService(client);
+        const dataViewsService = new DataViewsService(generalService.papiClient);
+        const slugs: Slugs = new Slugs(this.browser);
+        const existingMappedSlugs = await slugs.getExistingMappedSlugsList(dataViewsService);
+        const slugsFields: MenuDataViewField[] = this.prepareDataForDragAndDropAtSlugs(
+            slugsPagesPairsToAdd,
+            existingMappedSlugs,
+        );
+        console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 4)}`);
+        const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
+        console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 4)}`);
+        const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
+        return { previouslyExistingMappedSlugs: existingMappedSlugs, postResponse: upsertFieldsToMappedSlugs };
+    }
+
     public async runOverMappedSlugs(mappedSlugsList: MenuDataViewField[], client: Client) {
         const generalService = new GeneralService(client);
         const dataViewsService = new DataViewsService(generalService.papiClient);
