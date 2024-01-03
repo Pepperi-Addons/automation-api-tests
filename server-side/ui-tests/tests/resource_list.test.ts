@@ -563,16 +563,17 @@ export async function ResourceListTests(email: string, password: string, varPass
                     await resourceListUtils.performManualSync(client);
                 });
                 it('Create Page', async () => {
-                    for (let index = 0; index < 3; index++) {
-                        try {
-                            await resourceListUtils.navigateTo('Page Builder');
-                            await pageBuilder.validatePageBuilderIsLoaded();
-                            break;
-                        } catch (error) {
-                            console.error(error);
-                            await driver.refresh();
-                        }
-                    }
+                    await resourceListUtils.navigateTo('Page Builder');
+                    await driver.refresh();
+                    await resourceList.isSpinnerDone();
+                    await pageBuilder.validatePageBuilderIsLoaded();
+                    // for (let index = 0; index < 3; index++) {
+                    //     try {
+                    //         break;
+                    //     } catch (error) {
+                    //         console.error(error);
+                    //     }
+                    // }
                     pageName = `${resource} Page Auto_(${random_name})`;
                     await pageBuilder.addBlankPage(pageName, `Automation Testing Page for resource '${resource}'`);
                     driver.sleep(0.2 * 1000);
@@ -606,6 +607,9 @@ export async function ResourceListTests(email: string, password: string, varPass
                     pageBuilder.pause(1 * 1000);
                     await webAppHeader.goHome();
                 });
+                it('Perform Manual Sync', async () => {
+                    await resourceListUtils.performManualSync(client);
+                });
                 it('Map the Slug with the Page', async () => {
                     // const mapPage = await resourceListUtils.changePageAtMappedSlugs([{ slug_path: slug_path, pageUUID: pageKey }], client); // TODO
                     const mapPage = await resourceListUtils.addToMappedSlugs(
@@ -613,9 +617,12 @@ export async function ResourceListTests(email: string, password: string, varPass
                         client,
                     );
                     console.info(`Map Page To Slug: ${JSON.stringify(mapPage, null, 2)}`);
-                    await resourceListUtils.performManualSync(client);
+                    // await resourceListUtils.performManualSync(client);
                     // expect(mapPage.postResponse.Ok).to.be.true;
                     // expect(mapPage.postResponse.Status).to.equal(200);
+                });
+                it('Perform Manual Sync', async () => {
+                    await resourceListUtils.performManualSync(client);
                 });
                 it('Block Tests', async () => {
                     await webAppHomePage.isSpinnerDone();
