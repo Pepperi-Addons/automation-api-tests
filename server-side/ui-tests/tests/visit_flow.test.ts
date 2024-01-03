@@ -662,7 +662,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 it('Configuring Survey', async () => {
                     surveyTemplateName = `VF_Survey_${randomString}`;
                     surveyTemplateDesc = 'Survey in Visit Flow Automated Test';
-                    await surveyService.enterSurveyBuilderSettingsPage();
+                    await surveyService.enterSurveyBuilderSettingsPage('Webapp17');
                     await surveyService.enterSurveyBuilderActualBuilder();
                     surveyUUID = await surveyService.configureTheSurveyTemplate(
                         surveyTemplateName,

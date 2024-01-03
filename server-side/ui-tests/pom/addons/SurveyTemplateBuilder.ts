@@ -254,9 +254,14 @@ export class SurveyTemplateBuilder extends AddonPage {
         expect(deleteSurveyTemplateResponse.Body.Hidden).to.equal(true);
     }
 
-    public async enterSurveyBuilderSettingsPage(): Promise<boolean> {
+    public async enterSurveyBuilderSettingsPage(oldWeb?: 'Webapp17'): Promise<boolean> {
         const webAppHeader = new WebAppHeader(this.browser);
-        await webAppHeader.webApp18_openSettings();
+        if (oldWeb === 'Webapp17') {
+            // added to support webapp versions older than 18, Hagit 3/1/24
+            await webAppHeader.openSettings();
+        } else {
+            await webAppHeader.webApp18_openSettings();
+        }
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Sales Activities');
         await this.browser.click(webAppSettingsSidePanel.SurveysEditor);
