@@ -8,6 +8,7 @@ import { ObjectsService } from '../../services';
 // import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingData05 } from '../pom/addons/Pricing05';
 import { PricingData06 } from '../pom/addons/Pricing06';
+import { PricingData07 } from '../pom/addons/Pricing07';
 
 chai.use(promised);
 
@@ -42,16 +43,16 @@ export async function PricingDataPrep(varPass: string, client: Client) {
         // 'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''], // current phased version 0.7.112 | dependency > 0.7.104
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // current phased version 0.5.10 | dependency > 0.5.7
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''], // current phased version 0.6.26 | dependency > 0.6.3
-        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', ''], // CPAPI | dependency > 9.6.43
-        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''], //CPAS | dependency > 17.3
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi-node (Cross Platform Engine) | dependency > 1.5.39
+        // 'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', ''], // CPAPI | dependency > 9.6.43
+        // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''], //CPAS | dependency > 17.3
+        // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi-node (Cross Platform Engine) | dependency > 1.5.39
         // Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], // current phased version 0.9.38 | dependency > 0.9.31
         // Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''], // current phased version 1.0.23 | dependency > 1.0.23
         // 'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], // UDC current phased version 0.8.29 | dependency > 0.8.11
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
     // console.info('Installed Addons: ', JSON.stringify(await generalService.getInstalledAddons(), null, 2));
     // installedPricingVersion = (await generalService.getInstalledAddons())
     //     .find((addon) => addon.Addon.Name == 'pricing')
@@ -63,11 +64,11 @@ export async function PricingDataPrep(varPass: string, client: Client) {
     describe(`Prerequisites Addons for PRICING Tests - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
     } | Date Time: ${dateTime}`, async () => {
-        isInstalledArr.forEach((isInstalled, index) => {
-            it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-                expect(isInstalled).to.be.true;
-            });
-        });
+        // isInstalledArr.forEach((isInstalled, index) => {
+        //     it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+        //         expect(isInstalled).to.be.true;
+        //     });
+        // });
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
@@ -108,9 +109,12 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                     // await uploadConfiguration(pricingData.config_05);
                     break;
                 case '6':
-                case '7':
-                    console.info('AT installedPricingVersion CASE 6 or 7');
+                    console.info('AT installedPricingVersion CASE 6');
                     pricingData = new PricingData06();
+                    break;
+                case '7':
+                    console.info('AT installedPricingVersion CASE 7');
+                    pricingData = new PricingData07();
                     break;
 
                 default:

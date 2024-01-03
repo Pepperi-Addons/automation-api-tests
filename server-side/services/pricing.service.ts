@@ -3,7 +3,7 @@
 // import { ObjectsService } from "./objects.service";
 import { Browser } from '../ui-tests/utilities/browser';
 import { expect } from 'chai';
-import { Key } from 'selenium-webdriver';
+import { Key, WebElement } from 'selenium-webdriver';
 import { Context } from 'vm';
 import { WebAppLoginPage, WebAppHomePage, WebAppHeader, WebAppList, WebAppTopBar, WebAppDialog } from '../ui-tests/pom';
 import { OrderPage } from '../ui-tests/pom/Pages/OrderPage';
@@ -16,6 +16,23 @@ export interface PriceTsaFields {
     PriceManualLineUnitPriceAfter1: number;
     PriceTaxUnitPriceAfter1: number;
     NPMCalcMessage: [any];
+}
+
+export interface PriceTsaDiscount2 {
+    PriceDiscount2UnitPriceAfter1: number;
+}
+
+export interface PriceTsaFieldsUom2 {
+    PriceBaseUnitPriceAfter2: number;
+    PriceDiscountUnitPriceAfter2: number;
+    PriceTaxUnitPriceAfter2: number;
+}
+
+export interface PriceTotalsTsaFields {
+    PriceTaxTotal: number;
+    PriceTaxTotalPercent: number;
+    PriceTaxTotalDiff: number;
+    PriceTaxUnitDiff: number;
 }
 
 export class PricingService {
@@ -84,28 +101,86 @@ export class PricingService {
         return trnUUID;
     }
 
+    public async getItemTotalAmount(
+        at: 'OrderCenter' | 'Cart',
+        itemName: string,
+        freeItem?: 'Free',
+        locationInElementsArray?: number,
+    ): Promise<number> {
+        const nameOfFunctionToLocateSelector = `getSelectorOfNumberOfUnitsIn${at}By${freeItem ? freeItem : ''}ItemName`;
+        const selectorOfItem = this.orderPage[nameOfFunctionToLocateSelector](itemName);
+        const arrOfTotalOfUnits: WebElement[] = await this.browser.findElements(selectorOfItem);
+        if (arrOfTotalOfUnits.length > 1) {
+            // let arrOfFreeTotalOfUnits: WebElement[] = [];
+            const arrOfTotalOfUnitsMinusFree: WebElement[] = arrOfTotalOfUnits;
+            // if (!freeItem) {
+            //     // arrOfFreeTotalOfUnits = await this.browser.findElements(this.orderPage.getSelectorOfNumberOfUnitsInCartByFreeItemName(itemName));
+            //     // arrOfFreeTotalOfUnits.forEach(webelement => {
+            //     //     arrOfTotalOfUnitsMinusFree = arrOfTotalOfUnitsMinusFree.splice(arrOfTotalOfUnitsMinusFree.findIndex(elem => elem === webelement), 1);
+            //     // });
+            //     arrOfTotalOfUnitsMinusFree = arrOfTotalOfUnits.filter(async (webelement) => {
+            //         if (!(await webelement.getAttribute('style'))) {
+            //             return webelement;
+            //         }
+            //     });
+            // }
+            if (locationInElementsArray) {
+                const totalOfUnitsByLocationAsNum = Number(
+                    await arrOfTotalOfUnitsMinusFree[locationInElementsArray].getAttribute('title'),
+                );
+                console.info(
+                    'at getItemTotalAmount function -> totalOfUnitsByLocationAsNum: ',
+                    totalOfUnitsByLocationAsNum,
+                );
+                return totalOfUnitsByLocationAsNum;
+            }
+            const totalOfUnitsFirstInArrAsNum = Number(await arrOfTotalOfUnitsMinusFree[0].getAttribute('title'));
+            console.info(
+                'at getItemTotalAmount function -> totalOfUnitsFirstInArrAsNum: ',
+                totalOfUnitsFirstInArrAsNum,
+            );
+            return totalOfUnitsFirstInArrAsNum;
+        }
+        const totalOfUnitsAsNum = Number(await arrOfTotalOfUnits[0].getAttribute('title'));
+        console.info('at getItemTotalAmount function -> totalOfUnitsAsNum: ', totalOfUnitsAsNum);
+        return totalOfUnitsAsNum;
+    }
+
     public async getItemTSAs(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
         freeItem?: 'Free',
         locationInElementsArray?: number,
     ): Promise<PriceTsaFields> {
-        const findSelectorOfItem = `getSelectorOfCustomFieldIn${at}By${freeItem ? freeItem : ''}ItemName`;
+        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}By${freeItem ? freeItem : ''}ItemName`;
         let NPMCalcMessage_Value;
-        const PriceBaseUnitPriceAfter1_Selector = this.orderPage[findSelectorOfItem](
+        const PriceBaseUnitPriceAfter1_Selector = this.orderPage[nameOfFunctionToLocateSelector](
             'PriceBaseUnitPriceAfter1_Value',
             nameOfItem,
         );
+        // let PriceBaseUnitPriceAfter1_Values;
+        // if (at === 'Cart') {
+        //     PriceBaseUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getCssValue('background')) !== 'rgb(165, 235, 255)') { return webElement } });
+        //     console.info('background-color: ', await PriceBaseUnitPriceAfter1_Values[0].getCssValue('background-color'));
+        // } else {
+        //     PriceBaseUnitPriceAfter1_Values = await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector);
+        // }
         const PriceBaseUnitPriceAfter1_Values = await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector);
         const PriceBaseUnitPriceAfter1_Value = locationInElementsArray
             ? await PriceBaseUnitPriceAfter1_Values[locationInElementsArray].getText()
             : await PriceBaseUnitPriceAfter1_Values[0].getText();
         console.info(`${nameOfItem} PriceBaseUnitPriceAfter1_Value: `, PriceBaseUnitPriceAfter1_Value);
 
-        const PriceDiscountUnitPriceAfter1_Selector = this.orderPage[findSelectorOfItem](
+        const PriceDiscountUnitPriceAfter1_Selector = this.orderPage[nameOfFunctionToLocateSelector](
             'PriceDiscountUnitPriceAfter1_Value',
             nameOfItem,
         );
+        // let PriceDiscountUnitPriceAfter1_Values;
+        // if (at === 'Cart') {
+        //     PriceDiscountUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceDiscountUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceDiscountUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
+        // } else {
+        //     PriceDiscountUnitPriceAfter1_Values = await this.browser.findElements(PriceDiscountUnitPriceAfter1_Selector);
+        // }
         const PriceDiscountUnitPriceAfter1_Values = await this.browser.findElements(
             PriceDiscountUnitPriceAfter1_Selector,
         );
@@ -114,10 +189,16 @@ export class PricingService {
             : await PriceDiscountUnitPriceAfter1_Values[0].getText();
         console.info(`${nameOfItem} PriceDiscountUnitPriceAfter1_Value: `, PriceDiscountUnitPriceAfter1_Value);
 
-        const PriceGroupDiscountUnitPriceAfter1_Selector = this.orderPage[findSelectorOfItem](
+        const PriceGroupDiscountUnitPriceAfter1_Selector = this.orderPage[nameOfFunctionToLocateSelector](
             'PriceGroupDiscountUnitPriceAfter1_Value',
             nameOfItem,
         );
+        // let PriceGroupDiscountUnitPriceAfter1_Values;
+        // if (at === 'Cart') {
+        //     PriceGroupDiscountUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceGroupDiscountUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceGroupDiscountUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
+        // } else {
+        //     PriceGroupDiscountUnitPriceAfter1_Values = await this.browser.findElements(PriceGroupDiscountUnitPriceAfter1_Selector);
+        // }
         const PriceGroupDiscountUnitPriceAfter1_Values = await this.browser.findElements(
             PriceGroupDiscountUnitPriceAfter1_Selector,
         );
@@ -129,10 +210,16 @@ export class PricingService {
             PriceGroupDiscountUnitPriceAfter1_Value,
         );
 
-        const PriceManualLineUnitPriceAfter1_Selector = this.orderPage[findSelectorOfItem](
+        const PriceManualLineUnitPriceAfter1_Selector = this.orderPage[nameOfFunctionToLocateSelector](
             'PriceManualLineUnitPriceAfter1_Value',
             nameOfItem,
         );
+        // let PriceManualLineUnitPriceAfter1_Values;
+        // if (at === 'Cart') {
+        //     PriceManualLineUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceManualLineUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceManualLineUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
+        // } else {
+        //     PriceManualLineUnitPriceAfter1_Values = await this.browser.findElements(PriceManualLineUnitPriceAfter1_Selector);
+        // }
         const PriceManualLineUnitPriceAfter1_Values = await this.browser.findElements(
             PriceManualLineUnitPriceAfter1_Selector,
         );
@@ -141,10 +228,16 @@ export class PricingService {
             : await PriceManualLineUnitPriceAfter1_Values[0].getText();
         console.info(`${nameOfItem} PriceManualLineUnitPriceAfter1_Value: `, PriceManualLineUnitPriceAfter1_Value);
 
-        const PriceTaxUnitPriceAfter1_Selector = this.orderPage[findSelectorOfItem](
+        const PriceTaxUnitPriceAfter1_Selector = this.orderPage[nameOfFunctionToLocateSelector](
             'PriceTaxUnitPriceAfter1_Value',
             nameOfItem,
         );
+        // let PriceTaxUnitPriceAfter1_Values;
+        // if (at === 'Cart') {
+        //     PriceTaxUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
+        // } else {
+        //     PriceTaxUnitPriceAfter1_Values = await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector);
+        // }
         const PriceTaxUnitPriceAfter1_Values = await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector);
         const PriceTaxUnitPriceAfter1_Value = locationInElementsArray
             ? await PriceTaxUnitPriceAfter1_Values[locationInElementsArray].getText()
@@ -152,7 +245,10 @@ export class PricingService {
         console.info(`${nameOfItem} PriceTaxUnitPriceAfter1_Value: `, PriceTaxUnitPriceAfter1_Value);
 
         if (at === 'OrderCenter') {
-            const NPMCalcMessage_Selector = this.orderPage[findSelectorOfItem]('NPMCalcMessage_Value', nameOfItem);
+            const NPMCalcMessage_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+                'NPMCalcMessage_Value',
+                nameOfItem,
+            );
             NPMCalcMessage_Value = await (await this.browser.findElement(NPMCalcMessage_Selector)).getText();
             console.info(`${nameOfItem} NPMCalcMessage_Value: `, NPMCalcMessage_Value);
         }
@@ -164,6 +260,166 @@ export class PricingService {
             PriceManualLineUnitPriceAfter1: Number(PriceManualLineUnitPriceAfter1_Value.split(' ')[1].trim()),
             PriceTaxUnitPriceAfter1: Number(PriceTaxUnitPriceAfter1_Value.split(' ')[1].trim()),
             NPMCalcMessage: at === 'OrderCenter' ? JSON.parse(NPMCalcMessage_Value) : null,
+        };
+    }
+
+    public async getItemTSAs_Discount2(
+        at: 'OrderCenter' | 'Cart',
+        nameOfItem: string,
+        freeItem?: 'Free',
+        locationInElementsArray?: number,
+    ): Promise<PriceTsaDiscount2> {
+        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}By${freeItem ? freeItem : ''}ItemName`;
+
+        const PriceDiscount2UnitPriceAfter1_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceDiscount2UnitPriceAfter1_Value',
+            nameOfItem,
+        );
+        // let PriceDiscount2UnitPriceAfter1_Values;
+        // if (at === 'Cart') {
+        //     PriceDiscount2UnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceDiscount2UnitPriceAfter1_Selector) : (await this.browser.findElements(PriceDiscount2UnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
+        // } else {
+        //     PriceDiscount2UnitPriceAfter1_Values = await this.browser.findElements(PriceDiscount2UnitPriceAfter1_Selector);
+        // }
+        const PriceDiscount2UnitPriceAfter1_Values = await this.browser.findElements(
+            PriceDiscount2UnitPriceAfter1_Selector,
+        );
+        const PriceDiscount2UnitPriceAfter1_Value = locationInElementsArray
+            ? await PriceDiscount2UnitPriceAfter1_Values[locationInElementsArray].getText()
+            : await PriceDiscount2UnitPriceAfter1_Values[0].getText();
+        console.info(`${nameOfItem} PriceDiscount2UnitPriceAfter1_Value: `, PriceDiscount2UnitPriceAfter1_Value);
+
+        this.browser.sleep(0.1 * 1000);
+        return {
+            PriceDiscount2UnitPriceAfter1: Number(PriceDiscount2UnitPriceAfter1_Value.split(' ')[1].trim()),
+        };
+    }
+
+    public async getItemTSAs_AOQM_UOM2(
+        at: 'OrderCenter' | 'Cart',
+        nameOfItem: string,
+        freeItem?: 'Free',
+        locationInElementsArray?: number,
+    ): Promise<PriceTsaFieldsUom2> {
+        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}By${freeItem ? freeItem : ''}ItemName`;
+
+        const PriceBaseUnitPriceAfter2_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceBaseUnitPriceAfter2_Value',
+            nameOfItem,
+        );
+        // let PriceBaseUnitPriceAfter2_Values;
+        // if (at === 'Cart') {
+        //     PriceBaseUnitPriceAfter2_Values = freeItem ? await this.browser.findElements(PriceBaseUnitPriceAfter2_Selector) : (await this.browser.findElements(PriceBaseUnitPriceAfter2_Selector)).filter(async webElement => { if ((await webElement.getCssValue('background')) !== 'rgb(165, 235, 255)') { return webElement } });
+        //     console.info('background-color: ', await PriceBaseUnitPriceAfter2_Values[0].getCssValue('background-color'));
+        // } else {
+        //     PriceBaseUnitPriceAfter2_Values = await this.browser.findElements(PriceBaseUnitPriceAfter2_Selector);
+        // }
+        const PriceBaseUnitPriceAfter2_Values = await this.browser.findElements(PriceBaseUnitPriceAfter2_Selector);
+        const PriceBaseUnitPriceAfter2_Value = locationInElementsArray
+            ? await PriceBaseUnitPriceAfter2_Values[locationInElementsArray].getText()
+            : await PriceBaseUnitPriceAfter2_Values[0].getText();
+        console.info(`${nameOfItem} PriceBaseUnitPriceAfter2_Value: `, PriceBaseUnitPriceAfter2_Value);
+
+        const PriceDiscountUnitPriceAfter2_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceDiscountUnitPriceAfter2_Value',
+            nameOfItem,
+        );
+        // let PriceDiscountUnitPriceAfter2_Values;
+        // if (at === 'Cart') {
+        //     PriceDiscountUnitPriceAfter2_Values = freeItem ? await this.browser.findElements(PriceDiscountUnitPriceAfter2_Selector) : (await this.browser.findElements(PriceDiscountUnitPriceAfter2_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
+        // } else {
+        //     PriceDiscountUnitPriceAfter2_Values = await this.browser.findElements(PriceDiscountUnitPriceAfter2_Selector);
+        // }
+        const PriceDiscountUnitPriceAfter2_Values = await this.browser.findElements(
+            PriceDiscountUnitPriceAfter2_Selector,
+        );
+        const PriceDiscountUnitPriceAfter2_Value = locationInElementsArray
+            ? await PriceDiscountUnitPriceAfter2_Values[locationInElementsArray].getText()
+            : await PriceDiscountUnitPriceAfter2_Values[0].getText();
+        console.info(`${nameOfItem} PriceDiscountUnitPriceAfter2_Value: `, PriceDiscountUnitPriceAfter2_Value);
+
+        const PriceTaxUnitPriceAfter2_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceTaxUnitPriceAfter2_Value',
+            nameOfItem,
+        );
+        // let PriceTaxUnitPriceAfter2_Values;
+        // if (at === 'Cart') {
+        //     PriceTaxUnitPriceAfter2_Values = freeItem ? await this.browser.findElements(PriceTaxUnitPriceAfter2_Selector) : (await this.browser.findElements(PriceTaxUnitPriceAfter2_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
+        // } else {
+        //     PriceTaxUnitPriceAfter2_Values = await this.browser.findElements(PriceTaxUnitPriceAfter2_Selector);
+        // }
+        const PriceTaxUnitPriceAfter2_Values = await this.browser.findElements(PriceTaxUnitPriceAfter2_Selector);
+        const PriceTaxUnitPriceAfter2_Value = locationInElementsArray
+            ? await PriceTaxUnitPriceAfter2_Values[locationInElementsArray].getText()
+            : await PriceTaxUnitPriceAfter2_Values[0].getText();
+        console.info(`${nameOfItem} PriceTaxUnitPriceAfter2_Value: `, PriceTaxUnitPriceAfter2_Value);
+
+        this.browser.sleep(0.1 * 1000);
+        return {
+            PriceBaseUnitPriceAfter2: Number(PriceBaseUnitPriceAfter2_Value.split(' ')[1].trim()),
+            PriceDiscountUnitPriceAfter2: Number(PriceDiscountUnitPriceAfter2_Value.split(' ')[1].trim()),
+            PriceTaxUnitPriceAfter2: Number(PriceTaxUnitPriceAfter2_Value.split(' ')[1].trim()),
+        };
+    }
+
+    public async getTotalsTSAsOfItem(
+        at: 'OrderCenter' | 'Cart',
+        nameOfItem: string,
+        freeItem?: 'Free',
+        locationInElementsArray?: number,
+    ): Promise<PriceTotalsTsaFields> {
+        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}By${freeItem ? freeItem : ''}ItemName`;
+
+        const PriceTaxTotal_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceTaxTotal_Value',
+            nameOfItem,
+        );
+
+        const PriceTaxTotal_Values = await this.browser.findElements(PriceTaxTotal_Selector);
+        const PriceTaxTotal_Value = locationInElementsArray
+            ? await PriceTaxTotal_Values[locationInElementsArray].getText()
+            : await PriceTaxTotal_Values[0].getText();
+        console.info(`${nameOfItem} PriceTaxTotal_Value: `, PriceTaxTotal_Value);
+
+        const PriceTaxTotalPercent_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceTaxTotalPercent_Value',
+            nameOfItem,
+        );
+
+        const PriceTaxTotalPercent_Values = await this.browser.findElements(PriceTaxTotalPercent_Selector);
+        const PriceTaxTotalPercent_Value = locationInElementsArray
+            ? await PriceTaxTotalPercent_Values[locationInElementsArray].getText()
+            : await PriceTaxTotalPercent_Values[0].getText();
+        console.info(`${nameOfItem} PriceTaxTotalPercent_Value: `, PriceTaxTotalPercent_Value);
+
+        const PriceTaxTotalDiff_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceTaxTotalDiff_Value',
+            nameOfItem,
+        );
+
+        const PriceTaxTotalDiff_Values = await this.browser.findElements(PriceTaxTotalDiff_Selector);
+        const PriceTaxTotalDiff_Value = locationInElementsArray
+            ? await PriceTaxTotalDiff_Values[locationInElementsArray].getText()
+            : await PriceTaxTotalDiff_Values[0].getText();
+        console.info(`${nameOfItem} PriceTaxTotalDiff_Value: `, PriceTaxTotalDiff_Value);
+
+        const PriceTaxUnitDiff_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceTaxUnitDiff_Value',
+            nameOfItem,
+        );
+
+        const PriceTaxUnitDiff_Values = await this.browser.findElements(PriceTaxUnitDiff_Selector);
+        const PriceTaxUnitDiff_Value = locationInElementsArray
+            ? await PriceTaxUnitDiff_Values[locationInElementsArray].getText()
+            : await PriceTaxUnitDiff_Values[0].getText();
+        console.info(`${nameOfItem} PriceTaxUnitDiff_Value: `, PriceTaxUnitDiff_Value);
+
+        this.browser.sleep(0.1 * 1000);
+        return {
+            PriceTaxTotal: Number(PriceTaxTotal_Value.split(' ')[1].trim()),
+            PriceTaxTotalPercent: Number(PriceTaxTotalPercent_Value.split(' ')[1].trim()),
+            PriceTaxTotalDiff: Number(PriceTaxTotalDiff_Value.split(' ')[1].trim()),
+            PriceTaxUnitDiff: Number(PriceTaxUnitDiff_Value.split(' ')[1].trim()),
         };
     }
 

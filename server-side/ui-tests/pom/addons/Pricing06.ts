@@ -1,5 +1,6 @@
 export class PricingData06 {
     public tableName = 'PPM_Values';
+
     public config = {
         PPM_General: {
             QuantityCriteriaField: 'UnitsQuantity',
@@ -426,6 +427,7 @@ export class PricingData06 {
             '[[true,"1555891200000","2534022144999","1","","Free Goods",[[5,"D",100,"%","",1,"EA","Hair002",0],[20,"D",100,"%","",1,"CS","Hair012",0]],"EA","EA@CS"],[true,"1555891200000","2534022144999","1","","Free Goods",[[2,"D",100,"%","",1,"CS","Hair002",0],[4,"D",100,"%","",1,"CS","MaFa24",0]],"BOX","BOX"]]',
         'ZBASE@A005@Hand Cosmetics':
             '[[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",8,"P"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",40,"P"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",160,"P"]],"BOX","BOX"]]',
+        'ZBASE@A005@dummyItem': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",100,"P"]]]]',
     };
 
     public testItemsValues = {
@@ -449,6 +451,7 @@ export class PricingData06 {
             },
             PriceBaseUnitPriceAfter1: {
                 Acc01: {
+                    cart: 27.75,
                     baseline: 27.75,
                     '1unit': 27.75,
                     '3units': 27.75,
@@ -456,6 +459,7 @@ export class PricingData06 {
                     '4cases(24units)': 27.75,
                 },
                 OtherAcc: {
+                    cart: 27.75,
                     baseline: 27.75,
                     '1unit': 27.75,
                     '3units': 27.75,
@@ -465,6 +469,7 @@ export class PricingData06 {
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 27.75,
                     baseline: 27.75,
                     '1unit': 27.75,
                     '3units': 27.75,
@@ -472,6 +477,7 @@ export class PricingData06 {
                     '4cases(24units)': 27.75,
                 },
                 OtherAcc: {
+                    cart: 27.75,
                     baseline: 27.75,
                     '1unit': 27.75,
                     '3units': 27.75,
@@ -481,6 +487,7 @@ export class PricingData06 {
             },
             PriceGroupDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 27.75,
                     baseline: 27.75,
                     '1unit': 27.75,
                     '3units': 27.75,
@@ -488,6 +495,7 @@ export class PricingData06 {
                     '4cases(24units)': 27.75,
                 },
                 OtherAcc: {
+                    cart: 27.75,
                     baseline: 27.75,
                     '1unit': 27.75,
                     '3units': 27.75,
@@ -497,6 +505,7 @@ export class PricingData06 {
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
+                    cart: 27.75,
                     baseline: 27.75,
                     '1unit': 27.75,
                     '3units': 27.75,
@@ -504,6 +513,7 @@ export class PricingData06 {
                     '4cases(24units)': 27.75,
                 },
                 OtherAcc: {
+                    cart: 27.75,
                     baseline: 27.75,
                     '1unit': 27.75,
                     '3units': 27.75,
@@ -513,6 +523,7 @@ export class PricingData06 {
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
+                    cart: 27.75,
                     baseline: 27.75,
                     '1unit': 27.75,
                     '3units': 27.75,
@@ -520,6 +531,7 @@ export class PricingData06 {
                     '4cases(24units)': 27.75,
                 },
                 OtherAcc: {
+                    cart: 27.75,
                     baseline: 27.75,
                     '1unit': 27.75,
                     '3units': 27.75,
@@ -656,6 +668,7 @@ export class PricingData06 {
             },
             PriceBaseUnitPriceAfter1: {
                 Acc01: {
+                    cart: 27.0,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27.0,
@@ -663,6 +676,7 @@ export class PricingData06 {
                     '4cases(24units)': 27.0,
                 },
                 OtherAcc: {
+                    cart: 27.0,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27.0,
@@ -672,6 +686,7 @@ export class PricingData06 {
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -679,6 +694,7 @@ export class PricingData06 {
                     '4cases(24units)': 27 * 0.85,
                 },
                 OtherAcc: {
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -688,6 +704,7 @@ export class PricingData06 {
             },
             PriceGroupDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 27.0,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27.0,
@@ -695,6 +712,7 @@ export class PricingData06 {
                     '4cases(24units)': 27.0,
                 },
                 OtherAcc: {
+                    cart: 27.0,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27.0,
@@ -704,6 +722,7 @@ export class PricingData06 {
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -711,6 +730,7 @@ export class PricingData06 {
                     '4cases(24units)': 27 * 0.85,
                 },
                 OtherAcc: {
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -720,6 +740,7 @@ export class PricingData06 {
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -727,6 +748,7 @@ export class PricingData06 {
                     '4cases(24units)': 27 * 0.85,
                 },
                 OtherAcc: {
+                    cart: 22.95,
                     baseline: 27.0,
                     '1unit': 27.0,
                     '3units': 27 * 0.95,
@@ -766,6 +788,7 @@ export class PricingData06 {
             },
             PriceBaseUnitPriceAfter1: {
                 Acc01: {
+                    cart: 6 * 10,
                     baseline: 6 * 10,
                     '1unit': 10,
                     '3units': 10,
@@ -773,6 +796,7 @@ export class PricingData06 {
                     '4cases(24units)': 6 * 10,
                 },
                 OtherAcc: {
+                    cart: 26.25,
                     baseline: 26.25,
                     '1unit': 26.25,
                     '3units': 26.25,
@@ -782,6 +806,7 @@ export class PricingData06 {
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 6 * 10,
                     baseline: 6 * 10,
                     '1unit': 10,
                     '3units': 10,
@@ -789,6 +814,7 @@ export class PricingData06 {
                     '4cases(24units)': 6 * 10,
                 },
                 OtherAcc: {
+                    cart: 26.25,
                     baseline: 26.25,
                     '1unit': 26.25,
                     '3units': 26.25,
@@ -798,6 +824,7 @@ export class PricingData06 {
             },
             PriceGroupDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 6 * 10,
                     baseline: 6 * 10,
                     '1unit': 10,
                     '3units': 10,
@@ -805,6 +832,7 @@ export class PricingData06 {
                     '4cases(24units)': 6 * 10,
                 },
                 OtherAcc: {
+                    cart: 26.25,
                     baseline: 26.25,
                     '1unit': 26.25,
                     '3units': 26.25,
@@ -814,6 +842,7 @@ export class PricingData06 {
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
+                    cart: 6 * 10,
                     baseline: 6 * 10,
                     '1unit': 10,
                     '3units': 10,
@@ -821,6 +850,7 @@ export class PricingData06 {
                     '4cases(24units)': 6 * 10,
                 },
                 OtherAcc: {
+                    cart: 26.25,
                     baseline: 26.25,
                     '1unit': 26.25,
                     '3units': 26.25,
@@ -830,6 +860,7 @@ export class PricingData06 {
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
+                    cart: 70.2,
                     baseline: 70.2,
                     '1unit': 11.7,
                     '3units': 11.7,
@@ -837,6 +868,7 @@ export class PricingData06 {
                     '4cases(24units)': 70.2,
                 },
                 OtherAcc: {
+                    cart: 26.25,
                     baseline: 26.25,
                     '1unit': 26.25,
                     '3units': 26.25,
@@ -884,6 +916,7 @@ export class PricingData06 {
             },
             PriceBaseUnitPriceAfter1: {
                 Acc01: {
+                    cart: 6 * 20,
                     baseline: 6 * 20,
                     '1unit': 20,
                     '3units': 20,
@@ -891,6 +924,7 @@ export class PricingData06 {
                     '4cases(24units)': 6 * 20,
                 },
                 OtherAcc: {
+                    cart: 6 * 20,
                     baseline: 6 * 20,
                     '1unit': 20,
                     '3units': 20,
@@ -900,6 +934,7 @@ export class PricingData06 {
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 6 * 20,
                     baseline: 6 * 20,
                     '1unit': 20,
                     '3units': 20,
@@ -907,6 +942,7 @@ export class PricingData06 {
                     '4cases(24units)': 6 * 20,
                 },
                 OtherAcc: {
+                    cart: 6 * 20,
                     baseline: 6 * 20,
                     '1unit': 20,
                     '3units': 20,
@@ -916,6 +952,7 @@ export class PricingData06 {
             },
             PriceGroupDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 6 * 20,
                     baseline: 6 * 20,
                     '1unit': 20,
                     '3units': 20,
@@ -923,6 +960,7 @@ export class PricingData06 {
                     '4cases(24units)': 6 * 20,
                 },
                 OtherAcc: {
+                    cart: 6 * 20,
                     baseline: 6 * 20,
                     '1unit': 20,
                     '3units': 20,
@@ -932,6 +970,7 @@ export class PricingData06 {
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
+                    cart: 6 * 20,
                     baseline: 6 * 20,
                     '1unit': 20,
                     '3units': 20,
@@ -939,6 +978,7 @@ export class PricingData06 {
                     '4cases(24units)': 6 * 20,
                 },
                 OtherAcc: {
+                    cart: 6 * 20,
                     baseline: 6 * 20,
                     '1unit': 20,
                     '3units': 20,
@@ -948,6 +988,7 @@ export class PricingData06 {
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
+                    cart: 140.4,
                     baseline: 140.4,
                     '1unit': 23.4,
                     '3units': 23.4,
@@ -955,6 +996,7 @@ export class PricingData06 {
                     '4cases(24units)': 140.4,
                 },
                 OtherAcc: {
+                    cart: 6 * 20,
                     baseline: 6 * 20,
                     '1unit': 20,
                     '3units': 20,
@@ -1031,6 +1073,7 @@ export class PricingData06 {
             },
             PriceBaseUnitPriceAfter1: {
                 Acc01: {
+                    cart: 22 * 6,
                     baseline: 22 * 6,
                     '1unit': 22,
                     '3units': 22,
@@ -1038,6 +1081,7 @@ export class PricingData06 {
                     '4cases(24units)': 22 * 6,
                 },
                 OtherAcc: {
+                    cart: 50 * 6,
                     baseline: 50 * 6,
                     '1unit': 50,
                     '3units': 50,
@@ -1047,6 +1091,7 @@ export class PricingData06 {
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 22 * 6,
                     baseline: 22 * 6,
                     '1unit': 22,
                     '3units': 17.6,
@@ -1054,6 +1099,7 @@ export class PricingData06 {
                     '4cases(24units)': 105.6,
                 },
                 OtherAcc: {
+                    cart: 40 * 6,
                     baseline: 50 * 6,
                     '1unit': 50,
                     '3units': 40,
@@ -1063,6 +1109,7 @@ export class PricingData06 {
             },
             PriceGroupDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 22 * 6,
                     baseline: 22 * 6,
                     '1unit': 22,
                     '3units': 22,
@@ -1070,6 +1117,7 @@ export class PricingData06 {
                     '4cases(24units)': 22 * 6,
                 },
                 OtherAcc: {
+                    cart: 50 * 6,
                     baseline: 50 * 6,
                     '1unit': 50,
                     '3units': 50,
@@ -1079,6 +1127,7 @@ export class PricingData06 {
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
+                    cart: 22 * 6,
                     baseline: 22 * 6,
                     '1unit': 22,
                     '3units': 17.6,
@@ -1086,6 +1135,7 @@ export class PricingData06 {
                     '4cases(24units)': 105.6,
                 },
                 OtherAcc: {
+                    cart: 40 * 6,
                     baseline: 50 * 6,
                     '1unit': 50,
                     '3units': 40,
@@ -1095,6 +1145,7 @@ export class PricingData06 {
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
+                    cart: 22 * 6,
                     baseline: 22 * 6,
                     '1unit': 22,
                     '3units': 17.6,
@@ -1102,6 +1153,7 @@ export class PricingData06 {
                     '4cases(24units)': 105.6,
                 },
                 OtherAcc: {
+                    cart: 40 * 6,
                     baseline: 50 * 6,
                     '1unit': 50,
                     '3units': 40,
@@ -1136,6 +1188,7 @@ export class PricingData06 {
             },
             PriceBaseUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30 * 6,
                     baseline: 30 * 6,
                     '1unit': 30,
                     '3units': 30,
@@ -1143,6 +1196,7 @@ export class PricingData06 {
                     '4cases(24units)': 30 * 6,
                 },
                 OtherAcc: {
+                    cart: 30.25,
                     baseline: 30.25,
                     '1unit': 30.25,
                     '3units': 30.25,
@@ -1152,6 +1206,7 @@ export class PricingData06 {
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30 * 6,
                     baseline: 30 * 6,
                     '1unit': 30,
                     '3units': 30,
@@ -1159,6 +1214,7 @@ export class PricingData06 {
                     '4cases(24units)': 30 * 6,
                 },
                 OtherAcc: {
+                    cart: 30.25,
                     baseline: 30.25,
                     '1unit': 30.25,
                     '3units': 30.25,
@@ -1168,6 +1224,7 @@ export class PricingData06 {
             },
             PriceGroupDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30 * 6,
                     baseline: 30 * 6,
                     '1unit': 30,
                     '3units': 30,
@@ -1175,6 +1232,7 @@ export class PricingData06 {
                     '4cases(24units)': 30 * 6,
                 },
                 OtherAcc: {
+                    cart: 30.25,
                     baseline: 30.25,
                     '1unit': 30.25,
                     '3units': 30.25,
@@ -1184,6 +1242,7 @@ export class PricingData06 {
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30 * 6,
                     baseline: 30 * 6,
                     '1unit': 30,
                     '3units': 30,
@@ -1191,6 +1250,7 @@ export class PricingData06 {
                     '4cases(24units)': 30 * 6,
                 },
                 OtherAcc: {
+                    cart: 30.25,
                     baseline: 30.25,
                     '1unit': 30.25,
                     '3units': 30.25,
@@ -1200,6 +1260,7 @@ export class PricingData06 {
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30 * 6,
                     baseline: 30 * 6,
                     '1unit': 30,
                     '3units': 30,
@@ -1207,6 +1268,7 @@ export class PricingData06 {
                     '4cases(24units)': 30 * 6,
                 },
                 OtherAcc: {
+                    cart: 30.25,
                     baseline: 30.25,
                     '1unit': 30.25,
                     '3units': 30.25,
@@ -1241,6 +1303,7 @@ export class PricingData06 {
             },
             PriceBaseUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30 * 6,
                     baseline: 30 * 6,
                     '1unit': 30,
                     '3units': 30,
@@ -1248,6 +1311,7 @@ export class PricingData06 {
                     '4cases(24units)': 30 * 6,
                 },
                 OtherAcc: {
+                    cart: 32.25,
                     baseline: 32.25,
                     '1unit': 32.25,
                     '3units': 32.25,
@@ -1257,6 +1321,7 @@ export class PricingData06 {
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30 * 6,
                     baseline: 30 * 6,
                     '1unit': 30,
                     '3units': 30,
@@ -1264,6 +1329,7 @@ export class PricingData06 {
                     '4cases(24units)': 30 * 6,
                 },
                 OtherAcc: {
+                    cart: 32.25,
                     baseline: 32.25,
                     '1unit': 32.25,
                     '3units': 32.25,
@@ -1273,6 +1339,7 @@ export class PricingData06 {
             },
             PriceGroupDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30 * 6,
                     baseline: 30 * 6,
                     '1unit': 30,
                     '3units': 30,
@@ -1280,6 +1347,7 @@ export class PricingData06 {
                     '4cases(24units)': 30 * 6,
                 },
                 OtherAcc: {
+                    cart: 32.25,
                     baseline: 32.25,
                     '1unit': 32.25,
                     '3units': 32.25,
@@ -1289,6 +1357,7 @@ export class PricingData06 {
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30 * 6,
                     baseline: 30 * 6,
                     '1unit': 30,
                     '3units': 30,
@@ -1296,6 +1365,7 @@ export class PricingData06 {
                     '4cases(24units)': 30 * 6,
                 },
                 OtherAcc: {
+                    cart: 32.25,
                     baseline: 32.25,
                     '1unit': 32.25,
                     '3units': 32.25,
@@ -1305,6 +1375,7 @@ export class PricingData06 {
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30 * 6,
                     baseline: 30 * 6,
                     '1unit': 30,
                     '3units': 30,
@@ -1312,6 +1383,7 @@ export class PricingData06 {
                     '4cases(24units)': 30 * 6,
                 },
                 OtherAcc: {
+                    cart: 32.25,
                     baseline: 32.25,
                     '1unit': 32.25,
                     '3units': 32.25,
@@ -1372,24 +1444,78 @@ export class PricingData06 {
                 },
             },
             PriceBaseUnitPriceAfter1: {
-                Acc01: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 29.25 },
-                OtherAcc: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 29.25 },
+                Acc01: {
+                    cart: 29.25,
+                    baseline: 29.25,
+                    '5units': 29.25,
+                    '20units': 29.25,
+                    additional: { Each: 29.25, Case: 29.25 },
+                },
+                OtherAcc: { cart: 29.25, baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 29.25 },
             },
             PriceDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
-                OtherAcc: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
+                Acc01: {
+                    cart: 29.25,
+                    baseline: 29.25,
+                    '5units': 29.25,
+                    '20units': 29.25,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
+                OtherAcc: {
+                    cart: 29.25,
+                    baseline: 29.25,
+                    '5units': 29.25,
+                    '20units': 29.25,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
             },
             PriceGroupDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
-                OtherAcc: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
+                Acc01: {
+                    cart: 29.25,
+                    baseline: 29.25,
+                    '5units': 29.25,
+                    '20units': 29.25,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
+                OtherAcc: {
+                    cart: 29.25,
+                    baseline: 29.25,
+                    '5units': 29.25,
+                    '20units': 29.25,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
             },
             PriceManualLineUnitPriceAfter1: {
-                Acc01: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
-                OtherAcc: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
+                Acc01: {
+                    cart: 29.25,
+                    baseline: 29.25,
+                    '5units': 29.25,
+                    '20units': 29.25,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
+                OtherAcc: {
+                    cart: 29.25,
+                    baseline: 29.25,
+                    '5units': 29.25,
+                    '20units': 29.25,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
             },
             PriceTaxUnitPriceAfter1: {
-                Acc01: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
-                OtherAcc: { baseline: 29.25, '5units': 29.25, '20units': 29.25, additional: 0.0 },
+                Acc01: {
+                    cart: 29.25,
+                    baseline: 29.25,
+                    '5units': 29.25,
+                    '20units': 29.25,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
+                OtherAcc: {
+                    cart: 29.25,
+                    baseline: 29.25,
+                    '5units': 29.25,
+                    '20units': 29.25,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
             },
         },
         Drug0002: {
@@ -1444,24 +1570,84 @@ export class PricingData06 {
                 },
             },
             PriceBaseUnitPriceAfter1: {
-                Acc01: { baseline: 30 * 6, '9case(54units)': 30 * 6, '10cases(60units)': 30 * 6, additional: 30 * 6 },
-                OtherAcc: { baseline: 31.25, '9case(54units)': 31.25, '10cases(60units)': 31.25, additional: 31.25 },
+                Acc01: {
+                    cart: 30 * 6,
+                    baseline: 30 * 6,
+                    '9case(54units)': 30 * 6,
+                    '10cases(60units)': 30 * 6,
+                    additional: { Each: 30, Case: 30 * 6 },
+                },
+                OtherAcc: {
+                    cart: 31.25,
+                    baseline: 31.25,
+                    '9case(54units)': 31.25,
+                    '10cases(60units)': 31.25,
+                    additional: { Each: 31.25, Case: 31.25 },
+                },
             },
             PriceDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 30 * 6, '9case(54units)': 30 * 6, '10cases(60units)': 30 * 6, additional: 0.0 },
-                OtherAcc: { baseline: 31.25, '9case(54units)': 31.25, '10cases(60units)': 31.25, additional: 0.0 },
+                Acc01: {
+                    cart: 30 * 6,
+                    baseline: 30 * 6,
+                    '9case(54units)': 30 * 6,
+                    '10cases(60units)': 30 * 6,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
+                OtherAcc: {
+                    cart: 31.25,
+                    baseline: 31.25,
+                    '9case(54units)': 31.25,
+                    '10cases(60units)': 31.25,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
             },
             PriceGroupDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 30 * 6, '9case(54units)': 30 * 6, '10cases(60units)': 30 * 6, additional: 0.0 },
-                OtherAcc: { baseline: 31.25, '9case(54units)': 31.25, '10cases(60units)': 31.25, additional: 0.0 },
+                Acc01: {
+                    cart: 30 * 6,
+                    baseline: 30 * 6,
+                    '9case(54units)': 30 * 6,
+                    '10cases(60units)': 30 * 6,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
+                OtherAcc: {
+                    cart: 31.25,
+                    baseline: 31.25,
+                    '9case(54units)': 31.25,
+                    '10cases(60units)': 31.25,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
             },
             PriceManualLineUnitPriceAfter1: {
-                Acc01: { baseline: 30 * 6, '9case(54units)': 30 * 6, '10cases(60units)': 30 * 6, additional: 0.0 },
-                OtherAcc: { baseline: 31.25, '9case(54units)': 31.25, '10cases(60units)': 31.25, additional: 0.0 },
+                Acc01: {
+                    cart: 30 * 6,
+                    baseline: 30 * 6,
+                    '9case(54units)': 30 * 6,
+                    '10cases(60units)': 30 * 6,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
+                OtherAcc: {
+                    cart: 31.25,
+                    baseline: 31.25,
+                    '9case(54units)': 31.25,
+                    '10cases(60units)': 31.25,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
             },
             PriceTaxUnitPriceAfter1: {
-                Acc01: { baseline: 30 * 6, '9case(54units)': 30 * 6, '10cases(60units)': 30 * 6, additional: 0.0 },
-                OtherAcc: { baseline: 31.25, '9case(54units)': 31.25, '10cases(60units)': 31.25, additional: 0.0 },
+                Acc01: {
+                    cart: 30 * 6,
+                    baseline: 30 * 6,
+                    '9case(54units)': 30 * 6,
+                    '10cases(60units)': 30 * 6,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
+                OtherAcc: {
+                    cart: 31.25,
+                    baseline: 31.25,
+                    '9case(54units)': 31.25,
+                    '10cases(60units)': 31.25,
+                    additional: { Each: 0.0, Case: 0.0 },
+                },
             },
         },
         Drug0004: {
@@ -1516,48 +1702,48 @@ export class PricingData06 {
                 },
             },
             PriceBaseUnitPriceAfter1: {
-                Acc01: { baseline: 30 * 6, '2case(12units)': 30 * 6, '3cases(18units)': 30 * 6 },
-                OtherAcc: { baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
+                Acc01: { cart: 30 * 6, baseline: 30 * 6, '2case(12units)': 30 * 6, '3cases(18units)': 30 * 6 },
+                OtherAcc: { cart: 33.25, baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
             },
             PriceDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 30 * 6, '2case(12units)': 30 * 6, '3cases(18units)': 30 * 6 },
-                OtherAcc: { baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
+                Acc01: { cart: 30 * 6, baseline: 30 * 6, '2case(12units)': 30 * 6, '3cases(18units)': 30 * 6 },
+                OtherAcc: { cart: 33.25, baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
             },
             PriceGroupDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 30 * 6, '2case(12units)': 30 * 6, '3cases(18units)': 30 * 6 },
-                OtherAcc: { baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
+                Acc01: { cart: 30 * 6, baseline: 30 * 6, '2case(12units)': 30 * 6, '3cases(18units)': 30 * 6 },
+                OtherAcc: { cart: 33.25, baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
             },
             PriceManualLineUnitPriceAfter1: {
-                Acc01: { baseline: 30 * 6, '2case(12units)': 30 * 6, '3cases(18units)': 30 * 6 },
-                OtherAcc: { baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
+                Acc01: { cart: 30 * 6, baseline: 30 * 6, '2case(12units)': 30 * 6, '3cases(18units)': 30 * 6 },
+                OtherAcc: { cart: 33.25, baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
             },
             PriceTaxUnitPriceAfter1: {
-                Acc01: { baseline: 30 * 6, '2case(12units)': 30 * 6, '3cases(18units)': 30 * 6 },
-                OtherAcc: { baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
+                Acc01: { cart: 30 * 6, baseline: 30 * 6, '2case(12units)': 30 * 6, '3cases(18units)': 30 * 6 },
+                OtherAcc: { cart: 33.25, baseline: 33.25, '2case(12units)': 33.25, '3cases(18units)': 33.25 },
             },
         },
         ToBr10: {
             // Additional item
             ItemPrice: 28.5,
             PriceBaseUnitPriceAfter1: {
-                Acc01: { additional: 28.5 },
-                OtherAcc: { additional: 28.5 },
+                Acc01: { additional: { Each: 28.5, Case: 28.5 * 6 } },
+                OtherAcc: { additional: { Each: 28.5, Case: 28.5 } },
             },
             PriceDiscountUnitPriceAfter1: {
-                Acc01: { additional: 0.0 },
-                OtherAcc: { additional: 0.0 },
+                Acc01: { additional: { Each: 0.0, Case: 0.0 } },
+                OtherAcc: { additional: { Each: 0.0, Case: 0.0 } },
             },
             PriceGroupDiscountUnitPriceAfter1: {
-                Acc01: { additional: 0.0 },
-                OtherAcc: { additional: 0.0 },
+                Acc01: { additional: { Each: 0.0, Case: 0.0 } },
+                OtherAcc: { additional: { Each: 0.0, Case: 0.0 } },
             },
             PriceManualLineUnitPriceAfter1: {
-                Acc01: { additional: 0.0 },
-                OtherAcc: { additional: 0.0 },
+                Acc01: { additional: { Each: 0.0, Case: 0.0 } },
+                OtherAcc: { additional: { Each: 0.0, Case: 0.0 } },
             },
             PriceTaxUnitPriceAfter1: {
-                Acc01: { additional: 0.0 },
-                OtherAcc: { additional: 0.0 },
+                Acc01: { additional: { Each: 0.0, Case: 0.0 } },
+                OtherAcc: { additional: { Each: 0.0, Case: 0.0 } },
             },
         },
         BeautyMakeUp: {
@@ -1625,6 +1811,7 @@ export class PricingData06 {
             PriceBaseUnitPriceAfter1: {
                 Acc01: {
                     baseline: 28.75,
+                    cart: 28.75,
                     '2unit': 28.75,
                     '3units': 28.75,
                     '6units': 28.75,
@@ -1633,6 +1820,7 @@ export class PricingData06 {
                     '12units': 28.75,
                 },
                 OtherAcc: {
+                    cart: 28.75,
                     baseline: 28.75,
                     '1unit': 28.75,
                     '3units': 28.75,
@@ -1642,6 +1830,7 @@ export class PricingData06 {
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 28.75,
                     baseline: 28.75,
                     '1unit': 28.75,
                     '3units': 28.75,
@@ -1649,6 +1838,7 @@ export class PricingData06 {
                     '4cases(24units)': 28.75,
                 },
                 OtherAcc: {
+                    cart: 28.75,
                     baseline: 28.75,
                     '1unit': 28.75,
                     '3units': 28.75,
@@ -1658,6 +1848,7 @@ export class PricingData06 {
             },
             PriceGroupDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 28.75,
                     baseline: 28.75,
                     '1unit': 28.75,
                     '3units': 28.75,
@@ -1665,6 +1856,7 @@ export class PricingData06 {
                     '4cases(24units)': 28.75,
                 },
                 OtherAcc: {
+                    cart: 28.75,
                     baseline: 28.75,
                     '1unit': 28.75,
                     '3units': 28.75,
@@ -1674,6 +1866,7 @@ export class PricingData06 {
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
+                    cart: 28.75,
                     baseline: 28.75,
                     '1unit': 28.75,
                     '3units': 28.75,
@@ -1681,6 +1874,7 @@ export class PricingData06 {
                     '4cases(24units)': 28.75,
                 },
                 OtherAcc: {
+                    cart: 28.75,
                     baseline: 28.75,
                     '1unit': 28.75,
                     '3units': 28.75,
@@ -1690,6 +1884,7 @@ export class PricingData06 {
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
+                    cart: 28.75,
                     baseline: 28.75,
                     '1unit': 28.75,
                     '3units': 28.75,
@@ -1697,12 +1892,61 @@ export class PricingData06 {
                     '4cases(24units)': 28.75,
                 },
                 OtherAcc: {
+                    cart: 28.75,
                     baseline: 28.75,
                     '1unit': 28.75,
                     '3units': 28.75,
                     '1case(6units)': 28.75,
                     '4cases(24units)': 28.75,
                 },
+            },
+        },
+        MakeUp001: {
+            // Group Rules
+            ItemPrice: 28.75,
+            PriceBaseUnitPriceAfter1: {
+                Acc01: { cart: 28.75, baseline: 28.75 },
+                OtherAcc: { cart: 28.75, baseline: 28.75 },
+            },
+            PriceDiscountUnitPriceAfter1: {
+                Acc01: { cart: 28.75, baseline: 28.75 },
+                OtherAcc: { cart: 28.75, baseline: 28.75 },
+            },
+            PriceGroupDiscountUnitPriceAfter1: {
+                Acc01: { cart: 26.73, baseline: 26.73 },
+                OtherAcc: { cart: 28.75, baseline: 28.75 },
+            },
+            PriceManualLineUnitPriceAfter1: {
+                Acc01: { cart: 28.75, baseline: 28.75 },
+                OtherAcc: { cart: 28.75, baseline: 28.75 },
+            },
+            PriceTaxUnitPriceAfter1: {
+                Acc01: { cart: 28.75, baseline: 28.75 },
+                OtherAcc: { cart: 28.75, baseline: 28.75 },
+            },
+        },
+        MakeUp002: {
+            // Group Rules
+            ItemPrice: 29.75,
+            PriceBaseUnitPriceAfter1: {
+                Acc01: { cart: 29.75, baseline: 29.75 },
+                OtherAcc: { cart: 29.75, baseline: 29.75 },
+            },
+            PriceDiscountUnitPriceAfter1: {
+                Acc01: { cart: 29.75, baseline: 29.75 },
+                OtherAcc: { cart: 29.75, baseline: 29.75 },
+            },
+            PriceGroupDiscountUnitPriceAfter1: {
+                Acc01: { cart: 27.66, baseline: 27.66 },
+                OtherAcc: { cart: 29.75, baseline: 29.75 },
+            },
+            PriceManualLineUnitPriceAfter1: {
+                Acc01: { cart: 29.75, baseline: 29.75 },
+                OtherAcc: { cart: 29.75, baseline: 29.75 },
+            },
+            PriceTaxUnitPriceAfter1: {
+                Acc01: { cart: 29.75, baseline: 29.75 },
+                OtherAcc: { cart: 29.75, baseline: 29.75 },
             },
         },
         MakeUp003: {
@@ -1748,6 +1992,7 @@ export class PricingData06 {
             },
             PriceBaseUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30.75,
                     baseline: 30.75,
                     '2unit': 30.75,
                     '3units': 30.75,
@@ -1759,6 +2004,7 @@ export class PricingData06 {
                     '12units': 30.75,
                 },
                 OtherAcc: {
+                    cart: 30.75,
                     baseline: 30.75,
                     '2unit': 30.75,
                     '3units': 30.75,
@@ -1772,6 +2018,7 @@ export class PricingData06 {
             },
             PriceDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30.75,
                     baseline: 30.75,
                     '1unit': 30.75,
                     '3units': 30.75,
@@ -1779,6 +2026,7 @@ export class PricingData06 {
                     '4cases(24units)': 30.75,
                 },
                 OtherAcc: {
+                    cart: 30.75,
                     baseline: 30.75,
                     '1unit': 30.75,
                     '3units': 30.75,
@@ -1788,6 +2036,7 @@ export class PricingData06 {
             },
             PriceGroupDiscountUnitPriceAfter1: {
                 Acc01: {
+                    cart: 22.44,
                     baseline: 30.75,
                     '1unit': 30.75,
                     '3units': 30.75,
@@ -1795,6 +2044,7 @@ export class PricingData06 {
                     '4cases(24units)': 30.75,
                 },
                 OtherAcc: {
+                    cart: 30.75,
                     baseline: 30.75,
                     '1unit': 30.75,
                     '3units': 30.75,
@@ -1804,6 +2054,7 @@ export class PricingData06 {
             },
             PriceManualLineUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30.75,
                     baseline: 30.75,
                     '1unit': 30.75,
                     '3units': 30.75,
@@ -1811,6 +2062,7 @@ export class PricingData06 {
                     '4cases(24units)': 30.75,
                 },
                 OtherAcc: {
+                    cart: 30.75,
                     baseline: 30.75,
                     '1unit': 30.75,
                     '3units': 30.75,
@@ -1820,6 +2072,7 @@ export class PricingData06 {
             },
             PriceTaxUnitPriceAfter1: {
                 Acc01: {
+                    cart: 30.75,
                     baseline: 30.75,
                     '1unit': 30.75,
                     '3units': 30.75,
@@ -1827,12 +2080,85 @@ export class PricingData06 {
                     '4cases(24units)': 30.75,
                 },
                 OtherAcc: {
+                    cart: 30.75,
                     baseline: 30.75,
                     '1unit': 30.75,
                     '3units': 30.75,
                     '1case(6units)': 30.75,
                     '4cases(24units)': 30.75,
                 },
+            },
+        },
+        MakeUp006: {
+            // Group Rules
+            ItemPrice: 33.75,
+            PriceBaseUnitPriceAfter1: {
+                Acc01: { cart: 33.75, baseline: 33.75 },
+                OtherAcc: { cart: 33.75, baseline: 33.75 },
+            },
+            PriceDiscountUnitPriceAfter1: {
+                Acc01: { cart: 33.75, baseline: 33.75 },
+                OtherAcc: { cart: 33.75, baseline: 33.75 },
+            },
+            PriceGroupDiscountUnitPriceAfter1: {
+                Acc01: { cart: 31.38, baseline: 31.38 },
+                OtherAcc: { cart: 33.75, baseline: 33.75 },
+            },
+            PriceManualLineUnitPriceAfter1: {
+                Acc01: { cart: 33.75, baseline: 33.75 },
+                OtherAcc: { cart: 33.75, baseline: 33.75 },
+            },
+            PriceTaxUnitPriceAfter1: {
+                Acc01: { cart: 33.75, baseline: 33.75 },
+                OtherAcc: { cart: 33.75, baseline: 33.75 },
+            },
+        },
+        MakeUp018: {
+            // Group Rules
+            ItemPrice: 14.95,
+            PriceBaseUnitPriceAfter1: {
+                Acc01: { cart: 14.95, baseline: 14.95, additional: { Each: 14.95, Case: 14.95 } },
+                OtherAcc: { cart: 14.95, baseline: 14.95 },
+            },
+            PriceDiscountUnitPriceAfter1: {
+                Acc01: { cart: 14.95, baseline: 14.95, additional: { Each: 0.0, Case: 0.0 } },
+                OtherAcc: { cart: 14.95, baseline: 14.95 },
+            },
+            PriceGroupDiscountUnitPriceAfter1: {
+                Acc01: { cart: 13.9, baseline: 13.9, additional: { Each: 0.0, Case: 0.0 } },
+                OtherAcc: { cart: 14.95, baseline: 14.95 },
+            },
+            PriceManualLineUnitPriceAfter1: {
+                Acc01: { cart: 14.95, baseline: 14.95, additional: { Each: 0.0, Case: 0.0 } },
+                OtherAcc: { cart: 14.95, baseline: 14.95 },
+            },
+            PriceTaxUnitPriceAfter1: {
+                Acc01: { cart: 14.95, baseline: 14.95, additional: { Each: 0.0, Case: 0.0 } },
+                OtherAcc: { cart: 14.95, baseline: 14.95 },
+            },
+        },
+        MakeUp019: {
+            // Group Rules
+            ItemPrice: 15.95,
+            PriceBaseUnitPriceAfter1: {
+                Acc01: { cart: 15.95, baseline: 15.95 },
+                OtherAcc: { cart: 15.95, baseline: 15.95 },
+            },
+            PriceDiscountUnitPriceAfter1: {
+                Acc01: { cart: 15.95, baseline: 15.95 },
+                OtherAcc: { cart: 15.95, baseline: 15.95 },
+            },
+            PriceGroupDiscountUnitPriceAfter1: {
+                Acc01: { cart: 14.83, baseline: 15.95 },
+                OtherAcc: { cart: 15.95, baseline: 15.95 },
+            },
+            PriceManualLineUnitPriceAfter1: {
+                Acc01: { cart: 15.95, baseline: 15.95 },
+                OtherAcc: { cart: 15.95, baseline: 15.95 },
+            },
+            PriceTaxUnitPriceAfter1: {
+                Acc01: { cart: 15.95, baseline: 15.95 },
+                OtherAcc: { cart: 15.95, baseline: 15.95 },
             },
         },
         Hair001: {
@@ -2844,6 +3170,235 @@ export class PricingData06 {
                     '3 Box': 55.25,
                     '4 Box': 55.25,
                 },
+            },
+        },
+        MaFa24: {
+            // UOMs - additional item just for Acc01
+            ItemPrice: 34.5,
+            PriceBaseUnitPriceAfter1: {
+                Acc01: {
+                    cart: 34.5,
+                },
+            },
+            PriceDiscountUnitPriceAfter1: {
+                Acc01: {
+                    cart: 0.0,
+                },
+            },
+            PriceGroupDiscountUnitPriceAfter1: {
+                Acc01: {
+                    cart: 0.0,
+                },
+            },
+            PriceManualLineUnitPriceAfter1: {
+                Acc01: {
+                    cart: 0.0,
+                },
+            },
+            PriceTaxUnitPriceAfter1: {
+                Acc01: {
+                    cart: 0.0,
+                },
+            },
+        },
+        MaNa14: {
+            // totals
+            ItemPrice: 37.75,
+            baseline: {
+                uom1: 'Case',
+                qty1: 0,
+                uom2: 'Each',
+                qty2: 0,
+                unitQuantity: 0,
+                PriceTaxTotal: 0.0,
+                PriceTaxTotalDiff: 0.0,
+                PriceTaxTotalPercent: 0.0,
+                PriceTaxUnitDiff: 0.0,
+                PriceBaseUnitPriceAfter1: 40.0,
+                PriceDiscountUnitPriceAfter1: 40.0,
+                PriceGroupDiscountUnitPriceAfter1: 40.0,
+                PriceManualLineUnitPriceAfter1: 40.0,
+                PriceTaxUnitPriceAfter1: 40.0,
+                PriceDiscount2UnitPriceAfter1: 40.0,
+                PriceBaseUnitPriceAfter2: 8.0,
+                PriceDiscountUnitPriceAfter2: 8.0,
+                PriceTaxUnitPriceAfter2: 8.0,
+                NPMCalcMessage: [
+                    {
+                        Name: 'Base',
+                        Base: 0,
+                        Conditions: [
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                        ],
+                        New: 0,
+                        Amount: 0,
+                    },
+                ],
+            },
+            state1: {
+                uom1: 'Case',
+                qty1: 1,
+                uom2: 'Each',
+                qty2: 1,
+                unitQuantity: 7,
+                PriceTaxTotal: 0.0,
+                PriceTaxTotalDiff: 0.0,
+                PriceTaxTotalPercent: 0.0,
+                PriceTaxUnitDiff: 0.0,
+                PriceBaseUnitPriceAfter1: 40.0,
+                PriceDiscountUnitPriceAfter1: 40.0,
+                PriceGroupDiscountUnitPriceAfter1: 40.0,
+                PriceManualLineUnitPriceAfter1: 40.0,
+                PriceTaxUnitPriceAfter1: 40.0,
+                PriceDiscount2UnitPriceAfter1: 40.0,
+                PriceBaseUnitPriceAfter2: 8.0,
+                PriceDiscountUnitPriceAfter2: 8.0,
+                PriceTaxUnitPriceAfter2: 8.0,
+                NPMCalcMessage: [
+                    {
+                        Name: 'Base',
+                        Base: 0,
+                        Conditions: [
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                        ],
+                        New: 0,
+                        Amount: 0,
+                    },
+                ],
+            },
+            state2: {
+                uom1: 'Case',
+                qty1: 1,
+                uom2: 'Each',
+                qty2: 1,
+                unitQuantity: 7,
+                PriceTaxTotal: 0.0,
+                PriceTaxTotalDiff: 0.0,
+                PriceTaxTotalPercent: 0.0,
+                PriceTaxUnitDiff: 0.0,
+                PriceBaseUnitPriceAfter1: 40.0,
+                PriceDiscountUnitPriceAfter1: 40.0,
+                PriceGroupDiscountUnitPriceAfter1: 40.0,
+                PriceManualLineUnitPriceAfter1: 40.0,
+                PriceTaxUnitPriceAfter1: 40.0,
+                PriceDiscount2UnitPriceAfter1: 40.0,
+                PriceBaseUnitPriceAfter2: 8.0,
+                PriceDiscountUnitPriceAfter2: 8.0,
+                PriceTaxUnitPriceAfter2: 8.0,
+                NPMCalcMessage: [
+                    {
+                        Name: 'Base',
+                        Base: 0,
+                        Conditions: [
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                        ],
+                        New: 0,
+                        Amount: 0,
+                    },
+                ],
+            },
+        },
+        MaNa23: {
+            // totals
+            ItemPrice: 40.25,
+            baseline: {
+                uom1: 'Case',
+                qty1: 0,
+                uom2: 'Each',
+                qty2: 0,
+                unitQuantity: 0,
+                PriceTaxTotal: 0.0,
+                PriceTaxTotalDiff: 0.0,
+                PriceTaxTotalPercent: 0.0,
+                PriceTaxUnitDiff: 0.0,
+                PriceBaseUnitPriceAfter1: 40.0,
+                PriceDiscountUnitPriceAfter1: 40.0,
+                PriceGroupDiscountUnitPriceAfter1: 40.0,
+                PriceManualLineUnitPriceAfter1: 40.0,
+                PriceTaxUnitPriceAfter1: 40.0,
+                PriceDiscount2UnitPriceAfter1: 40.0,
+                PriceBaseUnitPriceAfter2: 8.0,
+                PriceDiscountUnitPriceAfter2: 8.0,
+                PriceTaxUnitPriceAfter2: 8.0,
+                NPMCalcMessage: [
+                    {
+                        Name: 'Base',
+                        Base: 0,
+                        Conditions: [
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                        ],
+                        New: 0,
+                        Amount: 0,
+                    },
+                ],
+            },
+            state1: {
+                uom1: 'Case',
+                qty1: 1,
+                uom2: 'Each',
+                qty2: 1,
+                unitQuantity: 7,
+                PriceTaxTotal: 75.5,
+                PriceTaxTotalDiff: 37.75,
+                PriceTaxTotalPercent: 50.0,
+                PriceTaxUnitDiff: 0.0,
+                PriceBaseUnitPriceAfter1: 40.0,
+                PriceDiscountUnitPriceAfter1: 40.0,
+                PriceGroupDiscountUnitPriceAfter1: 40.0,
+                PriceManualLineUnitPriceAfter1: 40.0,
+                PriceTaxUnitPriceAfter1: 40.0,
+                PriceDiscount2UnitPriceAfter1: 40.0,
+                PriceBaseUnitPriceAfter2: 8.0,
+                PriceDiscountUnitPriceAfter2: 8.0,
+                PriceTaxUnitPriceAfter2: 8.0,
+                NPMCalcMessage: [
+                    {
+                        Name: 'Base',
+                        Base: 0,
+                        Conditions: [
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                        ],
+                        New: 0,
+                        Amount: 0,
+                    },
+                ],
+            },
+            state2: {
+                uom1: 'Case',
+                qty1: 1,
+                uom2: 'Each',
+                qty2: 1,
+                unitQuantity: 7,
+                PriceTaxTotal: 75.5,
+                PriceTaxTotalDiff: 37.75,
+                PriceTaxTotalPercent: 50.0,
+                PriceTaxUnitDiff: 0.0,
+                PriceBaseUnitPriceAfter1: 40.0,
+                PriceDiscountUnitPriceAfter1: 40.0,
+                PriceGroupDiscountUnitPriceAfter1: 40.0,
+                PriceManualLineUnitPriceAfter1: 40.0,
+                PriceTaxUnitPriceAfter1: 40.0,
+                PriceDiscount2UnitPriceAfter1: 40.0,
+                PriceBaseUnitPriceAfter2: 8.0,
+                PriceDiscountUnitPriceAfter2: 8.0,
+                PriceTaxUnitPriceAfter2: 8.0,
+                NPMCalcMessage: [
+                    {
+                        Name: 'Base',
+                        Base: 0,
+                        Conditions: [
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                            { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                        ],
+                        New: 0,
+                        Amount: 0,
+                    },
+                ],
             },
         },
     };

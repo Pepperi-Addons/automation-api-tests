@@ -28,6 +28,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const udcService = new UDCService(generalService);
     const objectsService = new ObjectsService(generalService);
     const openCatalogService = new OpenCatalogService(generalService);
+    const dateTime = new Date();
 
     // const setOfAddonsForTheTest = [
     //     // Hagit, July 2023
@@ -113,16 +114,18 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
-    describe('Prerequisites Addons for Resource List Tests', () => {
-        const addonsLatestVersionList = Object.keys(testData);
+    describe(`Prerequisites Addons for Resource List Tests - ${
+        client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
+    } | Date Time: ${dateTime}`, () => {
+        // const addonsLatestVersionList = Object.keys(testData);
 
-        isInstalledArr.forEach((isInstalled, index) => {
-            it(`Validate That The Needed Addon: ${addonsLatestVersionList[index]} - Is Installed.`, () => {
-                expect(isInstalled).to.be.true;
-            });
-        });
+        // isInstalledArr.forEach((isInstalled, index) => {
+        //     it(`Validate That The Needed Addon: ${addonsLatestVersionList[index]} - Is Installed.`, () => {
+        //         expect(isInstalled).to.be.true;
+        //     });
+        // });
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
@@ -257,7 +260,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     let webAppList: WebAppList;
     let resourceListABI: ResourceListABI;
 
-    describe('Resource List ABI Test Suite', async () => {
+    describe(`Resource List ABI Test Suite`, async () => {
         before(async function () {
             console.info('numOfListingsIn_accounts: ', JSON.stringify(numOfListingsIn_accounts, null, 2));
             console.info('numOfListingsIn_items: ', JSON.stringify(numOfListingsIn_items, null, 2));

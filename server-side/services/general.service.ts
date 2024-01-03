@@ -2325,6 +2325,8 @@ export default class GeneralService {
                 return 'bb6ee826-1c6b-4a11-9758-40a46acb69c5';
             case 'CRAWLER':
                 return 'f489d076-381f-4cf7-aa63-33c6489eb017';
+            case 'ASYNCADDON':
+                return '00000000-0000-0000-0000-0000000a594c';
             default:
                 return 'none';
         }
