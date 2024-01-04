@@ -26,7 +26,7 @@ export async function PepperiNotificationServiceTests(
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.7.27'],
         'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
@@ -606,7 +606,7 @@ export async function PepperiNotificationServiceTests(
                     expect(schema.Message.FilterAttributes.Resource).to.equal('installed_addons');
                     expect(schema.Message.FilterAttributes.Action).to.equal('insert');
                     expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
-
+                    debugger;
                     filter.Action = ['update'];
                     filter.ModifiedFields = ['SystemData', 'ModificationDate'];
                     schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
@@ -618,7 +618,9 @@ export async function PepperiNotificationServiceTests(
                     expect(schema, JSON.stringify(schema)).to.not.be.an('array');
                     expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
                     expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(installedAddon.UUID);
-                    expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
+                    expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(
+                        filter.ModifiedFields.length,
+                    );
                     expect(schema.Message.FilterAttributes.Resource).to.equal('installed_addons');
                     expect(schema.Message.FilterAttributes.Action).to.equal('update');
                     expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
