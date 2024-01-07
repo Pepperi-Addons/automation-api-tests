@@ -73,11 +73,13 @@ export class OrderPage extends WebAppList {
         '//mat-tree//span[text()="Beauty Make Up"]/parent::li/parent::mat-tree-node',
     );
 
-    public getSelectorOfUnitOfMeasureOptionByText(text: string, uomIndex?: number) {
-        const path = `//div[@id="TSAAOQMUOM1-panel"][@role="listbox"]/mat-option[@title="${text}"]`;
-        if (uomIndex && uomIndex === 2) {
-            path.replace('1', '2');
-        }
+    public getSelectorOfUnitOfMeasureOptionByText(text: string, uomIndex?: '2') {
+        const path = `//div[@id="TSAAOQMUOM${
+            uomIndex ? uomIndex : '1'
+        }-panel"][@role="listbox"]/mat-option[@title="${text}"]`;
+        // if (uomIndex && uomIndex === '2') {
+        //     path = `//div[@id="TSAAOQMUOM2-panel"][@role="listbox"]/mat-option[@title="${text}"]`;
+        // }
         return By.xpath(path);
     }
 
