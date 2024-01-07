@@ -22,6 +22,9 @@ export class OrderPage extends WebAppList {
     public ItemQuantity_byUOM_InteractableNumber: By = By.xpath(
         '//pep-quantity-selector//input[@id="TSAAOQMQuantity1"]',
     );
+    public ItemQuantity2_byUOM_InteractableNumber: By = By.xpath(
+        '//pep-quantity-selector//input[@id="TSAAOQMQuantity2"]',
+    );
     public AdditionalItemQuantity_byUOM_Number_Cart: By = By.xpath(
         '//pep-quantity-selector//button[@id="TSAAOQMQuantity1"]',
     );
@@ -36,6 +39,7 @@ export class OrderPage extends WebAppList {
     public Cart_Total_Header_container: By = By.xpath('//div[contains(@class,"line-view")]');
     public Cart_Submit_Button: By = By.xpath('//button[@data-qa="Submit"]');
     public Cart_List_container: By = By.xpath('//app-cart//pep-list/div');
+    public Cart_LinesView_List_container: By = By.xpath('//app-cart//pep-list');
     public TransactionUUID: By = By.id('UUID');
     public TransactionID: By = By.id('WrntyID');
 
@@ -123,12 +127,20 @@ export class OrderPage extends WebAppList {
         );
     }
 
+    public getSelectorOfItemInCartLinesViewByName(name: string) {
+        return By.xpath(`//span[contains(@title,"${name}")]/ancestor::fieldset`);
+    }
+
     public getSelectorOfFreeItemInCartByName(name: string) {
         return By.xpath(`${this.getSelectorOfItemInCartByName(name).value}[@style]`);
     }
 
     public getSelectorOfCustomFieldInCartByItemName(fieldName: string, itemName: string) {
         return By.xpath(`${this.getSelectorOfItemInCartByName(itemName).value}${this[fieldName].value}`);
+    }
+
+    public getSelectorOfCustomFieldInCartLinesViewByItemName(fieldName: string, itemName: string) {
+        return By.xpath(`${this.getSelectorOfItemInCartLinesViewByName(itemName).value}${this[fieldName].value}`);
     }
 
     public getSelectorOfCustomFieldInCartByFreeItemName(fieldName: string, itemName: string) {
@@ -173,6 +185,16 @@ export class OrderPage extends WebAppList {
     // End of specific pricing selectors //
 
     public async changeOrderCenterPageView(viewType: string) {
+        //switch to medium view:
+        //1. click on btn to open drop down
+        await this.clickViewMenu();
+        //2. pick wanted view
+        const injectedViewType = this.ViewTypeOption.valueOf()['value'].slice().replace('|textToFill|', viewType);
+        await this.browser.click(By.xpath(injectedViewType));
+        await this.isSpinnerDone();
+    }
+
+    public async changeCartView(viewType: string) {
         //switch to medium view:
         //1. click on btn to open drop down
         await this.clickViewMenu();

@@ -1,3 +1,4 @@
+import addContext from 'mochawesome/addContext';
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
@@ -332,6 +333,11 @@ export async function ResourceListTests(email: string, password: string, varPass
                     },
                     editorName,
                 );
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `In Editor "${resource_name}"`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 resourceEditors.pause(5 * 1000);
             });
             it('Add & Configure View', async () => {
@@ -360,6 +366,11 @@ export async function ResourceListTests(email: string, password: string, varPass
                     matchingEditorName: editorName,
                     viewKey: viewKey,
                     fieldsToConfigureInView: viewFields,
+                });
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `In View "${resource_name}"`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 resourceViews.pause(5 * 1000);
             });
@@ -428,6 +439,11 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await webAppHomePage.isSpinnerDone();
                 await webAppHomePage.clickOnBtn(slugDisplayName);
                 await resourceListBlock.isSpinnerDone();
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `In Block "${resource_name}"`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                 driver.sleep(0.5 * 1000);
                 const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
@@ -557,6 +573,11 @@ export async function ResourceListTests(email: string, password: string, varPass
                         viewKey: viewKey,
                         fieldsToConfigureInView: viewFields,
                     });
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `In View "${resource}"`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     resourceViews.pause(5 * 1000);
                 });
                 it('Perform Manual Sync', async () => {
@@ -628,6 +649,11 @@ export async function ResourceListTests(email: string, password: string, varPass
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn(slugDisplayName);
                     await resourceListBlock.isSpinnerDone();
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `In Block "${resource}"`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                     driver.sleep(0.5 * 1000);
                     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
