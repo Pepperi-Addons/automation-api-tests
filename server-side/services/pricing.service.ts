@@ -151,8 +151,11 @@ export class PricingService {
         nameOfItem: string,
         freeItem?: 'Free',
         locationInElementsArray?: number,
+        view?: 'LinesView',
     ): Promise<PriceTsaFields> {
-        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}By${freeItem ? freeItem : ''}ItemName`;
+        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}${view ? view : ''}By${
+            freeItem ? freeItem : ''
+        }ItemName`;
         let NPMCalcMessage_Value;
         const PriceBaseUnitPriceAfter1_Selector = this.orderPage[nameOfFunctionToLocateSelector](
             'PriceBaseUnitPriceAfter1_Value',
@@ -268,8 +271,11 @@ export class PricingService {
         nameOfItem: string,
         freeItem?: 'Free',
         locationInElementsArray?: number,
+        view?: 'LinesView',
     ): Promise<PriceTsaDiscount2> {
-        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}By${freeItem ? freeItem : ''}ItemName`;
+        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}${view ? view : ''}By${
+            freeItem ? freeItem : ''
+        }ItemName`;
 
         const PriceDiscount2UnitPriceAfter1_Selector = this.orderPage[nameOfFunctionToLocateSelector](
             'PriceDiscount2UnitPriceAfter1_Value',
@@ -300,8 +306,11 @@ export class PricingService {
         nameOfItem: string,
         freeItem?: 'Free',
         locationInElementsArray?: number,
+        view?: 'LinesView',
     ): Promise<PriceTsaFieldsUom2> {
-        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}By${freeItem ? freeItem : ''}ItemName`;
+        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}${view ? view : ''}By${
+            freeItem ? freeItem : ''
+        }ItemName`;
 
         const PriceBaseUnitPriceAfter2_Selector = this.orderPage[nameOfFunctionToLocateSelector](
             'PriceBaseUnitPriceAfter2_Value',
@@ -367,8 +376,11 @@ export class PricingService {
         nameOfItem: string,
         freeItem?: 'Free',
         locationInElementsArray?: number,
+        view?: 'LinesView',
     ): Promise<PriceTotalsTsaFields> {
-        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}By${freeItem ? freeItem : ''}ItemName`;
+        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}${view ? view : ''}By${
+            freeItem ? freeItem : ''
+        }ItemName`;
 
         const PriceTaxTotal_Selector = this.orderPage[nameOfFunctionToLocateSelector](
             'PriceTaxTotal_Value',
@@ -450,30 +462,36 @@ export class PricingService {
         nameOfItem: string,
         quantityOfItem: number,
         driver: Browser,
+        aoqm?: '2',
     ): Promise<void> {
         const orderPage = new OrderPage(driver);
-        const itemContainer = await driver.findElement(orderPage.getSelectorOfItemInOrderCenterByName(nameOfItem));
+        const uomValueSplited = uomValue.split('&');
+        const uomToSet = uomValueSplited[0];
+        const isTotals = uomValueSplited[1];
+        // const itemContainer = await driver.findElement(orderPage.getSelectorOfItemInOrderCenterByName(nameOfItem));
+        const uomSelector = orderPage[`UnitOfMeasure${aoqm ? '2' : ''}_Selector_Value`];
         driver.sleep(0.05 * 1000);
-        let itemUomValue = await driver.findElement(orderPage.UnitOfMeasure_Selector_Value);
-        if ((await itemUomValue.getText()) !== uomValue) {
-            await driver.click(orderPage.UnitOfMeasure_Selector_Value);
+        let itemUomValue = await driver.findElement(uomSelector);
+        if ((await itemUomValue.getText()) !== uomToSet) {
+            await driver.click(uomSelector);
             driver.sleep(0.05 * 1000);
-            await driver.click(orderPage.getSelectorOfUnitOfMeasureOptionByText(uomValue));
+            await driver.click(orderPage.getSelectorOfUnitOfMeasureOptionByText(uomToSet));
             driver.sleep(0.1 * 1000);
-            await itemContainer.click();
+            // await itemContainer.click();
+            // await driver.click(orderPage.ItemQuantity_NumberOfUnits_Readonly);
             driver.sleep(0.1 * 1000);
-            itemUomValue = await driver.findElement(orderPage.UnitOfMeasure_Selector_Value);
+            itemUomValue = await driver.findElement(uomSelector);
         }
         driver.sleep(0.05 * 1000);
         await orderPage.isSpinnerDone();
-        expect(await itemUomValue.getText()).equals(uomValue);
-        const uomXnumber = await driver.findElement(
-            orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
-                'ItemQuantity_byUOM_InteractableNumber',
-                nameOfItem,
-            ),
+        expect(await itemUomValue.getText()).equals(uomToSet);
+        const quantitySelector = orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+            `ItemQuantity${aoqm ? '2' : ''}_byUOM_InteractableNumber`,
+            nameOfItem,
         );
-        await itemContainer.click();
+        const uomXnumber = await driver.findElement(quantitySelector);
+        // await itemContainer.click();
+        // await driver.click(orderPage.ItemQuantity_NumberOfUnits_Readonly);
         for (let i = 0; i < 6; i++) {
             await uomXnumber.sendKeys(Key.BACK_SPACE);
             driver.sleep(0.01 * 1000);
@@ -482,7 +500,8 @@ export class PricingService {
         await uomXnumber.sendKeys(quantityOfItem);
         await orderPage.isSpinnerDone();
         driver.sleep(0.05 * 1000);
-        await itemContainer.click();
+        // await itemContainer.click();
+        await driver.click(orderPage.ItemQuantity_NumberOfUnits_Readonly);
         driver.sleep(1 * 1000);
         const numberByUOM = await uomXnumber.getAttribute('title');
         driver.sleep(0.5 * 1000);
@@ -501,17 +520,130 @@ export class PricingService {
             case 'Case':
                 expect(Number(numberOfUnits)).equals(Number(numberByUOM) * 6);
                 break;
+            case 'Box':
+                expect(Number(numberOfUnits)).equals(Number(numberByUOM) * 24);
+                break;
             default:
+                if (isTotals === 'Totals') {
+                    const otherQuantitySelector = orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                        `ItemQuantity${aoqm ? '' : '2'}_byUOM_InteractableNumber`,
+                        nameOfItem,
+                    );
+                    const otherQty = await (await driver.findElement(otherQuantitySelector)).getAttribute('title');
+                    if (aoqm === '2') {
+                        const uom1 = await (await driver.findElement(orderPage.UnitOfMeasure_Selector_Value)).getText();
+                        // const qty1 = await (await driver.findElement(otherQuantitySelector)).getText();
+                        const multiplier1 = uom1 === 'Case' ? 6 : uom1 === 'Box' ? 24 : 1;
+                        const units1 = Number(otherQty) * multiplier1;
+                        const units2 = Number(numberByUOM) * (uomToSet === 'Case' ? 6 : uomToSet === 'Box' ? 24 : 1);
+                        console.info(
+                            `at changeSelectedQuantityOfSpecificItemInOrderCenter(), case: "${uomValue}", units1: `,
+                            units1,
+                            'units2: ',
+                            units2,
+                            'total: ',
+                            units1 + units2,
+                        );
+                        expect(Number(numberOfUnits)).equals(units1 + units2);
+                    } else {
+                        const uom2 = await (
+                            await driver.findElement(orderPage.UnitOfMeasure2_Selector_Value)
+                        ).getText();
+                        // const qty2 = await (await driver.findElement(otherQuantitySelector)).getText();
+                        const multiplier2 = uom2 === 'Case' ? 6 : uom2 === 'Box' ? 24 : 1;
+                        const units1 = Number(numberByUOM) * (uomToSet === 'Case' ? 6 : uomToSet === 'Box' ? 24 : 1);
+                        const units2 = Number(otherQty) * multiplier2;
+                        console.info(
+                            `at changeSelectedQuantityOfSpecificItemInOrderCenter(), case: "${uomValue}", units1: `,
+                            units1,
+                            'units2: ',
+                            units2,
+                            'total: ',
+                            units1 + units2,
+                        );
+                        expect(Number(numberOfUnits)).equals(units1 + units2);
+                    }
+                }
                 break;
         }
         driver.sleep(0.05 * 1000);
-        await itemContainer.click();
+        // await itemContainer.click();
+        // await driver.click(orderPage.ItemQuantity_NumberOfUnits_Readonly);
         this.base64Image = await driver.saveScreenshots();
         addContext(this, {
             title: `At Order Center - after Quantity change`,
             value: 'data:image/png;base64,' + this.base64Image,
         });
     }
+
+    // public async changeSelectedQuantity2OfSpecificItemInOrderCenter(
+    //     this: Context,
+    //     uomValue: string,
+    //     nameOfItem: string,
+    //     quantityOfItem: number,
+    //     driver: Browser,
+    // ): Promise<void> {
+    //     const orderPage = new OrderPage(driver);
+    //     const itemContainer = await driver.findElement(orderPage.getSelectorOfItemInOrderCenterByName(nameOfItem));
+    //     driver.sleep(0.05 * 1000);
+    //     let itemUomValue = await driver.findElement(orderPage.UnitOfMeasure2_Selector_Value);
+    //     if ((await itemUomValue.getText()) !== uomValue) {
+    //         await driver.click(orderPage.UnitOfMeasure2_Selector_Value);
+    //         driver.sleep(0.05 * 1000);
+    //         await driver.click(orderPage.getSelectorOfUnitOfMeasureOptionByText(uomValue));
+    //         driver.sleep(0.1 * 1000);
+    //         await itemContainer.click();
+    //         driver.sleep(0.1 * 1000);
+    //         itemUomValue = await driver.findElement(orderPage.UnitOfMeasure2_Selector_Value);
+    //     }
+    //     driver.sleep(0.05 * 1000);
+    //     await orderPage.isSpinnerDone();
+    //     expect(await itemUomValue.getText()).equals(uomValue);
+    //     const uomXnumber = await driver.findElement(
+    //         orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+    //             'ItemQuantity2_byUOM_InteractableNumber',
+    //             nameOfItem,
+    //         ),
+    //     );
+    //     await itemContainer.click();
+    //     for (let i = 0; i < 6; i++) {
+    //         await uomXnumber.sendKeys(Key.BACK_SPACE);
+    //         driver.sleep(0.01 * 1000);
+    //     }
+    //     driver.sleep(0.05 * 1000);
+    //     await uomXnumber.sendKeys(quantityOfItem);
+    //     await orderPage.isSpinnerDone();
+    //     driver.sleep(0.05 * 1000);
+    //     await itemContainer.click();
+    //     driver.sleep(1 * 1000);
+    //     const numberByUOM = await uomXnumber.getAttribute('title');
+    //     driver.sleep(0.5 * 1000);
+    //     await orderPage.isSpinnerDone();
+    //     expect(Number(numberByUOM)).equals(quantityOfItem);
+    //     driver.sleep(1 * 1000);
+    //     const numberOfUnits = await (
+    //         await driver.findElement(orderPage.ItemQuantity_NumberOfUnits_Readonly)
+    //     ).getAttribute('title');
+    //     driver.sleep(0.5 * 1000);
+    //     await orderPage.isSpinnerDone();
+    //     switch (uomValue) {
+    //         case 'Each':
+    //             expect(numberOfUnits).equals(numberByUOM);
+    //             break;
+    //         case 'Case':
+    //             expect(Number(numberOfUnits)).equals(Number(numberByUOM) * 6);
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    //     driver.sleep(0.05 * 1000);
+    //     await itemContainer.click();
+    //     this.base64Image = await driver.saveScreenshots();
+    //     addContext(this, {
+    //         title: `At Order Center - after Quantity change`,
+    //         value: 'data:image/png;base64,' + this.base64Image,
+    //     });
+    // }
 
     public async changeSelectedQuantityOfSpecificItemInCart(
         this: Context,

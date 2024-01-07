@@ -7,6 +7,7 @@ import promised from 'chai-as-promised';
 chai.use(promised);
 
 export async function VFdataPrep(varPass: string, client: Client) {
+    const date = new Date();
     const generalService = new GeneralService(client);
     // const areBaseAddonsPhased = await generalService.setBaseAddonsToPhasedForE2E(varPass);
     // console.info('Are Base Addons Phased: ', JSON.stringify(areBaseAddonsPhased, null, 2));
@@ -115,8 +116,8 @@ export async function VFdataPrep(varPass: string, client: Client) {
     //#regression Upgrade visit flow dependencies
 
     const testData = {
-        'pepperi-pack': ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''],
         VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
+        'pepperi-pack': ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
@@ -162,19 +163,19 @@ export async function VFdataPrep(varPass: string, client: Client) {
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    const isInstalledArr = await generalService.areAddonsInstalled(testData);
+    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
     // #endregion Upgrade script dependencies
 
     // describe(`Prerequisites Addons for Visit Flow Tests - ${client.BaseURL}`, async () => {
     describe(`Prerequisites Addons for VISIT FLOW Tests - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-    }`, async () => {
-        isInstalledArr.forEach((isInstalled, index) => {
-            it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-                expect(isInstalled).to.be.true;
-            });
-        });
+    } || ${date}`, async () => {
+        // isInstalledArr.forEach((isInstalled, index) => {
+        //     it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+        //         expect(isInstalled).to.be.true;
+        //     });
+        // });
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];

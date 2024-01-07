@@ -350,6 +350,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     driver.sleep(1 * 1000);
                                     await driver.untilIsVisible(orderPage.Cart_List_container);
                                 });
+                                it(`switch to 'Grid View'`, async function () {
+                                    await orderPage.changeCartView('Grid');
+                                    base64ImageComponent = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `After "Line View" was selected`,
+                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                    });
+                                });
                                 it('verify that the sum total of items in the cart is correct', async function () {
                                     base64ImageComponent = await driver.saveScreenshots();
                                     addContext(this, {
@@ -843,6 +851,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                     });
                     describe('CART', () => {
+                        it(`switch to 'Grid View'`, async function () {
+                            await orderPage.changeCartView('Grid');
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After "Line View" was selected`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
                         it('verifying that the sum total of items in the cart is correct', async function () {
                             base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
@@ -1876,6 +1892,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                             driver.sleep(1 * 1000);
                         });
+                        it(`switch to 'Grid View'`, async function () {
+                            await orderPage.changeCartView('Grid');
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After "Line View" was selected`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
                         it('verifying that the sum total of items in the cart is correct', async function () {
                             let numberOfItemsInCart =
                                 testItems.length +
@@ -2184,6 +2208,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                     });
                     describe('CART', function () {
+                        it(`switch to 'Grid View'`, async function () {
+                            await orderPage.changeCartView('Grid');
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After "Line View" was selected`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        });
                         it('verifying that the sum total of items in the cart is correct', async function () {
                             await driver.untilIsVisible(orderPage.Cart_Totals); // Verify being in Cart
                             let numberOfItemsInCart =
