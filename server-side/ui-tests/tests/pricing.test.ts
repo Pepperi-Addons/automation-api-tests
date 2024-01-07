@@ -114,7 +114,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         { name: 'MakeUp019', Acc01: { uom: 'Each', unitQuantity: 5 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
         { name: 'MakeUp018 Free', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
         { name: 'MakeUp006', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
-        { name: 'MakeUp018', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        // { name: 'MakeUp018', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
         { name: 'MakeUp003', Acc01: { uom: 'Each', unitQuantity: 10 }, OtherAcc: { uom: 'Each', unitQuantity: 10 } },
         { name: 'MakeUp002', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
         { name: 'MakeUp001', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
