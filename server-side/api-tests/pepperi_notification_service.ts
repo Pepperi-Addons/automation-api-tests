@@ -26,9 +26,9 @@ export async function PepperiNotificationServiceTests(
 
     //#region Upgrade Pepperi Notification Service
     const testData = {
-        // ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        // 'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-        // 'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.7.27'],
+        'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     };
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
@@ -553,7 +553,11 @@ export async function PepperiNotificationServiceTests(
                         AddonRelativeURL: '/test/go',
                         Type: 'data',
                         AddonUUID: createdAddon.Body.UUID,
-                        FilterPolicy: {},
+                        FilterPolicy: {
+                            Action: ['update'],
+                            Resource: ['installed_addons'],
+                            AddonUUID: ['00000000-0000-0000-0000-000000000a91'],
+                        },
                         Name: 'Subscription_Removal_Test',
                     };
 
@@ -566,7 +570,6 @@ export async function PepperiNotificationServiceTests(
                             'X-Pepperi-SecretKey': addonSK,
                         },
                     });
-
                     expect(subsciptionPostResponse.Status).to.equal(200);
                     expect(subsciptionPostResponse.Body.Name).to.equal('Subscription_Removal_Test');
 
@@ -603,8 +606,9 @@ export async function PepperiNotificationServiceTests(
                     expect(schema.Message.FilterAttributes.Resource).to.equal('installed_addons');
                     expect(schema.Message.FilterAttributes.Action).to.equal('insert');
                     expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
-
+                    debugger;
                     filter.Action = ['update'];
+                    filter.ModifiedFields = ['SystemData', 'ModificationDate'];
                     schema = await generalService.getLatestSchemaByKeyAndFilterAttributes(
                         'Log_Update_PNS_Test',
                         PepperiOwnerID,
@@ -614,7 +618,9 @@ export async function PepperiNotificationServiceTests(
                     expect(schema, JSON.stringify(schema)).to.not.be.an('array');
                     expect(schema.Key).to.be.a('String').and.contain('Log_Update_PNS_Test');
                     expect(schema.Message.Message.ModifiedObjects[0].ObjectKey).to.deep.equal(installedAddon.UUID);
-                    expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(0);
+                    expect(schema.Message.Message.ModifiedObjects[0].ModifiedFields.length).to.equal(
+                        filter.ModifiedFields.length,
+                    );
                     expect(schema.Message.FilterAttributes.Resource).to.equal('installed_addons');
                     expect(schema.Message.FilterAttributes.Action).to.equal('update');
                     expect(schema.Message.FilterAttributes.ModifiedFields).to.deep.equal([]);
