@@ -194,6 +194,8 @@ export async function SchedulerTests_Part2(generalService: GeneralService, reque
                     codeJobAuditResponse[0].Status.ID !== 0
                 );
                 console.log(howManyRuns);
+                expect(codeJobAuditResponse[0].Status.Name).to.equal('Failure');
+                expect(codeJobAuditResponse[0].Status.ID).to.equal(0);
                 expect(codeJobAuditResponse[0].AuditInfo.ErrorMessage).to.equal('Job was stopped by user');
             });
             it(`5. Wait For 5 Minutes - And See The Job Execution Is 'Frozen'`, async () => {
