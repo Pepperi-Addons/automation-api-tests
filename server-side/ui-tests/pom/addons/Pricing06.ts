@@ -20,6 +20,7 @@ export class PricingData06 {
                     },
                 ],
             },
+            MultipleValuesKeyFields: ['TransactionAccountTSAPricingContracts'],
         },
         PPM_CalcProcedures: [
             {
@@ -359,6 +360,17 @@ export class PricingData06 {
                 Name: 'MTAX',
                 TablesSearchOrder: ['A002', 'A004'],
             },
+            {
+                Key: 'ZDH1',
+                Name: 'ZDH1 Hierarchy Discount',
+                TablesSearchOrder: [
+                    { Name: 'A011' },
+                    { Name: 'A010' },
+                    { Name: 'A010', Keys: [{ Name: 'TransactionAccountTSAPricingHierarchy', Split: 4 }] },
+                    { Name: 'A009', Keys: [{ Name: 'TransactionAccountTSAPricingHierarchy', Split: 7 }] },
+                    { Name: 'A009', Keys: [{ Name: 'TransactionAccountTSAPricingHierarchy', Split: 4 }] },
+                ],
+            },
         ],
         PPM_Tables: [
             {
@@ -380,6 +392,30 @@ export class PricingData06 {
             {
                 Key: 'A005',
                 KeyFields: ['ItemMainCategory'],
+            },
+            {
+                Key: 'A006',
+                KeyFields: ['TransactionAccountTSAPricingContracts'],
+            },
+            {
+                Key: 'A007',
+                KeyFields: ['TransactionAccountTSAPricingContracts', 'ItemMainCategory'],
+            },
+            {
+                Key: 'A008',
+                KeyFields: ['TransactionAccountTSAPricingContracts', 'ItemExternalID'],
+            },
+            {
+                Key: 'A009',
+                KeyFields: ['TransactionAccountTSAPricingHierarchy'],
+            },
+            {
+                Key: 'A010',
+                KeyFields: ['TransactionAccountTSAPricingHierarchy', 'ItemMainCategory'],
+            },
+            {
+                Key: 'A011',
+                KeyFields: ['TransactionAccountTSAPricingHierarchy', 'ItemExternalID'],
             },
         ],
     };
