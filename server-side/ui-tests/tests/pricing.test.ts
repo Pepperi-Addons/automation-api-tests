@@ -550,6 +550,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                                 this,
                                             )('Case', item_forFreeGoods, 9, driver);
+                                            orderPage.isSpinnerDone();
                                             break;
 
                                         case '10 Cases':
@@ -558,6 +559,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                     item_forFreeGoods,
                                                 ),
                                             );
+                                            orderPage.isSpinnerDone();
                                             driver.sleep(0.5 * 1000);
                                             base64ImageComponent = await driver.saveScreenshots();
                                             addContext(this, {
@@ -1905,7 +1907,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 testItems.length +
                                 itemsAddedToGetFreeGoods.length +
                                 freeGoodsReceived[account].length +
-                                groupRulesItems.length;
+                                groupRulesItems.length +
+                                1; // because of the commenting out of MakeUp018
                             if (account === 'OtherAcc') {
                                 numberOfItemsInCart--;
                             }
@@ -2222,7 +2225,8 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 testItems.length +
                                 itemsAddedToGetFreeGoods.length +
                                 freeGoodsReceived[account].length +
-                                groupRulesItems.length;
+                                groupRulesItems.length +
+                                1; // because of the commenting out of MakeUp018
                             if (account === 'OtherAcc') {
                                 numberOfItemsInCart--;
                             }
