@@ -181,12 +181,14 @@ export async function SchedulerTests_Part2(generalService: GeneralService, reque
                 let howManyRuns = 0;
                 do {
                     generalService.sleep(20000);
-                    console.log(
-                        `waiting for the job status to become 'Failure', running for the ${howManyRuns + 1} time`,
-                    );
                     codeJobAuditResponse = await service.auditLogs.find({
                         where: `AuditInfo.JobMessageData.CodeJobUUID='${CodeJobUUIDCron}'`,
                     });
+                    console.log(
+                        `waiting for the job status to become 'Failure', current job's status is: ${
+                            codeJobAuditResponse[0].Status.Name
+                        }, running for the: ${howManyRuns + 1} time`,
+                    );
                     howManyRuns++;
                 } while (
                     howManyRuns < 25 &&
@@ -196,7 +198,7 @@ export async function SchedulerTests_Part2(generalService: GeneralService, reque
                 console.log(howManyRuns);
                 expect(codeJobAuditResponse[0].Status.Name).to.equal('Failure');
                 expect(codeJobAuditResponse[0].Status.ID).to.equal(0);
-                expect(codeJobAuditResponse[0].AuditInfo.ErrorMessage).to.equal('Job was stopped by user');
+                expect(codeJobAuditResponse[0].AuditInfo.ErrorMessage).to.equal('System Error:Job was stopped by user');
             });
             it(`5. Wait For 5 Minutes - And See The Job Execution Is 'Frozen'`, async () => {
                 generalService.sleep(300000); //5 minutes
@@ -209,7 +211,7 @@ export async function SchedulerTests_Part2(generalService: GeneralService, reque
                 expect((codeJobResponse[0] as any).AuditInfo.JobMessageData.NumberOfTry).to.equal(2);
                 expect((codeJobResponse[0] as any).AuditInfo.JobMessageData.NumberOfTries).to.equal(10);
                 expect(JSON.parse((codeJobResponse[0] as any).AuditInfo.ResultObject).errorMessage).to.equal(
-                    'Job was stopped by user',
+                    'System Error:Job was stopped by user',
                 );
             });
             it(`6. Call Restart On This Job`, async () => {
@@ -224,7 +226,7 @@ export async function SchedulerTests_Part2(generalService: GeneralService, reque
                 expect(codeJobResponse.Body.AddonPath).to.equal(CodeJobBody.AddonPath);
                 expect(codeJobResponse.Body.AddonUUID).to.equal(CodeJobBody.AddonUUID);
                 expect(codeJobResponse.Body.CodeJobUUID).to.equal(CallbackCash.insertNewCJtoCronVerification.UUID);
-                expect(codeJobResponse.Body.ErrorMessage).to.equal('Job was stopped by user');
+                expect(codeJobResponse.Body.ErrorMessage).to.equal('System Error:Job was stopped by user');
                 expect(codeJobResponse.Body.Key).to.equal(codeJobExecuteResponse.ExecutionUUID);
                 expect(codeJobResponse.Body.NumberOfTries).to.equal(10);
                 expect(codeJobResponse.Body.NumberOfTry).to.equal(1);
@@ -240,7 +242,7 @@ export async function SchedulerTests_Part2(generalService: GeneralService, reque
                 ).to.be.above(1);
                 const prevNumOfTry =
                     CallbackCash.ResponseEmptyExecutedLogsCronTest[0].AuditInfo.JobMessageData.NumberOfTry;
-                generalService.sleep(240000);
+                generalService.sleep(265000);
                 CallbackCash.ResponseEmptyExecutedLogsCronTest = await service.auditLogs.find({
                     where: `AuditInfo.JobMessageData.CodeJobUUID='${CodeJobUUIDCron}'`,
                 });
