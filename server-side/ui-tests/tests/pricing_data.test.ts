@@ -180,9 +180,10 @@ export async function PricingDataPrep(varPass: string, client: Client) {
         // The following code uses for ONE-TIME insertion of values to PPM_Values UDT
 
         // it('inserting 20,000 dummy rules to the UDT "PPM_Values"', async () => {
-        //     for (let i = 0; i < 10; i++) {
+        //     // for (let i = 0; i < 50; i++) {
         //         dummyDataToBatch = [];
-        //         for (let index = 40000 + (1000 * i); index < 41000 + (1000 * i); index++) {
+        //         // for (let index = 1 + (1000 * i); index < 1000 + (1000 * i); index++) {
+        //         for (let index = 1000; index < 50000; index = index + 1000) {
         //             dummyDataToBatch.push({
         //                 MapDataExternalID: tableName,
         //                 MainKey: `ZDS1@A001@DummyItem${index}`,
@@ -210,7 +211,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
         //                 .to.have.property('URI')
         //                 .that.equals('/user_defined_tables/' + row.InternalID);
         //         });
-        //     }
+        //     // }
         // });
 
         it('get UDT Values (PPM_Values)', async () => {
