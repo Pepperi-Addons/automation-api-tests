@@ -1364,8 +1364,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 }
             }
             debugger;
-            //3. run the test on latest version of the template addon
-            debugger;
             //3.1 get test names
             try {
                 testsList = await getTestNames(addonName, prodUser, 'prod');
