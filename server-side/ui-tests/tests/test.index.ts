@@ -943,22 +943,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 }
             }
             debugger;
-            //3. run the test on latest version of the template addon
-            const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
-                '02754342-e0b5-4300-b728-a94ea5e0e8f4',
-                varPass,
-            );
-            console.log(entryUUID);
             // debugger;
             //3.1 get test names
             try {
-                testsList = await getTestNames(
-                    addonName,
-                    sbUser,
-                    'stage',
-                    latestVersionOfAutomationTemplateAddon,
-                    addonUUID,
-                );
+                testsList = await getTestNames(addonName, sbUser, 'stage');
             } catch (error) {
                 debugger;
                 const errorString = `Error: got exception trying to get test Names: ${(error as any).message}`;
@@ -987,14 +975,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 //4.1. call current test async->
                 const [devTestResponseSb] = await Promise.all([
                     //devTestResponseEu,
-                    runDevTestOnCertainEnv(
-                        sbUser,
-                        'stage',
-                        latestVersionOfAutomationTemplateAddon,
-                        body,
-                        addonName,
-                        addonSk,
-                    ),
+                    runDevTestOnCertainEnv(sbUser, 'stage', body, addonName, addonSk),
                 ]);
                 if (devTestResponseSb === undefined) {
                     const whichEnvs = devTestResponseSb === undefined ? 'SB' : '';
@@ -1384,21 +1365,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             }
             debugger;
             //3. run the test on latest version of the template addon
-            const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
-                '02754342-e0b5-4300-b728-a94ea5e0e8f4',
-                varPass,
-            );
-            console.log(entryUUID);
             debugger;
             //3.1 get test names
             try {
-                testsList = await getTestNames(
-                    addonName,
-                    prodUser,
-                    'prod',
-                    latestVersionOfAutomationTemplateAddon,
-                    addonUUID,
-                );
+                testsList = await getTestNames(addonName, prodUser, 'prod');
             } catch (error) {
                 debugger;
                 const errorString = `Error: got exception trying to get test Names: ${(error as any).message}`;
@@ -1421,30 +1391,9 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 //4.1. call current test async->
                 const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
                     //devTestResponseEu,
-                    runDevTestOnCertainEnv(
-                        euUser,
-                        'prod',
-                        latestVersionOfAutomationTemplateAddon,
-                        body,
-                        addonName,
-                        addonSk,
-                    ),
-                    runDevTestOnCertainEnv(
-                        prodUser,
-                        'prod',
-                        latestVersionOfAutomationTemplateAddon,
-                        body,
-                        addonName,
-                        addonSk,
-                    ),
-                    runDevTestOnCertainEnv(
-                        sbUser,
-                        'stage',
-                        latestVersionOfAutomationTemplateAddon,
-                        body,
-                        addonName,
-                        addonSk,
-                    ),
+                    runDevTestOnCertainEnv(euUser, 'prod', body, addonName, addonSk),
+                    runDevTestOnCertainEnv(prodUser, 'prod', body, addonName, addonSk),
+                    runDevTestOnCertainEnv(sbUser, 'stage', body, addonName, addonSk),
                 ]);
                 if (
                     devTestResponseEu === undefined ||
@@ -3656,14 +3605,7 @@ async function getUDBTests(userName, env) {
     return toReturn;
 }
 
-async function runDevTestOnCertainEnv(
-    userName,
-    env,
-    latestVersionOfAutomationTemplateAddon,
-    bodyToSend,
-    addonName,
-    addonSk?,
-) {
+async function runDevTestOnCertainEnv(userName, env, bodyToSend, addonName, addonSk?) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
     let urlToCall;
@@ -3699,8 +3641,6 @@ async function runDevTestOnCertainEnv(
         urlToCall = '/addons/api/async/bb6ee826-1c6b-4a11-9758-40a46acb69c5/tests/tests';
     } else if (addonName === 'ASYNCADDON') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-0000000a594c/tests/tests';
-    } else {
-        urlToCall = `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`;
     }
     let testResponse;
     if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
@@ -3729,7 +3669,7 @@ async function getTestResponseFromAuditLog(userName, env, URI: string) {
     return auditLogDevTestResponse;
 }
 
-async function getTestNames(addonName, user, env, latestVersionOfAutomationTemplateAddon, addonUUID) {
+async function getTestNames(addonName, user, env) {
     if (addonName === 'NEBULA') {
         // testsList
         return await getNebulaTests(user, env);
@@ -3757,22 +3697,6 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getCPINodeTests(user, 'prod');
     } else if (addonName === 'ASYNCADDON') {
         return await getAsyncAddonTests(user, 'prod');
-    } else {
-        const client = await initiateTester(user, 'Aa123456', env);
-        const service = new GeneralService(client);
-        if (addonUUID === '00000000-0000-0000-0000-00000000ada1') {
-            // in case of ADAL we want to run data index dev tests
-            addonUUID = '00000000-0000-0000-0000-00000e1a571c'; // data index framework UUID
-        }
-        return (
-            await service.fetchStatus(
-                `/addons/api/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/which_tests_for_addonUUID`,
-                {
-                    method: 'POST',
-                    body: JSON.stringify({ AddonUUID: addonUUID }),
-                },
-            )
-        ).Body;
     }
 }
 
