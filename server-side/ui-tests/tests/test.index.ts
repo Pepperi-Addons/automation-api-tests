@@ -2625,6 +2625,8 @@ export async function handleTeamsURL(addonName, service, email, pass) {
             return await service.getSecretfromKMS(email, pass, 'CRAWLERTeamsWebHook');
         case 'ASYNCADDON':
             return await service.getSecretfromKMS(email, pass, 'ASYNCTeamsWebHook');
+        case 'TRANSLATION':
+            return await service.getSecretfromKMS(email, pass, 'TRANSLATIONTeamsWebHook');
     }
 }
 
@@ -3408,6 +3410,12 @@ function resolveUserPerTest(addonName): any[] {
                 'AsyncCiCdTesterProd@pepperitest.com',
                 'AsyncCiCdTesterSB@pepperitest.com',
             ];
+        case 'TRANSLATION':
+            return [
+                'TranslationTesterEU@pepperitest.com',
+                'TranslationTesterProd@pepperitest.com',
+                'TranslationTesterSB@pepperitest.com',
+            ];
         default:
             return [];
     }
@@ -3590,6 +3598,19 @@ async function getAsyncAddonTests(userName, env) {
     return toReturn;
 }
 
+async function getTranslationAddonTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/fbbac53c-c350-42c9-b9ad-17c238e55b42/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function getUDBTests(userName, env) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
@@ -3639,6 +3660,8 @@ async function runDevTestOnCertainEnv(userName, env, bodyToSend, addonName, addo
         urlToCall = '/addons/api/async/bb6ee826-1c6b-4a11-9758-40a46acb69c5/tests/tests';
     } else if (addonName === 'ASYNCADDON') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-0000000a594c/tests/tests';
+    } else if (addonName === 'TRANSLATION') {
+        urlToCall = '/addons/api/async/fbbac53c-c350-42c9-b9ad-17c238e55b42/tests/tests';
     }
     let testResponse;
     if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
@@ -3695,6 +3718,8 @@ async function getTestNames(addonName, user, env) {
         return await getCPINodeTests(user, 'prod');
     } else if (addonName === 'ASYNCADDON') {
         return await getAsyncAddonTests(user, 'prod');
+    } else if (addonName === 'TRANSLATION') {
+        return await getTranslationAddonTests(user, 'prod');
     }
 }
 
@@ -3720,7 +3745,8 @@ function prepareTestBody(addonName, currentTestName) {
         addonName === 'NODE' ||
         addonName === 'CPI-NODE' ||
         addonName === 'CRAWLER' ||
-        addonName === 'ASYNCADDON'
+        addonName === 'ASYNCADDON' ||
+        addonName === 'TRANSLATION'
     ) {
         body = {
             Name: currentTestName,
