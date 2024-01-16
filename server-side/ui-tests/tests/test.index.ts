@@ -3639,6 +3639,11 @@ async function runDevTestOnCertainEnv(userName, env, bodyToSend, addonName, addo
         urlToCall = '/addons/api/async/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/tests/tests';
     } else if (addonName === 'CONFIGURATIONS') {
         urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
+        headers = {
+            'x-pepperi-ownerid': '84c999c3-84b7-454e-9a86-71b7abc96554',
+            'x-pepperi-secretkey': service['client'].AddonSecretKey,
+            Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
+        };
     } else if (addonName === 'RELATED-ITEMS') {
         urlToCall = '/addons/api/async/4f9f10f3-cd7d-43f8-b969-5029dad9d02b/tests/tests';
     } else if (addonName === 'CRAWLER') {
@@ -3664,7 +3669,12 @@ async function runDevTestOnCertainEnv(userName, env, bodyToSend, addonName, addo
         urlToCall = '/addons/api/async/fbbac53c-c350-42c9-b9ad-17c238e55b42/tests/tests';
     }
     let testResponse;
-    if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
+    if (
+        addonName === 'DATA INDEX' ||
+        addonName === 'DATA-INDEX' ||
+        addonName === 'ADAL' ||
+        addonName === 'CONFIGURATIONS'
+    ) {
         testResponse = await service.fetchStatus(urlToCall, {
             body: JSON.stringify(bodyToSend),
             method: 'POST',
