@@ -1386,6 +1386,9 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
                     addonSk = await service.getSecretfromKMS(email, pass, 'AutomationAddonSecretKey');
                 }
+                if (addonName === 'CONFIGURATIONS') {
+                    addonSk = await service.getSecretfromKMS(email, pass, 'AutomationAddonSecretKeyConfigAddon');
+                }
                 //4.1. call current test async->
                 const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
                     //devTestResponseEu,
@@ -3641,7 +3644,7 @@ async function runDevTestOnCertainEnv(userName, env, bodyToSend, addonName, addo
         urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
         headers = {
             'x-pepperi-ownerid': '84c999c3-84b7-454e-9a86-71b7abc96554',
-            'x-pepperi-secretkey': service['client'].AddonSecretKey,
+            'x-pepperi-secretkey': addonSk,
             Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
         };
     } else if (addonName === 'RELATED-ITEMS') {
