@@ -67,6 +67,7 @@ import {
     StorybookTextboxTests,
     Pricing06DataPrep,
     Pricing06Tests,
+    NeltPerformanceTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -604,6 +605,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
     if (tests.includes('StorybookTextbox')) {
         await StorybookTextboxTests();
+    }
+
+    if (tests.includes('NeltPerformance')) {
+        await NeltPerformanceTests(email, pass);
     }
 
     if (tests.includes('MockTest')) {
