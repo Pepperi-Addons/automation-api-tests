@@ -1,17 +1,19 @@
 import { By } from 'selenium-webdriver';
-import { WebAppList } from '..';
-import { Browser } from '../../utilities/browser';
+import { AddonPage } from './addons/base/AddonPage';
 
-export class OrderPage extends WebAppList {
-    constructor(protected browser: Browser) {
-        super(browser);
-    }
+export class NeltPerformance extends AddonPage {
+    public Home: By = By.css('[data-qa="systemHome"]');
+    public HamburgerMenuButtonAtHome: By = By.css('[data-qa="systemMenu"]');
+    public HomeMenuDropdown: By = By.xpath('//div[@role="menu"]');
+    public AccountsSearchbox: By = By.xpath('//input[@id="searchInput"]');
     public pageGrandTotal: By = By.xpath("//span[@class='value']"); //order page
     public blankSpaceOnScreenToClick: By = By.xpath("//div[contains(@class,'total-items-container')]"); //order page
     public SubmitToCart: By = By.css('[data-qa=cartButton]'); //order
     public ChangeViewButton: By = By.xpath("//mat-icon[@title='Change View']");
     public ViewTypeOption: By = By.xpath(`//span[text()='|textToFill|']`);
-
+    public KupciButtonAtHome: By = By.xpath('//button[@id="mainButton"]');
+    public FirstAccountInList: By = By.xpath('//virtual-scroller//fieldset//span[@id="Name"]');
+    public AccountActivityList_PlusButton: By = By.xpath('//list-menu[@data-qa="secondMenu"]//button');
     public Image_Label: By = By.xpath(`//pep-list//label[@id="Image"]`);
 
     // Specific selectors for Pricing //
@@ -51,22 +53,6 @@ export class OrderPage extends WebAppList {
     public Cart_UnitOfMeasure2_Selector_Value: By = By.xpath('//*[@id="TSAAOQMUOM2"]');
 
     public PriceBaseUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceBaseUnitPriceAfter1"]');
-    public PriceDiscountUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceDiscountUnitPriceAfter1"]');
-    public PriceGroupDiscountUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceGroupDiscountUnitPriceAfter1"]');
-    public PriceManualLineUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceManualLineUnitPriceAfter1"]');
-    public PriceTaxUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceTaxUnitPriceAfter1"]');
-    public NPMCalcMessage_Value: By = By.xpath('//span[@id="TSANPMCalcMessage"]');
-
-    public PriceDiscount2UnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceDiscount2UnitPriceAfter1"]');
-
-    public PriceBaseUnitPriceAfter2_Value: By = By.xpath('//span[@id="TSAPriceBaseUnitPriceAfter2"]');
-    public PriceDiscountUnitPriceAfter2_Value: By = By.xpath('//span[@id="TSAPriceDiscountUnitPriceAfter2"]');
-    public PriceTaxUnitPriceAfter2_Value: By = By.xpath('//span[@id="TSAPriceTaxUnitPriceAfter2"]');
-
-    public PriceTaxTotal_Value: By = By.xpath('//span[@id="TSAPriceTaxTotal"]');
-    public PriceTaxTotalPercent_Value: By = By.xpath('//span[@id="TSAPriceTaxTotalPercent"]');
-    public PriceTaxTotalDiff_Value: By = By.xpath('//span[@id="TSAPriceTaxTotalDiff"]');
-    public PriceTaxUnitDiff_Value: By = By.xpath('//span[@id="TSAPriceTaxUnitDiff"]');
 
     public Cart_ContinueOrdering_Button: By = By.xpath('//button[@data-qa="Continue ordering"]');
     public Cart_Headline_Results_Number: By = By.xpath('//pep-list-total//span[contains(@class,"bold number")]');
@@ -75,13 +61,28 @@ export class OrderPage extends WebAppList {
         '//mat-tree//span[text()="Beauty Make Up"]/parent::li/parent::mat-tree-node',
     );
 
+    public getSelectorOfHomeHamburgerMenuItemByName(name: string) {
+        return By.xpath(`//span[contains(text(),"${name}")]/parent::button[@role="menuitem"]`);
+    }
+
+    public getSelectorOfAccountHyperlinkByName(name: string) {
+        return By.xpath(`//virtual-scroller//fieldset//span[@id="Name"][@title="${name}"]`);
+    }
+
+    public getSelectorOfAccountHyperlinkByID(id: number) {
+        return By.xpath(
+            `//virtual-scroller//fieldset//span[@id="ExternalID"][@title="${id}"]/ancestor::fieldset//pep-internal-button/a`,
+        );
+    }
+
+    public getSelectorOfAccountActivityPlusButtonMenuItemByName(name: string) {
+        return By.xpath(`//button[@title="${name}"]`);
+    }
+
     public getSelectorOfUnitOfMeasureOptionByText(text: string, uomIndex?: '2') {
         const path = `//div[@id="TSAAOQMUOM${
             uomIndex ? uomIndex : '1'
         }-panel"][@role="listbox"]/mat-option[@title="${text}"]`;
-        // if (uomIndex && uomIndex === '2') {
-        //     path = `//div[@id="TSAAOQMUOM2-panel"][@role="listbox"]/mat-option[@title="${text}"]`;
-        // }
         return By.xpath(path);
     }
 
@@ -205,53 +206,6 @@ export class OrderPage extends WebAppList {
         return By.xpath(
             `${this.getSelectorOfItemInCartByName(name).value}${this.AdditionalItemQuantity_byUOM_Number_Cart.value}`,
         );
-    }
-    // End of specific pricing selectors //
-
-    public async changeOrderCenterPageView(viewType: string) {
-        //switch to medium view:
-        //1. click on btn to open drop down
-        await this.clickViewMenu();
-        //2. pick wanted view
-        const injectedViewType = this.ViewTypeOption.valueOf()['value'].slice().replace('|textToFill|', viewType);
-        await this.browser.click(By.xpath(injectedViewType));
-        await this.isSpinnerDone();
-    }
-
-    public async changeCartView(viewType: string) {
-        //switch to medium view:
-        //1. click on btn to open drop down
-        await this.clickViewMenu();
-        //2. pick wanted view
-        const injectedViewType = this.ViewTypeOption.valueOf()['value'].slice().replace('|textToFill|', viewType);
-        await this.browser.click(By.xpath(injectedViewType));
-        await this.isSpinnerDone();
-    }
-
-    public async clickViewMenu() {
-        await this.browser.click(this.ChangeViewButton);
-        await this.browser.sleep(0.5 * 1000);
-    }
-
-    public async searchInOrderCenter(nameOfItem: string): Promise<void> {
-        await this.isSpinnerDone();
-        const searchInput = await this.browser.findElement(this.Search_Input);
-        await searchInput.clear();
-        this.browser.sleep(0.1 * 1000);
-        await searchInput.sendKeys(nameOfItem + '\n');
-        this.browser.sleep(0.5 * 1000);
-        await this.browser.click(this.HtmlBody);
-        await this.browser.click(this.Search_Magnifier_Button);
-        this.browser.sleep(0.1 * 1000);
-        await this.isSpinnerDone();
-        await this.browser.untilIsVisible(this.getSelectorOfItemInOrderCenterByName(nameOfItem));
-    }
-
-    public async clearOrderCenterSearch(): Promise<void> {
-        await this.isSpinnerDone();
-        await this.browser.click(this.Search_X_Button);
-        this.browser.sleep(0.1 * 1000);
-        await this.isSpinnerDone();
     }
 }
 
