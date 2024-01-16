@@ -28,6 +28,7 @@ import {
     DBSchemaTests,
     DBSchemaTestsPart2,
     SchemaTypeDataIndexedTests,
+    AdalBigDataTests,
     DocDBIndexedAdal,
     BatchUpsertTests,
     DimxDataImportTests,
@@ -568,6 +569,16 @@ export async function schema_type_data_index(client: Client, request: Request, t
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await SchemaTypeDataIndexedTests(service, request, testerFunctions), await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function adal_big_data(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Adal_Big_Data';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await AdalBigDataTests(service, request, testerFunctions), await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
 }
