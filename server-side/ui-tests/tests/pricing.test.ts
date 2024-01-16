@@ -1955,7 +1955,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             // expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
                                             priceFields.forEach((priceField) => {
                                                 expectedValue =
-                                                    pricingData.testItemsValues[itemName][priceField][account][
+                                                    pricingData.testItemsValues['MakeUp018'][priceField][account][
                                                         'additional'
                                                     ]['Each'];
                                                 addContext(this, {

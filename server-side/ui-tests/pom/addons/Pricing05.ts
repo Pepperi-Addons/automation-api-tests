@@ -600,7 +600,14 @@ export class PricingData05 {
                 },
             },
             PriceBaseUnitPriceAfter1: {
-                Acc01: { baseline: 10, '1unit': 10, '3units': 10, '1case(6units)': 10, '4cases(24units)': 10 },
+                Acc01: {
+                    cart: 10,
+                    baseline: 10,
+                    '1unit': 10,
+                    '3units': 10,
+                    '1case(6units)': 10,
+                    '4cases(24units)': 10,
+                },
                 OtherAcc: {
                     cart: 26.25,
                     baseline: 26.25,
@@ -611,7 +618,14 @@ export class PricingData05 {
                 },
             },
             PriceDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 10, '1unit': 10, '3units': 10, '1case(6units)': 10, '4cases(24units)': 10 },
+                Acc01: {
+                    cart: 10,
+                    baseline: 10,
+                    '1unit': 10,
+                    '3units': 10,
+                    '1case(6units)': 10,
+                    '4cases(24units)': 10,
+                },
                 OtherAcc: {
                     cart: 26.25,
                     baseline: 26.25,
@@ -622,7 +636,14 @@ export class PricingData05 {
                 },
             },
             PriceGroupDiscountUnitPriceAfter1: {
-                Acc01: { baseline: 10, '1unit': 10, '3units': 10, '1case(6units)': 10, '4cases(24units)': 10 },
+                Acc01: {
+                    cart: 10,
+                    baseline: 10,
+                    '1unit': 10,
+                    '3units': 10,
+                    '1case(6units)': 10,
+                    '4cases(24units)': 10,
+                },
                 OtherAcc: {
                     cart: 26.25,
                     baseline: 26.25,
@@ -633,7 +654,14 @@ export class PricingData05 {
                 },
             },
             PriceManualLineUnitPriceAfter1: {
-                Acc01: { baseline: 10, '1unit': 10, '3units': 10, '1case(6units)': 10, '4cases(24units)': 10 },
+                Acc01: {
+                    cart: 10,
+                    baseline: 10,
+                    '1unit': 10,
+                    '3units': 10,
+                    '1case(6units)': 10,
+                    '4cases(24units)': 10,
+                },
                 OtherAcc: {
                     cart: 26.25,
                     baseline: 26.25,
