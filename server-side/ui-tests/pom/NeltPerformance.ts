@@ -45,7 +45,7 @@ export class NeltPerformance extends AddonPage {
     public InsightsLoaded_Indication_GalleryCard: By = By.xpath(
         `//gallery-card//*[local-name()='svg']/*[local-name()='text']`,
     );
-    public InsightsLoaded_Indication_GalleryCard_text0: By = By.xpath(
+    public InsightsLoaded_Indication_GalleryCard_text: By = By.xpath(
         `//gallery-card//*[local-name()='svg']/*[local-name()='text'][contains(text(),"0")]`,
     );
 
