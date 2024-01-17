@@ -92,7 +92,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Time Interval`, async function () {
+            it(`Time Measurement`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Finansijski podaci" to load:`,
                     value: `${timeInterval} ms`,
@@ -140,7 +140,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Time Interval`, async function () {
+            it(`Time Measurement`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Dugovanja" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
@@ -190,7 +190,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Time Interval`, async function () {
+            it(`Time Measurement`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Dnevni plan" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
@@ -234,7 +234,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Time Interval`, async function () {
+            it(`Time Measurement`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Kupci" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
@@ -287,7 +287,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Time Interval`, async function () {
+            it(`Time Measurement`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Kupci Account" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
@@ -421,8 +421,12 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 );
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_GalleryCard);
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_GalleryCard_text0);
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table);
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table_Header);
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table_Header_Target);
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart);
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVG);
                 const Dnevni_izvestaj_loaded = new Date().getTime();
                 timeInterval = Dnevni_izvestaj_loaded - Dnevni_izvestaj_opening;
                 console.info(
@@ -439,7 +443,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Time Interval`, async function () {
+            it(`Time Measurement`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Dnevni izvestaj" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
