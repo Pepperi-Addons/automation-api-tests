@@ -15,6 +15,8 @@ export class NeltPerformance extends AddonPage {
     public FirstAccountInList: By = By.xpath('//virtual-scroller//fieldset//span[@id="Name"]');
     public AccountActivityList_PlusButton: By = By.xpath('//list-menu[@data-qa="secondMenu"]//button');
     public Image_Label: By = By.xpath(`//pep-list//label[@id="Image"]`);
+    public PepList: By = By.xpath(`//pep-list`);
+    public ListRow: By = By.xpath(`//pep-list//virtual-scroller//fieldset[contains(@class,"table-row-fieldset")]`);
 
     // Specific selectors for Pricing //
     public Duration_Span: By = By.xpath('//span[@id="TSAduration"]');
