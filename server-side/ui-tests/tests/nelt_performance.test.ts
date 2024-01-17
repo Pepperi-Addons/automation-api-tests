@@ -60,7 +60,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
             driver.sleep(1 * 1000);
         });
 
-        describe('Home Screen -- Finansijski podaci', async () => {
+        describe('1. Home Screen -- Finansijski podaci', async () => {
             it('Navigating from Home Screen (through Burger Menu) to "Finansijski podaci"', async function () {
                 await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
                 await driver.untilIsVisible(neltPerformanceSelectors.HomeMenuDropdown);
@@ -75,7 +75,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Finansijski podaci'),
                 );
                 await neltPerformanceSelectors.isSpinnerDone();
-                // await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
+                // await driver.untilIsVisible(neltPerformanceSelectors.ListRow); // there is a bug with content loading for now 17/1/24
                 const Finansijski_podaci_loaded = new Date().getTime();
                 timeInterval = Finansijski_podaci_loaded - Finansijski_podaci_opening;
                 console.info(
@@ -92,7 +92,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Time Measurement`, async function () {
+            it(`Time Measured`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Finansijski podaci" to load:`,
                     value: `${timeInterval} ms`,
@@ -111,7 +111,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
             });
         });
 
-        describe('Home Screen -- Dugovnaja', async () => {
+        describe('2. Home Screen -- Dugovnaja', async () => {
             it('Navigating from Home Screen (through Burger Menu) to "Dugovanja"', async function () {
                 await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
                 base64ImageComponent = await driver.saveScreenshots();
@@ -140,7 +140,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Time Measurement`, async function () {
+            it(`Time Measured`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Dugovanja" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
@@ -161,7 +161,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
             });
         });
 
-        describe('Home Screen -- Dnevni plan', async () => {
+        describe('3. Home Screen -- Dnevni plan', async () => {
             it('Navigating from Home Screen (through Burger Menu) to "Dnevni plan"', async function () {
                 await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
                 base64ImageComponent = await driver.saveScreenshots();
@@ -190,7 +190,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Time Measurement`, async function () {
+            it(`Time Measured`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Dnevni plan" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
@@ -211,7 +211,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
             });
         });
 
-        describe('Home Screen -- Kupci', async () => {
+        describe('4. Home Screen -- Kupci', async () => {
             it('Clicking "Kupci" button at Home Screen', async function () {
                 // time measurment
                 const Kupci_opening = new Date().getTime();
@@ -234,7 +234,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Time Measurement`, async function () {
+            it(`Time Measured`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Kupci" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
@@ -255,7 +255,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
             });
         });
 
-        describe('Home Screen -- Kupci -- Select account', async () => {
+        describe('5. Home Screen -- Kupci -- Select account', async () => {
             it('Clicking "Kupci" button at Home Screen', async function () {
                 await driver.click(neltPerformanceSelectors.KupciButtonAtHome);
                 await neltPerformanceSelectors.isSpinnerDone();
@@ -287,7 +287,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Time Measurement`, async function () {
+            it(`Time Measured`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Kupci Account" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
@@ -308,10 +308,10 @@ export async function NeltPerformanceTests(email: string, password: string) {
             });
         });
 
-        // describe('Account Dashboard? CC agent use webapp', async () => {});
-        // describe('Home Screen -- Kupci -- Select account -- Burger menu -- Istorija prodaje po kupcu', async () => {});
+        // describe('6. Account Dashboard? CC agent use webapp', async () => {});
+        // describe('7. Home Screen -- Kupci -- Select account -- Burger menu -- Istorija prodaje po kupcu', async () => {});
 
-        describe('Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center)', async () => {
+        describe('8. Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center)', async () => {
             it('Clicking "Kupci" button at Home Screen', async function () {
                 await driver.click(neltPerformanceSelectors.KupciButtonAtHome);
                 await neltPerformanceSelectors.isSpinnerDone();
@@ -323,15 +323,8 @@ export async function NeltPerformanceTests(email: string, password: string) {
             });
             it('Searching for Account 1100072 at searchbox', async function () {
                 await neltPerfomanceService.searchInAccounts.bind(this)('1100072', driver);
-                // driver.sleep(5 * 1000);
-                // base64ImageComponent = await driver.saveScreenshots();
-                // addContext(this, {
-                //     title: `After Search for Account "1100072"`,
-                //     value: 'data:image/png;base64,' + base64ImageComponent,
-                // });
             });
             it('Clicking on Account 1100072 at search results', async function () {
-                // await driver.click(neltPerformanceSelectors.getSelectorOfAccountHyperlinkByName('DOBROTA STR br. APR'));
                 await driver.click(neltPerformanceSelectors.getSelectorOfAccountHyperlinkByID(1100072));
                 await neltPerformanceSelectors.isSpinnerDone();
                 base64ImageComponent = await driver.saveScreenshots();
@@ -362,8 +355,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 });
             });
             it('Choosing "CC Call Center" at Catalog', async function () {
-                // await driver.untilIsVisible(neltPerformanceSelectors.HomeMenuDropdown);
-                // await driver.click(neltPerformanceSelectors.getSelectorOfAccountActivityPlusButtonMenuItemByName('Order'));
                 await neltPerformanceSelectors.isSpinnerDone();
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -383,30 +374,20 @@ export async function NeltPerformanceTests(email: string, password: string) {
             });
         });
 
-        // describe('Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Add items -- Click on cart', async () => {});
-        // describe('Zatvaranje ordera', async () => {});
-        // describe('Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Select filter', async () => {
-        // });
-        // describe('Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Select smart filter', async () => {
-        // });
-        // describe('Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Change sort by', async () => {
-        // });
-        // describe('Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Open promotions that are (bundles)', async () => {
-        // });
-        // describe('Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Open promotions (not bundles)', async () => {
-        // });
-        // describe('Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Open promotions (not bundles) -- Click Done', async () => {
-        // });
-        // describe('Home Screen -- Kupci -- Select account -- Burger menu -- Pocni Posetu -- Select visit flow -- Open -- Select Provat -- Provat order', async () => {
-        // });
-        // describe('Home Screen -- Kupci -- Select account -- Burger menu -- Pocni Posetu -- Select visit flow -- Open -- Select Provat -- Provat order -- Add item -- Submit', async () => {
-        // });
-        // describe('Home Screen -- Kupci -- Select account -- Burger menu -- Pocni Posetu -- Select visit flow -- Open -- Near Expiry order', async () => {
-        // });
-        // describe('Home Screen -- Kupci -- Select account -- Burger menu -- Pocni Posetu -- Select visit flow -- Open -- Near Expiry order -- Add items -- Submit', async () => {
-        // });
+        // describe('9. Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Add items -- Click on cart', async () => {});
+        // describe('10. Zatvaranje ordera', async () => {});
+        // describe('11. Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Select filter', async () => {});
+        // describe('12. Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Select smart filter', async () => {});
+        // describe('13. Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Change sort by', async () => {});
+        // describe('14. Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Open promotions that are (bundles)', async () => {});
+        // describe('15. Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Open promotions (not bundles)', async () => {});
+        // describe('16. Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center) -- Open promotions (not bundles) -- Click Done', async () => {});
+        // describe('17. Home Screen -- Kupci -- Select account -- Burger menu -- Pocni Posetu -- Select visit flow -- Open -- Select Provat -- Provat order', async () => {});
+        // describe('18. Home Screen -- Kupci -- Select account -- Burger menu -- Pocni Posetu -- Select visit flow -- Open -- Select Provat -- Provat order -- Add item -- Submit', async () => {});
+        // describe('19. Home Screen -- Kupci -- Select account -- Burger menu -- Pocni Posetu -- Select visit flow -- Open -- Near Expiry order', async () => {});
+        // describe('20. Home Screen -- Kupci -- Select account -- Burger menu -- Pocni Posetu -- Select visit flow -- Open -- Near Expiry order -- Add items -- Submit', async () => {});
 
-        describe('Home Screen -- Dnevni izvestaj', async () => {
+        describe('21. Home Screen -- Dnevni izvestaj', async () => {
             it('Navigating from Home Screen (through Burger Menu) to "Dnevni izvestaj"', async function () {
                 await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
                 base64ImageComponent = await driver.saveScreenshots();
@@ -421,12 +402,13 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 );
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_GalleryCard);
-                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_GalleryCard_text0);
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_GalleryCard_text);
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table);
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table_Header);
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table_Header_Target);
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart);
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVG);
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVGtext);
                 const Dnevni_izvestaj_loaded = new Date().getTime();
                 timeInterval = Dnevni_izvestaj_loaded - Dnevni_izvestaj_opening;
                 console.info(
@@ -443,7 +425,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Time Measurement`, async function () {
+            it(`Time Measured`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Dnevni izvestaj" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
@@ -464,17 +446,14 @@ export async function NeltPerformanceTests(email: string, password: string) {
             });
         });
 
-        // describe('Home Screen -- Kupci -- Select account -- Burger menu -- Pocni Posetu -- Select visit flow -- Start', async () => {});
-        // describe('Home Screen -- Kupci -- Select account -- Burger menu -- Pocni Posetu -- Select visit flow -- Start -- End', async () => {});
-        // describe('Home Screen -- Kupci -- Select account -- Burger menu -- Kartica Kupca', async () => {});
-        // describe('Status dokumenata', async () => {});
-        // describe('Home Screen -- Kupci -- Select Account -- + -- Ekstenzija KL', async () => {});
-        // describe('Home Screen -- Kupci -- Select Account -- + -- Ekstenzija KL -- Submit', async () => {});
-        // describe('Artikli na leafletu (Opening of page products on leaflet)', async () => {
-        // });
-        // describe('Open list of task on accounts', async () => {
-        // });
-        // describe('Task response', async () => {
-        // });
+        // describe('22. Home Screen -- Kupci -- Select account -- Burger menu -- Pocni Posetu -- Select visit flow -- Start', async () => {});
+        // describe('23. Home Screen -- Kupci -- Select account -- Burger menu -- Pocni Posetu -- Select visit flow -- Start -- End', async () => {});
+        // describe('24. Home Screen -- Kupci -- Select account -- Burger menu -- Kartica Kupca', async () => {});
+        // describe('25. Status dokumenata', async () => {});
+        // describe('26. Home Screen -- Kupci -- Select Account -- + -- Ekstenzija KL', async () => {});
+        // describe('27. Home Screen -- Kupci -- Select Account -- + -- Ekstenzija KL -- Submit', async () => {});
+        // describe('28. Artikli na leafletu (Opening of page products on leaflet)', async () => {});
+        // describe('29. Open list of task on accounts', async () => {});
+        // describe('30. Task response', async () => {});
     });
 }
