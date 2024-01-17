@@ -27,11 +27,26 @@ export class NeltPerformance extends AddonPage {
     public InsightsLoaded_Indication_Chart: By = By.xpath(
         '//pep-remote-loader-element//benchmark-chart-element-00000000-0000-0000-0000-0da1a0de41e5//div[@id="canvas"]',
     );
+    public InsightsLoaded_Indication_Chart_SVG: By = By.xpath(
+        `//pep-remote-loader-element//benchmark-chart-element-00000000-0000-0000-0000-0da1a0de41e5//div[@id="canvas"]//*[local-name()='svg']/*[local-name()='text']`,
+    );
+    public InsightsLoaded_Indication_Chart_SVGtext: By = By.xpath(
+        `//pep-remote-loader-element//benchmark-chart-element-00000000-0000-0000-0000-0da1a0de41e5//div[@id="canvas"]//*[local-name()='svg']/*[local-name()='text'][contains(text(),"")]`,
+    );
     public InsightsLoaded_Indication_Table: By = By.xpath(
         '//pep-remote-loader-element//table-element-00000000-0000-0000-0000-0da1a0de41e5//tbody//tr//td',
     );
+    public InsightsLoaded_Indication_Table_Header: By = By.xpath(
+        '//pep-remote-loader-element//table-element-00000000-0000-0000-0000-0da1a0de41e5//thead//tr//td[contains(text(),"")]',
+    );
+    public InsightsLoaded_Indication_Table_Header_Target: By = By.xpath(
+        '//pep-remote-loader-element//table-element-00000000-0000-0000-0000-0da1a0de41e5//thead//tr//td[contains(text(),"Target")]',
+    );
     public InsightsLoaded_Indication_GalleryCard: By = By.xpath(
         `//gallery-card//*[local-name()='svg']/*[local-name()='text']`,
+    );
+    public InsightsLoaded_Indication_GalleryCard_text0: By = By.xpath(
+        `//gallery-card//*[local-name()='svg']/*[local-name()='text'][contains(text(),"0")]`,
     );
 
     public getSelectorOfHomeHamburgerMenuItemByName(name: string) {
