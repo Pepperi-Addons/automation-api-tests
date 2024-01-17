@@ -95,7 +95,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
             it(`Time Interval`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Finansijski podaci" to load:`,
-                    value: `${timeInterval}ms`,
+                    value: `${timeInterval} ms`,
                 });
                 driver.sleep(5 * 1000);
             });
@@ -143,9 +143,9 @@ export async function NeltPerformanceTests(email: string, password: string) {
             it(`Time Interval`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Dugovanja" to load:`,
-                    value: `row (miliseconds): ${timeInterval}ms | rounded (seconds): ${Math.round(
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
                         timeInterval / 1000,
-                    )}s`,
+                    )} s`,
                 });
                 driver.sleep(5 * 1000);
             });
@@ -193,9 +193,9 @@ export async function NeltPerformanceTests(email: string, password: string) {
             it(`Time Interval`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Dnevni plan" to load:`,
-                    value: `row (miliseconds): ${timeInterval}ms | rounded (seconds): ${Math.round(
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
                         timeInterval / 1000,
-                    )}s`,
+                    )} s`,
                 });
                 driver.sleep(5 * 1000);
             });
@@ -237,9 +237,9 @@ export async function NeltPerformanceTests(email: string, password: string) {
             it(`Time Interval`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Kupci" to load:`,
-                    value: `row (miliseconds): ${timeInterval}ms | rounded (seconds): ${Math.round(
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
                         timeInterval / 1000,
-                    )}s`,
+                    )} s`,
                 });
                 driver.sleep(5 * 1000);
             });
@@ -290,9 +290,9 @@ export async function NeltPerformanceTests(email: string, password: string) {
             it(`Time Interval`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Kupci Account" to load:`,
-                    value: `row (miliseconds): ${timeInterval}ms | rounded (seconds): ${Math.round(
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
                         timeInterval / 1000,
-                    )}s`,
+                    )} s`,
                 });
                 driver.sleep(5 * 1000);
             });
@@ -420,7 +420,9 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dnevni izvestaj'),
                 );
                 await neltPerformanceSelectors.isSpinnerDone();
-                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication);
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_GalleryCard);
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table);
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart);
                 const Dnevni_izvestaj_loaded = new Date().getTime();
                 timeInterval = Dnevni_izvestaj_loaded - Dnevni_izvestaj_opening;
                 console.info(
@@ -440,9 +442,9 @@ export async function NeltPerformanceTests(email: string, password: string) {
             it(`Time Interval`, async function () {
                 addContext(this, {
                     title: `Time Interval for "Dnevni izvestaj" to load:`,
-                    value: `row (miliseconds): ${timeInterval}ms | rounded (seconds): ${Math.round(
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
                         timeInterval / 1000,
-                    )}s`,
+                    )} s`,
                 });
                 driver.sleep(5 * 1000);
             });

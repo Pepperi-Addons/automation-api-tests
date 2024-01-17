@@ -24,8 +24,14 @@ export class NeltPerformance extends AddonPage {
     public TransactionID: By = By.id('WrntyID');
 
     // Specific selectors for Nelt //
-    public InsightsLoaded_Indication: By = By.xpath(
+    public InsightsLoaded_Indication_Chart: By = By.xpath(
         '//pep-remote-loader-element//benchmark-chart-element-00000000-0000-0000-0000-0da1a0de41e5//div[@id="canvas"]',
+    );
+    public InsightsLoaded_Indication_Table: By = By.xpath(
+        '//pep-remote-loader-element//table-element-00000000-0000-0000-0000-0da1a0de41e5//tbody//tr//td',
+    );
+    public InsightsLoaded_Indication_GalleryCard: By = By.xpath(
+        `//gallery-card//*[local-name()='svg']/*[local-name()='text']`,
     );
 
     public getSelectorOfHomeHamburgerMenuItemByName(name: string) {
