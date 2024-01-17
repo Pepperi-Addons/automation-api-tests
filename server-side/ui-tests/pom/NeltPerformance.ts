@@ -24,6 +24,13 @@ export class NeltPerformance extends AddonPage {
     public TransactionID: By = By.id('WrntyID');
 
     // Specific selectors for Nelt //
+    public OrderCatalogItem: By = By.xpath('//span[@id="Description"]/ancestor::mat-grid-list');
+    public OrderCenterItem_OrderButton: By = By.xpath(
+        '//pep-list//virtual-scroller//pep-form//mat-grid-list[contains(@class,"card")]//button[@id="TSAAOQMQuantity1"][@title="Order"]',
+    );
+    public OrderCenterItem_OrderButton_GridLineView: By = By.xpath(
+        '//pep-list//virtual-scroller//pep-form//button[@id="TSAAOQMQuantity1"][@title="Order"]',
+    );
     public InsightsLoaded_Indication_Chart: By = By.xpath(
         '//pep-remote-loader-element//benchmark-chart-element-00000000-0000-0000-0000-0da1a0de41e5//div[@id="canvas"]',
     );
@@ -65,5 +72,9 @@ export class NeltPerformance extends AddonPage {
 
     public getSelectorOfAccountActivityPlusButtonMenuItemByName(name: string) {
         return By.xpath(`//button[@title="${name}"]`);
+    }
+
+    public getSelectorOfOrderCatalogByName(name: string) {
+        return By.xpath(`//span[@id="Description"][@title="${name}"]/ancestor::mat-grid-list`);
     }
 }

@@ -350,17 +350,49 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 await neltPerformanceSelectors.isSpinnerDone();
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `"Order" chosen`,
+                    title: `"Order" chosen --> Catalogs List loaded`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(1 * 1000);
+            });
+            it('Choosing "CC Call Centar" at Catalog', async function () {
+                await driver.untilIsVisible(neltPerformanceSelectors.OrderCatalogItem);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Catalogs List loaded`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                // time measurment
+                const CC_Call_Centar_opening = new Date().getTime();
+                await driver.click(neltPerformanceSelectors.getSelectorOfOrderCatalogByName('CC Call Centar'));
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
+                await driver.untilIsVisible(neltPerformanceSelectors.TransactionID);
+                await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_OrderButton_GridLineView);
+                const CC_Call_Centar_loaded = new Date().getTime();
+                timeInterval = CC_Call_Centar_loaded - CC_Call_Centar_opening;
+                console.info(
+                    'CC_Call_Centar_opening: ',
+                    CC_Call_Centar_opening,
+                    'CC_Call_Centar_loaded: ',
+                    CC_Call_Centar_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Order Center`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it('Choosing "CC Call Center" at Catalog', async function () {
-                await neltPerformanceSelectors.isSpinnerDone();
-                base64ImageComponent = await driver.saveScreenshots();
+            it(`Time Measured`, async function () {
                 addContext(this, {
-                    title: `"Order" chosen`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    title: `Time Interval for "CC Call Centar" to load:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
+                        timeInterval / 1000,
+                    )} s`,
                 });
+                driver.sleep(5 * 1000);
             });
             it('Back to Home Screen', async function () {
                 await neltPerfomanceService.goHome();
