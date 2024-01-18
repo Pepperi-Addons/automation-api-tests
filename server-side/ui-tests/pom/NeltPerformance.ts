@@ -15,14 +15,16 @@ export class NeltPerformance extends AddonPage {
     public AccountActivityList_PlusButton: By = By.xpath('//list-menu[@data-qa="secondMenu"]//button');
     public AccountActivityList_BurgerMenu: By = By.xpath('//list-menu[@data-qa="firstMenu"]//button');
     public Image_Label: By = By.xpath(`//pep-list//label[@id="Image"]`);
+    public ListNumberOfResults: By = By.xpath(`//list-total//span[contains(@class,"bold number")]`);
     public PepList: By = By.xpath(`//pep-list`);
     public ListRow: By = By.xpath(`//pep-list//virtual-scroller//fieldset[contains(@class,"table-row-fieldset")]`);
     public Search_Input: By = By.xpath('//input[@id="searchInput"]');
     public Search_Magnifier_Button: By = By.xpath('//search//pep-icon[@name="system_search"]');
     public Search_X_Button: By = By.xpath('//search//pep-icon[@name="system_close"]');
-    public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
-    public TransactionUUID: By = By.id('UUID');
     public TransactionID: By = By.id('WrntyID');
+    public TransactionUUID: By = By.id('UUID');
+    public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
+    public ContinueOrdering_Button: By = By.xpath('//button[@data-qa="Continue ordering"]');
 
     // Specific selectors for Nelt //
     public OrderCatalogItem: By = By.xpath('//span[@id="Description"]/ancestor::mat-grid-list');
@@ -32,8 +34,14 @@ export class NeltPerformance extends AddonPage {
     public OrderCenterItem_OrderButton_GridLineView: By = By.xpath(
         '//pep-list//virtual-scroller//pep-form//button[@id="TSAAOQMQuantity1"][@title="Order"]',
     );
+    public OrderCenterItem_QuantitySelector_GridLineView: By = By.xpath(
+        '//pep-list//virtual-scroller//pep-form//input[@id="TSAAOQMQuantity1"]',
+    );
     public InsightsLoaded_Indication_Chart: By = By.xpath(
         '//pep-remote-loader-element//benchmark-chart-element-00000000-0000-0000-0000-0da1a0de41e5//div[@id="canvas"]',
+    );
+    public InsightsLoaded_Indication_ChartGraph: By = By.xpath(
+        `//*[local-name()='g'][contains(@class,"apexcharts-series")]/*[local-name()='path']`,
     );
     public InsightsLoaded_Indication_Chart_SVG: By = By.xpath(
         `//pep-remote-loader-element//benchmark-chart-element-00000000-0000-0000-0000-0da1a0de41e5//div[@id="canvas"]//*[local-name()='svg']/*[local-name()='text']`,
@@ -54,8 +62,11 @@ export class NeltPerformance extends AddonPage {
         `//gallery-card//*[local-name()='svg']/*[local-name()='text']`,
     );
     public InsightsLoaded_Indication_GalleryCard_text: By = By.xpath(
-        `//gallery-card//*[local-name()='svg']/*[local-name()='text'][contains(text(),"0")]`,
+        `//gallery-card//*[local-name()='svg']/*[local-name()='text']`,
     );
+    // public InsightsLoaded_Indication_GalleryCard_text: By = By.xpath(
+    //     `//gallery-card//*[local-name()='svg']/*[local-name()='text'][contains(text(),"")]`,
+    // );
     public ResourceView_Indication_TableHeader_Label_Category: By = By.xpath(
         `//pep-list//fieldset[contains(@class,"table-header-fieldset")]//fieldset//label[@id="category"]`,
     );
@@ -87,5 +98,23 @@ export class NeltPerformance extends AddonPage {
 
     public getSelectorOfOrderCatalogByName(name: string) {
         return By.xpath(`//span[@id="Description"][@title="${name}"]/ancestor::mat-grid-list`);
+    }
+
+    public getSelectorOfOrderCenterSideBarTreeItemByName(name: string) {
+        return By.xpath(`//mat-tree//span[contains(text(),"${name}")]/ancestor::mat-tree-node`);
+    }
+
+    public getSelectorOfInsightsGalleryCardByText(text?: string) {
+        return By.xpath(
+            `//gallery-card//*[local-name()='svg']/*[local-name()='text'][contains(text(),"${text || ''}")]`,
+        );
+    }
+
+    public getSelectorOfInsightsTableHeaderdByText(text?: string) {
+        return By.xpath(
+            `//pep-remote-loader-element//table-element-00000000-0000-0000-0000-0da1a0de41e5//thead//tr//td[contains(text(),"${
+                text || ''
+            }")]`,
+        );
     }
 }
