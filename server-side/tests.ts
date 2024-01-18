@@ -29,6 +29,7 @@ import {
     DBSchemaTestsPart2,
     SchemaTypeDataIndexedTests,
     AdalBigDataTests,
+    AdalDefaultValuesTests,
     DocDBIndexedAdal,
     BatchUpsertTests,
     DimxDataImportTests,
@@ -579,6 +580,16 @@ export async function adal_big_data(client: Client, request: Request, testerFunc
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await AdalBigDataTests(service, request, testerFunctions), await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function adal_1_7_default_value(client: Client, request: Request, testerFunctions: TesterFunctions) {
+    const service = new GeneralService(client);
+    testName = 'Adal_Default_Values';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await AdalDefaultValuesTests(service, request, testerFunctions), await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
 }
