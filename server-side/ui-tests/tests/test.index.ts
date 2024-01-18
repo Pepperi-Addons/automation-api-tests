@@ -67,6 +67,7 @@ import {
     StorybookTextboxTests,
     Pricing06DataPrep,
     Pricing06Tests,
+    NeltPerformanceTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -606,6 +607,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await StorybookTextboxTests();
     }
 
+    if (tests.includes('NeltPerformance')) {
+        await NeltPerformanceTests(email, pass);
+    }
+
     if (tests.includes('MockTest')) {
         await MockTest(email, pass, client);
         // await ResourceListTests(email, pass, varPass, client);
@@ -943,22 +948,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 }
             }
             debugger;
-            //3. run the test on latest version of the template addon
-            const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
-                '02754342-e0b5-4300-b728-a94ea5e0e8f4',
-                varPass,
-            );
-            console.log(entryUUID);
             // debugger;
             //3.1 get test names
             try {
-                testsList = await getTestNames(
-                    addonName,
-                    sbUser,
-                    'stage',
-                    latestVersionOfAutomationTemplateAddon,
-                    addonUUID,
-                );
+                testsList = await getTestNames(addonName, sbUser, 'stage');
             } catch (error) {
                 debugger;
                 const errorString = `Error: got exception trying to get test Names: ${(error as any).message}`;
@@ -987,14 +980,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 //4.1. call current test async->
                 const [devTestResponseSb] = await Promise.all([
                     //devTestResponseEu,
-                    runDevTestOnCertainEnv(
-                        sbUser,
-                        'stage',
-                        latestVersionOfAutomationTemplateAddon,
-                        body,
-                        addonName,
-                        addonSk,
-                    ),
+                    runDevTestOnCertainEnv(sbUser, 'stage', body, addonName, addonSk),
                 ]);
                 if (devTestResponseSb === undefined) {
                     const whichEnvs = devTestResponseSb === undefined ? 'SB' : '';
@@ -1383,22 +1369,9 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 }
             }
             debugger;
-            //3. run the test on latest version of the template addon
-            const [latestVersionOfAutomationTemplateAddon, entryUUID] = await generalService.getLatestAvailableVersion(
-                '02754342-e0b5-4300-b728-a94ea5e0e8f4',
-                varPass,
-            );
-            console.log(entryUUID);
-            debugger;
             //3.1 get test names
             try {
-                testsList = await getTestNames(
-                    addonName,
-                    prodUser,
-                    'prod',
-                    latestVersionOfAutomationTemplateAddon,
-                    addonUUID,
-                );
+                testsList = await getTestNames(addonName, prodUser, 'prod');
             } catch (error) {
                 debugger;
                 const errorString = `Error: got exception trying to get test Names: ${(error as any).message}`;
@@ -1418,33 +1391,15 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
                     addonSk = await service.getSecretfromKMS(email, pass, 'AutomationAddonSecretKey');
                 }
+                if (addonName === 'CONFIGURATIONS') {
+                    addonSk = await service.getSecretfromKMS(email, pass, 'AutomationAddonSecretKeyConfigAddon');
+                }
                 //4.1. call current test async->
                 const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
                     //devTestResponseEu,
-                    runDevTestOnCertainEnv(
-                        euUser,
-                        'prod',
-                        latestVersionOfAutomationTemplateAddon,
-                        body,
-                        addonName,
-                        addonSk,
-                    ),
-                    runDevTestOnCertainEnv(
-                        prodUser,
-                        'prod',
-                        latestVersionOfAutomationTemplateAddon,
-                        body,
-                        addonName,
-                        addonSk,
-                    ),
-                    runDevTestOnCertainEnv(
-                        sbUser,
-                        'stage',
-                        latestVersionOfAutomationTemplateAddon,
-                        body,
-                        addonName,
-                        addonSk,
-                    ),
+                    runDevTestOnCertainEnv(euUser, 'prod', body, addonName, addonSk),
+                    runDevTestOnCertainEnv(prodUser, 'prod', body, addonName, addonSk),
+                    runDevTestOnCertainEnv(sbUser, 'stage', body, addonName, addonSk),
                 ]);
                 if (
                     devTestResponseEu === undefined ||
@@ -2678,6 +2633,8 @@ export async function handleTeamsURL(addonName, service, email, pass) {
             return await service.getSecretfromKMS(email, pass, 'CRAWLERTeamsWebHook');
         case 'ASYNCADDON':
             return await service.getSecretfromKMS(email, pass, 'ASYNCTeamsWebHook');
+        case 'TRANSLATION':
+            return await service.getSecretfromKMS(email, pass, 'TRANSLATIONTeamsWebHook');
     }
 }
 
@@ -3461,6 +3418,12 @@ function resolveUserPerTest(addonName): any[] {
                 'AsyncCiCdTesterProd@pepperitest.com',
                 'AsyncCiCdTesterSB@pepperitest.com',
             ];
+        case 'TRANSLATION':
+            return [
+                'TranslationTesterEU@pepperitest.com',
+                'TranslationTesterProd@pepperitest.com',
+                'TranslationTesterSB@pepperitest.com',
+            ];
         default:
             return [];
     }
@@ -3643,6 +3606,19 @@ async function getAsyncAddonTests(userName, env) {
     return toReturn;
 }
 
+async function getTranslationAddonTests(userName, env) {
+    const client = await initiateTester(userName, 'Aa123456', env);
+    const service = new GeneralService(client);
+    const response = (
+        await service.fetchStatus(`/addons/api/fbbac53c-c350-42c9-b9ad-17c238e55b42/tests/tests`, {
+            method: 'GET',
+        })
+    ).Body;
+    let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
+    toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
+    return toReturn;
+}
+
 async function getUDBTests(userName, env) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
@@ -3656,14 +3632,7 @@ async function getUDBTests(userName, env) {
     return toReturn;
 }
 
-async function runDevTestOnCertainEnv(
-    userName,
-    env,
-    latestVersionOfAutomationTemplateAddon,
-    bodyToSend,
-    addonName,
-    addonSk?,
-) {
+async function runDevTestOnCertainEnv(userName, env, bodyToSend, addonName, addonSk?) {
     const client = await initiateTester(userName, 'Aa123456', env);
     const service = new GeneralService(client);
     let urlToCall;
@@ -3678,6 +3647,11 @@ async function runDevTestOnCertainEnv(
         urlToCall = '/addons/api/async/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/tests/tests';
     } else if (addonName === 'CONFIGURATIONS') {
         urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
+        headers = {
+            'x-pepperi-ownerid': '84c999c3-84b7-454e-9a86-71b7abc96554',
+            'x-pepperi-secretkey': addonSk,
+            Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
+        };
     } else if (addonName === 'RELATED-ITEMS') {
         urlToCall = '/addons/api/async/4f9f10f3-cd7d-43f8-b969-5029dad9d02b/tests/tests';
     } else if (addonName === 'CRAWLER') {
@@ -3699,11 +3673,16 @@ async function runDevTestOnCertainEnv(
         urlToCall = '/addons/api/async/bb6ee826-1c6b-4a11-9758-40a46acb69c5/tests/tests';
     } else if (addonName === 'ASYNCADDON') {
         urlToCall = '/addons/api/async/00000000-0000-0000-0000-0000000a594c/tests/tests';
-    } else {
-        urlToCall = `/addons/api/async/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/run`;
+    } else if (addonName === 'TRANSLATION') {
+        urlToCall = '/addons/api/async/fbbac53c-c350-42c9-b9ad-17c238e55b42/tests/tests';
     }
     let testResponse;
-    if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
+    if (
+        addonName === 'DATA INDEX' ||
+        addonName === 'DATA-INDEX' ||
+        addonName === 'ADAL' ||
+        addonName === 'CONFIGURATIONS'
+    ) {
         testResponse = await service.fetchStatus(urlToCall, {
             body: JSON.stringify(bodyToSend),
             method: 'POST',
@@ -3729,7 +3708,7 @@ async function getTestResponseFromAuditLog(userName, env, URI: string) {
     return auditLogDevTestResponse;
 }
 
-async function getTestNames(addonName, user, env, latestVersionOfAutomationTemplateAddon, addonUUID) {
+async function getTestNames(addonName, user, env) {
     if (addonName === 'NEBULA') {
         // testsList
         return await getNebulaTests(user, env);
@@ -3757,22 +3736,8 @@ async function getTestNames(addonName, user, env, latestVersionOfAutomationTempl
         return await getCPINodeTests(user, 'prod');
     } else if (addonName === 'ASYNCADDON') {
         return await getAsyncAddonTests(user, 'prod');
-    } else {
-        const client = await initiateTester(user, 'Aa123456', env);
-        const service = new GeneralService(client);
-        if (addonUUID === '00000000-0000-0000-0000-00000000ada1') {
-            // in case of ADAL we want to run data index dev tests
-            addonUUID = '00000000-0000-0000-0000-00000e1a571c'; // data index framework UUID
-        }
-        return (
-            await service.fetchStatus(
-                `/addons/api/02754342-e0b5-4300-b728-a94ea5e0e8f4/version/${latestVersionOfAutomationTemplateAddon}/tests/which_tests_for_addonUUID`,
-                {
-                    method: 'POST',
-                    body: JSON.stringify({ AddonUUID: addonUUID }),
-                },
-            )
-        ).Body;
+    } else if (addonName === 'TRANSLATION') {
+        return await getTranslationAddonTests(user, 'prod');
     }
 }
 
@@ -3798,7 +3763,8 @@ function prepareTestBody(addonName, currentTestName) {
         addonName === 'NODE' ||
         addonName === 'CPI-NODE' ||
         addonName === 'CRAWLER' ||
-        addonName === 'ASYNCADDON'
+        addonName === 'ASYNCADDON' ||
+        addonName === 'TRANSLATION'
     ) {
         body = {
             Name: currentTestName,

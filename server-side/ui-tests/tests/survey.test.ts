@@ -134,10 +134,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
     const buyerPassStage = '4iuWd*';
     const repEmailStage = 'surveyNeo4jSBRep@pepperitest.com';
     const repPassStage = 'F@QVr9';
-    const buyerEmailEU = 'surveyNeo4jEUBuyer@pepperitest.com';
-    const buyerPassEU = 'Ee$U94';
-    const repEmailEU = 'surveyNeo4jEURep@pepperitest.com';
-    const repPassEU = '3q3@TA';
+    const buyerEmailEU = 'surveyNeo4jEUBuyer2@pepperitest.com';
+    const buyerPassEU = '5&6bAx';
+    const repEmailEU = 'surveyNeo4jEURep2@pepperitest.com';
+    const repPassEU = 'j58Y$x';
 
     let repEmail;
     let repPass;
@@ -165,8 +165,8 @@ export async function SurveyTests(email: string, password: string, client: Clien
     const testData = {
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
         'application-header': ['9bc8af38-dd67-4d33-beb0-7d6b39a6e98d', ''],
-        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.0.123'], //11/1/24: this has to be locked currently as new versions are dependent on config versions which are not available yet
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.0.123'], //11/1/24: this has to be locked currently as new versions are dependent on config versions which are not available yet
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'],

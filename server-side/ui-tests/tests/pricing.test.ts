@@ -1135,7 +1135,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                     });
                 });
 
-                describe('Group Rules', () => {
+                describe('Group Rules (with exclusion)', () => {
                     /*
                      _________________ 
                      _________________ Brief:
@@ -1932,31 +1932,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                             it(`checking item "${groupRuleItem.name}"`, async function () {
                                 let totalUnitsAmount;
                                 let priceTSAs;
-                                switch (groupRuleItem.name) {
-                                    // case 'MakeUp018':
-                                    //     totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                    //         'Cart',
-                                    //         groupRuleItem.name,
-                                    //     );
-                                    //     // if (account === 'Acc01' && !client.BaseURL.includes('staging')) {
-                                    //     if (account === 'Acc01') {
-                                    //         priceTSAs = await pricingService.getItemTSAs(
-                                    //             'Cart',
-                                    //             groupRuleItem.name,
-                                    //             undefined,
-                                    //             1,
-                                    //         );
-                                    //     } else {
-                                    //         priceTSAs = await pricingService.getItemTSAs('Cart', groupRuleItem.name);
-                                    //     }
-                                    //     console.info(
-                                    //         `Cart ${groupRuleItem.name} priceTSAs:`,
-                                    //         JSON.stringify(priceTSAs, null, 2),
-                                    //         'totalUnitsAmount:',
-                                    //         totalUnitsAmount,
-                                    //     );
-                                    //     break;
-                                    case 'MakeUp018 Free':
+                                let expectedValue;
+                                switch (true) {
+                                    case groupRuleItem.name === 'MakeUp018 Free':
                                         if (account === 'Acc01') {
                                             totalUnitsAmount = await pricingService.getItemTotalAmount(
                                                 'Cart',
@@ -1976,28 +1954,80 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             });
                                             // expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
                                             priceFields.forEach((priceField) => {
-                                                switch (priceField) {
-                                                    case 'PriceBaseUnitPriceAfter1':
-                                                        const expectedValue =
-                                                            pricingData.testItemsValues['MakeUp018']['ItemPrice'];
-                                                        addContext(this, {
-                                                            title: `TSA field "${priceField}" Values`,
-                                                            value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
-                                                        });
-                                                        expect(priceTSAs[priceField]).equals(expectedValue);
-                                                        break;
+                                                expectedValue =
+                                                    pricingData.testItemsValues['MakeUp018'][priceField][account][
+                                                        'additional'
+                                                    ]['Each'];
+                                                addContext(this, {
+                                                    title: `TSA field "${priceField}" Values`,
+                                                    value: `form UI: ${priceTSAs[priceField]} , expected: ${0}`,
+                                                });
+                                                expect(priceTSAs[priceField]).equals(expectedValue);
+                                                // switch (priceField) {
+                                                //     case 'PriceBaseUnitPriceAfter1':
+                                                //         const expectedValue =
+                                                //             pricingData.testItemsValues['MakeUp018']['ItemPrice'];
+                                                //         addContext(this, {
+                                                //             title: `TSA field "${priceField}" Values`,
+                                                //             value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                                //         });
+                                                //         expect(priceTSAs[priceField]).equals(expectedValue);
+                                                //         break;
 
-                                                    default:
-                                                        addContext(this, {
-                                                            title: `TSA field "${priceField}" Values`,
-                                                            value: `form UI: ${priceTSAs[priceField]} , expected: ${0}`,
-                                                        });
-                                                        expect(priceTSAs[priceField]).equals(0);
-                                                        break;
-                                                }
+                                                //     default:
+                                                //         addContext(this, {
+                                                //             title: `TSA field "${priceField}" Values`,
+                                                //             value: `form UI: ${priceTSAs[priceField]} , expected: ${0}`,
+                                                //         });
+                                                //         expect(priceTSAs[priceField]).equals(0);
+                                                //         break;
+                                                // }
                                             });
                                             driver.sleep(0.5 * 1000);
                                         }
+                                        break;
+                                    case groupRuleItem.name.includes('Free'):
+                                        const itemName = groupRuleItem.name.split(' ')[0];
+                                        totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                            'Cart',
+                                            groupRuleItem.name,
+                                        );
+                                        priceTSAs = await pricingService.getItemTSAs('Cart', groupRuleItem.name);
+                                        console.info(
+                                            `Cart ${groupRuleItem.name} priceTSAs:`,
+                                            JSON.stringify(priceTSAs, null, 2),
+                                            'totalUnitsAmount:',
+                                            totalUnitsAmount,
+                                        );
+                                        addContext(this, {
+                                            title: `Total Units amount of item`,
+                                            value: `form UI: ${totalUnitsAmount} , expected: ${groupRuleItem[account].unitQuantity}`,
+                                        });
+                                        // expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
+                                        priceFields.forEach((priceField) => {
+                                            switch (priceField) {
+                                                case 'PriceBaseUnitPriceAfter1':
+                                                    const expectedValue =
+                                                        installedPricingVersion === '5'
+                                                            ? pricingData.testItemsValues[itemName]['ItemPrice']
+                                                            : 0;
+                                                    addContext(this, {
+                                                        title: `TSA field "${priceField}" Values`,
+                                                        value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                                    });
+                                                    expect(priceTSAs[priceField]).equals(expectedValue);
+                                                    break;
+
+                                                default:
+                                                    addContext(this, {
+                                                        title: `TSA field "${priceField}" Values`,
+                                                        value: `form UI: ${priceTSAs[priceField]} , expected: ${0}`,
+                                                    });
+                                                    expect(priceTSAs[priceField]).equals(0);
+                                                    break;
+                                            }
+                                        });
+                                        driver.sleep(0.5 * 1000);
                                         break;
 
                                     default:
@@ -2023,6 +2053,17 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     // expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
                                     priceFields.forEach((priceField) => {
                                         switch (priceField) {
+                                            case 'PriceDiscountUnitPriceAfter1':
+                                                expectedValue =
+                                                    pricingData.testItemsValues[groupRuleItem.name][priceField][
+                                                        account
+                                                    ]['cart'];
+                                                addContext(this, {
+                                                    title: `TSA field "${priceField}" Values`,
+                                                    value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                                });
+                                                expect(priceTSAs[priceField]).equals(expectedValue);
+                                                break;
                                             case 'PriceGroupDiscountUnitPriceAfter1':
                                                 expectedValue =
                                                     pricingData.testItemsValues[groupRuleItem.name][priceField][
