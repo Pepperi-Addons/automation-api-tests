@@ -87,6 +87,18 @@ export class DevTest {
             case 'PEPPERI-FILE-STORAGE':
             case 'PFS':
                 return '00000000-0000-0000-0000-0000000f11e5';
+            case 'JOURNEY':
+            case 'JOURNEY-TRACKER':
+                return '41011fbf-debf-40d8-8990-767738b8af03';
+            case 'NODE':
+            case 'CPI-NODE':
+                return 'bb6ee826-1c6b-4a11-9758-40a46acb69c5';
+            case 'CRAWLER':
+                return 'f489d076-381f-4cf7-aa63-33c6489eb017';
+            case 'ASYNCADDON':
+                return '00000000-0000-0000-0000-0000000a594c';
+            case 'TRANSLATION':
+                return 'fbbac53c-c350-42c9-b9ad-17c238e55b42';
             default:
                 return 'none';
         }
@@ -153,98 +165,105 @@ export class DevTest {
         //3. get dependencys of tested addon
         const addonDep = await this.getDependenciesOfAddon(service, this.addonUUID, varPass);
         //4. install on dist
-    if (addonDep !== undefined && addonDep.length !== 0) {
-        if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5') {
-            //OFS
-            const depObjNebula = {};
-            depObjNebula['Nebula'] = ['00000000-0000-0000-0000-000000006a91', ''];
-            const depObjSync = {};
-            depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''];
-            addonDep.push(depObjNebula);
-            addonDep.push(depObjSync);
-        }
-        if (
-            this.addonUUID !== '5122dc6d-745b-4f46-bb8e-bd25225d350a' &&
-            addonDep.map((dep) => Object.keys(dep)[0]).includes('sync')
-        ) {
-            //New sync dependecy in case were not in sync addon but have to install it
-            const depObjSync = {};
-            depObjSync['pepperi-pack'] = ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''];
-            addonDep.splice(0, 0, depObjSync);
-        }
-        if (
-            this.addonUUID === '00000000-0000-0000-0000-000000006a91' //Nebula
-        ) {
-            const depObj = {};
-            depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''];
-            addonDep.push(depObj);
-        }
-        if (this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
-            //Sync
-            const depObj = {};
-            depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''];
-            addonDep.push(depObj);
-        }
-        if (
-            this.addonUUID === 'cebb251f-1c80-4d80-b62c-442e48e678e8' //Febula
-        ) {
-            const depObj = {};
-            depObj['Generic Resource'] = ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '%'];
-            addonDep.push(depObj);
-        }
-        if (
-            this.addonUUID === 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f' //Core
-        ) {
-            const depObj = {};
-            depObj['User Defined Collections'] = ['122c0e9d-c240-4865-b446-f37ece866c22', ''];
-            addonDep.push(depObj);
-        }
-        for (let index = 0; index < addonDep.length; index++) {
-            const addonToInstall = addonDep[index];
-            const currentAddonName = Object.entries(addonToInstall)[0][0];
-            const uuid = (Object.entries(addonToInstall)[0][1] as any)[0];
-            if (currentAddonName === 'papi' && this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
-                addonToInstall[currentAddonName][1] = '9.6.%';
+        if (addonDep !== undefined && addonDep.length !== 0) {
+            if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5') {
+                //OFS
+                const depObjNebula = {};
+                depObjNebula['Nebula'] = ['00000000-0000-0000-0000-000000006a91', ''];
+                const depObjSync = {};
+                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''];
+                addonDep.push(depObjNebula);
+                addonDep.push(depObjSync);
             }
             if (
-                this.addonName !== 'nebula' &&
-                currentAddonName === 'nebula' &&
-                uuid === '00000000-0000-0000-0000-000000006a91'
+                this.addonUUID !== '5122dc6d-745b-4f46-bb8e-bd25225d350a' &&
+                addonDep.map((dep) => Object.keys(dep)[0]).includes('sync')
             ) {
-                const NebulaDep = await this.getDependenciesOfAddon(service, uuid, varPass);
-                for (let index = 0; index < NebulaDep.length; index++) {
-                    const nebulaDepAddon = NebulaDep[index];
-                    const installAddonResponse = (await service.installLatestAvalibaleVersionOfAddon(
-                        varPass,
-                        nebulaDepAddon,
-                    )) as any;
-                    if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
-                        throw new Error(
-                            `Error: can't install one of Nebulas dependency's: ${
-                                Object.entries(nebulaDepAddon)[0][0]
-                            } - ${(Object.entries(nebulaDepAddon)[0][1] as any)[0]}, error:${installAddonResponse[0]}`,
-                        );
+                //New sync dependecy in case were not in sync addon but have to install it
+                const depObjSync = {};
+                depObjSync['pepperi-pack'] = ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''];
+                addonDep.splice(0, 0, depObjSync);
+            }
+            if (
+                this.addonUUID === '00000000-0000-0000-0000-000000006a91' //Nebula
+            ) {
+                const depObj = {};
+                depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''];
+                addonDep.push(depObj);
+            }
+            if (this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+                //Sync
+                const depObj = {};
+                depObj['Core Resources'] = ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''];
+                addonDep.push(depObj);
+            }
+            if (
+                this.addonUUID === 'cebb251f-1c80-4d80-b62c-442e48e678e8' //Febula
+            ) {
+                const depObj = {};
+                depObj['Generic Resource'] = ['df90dba6-e7cc-477b-95cf-2c70114e44e0', '%'];
+                addonDep.push(depObj);
+            }
+            if (
+                this.addonUUID === 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f' //Core
+            ) {
+                const depObj = {};
+                depObj['User Defined Collections'] = ['122c0e9d-c240-4865-b446-f37ece866c22', ''];
+                addonDep.push(depObj);
+            }
+            for (let index = 0; index < addonDep.length; index++) {
+                const addonToInstall = addonDep[index];
+                const currentAddonName = Object.entries(addonToInstall)[0][0];
+                const uuid = (Object.entries(addonToInstall)[0][1] as any)[0];
+                if (currentAddonName === 'papi' && this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+                    addonToInstall[currentAddonName][1] = '9.6.%';
+                }
+                if (
+                    this.addonName !== 'nebula' &&
+                    currentAddonName === 'nebula' &&
+                    uuid === '00000000-0000-0000-0000-000000006a91'
+                ) {
+                    const NebulaDep = await this.getDependenciesOfAddon(service, uuid, varPass);
+                    for (let index = 0; index < NebulaDep.length; index++) {
+                        const nebulaDepAddon = NebulaDep[index];
+                        const installAddonResponse = (await service.installLatestAvalibaleVersionOfAddon(
+                            varPass,
+                            nebulaDepAddon,
+                        )) as any;
+                        if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
+                            throw new Error(
+                                `Error: can't install one of Nebulas dependency's: ${
+                                    Object.entries(nebulaDepAddon)[0][0]
+                                } - ${(Object.entries(nebulaDepAddon)[0][1] as any)[0]}, error:${
+                                    installAddonResponse[0]
+                                }`,
+                            );
+                        }
                     }
                 }
+                const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(
+                    varPass,
+                    addonToInstall,
+                );
+                if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
+                    throw new Error(
+                        `Error: can't install ${this.addonName} - ${uuid}, error:${installAddonResponse[0]}`,
+                    );
+                }
             }
-            const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
-            if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
-                throw new Error(`Error: can't install ${this.addonName} - ${uuid}, error:${installAddonResponse[0]}`);
-            }
+            // for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
+            //     const addonToInstall = {};
+            //     if (addonName === 'papi' && addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+            //         addonToInstall[addonName] = [(uuid as any[])[0], '9.6.%'];
+            //     } else {
+            //         addonToInstall[addonName] = uuid;
+            //     }
+            //     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
+            //     if (!installAddonResponse[0]) {
+            //         throw new Error(`Error: can't install ${addonName} - ${uuid}`);
+            //     }
+            // }
         }
-        // for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
-        //     const addonToInstall = {};
-        //     if (addonName === 'papi' && addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
-        //         addonToInstall[addonName] = [(uuid as any[])[0], '9.6.%'];
-        //     } else {
-        //         addonToInstall[addonName] = uuid;
-        //     }
-        //     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
-        //     if (!installAddonResponse[0]) {
-        //         throw new Error(`Error: can't install ${addonName} - ${uuid}`);
-        //     }
-        // }
-    }
         //5. validate actual tested addon is installed
         const addonToInstall = {};
         // this can be used to install NOT latest avalivale versions
@@ -259,17 +278,17 @@ export class DevTest {
         service.PrintMemoryUseToLog('End', testName);
     }
 
-    async getEuUser() {
+    async getEuUserEmail() {
         debugger;
-        return this.euUser;
+        return this.euUser.email;
     }
 
-    async getSbUser() {
-        return this.sbUser;
+    async getSbUserEmail() {
+        return this.sbUser.email;
     }
 
-    async getProdUser() {
-        return this.prodUser;
+    async getProdUserEmail() {
+        return this.prodUser.email;
     }
 
     async validateAllVersionsAreEqualBetweenEnvs() {
@@ -362,16 +381,23 @@ export class DevTest {
                     'AutomationAddonSecretKey',
                 );
             }
+            if (this.addonName === 'CONFIGURATIONS') {
+                addonSk = await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'AutomationAddonSecretKeyConfigAddon',
+                );
+            }
+            const euUser = await this.getEuUserEmail();
+            const prodUser = await this.getProdUserEmail();
+            const sbUser = await this.getSbUserEmail();
             debugger;
-            const euUser = await this.getEuUser();
-            const prodUser = await this.getProdUser();
-            const sbUser = await this.getSbUser();
             const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
                 //devTestResponseEu,
                 //userName, env, addonSk, bodyToSend
-                this.runDevTestOnCertainEnv(euUser.email, 'prod', addonSk, body),
-                this.runDevTestOnCertainEnv(prodUser.email, 'prod', addonSk, body),
-                this.runDevTestOnCertainEnv(sbUser.email, 'stage', addonSk, body),
+                this.runDevTestOnCertainEnv(euUser, 'prod', addonSk, body),
+                this.runDevTestOnCertainEnv(prodUser, 'prod', addonSk, body),
+                this.runDevTestOnCertainEnv(sbUser, 'stage', addonSk, body),
             ]);
             if (
                 devTestResponseEu === undefined ||
@@ -691,6 +717,10 @@ export class DevTest {
         }
     }
 
+    async getProdUser(){
+        return this.prodUser;
+    }
+
     async reportToTeams(jenkinsLink) {
         await this.reportBuildEnded();
         const users = await this.resolveUserPerTest2();
@@ -862,8 +892,15 @@ export class DevTest {
             urlToCall = '/addons/api/async/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/tests/tests';
         } else if (this.addonName === 'CONFIGURATIONS') {
             urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
+            headers = {
+                'x-pepperi-ownerid': '84c999c3-84b7-454e-9a86-71b7abc96554',
+                'x-pepperi-secretkey': addonSk,
+                Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
+            };
         } else if (this.addonName === 'RELATED-ITEMS') {
             urlToCall = '/addons/api/async/4f9f10f3-cd7d-43f8-b969-5029dad9d02b/tests/tests';
+        } else if (this.addonName === 'CRAWLER') {
+            urlToCall = '/addons/api/async/f489d076-381f-4cf7-aa63-33c6489eb017/tests/tests';
         } else if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
             urlToCall = '/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests';
             headers = {
@@ -875,9 +912,22 @@ export class DevTest {
             urlToCall = '/addons/api/async/9abbb634-9df5-49ab-91d1-41ad7a2632a6/tests/tests';
         } else if (this.addonName === 'PFS' || this.addonName === 'PEPPERI-FILE-STORAGE') {
             urlToCall = '/addons/api/async/00000000-0000-0000-0000-0000000f11e5/tests/tests';
+        } else if (this.addonName === 'JOURNEY' || this.addonName === 'JOURNEY-TRACKER') {
+            urlToCall = '/addons/api/async/41011fbf-debf-40d8-8990-767738b8af03/tests/tests';
+        } else if (this.addonName === 'NODE' || this.addonName === 'CPI-NODE') {
+            urlToCall = '/addons/api/async/bb6ee826-1c6b-4a11-9758-40a46acb69c5/tests/tests';
+        } else if (this.addonName === 'ASYNCADDON') {
+            urlToCall = '/addons/api/async/00000000-0000-0000-0000-0000000a594c/tests/tests';
+        } else if (this.addonName === 'TRANSLATION') {
+            urlToCall = '/addons/api/async/fbbac53c-c350-42c9-b9ad-17c238e55b42/tests/tests';
         }
         let testResponse;
-        if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
+        if (
+            this.addonName === 'DATA INDEX' ||
+            this.addonName === 'DATA-INDEX' ||
+            this.addonName === 'ADAL' ||
+            this.addonName === 'CONFIGURATIONS'
+        ) {
             testResponse = await service.fetchStatus(urlToCall, {
                 body: JSON.stringify(bodyToSend),
                 method: 'POST',
@@ -892,6 +942,7 @@ export class DevTest {
                 },
             });
         }
+    
         return testResponse;
     }
 
@@ -1099,7 +1150,6 @@ export class DevTest {
                 : userEmail.toLocaleUpperCase().includes('SB')
                 ? 'stage'
                 : 'PROD';
-            debugger;
             const client = await initiateTester(userEmail, userPass, userEnv);
             const service = new GeneralService(client);
             const devUser: DevTestUser = new DevTestUser(userEmail, userPass, userEnv, service);
@@ -1122,7 +1172,7 @@ export class DevTest {
             case 'ADAL':
                 return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
             case 'SYNC':
-                return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JSB@pepperitest.com']; //'syncNeo4JProd@pepperitest.com',
+                return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com'];
             case 'CORE':
             case 'CORE-GENERIC-RESOURCES':
                 return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
@@ -1147,6 +1197,38 @@ export class DevTest {
                     'UserDefinedBlocksEUApp2@pepperitest.com',
                     'UserDefinedBlocksEUApp5@pepperitest.com',
                     'UserDefinedBlocksSBApp2@pepperitest.com',
+                ];
+            case 'JOURNEY-TRACKER':
+            case 'JOURNEY':
+                return [
+                    'JourneyTrackerTesterEU@pepperitest.com',
+                    'JourneyTrackerTesterProd@pepperitest.com',
+                    'JourneyTrackerTesterSB@pepperitest.com',
+                ];
+            case 'CPI-NODE':
+            case 'NODE':
+                return [
+                    'CpiNodeTesterEU@pepperitest.com',
+                    'CpiNodeTesterProd@pepperitest.com',
+                    'CpiNodeTesterSB@pepperitest.com',
+                ];
+            case 'CRAWLER':
+                return [
+                    'crawlerTesterEU@pepperitest.com',
+                    'crawlerTesterProd@pepperitest.com',
+                    'crawlerTesterSB@pepperitest.com',
+                ];
+            case 'ASYNCADDON':
+                return [
+                    'AsyncCiCdTesterEU@pepperitest.com',
+                    'AsyncCiCdTesterProd@pepperitest.com',
+                    'AsyncCiCdTesterSB@pepperitest.com',
+                ];
+            case 'TRANSLATION':
+                return [
+                    'TranslationTesterEU@pepperitest.com',
+                    'TranslationTesterProd@pepperitest.com',
+                    'TranslationTesterSB@pepperitest.com',
                 ];
             default:
                 return [];

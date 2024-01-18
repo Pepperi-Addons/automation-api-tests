@@ -67,6 +67,7 @@ import {
     StorybookTextboxTests,
     Pricing06DataPrep,
     Pricing06Tests,
+    NeltPerformanceTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -607,6 +608,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await StorybookTextboxTests();
     }
 
+    if (tests.includes('NeltPerformance')) {
+        await NeltPerformanceTests(email, pass);
+    }
+
     if (tests.includes('MockTest')) {
         await MockTest(email, pass, client);
         // await ResourceListTests(email, pass, varPass, client);
@@ -840,6 +845,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
+    //****EVGENY: this one is temporary - once we will realize how nebula should work - with neptune or neo4J this will become redundant
     if (tests.includes('Jenkins_Neptune')) {
         let isLocal = true;
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
@@ -1177,6 +1183,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
         }
     }
+    //****EVGENY: this is the actual code for most addons
     if (tests.includes('Remote_Jenkins_Handler')) {
         let isLocal = true;
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
@@ -1203,6 +1210,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         // // const passedTests: string[] = [];
         // // const passedTestsEnv: string[] = [];
         // // const failingTestsEnv: string[] = [];
+        debugger;
         let testsList: string[] = [];
         if (devTest.addonUUID === 'none') {
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
@@ -2362,55 +2370,55 @@ async function setOrderCenterClosedFooter(generalService: GeneralService, OrderC
     }
 }
 
-async function unavailableAddonVersion(env, addonName, addonEntryUUID, addonVersion, addonUUID, varCredentials) {
-    const [varUserName, varPassword] = varCredentials.split(':');
-    const client = await initiateTester(varUserName, varPassword, env);
-    const service = new GeneralService(client);
-    const bodyToSendVARProd = {
-        UUID: addonEntryUUID,
-        Version: addonVersion,
-        Available: false,
-        AddonUUID: addonUUID,
-    };
-    const varCredBase64 = Buffer.from(varCredentials).toString('base64');
-    // const baseURL = env === 'prod' ? 'papi' : userName.includes('eu') ? 'papi-eu' : 'papi.staging';
-    const varResponseProd = await service.fetchStatus(
-        `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersion}' AND Available=1`,
-        {
-            method: 'POST',
-            headers: {
-                Authorization: `Basic ${varCredBase64}`,
-            },
-            body: JSON.stringify(bodyToSendVARProd),
-        },
-    );
-    if (varResponseProd.Ok !== true) {
-        throw new Error(`Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseProd.Ok}`);
-    }
-    if (varResponseProd.Status !== 200) {
-        throw new Error(
-            `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseProd.Status}`,
-        );
-    }
-    if (varResponseProd.Body.AddonUUID !== addonUUID) {
-        throw new Error(
-            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseProd.Body.AddonUUID} instead of ${addonUUID}`,
-        );
-    }
-    if (varResponseProd.Body.Version !== addonVersion) {
-        throw new Error(
-            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseProd.Body.Version} instead of ${addonVersion}`,
-        );
-    }
-    if (varResponseProd.Body.Available !== false) {
-        throw new Error(
-            `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseProd.Body.Available} instead of false`,
-        );
-    }
-    console.log(
-        `${addonName}, version: ${addonVersion}  on Production became unavailable: Approvment tests didnt pass`,
-    );
-}
+// async function unavailableAddonVersion(env, addonName, addonEntryUUID, addonVersion, addonUUID, varCredentials) {
+//     const [varUserName, varPassword] = varCredentials.split(':');
+//     const client = await initiateTester(varUserName, varPassword, env);
+//     const service = new GeneralService(client);
+//     const bodyToSendVARProd = {
+//         UUID: addonEntryUUID,
+//         Version: addonVersion,
+//         Available: false,
+//         AddonUUID: addonUUID,
+//     };
+//     const varCredBase64 = Buffer.from(varCredentials).toString('base64');
+//     // const baseURL = env === 'prod' ? 'papi' : userName.includes('eu') ? 'papi-eu' : 'papi.staging';
+//     const varResponseProd = await service.fetchStatus(
+//         `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersion}' AND Available=1`,
+//         {
+//             method: 'POST',
+//             headers: {
+//                 Authorization: `Basic ${varCredBase64}`,
+//             },
+//             body: JSON.stringify(bodyToSendVARProd),
+//         },
+//     );
+//     if (varResponseProd.Ok !== true) {
+//         throw new Error(`Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseProd.Ok}`);
+//     }
+//     if (varResponseProd.Status !== 200) {
+//         throw new Error(
+//             `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseProd.Status}`,
+//         );
+//     }
+//     if (varResponseProd.Body.AddonUUID !== addonUUID) {
+//         throw new Error(
+//             `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseProd.Body.AddonUUID} instead of ${addonUUID}`,
+//         );
+//     }
+//     if (varResponseProd.Body.Version !== addonVersion) {
+//         throw new Error(
+//             `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseProd.Body.Version} instead of ${addonVersion}`,
+//         );
+//     }
+//     if (varResponseProd.Body.Available !== false) {
+//         throw new Error(
+//             `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseProd.Body.Available} instead of false`,
+//         );
+//     }
+//     console.log(
+//         `${addonName}, version: ${addonVersion}  on Production became unavailable: Approvment tests didnt pass`,
+//     );
+// }
 
 export async function reportToTeams(
     generalService: GeneralService,
@@ -2711,78 +2719,78 @@ export async function reportBuildEnded(addonName, addonUUID, addonVersion, servi
     }
 }
 
-function resolveUserPerTest(addonName): any[] {
-    switch (addonName) {
-        case 'DATA INDEX':
-        case 'DATA-INDEX':
-            return ['DataIndexEU@pepperitest.com', 'DataIndexProd@pepperitest.com', 'DataIndexSB@pepperitest.com'];
-        // case 'NEBULA'://0.6.x neptune
-        //     return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
-        case 'NEBULA': //0.7.x neo4j
-            return ['neo4JSyncEU@pepperitest.com', 'Neo4JSyncProd@pepperitest.com', 'Neo4JSyncSB@pepperitest.com']; //
-        case 'FEBULA':
-            return ['febulaEU@pepperitest.com', 'febulaProd@pepperitest.com', 'febulaSB@pepperitest.com']; //
-        case 'ADAL':
-            return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
-        case 'SYNC':
-            return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com'];
-        case 'CORE':
-        case 'CORE-GENERIC-RESOURCES':
-            return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
-        case 'PEPPERI-FILE-STORAGE':
-        case 'PFS':
-            return ['PfsCpiTestEU@pepperitest.com', 'PfsCpiTestProd@pepperitest.com', 'PfsCpiTestSB@pepperitest.com'];
-        case 'CONFIGURATIONS':
-            return ['configEU@pepperitest.com', 'configProd@pepperitest.com', 'configSB@pepperitest.com'];
-        case 'RELATED-ITEMS':
-            return [
-                'relatedItemsTestEU@pepperitest.com',
-                'relatedItemsTestProd@pepperitest.com',
-                'relatedItemsTestSB@pepperitest.com',
-            ];
-        case 'UDB':
-        case 'USER DEFINED BLOCKS':
-            return [
-                'UserDefinedBlocksEUApp2@pepperitest.com',
-                'UserDefinedBlocksEUApp5@pepperitest.com',
-                'UserDefinedBlocksSBApp2@pepperitest.com',
-            ];
-        case 'JOURNEY-TRACKER':
-        case 'JOURNEY':
-            return [
-                'JourneyTrackerTesterEU@pepperitest.com',
-                'JourneyTrackerTesterProd@pepperitest.com',
-                'JourneyTrackerTesterSB@pepperitest.com',
-            ];
-        case 'CPI-NODE':
-        case 'NODE':
-            return [
-                'CpiNodeTesterEU@pepperitest.com',
-                'CpiNodeTesterProd@pepperitest.com',
-                'CpiNodeTesterSB@pepperitest.com',
-            ];
-        case 'CRAWLER':
-            return [
-                'crawlerTesterEU@pepperitest.com',
-                'crawlerTesterProd@pepperitest.com',
-                'crawlerTesterSB@pepperitest.com',
-            ];
-        case 'ASYNCADDON':
-            return [
-                'AsyncCiCdTesterEU@pepperitest.com',
-                'AsyncCiCdTesterProd@pepperitest.com',
-                'AsyncCiCdTesterSB@pepperitest.com',
-            ];
-        case 'TRANSLATION':
-            return [
-                'TranslationTesterEU@pepperitest.com',
-                'TranslationTesterProd@pepperitest.com',
-                'TranslationTesterSB@pepperitest.com',
-            ];
-        default:
-            return [];
-    }
-}
+// function resolveUserPerTest(addonName): any[] {
+//     switch (addonName) {
+//         case 'DATA INDEX':
+//         case 'DATA-INDEX':
+//             return ['DataIndexEU@pepperitest.com', 'DataIndexProd@pepperitest.com', 'DataIndexSB@pepperitest.com'];
+//         // case 'NEBULA'://0.6.x neptune
+//         //     return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
+//         case 'NEBULA': //0.7.x neo4j
+//             return ['neo4JSyncEU@pepperitest.com', 'Neo4JSyncProd@pepperitest.com', 'Neo4JSyncSB@pepperitest.com']; //
+//         case 'FEBULA':
+//             return ['febulaEU@pepperitest.com', 'febulaProd@pepperitest.com', 'febulaSB@pepperitest.com']; //
+//         case 'ADAL':
+//             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
+//         case 'SYNC':
+//             return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com'];
+//         case 'CORE':
+//         case 'CORE-GENERIC-RESOURCES':
+//             return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
+//         case 'PEPPERI-FILE-STORAGE':
+//         case 'PFS':
+//             return ['PfsCpiTestEU@pepperitest.com', 'PfsCpiTestProd@pepperitest.com', 'PfsCpiTestSB@pepperitest.com'];
+//         case 'CONFIGURATIONS':
+//             return ['configEU@pepperitest.com', 'configProd@pepperitest.com', 'configSB@pepperitest.com'];
+//         case 'RELATED-ITEMS':
+//             return [
+//                 'relatedItemsTestEU@pepperitest.com',
+//                 'relatedItemsTestProd@pepperitest.com',
+//                 'relatedItemsTestSB@pepperitest.com',
+//             ];
+//         case 'UDB':
+//         case 'USER DEFINED BLOCKS':
+//             return [
+//                 'UserDefinedBlocksEUApp2@pepperitest.com',
+//                 'UserDefinedBlocksEUApp5@pepperitest.com',
+//                 'UserDefinedBlocksSBApp2@pepperitest.com',
+//             ];
+//         case 'JOURNEY-TRACKER':
+//         case 'JOURNEY':
+//             return [
+//                 'JourneyTrackerTesterEU@pepperitest.com',
+//                 'JourneyTrackerTesterProd@pepperitest.com',
+//                 'JourneyTrackerTesterSB@pepperitest.com',
+//             ];
+//         case 'CPI-NODE':
+//         case 'NODE':
+//             return [
+//                 'CpiNodeTesterEU@pepperitest.com',
+//                 'CpiNodeTesterProd@pepperitest.com',
+//                 'CpiNodeTesterSB@pepperitest.com',
+//             ];
+//         case 'CRAWLER':
+//             return [
+//                 'crawlerTesterEU@pepperitest.com',
+//                 'crawlerTesterProd@pepperitest.com',
+//                 'crawlerTesterSB@pepperitest.com',
+//             ];
+//         case 'ASYNCADDON':
+//             return [
+//                 'AsyncCiCdTesterEU@pepperitest.com',
+//                 'AsyncCiCdTesterProd@pepperitest.com',
+//                 'AsyncCiCdTesterSB@pepperitest.com',
+//             ];
+//         case 'TRANSLATION':
+//             return [
+//                 'TranslationTesterEU@pepperitest.com',
+//                 'TranslationTesterProd@pepperitest.com',
+//                 'TranslationTesterSB@pepperitest.com',
+//             ];
+//         default:
+//             return [];
+//     }
+// }
 
 function resolveUserPerTestNeptune(addonName): any[] {
     switch (addonName) {
@@ -3002,6 +3010,11 @@ async function runDevTestOnCertainEnv(userName, env, bodyToSend, addonName, addo
         urlToCall = '/addons/api/async/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/tests/tests';
     } else if (addonName === 'CONFIGURATIONS') {
         urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
+        headers = {
+            'x-pepperi-ownerid': '84c999c3-84b7-454e-9a86-71b7abc96554',
+            'x-pepperi-secretkey': addonSk,
+            Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
+        };
     } else if (addonName === 'RELATED-ITEMS') {
         urlToCall = '/addons/api/async/4f9f10f3-cd7d-43f8-b969-5029dad9d02b/tests/tests';
     } else if (addonName === 'CRAWLER') {
@@ -3027,7 +3040,12 @@ async function runDevTestOnCertainEnv(userName, env, bodyToSend, addonName, addo
         urlToCall = '/addons/api/async/fbbac53c-c350-42c9-b9ad-17c238e55b42/tests/tests';
     }
     let testResponse;
-    if (addonName === 'DATA INDEX' || addonName === 'DATA-INDEX' || addonName === 'ADAL') {
+    if (
+        addonName === 'DATA INDEX' ||
+        addonName === 'DATA-INDEX' ||
+        addonName === 'ADAL' ||
+        addonName === 'CONFIGURATIONS'
+    ) {
         testResponse = await service.fetchStatus(urlToCall, {
             body: JSON.stringify(bodyToSend),
             method: 'POST',
@@ -3170,28 +3188,28 @@ async function printResultsTestObject(testResultArray, userName, env, addonUUID,
 
 //#endregion Replacing UI Functions
 
-function doWeHaveSuchAppTest(addonName: string) {
-    switch (addonName) {
-        //add another 'case' here when adding new addons to this mehcanisem
-        case 'ADAL': {
-            return true;
-        }
-        case 'DIMX': {
-            return true;
-        }
-        case 'DATA INDEX':
-        case 'DATA-INDEX': {
-            return true;
-        }
-        case 'PEPPERI-FILE-STORAGE':
-        case 'PFS': {
-            return true;
-        }
-        case 'CORE-GENERIC-RESOURCES':
-        case 'CORE': {
-            return true;
-        }
-        default:
-            return false;
-    }
-}
+// function doWeHaveSuchAppTest(addonName: string) {
+//     switch (addonName) {
+//         //add another 'case' here when adding new addons to this mehcanisem
+//         case 'ADAL': {
+//             return true;
+//         }
+//         case 'DIMX': {
+//             return true;
+//         }
+//         case 'DATA INDEX':
+//         case 'DATA-INDEX': {
+//             return true;
+//         }
+//         case 'PEPPERI-FILE-STORAGE':
+//         case 'PFS': {
+//             return true;
+//         }
+//         case 'CORE-GENERIC-RESOURCES':
+//         case 'CORE': {
+//             return true;
+//         }
+//         default:
+//             return false;
+//     }
+// }

@@ -134,10 +134,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
     const buyerPassStage = '4iuWd*';
     const repEmailStage = 'surveyNeo4jSBRep@pepperitest.com';
     const repPassStage = 'F@QVr9';
-    const buyerEmailEU = 'surveyNeo4jEUBuyer@pepperitest.com';
-    const buyerPassEU = 'Ee$U94';
-    const repEmailEU = 'surveyNeo4jEURep@pepperitest.com';
-    const repPassEU = '3q3@TA';
+    const buyerEmailEU = 'surveyNeo4jEUBuyer2@pepperitest.com';
+    const buyerPassEU = '5&6bAx';
+    const repEmailEU = 'surveyNeo4jEURep2@pepperitest.com';
+    const repPassEU = 'j58Y$x';
 
     let repEmail;
     let repPass;

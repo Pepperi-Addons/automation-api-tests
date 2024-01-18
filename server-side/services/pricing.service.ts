@@ -106,8 +106,11 @@ export class PricingService {
         itemName: string,
         freeItem?: 'Free',
         locationInElementsArray?: number,
+        view?: 'LinesView',
     ): Promise<number> {
-        const nameOfFunctionToLocateSelector = `getSelectorOfNumberOfUnitsIn${at}By${freeItem ? freeItem : ''}ItemName`;
+        const nameOfFunctionToLocateSelector = `getSelectorOfNumberOfUnitsIn${at}${view ? view : ''}By${
+            freeItem ? freeItem : ''
+        }ItemName`;
         const selectorOfItem = this.orderPage[nameOfFunctionToLocateSelector](itemName);
         const arrOfTotalOfUnits: WebElement[] = await this.browser.findElements(selectorOfItem);
         if (arrOfTotalOfUnits.length > 1) {

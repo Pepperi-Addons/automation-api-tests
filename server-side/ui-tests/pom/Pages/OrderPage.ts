@@ -12,6 +12,8 @@ export class OrderPage extends WebAppList {
     public ChangeViewButton: By = By.xpath("//mat-icon[@title='Change View']");
     public ViewTypeOption: By = By.xpath(`//span[text()='|textToFill|']`);
 
+    public Image_Label: By = By.xpath(`//pep-list//label[@id="Image"]`);
+
     // Specific selectors for Pricing //
     public Duration_Span: By = By.xpath('//span[@id="TSAduration"]');
     public Search_Input: By = By.xpath('//input[@id="searchInput"]');
@@ -137,6 +139,10 @@ export class OrderPage extends WebAppList {
         return By.xpath(`${this.getSelectorOfItemInCartByName(name).value}[@style]`);
     }
 
+    public getSelectorOfFreeItemInCartLinesViewByName(name: string) {
+        return By.xpath(`${this.getSelectorOfItemInCartLinesViewByName(name).value}[@style]`);
+    }
+
     public getSelectorOfCustomFieldInCartByItemName(fieldName: string, itemName: string) {
         return By.xpath(`${this.getSelectorOfItemInCartByName(itemName).value}${this[fieldName].value}`);
     }
@@ -161,9 +167,25 @@ export class OrderPage extends WebAppList {
         );
     }
 
+    public getSelectorOfNumberOfUnitsInCartLinesViewByItemName(name: string) {
+        return By.xpath(
+            `${this.getSelectorOfItemInCartLinesViewByName(name).value}${
+                this.ItemQuantity_NumberOfUnits_Readonly.value
+            }`,
+        );
+    }
+
     public getSelectorOfNumberOfUnitsInCartByFreeItemName(name: string) {
         return By.xpath(
             `${this.getSelectorOfFreeItemInCartByName(name).value}${this.ItemQuantity_NumberOfUnits_Readonly.value}`,
+        );
+    }
+
+    public getSelectorOfNumberOfUnitsInCartLinesViewByFreeItemName(name: string) {
+        return By.xpath(
+            `${this.getSelectorOfFreeItemInCartLinesViewByName(name).value}${
+                this.ItemQuantity_NumberOfUnits_Readonly.value
+            }`,
         );
     }
 
