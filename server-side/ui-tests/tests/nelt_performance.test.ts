@@ -97,7 +97,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     title: `Time Interval for "Finansijski podaci" to load:`,
                     value: `${timeInterval} ms`,
                 });
-                driver.sleep(5 * 1000);
+                driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async function () {
                 await neltPerfomanceService.goHome();
@@ -147,7 +147,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         timeInterval / 1000,
                     )} s`,
                 });
-                driver.sleep(5 * 1000);
+                driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async () => {
                 await neltPerfomanceService.goHome();
@@ -197,7 +197,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         timeInterval / 1000,
                     )} s`,
                 });
-                driver.sleep(5 * 1000);
+                driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async function () {
                 await neltPerfomanceService.goHome();
@@ -241,7 +241,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         timeInterval / 1000,
                     )} s`,
                 });
-                driver.sleep(5 * 1000);
+                driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async function () {
                 await neltPerfomanceService.goHome();
@@ -294,7 +294,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         timeInterval / 1000,
                     )} s`,
                 });
-                driver.sleep(5 * 1000);
+                driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async function () {
                 await neltPerfomanceService.goHome();
@@ -309,7 +309,96 @@ export async function NeltPerformanceTests(email: string, password: string) {
         });
 
         // describe('6. Account Dashboard? CC agent use webapp', async () => {});
-        // describe('7. Home Screen -- Kupci -- Select account -- Burger menu -- Istorija prodaje po kupcu', async () => {});
+
+        describe('7. Home Screen -- Kupci -- Select account -- Burger menu -- Istorija prodaje po kupcu', async () => {
+            it('Clicking "Kupci" button at Home Screen', async function () {
+                await driver.click(neltPerformanceSelectors.KupciButtonAtHome);
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Kupci`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Choosing First Account in list', async function () {
+                await driver.click(neltPerformanceSelectors.FirstAccountInList);
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.PepList);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Kupci Account`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Clicking Burger Menu', async function () {
+                await driver.click(neltPerformanceSelectors.AccountActivityList_BurgerMenu);
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.HomeMenuDropdown);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Hamburger Menu Opened`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Choosing "Istorija prodaje po kupcu" Resource View', async function () {
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Choosing "Istorija prodaje po kupcu" From Menu`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                // time measurment
+                const Istorija_prodaje_po_kupcu_opening = new Date().getTime();
+                await driver.click(
+                    neltPerformanceSelectors.getSelectorOfAccountActivityHamburgerMenuItemByName(
+                        'Istorija prodaje po kupcu',
+                    ),
+                );
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.PepList);
+                await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
+                await driver.untilIsVisible(
+                    neltPerformanceSelectors.ResourceView_Indication_TableHeader_Label_Category,
+                );
+                await driver.untilIsVisible(
+                    neltPerformanceSelectors.ResourceView_Indication_TableHeader_Label_returnYTD,
+                );
+                const Istorija_prodaje_po_kupcu_loaded = new Date().getTime();
+                timeInterval = Istorija_prodaje_po_kupcu_loaded - Istorija_prodaje_po_kupcu_opening;
+                console.info(
+                    'Istorija_prodaje_po_kupcu_opening: ',
+                    Istorija_prodaje_po_kupcu_opening,
+                    'Istorija_prodaje_po_kupcu_loaded: ',
+                    Istorija_prodaje_po_kupcu_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At "Istorija prodaje po kupcu" View`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "Istorija prodaje po kupcu" to load:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${Math.round(
+                        timeInterval / 1000,
+                    )} s`,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it('Back to Home Screen', async function () {
+                await neltPerfomanceService.goHome();
+                await neltPerformanceSelectors.isSpinnerDone();
+                driver.sleep(0.5 * 1000);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Home Page`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+        });
 
         describe('8. Home Screen -- Kupci -- Select Account (1100072) -- + -- Order -- Select catalogue (CC call center)', async () => {
             it('Clicking "Kupci" button at Home Screen', async function () {
@@ -353,7 +442,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     title: `"Order" chosen --> Catalogs List loaded`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                driver.sleep(1 * 1000);
+                driver.sleep(0.5 * 1000);
             });
             it('Choosing "CC Call Centar" at Catalog', async function () {
                 await driver.untilIsVisible(neltPerformanceSelectors.OrderCatalogItem);
@@ -392,7 +481,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         timeInterval / 1000,
                     )} s`,
                 });
-                driver.sleep(5 * 1000);
+                driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async function () {
                 await neltPerfomanceService.goHome();
@@ -464,7 +553,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         timeInterval / 1000,
                     )} s`,
                 });
-                driver.sleep(5 * 1000);
+                driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async function () {
                 await neltPerfomanceService.goHome();

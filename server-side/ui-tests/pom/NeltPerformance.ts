@@ -13,6 +13,7 @@ export class NeltPerformance extends AddonPage {
     public KupciButtonAtHome: By = By.xpath('//button[@id="mainButton"]');
     public FirstAccountInList: By = By.xpath('//virtual-scroller//fieldset//span[@id="Name"]');
     public AccountActivityList_PlusButton: By = By.xpath('//list-menu[@data-qa="secondMenu"]//button');
+    public AccountActivityList_BurgerMenu: By = By.xpath('//list-menu[@data-qa="firstMenu"]//button');
     public Image_Label: By = By.xpath(`//pep-list//label[@id="Image"]`);
     public PepList: By = By.xpath(`//pep-list`);
     public ListRow: By = By.xpath(`//pep-list//virtual-scroller//fieldset[contains(@class,"table-row-fieldset")]`);
@@ -55,6 +56,12 @@ export class NeltPerformance extends AddonPage {
     public InsightsLoaded_Indication_GalleryCard_text: By = By.xpath(
         `//gallery-card//*[local-name()='svg']/*[local-name()='text'][contains(text(),"0")]`,
     );
+    public ResourceView_Indication_TableHeader_Label_Category: By = By.xpath(
+        `//pep-list//fieldset[contains(@class,"table-header-fieldset")]//fieldset//label[@id="category"]`,
+    );
+    public ResourceView_Indication_TableHeader_Label_returnYTD: By = By.xpath(
+        `//pep-list//fieldset[contains(@class,"table-header-fieldset")]//fieldset//label[@id="returnYTD"]`,
+    );
 
     public getSelectorOfHomeHamburgerMenuItemByName(name: string) {
         return By.xpath(`//span[contains(text(),"${name}")]/parent::button[@role="menuitem"]`);
@@ -71,6 +78,10 @@ export class NeltPerformance extends AddonPage {
     }
 
     public getSelectorOfAccountActivityPlusButtonMenuItemByName(name: string) {
+        return By.xpath(`//button[@title="${name}"]`);
+    }
+
+    public getSelectorOfAccountActivityHamburgerMenuItemByName(name: string) {
         return By.xpath(`//button[@title="${name}"]`);
     }
 
