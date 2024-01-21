@@ -128,7 +128,14 @@ export class DevTest {
             const user = userList[index];
             arrayOfResponses.push(await this.valdateTestedAddonLatestVersionIsInstalledInternal(user.email, user.env));
         }
-        return arrayOfResponses;
+        for (let index = 0; index < arrayOfResponses.length; index++) {
+            const isTestedAddonInstalled = arrayOfResponses[index];
+            if (isTestedAddonInstalled === false) {
+                throw new Error(
+                    `Error: didn't install ${this.addonName} - ${this.addonUUID}, version: ${this.addonVersion}`,
+                );
+            }
+        }
     }
 
     async valdateTestedAddonLatestVersionIsInstalledInternal(userName, env) {
@@ -746,12 +753,12 @@ export class DevTest {
         const users = await this.resolveUserPerTest2();
         const userMails = users.map((user) => user.email);
         const stringUsers = userMails.join(',');
-        const uniqFailingEnvs = [...new Set(this.devFailedEnvs)];
-        debugger;
+        const uniqFailingEnvs = [...new Set(this.devFailedEnvs.map((env) => env.toUpperCase()))];
+        this.devPassingEnvs = this.devPassingEnvs.map((env) => env.toUpperCase());
         const message = `Dev Test: ${this.addonName} - (${this.addonUUID}), Version:${
             this.addonVersion
         }, Test Users:<br>${stringUsers}<br>${
-            this.devFailedEnvs.length === 0 ? '' : 'Passed On: ' + this.devFailedEnvs.join(', ') + ' |||'
+            this.devPassingEnvs.length === 0 ? '' : 'Passed On: ' + this.devPassingEnvs.join(', ') + ' |||'
         } ${
             this.devFailedEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')
         },<br>Link: ${jenkinsLink}`;
@@ -772,7 +779,7 @@ export class DevTest {
         const bodyToSend = {
             Name: `${this.addonName} Dev Test Result Status`,
             Description: message,
-            Status: this.devFailedEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
+            Status: this.devPassingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
             Message: message2 === '' ? '~' : message2,
             UserWebhook: await this.handleTeamsURL(this.addonName),
         };
@@ -1004,7 +1011,6 @@ export class DevTest {
     }
 
     async reportBuildEnded() {
-        debugger;
         const message = `${this.addonName} - (${this.addonUUID}), Version:${this.addonVersion}, Ended Testing`;
         const bodyToSend = {
             Name: `${this.addonName}, ${this.addonUUID}, ${this.addonVersion}`,
