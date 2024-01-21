@@ -1157,15 +1157,15 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 `####################### Running For: ${devTest.addonName}(${devTest.addonUUID}), version: ${devTest.addonVersion} #######################`,
             );
             await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
+            debugger;
             await devTest.installDependencies();
+            await devTest.valdateTestedAddonLatestVersionIsInstalled();
             console.log(
                 `####################### Finished Installing: ${devTest.addonName}(${devTest.addonUUID}), version: ${
                     devTest.addonVersion
                 }, On: ${devTest.euUser.email}, ${await devTest.prodUser.email}, ${await devTest.sbUser
                     .email} #######################`,
             );
-            debugger;
-            await devTest.valdateTestedAddonLatestVersionIsInstalled();
             debugger;
             //3.1 get test names
             try {
