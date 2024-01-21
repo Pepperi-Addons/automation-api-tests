@@ -1141,7 +1141,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         const service = new GeneralService(client);
-        const devTest = new DevTest(addon, varPass, varPassEU, varPassSB, generalService, email, pass);
+        const devTest = new DevTest(addon.toUpperCase(), varPass, varPassEU, varPassSB, generalService, email, pass);
         debugger;
         let testsList: string[] = [];
         if (devTest.addonUUID === 'none') {
