@@ -1142,21 +1142,22 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         const service = new GeneralService(client);
         const devTest = new DevTest(addon.toUpperCase(), varPass, varPassEU, varPassSB, generalService, email, pass);
-        debugger;
         let testsList: string[] = [];
         if (devTest.addonUUID === 'none') {
+            debugger;
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
         } else {
             console.log(
                 `####################### Running For: ${devTest.addonName}(${devTest.addonUUID}) #######################`,
             );
+            debugger;
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
             await devTest.validateAllVersionsAreEqualBetweenEnvs();
             console.log(
                 `####################### Running For: ${devTest.addonName}(${devTest.addonUUID}), version: ${devTest.addonVersion} #######################`,
             );
             await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
-            await devTest.installDependencies();
+            // await devTest.installDependencies();
             console.log(
                 `####################### Finished Installing: ${devTest.addonName}(${devTest.addonUUID}), version: ${
                     devTest.addonVersion
