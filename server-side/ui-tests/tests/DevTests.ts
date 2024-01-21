@@ -696,6 +696,24 @@ export class DevTest {
             case 'ADAL': {
                 return true;
             }
+            case 'DATA INDEX':
+            case 'DATA-INDEX': {
+                return true;
+            }
+            case 'PNS': {
+                return true;
+            }
+            case 'USER-DEFINED-COLLECTIONS':
+            case 'UDC': {
+                return true;
+            }
+            case 'PAPI-DATA-INDEX':
+            case 'PAPI INDEX': {
+                return true;
+            }
+            case 'SCHEDULER': {
+                return true;
+            }
             case 'DIMX': {
                 return true;
             }
@@ -709,6 +727,9 @@ export class DevTest {
             }
             case 'CORE-GENERIC-RESOURCES':
             case 'CORE': {
+                return true;
+            }
+            case 'ASYNCADDON': {
                 return true;
             }
             default:
@@ -1024,7 +1045,7 @@ export class DevTest {
                     'QAWebHook',
                 );
             case 'PAPI-DATA-INDEX':
-            case 'PAPI INDEX': //evgeny todo
+            case 'PAPI INDEX':
                 return await this.adminBaseUserGeneralService.getSecretfromKMS(
                     this.adminBaseUserEmail,
                     this.adminBaseUserPass,

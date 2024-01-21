@@ -72,7 +72,6 @@ import {
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
-// import { testData } from './../../services/general.service';
 import {} from './script_picker.test';
 import { PFSTestser } from '../../api-tests/pepperi_file_service';
 import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
@@ -85,7 +84,6 @@ import { NgxLibPOC } from './NgxLibPOC.test';
 import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
 import { CiCdFlow } from '../../services/cicd-flow.service copy';
 import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon_from_all_auto_users';
-// import { FlowAPITest } from '../../api-tests/flows_api_part';
 import { FlowTests } from './flows_builder.test';
 import { Import250KToAdalFromDimx } from './import_250k_DIMX.test';
 import { UDCImportExportTests } from '../../api-tests/user_defined_collections_import_export';
@@ -146,35 +144,17 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
     const client: Client = await tempGeneralService.initiateTester(email, pass);
 
     const generalService = new GeneralService(client);
-    //SYS REPORTING
-    // const arrayOfItResules: string[] = [];
-    // let testSuitName = '';
 
     let nestedGap = '';
     let startedTestSuiteTitle = '';
 
     generalService.PrintMemoryUseToLog('Start', tests);
     after(async function () {
-        //SYS REPORTING
-        // const arrAfterFilter = arrayOfItResules.filter((elem) => elem === 'FAIL');
-        // const testSuitStatus = arrAfterFilter.length === 0 ? 'SUCCESS' : 'ERROR';
-        // if (testSuitStatus === 'SUCCESS') {
-        //     const monitoringResult = await generalService.sendResultsToMonitoringAddon(
-        //         'user',
-        //         testSuitName,
-        //         testSuitStatus,
-        //         'env',
-        //     );
-        // if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
-        //     console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
-        // }
-        // }
         generalService.PrintMemoryUseToLog('End', tests);
     });
 
     beforeEach(function () {
         let isCorrectNestedGap = false;
-        // testSuitName = testSuitName === '' ? this.currentTest.parent.title : testSuitName;
         do {
             if (
                 this.currentTest.parent.suites.length > nestedGap.length &&
@@ -218,35 +198,11 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Error,
             );
-            //SYS REPORTING
-            // arrayOfItResules.push('FAIL');
-            // const indexOfParentheses =
-            //     this.currentTest.parent.title.indexOf('(') === -1
-            //         ? this.currentTest.parent.title.length
-            //         : this.currentTest.parent.title.indexOf('(');
-            // const testSuitName = this.currentTest.parent.title.substring(0, indexOfParentheses);
-            // const testName = `${testSuitName} : ${this.currentTest.title}_retry:${this.currentTest._currentRetry} / ${this.currentTest._retries}`;
-            // const monitoringResult = await generalService.sendResultsToMonitoringAddon(
-            //     'user',
-            //     testName,
-            //     'ERROR',
-            //     'env',
-            // );
-            // if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
-            //     console.log('FAILED TO SEND REPORT TO MOINITORING ADDON', ConsoleColors.Error);
-            // }
         } else {
             console.log(
                 `%c${nestedGap}Test End: '${this.currentTest.title}': Result: '${this.currentTest.state}'`,
                 ConsoleColors.Success,
             );
-            // arrayOfItResules.push('PASS');
-            // const testSuitName = this.currentTest.parent.title.substring(0, this.currentTest.parent.title.indexOf('('));
-            // const testName = `${testSuitName}:${this.currentTest.title}`;
-            // const monitoringResult = await generalService.sendResultsToMonitoringAddon(testName, "SUCCESS");
-            // if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
-            //     console.log("FAILED TO SEND REPORT TO MOINITORING ADDON", ConsoleColors.Error);
-            // }
         }
         if (this.currentTest.parent.tests.slice(-1)[0].title == this.currentTest.title) {
             console.log(
@@ -256,10 +212,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             nestedGap = nestedGap.slice(1);
         }
     });
-
-    // if (tests != 'Create') {
-    //     await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    // }
 
     if (tests.includes('Reset')) {
         //Reset the needed UI Controls for the UI tests.
@@ -1205,7 +1157,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             );
             await devTest.installDependencies();
             console.log(
-                `####################### Finished Installing: ${devTest.addonName}(${devTest.addonUUID}), version: ${devTest.addonVersion}, On:${devTest.euUser}, ${devTest.prodUser}, ${devTest.sbUser} #######################`,
+                `####################### Finished Installing: ${devTest.addonName}(${devTest.addonUUID}), version: ${devTest.addonVersion}, On: ${devTest.euUser}, ${devTest.prodUser}, ${devTest.sbUser} #######################`,
             );
             debugger;
             await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
