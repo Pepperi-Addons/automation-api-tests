@@ -797,7 +797,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
-    //****EVGENY: this one is temporary - once we will realize how nebula should work - with neptune or neo4J this will become redundant
+    //****EVGENY: this one (VVV**DOWN-HERE**VVV) is ****temporary**** !!!!!! ---> once we will realize how nebula should work - with neptune or neo4J this will become redundant and nebula will run as any-other addon
     if (tests.includes('Jenkins_Neptune')) {
         let isLocal = true;
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
@@ -1125,7 +1125,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
         }
     }
-    //****EVGENY: this is the actual code for most addons
+    //****EVGENY: this is the actual code for most addons & nebula will be 'merged' here once it'll run as other addons
     if (tests.includes('Remote_Jenkins_Handler')) {
         let isLocal = true;
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
