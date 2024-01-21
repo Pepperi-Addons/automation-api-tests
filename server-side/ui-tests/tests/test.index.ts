@@ -857,19 +857,9 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             isLocal = false;
         }
         let jenkinsLink;
-        // getting VAR credentials for all envs
-        // const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
-        // const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
-        // const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         const service = new GeneralService(client);
         const addonName = addon.toUpperCase();
-        // const failedSuitesProd: any[] = [];
-        // const failedSuitesEU: any[] = [];
         const failedSuitesSB: any[] = [];
-        // const arrayOfFailedTests: any[] = [];
-        // const passedTests: string[] = [];
-        // const passedTestsEnv: string[] = [];
-        // const failingTestsEnv: string[] = [];
         let testsList: string[] = [];
         const addonUUID = generalService.convertNameToUUIDForDevTests(addonName);
         if (addonUUID === 'none') {
@@ -1194,22 +1184,12 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             );
             isLocal = false;
         }
-        // let jenkinsLink;
         // getting VAR credentials for all envs
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         const service = new GeneralService(client);
         const devTest = new DevTest(addon, varPass, varPassEU, varPassSB, generalService, email, pass);
-        // const addonName = addon.toUpperCase();
-        // let addonUUID;
-        // const failedSuitesProd: any[] = [];
-        // const failedSuitesEU: any[] = [];
-        // const failedSuitesSB: any[] = [];
-        // // const arrayOfFailedTests: any[] = [];
-        // // const passedTests: string[] = [];
-        // // const passedTestsEnv: string[] = [];
-        // // const failingTestsEnv: string[] = [];
         debugger;
         let testsList: string[] = [];
         if (devTest.addonUUID === 'none') {
@@ -1220,9 +1200,12 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             );
             // 1. install all dependencys latest available versions on testing user + template addon latest available version
             await devTest.validateAllVersionsAreEqualBetweenEnvs();
-            await devTest.installDependencies();
             console.log(
                 `####################### Running For: ${devTest.addonName}(${devTest.addonUUID}), version: ${devTest.addonVersion} #######################`,
+            );
+            await devTest.installDependencies();
+            console.log(
+                `####################### Finished Installing: ${devTest.addonName}(${devTest.addonUUID}), version: ${devTest.addonVersion}, On:${devTest.euUser}, ${devTest.prodUser}, ${devTest.sbUser} #######################`,
             );
             debugger;
             await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
@@ -2233,10 +2216,6 @@ async function setCatalogSelectionCardUI(generalService: GeneralService, catalog
     });
     expect(catalogSelectionCard).to.have.length.that.is.above(0);
     for (let i = 0; i < catalogSelectionCard.length; i++) {
-        // addContext(this, {
-        //     title: 'Test Data',
-        //     value: `Add UIControls ${catalogSelectionCard[i]['Type']}, ${catalogSelectionCard[i]['InternalID']}`,
-        // });
         const uiControlFromAPI = catalogSelectionCard[i].UIControlData.split('CatalogSelectionCard');
         const uiControlFromFile = catalogSelectionUIControl.UIControlData.split('CatalogSelectionCard');
         catalogSelectionCard[i].UIControlData = `${uiControlFromAPI[0]}CatalogSelectionCard${uiControlFromFile[1]}`;
@@ -2252,10 +2231,6 @@ async function setCatalogFormUI(generalService: GeneralService, catalogSelection
     });
     expect(catalogForm).to.have.length.that.is.above(0);
     for (let i = 0; i < catalogForm.length; i++) {
-        // addContext(this, {
-        //     title: 'Test Data',
-        //     value: `Add UIControls ${catalogForm[i]['Type']}, ${catalogForm[i]['InternalID']}`,
-        // });
         const uiControlFromAPI = catalogForm[i].UIControlData.split('CatalogForm');
         const uiControlFromFile = catalogSelectionUIControl.UIControlData.split('CatalogForm');
         catalogForm[i].UIControlData = `${uiControlFromAPI[0]}CatalogForm${uiControlFromFile[1]}`;
@@ -2271,10 +2246,6 @@ async function setOrderViewsMenu(generalService: GeneralService, orderViewsMenuU
     });
     expect(orderViewsMenu).to.have.length.that.is.above(0);
     for (let i = 0; i < orderViewsMenu.length; i++) {
-        // addContext(this, {
-        //     title: 'Test Data',
-        //     value: `Add UIControls ${orderViewsMenu[i]['Type']}, ${orderViewsMenu[i]['InternalID']}`,
-        // });
         const uiControlFromAPI = orderViewsMenu[i].UIControlData.split('OrderViewsMenu');
         const uiControlFromFile = orderViewsMenuUIControl.UIControlData.split('OrderViewsMenu');
         orderViewsMenu[i].UIControlData = `${uiControlFromAPI[0]}OrderViewsMenu${uiControlFromFile[1]}`;
@@ -2290,10 +2261,6 @@ async function setOrderCartGrid(generalService: GeneralService, orderCartGridUIC
     });
     expect(orderCartGrid).to.have.length.that.is.above(0);
     for (let i = 0; i < orderCartGrid.length; i++) {
-        // addContext(this, {
-        //     title: 'Test Data',
-        //     value: `Add UIControls ${orderCartGrid[i]['Type']}, ${orderCartGrid[i]['InternalID']}`,
-        // });
         const uiControlFromAPI = orderCartGrid[i].UIControlData.split('OrderCartGrid');
         const uiControlFromFile = orderCartGridUIControl.UIControlData.split('OrderCartGrid');
         orderCartGrid[i].UIControlData = `${uiControlFromAPI[0]}OrderCartGrid${uiControlFromFile[1]}`;
@@ -2309,10 +2276,6 @@ async function setOrderBanner(generalService: GeneralService, OrderBannerUIContr
     });
     expect(orderBanner).to.have.length.that.is.above(0);
     for (let i = 0; i < orderBanner.length; i++) {
-        // addContext(this, {
-        //     title: 'Test Data',
-        //     value: `Add UIControls ${orderBanner[i]['Type']}, ${orderBanner[i]['InternalID']}`,
-        // });
         const uiControlFromAPI = orderBanner[i].UIControlData.split('OrderBanner');
         const uiControlFromFile = OrderBannerUIControl.UIControlData.split('OrderBanner');
         orderBanner[i].UIControlData = `${uiControlFromAPI[0]}OrderBanner${uiControlFromFile[1]}`;
@@ -2328,10 +2291,6 @@ async function setOrderCartOpenedFooter(generalService: GeneralService, OrderCar
     });
     expect(orderCartOpenedFooter).to.have.length.that.is.above(0);
     for (let i = 0; i < orderCartOpenedFooter.length; i++) {
-        // addContext(this, {
-        //     title: 'Test Data',
-        //     value: `Add UIControls ${orderCartOpenedFooter[i]['Type']}, ${orderCartOpenedFooter[i]['InternalID']}`,
-        // });
         const uiControlFromAPI = orderCartOpenedFooter[i].UIControlData.split('OrderCartOpenedFooter');
         const uiControlFromFile = OrderCartOpenedFooterUIControl.UIControlData.split('OrderCartOpenedFooter');
         orderCartOpenedFooter[i].UIControlData = `${uiControlFromAPI[0]}OrderCartOpenedFooter${uiControlFromFile[1]}`;
@@ -2352,10 +2311,6 @@ async function setOrderCenterClosedFooter(generalService: GeneralService, OrderC
         const uiControlFromAPI = orderCenterClosedFooter[0].UIControlData.split('OrderCenterClosedFooter');
         uiControlFromAPI[0] = `${uiControlFromAPI[0].split('OA#')[0]}OA#${atdArray[i]['InternalID']}]`;
         const uiControlFromFile = OrderCenterClosedFooterUIControl.UIControlData.split('OrderCenterClosedFooter');
-        // addContext(this, {
-        //     title: 'Test Data',
-        //     value: `Add UIControls ${uiControlFromAPI[0]}OrderCenterClosedFooter${uiControlFromFile[1]}, ${atdArray[i]['InternalID']}`,
-        // });
         if (JSON.stringify(orderCenterClosedFooter).includes(atdArray[i].InternalID)) {
             orderCenterClosedFooter[0]['InternalID'] = orderCenterClosedFooter[orderOrigenUpdateCounter].InternalID;
             orderOrigenUpdateCounter++;
@@ -2369,56 +2324,6 @@ async function setOrderCenterClosedFooter(generalService: GeneralService, OrderC
         expect(upsertUIControlResponse.Type).to.include('OrderCenterClosedFooter');
     }
 }
-
-// async function unavailableAddonVersion(env, addonName, addonEntryUUID, addonVersion, addonUUID, varCredentials) {
-//     const [varUserName, varPassword] = varCredentials.split(':');
-//     const client = await initiateTester(varUserName, varPassword, env);
-//     const service = new GeneralService(client);
-//     const bodyToSendVARProd = {
-//         UUID: addonEntryUUID,
-//         Version: addonVersion,
-//         Available: false,
-//         AddonUUID: addonUUID,
-//     };
-//     const varCredBase64 = Buffer.from(varCredentials).toString('base64');
-//     // const baseURL = env === 'prod' ? 'papi' : userName.includes('eu') ? 'papi-eu' : 'papi.staging';
-//     const varResponseProd = await service.fetchStatus(
-//         `/var/addons/versions?where=AddonUUID='${addonUUID}' AND Version='${addonVersion}' AND Available=1`,
-//         {
-//             method: 'POST',
-//             headers: {
-//                 Authorization: `Basic ${varCredBase64}`,
-//             },
-//             body: JSON.stringify(bodyToSendVARProd),
-//         },
-//     );
-//     if (varResponseProd.Ok !== true) {
-//         throw new Error(`Error: calling var to make ${addonName} unavailable returned error OK: ${varResponseProd.Ok}`);
-//     }
-//     if (varResponseProd.Status !== 200) {
-//         throw new Error(
-//             `Error: calling var to make ${addonName} unavailable returned error Status: ${varResponseProd.Status}`,
-//         );
-//     }
-//     if (varResponseProd.Body.AddonUUID !== addonUUID) {
-//         throw new Error(
-//             `Error: var call to make ${addonName} unavailable returned WRONG ADDON-UUID: ${varResponseProd.Body.AddonUUID} instead of ${addonUUID}`,
-//         );
-//     }
-//     if (varResponseProd.Body.Version !== addonVersion) {
-//         throw new Error(
-//             `Error: var call to make ${addonName} unavailable returned WRONG ADDON-VERSION: ${varResponseProd.Body.Version} instead of ${addonVersion}`,
-//         );
-//     }
-//     if (varResponseProd.Body.Available !== false) {
-//         throw new Error(
-//             `Error: var call to make ${addonName} unavailable returned WRONG ADDON-AVALIBILITY: ${varResponseProd.Body.Available} instead of false`,
-//         );
-//     }
-//     console.log(
-//         `${addonName}, version: ${addonVersion}  on Production became unavailable: Approvment tests didnt pass`,
-//     );
-// }
 
 export async function reportToTeams(
     generalService: GeneralService,
@@ -2718,79 +2623,6 @@ export async function reportBuildEnded(addonName, addonUUID, addonVersion, servi
         throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
     }
 }
-
-// function resolveUserPerTest(addonName): any[] {
-//     switch (addonName) {
-//         case 'DATA INDEX':
-//         case 'DATA-INDEX':
-//             return ['DataIndexEU@pepperitest.com', 'DataIndexProd@pepperitest.com', 'DataIndexSB@pepperitest.com'];
-//         // case 'NEBULA'://0.6.x neptune
-//         //     return ['NebulaTestEU@pepperitest.com', 'NebulaTestProd@pepperitest.com', 'NebulaTestSB@pepperitest.com'];
-//         case 'NEBULA': //0.7.x neo4j
-//             return ['neo4JSyncEU@pepperitest.com', 'Neo4JSyncProd@pepperitest.com', 'Neo4JSyncSB@pepperitest.com']; //
-//         case 'FEBULA':
-//             return ['febulaEU@pepperitest.com', 'febulaProd@pepperitest.com', 'febulaSB@pepperitest.com']; //
-//         case 'ADAL':
-//             return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
-//         case 'SYNC':
-//             return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com'];
-//         case 'CORE':
-//         case 'CORE-GENERIC-RESOURCES':
-//             return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
-//         case 'PEPPERI-FILE-STORAGE':
-//         case 'PFS':
-//             return ['PfsCpiTestEU@pepperitest.com', 'PfsCpiTestProd@pepperitest.com', 'PfsCpiTestSB@pepperitest.com'];
-//         case 'CONFIGURATIONS':
-//             return ['configEU@pepperitest.com', 'configProd@pepperitest.com', 'configSB@pepperitest.com'];
-//         case 'RELATED-ITEMS':
-//             return [
-//                 'relatedItemsTestEU@pepperitest.com',
-//                 'relatedItemsTestProd@pepperitest.com',
-//                 'relatedItemsTestSB@pepperitest.com',
-//             ];
-//         case 'UDB':
-//         case 'USER DEFINED BLOCKS':
-//             return [
-//                 'UserDefinedBlocksEUApp2@pepperitest.com',
-//                 'UserDefinedBlocksEUApp5@pepperitest.com',
-//                 'UserDefinedBlocksSBApp2@pepperitest.com',
-//             ];
-//         case 'JOURNEY-TRACKER':
-//         case 'JOURNEY':
-//             return [
-//                 'JourneyTrackerTesterEU@pepperitest.com',
-//                 'JourneyTrackerTesterProd@pepperitest.com',
-//                 'JourneyTrackerTesterSB@pepperitest.com',
-//             ];
-//         case 'CPI-NODE':
-//         case 'NODE':
-//             return [
-//                 'CpiNodeTesterEU@pepperitest.com',
-//                 'CpiNodeTesterProd@pepperitest.com',
-//                 'CpiNodeTesterSB@pepperitest.com',
-//             ];
-//         case 'CRAWLER':
-//             return [
-//                 'crawlerTesterEU@pepperitest.com',
-//                 'crawlerTesterProd@pepperitest.com',
-//                 'crawlerTesterSB@pepperitest.com',
-//             ];
-//         case 'ASYNCADDON':
-//             return [
-//                 'AsyncCiCdTesterEU@pepperitest.com',
-//                 'AsyncCiCdTesterProd@pepperitest.com',
-//                 'AsyncCiCdTesterSB@pepperitest.com',
-//             ];
-//         case 'TRANSLATION':
-//             return [
-//                 'TranslationTesterEU@pepperitest.com',
-//                 'TranslationTesterProd@pepperitest.com',
-//                 'TranslationTesterSB@pepperitest.com',
-//             ];
-//         default:
-//             return [];
-//     }
-// }
 
 function resolveUserPerTestNeptune(addonName): any[] {
     switch (addonName) {
@@ -3187,29 +3019,3 @@ async function printResultsTestObject(testResultArray, userName, env, addonUUID,
 }
 
 //#endregion Replacing UI Functions
-
-// function doWeHaveSuchAppTest(addonName: string) {
-//     switch (addonName) {
-//         //add another 'case' here when adding new addons to this mehcanisem
-//         case 'ADAL': {
-//             return true;
-//         }
-//         case 'DIMX': {
-//             return true;
-//         }
-//         case 'DATA INDEX':
-//         case 'DATA-INDEX': {
-//             return true;
-//         }
-//         case 'PEPPERI-FILE-STORAGE':
-//         case 'PFS': {
-//             return true;
-//         }
-//         case 'CORE-GENERIC-RESOURCES':
-//         case 'CORE': {
-//             return true;
-//         }
-//         default:
-//             return false;
-//     }
-// }

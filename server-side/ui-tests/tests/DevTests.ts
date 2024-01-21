@@ -279,7 +279,6 @@ export class DevTest {
     }
 
     async getEuUserEmail() {
-        debugger;
         return this.euUser.email;
     }
 
@@ -391,7 +390,6 @@ export class DevTest {
             const euUser = await this.getEuUserEmail();
             const prodUser = await this.getProdUserEmail();
             const sbUser = await this.getSbUserEmail();
-            debugger;
             const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
                 //devTestResponseEu,
                 //userName, env, addonSk, bodyToSend
@@ -426,6 +424,7 @@ export class DevTest {
             console.log(
                 `####################### ${currentTestName}: EXECUTION UUIDS:\nEU - ${devTestResponseEu.Body.URI}\nPROD - ${devTestResponseProd.Body.URI}\nSB - ${devTestResponseSb.Body.URI}`,
             );
+            debugger;
             const testObject = {
                 name: currentTestName,
                 prodExecution: devTestResponseProd.Body.URI,
@@ -433,9 +432,9 @@ export class DevTest {
                 euExecution: devTestResponseEu.Body.URI,
             };
             this.adminBaseUserGeneralService.sleep(1000 * 15);
-            const devTestResutsEu = await this.getTestResponse(euUser.email, 'prod', devTestResponseEu.Body.URI);
-            const devTestResultsProd = await this.getTestResponse(prodUser.email, 'prod', devTestResponseProd.Body.URI);
-            const devTestResultsSb = await this.getTestResponse(sbUser.email, 'stage', devTestResponseSb.Body.URI);
+            const devTestResutsEu = await this.getTestResponse(euUser, 'prod', devTestResponseEu.Body.URI);
+            const devTestResultsProd = await this.getTestResponse(prodUser, 'prod', devTestResponseProd.Body.URI);
+            const devTestResultsSb = await this.getTestResponse(sbUser, 'stage', devTestResponseSb.Body.URI);
             if (
                 (devTestResutsEu.AuditInfo.hasOwnProperty('ErrorMessage') &&
                     devTestResutsEu.AuditInfo.ErrorMessage.includes('Task timed out after')) ||
@@ -717,7 +716,7 @@ export class DevTest {
         }
     }
 
-    async getProdUser(){
+    async getProdUser() {
         return this.prodUser;
     }
 
@@ -942,7 +941,7 @@ export class DevTest {
                 },
             });
         }
-    
+
         return testResponse;
     }
 
@@ -1030,6 +1029,13 @@ export class DevTest {
                     this.adminBaseUserEmail,
                     this.adminBaseUserPass,
                     'PapiDataIndexWebHook',
+                );
+            case 'JOURNEY':
+            case 'JOURNEY-TRACKER':
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'JourneyTeamsWebHook',
                 );
             case 'SYNC':
                 return await this.adminBaseUserGeneralService.getSecretfromKMS(
@@ -1135,6 +1141,31 @@ export class DevTest {
                     this.adminBaseUserEmail,
                     this.adminBaseUserPass,
                     'GenericResourceTeamsWebHook',
+                );
+            case 'NODE': //new teams
+            case 'CPI-NODE':
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'CPINodeTeamsWebHook',
+                );
+            case 'CRAWLER':
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'CRAWLERTeamsWebHook',
+                );
+            case 'ASYNCADDON':
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'ASYNCTeamsWebHook',
+                );
+            case 'TRANSLATION':
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'TRANSLATIONTeamsWebHook',
                 );
         }
     }
