@@ -693,6 +693,8 @@ export class DevTest {
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
             return;
         } else if (!this.doWeHaveSuchAppTest(this.addonName)) {
+            this.devPassingEnvs = devPassingEnvs2;
+            this.devFailedEnvs = devFailedEnvs2;
             await this.reportToTeams(jenkinsLink);
         }
     }
@@ -754,7 +756,6 @@ export class DevTest {
         const userMails = users.map((user) => user.email);
         const stringUsers = userMails.join(',');
         const uniqFailingEnvs = [...new Set(this.devFailedEnvs.map((env) => env.toUpperCase()))];
-        this.devPassingEnvs = this.devPassingEnvs.map((env) => env.toUpperCase());
         const message = `Dev Test: ${this.addonName} - (${this.addonUUID}), Version:${
             this.addonVersion
         }, Test Users:<br>${stringUsers}<br>${
