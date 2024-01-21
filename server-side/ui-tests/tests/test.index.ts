@@ -1155,22 +1155,16 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             console.log(
                 `####################### Running For: ${devTest.addonName}(${devTest.addonUUID}), version: ${devTest.addonVersion} #######################`,
             );
+            await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
             await devTest.installDependencies();
             console.log(
-                `####################### Finished Installing: ${devTest.addonName}(${devTest.addonUUID}), version: ${devTest.addonVersion}, On: ${devTest.euUser}, ${devTest.prodUser}, ${devTest.sbUser} #######################`,
+                `####################### Finished Installing: ${devTest.addonName}(${devTest.addonUUID}), version: ${
+                    devTest.addonVersion
+                }, On: ${devTest.euUser.email}, ${await devTest.prodUser.email}, ${await devTest.sbUser
+                    .email} #######################`,
             );
             debugger;
-            await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
-            debugger;
-            const isInstalled = await devTest.valdateTestedAddonLatestVersionIsInstalled();
-            for (let index = 0; index < isInstalled.length; index++) {
-                const isTestedAddonInstalled = isInstalled[index];
-                if (isTestedAddonInstalled === false) {
-                    throw new Error(
-                        `Error: didn't install ${devTest.addonName} - ${devTest.addonUUID}, version: ${devTest.addonVersion}`,
-                    );
-                }
-            }
+            await devTest.valdateTestedAddonLatestVersionIsInstalled();
             debugger;
             //3.1 get test names
             try {
