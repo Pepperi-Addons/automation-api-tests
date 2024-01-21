@@ -1157,7 +1157,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 `####################### Running For: ${devTest.addonName}(${devTest.addonUUID}), version: ${devTest.addonVersion} #######################`,
             );
             await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
-            // await devTest.installDependencies();
+            await devTest.installDependencies();
             console.log(
                 `####################### Finished Installing: ${devTest.addonName}(${devTest.addonUUID}), version: ${
                     devTest.addonVersion
