@@ -797,6 +797,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
+    ///////////////////////~~~CI/CD Flow~~~///////////////////////////////////
     //****EVGENY: this code (VVV**DOWN-HERE**VVV) is ****temporary**** !!!!!! ---> once we will realize how nebula should work - with neptune or neo4J this will become redundant and nebula will run as any-other addon
     if (tests.includes('Jenkins_Neptune')) {
         let isLocal = true;
