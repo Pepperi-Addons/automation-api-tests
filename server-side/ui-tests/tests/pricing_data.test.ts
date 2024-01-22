@@ -120,6 +120,8 @@ export async function PricingDataPrep(varPass: string, client: Client) {
                     break;
 
                 default:
+                    console.info('AT installedPricingVersion Default');
+                    pricingData = new PricingData07();
                     break;
             }
             await uploadConfiguration(pricingData.config);
