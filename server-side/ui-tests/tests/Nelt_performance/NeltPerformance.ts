@@ -1,9 +1,14 @@
 import { By } from 'selenium-webdriver';
-import { AddonPage } from './addons/base/AddonPage';
+import { AddonPage } from '../../pom/addons/base/AddonPage';
 
 export class NeltPerformance extends AddonPage {
     public Home: By = By.css('[data-qa="systemHome"]');
     public HamburgerMenuButtonAtHome: By = By.css('[data-qa="systemMenu"]');
+    public Iframe: By = By.xpath('//iframe');
+    public WebappIframe: By = By.xpath('//iframe[@id="webappiframe"]');
+    public WebappIframe_closeButton: By = By.xpath(
+        '//div[contains(@class,"mat-dialog-title")]//pep-icon[@name="system_close"]/ancestor::button',
+    );
     public HomeMenuDropdown: By = By.xpath('//div[@role="menu"]');
     public pageGrandTotal: By = By.xpath("//span[@class='value']"); //order page
     public blankSpaceOnScreenToClick: By = By.xpath("//div[contains(@class,'total-items-container')]"); //order page
@@ -12,8 +17,8 @@ export class NeltPerformance extends AddonPage {
     public ViewTypeOption: By = By.xpath(`//span[text()='|textToFill|']`);
     public KupciButtonAtHome: By = By.xpath('//button[@id="mainButton"]');
     public FirstAccountInList: By = By.xpath('//virtual-scroller//fieldset//span[@id="Name"]');
-    public AccountActivityList_PlusButton: By = By.xpath('//list-menu[@data-qa="secondMenu"]//button');
-    public AccountActivityList_BurgerMenu: By = By.xpath('//list-menu[@data-qa="firstMenu"]//button');
+    public AccountDashboard_PlusButton: By = By.xpath('//list-menu[@data-qa="secondMenu"]//button');
+    public AccountDashboard_BurgerMenu: By = By.xpath('//list-menu[@data-qa="firstMenu"]//button');
     public Image_Label: By = By.xpath(`//pep-list//label[@id="Image"]`);
     public ListNumberOfResults: By = By.xpath(`//list-total//span[contains(@class,"bold number")]`);
     public PepList: By = By.xpath(`//pep-list`);
@@ -25,6 +30,12 @@ export class NeltPerformance extends AddonPage {
     public TransactionUUID: By = By.id('UUID');
     public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
     public ContinueOrdering_Button: By = By.xpath('//button[@data-qa="Continue ordering"]');
+    public VisitFlow_visits_container: By = By.xpath('//div[contains(@class,"visits-container")]');
+    public VisitFlow_selection_header: By = By.xpath(
+        '//div[contains(@class,"visit-selection")]/div[contains(@class,"header")]',
+    );
+    public VisitFlow_singleVisit_container: By = By.xpath('//div[contains(@class,"visit-container")]');
+    public VisitFlow_singleVisit_step: By = By.xpath('//div[contains(@class,"group-steps")]//pep-button');
 
     // Specific selectors for Nelt //
     public OrderCatalogItem: By = By.xpath('//span[@id="Description"]/ancestor::mat-grid-list');
@@ -88,11 +99,11 @@ export class NeltPerformance extends AddonPage {
         );
     }
 
-    public getSelectorOfAccountActivityPlusButtonMenuItemByName(name: string) {
+    public getSelectorOfAccountDashboardPlusButtonMenuItemByName(name: string) {
         return By.xpath(`//button[@title="${name}"]`);
     }
 
-    public getSelectorOfAccountActivityHamburgerMenuItemByName(name: string) {
+    public getSelectorOfAccountDashboardHamburgerMenuItemByName(name: string) {
         return By.xpath(`//button[@title="${name}"]`);
     }
 
@@ -116,5 +127,21 @@ export class NeltPerformance extends AddonPage {
                 text || ''
             }")]`,
         );
+    }
+
+    public getSelectorOfSmartFilterFieldByName(name?: string) {
+        return By.xpath(`//pep-smart-filters//span[@title="${name}"]/ancestor::mat-expansion-panel`);
+    }
+
+    public getSelectorOfVisitFlowAtMultipleVisitsSelectionByText(text: string) {
+        return By.xpath(`//div[contains(@class,"visit-selection")]//span[@title="${text}"]/ancestor::button`);
+    }
+
+    public getSelectorOfVisitGroupByText(text: string) {
+        return By.xpath(`//div[contains(@class,"flow-groups")]//span[@title="${text}"]/ancestor::button`);
+    }
+
+    public getSelectorOfVisitStepByText(text: string) {
+        return By.xpath(`//div[contains(@class,"group-steps")]//span[@title="${text}"]/ancestor::button`);
     }
 }
