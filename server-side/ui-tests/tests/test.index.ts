@@ -797,7 +797,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
-    //****EVGENY: this one (VVV**DOWN-HERE**VVV) is ****temporary**** !!!!!! ---> once we will realize how nebula should work - with neptune or neo4J this will become redundant and nebula will run as any-other addon
+    //****EVGENY: this code (VVV**DOWN-HERE**VVV) is ****temporary**** !!!!!! ---> once we will realize how nebula should work - with neptune or neo4J this will become redundant and nebula will run as any-other addon
     if (tests.includes('Jenkins_Neptune')) {
         let isLocal = true;
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
@@ -1125,7 +1125,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
         }
     }
-    //****EVGENY: this is the actual code for most addons & nebula will be 'merged' here once it'll run as other addons
+    //****EVGENY: this is the actual CI/CD code for most addons ||| Nebula will be 'merged' here once it'll run as other addons
     if (tests.includes('Remote_Jenkins_Handler')) {
         let isLocal = true;
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
@@ -1136,16 +1136,17 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             );
             isLocal = false;
         }
+        const addonName = addon.toUpperCase(); // this will be used across the whole CI/CD flow (Dev & App. tests)
         ///////////////////////DEV TESTS///////////////////////////////////
         // 1.VAR credentials for all envs - used for addon installations
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         const service = new GeneralService(client);
-        const devTest = new DevTest(addon.toUpperCase(), varPass, varPassEU, varPassSB, generalService, email, pass); // adding new addons tests should be done using this class
+        const devTest = new DevTest(addonName, varPass, varPassEU, varPassSB, generalService, email, pass); // adding new addons tests should be done using this 'DevTest' class
         let testsList: string[] = [];
         if (devTest.addonUUID === 'none') {
-            //if we cant find the addon uuid - it means we dont have tests for it
+            //if we cant find the addon uuid - it means we dont have *DEV* tests for it (might have approvement)
             debugger;
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
         } else {
@@ -1207,7 +1208,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         let addonEntryUUIDProdEx;
         let addonEntryUUIDEuEx;
         let addonEntryUUIDSbEx;
-        const addonName = addon.toUpperCase();
+
         let addonUUID: string;
         console.log(`####################### Approvment Tests For ${addonName} #######################`);
         const runnnerService = new CiCdFlow(
