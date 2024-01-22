@@ -72,7 +72,6 @@ import {
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
 import { UIControl } from '@pepperi-addons/papi-sdk';
-import {} from './script_picker.test';
 import { PFSTestser } from '../../api-tests/pepperi_file_service';
 import { AsyncAddonGetRemoveTestser } from '../../api-tests/objects/async_addon_get_remove_codejobs';
 import { DimxDataImportTestsTestser } from '../../api-tests/dimx_data_import';
@@ -82,7 +81,7 @@ import { maintenance3APITestser } from '../../api-tests/addons';
 import { handleDevTestInstallation } from '../../tests';
 import { NgxLibPOC } from './NgxLibPOC.test';
 import { SchedulerTester } from '../../api-tests/code-jobs/scheduler';
-import { CiCdFlow } from '../../services/cicd-flow.service copy';
+import { AppTest } from '../../services/app-tests-runner.service';
 import { UnistallAddonFromAllUsersTester } from '../../api-tests/uninstall_addon_from_all_auto_users';
 import { FlowTests } from './flows_builder.test';
 import { Import250KToAdalFromDimx } from './import_250k_DIMX.test';
@@ -1196,7 +1195,6 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         ///////////////////////APPROVMENT TESTS///////////////////////////////////
         // global ugly variable
         let JenkinsBuildResultsAllEnvsEx: string[][] = [[]];
-        // let addonUUID = '';
         let addonVersionProdEx = '';
         let addonVersionEUEx = '';
         let addonVersionSbEx = '';
@@ -1212,7 +1210,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
         let addonUUID: string;
         console.log(`####################### Approvment Tests For ${addonName} #######################`);
-        const runnnerService = new CiCdFlow(
+        const appTestsRunnnerService = new AppTest( //utility class for app. tests functionality
             generalService,
             base64VARCredentialsProd,
             base64VARCredentialsEU,
@@ -1241,7 +1239,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                } = await runnnerService.jenkinsSingleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
                     email,
                     pass,
                     addonName,
@@ -1286,7 +1284,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                } = await runnnerService.jenkinsSingleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
                     email,
                     pass,
                     addonName,
@@ -1332,7 +1330,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                } = await runnnerService.jenkinsSingleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
                     email,
                     pass,
                     addonName,
@@ -1378,7 +1376,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                } = await runnnerService.jenkinsSingleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
                     email,
                     pass,
                     addonName,
@@ -1425,7 +1423,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                } = await runnnerService.jenkinsSingleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
                     email,
                     pass,
                     addonName,
@@ -1470,7 +1468,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                } = await runnnerService.jenkinsSingleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
                     email,
                     pass,
                     addonName,
@@ -1525,7 +1523,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     jobPathToReturnProd,
                     jobPathToReturnSB,
                     jobPathToReturnEU,
-                } = await runnnerService.jenkinsDoubleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsDoubleJobTestRunner(
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1580,7 +1578,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     jobPathToReturnProd,
                     jobPathToReturnSB,
                     jobPathToReturnEU,
-                } = await runnnerService.jenkinsDoubleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsDoubleJobTestRunner(
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1635,7 +1633,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     jobPathToReturnProd,
                     jobPathToReturnSB,
                     jobPathToReturnEU,
-                } = await runnnerService.jenkinsDoubleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsDoubleJobTestRunner(
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1682,7 +1680,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                } = await runnnerService.jenkinsSingleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
                     email,
                     pass,
                     addonName,
@@ -1728,7 +1726,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                } = await runnnerService.jenkinsSingleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
                     email,
                     pass,
                     addonName,
@@ -1779,7 +1777,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     jobPathToReturnProd,
                     jobPathToReturnSB,
                     jobPathToReturnEU,
-                } = await runnnerService.jenkinsDoubleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsDoubleJobTestRunner(
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1824,7 +1822,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                } = await runnnerService.jenkinsSingleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
                     email,
                     pass,
                     addonName,
@@ -1853,7 +1851,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 console.log(`no approvement tests for addon: ${addonName}`);
                 return;
         }
-        await runnnerService.resultParser(
+        await appTestsRunnnerService.resultParser(
             JenkinsBuildResultsAllEnvsEx,
             addonEntryUUIDEuEx,
             addonEntryUUIDProdEx,
