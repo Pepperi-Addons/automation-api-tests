@@ -1136,14 +1136,16 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             );
             isLocal = false;
         }
-        // getting VAR credentials for all envs
+        ///////////////////////DEV TESTS///////////////////////////////////
+        // 1.VAR credentials for all envs - used for addon installations
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         const service = new GeneralService(client);
-        const devTest = new DevTest(addon.toUpperCase(), varPass, varPassEU, varPassSB, generalService, email, pass);
+        const devTest = new DevTest(addon.toUpperCase(), varPass, varPassEU, varPassSB, generalService, email, pass); // adding new addons tests should be done using this class
         let testsList: string[] = [];
         if (devTest.addonUUID === 'none') {
+            //if we cant find the addon uuid - it means we dont have tests for it
             debugger;
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
         } else {
@@ -1151,13 +1153,15 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                 `####################### Running For: ${devTest.addonName}(${devTest.addonUUID}) #######################`,
             );
             debugger;
-            // 1. install all dependencys latest available versions on testing user + template addon latest available version
+            //2. validate latest available version of tested addon is equal between envs - if not: wont run
             await devTest.validateAllVersionsAreEqualBetweenEnvs();
             console.log(
                 `####################### Running For: ${devTest.addonName}(${devTest.addonUUID}), version: ${devTest.addonVersion} #######################`,
             );
+            //this reports to QA build tracker in Teams [https://teams.microsoft.com/l/channel/19%3ac553a2dddecb497499e4df6fc1cf25af%40thread.tacv2/QA%2520Build%2520Tracker?groupId=84e28b5e-1f7f-4e05-820f-9728916558b2&tenantId=2f2b54b7-0141-4ba7-8fcd-ab7d17a60547]
             await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
             debugger;
+            // 3. install all dependencys latest available versions on testing user - finaly install tested addon
             await devTest.installDependencies();
             await devTest.valdateTestedAddonLatestVersionIsInstalled();
             console.log(
@@ -1167,7 +1171,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
                     .email} #######################`,
             );
             debugger;
-            //3.1 get test names
+            //3.1 get test names by calling tested addon
             try {
                 testsList = await devTest.getTestNames();
             } catch (error) {
@@ -1184,6 +1188,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
             }
             //4. iterate on all test names and call each
             await devTest.runDevTest(testsList);
+            //5. parse the response we got from the tests, print & report to Teams
             await devTest.calculateAndReportResults(isLocal);
         }
         ///////////////////////APPROVMENT TESTS///////////////////////////////////
