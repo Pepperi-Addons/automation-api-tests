@@ -34,19 +34,16 @@ export async function PricingTests(email: string, password: string, client: Clie
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
     let pricingData;
-    switch (installedPricingVersion) {
-        case '5':
+    switch (true) {
+        case installedPricingVersion === '5':
             pricingData = new PricingData05();
             break;
-        case '6':
+        case installedPricingVersion === '6':
             pricingData = new PricingData06();
-            break;
-        case '7':
-            pricingData = new PricingData07();
             break;
 
         default:
-            pricingData = new PricingData05();
+            pricingData = new PricingData07();
             break;
     }
 
