@@ -112,9 +112,15 @@ export class DevTest {
             try {
                 await this.installDependenciesInternal(user.email, user.env, varPass);
             } catch (error) {
-                const errorString = `Error: Got Exception While Trying To Upgrade Addons: ${
+                const errorString = `Error: Got Exception While Trying To Upgrade / Install Addons, Got Exception: ${
                     (error as any).message
-                }, On User: ${user.email}`;
+                }, On User: ${user.email}, Making ${this.addonName} unavailable`;
+                await this.unavailableVersion(
+                    this.addonEntryUUIDEU,
+                    this.addonEntryUUIDProd,
+                    this.addonEntryUUIDSb,
+                    this.addonVersion,
+                );
                 await this.reportToTeamsMessage(errorString);
                 throw new Error(errorString);
             }
@@ -151,27 +157,26 @@ export class DevTest {
     }
 
     async installDependenciesInternal(userName, env, varPass) {
-        //im here - TODO
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
         const testName = `Installing Dev Test Prerequisites On ${
             userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
         } Env, User: ${userName}, Addon: ${this.addonName}, UUID: ${this.addonUUID}`;
         service.PrintMemoryUseToLog('Start', testName);
-        //2. upgrade dependencys - basic: correct for all addons
+        //1. upgrade dependencys - basic: correct for all addons
         await service.baseAddonVersionsInstallation(varPass);
-        //2.1 install template automation addon
+        //1.1 install addon-testing-framework - Chasky's addon which we need
         const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, {
             automation_template_addon: ['d541b959-87af-4d18-9215-1b30dbe1bcf4', ''],
         });
         if (templateAddonResponse[0] != true) {
             throw new Error(
-                `Error: can't install automation_template_addon, got the exception: ${templateAddonResponse} from audit log`,
+                `Error: can't install automation_template_addon (Chasky's Addon), got the exception: ${templateAddonResponse} from audit log`,
             );
         }
-        //3. get dependencys of tested addon
+        //2. get dependencys of tested addon
         const addonDep = await this.getDependenciesOfAddon(service, this.addonUUID, varPass);
-        //4. install on dist
+        //3. install dependencys
         if (addonDep !== undefined && addonDep.length !== 0) {
             if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5') {
                 //OFS
@@ -248,6 +253,7 @@ export class DevTest {
                         }
                     }
                 }
+                //4. install tested addon
                 const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(
                     varPass,
                     addonToInstall,
@@ -258,22 +264,10 @@ export class DevTest {
                     );
                 }
             }
-            // for (const [addonName, uuid] of Object.entries(dependeciesUUIDs)) {
-            //     const addonToInstall = {};
-            //     if (addonName === 'papi' && addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
-            //         addonToInstall[addonName] = [(uuid as any[])[0], '9.6.%'];
-            //     } else {
-            //         addonToInstall[addonName] = uuid;
-            //     }
-            //     const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
-            //     if (!installAddonResponse[0]) {
-            //         throw new Error(`Error: can't install ${addonName} - ${uuid}`);
-            //     }
-            // }
         }
         //5. validate actual tested addon is installed
         const addonToInstall = {};
-        // this can be used to install NOT latest avalivale versions
+        // this can be used to install version which is NOT the latest avalivale versions
         // const version = addonName === 'SYNC' ? '0.7.30' : '%';
         addonToInstall[this.addonName] = [this.addonUUID, '%'];
         const installAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, addonToInstall);
@@ -689,6 +683,8 @@ export class DevTest {
                 this.addonEntryUUIDSb,
                 this.addonVersion,
             );
+            this.devPassingEnvs = devPassingEnvs2;
+            this.devFailedEnvs = devFailedEnvs2;
             await this.reportToTeams(jenkinsLink);
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
             return;
@@ -908,69 +904,27 @@ export class DevTest {
     async runDevTestOnCertainEnv(userName, env, addonSk, bodyToSend) {
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
-        let urlToCall;
-        let headers;
-        if (this.addonName === 'NEBULA') {
-            urlToCall = '/addons/api/async/00000000-0000-0000-0000-000000006a91/tests/tests';
-        } else if (this.addonName === 'FEBULA') {
-            urlToCall = '/addons/api/async/cebb251f-1c80-4d80-b62c-442e48e678e8/tests/tests';
-        } else if (this.addonName === 'SYNC') {
-            urlToCall = '/addons/api/async/5122dc6d-745b-4f46-bb8e-bd25225d350a/tests/tests';
-        } else if (this.addonName === 'CORE' || this.addonName === 'CORE-GENERIC-RESOURCES') {
-            urlToCall = '/addons/api/async/fc5a5974-3b30-4430-8feb-7d5b9699bc9f/tests/tests';
-        } else if (this.addonName === 'CONFIGURATIONS') {
-            urlToCall = '/addons/api/async/84c999c3-84b7-454e-9a86-71b7abc96554/tests/tests';
-            headers = {
+        let _headers;
+        const addonsTestingEndpoint = `/addons/api/async/${this.addonUUID}/tests/tests`;
+        if (this.addonName === 'CONFIGURATIONS') {
+            _headers = {
                 'x-pepperi-ownerid': '84c999c3-84b7-454e-9a86-71b7abc96554',
                 'x-pepperi-secretkey': addonSk,
                 Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
             };
-        } else if (this.addonName === 'RELATED-ITEMS') {
-            urlToCall = '/addons/api/async/4f9f10f3-cd7d-43f8-b969-5029dad9d02b/tests/tests';
-        } else if (this.addonName === 'CRAWLER') {
-            urlToCall = '/addons/api/async/f489d076-381f-4cf7-aa63-33c6489eb017/tests/tests';
-        } else if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
-            urlToCall = '/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests';
-            headers = {
+        }
+        if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
+            _headers = {
                 'x-pepperi-ownerid': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                 'x-pepperi-secretkey': addonSk,
                 Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
             };
-        } else if (this.addonName === 'UDB' || this.addonName === 'USER DEFINED BLOCKS') {
-            urlToCall = '/addons/api/async/9abbb634-9df5-49ab-91d1-41ad7a2632a6/tests/tests';
-        } else if (this.addonName === 'PFS' || this.addonName === 'PEPPERI-FILE-STORAGE') {
-            urlToCall = '/addons/api/async/00000000-0000-0000-0000-0000000f11e5/tests/tests';
-        } else if (this.addonName === 'JOURNEY' || this.addonName === 'JOURNEY-TRACKER') {
-            urlToCall = '/addons/api/async/41011fbf-debf-40d8-8990-767738b8af03/tests/tests';
-        } else if (this.addonName === 'NODE' || this.addonName === 'CPI-NODE') {
-            urlToCall = '/addons/api/async/bb6ee826-1c6b-4a11-9758-40a46acb69c5/tests/tests';
-        } else if (this.addonName === 'ASYNCADDON') {
-            urlToCall = '/addons/api/async/00000000-0000-0000-0000-0000000a594c/tests/tests';
-        } else if (this.addonName === 'TRANSLATION') {
-            urlToCall = '/addons/api/async/fbbac53c-c350-42c9-b9ad-17c238e55b42/tests/tests';
         }
-        let testResponse;
-        if (
-            this.addonName === 'DATA INDEX' ||
-            this.addonName === 'DATA-INDEX' ||
-            this.addonName === 'ADAL' ||
-            this.addonName === 'CONFIGURATIONS'
-        ) {
-            testResponse = await service.fetchStatus(urlToCall, {
-                body: JSON.stringify(bodyToSend),
-                method: 'POST',
-                headers: headers,
-            });
-        } else {
-            testResponse = await service.fetchStatus(urlToCall, {
-                body: JSON.stringify(bodyToSend),
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
-                },
-            });
-        }
-
+        const testResponse = await service.fetchStatus(addonsTestingEndpoint, {
+            body: JSON.stringify(bodyToSend),
+            method: 'POST',
+            headers: _headers ? _headers : { Authorization: `Bearer ${service['client'].OAuthAccessToken}` },
+        });
         return testResponse;
     }
 
