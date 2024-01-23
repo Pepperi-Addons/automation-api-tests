@@ -112,9 +112,15 @@ export class DevTest {
             try {
                 await this.installDependenciesInternal(user.email, user.env, varPass);
             } catch (error) {
-                const errorString = `Error: Got Exception While Trying To Upgrade Addons: ${
+                const errorString = `Error: Got Exception While Trying To Upgrade / Install Addons, Got Exception: ${
                     (error as any).message
-                }, On User: ${user.email}`;
+                }, On User: ${user.email}, Making ${this.addonName} unavailable`;
+                await this.unavailableVersion(
+                    this.addonEntryUUIDEU,
+                    this.addonEntryUUIDProd,
+                    this.addonEntryUUIDSb,
+                    this.addonVersion,
+                );
                 await this.reportToTeamsMessage(errorString);
                 throw new Error(errorString);
             }
