@@ -12,6 +12,8 @@ export class OrderPage extends WebAppList {
     public ChangeViewButton: By = By.xpath("//mat-icon[@title='Change View']");
     public ViewTypeOption: By = By.xpath(`//span[text()='|textToFill|']`);
 
+    public Image_Label: By = By.xpath(`//pep-list//label[@id="Image"]`);
+
     // Specific selectors for Pricing //
     public Duration_Span: By = By.xpath('//span[@id="TSAduration"]');
     public Search_Input: By = By.xpath('//input[@id="searchInput"]');
@@ -21,6 +23,9 @@ export class OrderPage extends WebAppList {
     public ItemQuantity_NumberOfUnits_Readonly: By = By.xpath('//pep-quantity-selector//button[@id="UnitsQuantity"]');
     public ItemQuantity_byUOM_InteractableNumber: By = By.xpath(
         '//pep-quantity-selector//input[@id="TSAAOQMQuantity1"]',
+    );
+    public ItemQuantity2_byUOM_InteractableNumber: By = By.xpath(
+        '//pep-quantity-selector//input[@id="TSAAOQMQuantity2"]',
     );
     public AdditionalItemQuantity_byUOM_Number_Cart: By = By.xpath(
         '//pep-quantity-selector//button[@id="TSAAOQMQuantity1"]',
@@ -36,6 +41,7 @@ export class OrderPage extends WebAppList {
     public Cart_Total_Header_container: By = By.xpath('//div[contains(@class,"line-view")]');
     public Cart_Submit_Button: By = By.xpath('//button[@data-qa="Submit"]');
     public Cart_List_container: By = By.xpath('//app-cart//pep-list/div');
+    public Cart_LinesView_List_container: By = By.xpath('//app-cart//pep-list');
     public TransactionUUID: By = By.id('UUID');
     public TransactionID: By = By.id('WrntyID');
 
@@ -69,11 +75,13 @@ export class OrderPage extends WebAppList {
         '//mat-tree//span[text()="Beauty Make Up"]/parent::li/parent::mat-tree-node',
     );
 
-    public getSelectorOfUnitOfMeasureOptionByText(text: string, uomIndex?: number) {
-        const path = `//div[@id="TSAAOQMUOM1-panel"][@role="listbox"]/mat-option[@title="${text}"]`;
-        if (uomIndex && uomIndex === 2) {
-            path.replace('1', '2');
-        }
+    public getSelectorOfUnitOfMeasureOptionByText(text: string, uomIndex?: '2') {
+        const path = `//div[@id="TSAAOQMUOM${
+            uomIndex ? uomIndex : '1'
+        }-panel"][@role="listbox"]/mat-option[@title="${text}"]`;
+        // if (uomIndex && uomIndex === '2') {
+        //     path = `//div[@id="TSAAOQMUOM2-panel"][@role="listbox"]/mat-option[@title="${text}"]`;
+        // }
         return By.xpath(path);
     }
 
@@ -123,12 +131,24 @@ export class OrderPage extends WebAppList {
         );
     }
 
+    public getSelectorOfItemInCartLinesViewByName(name: string) {
+        return By.xpath(`//span[contains(@title,"${name}")]/ancestor::fieldset`);
+    }
+
     public getSelectorOfFreeItemInCartByName(name: string) {
         return By.xpath(`${this.getSelectorOfItemInCartByName(name).value}[@style]`);
     }
 
+    public getSelectorOfFreeItemInCartLinesViewByName(name: string) {
+        return By.xpath(`${this.getSelectorOfItemInCartLinesViewByName(name).value}[@style]`);
+    }
+
     public getSelectorOfCustomFieldInCartByItemName(fieldName: string, itemName: string) {
         return By.xpath(`${this.getSelectorOfItemInCartByName(itemName).value}${this[fieldName].value}`);
+    }
+
+    public getSelectorOfCustomFieldInCartLinesViewByItemName(fieldName: string, itemName: string) {
+        return By.xpath(`${this.getSelectorOfItemInCartLinesViewByName(itemName).value}${this[fieldName].value}`);
     }
 
     public getSelectorOfCustomFieldInCartByFreeItemName(fieldName: string, itemName: string) {
@@ -147,9 +167,25 @@ export class OrderPage extends WebAppList {
         );
     }
 
+    public getSelectorOfNumberOfUnitsInCartLinesViewByItemName(name: string) {
+        return By.xpath(
+            `${this.getSelectorOfItemInCartLinesViewByName(name).value}${
+                this.ItemQuantity_NumberOfUnits_Readonly.value
+            }`,
+        );
+    }
+
     public getSelectorOfNumberOfUnitsInCartByFreeItemName(name: string) {
         return By.xpath(
             `${this.getSelectorOfFreeItemInCartByName(name).value}${this.ItemQuantity_NumberOfUnits_Readonly.value}`,
+        );
+    }
+
+    public getSelectorOfNumberOfUnitsInCartLinesViewByFreeItemName(name: string) {
+        return By.xpath(
+            `${this.getSelectorOfFreeItemInCartLinesViewByName(name).value}${
+                this.ItemQuantity_NumberOfUnits_Readonly.value
+            }`,
         );
     }
 
@@ -173,6 +209,16 @@ export class OrderPage extends WebAppList {
     // End of specific pricing selectors //
 
     public async changeOrderCenterPageView(viewType: string) {
+        //switch to medium view:
+        //1. click on btn to open drop down
+        await this.clickViewMenu();
+        //2. pick wanted view
+        const injectedViewType = this.ViewTypeOption.valueOf()['value'].slice().replace('|textToFill|', viewType);
+        await this.browser.click(By.xpath(injectedViewType));
+        await this.isSpinnerDone();
+    }
+
+    public async changeCartView(viewType: string) {
         //switch to medium view:
         //1. click on btn to open drop down
         await this.clickViewMenu();

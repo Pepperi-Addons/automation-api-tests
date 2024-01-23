@@ -38,7 +38,7 @@ export class StoryBookPage extends Page {
     public StorybookIframe: By = By.css('iframe#storybook-preview-iframe');
 
     public async navigateToStoryBook(): Promise<void> {
-        return await this.browser.navigate(super.url);
+        return await this.browser.navigate(this.url);
     }
 
     public async chooseLatestBuild(): Promise<void> {

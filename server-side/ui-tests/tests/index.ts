@@ -49,6 +49,7 @@ import { StorybookSkeletonLoaderTests } from './storybook/storybook_skeleton_loa
 import { StorybookSliderTests } from './storybook/storybook_slider.test';
 import { StorybookTextareaTests } from './storybook/storybook_textarea.test';
 import { StorybookTextboxTests } from './storybook/storybook_textbox.test';
+import { NeltPerformanceTests } from './Nelt_performance/nelt_performance.test';
 
 export {
     LoginTests,
@@ -102,4 +103,5 @@ export {
     StorybookSliderTests,
     StorybookTextareaTests,
     StorybookTextboxTests,
+    NeltPerformanceTests,
 };
