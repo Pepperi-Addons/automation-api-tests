@@ -31,13 +31,60 @@ export class NeltPerformance extends AddonPage {
     public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
     public ContinueOrdering_Button: By = By.xpath('//button[@data-qa="Continue ordering"]');
     public VisitFlow_visits_container: By = By.xpath('//div[contains(@class,"visits-container")]');
+    public VisitFlow_visits_selection: By = By.xpath('//div[contains(@class,"visit-selection")]');
     public VisitFlow_selection_header: By = By.xpath(
         '//div[contains(@class,"visit-selection")]/div[contains(@class,"header")]',
     );
     public VisitFlow_singleVisit_container: By = By.xpath('//div[contains(@class,"visit-container")]');
     public VisitFlow_singleVisit_step: By = By.xpath('//div[contains(@class,"group-steps")]//pep-button');
+    public VisitFlow_StartButton: By = By.xpath('//div[contains(@class,"group-steps")]//pep-button');
+    public DatePicker_container: By = By.xpath('//mat-datetimepicker-content');
+    public DatePicker_highlightedDate: By = By.xpath(
+        `${this.DatePicker_container.value}//td[@role="button"][contains(@class,"active")]`,
+    );
+    public PepMainArea: By = By.xpath('//div[contains(@class,"pep-main-area")]');
+    public AccountDetails_component: By = By.xpath('//acc-details');
+    public MatGridList: By = By.xpath(`${this.PepMainArea.value}//mat-grid-list`);
+    public TopBarContainer: By = By.xpath('//div[contains(@class,"top-bar-container")]');
+    public TopBar_LeftContainer: By = By.xpath(`${this.TopBarContainer.value}//div[contains(@class,"left-container")]`);
+    public TopBar_RightContainer: By = By.xpath(
+        `${this.TopBarContainer.value}//div[contains(@class,"right-container")]`,
+    );
+    public TopBar_Left_CancelButtton: By = By.xpath(
+        `${this.TopBar_LeftContainer.value}//button[@data-qa="cancelButton"]`,
+    );
+    public TopBar_Right_DoneButtton: By = By.xpath(
+        `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Done"]`,
+    );
+    public TopBar_Right_EndButtton: By = By.xpath(
+        `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="End"]`,
+    );
+    public TopBar_Right_StartButtton: By = By.xpath(
+        `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Start"]`,
+    );
+    public Information_popup: By = By.xpath(
+        '//mat-dialog-container//div[contains(@id,"mat-dialog-title-")]/span[contains(text(),"Information")]',
+    );
+    public PepDialog_message: By = By.xpath('//mat-dialog-container//pep-dialog/div[2]/div');
+    public PepDialog_Cancel_button: By = By.xpath(
+        '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"Cancel")]/parent::button',
+    );
+    public PepDialog_Continue_button: By = By.xpath(
+        '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"Continue")]/parent::button',
+    );
 
     // Specific selectors for Nelt //
+    public Kartica_kupca_results_number: By = By.xpath('//div[contains(@class,"topBar")]//b[@id="results"]');
+    public Kartica_kupca_table_cell: By = By.xpath('//table//tbody//td[contains(@class,"table-td-container")]');
+    public Datum_ekstenzije_od_DateField: By = By.xpath('//input[@id="TSACreditLimitDateFrom"]');
+    public Broj_dana_trajanja_ekstenzije_Field: By = By.xpath(
+        '//mat-label[contains(@title,"Broj ")]/ancestor::pep-textbox//mat-form-field//input',
+    );
+    public Razlog_povecanja_DropdownOptionsField: By = By.xpath('//mat-select[@id="TSAReason"]');
+    public Razlog_povecanja_OptionsList: By = By.xpath('//div[@role="listbox"]');
+    public Razlog_povecanja_OptionThatContainsWhiteSpace: By = By.xpath(
+        `${this.Razlog_povecanja_OptionsList.value}//mat-option[contains(@id,"mat-option-")][contains(@title," ")]`,
+    );
     public OrderCatalogItem: By = By.xpath('//span[@id="Description"]/ancestor::mat-grid-list');
     public OrderCenterItem_OrderButton: By = By.xpath(
         '//pep-list//virtual-scroller//pep-form//mat-grid-list[contains(@class,"card")]//button[@id="TSAAOQMQuantity1"][@title="Order"]',
@@ -142,6 +189,6 @@ export class NeltPerformance extends AddonPage {
     }
 
     public getSelectorOfVisitStepByText(text: string) {
-        return By.xpath(`//div[contains(@class,"group-steps")]//span[@title="${text}"]/ancestor::button`);
+        return By.xpath(`//div[contains(@class,"group-steps")]//span[contains(@title,"${text}")]/ancestor::button`);
     }
 }
