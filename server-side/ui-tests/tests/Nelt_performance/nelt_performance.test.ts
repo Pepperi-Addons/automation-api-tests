@@ -1755,7 +1755,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 });
                 driver.sleep(0.5 * 1000);
             });
-            it(`Time Measured`, async function () {
+            it(`Raw Time Measured`, async function () {
                 addContext(this, {
                     title: `Raw Times (in miliseconds):`,
                     value: `${JSON.stringify(timeMeasurementsRaw, null, 2)}`,
