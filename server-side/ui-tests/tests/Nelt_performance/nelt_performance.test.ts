@@ -367,33 +367,36 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
                 await driver.click(neltPerformanceSelectors.Datum_ekstenzije_od_DateField);
                 await driver.untilIsVisible(neltPerformanceSelectors.DatePicker_container);
-                await driver.click(neltPerformanceSelectors.DatePicker_highlightedDate);
-                await driver.untilIsVisible(neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field);
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `Date chosen`,
+                    title: `Date Picker Opened`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
+                await driver.click(neltPerformanceSelectors.DatePicker_highlightedDate);
+                await driver.untilIsVisible(neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field);
                 await neltPerfomanceService.replaceContentOfInput(
                     driver,
                     neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field,
                     10,
                 );
-                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Broj field filled`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
+                // await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
                 await driver.click(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
-                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
+                driver.sleep(1 * 1000);
+                // await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Dropdown opened`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
+                driver.sleep(1 * 1000);
                 await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
-                await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
+                driver.sleep(1 * 1000);
+                // await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Option at dropdown chosen`,
