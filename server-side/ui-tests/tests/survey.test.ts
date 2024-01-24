@@ -172,7 +172,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'],
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', '1.1.115'],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
