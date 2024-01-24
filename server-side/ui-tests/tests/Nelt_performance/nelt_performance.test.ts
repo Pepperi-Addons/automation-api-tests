@@ -538,6 +538,10 @@ export async function NeltPerformanceTests(email: string, password: string) {
 
         // 17
         describe('ExternalResourceView: 1. Home Screen --> Kupci --> Select account --> Burger menu --> Kartica Kupca', async () => {
+            before(async function () {
+                await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+            });
+
             it('Navigate to first account in list from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
             });
