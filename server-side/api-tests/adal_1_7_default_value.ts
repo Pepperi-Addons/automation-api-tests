@@ -1,4 +1,5 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
+//import { DateTime } from '../ui-tests/pom/Pages/StorybookComponents/DateTime';
 //import { v4 as newUuid } from 'uuid';
 //import { Fields } from '@pepperi-addons/papi-sdk/dist/endpoints';
 
@@ -14,7 +15,8 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
 
     const logcash: any = {};
     logcash.randomInt = Math.floor(1000 + Math.random() * 9000);
-    logcash.DateTime = generalService.getDate();
+    //logcash.Date = generalService.getDate();
+    logcash.DateTime = new Date();
 
     const addonUUID = generalService['client'].BaseURL.includes('staging')
         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
@@ -76,21 +78,33 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
             }
         });
 
-        describe('Create Schema and insert 100K objects (just 5 not hidden objects on the end of list) -> search not hidden docs an truncate all data on the end of test', () => {
+        describe('Default values test - ADAL 1.7', () => {
             it('Test Initiation', async () => {
                 // this will run the first test that will run the second and so on..Its test initiation
                 await getSecretKey();
             });
-            it('Create Schema', async () => {
-                assert(logcash.createSchemaWithPropertiesStatus, logcash.createSchemaWithPropertiesErrorMessage);
+            it('Create Schema with fields with default values', async () => {
+                assert(logcash.createSchemaDefaultValueStatus, logcash.createSchemaDefaultValueErrorMessage);
             });
-            it('Insert 100K objects', () => {
-                assert(logcash.insert500ObjectsStatus, logcash.add50InsertsToTableOverwriteFalseError);
+            it('Insert 2 objects', () => {
+                assert(logcash.insertObjectsStatus, logcash.insertObjectsError);
             });
-            it('Search not hidden objects', () => {
-                assert(logcash.getDataNotHiddenStatus, logcash.getDataNotHiddenError);
+            it('Get data and verify defaultValues', () => {
+                assert(logcash.getDataTableOrderByKeyStatus, logcash.getDataTableOrderByKeyError);
             });
-            it('Trancate created data', () => {
+            it('Upsert fields with owerwrite false', () => {
+                assert(logcash.upsertObjectsStatus, logcash.upsertObjectsError);
+            });
+            it('Get data and verify values after update', () => {
+                assert(logcash.getDataTableOrderByKeyUpdatedStatus, logcash.getDataTableOrderByKeyUpdatedError);
+            });
+            it('Upsert data with owerwrite true. The will be updeted to default values', () => {
+                assert(logcash.upsertObjectsOwerwriteTrueStatus, logcash.upsertObjectsOwerwriteTrueError);
+            });
+            it('Get data after update wuth owewrite true', () => {
+                assert(logcash.getDataTableOrderByKeyUpdatedSecStatus, logcash.getDataTableOrderByKeyUpdatedSecError);
+            });
+            it('Truncate data', () => {
                 assert(logcash.truncateTestTableLastStatus, logcash.truncateTestTableLastError);
             });
             it('Drop created schema', () => {
@@ -129,7 +143,7 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
                     Fields: {
                         TestInteger: { Type: 'Integer', DefaultValue: 5 },
                         TestString: { Type: 'String', DefaultValue: 'DefaultVAlue test' },
-                        TestBoolean: { Type: 'Bool', DefaultValue: false },
+                        TestBoolean: { Type: 'Bool', DefaultValue: true },
                         TestDate: { Type: 'DateTime', DefaultValue: logcash.DateTime },
                         TestDouble: { Type: 'Double', DefaultValue: 10.5 },
                     },
@@ -144,7 +158,8 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
             logcash.createSchemaDefaultValue.Fields.TestInteger.Type == 'Integer' &&
             logcash.createSchemaDefaultValue.Fields.TestInteger.DefaultValue == 5 &&
             logcash.createSchemaDefaultValue.Fields.TestString.Type == 'String' &&
-            logcash.createSchemaDefaultValue.Fields.TestString.DefaultValue == 'DefaultVAlue test'){
+            logcash.createSchemaDefaultValue.Fields.TestString.DefaultValue == 'DefaultVAlue test'
+        ) {
             logcash.createSchemaDefaultValueStatus = true;
         } else {
             logcash.createSchemaDefaultValueStatus = false;
@@ -186,7 +201,7 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
         logcash.num = num;
         // const tst = 0;
         // let tst1 = 0;
-        const object = createObjects(num); 
+        const object = createObjects(num);
         logcash.insertObjects = await generalService
             .fetchStatus(baseURL + '/addons/data/batch/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName, {
                 method: 'POST',
@@ -205,10 +220,9 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
         //countNum++;
         //debugger;
         if (logcash.insertObjects.length == num) {
-            //logcash.insert500ObjectsStatus = true;
+            logcash.insertObjectsStatus = true;
         } else {
-            (logcash.insertObjectsStatus = false),
-                (logcash.insertObjectsError = 'Batch upsert failed');
+            (logcash.insertObjectsStatus = false), (logcash.insertObjectsError = 'Batch upsert failed');
         }
         await getDataTableOrderByKey();
     }
@@ -216,7 +230,12 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
     async function getDataTableOrderByKey() {
         logcash.getDataTableOrderByKey = await generalService
             .fetchStatus(
-                baseURL + '/addons/data/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName + '?order_by=Key&page_size=-1', //desc
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName +
+                    '?order_by=Key&page_size=-1', //desc
                 {
                     method: 'GET',
                     headers: {
@@ -227,16 +246,193 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
                 },
             )
             .then((res) => res.Body);
-        debugger;
+        //debugger;
         if (
-            logcash.getDataTableOrderByKey.length == logcash.num
+            logcash.getDataTableOrderByKey.length == logcash.num &&
+            logcash.getDataTableOrderByKey[0].Key == 'value0' &&
+            logcash.getDataTableOrderByKey[0].TestBoolean == true &&
+            JSON.stringify(logcash.getDataTableOrderByKey[0].TestDate) == JSON.stringify(logcash.DateTime) &&
+            logcash.getDataTableOrderByKey[0].TestDouble == 10.5 &&
+            logcash.getDataTableOrderByKey[0].TestInteger == 5 &&
+            logcash.getDataTableOrderByKey[0].TestString == 'DefaultVAlue test' &&
+            logcash.getDataTableOrderByKey[1].Key == 'value1' &&
+            logcash.getDataTableOrderByKey[1].TestBoolean == true &&
+            JSON.stringify(logcash.getDataTableOrderByKey[1].TestDate) == JSON.stringify(logcash.DateTime) &&
+            logcash.getDataTableOrderByKey[1].TestDouble == 10.5 &&
+            logcash.getDataTableOrderByKey[1].TestInteger == 5 &&
+            logcash.getDataTableOrderByKey[1].TestString == 'DefaultVAlue test'
         ) {
             logcash.getDataTableOrderByKeyStatus = true;
         } else {
             logcash.getDataTableOrderByKeyStatus = false;
-            logcash.getDataTableOrderByKeyError =
-                'Wrong data on GET :' +
-                logcash.getDataTableOrderByKey.length;
+            logcash.getDataTableOrderByKeyError = 'Wrong data on GET :' + logcash.getDataTableOrderByKey.length;
+        }
+        await upsertObjects();
+    }
+
+    async function upsertObjects() {
+        // const num = 1;
+        // logcash.num = num;
+        //const object = createObjects2(num);
+        logcash.upsertObjects = await generalService
+            .fetchStatus(baseURL + '/addons/data/batch/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+
+                body: JSON.stringify({
+                    Objects: [
+                        {
+                            Key: logcash.getDataTableOrderByKey[0].Key,
+                            TestBoolean: false,
+                            TestDate: new Date(),
+                            TestDouble: 21.9,
+                            TestInteger: 11,
+                            TestString: 'NotDefaultVAlue test',
+                        },
+                        {
+                            Key: logcash.getDataTableOrderByKey[1].Key,
+                        },
+                    ],
+                    //'Overwrite': false
+                    //OverwriteObject: true,
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.upsertObjects.length == 2) {
+            logcash.upsertObjectsStatus = true;
+        } else {
+            (logcash.upsertObjectsStatus = false), (logcash.upsertObjectsError = 'Batch upsert failed');
+        }
+        await getDataTableOrderByKeyUpdated();
+    }
+
+    async function getDataTableOrderByKeyUpdated() {
+        logcash.getDataTableOrderByKeyUpdated = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName +
+                    '?order_by=Key&page_size=-1', //desc
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataTableOrderByKeyUpdated[0].Key == 'value0' &&
+            logcash.getDataTableOrderByKeyUpdated[0].TestBoolean == false &&
+            JSON.stringify(logcash.getDataTableOrderByKeyUpdated[0].TestDate) != JSON.stringify(logcash.DateTime) &&
+            logcash.getDataTableOrderByKeyUpdated[0].TestDouble == 21.9 &&
+            logcash.getDataTableOrderByKeyUpdated[0].TestInteger == 11 &&
+            logcash.getDataTableOrderByKeyUpdated[0].TestString == 'NotDefaultVAlue test' &&
+            logcash.getDataTableOrderByKeyUpdated[1].Key == 'value1' &&
+            logcash.getDataTableOrderByKeyUpdated[1].TestBoolean == true &&
+            JSON.stringify(logcash.getDataTableOrderByKeyUpdated[1].TestDate) == JSON.stringify(logcash.DateTime) &&
+            logcash.getDataTableOrderByKeyUpdated[1].TestDouble == 10.5 &&
+            logcash.getDataTableOrderByKeyUpdated[1].TestInteger == 5 &&
+            logcash.getDataTableOrderByKeyUpdated[1].TestString == 'DefaultVAlue test'
+        ) {
+            logcash.getDataTableOrderByKeyUpdatedStatus = true;
+        } else {
+            logcash.getDataTableOrderByKeyUpdatedStatus = false;
+            logcash.getDataTableOrderByKeyUpdatedError = 'Wrong data on GET after upsert with owerwrite false';
+        }
+        await upsertObjectsOwerwriteTrue();
+    }
+
+    async function upsertObjectsOwerwriteTrue() {
+        //const num = 1;
+        //logcash.num = num;
+        //const object = createObjects2(num);
+        logcash.upsertObjectsOwerwriteTrue = await generalService
+            .fetchStatus(baseURL + '/addons/data/batch/' + addonUUID + '/' + logcash.createSchemaWithMandFieldName, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Pepperi-OwnerID': addonUUID,
+                    'X-Pepperi-SecretKey': logcash.secretKey,
+                },
+
+                body: JSON.stringify({
+                    Objects: [
+                        {
+                            Key: logcash.getDataTableOrderByKey[0].Key,
+                        },
+                        {
+                            Key: logcash.getDataTableOrderByKey[1].Key,
+                            TestBoolean: false,
+                            TestDate: new Date(),
+                            TestDouble: 21.9,
+                            TestInteger: 11,
+                            TestString: 'NotDefaultVAlue test',
+                        },
+                    ],
+                    //'Overwrite': false
+                    WriteMode: 'Overwrite',
+                }),
+            })
+            .then((res) => res.Body);
+        //debugger;
+        if (logcash.upsertObjectsOwerwriteTrue.length == 2) {
+            logcash.upsertObjectsOwerwriteTrueStatus = true;
+        } else {
+            (logcash.upsertObjectsOwerwriteTrueStatus = false),
+                (logcash.upsertObjectsOwerwriteTrueError = 'Batch upsert failed');
+        }
+        await getDataTableOrderByKeyUpdatedSec();
+    }
+
+    async function getDataTableOrderByKeyUpdatedSec() {
+        logcash.getDataTableOrderByKeyUpdatedSec = await generalService
+            .fetchStatus(
+                baseURL +
+                    '/addons/data/' +
+                    addonUUID +
+                    '/' +
+                    logcash.createSchemaWithMandFieldName +
+                    '?order_by=Key&page_size=-1', //desc
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: 'Bearer ' + token,
+                        'X-Pepperi-OwnerID': addonUUID,
+                        'X-Pepperi-SecretKey': logcash.secretKey,
+                    },
+                },
+            )
+            .then((res) => res.Body);
+        //debugger;
+        if (
+            logcash.getDataTableOrderByKeyUpdatedSec[0].Key == 'value0' &&
+            logcash.getDataTableOrderByKeyUpdatedSec[1].TestBoolean == false &&
+            JSON.stringify(logcash.getDataTableOrderByKeyUpdatedSec[1].TestDate) != JSON.stringify(logcash.DateTime) &&
+            logcash.getDataTableOrderByKeyUpdatedSec[1].TestDouble == 21.9 &&
+            logcash.getDataTableOrderByKeyUpdatedSec[1].TestInteger == 11 &&
+            logcash.getDataTableOrderByKeyUpdatedSec[1].TestString == 'NotDefaultVAlue test' &&
+            logcash.getDataTableOrderByKeyUpdatedSec[1].Key == 'value1' &&
+            logcash.getDataTableOrderByKeyUpdatedSec[0].TestBoolean == true &&
+            JSON.stringify(logcash.getDataTableOrderByKeyUpdatedSec[1].TestDate) == JSON.stringify(logcash.DateTime) &&
+            logcash.getDataTableOrderByKeyUpdatedSec[0].TestDouble == 10.5 &&
+            logcash.getDataTableOrderByKeyUpdatedSec[0].TestInteger == 5 &&
+            logcash.getDataTableOrderByKeyUpdatedSec[0].TestString == 'DefaultVAlue test'
+        ) {
+            logcash.getDataTableOrderByKeyUpdatedSecStatus = true;
+        } else {
+            logcash.getDataTableOrderByKeyUpdatedSecStatus = false;
+            logcash.getDataTableOrderByKeyUpdatedSecError = 'Wrong data on GET after upsert with owerwrite true';
         }
         await truncateTestTableLast();
     }
@@ -254,7 +450,7 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
             },
         );
         //debugger;
-        if (res6.Ok && res6.Status == 200 && res6.Body.ExecutionUUID) {
+        if (res6.Ok && res6.Status == 200) {
             logcash.truncateTestTableLastStatus = true;
             logcash.res6 = res6.Body.URI;
         } else {
@@ -262,25 +458,25 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
             logcash.truncateTestTableLastError = 'Truncate table failed.';
             await dropTableSec();
         }
-        await exLog();
-    }
-
-    async function exLog() {
-        const executionURI = logcash.res6;
-        logcash.exLog = await generalService.getAuditLogResultObjectIfValid(executionURI as string, 250, 7000);
-        // debugger;
-        if (
-            logcash.exLog.Status.ID == 1 &&
-            JSON.parse(logcash.exLog.AuditInfo.ResultObject).ProcessedCounter == 100000
-        ) {
-            logcash.truncateTestTableLastStatus = true;
-        } else {
-            logcash.truncateTestTableLastStatus = false;
-            logcash.truncateTestTableLastError = 'Truncate table failed.';
-        }
-
         await dropTableSec();
     }
+
+    // async function exLog() {
+    //     const executionURI = logcash.res6;
+    //     logcash.exLog = await generalService.getAuditLogResultObjectIfValid(executionURI as string, 250, 7000);
+    //     // debugger;
+    //     if (
+    //         logcash.exLog.Status.ID == 1 &&
+    //         JSON.parse(logcash.exLog.AuditInfo.ResultObject).ProcessedCounter == 100000
+    //     ) {
+    //         logcash.truncateTestTableLastStatus = true;
+    //     } else {
+    //         logcash.truncateTestTableLastStatus = false;
+    //         logcash.truncateTestTableLastError = 'Truncate table failed.';
+    //     }
+
+    //     await dropTableSec();
+    // }
 
     async function dropTableSec() {
         //logcash.dropExistingTable = await generalService.fetchStatus(baseURL + '/addons/data/schemes/' + logcash.createSchemaWithMandFieldName.Name + '/purge', {
@@ -309,11 +505,11 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     function createObjects(num) {
         // create inserts unique key:value
 
-        const array: { Key: string;}[] = [];
+        const array: { Key: string }[] = [];
         for (let index = 0; index < num; index++) {
             array[index] = {
                 Key: 'value' + index,
@@ -321,5 +517,19 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
         }
         return array;
     }
-   
+
+    // function createObjects2(num) {
+    //     // create inserts unique key:value
+    //     const array: { Key: string,TestBoolean: Boolean,TestDate: Date,TestDouble: Number,TestInteger: Number, TestString:String}[] = [];
+    //     for (let index = 0; index < num; index++) {
+    //         array[index] = {
+    //             Key: logcash.getDataTableOrderByKey[0].Key,
+    //             TestBoolean: false,
+    //             TestDate: new Date(),
+    //             TestDouble: 21.9,
+    //             TestInteger: 11,
+    //             TestString: 'NotDefaultVAlue test'}
+    //     }
+    //     return array;
+    // }
 }
