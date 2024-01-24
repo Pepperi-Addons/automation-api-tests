@@ -308,237 +308,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
             });
         });
 
-        // 6 + 7
-        describe('AccountAction: 1. Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit', async () => {
-            it('Navigate to first account from Home Screen main button', async function () {
-                await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
-            });
-            it('Clicking Plus Button at Account Dashboard', async function () {
-                await neltPerfomanceService.clickPlusButtonMenuAtAccountDashboard.bind(this)(driver);
-            });
-            it('Choosing "Ekstenzija KL" at Catalogs List', async function () {
-                timeInterval = 0;
-                // time measurment
-                const Ekstenzija_KL_opening = new Date().getTime();
-                await driver.click(
-                    neltPerformanceSelectors.getSelectorOfAccountDashboardPlusButtonMenuItemByName('Ekstenzija KL'),
-                );
-                await neltPerformanceSelectors.isSpinnerDone();
-                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Left_CancelButtton);
-                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
-                await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
-                const Ekstenzija_KL_loaded = new Date().getTime();
-                timeInterval = Ekstenzija_KL_loaded - Ekstenzija_KL_opening;
-                console.info(
-                    'Ekstenzija_KL_opening: ',
-                    Ekstenzija_KL_opening,
-                    'Ekstenzija_KL_loaded: ',
-                    Ekstenzija_KL_loaded,
-                    'Time Interval: ',
-                    timeInterval,
-                );
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `"Ekstenzija KL" loaded`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-            });
-            it(`Time Measured`, async function () {
-                addContext(this, {
-                    title: `Time Interval for "Ekstenzija KL" to load:`,
-                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-                        1,
-                    )} s`,
-                });
-                // timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL'] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
-                timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL'] = Number(
-                    (timeInterval / 1000).toFixed(1),
-                );
-                timeMeasurementsRaw.push({
-                    title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL',
-                    time: timeInterval,
-                });
-                driver.sleep(0.5 * 1000);
-            });
-            it('Clicking Submit at "Ekstenzija KL"', async function () {
-                timeInterval = 0;
-                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Left_CancelButtton);
-                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
-                await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
-                await driver.click(neltPerformanceSelectors.Datum_ekstenzije_od_DateField);
-                await driver.untilIsVisible(neltPerformanceSelectors.DatePicker_container);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Date Picker Opened`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                await driver.click(neltPerformanceSelectors.DatePicker_highlightedDate);
-                await driver.untilIsVisible(neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field);
-                await neltPerfomanceService.replaceContentOfInput(
-                    driver,
-                    neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field,
-                    10,
-                );
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Broj field filled`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                // await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
-                await driver.click(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
-                driver.sleep(1 * 1000);
-                // await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Dropdown opened`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                driver.sleep(1 * 1000);
-                await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
-                driver.sleep(1 * 1000);
-                // await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Option at dropdown chosen`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                await driver.click(neltPerformanceSelectors.HtmlBody);
-                await driver.click(neltPerformanceSelectors.TopBar_Right_DoneButtton);
-                await driver.untilIsVisible(neltPerformanceSelectors.Information_popup);
-                await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `"Ekstenzija KL" Submitted`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                // time measurment
-                const Ekstenzija_KL_submit_opening = new Date().getTime();
-                await driver.click(neltPerformanceSelectors.PepDialog_Continue_button);
-                await neltPerformanceSelectors.isSpinnerDone();
-                await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
-                await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_BurgerMenu);
-                await driver.untilIsVisible(neltPerformanceSelectors.AccountDetails_component);
-                const Ekstenzija_KL_submit_loaded = new Date().getTime();
-                timeInterval = Ekstenzija_KL_submit_loaded - Ekstenzija_KL_submit_opening;
-                console.info(
-                    'Ekstenzija_KL_submit_opening: ',
-                    Ekstenzija_KL_submit_opening,
-                    'Ekstenzija_KL_submit_loaded: ',
-                    Ekstenzija_KL_submit_loaded,
-                    'Time Interval: ',
-                    timeInterval,
-                );
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `At Order Center`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-            });
-            it(`Time Measured`, async function () {
-                addContext(this, {
-                    title: `Time Interval for "Ekstenzija KL" Submit to finish:`,
-                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-                        1,
-                    )} s`,
-                });
-                // timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
-                //     timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
-                timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
-                    Number((timeInterval / 1000).toFixed(1));
-                timeMeasurementsRaw.push({
-                    title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit',
-                    time: timeInterval,
-                });
-                driver.sleep(0.5 * 1000);
-            });
-            it('Back to Home Screen', async function () {
-                await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-            });
-        });
-
-        // 7
-        // describe('AccountAction: 2. Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit', async () => {
-        //     it('Navigate to first account from Home Screen main button', async function () {
-        //         await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
-        //     });
-        //     it('Choosing "Ekstenzija KL" at Dropdown Menu of Plus Button at Account Dashboard', async function () {
-        //         await neltPerfomanceService.selectUnderPlusButtonMenuAtAccountDashboard.bind(this)(
-        //             driver,
-        //             'Ekstenzija KL',
-        //         );
-        //     });
-        //     it('Clicking Submit at "Ekstenzija KL"', async function () {
-        //         timeInterval = 0;
-        //         await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Left_CancelButtton);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
-        //         await driver.click(neltPerformanceSelectors.Datum_ekstenzije_od_DateField);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.DatePicker_container);
-        //         await driver.click(neltPerformanceSelectors.DatePicker_highlightedDate);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field);
-        //         await neltPerfomanceService.replaceContentOfInput(
-        //             driver,
-        //             neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field,
-        //             10,
-        //         );
-        //         await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
-        //         await driver.click(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
-        //         await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
-        //         await driver.click(neltPerformanceSelectors.TopBar_Right_DoneButtton);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.Information_popup);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `"Ekstenzija KL" Opened`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         // time measurment
-        //         const Ekstenzija_KL_submit_opening = new Date().getTime();
-        //         await driver.click(neltPerformanceSelectors.PepDialog_Continue_button);
-        //         await neltPerformanceSelectors.isSpinnerDone();
-        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_BurgerMenu);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDetails_component);
-        //         const Ekstenzija_KL_submit_loaded = new Date().getTime();
-        //         timeInterval = Ekstenzija_KL_submit_loaded - Ekstenzija_KL_submit_opening;
-        //         console.info(
-        //             'Ekstenzija_KL_submit_opening: ',
-        //             Ekstenzija_KL_submit_opening,
-        //             'Ekstenzija_KL_submit_loaded: ',
-        //             Ekstenzija_KL_submit_loaded,
-        //             'Time Interval: ',
-        //             timeInterval,
-        //         );
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `At Order Center`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //     });
-        //     it(`Time Measured`, async function () {
-        //         addContext(this, {
-        //             title: `Time Interval for "Ekstenzija KL" Submit to finish:`,
-        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-        //                 1,
-        //             )} s`,
-        //         });
-        //         // timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
-        //         //     timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
-        //         timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
-        //             Number((timeInterval / 1000).toFixed(1));
-        //         timeMeasurementsRaw.push({
-        //             title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit',
-        //             time: timeInterval,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it('Back to Home Screen', async function () {
-        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-        //     });
-        // });
-
         // 17
         describe('ExternalResourceView: 1. Home Screen --> Kupci --> Select account --> Burger menu --> Kartica Kupca', async () => {
             // before(async function () {
@@ -1973,6 +1742,237 @@ export async function NeltPerformanceTests(email: string, password: string) {
         //             )} s`,
         //         });
         //         timeMeasurements["Home Screen --> Dnevni izvestaj  (WITH DATA)"] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
+        //         driver.sleep(0.5 * 1000);
+        //     });
+        //     it('Back to Home Screen', async function () {
+        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+        //     });
+        // });
+
+        // 6 + 7
+        describe('AccountAction: 1. Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit', async () => {
+            it('Navigate to first account from Home Screen main button', async function () {
+                await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
+            });
+            it('Clicking Plus Button at Account Dashboard', async function () {
+                await neltPerfomanceService.clickPlusButtonMenuAtAccountDashboard.bind(this)(driver);
+            });
+            it('Choosing "Ekstenzija KL" at Catalogs List', async function () {
+                timeInterval = 0;
+                // time measurment
+                const Ekstenzija_KL_opening = new Date().getTime();
+                await driver.click(
+                    neltPerformanceSelectors.getSelectorOfAccountDashboardPlusButtonMenuItemByName('Ekstenzija KL'),
+                );
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Left_CancelButtton);
+                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
+                await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
+                const Ekstenzija_KL_loaded = new Date().getTime();
+                timeInterval = Ekstenzija_KL_loaded - Ekstenzija_KL_opening;
+                console.info(
+                    'Ekstenzija_KL_opening: ',
+                    Ekstenzija_KL_opening,
+                    'Ekstenzija_KL_loaded: ',
+                    Ekstenzija_KL_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `"Ekstenzija KL" loaded`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "Ekstenzija KL" to load:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+                        1,
+                    )} s`,
+                });
+                // timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL'] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
+                timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL'] = Number(
+                    (timeInterval / 1000).toFixed(1),
+                );
+                timeMeasurementsRaw.push({
+                    title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL',
+                    time: timeInterval,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it('Clicking Submit at "Ekstenzija KL"', async function () {
+                timeInterval = 0;
+                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Left_CancelButtton);
+                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
+                await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
+                await driver.click(neltPerformanceSelectors.Datum_ekstenzije_od_DateField);
+                await driver.untilIsVisible(neltPerformanceSelectors.DatePicker_container);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Date Picker Opened`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.click(neltPerformanceSelectors.DatePicker_highlightedDate);
+                await driver.untilIsVisible(neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field);
+                await neltPerfomanceService.replaceContentOfInput(
+                    driver,
+                    neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field,
+                    10,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Broj field filled`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                // await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
+                await driver.click(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
+                driver.sleep(1 * 1000);
+                // await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Dropdown opened`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(1 * 1000);
+                await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
+                driver.sleep(1 * 1000);
+                // await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Option at dropdown chosen`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.click(neltPerformanceSelectors.HtmlBody);
+                await driver.click(neltPerformanceSelectors.TopBar_Right_DoneButtton);
+                await driver.untilIsVisible(neltPerformanceSelectors.Information_popup);
+                await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `"Ekstenzija KL" Submitted`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                // time measurment
+                const Ekstenzija_KL_submit_opening = new Date().getTime();
+                await driver.click(neltPerformanceSelectors.PepDialog_Continue_button);
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
+                await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_BurgerMenu);
+                await driver.untilIsVisible(neltPerformanceSelectors.AccountDetails_component);
+                const Ekstenzija_KL_submit_loaded = new Date().getTime();
+                timeInterval = Ekstenzija_KL_submit_loaded - Ekstenzija_KL_submit_opening;
+                console.info(
+                    'Ekstenzija_KL_submit_opening: ',
+                    Ekstenzija_KL_submit_opening,
+                    'Ekstenzija_KL_submit_loaded: ',
+                    Ekstenzija_KL_submit_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Order Center`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "Ekstenzija KL" Submit to finish:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+                        1,
+                    )} s`,
+                });
+                // timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
+                //     timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
+                timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
+                    Number((timeInterval / 1000).toFixed(1));
+                timeMeasurementsRaw.push({
+                    title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit',
+                    time: timeInterval,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it('Back to Home Screen', async function () {
+                await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+            });
+        });
+
+        // 7
+        // describe('AccountAction: 2. Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit', async () => {
+        //     it('Navigate to first account from Home Screen main button', async function () {
+        //         await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
+        //     });
+        //     it('Choosing "Ekstenzija KL" at Dropdown Menu of Plus Button at Account Dashboard', async function () {
+        //         await neltPerfomanceService.selectUnderPlusButtonMenuAtAccountDashboard.bind(this)(
+        //             driver,
+        //             'Ekstenzija KL',
+        //         );
+        //     });
+        //     it('Clicking Submit at "Ekstenzija KL"', async function () {
+        //         timeInterval = 0;
+        //         await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Left_CancelButtton);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
+        //         await driver.click(neltPerformanceSelectors.Datum_ekstenzije_od_DateField);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.DatePicker_container);
+        //         await driver.click(neltPerformanceSelectors.DatePicker_highlightedDate);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field);
+        //         await neltPerfomanceService.replaceContentOfInput(
+        //             driver,
+        //             neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field,
+        //             10,
+        //         );
+        //         await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
+        //         await driver.click(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
+        //         await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
+        //         await driver.click(neltPerformanceSelectors.TopBar_Right_DoneButtton);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.Information_popup);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
+        //         base64ImageComponent = await driver.saveScreenshots();
+        //         addContext(this, {
+        //             title: `"Ekstenzija KL" Opened`,
+        //             value: 'data:image/png;base64,' + base64ImageComponent,
+        //         });
+        //         // time measurment
+        //         const Ekstenzija_KL_submit_opening = new Date().getTime();
+        //         await driver.click(neltPerformanceSelectors.PepDialog_Continue_button);
+        //         await neltPerformanceSelectors.isSpinnerDone();
+        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_BurgerMenu);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDetails_component);
+        //         const Ekstenzija_KL_submit_loaded = new Date().getTime();
+        //         timeInterval = Ekstenzija_KL_submit_loaded - Ekstenzija_KL_submit_opening;
+        //         console.info(
+        //             'Ekstenzija_KL_submit_opening: ',
+        //             Ekstenzija_KL_submit_opening,
+        //             'Ekstenzija_KL_submit_loaded: ',
+        //             Ekstenzija_KL_submit_loaded,
+        //             'Time Interval: ',
+        //             timeInterval,
+        //         );
+        //         base64ImageComponent = await driver.saveScreenshots();
+        //         addContext(this, {
+        //             title: `At Order Center`,
+        //             value: 'data:image/png;base64,' + base64ImageComponent,
+        //         });
+        //     });
+        //     it(`Time Measured`, async function () {
+        //         addContext(this, {
+        //             title: `Time Interval for "Ekstenzija KL" Submit to finish:`,
+        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+        //                 1,
+        //             )} s`,
+        //         });
+        //         // timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
+        //         //     timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
+        //         timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
+        //             Number((timeInterval / 1000).toFixed(1));
+        //         timeMeasurementsRaw.push({
+        //             title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit',
+        //             time: timeInterval,
+        //         });
         //         driver.sleep(0.5 * 1000);
         //     });
         //     it('Back to Home Screen', async function () {
