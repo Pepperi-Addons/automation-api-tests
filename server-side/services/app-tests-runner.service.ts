@@ -2,7 +2,7 @@ import { reportBuildStarted, reportToTeams, reportToTeamsMessage } from '../ui-t
 import GeneralService from './general.service';
 import { initiateTester } from './general.service';
 
-export class CiCdFlow {
+export class AppTest {
     service: GeneralService;
     base64VARCredentialsProd;
     base64VARCredentialsEU;
