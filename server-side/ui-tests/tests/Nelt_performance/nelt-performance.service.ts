@@ -67,7 +67,7 @@ export class NeltPerformanceService {
         driver.sleep(0.1 * 1000);
         await inputElement.sendKeys(text + '\n');
         driver.sleep(0.5 * 1000);
-        await driver.click(neltPerformanceSelectors.HtmlBody);
+        // await driver.click(neltPerformanceSelectors.HtmlBody);
         driver.sleep(0.1 * 1000);
         await neltPerformanceSelectors.isSpinnerDone();
     }
