@@ -14,7 +14,7 @@ export async function PFSTests(generalService: GeneralService, request, tester: 
 
     //#region Upgrade PFS
     const testData = {
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.3.89'], //wont pass on other versions
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //wont pass on other versions
         'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     };
