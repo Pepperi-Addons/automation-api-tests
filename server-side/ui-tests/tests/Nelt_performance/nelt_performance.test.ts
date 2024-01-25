@@ -1825,10 +1825,10 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     title: `Broj field filled`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                // await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
+                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
                 await driver.click(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
                 driver.sleep(1 * 1000);
-                // await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
+                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Dropdown opened`,
@@ -1837,13 +1837,13 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 driver.sleep(1 * 1000);
                 await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
                 driver.sleep(1 * 1000);
-                // await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
+                await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Option at dropdown chosen`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                await driver.click(neltPerformanceSelectors.HtmlBody);
+                await driver.click(neltPerformanceSelectors.Ekstenzija_KL_bold_title);
                 await driver.click(neltPerformanceSelectors.TopBar_Right_DoneButtton);
                 await driver.untilIsVisible(neltPerformanceSelectors.Information_popup);
                 await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
