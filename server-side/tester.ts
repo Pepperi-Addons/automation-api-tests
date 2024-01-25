@@ -6,9 +6,6 @@ import path from 'path';
 import Mochawesome from 'mochawesome';
 import { Client } from '@pepperi-addons/debug-server';
 import { ConsoleColors } from './services/general.service';
-//SYS REPORTING
-// import GeneralService from './services/general.service';
-// import jwt_decode from 'jwt-decode';
 
 chai.use(promised);
 
@@ -94,7 +91,6 @@ export default function Tester(client?: Client, testName?: string, environment?:
                     })
                     .on('test end', (data) => {
                         if (data.state != 'passed') {
-                            //EVGENY HERE every test -- data is the same as in e2e
                             console.log(
                                 `%c${nestedGap.slice(1)}Test End: ${data.title}: Result: ${data.state}`,
                                 ConsoleColors.Error,
@@ -109,7 +105,6 @@ export default function Tester(client?: Client, testName?: string, environment?:
                         suitName = '';
                     })
                     .on('end', () => {
-                        // resolve((runner as any).testResults);
                         setTimeout(() => {
                             fs.readFile(path.join(mochaDir, fileName + '.json'), async (err, data) => {
                                 if (err) {
@@ -126,56 +121,8 @@ export default function Tester(client?: Client, testName?: string, environment?:
                                             return resolve(String(error));
                                         }
                                     }
-
                                     //Test results report might be to big for the addon, so remove some data from response
                                     let outpot = JSON.stringify(res);
-                                    //SYS REPORTING
-                                    // console.log(
-                                    //     `%cStarting To Report Test Results To Monitoring Addon`,
-                                    //     ConsoleColors.SystemInformation,
-                                    // );
-                                    // const parsedToken = jwt_decode(client!.OAuthAccessToken);
-                                    // const userName = parsedToken.email;
-                                    // //TODO:
-                                    // const generalService = new GeneralService(client!);
-                                    // //2. are all tests passed?
-                                    // const testResults = res.stats.failures === 0 ? 'SUCCESS' : 'ERROR';
-                                    //2.1 if so - send as "SUCSESS"  with only suit name
-                                    // if (failedTestsNames && failedTestsNames.length) {
-                                    //     for (let index = 0; index < failedTestsNames.length; index++) {
-                                    //         const element = failedTestsNames[index];
-                                    //         const monitoringResult = await generalService.sendResultsToMonitoringAddon(
-                                    //             userName,
-                                    //             `API Test: ${testName!} ` + element,
-                                    //             'ERROR',
-                                    //             environment!,
-                                    //         );
-                                    // if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
-                                    //     //monitoringResult.Body.fault.faultstring
-                                    //     console.log(
-                                    //         `%cFAILED TO SEND REPORT TO MONITORING ADDON, with the exception:${monitoringResult.Body.fault.faultstring}`,
-                                    //         ConsoleColors.Error,
-                                    //     );
-                                    // }
-                                    // }
-                                    // } else {
-                                    //     //2.2 if not - iterate on all failed tests and send test by test
-                                    //     const monitoringResult = await generalService.sendResultsToMonitoringAddon(
-                                    //         userName,
-                                    //         'API Test: ' + testName!,
-                                    //         testResults,
-                                    //         environment!,
-                                    //     );
-                                    // if (monitoringResult.Ok !== true || monitoringResult.Status !== 200) {
-                                    //     console.log(
-                                    //         `%cFAILED TO SEND REPORT TO MONITORING ADDON, with the exception:${monitoringResult.Body.fault.faultstring}`,
-                                    //         ConsoleColors.Error,
-                                    //     );
-                                    // }
-                                    // }
-                                    // console.log(`%cReporting ended`, ConsoleColors.SystemInformation);
-                                    // debugger;
-                                    //------------------------------------------------------------------------------------
                                     //Check response length to remove the code parts if needed
                                     //Changed from 200000 to 100000 since KB limitation is set to 128KB (16/11/2021 by Nofar)
                                     if (outpot.length > 100000) {
