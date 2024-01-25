@@ -74,6 +74,7 @@ export class NeltPerformance extends AddonPage {
     );
 
     // Specific selectors for Nelt //
+    public Ekstenzija_KL_bold_title: By = By.xpath('//mat-grid-tile//span[contains(@class,"block-with-text body-md")]');
     public Kartica_kupca_results_number: By = By.xpath('//div[contains(@class,"topBar")]//b[@id="results"]');
     public Kartica_kupca_table_cell: By = By.xpath('//table//tbody//td[contains(@class,"table-td-container")]');
     public Datum_ekstenzije_od_DateField: By = By.xpath('//input[@id="TSACreditLimitDateFrom"]');
