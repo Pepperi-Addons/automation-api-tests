@@ -2181,6 +2181,41 @@ export default class GeneralService {
         }
     }
 
+    convertArrayOfObjectsToPFSTempFile(arrayOfObjects: Record<string, unknown>[]) {
+        return this.turnJsonObjectToCSVTextualObjectArray(arrayOfObjects[1], arrayOfObjects);
+    }
+
+    turnJsonObjectToCSVTextualObjectArray(jsonObject: Record<string, unknown>, actualArray: Record<string, unknown>[]) {
+        let csvTextualObject = '';
+        const jsonObjKeys = Object.keys(jsonObject);
+        //1. validate all keys are the same across object
+        for (let index = 0; index < actualArray.length; index++) {
+            const jsonFromArray = actualArray[index];
+            const keys = Object.keys(jsonFromArray);
+            for (let index = 0; index < keys.length; index++) {
+                const keyFromJson = keys[index];
+                if (keyFromJson !== jsonObjKeys[index]) {
+                    throw new Error(
+                        `Error: Keys are not the same across JSON: ${keyFromJson} != ${jsonObjKeys[index]}`,
+                    );
+                }
+            }
+        }
+        //2. add CSV's keys
+        csvTextualObject += jsonObjKeys + ',Hidden' + '\n';
+        //3. add all values
+        for (let index = 0; index < actualArray.length; index++) {
+            const jsonElement = actualArray[index];
+            const jsonValues = Object.values(jsonElement);
+            for (let index = 0; index < jsonValues.length; index++) {
+                const csvRow = jsonValues[index];
+                csvTextualObject += csvRow + ',';
+            }
+            csvTextualObject += 'false' + '\n';
+        }
+        return csvTextualObject;
+    }
+
     async createCSVFile(
         fileName: string,
         howManyDataRows: number,
