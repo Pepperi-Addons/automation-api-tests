@@ -35,6 +35,51 @@ export class PFSService {
         );
     }
 
+    async createTempCSVFileFromArrayOfObjects(arrayOfObjects: Record<string, unknown>[]) {
+        //HOW TO USE:[Hagit]
+        //const pfsService = new PFSService(generalService); // create PFS Service
+        //const linkToCSV = await pfsService.createTempCSVFileFromArrayOfObjects(array); // call createTempCSVFileFromArrayOfObjects function which will return link to PFS Temp File
+        //1. create CSV textual object using the JSON & create a buffer out of the textual value
+        const csvTextualObject = this.generalService.convertArrayOfObjectsToPFSTempFile(arrayOfObjects);
+        const buf1 = Buffer.from(csvTextualObject, 'utf-8');
+        //2. create temp PFS file
+        const fileName = 'TempFile' + this.generalService.generateRandomString(8) + '.csv';
+        const mime = 'text/csv';
+        const tempFileResponse = await this.postTempFile({
+            FileName: fileName,
+            MIME: mime,
+        });
+        //2.1. validate it was created successfully
+        if (!tempFileResponse.PutURL) {
+            throw new Error(`Error: Creating PFS Temp File Failed - No Put URL - Response:${tempFileResponse}`);
+        }
+        if (!tempFileResponse.TemporaryFileURL) {
+            throw new Error(
+                `Error: Creating PFS Temp File Failed - No Temporary File URL - Response:${tempFileResponse}`,
+            );
+        }
+        if (!tempFileResponse.TemporaryFileURL.includes('pfs.')) {
+            throw new Error(
+                `Error: Creating PFS Temp File Failed - Temporary File URL is Broken - Response:${tempFileResponse}`,
+            );
+        }
+        //3. PUT the file to newly created PFS temp file
+        const putResponsePart1 = await this.putPresignedURL(tempFileResponse.PutURL, buf1);
+        //3. validate PUT was successfull
+        if (putResponsePart1.ok !== true) {
+            throw new Error(
+                `Error: PUT Data To Temp File URL - ${tempFileResponse.PutURL}, Failed, OK: FALSE, Response:${putResponsePart1}`,
+            );
+        }
+        if (putResponsePart1.status !== 200) {
+            throw new Error(
+                `Error: PUT Data To Temp File URL - ${tempFileResponse.PutURL}, Failed, Status IS NOT 200, Response:${putResponsePart1}`,
+            );
+        }
+        console.log(`CSV File Created In: ${tempFileResponse.TemporaryFileURL}`);
+        return tempFileResponse.TemporaryFileURL;
+    }
+
     postTempFile(body) {
         return this.papiClient.post(
             '/addons/api/00000000-0000-0000-0000-0000000f11e5/api/temporary_file',

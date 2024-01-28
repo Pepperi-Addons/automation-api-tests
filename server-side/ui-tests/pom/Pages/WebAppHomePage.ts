@@ -56,9 +56,13 @@ export class WebAppHomePage extends WebAppPage {
     public async reSyncApp() {
         const urlWithSupportMenu = (await this.browser.getCurrentUrl()) + '/supportmenu';
         await this.browser.navigate(urlWithSupportMenu);
+        this.browser.sleep(1000 * 2);
         await this.browser.untilIsVisible(this.SupportMenuPopup_Refresh);
+        this.browser.sleep(1000 * 2);
         await this.browser.click(this.SupportMenuPopup_Refresh);
+        this.browser.sleep(1000 * 3);
         await this.browser.untilIsVisible(this.SupportMenuPopup_RefreshData);
+        this.browser.sleep(1000 * 3);
         await this.browser.click(this.SupportMenuPopup_RefreshData);
         this.browser.sleep(3 * 1000);
         await this.isSpinnerDone();

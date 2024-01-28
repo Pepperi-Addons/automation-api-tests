@@ -96,6 +96,7 @@ import { UDC150KOverwriteTestser } from '../../api-tests/user_defined_collection
 import { UDC100KOverwriteTestser } from '../../api-tests/user_defined_collections_100K_overwrite';
 import { SchedulerTester_Part2 } from '../../api-tests/code-jobs/scheduler_DI_23872';
 import { DevTest } from './DevTests';
+import { XTimesSync } from './XTimesSyncE2E.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -123,6 +124,8 @@ const userNameCreate = process.env.npm_config_user_name_create as string;
 const passCreate = process.env.npm_config_pass_create as string;
 const whichEnvToRun = process.env.npm_config_envs as string;
 const whichAddonToUninstall = process.env.npm_config_which_addon as string;
+const XForSyncTimes = Number(process.env.npm_config_x as any);
+debugger;
 
 (async function () {
     const tempGeneralService = new GeneralService({
@@ -229,6 +232,10 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
+    if (tests.includes('XTimesSync')) {
+        await XTimesSync(email, pass, client, XForSyncTimes);
+    }
+
     if (tests.includes('FlowBuilder')) {
         await FlowTests(email, pass, client, {
             body: {
@@ -240,16 +247,16 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
         await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
     }
 
-    if (tests.includes('evgeny')) {
-        await Import250KToAdalFromDimx(client, {
-            body: {
-                varKeyStage: varPass,
-                varKeyPro: varPass,
-                varKeyEU: varPassEU,
-            },
-        }); //
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
+    // if (tests.includes('evgeny')) {
+    //     await XXXTestser(generalService, {
+    //         body: {
+    //             varKeyStage: varPass,
+    //             varKeyPro: varPass,
+    //             varKeyEU: varPassEU,
+    //         }
+    //     }, { describe, expect, it } as TesterFunctions); //
+    //     await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    // }
 
     if (tests.includes('UDCImportExport')) {
         await UDCImportExportTests(
