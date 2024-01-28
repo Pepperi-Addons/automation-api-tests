@@ -25,7 +25,7 @@ export const testData = {
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version --
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi --
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.30.%'], //CPAS --
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'], //EVGENY 21/12/23: new node version
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //EVGENY 21/12/23: new node version
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
@@ -89,7 +89,7 @@ export const testDataForInitUser = {
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on newest
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.20.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.4.%'], //cpi-node (Cross Platform Engine)
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi-node (Cross Platform Engine)
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.%'], //NG14 latest webapp
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],

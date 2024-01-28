@@ -169,7 +169,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.0.123'], //11/1/24: this has to be locked currently as new versions are dependent on config versions which are not available yet
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', ''],
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'],
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'],
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
