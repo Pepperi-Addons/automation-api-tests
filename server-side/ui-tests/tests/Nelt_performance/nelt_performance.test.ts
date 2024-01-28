@@ -6,13 +6,22 @@ import { Browser } from '../../utilities/browser';
 import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../pom';
 import { NeltPerformanceService } from './nelt-performance.service';
 import { NeltPerformance } from './NeltPerformance';
+// import { PFSService } from '../../../services/pfs.service';
+// import { GeneralService } from '../../../services';
+// import { Client } from '@pepperi-addons/debug-server/dist';
 
 chai.use(promised);
 
-export async function NeltPerformanceTests(email: string, password: string) {
+export async function NeltPerformanceTests(
+    email: string,
+    password: string,
+    // client: Client
+) {
     const dateTime = new Date();
     const timeMeasurements = {};
     const timeMeasurementsRaw: { title: string; time: number }[] = [];
+    // const generalService = new GeneralService(client);
+    // const pfsService: PFSService = new PFSService(generalService);
 
     let driver: Browser;
     let neltPerfomanceService: NeltPerformanceService;
@@ -151,7 +160,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements['Home Screen --> Dugovnaja'] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements['Home Screen --> Dugovnaja'] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({ title: 'Home Screen --> Dugovnaja', time: timeInterval });
                 driver.sleep(0.5 * 1000);
@@ -199,7 +207,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements['Home Screen --> Dnevni plan'] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements['Home Screen --> Dnevni plan'] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({ title: 'Home Screen --> Dnevni plan', time: timeInterval });
                 driver.sleep(0.5 * 1000);
@@ -210,7 +217,167 @@ export async function NeltPerformanceTests(email: string, password: string) {
         });
 
         // 4
-        describe('AccountList: 1. Home Screen --> Kupci', async () => {
+        describe('Insights: 1. Home Screen --> Dnevni izvestaj', async () => {
+            it('Navigating from Home Screen (through Burger Menu) to "Dnevni izvestaj"', async function () {
+                timeInterval = 0;
+                await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Home Hamburger Menu Opened:`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                // time measurment
+                const Dnevni_izvestaj_opening = new Date().getTime();
+                await driver.click(
+                    neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dnevni izvestaj'),
+                );
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_GalleryCard);
+                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfInsightsGalleryCardByText('0'));
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table);
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table_Header);
+                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfInsightsTableHeaderdByText('Target'));
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart);
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVG); // if there is NO DATA at insights
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVGtext); // if there is NO DATA at insights
+                // await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_ChartGraph); // if there is data at insights
+                const Dnevni_izvestaj_loaded = new Date().getTime();
+                timeInterval = Dnevni_izvestaj_loaded - Dnevni_izvestaj_opening;
+                console.info(
+                    'Dnevni_izvestaj_opening: ',
+                    Dnevni_izvestaj_opening,
+                    'Dnevni_izvestaj_loaded: ',
+                    Dnevni_izvestaj_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At "Dnevni izvestaj"`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "Dnevni izvestaj" to load:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+                        1,
+                    )} s`,
+                });
+                timeMeasurements['Home Screen --> Dnevni izvestaj'] = Number((timeInterval / 1000).toFixed(1));
+                timeMeasurementsRaw.push({
+                    title: 'Home Screen --> Dnevni izvestaj',
+                    time: timeInterval,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it('Back to Home Screen', async function () {
+                await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+            });
+        });
+
+        // 5
+        // describe('AccountList: 1. Home Screen --> Kupci', async () => {
+        //     it('Clicking "Kupci" button at Home Screen', async function () {
+        //         timeInterval = 0;
+        //         // time measurment
+        //         const Kupci_opening = new Date().getTime();
+        //         await driver.click(neltPerformanceSelectors.KupciButtonAtHome);
+        //         await neltPerformanceSelectors.isSpinnerDone();
+        //         await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
+        //         const Kupci_loaded = new Date().getTime();
+        //         timeInterval = Kupci_loaded - Kupci_opening;
+        //         console.info(
+        //             'Kupci_opening: ',
+        //             Kupci_opening,
+        //             'Kupci_loaded: ',
+        //             Kupci_loaded,
+        //             'Time Interval: ',
+        //             timeInterval,
+        //         );
+        //         base64ImageComponent = await driver.saveScreenshots();
+        //         addContext(this, {
+        //             title: `At Kupci`,
+        //             value: 'data:image/png;base64,' + base64ImageComponent,
+        //         });
+        //     });
+        //     it(`Time Measured`, async function () {
+        //         addContext(this, {
+        //             title: `Time Interval for "Kupci" to load:`,
+        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+        //                 1,
+        //             )} s`,
+        //         });
+        //         timeMeasurements['Home Screen --> Kupci'] = Number((timeInterval / 1000).toFixed(1));
+        //         timeMeasurementsRaw.push({ title: 'Home Screen --> Kupci', time: timeInterval });
+        //         driver.sleep(0.5 * 1000);
+        //     });
+        //     it('Back to Home Screen', async function () {
+        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+        //     });
+        // });
+
+        // 5
+        // describe('AccountList: 2. Home Screen --> Kupci --> Select account', async () => {
+        //     it('Clicking "Kupci" button at Home Screen', async function () {
+        //         await driver.click(neltPerformanceSelectors.KupciButtonAtHome);
+        //         await neltPerformanceSelectors.isSpinnerDone();
+        //         base64ImageComponent = await driver.saveScreenshots();
+        //         addContext(this, {
+        //             title: `At Kupci`,
+        //             value: 'data:image/png;base64,' + base64ImageComponent,
+        //         });
+        //     });
+        //     it('Choosing First Account in list', async function () {
+        //         timeInterval = 0;
+        //         // time measurment
+        //         const KupciAccount_opening = new Date().getTime();
+        //         await driver.click(neltPerformanceSelectors.FirstAccountInList);
+        //         await neltPerformanceSelectors.isSpinnerDone();
+        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_BurgerMenu);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDetails_component);
+        //         await driver.untilIsVisible(neltPerformanceSelectors.PepList);
+        //         const KupciAccount_loaded = new Date().getTime();
+        //         timeInterval = KupciAccount_loaded - KupciAccount_opening;
+        //         console.info(
+        //             'KupciAccount_opening: ',
+        //             KupciAccount_opening,
+        //             'KupciAccount_loaded: ',
+        //             KupciAccount_loaded,
+        //             'Time Interval: ',
+        //             timeInterval,
+        //         );
+        //         base64ImageComponent = await driver.saveScreenshots();
+        //         addContext(this, {
+        //             title: `At Kupci Account`,
+        //             value: 'data:image/png;base64,' + base64ImageComponent,
+        //         });
+        //     });
+        //     it(`Time Measured`, async function () {
+        //         addContext(this, {
+        //             title: `Time Interval for "Kupci Account" to load:`,
+        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+        //                 1,
+        //             )} s`,
+        //         });
+        //         timeMeasurements['Home Screen --> Kupci --> Select account'] = Number((timeInterval / 1000).toFixed(1));
+        //         timeMeasurementsRaw.push({
+        //             title: 'Home Screen --> Kupci --> Select account',
+        //             time: timeInterval,
+        //         });
+        //         driver.sleep(0.5 * 1000);
+        //     });
+        //     it('Back to Home Screen', async function () {
+        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+        //     });
+        // });
+
+        // 6 + 7
+        describe('AccountAction: 1. Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit', async () => {
+            // it('Navigate to first account from Home Screen main button', async function () {
+            //     await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
+            // });
             it('Clicking "Kupci" button at Home Screen', async function () {
                 timeInterval = 0;
                 // time measurment
@@ -241,26 +408,9 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements['Home Screen --> Kupci'] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements['Home Screen --> Kupci'] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({ title: 'Home Screen --> Kupci', time: timeInterval });
                 driver.sleep(0.5 * 1000);
-            });
-            it('Back to Home Screen', async function () {
-                await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-            });
-        });
-
-        // 5
-        describe('AccountList: 2. Home Screen --> Kupci --> Select account', async () => {
-            it('Clicking "Kupci" button at Home Screen', async function () {
-                await driver.click(neltPerformanceSelectors.KupciButtonAtHome);
-                await neltPerformanceSelectors.isSpinnerDone();
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `At Kupci`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
             });
             it('Choosing First Account in list', async function () {
                 timeInterval = 0;
@@ -295,10 +445,147 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements['Home Screen --> Kupci --> Select account'] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements['Home Screen --> Kupci --> Select account'] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
                     title: 'Home Screen --> Kupci --> Select account',
+                    time: timeInterval,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it('Clicking Plus Button at Account Dashboard', async function () {
+                await neltPerfomanceService.clickPlusButtonMenuAtAccountDashboard.bind(this)(driver);
+            });
+            it('Choosing "Ekstenzija KL" at Dropdown', async function () {
+                timeInterval = 0;
+                // time measurment
+                const Ekstenzija_KL_opening = new Date().getTime();
+                await driver.click(
+                    neltPerformanceSelectors.getSelectorOfAccountDashboardPlusButtonMenuItemByName('Ekstenzija KL'),
+                );
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Left_CancelButtton);
+                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
+                await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
+                const Ekstenzija_KL_loaded = new Date().getTime();
+                timeInterval = Ekstenzija_KL_loaded - Ekstenzija_KL_opening;
+                console.info(
+                    'Ekstenzija_KL_opening: ',
+                    Ekstenzija_KL_opening,
+                    'Ekstenzija_KL_loaded: ',
+                    Ekstenzija_KL_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `"Ekstenzija KL" loaded`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "Ekstenzija KL" to load:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+                        1,
+                    )} s`,
+                });
+                timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL'] = Number(
+                    (timeInterval / 1000).toFixed(1),
+                );
+                timeMeasurementsRaw.push({
+                    title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL',
+                    time: timeInterval,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it(`Filling the Form`, async function () {
+                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Left_CancelButtton);
+                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
+                await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
+                await driver.click(neltPerformanceSelectors.Datum_ekstenzije_od_DateField);
+                await driver.untilIsVisible(neltPerformanceSelectors.DatePicker_container);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Date Picker Opened`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.click(neltPerformanceSelectors.DatePicker_highlightedDate);
+                await driver.untilIsVisible(neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field);
+                await neltPerfomanceService.replaceContentOfInput(
+                    driver,
+                    neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field,
+                    10,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Broj field - filled`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
+                await driver.click(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
+                driver.sleep(1 * 1000);
+                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Dropdown opened`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(1 * 1000);
+                await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
+                driver.sleep(1 * 1000);
+                await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Option at dropdown chosen`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.click(neltPerformanceSelectors.Ekstenzija_KL_bold_title);
+                driver.sleep(0.5 * 1000);
+            });
+            it('Clicking Submit at "Ekstenzija KL"', async function () {
+                timeInterval = 0;
+                await driver.click(neltPerformanceSelectors.TopBar_Right_DoneButtton);
+                await driver.untilIsVisible(neltPerformanceSelectors.Information_popup);
+                await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `"Ekstenzija KL" Submitted`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                // time measurment
+                const Ekstenzija_KL_submit_opening = new Date().getTime();
+                await driver.click(neltPerformanceSelectors.PepDialog_Continue_button);
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
+                await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_BurgerMenu);
+                await driver.untilIsVisible(neltPerformanceSelectors.AccountDetails_component);
+                const Ekstenzija_KL_submit_loaded = new Date().getTime();
+                timeInterval = Ekstenzija_KL_submit_loaded - Ekstenzija_KL_submit_opening;
+                console.info(
+                    'Ekstenzija_KL_submit_opening: ',
+                    Ekstenzija_KL_submit_opening,
+                    'Ekstenzija_KL_submit_loaded: ',
+                    Ekstenzija_KL_submit_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Order Center`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "Ekstenzija KL" Submit to finish:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+                        1,
+                    )} s`,
+                });
+                timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
+                    Number((timeInterval / 1000).toFixed(1));
+                timeMeasurementsRaw.push({
+                    title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit',
                     time: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
@@ -310,10 +597,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
 
         // 17
         describe('ExternalResourceView: 1. Home Screen --> Kupci --> Select account --> Burger menu --> Kartica Kupca', async () => {
-            // before(async function () {
-            //     await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-            // });
-
             it('Navigate to first account in list from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
             });
@@ -363,8 +646,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements['Home Screen --> Kupci --> Select account --> Burger menu --> Kartica Kupca'] =
-                //     timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements['Home Screen --> Kupci --> Select account --> Burger menu --> Kartica Kupca'] = Number(
                     (timeInterval / 1000).toFixed(1),
                 );
@@ -440,9 +721,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select account --> Burger menu --> Istorija prodaje po kupcu'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements[
                     'Home Screen --> Kupci --> Select account --> Burger menu --> Istorija prodaje po kupcu'
                 ] = Number((timeInterval / 1000).toFixed(1));
@@ -472,7 +750,7 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
                     await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
                         driver,
-                        'F4 out-of-store poseta',
+                        ' poseta',
                     );
                 }
             });
@@ -517,9 +795,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Start'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements['Select visit flow --> Start'] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({ title: 'Select visit flow --> Start', time: timeInterval });
                 driver.sleep(0.5 * 1000);
@@ -564,9 +839,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Start --> End'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements['Select visit flow --> Start --> End'] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({ title: 'Select visit flow --> Start --> End', time: timeInterval });
                 driver.sleep(0.5 * 1000);
@@ -575,79 +847,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 await neltPerfomanceService.toHomeScreen.bind(this, driver)();
             });
         });
-
-        // 22
-        // describe('VisitFlow: 4. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Near Expiry order', async () => {
-        //     it('Navigate to first account in list from Home Screen', async function () {
-        //         await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
-        //     });
-        //     it('Choosing "Pocni Posetu" at Dropdown Menu of Hamburger Menu at Account Dashboard', async function () {
-        //         await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
-        //             driver,
-        //             'Pocni posetu',
-        //         );
-        //     });
-        //     it('Selecting Visit Flow from visits selection', async function () {
-        //         if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
-        //             await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
-        //                 driver,
-        //                 'F4 out-of-store poseta',
-        //             );
-        //         }
-        //     });
-        //     it('Starting Visit Flow', async function () {
-        //         timeInterval = 0;
-        //         await neltPerfomanceService.startVisit.bind(this)(driver);
-        //     });
-        //     it('Open Near Expiry order ********* || TODO', async function () {
-        //         // time measurment
-        //         const Near_Expiry_order_opening = new Date().getTime();
-        //         // await driver.click(neltPerformanceSelectors.TopBar_Right_EndButtton);
-        //         // await neltPerformanceSelectors.isSpinnerDone();
-        //         // await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
-        //         const Near_Expiry_order_loaded = new Date().getTime();
-        //         timeInterval = Near_Expiry_order_loaded - Near_Expiry_order_opening;
-        //         console.info(
-        //             'Near_Expiry_order_opening: ',
-        //             Near_Expiry_order_opening,
-        //             'Near_Expiry_order_loaded: ',
-        //             Near_Expiry_order_loaded,
-        //             'Time Interval: ',
-        //             timeInterval,
-        //         );
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `After "Near Expiry order" Opened`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it(`Time Measured`, async function () {
-        //         addContext(this, {
-        //             title: `Time Interval for "Near Expiry order" to load:`,
-        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-        //                 1,
-        //             )} s`,
-        //         });
-        //         // timeMeasurements[
-        //         //     'Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Near Expiry order'
-        //         // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
-        //         timeMeasurements['Select visit flow --> Open --> Near Expiry order'] = Number(
-        //             (timeInterval / 1000).toFixed(1),
-        //         );
-        //         timeMeasurementsRaw.push({
-        //             title: 'Select visit flow --> Open --> Near Expiry order',
-        //             time: timeInterval,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it('Ending Visit Flow', async function () {
-        //         await neltPerfomanceService.endVisit.bind(this)(driver);
-        //     });
-        //     it('Back to Home Screen', async function () {
-        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-        //     });
-        // });
 
         // 22 + 23
         describe('VisitFlow: 5. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Near Expiry order --> Add items --> Submit', async () => {
@@ -664,20 +863,33 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
                     await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
                         driver,
-                        'F4 out-of-store poseta',
+                        ' poseta',
                     );
                 }
             });
             it('Starting Visit Flow', async function () {
                 await neltPerfomanceService.startVisit.bind(this)(driver);
             });
-            it('Open Near Expiry order ********* || TODO', async function () {
+            it('Selecting "Knjizna za rokove" Group', async function () {
+                await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
+                await driver.click(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Knjizna za rokove'));
+                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitStepByText(''));
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Knjizna za rokove" Visit Flow Group Clicked`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it('Opening Near Expiry order', async function () {
                 timeInterval = 0;
                 // time measurment
                 const Near_Expiry_order_opening = new Date().getTime();
-                // await driver.click(neltPerformanceSelectors.TopBar_Right_EndButtton);
-                // await neltPerformanceSelectors.isSpinnerDone();
-                // await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
+                await driver.click(neltPerformanceSelectors.getSelectorOfVisitStepByText('Odobrenje'));
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
+                await driver.untilIsVisible(neltPerformanceSelectors.ListNumberOfResults);
+                await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_QuantitySelector_GridLineView);
                 const Near_Expiry_order_loaded = new Date().getTime();
                 timeInterval = Near_Expiry_order_loaded - Near_Expiry_order_opening;
                 console.info(
@@ -702,9 +914,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Near Expiry order'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements['Select visit flow --> Open --> Near Expiry order'] = Number(
                     (timeInterval / 1000).toFixed(1),
                 );
@@ -714,16 +923,85 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 });
                 driver.sleep(0.5 * 1000);
             });
-            it('Adding items ********* || TODO', async function () {
+            it('Adding items & choosing Expiry date of each', async function () {
+                await neltPerfomanceService.replaceContentOfInput(
+                    driver,
+                    neltPerformanceSelectors.getSelectorOfOrderCenterItemQuantitySelectorGridLineViewByIndex(1),
+                    8,
+                );
+                await driver.click(neltPerformanceSelectors.ListNumberOfResults);
+                await driver.click(neltPerformanceSelectors.getSelectorOfSpecificOrderCenterItemDateSelectByIndex(1));
+                await driver.untilIsVisible(neltPerformanceSelectors.DatePicker_container);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Date Picker Opened (date of today will be selected)`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.click(neltPerformanceSelectors.DatePicker_highlightedDate);
+                await driver.untilIsVisible(
+                    neltPerformanceSelectors.getSelectorOfSpecificOrderCenterItemExpiryDateByIndex(1),
+                );
+                await neltPerfomanceService.replaceContentOfInput(
+                    driver,
+                    neltPerformanceSelectors.getSelectorOfOrderCenterItemQuantitySelectorGridLineViewByIndex(2),
+                    10,
+                );
+                await driver.click(neltPerformanceSelectors.ListNumberOfResults);
+                await driver.click(neltPerformanceSelectors.getSelectorOfSpecificOrderCenterItemDateSelectByIndex(2));
+                await driver.untilIsVisible(neltPerformanceSelectors.DatePicker_container);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Date Picker Opened (date of today will be selected)`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.click(neltPerformanceSelectors.DatePicker_highlightedDate);
+                await driver.untilIsVisible(
+                    neltPerformanceSelectors.getSelectorOfSpecificOrderCenterItemExpiryDateByIndex(1),
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Items Selected`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 driver.sleep(0.5 * 1000);
             });
-            it('Submitting order ********* || TODO', async function () {
+            it('Clicking Cart Button', async function () {
+                await driver.click(neltPerformanceSelectors.Cart_Button);
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.ContinueOrdering_Button);
+                await driver.untilIsVisible(neltPerformanceSelectors.PepList);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Cart`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Selecting return reason', async function () {
+                await driver.click(neltPerformanceSelectors.Razlog_povrata_selectButton);
+                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
+                await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Return Reason Selected`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it('Submitting order', async function () {
                 timeInterval = 0;
+                await driver.click(neltPerformanceSelectors.TopBar_Right_SubmitButtton_atCart);
+                await driver.untilIsVisible(neltPerformanceSelectors.Information_popup);
+                await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Submit Button Clicked at "Odobrenje (Near Expiry) order"`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 // time measurment
                 const Submitting_Near_Expiry_order_opening = new Date().getTime();
-                // await driver.click(neltPerformanceSelectors.TopBar_Right_EndButtton);
-                // await neltPerformanceSelectors.isSpinnerDone();
-                // await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
+                await driver.click(neltPerformanceSelectors.PepDialog_Continue_button);
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
                 const Submitting_Near_Expiry_order_loaded = new Date().getTime();
                 timeInterval = Submitting_Near_Expiry_order_loaded - Submitting_Near_Expiry_order_opening;
                 console.info(
@@ -748,9 +1026,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Near Expiry order --> Add items --> Submit'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements['Select visit flow --> Open --> Near Expiry order --> Add items --> Submit'] = Number(
                     (timeInterval / 1000).toFixed(1),
                 );
@@ -768,58 +1043,8 @@ export async function NeltPerformanceTests(email: string, password: string) {
             });
         });
 
-        // 20
-        // describe('VisitFlow: 2. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Select Provat --> Provat order', async () => {
-        //     it('Navigate to first account in list from Home Screen', async function () {
-        //         await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
-        //     });
-        //     it('Choosing "Pocni Posetu" at Dropdown Menu of Hamburger Menu at Account Dashboard', async function () {
-        //         await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
-        //             driver,
-        //             'Pocni posetu',
-        //         );
-        //     });
-        //     it('Selecting Visit Flow from visits selection', async function () {
-        //         if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
-        //             await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
-        //                 driver,
-        //                 'F4 out-of-store poseta',
-        //             );
-        //         }
-        //     });
-        //     it('Starting Visit Flow', async function () {
-        //         timeInterval = 0;
-        //         await neltPerfomanceService.startVisit.bind(this)(driver);
-        //     });
-        //     it('Ending Visit Flow', async function () {
-        //         await neltPerfomanceService.endVisit.bind(this)(driver);
-        //     });
-        //     it(`Time Measured`, async function () {
-        //         addContext(this, {
-        //             title: `Time Interval for "Provat order" to load:`,
-        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-        //                 1,
-        //             )} s`,
-        //         });
-        //         // timeMeasurements[
-        //         //     'Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Select Provat --> Provat order'
-        //         // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
-        //         timeMeasurements['Select visit flow --> Open --> Select Provat --> Provat order'] = Number(
-        //             (timeInterval / 1000).toFixed(1),
-        //         );
-        //         timeMeasurementsRaw.push({
-        //             title: 'Select visit flow --> Open --> Select Provat --> Provat order',
-        //             time: timeInterval,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it('Back to Home Screen', async function () {
-        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-        //     });
-        // });
-
         // 20 + 21
-        describe('VisitFlow: 3. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Select Provat --> Provat order --> Add item --> Submit', async () => {
+        describe('VisitFlow: 3. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit', async () => {
             it('Navigate to first account in list from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
             });
@@ -833,105 +1058,160 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
                     await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
                         driver,
-                        'F4 out-of-store poseta',
+                        ' poseta',
                     );
                 }
             });
             it('Starting Visit Flow', async function () {
                 await neltPerfomanceService.startVisit.bind(this)(driver);
             });
-            it('Selecting Provat ********* || TODO', async function () {
+            it('Selecting Povrat', async function () {
+                await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
+                await driver.click(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Povrati'));
+                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitStepByText(''));
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Povrati" Visit Flow Group Clicked`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 driver.sleep(0.5 * 1000);
             });
-            it('Opening Provat order ********* || TODO', async function () {
+            it('Opening Povrat order', async function () {
                 timeInterval = 0;
                 // time measurment
-                const Provat_order_opening = new Date().getTime();
-                // await driver.click(neltPerformanceSelectors.TopBar_Right_EndButtton);
-                // await neltPerformanceSelectors.isSpinnerDone();
-                // await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
-                const Provat_order_loaded = new Date().getTime();
-                timeInterval = Provat_order_loaded - Provat_order_opening;
+                const Povrat_order_opening = new Date().getTime();
+                await driver.click(neltPerformanceSelectors.getSelectorOfVisitStepByText('Povrat - '));
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
+                await driver.untilIsVisible(neltPerformanceSelectors.ListNumberOfResults);
+                await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_QuantitySelector_GridLineView);
+                const Povrat_order_loaded = new Date().getTime();
+                timeInterval = Povrat_order_loaded - Povrat_order_opening;
                 console.info(
-                    'Provat_order_opening: ',
-                    Provat_order_opening,
-                    'Provat_order_loaded: ',
-                    Provat_order_loaded,
+                    'Povrat_order_opening: ',
+                    Povrat_order_opening,
+                    'Povrat_order_loaded: ',
+                    Povrat_order_loaded,
                     'Time Interval: ',
                     timeInterval,
                 );
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `After "Near Expiry order" Opened`,
+                    title: `After "Povrat order" Opened`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 driver.sleep(0.5 * 1000);
             });
             it(`Time Measured`, async function () {
                 addContext(this, {
-                    title: `Time Interval for "Provat order" to load:`,
+                    title: `Time Interval for "Povrat order" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Select Provat --> Provat order'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
-                timeMeasurements['Select visit flow --> Open --> Select Provat --> Provat order'] = Number(
+                timeMeasurements['Select visit flow --> Open --> Select Povrat --> Povrat order'] = Number(
                     (timeInterval / 1000).toFixed(1),
                 );
                 timeMeasurementsRaw.push({
-                    title: 'Select visit flow --> Open --> Select Provat --> Provat order',
+                    title: 'Select visit flow --> Open --> Select Povrat --> Povrat order',
                     time: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
-            it('Adding items ********* || TODO', async function () {
+            it('Adding items', async function () {
+                await neltPerfomanceService.replaceContentOfInput(
+                    driver,
+                    neltPerformanceSelectors.getSelectorOfOrderCenterItemQuantitySelectorGridLineViewByIndex(1),
+                    3,
+                );
+                await driver.click(neltPerformanceSelectors.ListNumberOfResults);
+                await neltPerfomanceService.replaceContentOfInput(
+                    driver,
+                    neltPerformanceSelectors.getSelectorOfOrderCenterItemQuantitySelectorGridLineViewByIndex(3),
+                    20,
+                );
+                await driver.click(neltPerformanceSelectors.ListNumberOfResults);
+                await neltPerfomanceService.replaceContentOfInput(
+                    driver,
+                    neltPerformanceSelectors.getSelectorOfOrderCenterItemQuantitySelectorGridLineViewByIndex(6),
+                    1,
+                );
+                await driver.click(neltPerformanceSelectors.ListNumberOfResults);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Items Selected`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Clicking Cart Button', async function () {
+                await driver.click(neltPerformanceSelectors.Cart_Button);
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.ContinueOrdering_Button);
+                await driver.untilIsVisible(neltPerformanceSelectors.PepList);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Cart`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Selecting return reason', async function () {
+                await driver.click(neltPerformanceSelectors.Razlog_povrata_selectButton);
+                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
+                await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Return Reason Selected`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 driver.sleep(0.5 * 1000);
             });
-            it('Submitting order ********* || TODO', async function () {
+            it('Submitting order', async function () {
                 timeInterval = 0;
                 // time measurment
-                const Submitting_Provat_order_opening = new Date().getTime();
-                // await driver.click(neltPerformanceSelectors.TopBar_Right_EndButtton);
-                // await neltPerformanceSelectors.isSpinnerDone();
-                // await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
-                const Submitting_Provat_order_loaded = new Date().getTime();
-                timeInterval = Submitting_Provat_order_loaded - Submitting_Provat_order_opening;
+                const Submitting_Povrat_order_opening = new Date().getTime();
+                await driver.click(neltPerformanceSelectors.TopBar_Right_SubmitButtton_atCart);
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
+                const Submitting_Povrat_order_loaded = new Date().getTime();
+                timeInterval = Submitting_Povrat_order_loaded - Submitting_Povrat_order_opening;
                 console.info(
-                    'Submitting_Provat_order_opening: ',
-                    Submitting_Provat_order_opening,
-                    'Submitting_Provat_order_loaded: ',
-                    Submitting_Provat_order_loaded,
+                    'Submitting_Povrat_order_opening: ',
+                    Submitting_Povrat_order_opening,
+                    'Submitting_Povrat_order_loaded: ',
+                    Submitting_Povrat_order_loaded,
                     'Time Interval: ',
                     timeInterval,
                 );
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `After "Near Expiry order" Opened`,
+                    title: `After "Povrat order" Submitted`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 driver.sleep(0.5 * 1000);
             });
             it(`Time Measured`, async function () {
                 addContext(this, {
-                    title: `Time Interval for "Provat order" submission:`,
+                    title: `Time Interval for "Povrat order" submission:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Select Provat --> Provat order --> Add item --> Submit'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements[
-                    'Select visit flow --> Open --> Select Provat --> Provat order --> Add item --> Submit'
+                    'Select visit flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit'
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: 'Select visit flow --> Open --> Select Provat --> Provat order --> Add item --> Submit',
+                    title: 'Select visit flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit',
                     time: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
+            // it('TEMP - puting order on hold', async function () {
+            //     await driver.click(neltPerformanceSelectors.Cart_Button);
+            //     await neltPerformanceSelectors.isSpinnerDone();
+            //     await driver.click(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
+            //     await neltPerformanceSelectors.isSpinnerDone();
+            //     driver.sleep(0.5 * 1000);
+            // });
             it('Ending Visit Flow', async function () {
                 await neltPerfomanceService.endVisit.bind(this)(driver);
             });
@@ -986,9 +1266,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar)'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements['Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar)'] =
                     Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
@@ -1028,17 +1305,13 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 // time measurment
-                await driver.click(
-                    neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Svi filteri'),
-                );
+                await driver.click(neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('MSL'));
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(
-                    neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
+                    neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Gillette'),
                 );
                 const Select_Filter_opening = new Date().getTime();
-                await driver.click(
-                    neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
-                );
+                await driver.click(neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Gillette'));
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
                 await driver.untilIsVisible(neltPerformanceSelectors.TransactionID);
@@ -1069,9 +1342,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select filter'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements[
                     'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select filter'
                 ] = Number((timeInterval / 1000).toFixed(1));
@@ -1155,9 +1425,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select smart filter'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements[
                     'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select smart filter'
                 ] = Number((timeInterval / 1000).toFixed(1));
@@ -1241,9 +1508,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements[
                     'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by'
                 ] = Number((timeInterval / 1000).toFixed(1));
@@ -1278,32 +1542,39 @@ export async function NeltPerformanceTests(email: string, password: string) {
             it('Choosing "CC Call Centar" at Catalogs List', async function () {
                 await neltPerfomanceService.choosingCatalogForOrder.bind(this)(driver, 'CC Call Centar');
             });
-            it('Adding Items ********* || TODO', async function () {
+            it('Search for "Ponuda S Ari" (to find non-promotion products)', async function () {
+                await neltPerfomanceService.replaceContentOfInput(
+                    driver,
+                    neltPerformanceSelectors.Search_Input,
+                    'Ponuda S Ari',
+                );
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `Catalogs List loaded`,
+                    title: `Sending Search String`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                // TODO - add between 3 to 5 items
+                await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
+            });
+            it('Adding Items', async function () {
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `Items Added`,
+                    title: `At Order Center after search`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
+                await neltPerfomanceService.chooseNonPromotionItemWithOrderClickByIndex.bind(this)(driver, 1);
+                await neltPerfomanceService.chooseNonPromotionItemWithOrderClickByIndex.bind(this)(driver, 2);
+                await neltPerfomanceService.chooseNonPromotionItemWithOrderClickByIndex.bind(this)(driver, 4);
+                await neltPerfomanceService.chooseNonPromotionItemWithOrderClickByIndex.bind(this)(driver, 10);
             });
             it('Clicking on Cart Button', async function () {
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `After Item Picking`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
                 // time measurment
                 const Click_on_Cart_opening = new Date().getTime();
                 await driver.click(neltPerformanceSelectors.Cart_Button);
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(neltPerformanceSelectors.ContinueOrdering_Button);
                 await driver.untilIsVisible(neltPerformanceSelectors.PepList);
-                // await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
+                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
+                // await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
                 const Click_on_Cart_loaded = new Date().getTime();
                 timeInterval = Click_on_Cart_loaded - Click_on_Cart_opening;
                 console.info(
@@ -1327,18 +1598,22 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select Account (1100072) --> + -- Order --> Select catalogue (CC call centar) --> Add items --> Click on cart'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements[
-                    'Select Account (1100072) --> + -- Order --> Select catalogue (CC call centar) --> Add items --> Click on cart'
+                    'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Add items --> Click on cart'
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: 'Select Account (1100072) --> + -- Order --> Select catalogue (CC call centar) --> Add items --> Click on cart',
+                    title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Add items --> Click on cart',
                     time: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
+            // it('Putting order on hold', async function () {
+            //     await driver.click(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
+            //     await neltPerformanceSelectors.isSpinnerDone();
+            //     await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
+            //     await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_BurgerMenu);
+            //     await driver.untilIsVisible(neltPerformanceSelectors.AccountDetails_component);
+            // });
             it('Back to Home Screen', async function () {
                 await neltPerfomanceService.toHomeScreen.bind(this, driver)();
             });
@@ -1405,9 +1680,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Home Screen --> Kupci --> Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions that are (bundles)'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements[
                     'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions that are bundles'
                 ] = Number((timeInterval / 1000).toFixed(1));
@@ -1475,9 +1747,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions that are (bundles) --> Click Done'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements[
                     'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions (bundles) --> Click Done'
                 ] = Number((timeInterval / 1000).toFixed(1));
@@ -1617,9 +1886,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                         1,
                     )} s`,
                 });
-                // timeMeasurements[
-                //     'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions (not bundles) --> Click Done'
-                // ] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 timeMeasurements[
                     'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions (not bundles) --> Click Done'
                 ] = Number((timeInterval / 1000).toFixed(1));
@@ -1633,352 +1899,6 @@ export async function NeltPerformanceTests(email: string, password: string) {
                 await neltPerfomanceService.toHomeScreen.bind(this, driver)();
             });
         });
-
-        // 4
-        describe('Insights: 1. Home Screen --> Dnevni izvestaj', async () => {
-            it('Navigating from Home Screen (through Burger Menu) to "Dnevni izvestaj"', async function () {
-                timeInterval = 0;
-                await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Home Hamburger Menu Opened:`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                // time measurment
-                const Dnevni_izvestaj_opening = new Date().getTime();
-                await driver.click(
-                    neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dnevni izvestaj'),
-                );
-                await neltPerformanceSelectors.isSpinnerDone();
-                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_GalleryCard);
-                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfInsightsGalleryCardByText('')); // if there is NO DATA at insights
-                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table);
-                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table_Header);
-                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfInsightsTableHeaderdByText('Target'));
-                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart);
-                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVG); // if there is NO DATA at insights
-                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVGtext); // if there is NO DATA at insights
-                const Dnevni_izvestaj_loaded = new Date().getTime();
-                timeInterval = Dnevni_izvestaj_loaded - Dnevni_izvestaj_opening;
-                console.info(
-                    'Dnevni_izvestaj_opening: ',
-                    Dnevni_izvestaj_opening,
-                    'Dnevni_izvestaj_loaded: ',
-                    Dnevni_izvestaj_loaded,
-                    'Time Interval: ',
-                    timeInterval,
-                );
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `At "Dnevni izvestaj"`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-            });
-            it(`Time Measured`, async function () {
-                addContext(this, {
-                    title: `Time Interval for "Dnevni izvestaj" to load:`,
-                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-                        1,
-                    )} s`,
-                });
-                // timeMeasurements['Home Screen --> Dnevni izvestaj  (NO DATA)'] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
-                timeMeasurements['Home Screen --> Dnevni izvestaj  (NO DATA)'] = Number(
-                    (timeInterval / 1000).toFixed(1),
-                );
-                timeMeasurementsRaw.push({
-                    title: 'Home Screen --> Dnevni izvestaj  (NO DATA)',
-                    time: timeInterval,
-                });
-                driver.sleep(0.5 * 1000);
-            });
-            it('Back to Home Screen', async function () {
-                await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-            });
-        });
-
-        // describe('Insights: 2. Home Screen --> Dnevni izvestaj  (WITH DATA)', async () => {
-        //     it('Navigating from Home Screen (through Burger Menu) to "Dnevni izvestaj"', async function () {
-        //         timeInterval = 0;
-        //         await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `Home Hamburger Menu Opened:`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         // time measurment
-        //         const Dnevni_izvestaj_opening = new Date().getTime();
-        //         await driver.click(
-        //             neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dnevni izvestaj'),
-        //         );
-        //         await neltPerformanceSelectors.isSpinnerDone();
-        //         await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_GalleryCard);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfInsightsGalleryCardByText('0'));
-        //         await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table_Header);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfInsightsTableHeaderdByText('Target'));
-        //         await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_ChartGraph); // if there is data at insights
-        //         const Dnevni_izvestaj_loaded = new Date().getTime();
-        //         timeInterval = Dnevni_izvestaj_loaded - Dnevni_izvestaj_opening;
-        //         console.info(
-        //             'Dnevni_izvestaj_opening: ',
-        //             Dnevni_izvestaj_opening,
-        //             'Dnevni_izvestaj_loaded: ',
-        //             Dnevni_izvestaj_loaded,
-        //             'Time Interval: ',
-        //             timeInterval,
-        //         );
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `At "Dnevni izvestaj"`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //     });
-        //     it(`Time Measured`, async function () {
-        //         addContext(this, {
-        //             title: `Time Interval for "Dnevni izvestaj" to load:`,
-        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-        //                 1,
-        //             )} s`,
-        //         });
-        //         timeMeasurements["Home Screen --> Dnevni izvestaj  (WITH DATA)"] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it('Back to Home Screen', async function () {
-        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-        //     });
-        // });
-
-        // 6 + 7
-        describe('AccountAction: 1. Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit', async () => {
-            it('Navigate to first account from Home Screen main button', async function () {
-                await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
-            });
-            it('Clicking Plus Button at Account Dashboard', async function () {
-                await neltPerfomanceService.clickPlusButtonMenuAtAccountDashboard.bind(this)(driver);
-            });
-            it('Choosing "Ekstenzija KL" at Catalogs List', async function () {
-                timeInterval = 0;
-                // time measurment
-                const Ekstenzija_KL_opening = new Date().getTime();
-                await driver.click(
-                    neltPerformanceSelectors.getSelectorOfAccountDashboardPlusButtonMenuItemByName('Ekstenzija KL'),
-                );
-                await neltPerformanceSelectors.isSpinnerDone();
-                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Left_CancelButtton);
-                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
-                await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
-                const Ekstenzija_KL_loaded = new Date().getTime();
-                timeInterval = Ekstenzija_KL_loaded - Ekstenzija_KL_opening;
-                console.info(
-                    'Ekstenzija_KL_opening: ',
-                    Ekstenzija_KL_opening,
-                    'Ekstenzija_KL_loaded: ',
-                    Ekstenzija_KL_loaded,
-                    'Time Interval: ',
-                    timeInterval,
-                );
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `"Ekstenzija KL" loaded`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-            });
-            it(`Time Measured`, async function () {
-                addContext(this, {
-                    title: `Time Interval for "Ekstenzija KL" to load:`,
-                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-                        1,
-                    )} s`,
-                });
-                // timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL'] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
-                timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL'] = Number(
-                    (timeInterval / 1000).toFixed(1),
-                );
-                timeMeasurementsRaw.push({
-                    title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL',
-                    time: timeInterval,
-                });
-                driver.sleep(0.5 * 1000);
-            });
-            it('Clicking Submit at "Ekstenzija KL"', async function () {
-                timeInterval = 0;
-                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Left_CancelButtton);
-                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
-                await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
-                await driver.click(neltPerformanceSelectors.Datum_ekstenzije_od_DateField);
-                await driver.untilIsVisible(neltPerformanceSelectors.DatePicker_container);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Date Picker Opened`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                await driver.click(neltPerformanceSelectors.DatePicker_highlightedDate);
-                await driver.untilIsVisible(neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field);
-                await neltPerfomanceService.replaceContentOfInput(
-                    driver,
-                    neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field,
-                    10,
-                );
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Broj field filled`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
-                await driver.click(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
-                driver.sleep(1 * 1000);
-                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Dropdown opened`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                driver.sleep(1 * 1000);
-                await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
-                driver.sleep(1 * 1000);
-                await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Option at dropdown chosen`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                await driver.click(neltPerformanceSelectors.Ekstenzija_KL_bold_title);
-                await driver.click(neltPerformanceSelectors.TopBar_Right_DoneButtton);
-                await driver.untilIsVisible(neltPerformanceSelectors.Information_popup);
-                await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `"Ekstenzija KL" Submitted`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                // time measurment
-                const Ekstenzija_KL_submit_opening = new Date().getTime();
-                await driver.click(neltPerformanceSelectors.PepDialog_Continue_button);
-                await neltPerformanceSelectors.isSpinnerDone();
-                await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
-                await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_BurgerMenu);
-                await driver.untilIsVisible(neltPerformanceSelectors.AccountDetails_component);
-                const Ekstenzija_KL_submit_loaded = new Date().getTime();
-                timeInterval = Ekstenzija_KL_submit_loaded - Ekstenzija_KL_submit_opening;
-                console.info(
-                    'Ekstenzija_KL_submit_opening: ',
-                    Ekstenzija_KL_submit_opening,
-                    'Ekstenzija_KL_submit_loaded: ',
-                    Ekstenzija_KL_submit_loaded,
-                    'Time Interval: ',
-                    timeInterval,
-                );
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `At Order Center`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-            });
-            it(`Time Measured`, async function () {
-                addContext(this, {
-                    title: `Time Interval for "Ekstenzija KL" Submit to finish:`,
-                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-                        1,
-                    )} s`,
-                });
-                // timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
-                //     timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
-                timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
-                    Number((timeInterval / 1000).toFixed(1));
-                timeMeasurementsRaw.push({
-                    title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit',
-                    time: timeInterval,
-                });
-                driver.sleep(0.5 * 1000);
-            });
-            it('Back to Home Screen', async function () {
-                await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-            });
-        });
-
-        // 7
-        // describe('AccountAction: 2. Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit', async () => {
-        //     it('Navigate to first account from Home Screen main button', async function () {
-        //         await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
-        //     });
-        //     it('Choosing "Ekstenzija KL" at Dropdown Menu of Plus Button at Account Dashboard', async function () {
-        //         await neltPerfomanceService.selectUnderPlusButtonMenuAtAccountDashboard.bind(this)(
-        //             driver,
-        //             'Ekstenzija KL',
-        //         );
-        //     });
-        //     it('Clicking Submit at "Ekstenzija KL"', async function () {
-        //         timeInterval = 0;
-        //         await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Left_CancelButtton);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
-        //         await driver.click(neltPerformanceSelectors.Datum_ekstenzije_od_DateField);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.DatePicker_container);
-        //         await driver.click(neltPerformanceSelectors.DatePicker_highlightedDate);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field);
-        //         await neltPerfomanceService.replaceContentOfInput(
-        //             driver,
-        //             neltPerformanceSelectors.Broj_dana_trajanja_ekstenzije_Field,
-        //             10,
-        //         );
-        //         await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
-        //         await driver.click(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
-        //         await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.MatGridList);
-        //         await driver.click(neltPerformanceSelectors.TopBar_Right_DoneButtton);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.Information_popup);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `"Ekstenzija KL" Opened`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         // time measurment
-        //         const Ekstenzija_KL_submit_opening = new Date().getTime();
-        //         await driver.click(neltPerformanceSelectors.PepDialog_Continue_button);
-        //         await neltPerformanceSelectors.isSpinnerDone();
-        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_BurgerMenu);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDetails_component);
-        //         const Ekstenzija_KL_submit_loaded = new Date().getTime();
-        //         timeInterval = Ekstenzija_KL_submit_loaded - Ekstenzija_KL_submit_opening;
-        //         console.info(
-        //             'Ekstenzija_KL_submit_opening: ',
-        //             Ekstenzija_KL_submit_opening,
-        //             'Ekstenzija_KL_submit_loaded: ',
-        //             Ekstenzija_KL_submit_loaded,
-        //             'Time Interval: ',
-        //             timeInterval,
-        //         );
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `At Order Center`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //     });
-        //     it(`Time Measured`, async function () {
-        //         addContext(this, {
-        //             title: `Time Interval for "Ekstenzija KL" Submit to finish:`,
-        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-        //                 1,
-        //             )} s`,
-        //         });
-        //         // timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
-        //         //     timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
-        //         timeMeasurements['Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit'] =
-        //             Number((timeInterval / 1000).toFixed(1));
-        //         timeMeasurementsRaw.push({
-        //             title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit',
-        //             time: timeInterval,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it('Back to Home Screen', async function () {
-        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-        //     });
-        // });
 
         // 6
         // describe('6. Account Dashboard? CC agent use webapp', async () => {});
@@ -2004,6 +1924,8 @@ export async function NeltPerformanceTests(email: string, password: string) {
                     title: `All Measured Times (in seconds):`,
                     value: `${JSON.stringify(timeMeasurements, null, 2)}`,
                 });
+                console.info(JSON.stringify(timeMeasurements, null, 2));
+                // const linkToCSV = await pfsService.createTempCSVFileFromArrayOfObjects(array); // call
                 driver.sleep(0.5 * 1000);
             });
             it(`Raw Time Measured`, async function () {

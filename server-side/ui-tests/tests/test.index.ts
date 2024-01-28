@@ -561,6 +561,7 @@ const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 
     if (tests.includes('NeltPerformance')) {
         await NeltPerformanceTests(email, pass);
+        // await NeltPerformanceTests(email, pass, client);
     }
 
     if (tests.includes('MockTest')) {
