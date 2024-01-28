@@ -247,16 +247,16 @@ debugger;
         await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
     }
 
-    if (tests.includes('evgeny')) {
-        await Import250KToAdalFromDimx(client, {
-            body: {
-                varKeyStage: varPass,
-                varKeyPro: varPass,
-                varKeyEU: varPassEU,
-            },
-        }); //
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
+    // if (tests.includes('evgeny')) {
+    //     await XXXTestser(generalService, {
+    //         body: {
+    //             varKeyStage: varPass,
+    //             varKeyPro: varPass,
+    //             varKeyEU: varPassEU,
+    //         }
+    //     }, { describe, expect, it } as TesterFunctions); //
+    //     await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    // }
 
     if (tests.includes('UDCImportExport')) {
         await UDCImportExportTests(
