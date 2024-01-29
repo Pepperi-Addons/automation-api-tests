@@ -213,7 +213,7 @@ export class OrderPage extends WebAppList {
         //1. click on btn to open drop down
         await this.clickViewMenu();
         //2. pick wanted view
-        const injectedViewType = this.ViewTypeOption.valueOf()['value'].slice().replace('|textToFill|', viewType);
+        const injectedViewType = this.ViewTypeOption.value.slice().replace('|textToFill|', viewType);
         await this.browser.click(By.xpath(injectedViewType));
         await this.isSpinnerDone();
     }
@@ -223,8 +223,9 @@ export class OrderPage extends WebAppList {
         //1. click on btn to open drop down
         await this.clickViewMenu();
         //2. pick wanted view
-        const injectedViewType = this.ViewTypeOption.valueOf()['value'].slice().replace('|textToFill|', viewType);
+        const injectedViewType = this.ViewTypeOption.value.slice().replace('|textToFill|', viewType);
         await this.browser.click(By.xpath(injectedViewType));
+        await this.browser.click(this.Cart_Headline_Results_Number);
         await this.isSpinnerDone();
     }
 
