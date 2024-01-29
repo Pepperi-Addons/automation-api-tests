@@ -179,7 +179,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                             // "baseline" , "state1", "state2"
                             describe(`"${totalsTestState}"`, () => {
                                 describe(`PREP`, () => {
-                                    totalsTestState != 'state1' &&
+                                    totalsTestState == 'state2' &&
                                         it('Click "Continue ordering" button', async function () {
                                             await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
                                             await driver.click(orderPage.Cart_ContinueOrdering_Button);

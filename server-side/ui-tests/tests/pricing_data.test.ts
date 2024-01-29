@@ -37,7 +37,7 @@ export async function PricingDataPrep(varPass: string, client: Client) {
     //#region Upgrade script dependencies
 
     const testData = {
-        pricing: ['adb3c829-110c-4706-9168-40fba9c0eb52', '0.7.%'], //
+        pricing: ['adb3c829-110c-4706-9168-40fba9c0eb52', ''], //
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''], // dependency > 1.1.105 | Nelt: 1.1.115
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 1.0.42 | Nelt: 0.7.79
         // 'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''], // current phased version 0.7.112 | dependency > 0.7.104
