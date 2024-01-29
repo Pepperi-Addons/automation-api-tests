@@ -6,22 +6,19 @@ import { Browser } from '../../utilities/browser';
 import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../pom';
 import { NeltPerformanceService } from './nelt-performance.service';
 import { NeltPerformance } from './NeltPerformance';
-// import { PFSService } from '../../../services/pfs.service';
-// import { GeneralService } from '../../../services';
-// import { Client } from '@pepperi-addons/debug-server/dist';
+import { PFSService } from '../../../services/pfs.service';
+import { GeneralService } from '../../../services';
+import { Client } from '@pepperi-addons/debug-server/dist';
 
 chai.use(promised);
 
-export async function NeltPerformanceTests(
-    email: string,
-    password: string,
-    // client: Client
-) {
+export async function NeltPerformanceTests(email: string, password: string, client: Client) {
     const dateTime = new Date();
     const timeMeasurements = {};
     const timeMeasurementsRaw: { title: string; time: number }[] = [];
-    // const generalService = new GeneralService(client);
-    // const pfsService: PFSService = new PFSService(generalService);
+    const timeMeasurementsArray: { Title: string; Sec: number; Milisec: number }[] = [];
+    const generalService = new GeneralService(client);
+    const pfsService: PFSService = new PFSService(generalService);
 
     let driver: Browser;
     let neltPerfomanceService: NeltPerformanceService;
@@ -115,6 +112,7 @@ export async function NeltPerformanceTests(
                 // timeMeasurements['Home Screen --> Finansijski podaci'] = timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval != 0 ? `${timeInterval} (${(timeInterval / 1000).toFixed(1)} s)` : timeInterval.toString();
                 // timeMeasurements['Home Screen --> Finansijski podaci'] = Number((timeInterval / 1000).toFixed(1)); // un-comment-out when BUG is fixed
                 // timeMeasurementsRaw.push({ title: 'Home Screen --> Finansijski podaci', time: timeInterval }); // un-comment-out when BUG is fixed
+                // timeMeasurementsArray.push({ title: 'Home Screen --> Finansijski podaci', time: Number((timeInterval / 1000).toFixed(1)) }); // un-comment-out when BUG is fixed
                 driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async function () {
@@ -162,6 +160,11 @@ export async function NeltPerformanceTests(
                 });
                 timeMeasurements['Home Screen --> Dugovnaja'] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({ title: 'Home Screen --> Dugovnaja', time: timeInterval });
+                timeMeasurementsArray.push({
+                    Title: 'Home Screen --> Dugovnaja',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async () => {
@@ -209,6 +212,11 @@ export async function NeltPerformanceTests(
                 });
                 timeMeasurements['Home Screen --> Dnevni plan'] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({ title: 'Home Screen --> Dnevni plan', time: timeInterval });
+                timeMeasurementsArray.push({
+                    Title: 'Home Screen --> Dnevni plan',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async function () {
@@ -233,13 +241,14 @@ export async function NeltPerformanceTests(
                 );
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_GalleryCard);
-                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfInsightsGalleryCardByText('0'));
+                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfInsightsGalleryCardByText(''));
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table);
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table_Header);
                 await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfInsightsTableHeaderdByText('Target'));
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart);
-                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVG); // if there is NO DATA at insights
-                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVGtext); // if there is NO DATA at insights
+                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_CanvasSVG); // if there is NO DATA at insights
+                // await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVG); // if there is NO DATA at insights
+                // await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVGtext); // if there is NO DATA at insights
                 // await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_ChartGraph); // if there is data at insights
                 const Dnevni_izvestaj_loaded = new Date().getTime();
                 timeInterval = Dnevni_izvestaj_loaded - Dnevni_izvestaj_opening;
@@ -268,6 +277,11 @@ export async function NeltPerformanceTests(
                 timeMeasurementsRaw.push({
                     title: 'Home Screen --> Dnevni izvestaj',
                     time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: 'Home Screen --> Dnevni izvestaj',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
@@ -410,6 +424,11 @@ export async function NeltPerformanceTests(
                 });
                 timeMeasurements['Home Screen --> Kupci'] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({ title: 'Home Screen --> Kupci', time: timeInterval });
+                timeMeasurementsArray.push({
+                    Title: 'Home Screen --> Kupci',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             it('Choosing First Account in list', async function () {
@@ -449,6 +468,11 @@ export async function NeltPerformanceTests(
                 timeMeasurementsRaw.push({
                     title: 'Home Screen --> Kupci --> Select account',
                     time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: 'Home Screen --> Kupci --> Select account',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
@@ -496,6 +520,11 @@ export async function NeltPerformanceTests(
                     title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL',
                     time: timeInterval,
                 });
+                timeMeasurementsArray.push({
+                    Title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             it(`Filling the Form`, async function () {
@@ -524,7 +553,7 @@ export async function NeltPerformanceTests(
                 await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
                 await driver.click(neltPerformanceSelectors.Razlog_povecanja_DropdownOptionsField);
                 driver.sleep(1 * 1000);
-                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
+                await driver.untilIsVisible(neltPerformanceSelectors.OptionsList);
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Dropdown opened`,
@@ -587,6 +616,11 @@ export async function NeltPerformanceTests(
                 timeMeasurementsRaw.push({
                     title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit',
                     time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: 'Home Screen --> Kupci --> Select Account --> + --> Ekstenzija KL --> Submit',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
@@ -652,6 +686,11 @@ export async function NeltPerformanceTests(
                 timeMeasurementsRaw.push({
                     title: 'Home Screen --> Kupci --> Select account --> Burger menu --> Kartica Kupca',
                     time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: 'Home Screen --> Kupci --> Select account --> Burger menu --> Kartica Kupca',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
@@ -728,6 +767,11 @@ export async function NeltPerformanceTests(
                     title: 'Home Screen --> Kupci --> Select account --> Burger menu --> Istorija prodaje po kupcu',
                     time: timeInterval,
                 });
+                timeMeasurementsArray.push({
+                    Title: 'Home Screen --> Kupci --> Select account --> Burger menu --> Istorija prodaje po kupcu',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async function () {
@@ -750,7 +794,7 @@ export async function NeltPerformanceTests(
                 if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
                     await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
                         driver,
-                        ' poseta',
+                        'F4 poseta',
                     );
                 }
             });
@@ -797,6 +841,11 @@ export async function NeltPerformanceTests(
                 });
                 timeMeasurements['Select visit flow --> Start'] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({ title: 'Select visit flow --> Start', time: timeInterval });
+                timeMeasurementsArray.push({
+                    Title: 'Select visit flow --> Start',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             it('Ending Visit Flow', async function () {
@@ -841,6 +890,11 @@ export async function NeltPerformanceTests(
                 });
                 timeMeasurements['Select visit flow --> Start --> End'] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({ title: 'Select visit flow --> Start --> End', time: timeInterval });
+                timeMeasurementsArray.push({
+                    Title: 'Select visit flow --> Start --> End',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async function () {
@@ -863,7 +917,7 @@ export async function NeltPerformanceTests(
                 if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
                     await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
                         driver,
-                        ' poseta',
+                        'F4 poseta',
                     );
                 }
             });
@@ -920,6 +974,11 @@ export async function NeltPerformanceTests(
                 timeMeasurementsRaw.push({
                     title: 'Select visit flow --> Open --> Near Expiry order',
                     time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: 'Select visit flow --> Open --> Near Expiry order',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
@@ -978,7 +1037,7 @@ export async function NeltPerformanceTests(
             });
             it('Selecting return reason', async function () {
                 await driver.click(neltPerformanceSelectors.Razlog_povrata_selectButton);
-                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
+                await driver.untilIsVisible(neltPerformanceSelectors.OptionsList);
                 await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -1033,6 +1092,11 @@ export async function NeltPerformanceTests(
                     title: 'Select visit flow --> Open --> Near Expiry order --> Add items --> Submit',
                     time: timeInterval,
                 });
+                timeMeasurementsArray.push({
+                    Title: 'Select visit flow --> Open --> Near Expiry order --> Add items --> Submit',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             it('Ending Visit Flow', async function () {
@@ -1058,7 +1122,7 @@ export async function NeltPerformanceTests(
                 if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
                     await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
                         driver,
-                        ' poseta',
+                        'F4 poseta',
                     );
                 }
             });
@@ -1116,6 +1180,11 @@ export async function NeltPerformanceTests(
                     title: 'Select visit flow --> Open --> Select Povrat --> Povrat order',
                     time: timeInterval,
                 });
+                timeMeasurementsArray.push({
+                    Title: 'Select visit flow --> Open --> Select Povrat --> Povrat order',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             it('Adding items', async function () {
@@ -1156,7 +1225,7 @@ export async function NeltPerformanceTests(
             });
             it('Selecting return reason', async function () {
                 await driver.click(neltPerformanceSelectors.Razlog_povrata_selectButton);
-                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_povecanja_OptionsList);
+                await driver.untilIsVisible(neltPerformanceSelectors.OptionsList);
                 await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -1202,6 +1271,11 @@ export async function NeltPerformanceTests(
                 timeMeasurementsRaw.push({
                     title: 'Select visit flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit',
                     time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: 'Select visit flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
@@ -1272,6 +1346,11 @@ export async function NeltPerformanceTests(
                     title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar)',
                     time: timeInterval,
                 });
+                timeMeasurementsArray.push({
+                    Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar)',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async function () {
@@ -1305,13 +1384,21 @@ export async function NeltPerformanceTests(
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 // time measurment
-                await driver.click(neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('MSL'));
+                await driver.click(
+                    neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Svi filteri'),
+                );
+                // await driver.click(neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('MSL'));
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(
-                    neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Gillette'),
+                    neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
                 );
+                // await driver.untilIsVisible(
+                //     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Gillette'),
+                // );
                 const Select_Filter_opening = new Date().getTime();
-                await driver.click(neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Gillette'));
+                await driver.click(
+                    neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
+                );
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
                 await driver.untilIsVisible(neltPerformanceSelectors.TransactionID);
@@ -1348,6 +1435,11 @@ export async function NeltPerformanceTests(
                 timeMeasurementsRaw.push({
                     title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select filter',
                     time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select filter',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
@@ -1386,16 +1478,20 @@ export async function NeltPerformanceTests(
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 await driver.click(neltPerformanceSelectors.getSelectorOfSmartFilterFieldByName('Zalihe'));
+                await driver.click(
+                    neltPerformanceSelectors.getSelectorOfSmartFilterInnerFieldDropdownByName('Zalihe', 'Type'),
+                );
+                await driver.untilIsVisible(neltPerformanceSelectors.OptionsList);
+                await driver.click(neltPerformanceSelectors.getSelectorOfMatOptionByText('Greater than')); //getSelectorOfSmartFilterFieldByName
+                // await driver.click(neltPerformanceSelectors.getSelectorOfSmartFilterFieldByName('Greater than'));
                 // await neltPerformanceSelectors.isSpinnerDone();
                 // await driver.untilIsVisible(
                 //     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
                 // );
                 // time measurment
                 const Select_Smart_Filter_opening = new Date().getTime();
-                // await driver.click(
-                //     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
-                // );
-                // await neltPerformanceSelectors.isSpinnerDone();
+                await driver.click(neltPerformanceSelectors.getSelectorOfSmartFilterButtonByName('Zalihe', 'Apply'));
+                await neltPerformanceSelectors.isSpinnerDone();
                 // await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
                 // await driver.untilIsVisible(neltPerformanceSelectors.TransactionID);
                 // await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_QuantitySelector_GridLineView);
@@ -1431,6 +1527,11 @@ export async function NeltPerformanceTests(
                 timeMeasurementsRaw.push({
                     title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select smart filter',
                     time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select smart filter',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
@@ -1515,6 +1616,11 @@ export async function NeltPerformanceTests(
                     title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by',
                     time: timeInterval,
                 });
+                timeMeasurementsArray.push({
+                    Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             // it(`Number of results has changed Assertion`, async function () {
@@ -1542,29 +1648,29 @@ export async function NeltPerformanceTests(
             it('Choosing "CC Call Centar" at Catalogs List', async function () {
                 await neltPerfomanceService.choosingCatalogForOrder.bind(this)(driver, 'CC Call Centar');
             });
-            it('Search for "Ponuda S Ari" (to find non-promotion products)', async function () {
-                await neltPerfomanceService.replaceContentOfInput(
-                    driver,
-                    neltPerformanceSelectors.Search_Input,
-                    'Ponuda S Ari',
-                );
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Sending Search String`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
-            });
+            // it('Search for "Ponuda S Ari" (to find non-promotion products)', async function () {
+            //     await neltPerfomanceService.replaceContentOfInput(
+            //         driver,
+            //         neltPerformanceSelectors.Search_Input,
+            //         'Ponuda S Ari',
+            //     );
+            //     base64ImageComponent = await driver.saveScreenshots();
+            //     addContext(this, {
+            //         title: `Sending Search String`,
+            //         value: 'data:image/png;base64,' + base64ImageComponent,
+            //     });
+            //     await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
+            // });
             it('Adding Items', async function () {
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `At Order Center after search`,
+                    title: `At Order Center`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                await neltPerfomanceService.chooseNonPromotionItemWithOrderClickByIndex.bind(this)(driver, 1);
-                await neltPerfomanceService.chooseNonPromotionItemWithOrderClickByIndex.bind(this)(driver, 2);
-                await neltPerfomanceService.chooseNonPromotionItemWithOrderClickByIndex.bind(this)(driver, 4);
-                await neltPerfomanceService.chooseNonPromotionItemWithOrderClickByIndex.bind(this)(driver, 10);
+                await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(driver, 1);
+                await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(driver, 2);
+                await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(driver, 4);
+                await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(driver, 10);
             });
             it('Clicking on Cart Button', async function () {
                 // time measurment
@@ -1604,6 +1710,11 @@ export async function NeltPerformanceTests(
                 timeMeasurementsRaw.push({
                     title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Add items --> Click on cart',
                     time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Add items --> Click on cart',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
@@ -1687,6 +1798,11 @@ export async function NeltPerformanceTests(
                     title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions that are bundles',
                     time: timeInterval,
                 });
+                timeMeasurementsArray.push({
+                    Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions that are bundles',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             // it(`Number of results has changed Assertion`, async function () {
@@ -1753,6 +1869,11 @@ export async function NeltPerformanceTests(
                 timeMeasurementsRaw.push({
                     title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions (bundles) --> Click Done',
                     time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions (bundles) --> Click Done',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
@@ -1832,6 +1953,11 @@ export async function NeltPerformanceTests(
                     title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions that are not bundles',
                     time: timeInterval,
                 });
+                timeMeasurementsArray.push({
+                    Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions that are not bundles',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             // it(`Number of results has changed Assertion`, async function () {
@@ -1893,6 +2019,11 @@ export async function NeltPerformanceTests(
                     title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions (not bundles) --> Click Done',
                     time: timeInterval,
                 });
+                timeMeasurementsArray.push({
+                    Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Open promotions (not bundles) --> Click Done',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
                 driver.sleep(0.5 * 1000);
             });
             it('Back to Home Screen', async function () {
@@ -1925,7 +2056,6 @@ export async function NeltPerformanceTests(
                     value: `${JSON.stringify(timeMeasurements, null, 2)}`,
                 });
                 console.info(JSON.stringify(timeMeasurements, null, 2));
-                // const linkToCSV = await pfsService.createTempCSVFileFromArrayOfObjects(array); // call
                 driver.sleep(0.5 * 1000);
             });
             it(`Raw Time Measured`, async function () {
@@ -1935,6 +2065,14 @@ export async function NeltPerformanceTests(
                 });
                 console.info(JSON.stringify(timeMeasurementsRaw, null, 2));
                 console.table(timeMeasurementsRaw, ['title', 'time']);
+                driver.sleep(0.5 * 1000);
+            });
+            it(`Link to Excel file`, async function () {
+                const linkToCSV = await pfsService.createTempCSVFileFromArrayOfObjects(timeMeasurementsArray);
+                addContext(this, {
+                    title: `Link to CSV:`,
+                    value: linkToCSV,
+                });
                 driver.sleep(0.5 * 1000);
             });
         });

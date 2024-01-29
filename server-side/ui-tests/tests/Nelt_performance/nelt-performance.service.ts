@@ -369,7 +369,7 @@ export class NeltPerformanceService {
         driver.sleep(0.5 * 1000);
     }
 
-    public async chooseNonPromotionItemWithOrderClickByIndex(
+    public async chooseNonBundleItemWithOrderClickByIndex(
         this: Context,
         driver: Browser,
         index: number,

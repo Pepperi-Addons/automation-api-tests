@@ -30,6 +30,7 @@ export class NeltPerformance extends AddonPage {
     public TransactionUUID: By = By.id('UUID');
     public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
     public ContinueOrdering_Button: By = By.xpath('//button[@data-qa="Continue ordering"]');
+    public OptionsList: By = By.xpath('//div[@role="listbox"]');
     public VisitFlow_visits_container: By = By.xpath('//div[contains(@class,"visits-container")]');
     public VisitFlow_visits_selection: By = By.xpath('//div[contains(@class,"visit-selection")]');
     public VisitFlow_selection_header: By = By.xpath(
@@ -101,9 +102,9 @@ export class NeltPerformance extends AddonPage {
     );
     public Razlog_povrata_selectButton: By = By.xpath('//span[@id="TSAReturnReasonSelector"]/ancestor::pep-select/div');
     public Razlog_povecanja_DropdownOptionsField: By = By.xpath('//mat-select[@id="TSAReason"]');
-    public Razlog_povecanja_OptionsList: By = By.xpath('//div[@role="listbox"]');
+
     public Razlog_povecanja_OptionThatContainsWhiteSpace: By = By.xpath(
-        `${this.Razlog_povecanja_OptionsList.value}//mat-option[contains(@id,"mat-option-")][contains(@title," ")]`,
+        `${this.OptionsList.value}//mat-option[contains(@id,"mat-option-")][contains(@title," ")]`,
     );
     public OrderCatalogItem: By = By.xpath('//span[@id="Description"]/ancestor::mat-grid-list');
     public OrderCenterItem_OrderButton: By = By.xpath(
@@ -120,6 +121,9 @@ export class NeltPerformance extends AddonPage {
     );
     public InsightsLoaded_Indication_ChartGraph: By = By.xpath(
         `//*[local-name()='g'][contains(@class,"apexcharts-series")]/*[local-name()='path']`,
+    );
+    public InsightsLoaded_Indication_Chart_CanvasSVG: By = By.xpath(
+        `//pep-remote-loader-element//benchmark-chart-element-00000000-0000-0000-0000-0da1a0de41e5//div[@id="canvas"]//*[local-name()='svg']`,
     );
     public InsightsLoaded_Indication_Chart_SVG: By = By.xpath(
         `//pep-remote-loader-element//benchmark-chart-element-00000000-0000-0000-0000-0da1a0de41e5//div[@id="canvas"]//*[local-name()='svg']/*[local-name()='text']`,
@@ -197,7 +201,23 @@ export class NeltPerformance extends AddonPage {
     }
 
     public getSelectorOfSmartFilterFieldByName(name?: string) {
-        return By.xpath(`//pep-smart-filters//span[@title="${name}"]/ancestor::mat-expansion-panel`);
+        return By.xpath(`//pep-smart-filters//span[@title="${name || ''}"]/ancestor::mat-expansion-panel`);
+    }
+
+    public getSelectorOfSmartFilterInnerFieldDropdownByName(filterName?: string, dropdownName?: string) {
+        return By.xpath(
+            `//span[@title="${filterName || ''}"]/ancestor::mat-expansion-panel//mat-label[contains(text(),"${
+                dropdownName || ''
+            }")]/ancestor::pep-select/mat-form-field/div/div`,
+        );
+    }
+
+    public getSelectorOfSmartFilterButtonByName(filterName?: string, buttonText?: string) {
+        return By.xpath(
+            `//span[@title="${
+                filterName || ''
+            }"]/ancestor::mat-expansion-panel/pep-filter-actions//button[contains(text(),"${buttonText || ''}")]`,
+        );
     }
 
     public getSelectorOfVisitFlowAtMultipleVisitsSelectionByText(text: string) {
@@ -230,5 +250,9 @@ export class NeltPerformance extends AddonPage {
 
     public getSelectorOfSpecificOrderCenterItemExpiryDateByIndex(index: number) {
         return By.xpath(`//pep-list//virtual-scroller/div[2]/div[${index}]//pep-date//span[@id="TSAExpiryDate"]`);
+    }
+
+    public getSelectorOfMatOptionByText(text: string) {
+        return By.xpath(`//span[contains(text(),"${text}")]/parent::mat-option`);
     }
 }
