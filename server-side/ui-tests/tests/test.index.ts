@@ -125,7 +125,7 @@ const passCreate = process.env.npm_config_pass_create as string;
 const whichEnvToRun = process.env.npm_config_envs as string;
 const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 const XForSyncTimes = Number(process.env.npm_config_x as any);
-debugger;
+// debugger;
 
 (async function () {
     const tempGeneralService = new GeneralService({
@@ -567,7 +567,8 @@ debugger;
     }
 
     if (tests.includes('NeltPerformance')) {
-        await NeltPerformanceTests(email, pass);
+        // await NeltPerformanceTests(email, pass);
+        await NeltPerformanceTests(email, pass, client);
     }
 
     if (tests.includes('MockTest')) {
