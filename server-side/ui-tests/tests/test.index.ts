@@ -97,6 +97,7 @@ import { UDC100KOverwriteTestser } from '../../api-tests/user_defined_collection
 import { SchedulerTester_Part2 } from '../../api-tests/code-jobs/scheduler_DI_23872';
 import { DevTest } from './DevTests';
 import { XTimesSync } from './XTimesSyncE2E.test';
+import { IdosPapiTests } from './ido_papi_tests.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -733,6 +734,10 @@ debugger;
 
     if (tests.includes('UdcUI')) {
         await UDCTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+    if (tests.includes('IdoPapi')) {
+        await IdosPapiTests(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
     if (tests.includes('SyncE2E')) {
