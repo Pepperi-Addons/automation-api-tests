@@ -1176,7 +1176,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
                 `####################### Running For: ${devTest.addonName}(${devTest.addonUUID}) #######################`,
             );
             debugger;
-            //2. validate latest available version of tested addon is equal between envs - if not: wont run
+            //2. validate latest available version of tested addon is equal between envs - if not: dont run
             await devTest.validateAllVersionsAreEqualBetweenEnvs();
             console.log(
                 `####################### Running For: ${devTest.addonName}(${devTest.addonUUID}), version: ${devTest.addonVersion} #######################`,
