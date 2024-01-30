@@ -1212,7 +1212,10 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             //4. iterate on all test names and call each
             await devTest.runDevTest(testsList);
             //5. parse the response we got from the tests, print & report to Teams
-            await devTest.calculateAndReportResults(isLocal);
+            const didPass = await devTest.calculateAndReportResults(isLocal);
+            if (didPass !== undefined && didPass === false) {
+                return;
+            }
         }
         ///////////////////////APPROVMENT TESTS///////////////////////////////////
         // global ugly variable
