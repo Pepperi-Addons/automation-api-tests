@@ -734,7 +734,7 @@ export default class GeneralService {
         this.CalculateUsedMemory();
     }
 
-    PrintMemoryUseToLogForCiCD(state, testName) {
+    PrintStartOfInstallation(state, testName) {
         console.log(` ####################### ${state} ${testName}`, ' ####################### ');
     }
 

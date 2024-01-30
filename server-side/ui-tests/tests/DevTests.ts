@@ -162,7 +162,7 @@ export class DevTest {
         const testName = `Installing Addon Prerequisites (Dependencies) On ${
             userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
         } Env, User: ${userName}, Addon: ${this.addonName}, UUID: ${this.addonUUID}, Version: ${this.addonVersion}`;
-        service.PrintMemoryUseToLogForCiCD('Start', testName);
+        service.PrintStartOfInstallation('Start', testName);
         //1. upgrade dependencys - basic: correct for all addons
         await service.baseAddonVersionsInstallation(varPass);
         //1.1 install addon-testing-framework - Chasky's addon which we need
