@@ -100,6 +100,7 @@ import { UDC100KOverwriteTestser } from '../../api-tests/user_defined_collection
 import { SchedulerTester_Part2 } from '../../api-tests/code-jobs/scheduler_DI_23872';
 import { DevTest } from './DevTests';
 import { XTimesSync } from './XTimesSyncE2E.test';
+import { IdosPapiTests } from './ido_papi_tests.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -745,6 +746,10 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         await UDCTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
+    if (tests.includes('IdoPapi')) {
+        await IdosPapiTests(email, pass, client, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
     if (tests.includes('SyncE2E')) {
         await SyncTests(email, pass, client, varPass);
         await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
@@ -1180,7 +1185,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
             debugger;
             // 3. install all dependencys latest available versions on testing user - finaly install tested addon
-            await devTest.installDependencies();
+            // await devTest.installDependencies();
             await devTest.valdateTestedAddonLatestVersionIsInstalled();
             console.log(
                 `####################### Finished Installing: ${devTest.addonName}(${devTest.addonUUID}), version: ${
