@@ -905,7 +905,7 @@ export class DevTest {
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
         let _headers;
-        const addonsTestingEndpoint = `/addons/api/async/${this.addonUUID}/tests/tests`;
+        let addonsTestingEndpoint = `/addons/api/async/${this.addonUUID}/tests/tests`;
         if (this.addonName === 'CONFIGURATIONS') {
             _headers = {
                 'x-pepperi-ownerid': '84c999c3-84b7-454e-9a86-71b7abc96554',
@@ -914,6 +914,7 @@ export class DevTest {
             };
         }
         if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
+            addonsTestingEndpoint = `/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests`; //run data index tests for ADAL
             _headers = {
                 'x-pepperi-ownerid': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                 'x-pepperi-secretkey': addonSk,
