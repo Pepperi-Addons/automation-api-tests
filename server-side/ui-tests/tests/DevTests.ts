@@ -276,7 +276,7 @@ export class DevTest {
                 `Error: can't install ${this.addonName} - ${this.addonUUID}, exception: ${installAddonResponse}`,
             );
         }
-        service.PrintMemoryUseToLog('End', testName);
+        console.log('\n#####################################################################\n');
     }
 
     async getEuUserEmail() {
@@ -599,16 +599,16 @@ export class DevTest {
                 const result = objectToPrintEu[index];
                 console.log(`\n***${currentTestName} EU result object: ${JSON.stringify(result)}***\n`);
             }
-            const euResults = await this.printResultsTestObject(objectToPrintEu, euUser, 'prod');
-            const prodResults = await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod');
-            const sbResults = await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage');
+            const euResults = await this.printResultsTestObject(objectToPrintEu, euUser, 'prod', currentTestName);
+            const prodResults = await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod', currentTestName);
+            const sbResults = await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage', currentTestName);
             if (shouldAlsoPrintVer) {
                 objectToPrintEu = testResultArrayEu.results[0].suites[1].suites;
                 objectToPrintProd = testResultArrayProd.results[0].suites[1].suites;
                 objectToPrintSB = testResultArraySB.results[0].suites[1].suites;
-                await this.printResultsTestObject(objectToPrintEu, euUser, 'prod');
-                await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod');
-                await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage');
+                await this.printResultsTestObject(objectToPrintEu, euUser, 'prod', currentTestName);
+                await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod', currentTestName);
+                await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage', currentTestName);
             }
             // debugger;
             //4.6. create the array of passing / failing tests
@@ -818,16 +818,18 @@ export class DevTest {
         }
     }
 
-    async printResultsTestObject(testResultArray, userName, env) {
+    async printResultsTestObject(testResultArray, userName, env, currentTestName) {
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
         const installedAddonsArr = await service.getInstalledAddons({ page_size: -1 });
         let didSucceed = true;
         // debugger;
         console.log(
-            `####################### ${userName.includes('EU') ? 'EU' : env} Dev Test Results For Addon ${
+            `####################### ${
+                userName.includes('EU') ? 'EU' : env
+            }, User: ${userName} Dev Test Results For Addon ${
                 this.addonUUID
-            } #######################`,
+            } For Test Name: ${currentTestName} #######################`,
         );
         for (let index = 0; index < testResultArray.length; index++) {
             const testResult = testResultArray[index];

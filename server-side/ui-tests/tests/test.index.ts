@@ -1184,8 +1184,8 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             //this reports to QA build tracker in Teams [https://teams.microsoft.com/l/channel/19%3ac553a2dddecb497499e4df6fc1cf25af%40thread.tacv2/QA%2520Build%2520Tracker?groupId=84e28b5e-1f7f-4e05-820f-9728916558b2&tenantId=2f2b54b7-0141-4ba7-8fcd-ab7d17a60547]
             await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
             debugger;
-            // 3. install all dependencys latest available versions on testing user - finaly install tested addon
-            await devTest.installDependencies();
+            // 3. install all dependencys of tested addon latest available version on testing users then finaly install tested addon
+            // await devTest.installDependencies();
             await devTest.valdateTestedAddonLatestVersionIsInstalled();
             console.log(
                 `####################### Finished Installing: ${devTest.addonName}(${devTest.addonUUID}), version: ${
@@ -1195,6 +1195,9 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             );
             debugger;
             //3.1 get test names by calling tested addon
+            console.log(
+                `####################### Calling GET:/tests/tests Of ${devTest.addonName}(${devTest.addonUUID}) To Get All Test Names #######################`,
+            );
             try {
                 testsList = await devTest.getTestNames();
             } catch (error) {
@@ -1209,6 +1212,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
                 );
                 throw new Error(`Error: got exception trying to get test Names: ${(error as any).message} `);
             }
+            console.log(`####################### Got ${testsList.length} Tests #######################`);
             //4. iterate on all test names and call each
             await devTest.runDevTest(testsList);
             //5. parse the response we got from the tests, print & report to Teams
