@@ -1185,7 +1185,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
             debugger;
             // 3. install all dependencys latest available versions on testing user - finaly install tested addon
-            // await devTest.installDependencies();
+            await devTest.installDependencies();
             await devTest.valdateTestedAddonLatestVersionIsInstalled();
             console.log(
                 `####################### Finished Installing: ${devTest.addonName}(${devTest.addonUUID}), version: ${
