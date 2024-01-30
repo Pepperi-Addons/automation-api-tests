@@ -50,6 +50,9 @@ import { StorybookSliderTests } from './storybook/storybook_slider.test';
 import { StorybookTextareaTests } from './storybook/storybook_textarea.test';
 import { StorybookTextboxTests } from './storybook/storybook_textbox.test';
 import { NeltPerformanceTests } from './Nelt_performance/nelt_performance.test';
+import { PricingUomTests } from './pricing_uom.test';
+import { PricingTotalsTests } from './pricing_totals.test';
+import { PricingMultipleValuesTests } from './pricing_multiple_values.test';
 
 export {
     LoginTests,
@@ -76,6 +79,9 @@ export {
     PricingTests,
     PricingDataPrep,
     Pricing06Tests,
+    PricingUomTests,
+    PricingTotalsTests,
+    PricingMultipleValuesTests,
     Pricing06DataPrep,
     ResourceListAbiTests,
     InstallationsTest,

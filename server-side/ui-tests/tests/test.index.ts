@@ -66,8 +66,11 @@ import {
     StorybookTextareaTests,
     StorybookTextboxTests,
     Pricing06DataPrep,
-    Pricing06Tests,
+    // Pricing06Tests,
     NeltPerformanceTests,
+    PricingUomTests,
+    PricingTotalsTests,
+    PricingMultipleValuesTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -126,7 +129,7 @@ const passCreate = process.env.npm_config_pass_create as string;
 const whichEnvToRun = process.env.npm_config_envs as string;
 const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 const XForSyncTimes = Number(process.env.npm_config_x as any);
-debugger;
+// debugger;
 
 (async function () {
     const tempGeneralService = new GeneralService({
@@ -461,13 +464,19 @@ debugger;
     if (tests === 'Pricing') {
         await PricingDataPrep(varPass, client);
         await PricingTests(email, pass, client);
-        await Pricing06Tests(email, pass, client);
+        await PricingUomTests(email, pass, client);
+        await PricingTotalsTests(email, pass, client);
+        await PricingMultipleValuesTests(email, pass, client);
+        // await Pricing06Tests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests.includes('Pricing06')) {
         // await Pricing06DataPrep(varPass, client);
-        await Pricing06Tests(email, pass, client);
+        await PricingUomTests(email, pass, client);
+        await PricingTotalsTests(email, pass, client);
+        await PricingMultipleValuesTests(email, pass, client);
+        // await Pricing06Tests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
@@ -568,7 +577,8 @@ debugger;
     }
 
     if (tests.includes('NeltPerformance')) {
-        await NeltPerformanceTests(email, pass);
+        // await NeltPerformanceTests(email, pass);
+        await NeltPerformanceTests(email, pass, client);
     }
 
     if (tests.includes('MockTest')) {
