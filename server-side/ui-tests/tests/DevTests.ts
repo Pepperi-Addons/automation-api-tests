@@ -350,10 +350,14 @@ export class DevTest {
     }
 
     async getTestNames() {
+        let urlToGetTestsFrom = `/addons/api/${this.addonUUID}/tests/tests`;
+        if (this.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
+            urlToGetTestsFrom = `/addons/api/00000000-0000-0000-0000-00000e1a571c/tests/tests`;
+        }
         const response = (
             await (
                 await this.getProdUser()
-            ).generalService.fetchStatus(`/addons/api/${this.addonUUID}/tests/tests`, {
+            ).generalService.fetchStatus(urlToGetTestsFrom, {
                 method: 'GET',
             })
         ).Body;
@@ -374,7 +378,7 @@ export class DevTest {
                 }  #######################`,
             );
             let addonSk = null;
-            if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX') {
+            if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
                 addonSk = await this.adminBaseUserGeneralService.getSecretfromKMS(
                     this.adminBaseUserEmail,
                     this.adminBaseUserPass,
