@@ -691,7 +691,7 @@ export class DevTest {
             this.devFailedEnvs = devFailedEnvs2;
             await this.reportToTeams(jenkinsLink);
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
-            return;
+            return false;
         } else if (!this.doWeHaveSuchAppTest(this.addonName)) {
             this.devPassingEnvs = devPassingEnvs2;
             this.devFailedEnvs = devFailedEnvs2;

@@ -734,6 +734,15 @@ export default class GeneralService {
         this.CalculateUsedMemory();
     }
 
+    PrintMemoryUseToLogForCiCD(state, testName) {
+        console.log(
+            ` ####################### %c${state} ${testName} Test System Information: `,
+            ConsoleColors.SystemInformation,
+            ' ####################### ',
+        );
+        this.CalculateUsedMemory();
+    }
+
     //#region getDate
     getTime() {
         const getDate = new Date();
