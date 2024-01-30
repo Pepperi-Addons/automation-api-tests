@@ -1213,6 +1213,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             await devTest.runDevTest(testsList);
             //5. parse the response we got from the tests, print & report to Teams
             const didPass = await devTest.calculateAndReportResults(isLocal);
+            //6. no point in running app. tests after dev failed
             if (didPass !== undefined && didPass === false) {
                 return;
             }
