@@ -1252,6 +1252,8 @@ export class DevTest {
                     'TranslationTesterProd@pepperitest.com',
                     'TranslationTesterSB@pepperitest.com',
                 ];
+            case 'DIMX':
+                return ['DIMXAppEU@pepperitest.com', 'DIMXAppProd@pepperitest.com', 'DimxAppSB@pepperitest.com'];
             default:
                 return [];
         }
