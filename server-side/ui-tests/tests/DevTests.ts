@@ -99,6 +99,8 @@ export class DevTest {
                 return '00000000-0000-0000-0000-0000000a594c';
             case 'TRANSLATION':
                 return 'fbbac53c-c350-42c9-b9ad-17c238e55b42';
+            case 'DIMX':
+                return '44c97115-6d14-4626-91dc-83f176e9a0fc';
             default:
                 return 'none';
         }
