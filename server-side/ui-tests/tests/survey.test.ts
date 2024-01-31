@@ -497,7 +497,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 );
                 driver.sleep(5000);
                 const webAppHeader = new WebAppHeader(driver);
-                await webAppHeader.webApp18_openSettings();
+                await webAppHeader.openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.addRepHomePageButtons(slideshowSlugDisplayName);
@@ -970,7 +970,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 const webAppHeader = new WebAppHeader(driver);
-                await webAppHeader.webApp18_openSettings();
+                await webAppHeader.openSettings();
                 driver.sleep(6000);
                 const brandedApp = new BrandedApp(driver);
                 await brandedApp.removeRepHomePageButtons(slideshowSlugDisplayName);
@@ -1044,7 +1044,7 @@ async function CreateSlug_Web18(
     // const slugDisplayName = 'slideshow_slug';
     // const slug_path = 'slideshow_slug';
     const e2eUiService = new E2EUtils(driver);
-    await e2eUiService.navigateTo_Web18('Slugs');
+    await e2eUiService.navigateTo('Slugs');
     const slugs: Slugs = new Slugs(driver);
     driver.sleep(2000);
     if (await driver.isElementVisible(slugs.SlugMappingScreenTitle)) {
@@ -1074,7 +1074,7 @@ async function CreateSlug_Web18(
     await e2eUiService.logOutLogIn_Web18(email, password);
     const webAppHomePage = new WebAppHomePage(driver);
     await webAppHomePage.isSpinnerDone();
-    await e2eUiService.navigateTo_Web18('Slugs');
+    await e2eUiService.navigateTo('Slugs');
     driver.sleep(4 * 1000);
     await slugs.clickTab('Mapping_Tab');
     driver.sleep(15 * 1000);

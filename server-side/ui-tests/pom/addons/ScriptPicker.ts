@@ -243,7 +243,7 @@ export class ScriptEditor extends AddonPage {
 
     public async configureScriptForSurvey_Web18(sciptText: string, generalService: GeneralService) {
         const webAppHeader = new WebAppHeader(this.browser);
-        await webAppHeader.webApp18_openSettings();
+        await webAppHeader.openSettings();
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Configuration');
         await this.browser.click(webAppSettingsSidePanel.ScriptsEditor);
