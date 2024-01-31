@@ -1041,7 +1041,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 const item = 'ToBr55';
                                 driver.refresh();
                                 await orderPage.isSpinnerDone();
-                                driver.sleep(0.2 * 1000);
+                                driver.sleep(1 * 1000);
                                 await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
                                     'Case',
                                     item,
