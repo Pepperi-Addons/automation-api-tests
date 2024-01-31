@@ -144,6 +144,7 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
                         TestInteger: { Type: 'Integer', DefaultValue: 5 },
                         TestString: { Type: 'String', DefaultValue: 'DefaultVAlue test' },
                         TestBoolean: { Type: 'Bool', DefaultValue: true },
+                        TestBoolean1: { Type: 'Bool', DefaultValue: false },
                         TestDate: { Type: 'DateTime', DefaultValue: logcash.DateTime },
                         TestDouble: { Type: 'Double', DefaultValue: 10.5 },
                     },
@@ -158,7 +159,9 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
             logcash.createSchemaDefaultValue.Fields.TestInteger.Type == 'Integer' &&
             logcash.createSchemaDefaultValue.Fields.TestInteger.DefaultValue == 5 &&
             logcash.createSchemaDefaultValue.Fields.TestString.Type == 'String' &&
-            logcash.createSchemaDefaultValue.Fields.TestString.DefaultValue == 'DefaultVAlue test'
+            logcash.createSchemaDefaultValue.Fields.TestString.DefaultValue == 'DefaultVAlue test'&&
+            logcash.createSchemaDefaultValue.Fields.TestBoolean.Type == 'Bool' &&
+            logcash.createSchemaDefaultValue.Fields.TestBoolean1.Type == 'Bool'
         ) {
             logcash.createSchemaDefaultValueStatus = true;
         } else {
@@ -251,6 +254,7 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
             logcash.getDataTableOrderByKey.length == logcash.num &&
             logcash.getDataTableOrderByKey[0].Key == 'value0' &&
             logcash.getDataTableOrderByKey[0].TestBoolean == true &&
+            logcash.getDataTableOrderByKey[0].TestBoolean1 == false &&
             JSON.stringify(logcash.getDataTableOrderByKey[0].TestDate) == JSON.stringify(logcash.DateTime) &&
             logcash.getDataTableOrderByKey[0].TestDouble == 10.5 &&
             logcash.getDataTableOrderByKey[0].TestInteger == 5 &&
@@ -424,7 +428,7 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
             logcash.getDataTableOrderByKeyUpdatedSec[1].TestString == 'NotDefaultVAlue test' &&
             logcash.getDataTableOrderByKeyUpdatedSec[1].Key == 'value1' &&
             logcash.getDataTableOrderByKeyUpdatedSec[0].TestBoolean == true &&
-            JSON.stringify(logcash.getDataTableOrderByKeyUpdatedSec[1].TestDate) == JSON.stringify(logcash.DateTime) &&
+            JSON.stringify(logcash.getDataTableOrderByKeyUpdatedSec[0].TestDate) == JSON.stringify(logcash.DateTime) &&
             logcash.getDataTableOrderByKeyUpdatedSec[0].TestDouble == 10.5 &&
             logcash.getDataTableOrderByKeyUpdatedSec[0].TestInteger == 5 &&
             logcash.getDataTableOrderByKeyUpdatedSec[0].TestString == 'DefaultVAlue test'

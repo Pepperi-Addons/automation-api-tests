@@ -988,7 +988,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.updateSurveyTestFieldError = 'Update data on Survey table (test field) failed';
         }
         //debugger;
-        const res = await getSurveyScheme1();
+        const res = await getSurveyScheme1();//DI-23760
         //debugger;
         if (res.test == '456' && res['Account.Name'] == 'Second table') {
             logcash.getFromAdal4Status = true;
