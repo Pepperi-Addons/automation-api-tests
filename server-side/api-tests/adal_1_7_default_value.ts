@@ -159,7 +159,7 @@ export async function AdalDefaultValuesTests(generalService: GeneralService, req
             logcash.createSchemaDefaultValue.Fields.TestInteger.Type == 'Integer' &&
             logcash.createSchemaDefaultValue.Fields.TestInteger.DefaultValue == 5 &&
             logcash.createSchemaDefaultValue.Fields.TestString.Type == 'String' &&
-            logcash.createSchemaDefaultValue.Fields.TestString.DefaultValue == 'DefaultVAlue test'&&
+            logcash.createSchemaDefaultValue.Fields.TestString.DefaultValue == 'DefaultVAlue test' &&
             logcash.createSchemaDefaultValue.Fields.TestBoolean.Type == 'Bool' &&
             logcash.createSchemaDefaultValue.Fields.TestBoolean1.Type == 'Bool'
         ) {
