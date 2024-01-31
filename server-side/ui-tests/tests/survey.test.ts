@@ -426,7 +426,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             it('5. ADMIN Set Up: Create Page With Survey Block Inside It', async function () {
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveyBlockPage';
-                surveyBlockPageUUID = await e2eUtils.addPageNoSections_Web18(surveyBlockPageName, 'tests');
+                surveyBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
                 const pageBuilder = new PageBuilder(driver);
                 const createdPage = await pageBuilder.getPageByUUID(surveyBlockPageUUID, client);
                 const surveyBlockInstance = new SurveyBlock();
@@ -470,7 +470,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             it('8. ADMIN Set Up: Create Page With SlideShow Which Will Run The Script', async function () {
                 const e2eUtils = new E2EUtils(driver);
                 surveyBlockPageName = 'surveySlideShow';
-                slideshowBlockPageUUID = await e2eUtils.addPageNoSections_Web18(surveyBlockPageName, 'tests');
+                slideshowBlockPageUUID = await e2eUtils.addPageNoSections(surveyBlockPageName, 'tests');
                 const pageBuilder = new PageBuilder(driver);
                 const createdPage = await pageBuilder.getPageByUUID(slideshowBlockPageUUID, client);
                 const SlideShowBlockInstance = new SlideShowBlock(scriptUUID);

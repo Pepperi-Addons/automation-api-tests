@@ -124,22 +124,6 @@ export default class E2EUtils extends BasePomObject {
         return pageUUID;
     }
 
-    public async addPageNoSections_Web18(nameOfPage: string, descriptionOfPage: string) {
-        const pageBuilder: PageBuilder = new PageBuilder(this.browser);
-        await this.navigateTo('Page Builder');
-        pageBuilder.pause(1000);
-        await pageBuilder.waitTillVisible(pageBuilder.PageBuilder_Title, 15000);
-        await pageBuilder.waitTillVisible(pageBuilder.AddPage_Button, 15000);
-        pageBuilder.pause(1000);
-        await pageBuilder.addBlankPageNoSections(nameOfPage, descriptionOfPage);
-        pageBuilder.pause(2 * 1000);
-        const pageUUID = await this.getUUIDfromURL();
-        pageBuilder.pause(3 * 1000);
-        await pageBuilder.returnToPageBuilderFromPage();
-        pageBuilder.pause(1000);
-        return pageUUID;
-    }
-
     public async deleteAllEditorsViaUI() {
         const resourceEditors: ResourceEditors = new ResourceEditors(this.browser);
         await this.navigateTo('Resource Views');
