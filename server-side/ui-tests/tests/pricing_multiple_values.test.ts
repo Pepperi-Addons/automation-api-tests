@@ -174,24 +174,6 @@ export async function PricingMultipleValuesTests(email: string, password: string
                     });
 
                     describe('Multiple Values', () => {
-                        // it('Click "Continue ordering" button', async function () {
-                        //     await driver.click(orderPage.Cart_ContinueOrdering_Button);
-                        //     await orderPage.isSpinnerDone();
-                        //     await orderPage.changeOrderCenterPageView('Line View');
-                        //     await orderPage.isSpinnerDone();
-                        //     base64ImageComponent = await driver.saveScreenshots();
-                        //     addContext(this, {
-                        //         title: `After "Line View" was selected`,
-                        //         value: 'data:image/png;base64,' + base64ImageComponent,
-                        //     });
-                        //     await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
-                        //     driver.sleep(1 * 1000);
-                        //     base64ImageComponent = await driver.saveScreenshots();
-                        //     addContext(this, {
-                        //         title: `Order Center - Loaded`,
-                        //         value: 'data:image/png;base64,' + base64ImageComponent,
-                        //     });
-                        // });
                         it('Navigating to "Facial Cosmetics" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(
@@ -303,7 +285,7 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                 await driver.click(orderPage.Cart_Button);
                                 await orderPage.isSpinnerDone();
                                 driver.sleep(1 * 1000);
-                                await driver.untilIsVisible(orderPage.Cart_List_container);
+                                await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
                             });
                             it(`switch to 'Lines View'`, async function () {
                                 await orderPage.changeCartView('Lines');
