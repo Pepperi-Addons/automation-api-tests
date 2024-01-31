@@ -30,6 +30,7 @@ export class NeltPerformance extends AddonPage {
     public TransactionUUID: By = By.id('UUID');
     public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
     public ContinueOrdering_Button: By = By.xpath('//button[@data-qa="Continue ordering"]');
+    public OptionsList: By = By.xpath('//div[@role="listbox"]');
     public VisitFlow_visits_container: By = By.xpath('//div[contains(@class,"visits-container")]');
     public VisitFlow_visits_selection: By = By.xpath('//div[contains(@class,"visit-selection")]');
     public VisitFlow_selection_header: By = By.xpath(
@@ -42,6 +43,7 @@ export class NeltPerformance extends AddonPage {
     public DatePicker_highlightedDate: By = By.xpath(
         `${this.DatePicker_container.value}//td[@role="button"][contains(@class,"active")]`,
     );
+    public OrderItem_single_details: By = By.xpath('//virtual-scroller//mat-grid-list');
     public PepMainArea: By = By.xpath('//div[contains(@class,"pep-main-area")]');
     public AccountDetails_component: By = By.xpath('//acc-details');
     public MatGridList: By = By.xpath(`${this.PepMainArea.value}//mat-grid-list`);
@@ -62,6 +64,19 @@ export class NeltPerformance extends AddonPage {
     public TopBar_Right_StartButtton: By = By.xpath(
         `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Start"]`,
     );
+
+    public TopBar_Right_SubmitButtton_atCart: By = By.xpath(
+        `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Submit"]`,
+    );
+
+    public TopBar_Right_PutOnHoldButtton_atCart: By = By.xpath(
+        `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Put On Hold"]`,
+    );
+
+    public TopBar_Right_SendButtton_atCart: By = By.xpath(
+        `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Send"]`,
+    );
+
     public Information_popup: By = By.xpath(
         '//mat-dialog-container//div[contains(@id,"mat-dialog-title-")]/span[contains(text(),"Information")]',
     );
@@ -74,16 +89,22 @@ export class NeltPerformance extends AddonPage {
     );
 
     // Specific selectors for Nelt //
+    public NeltLogo_Home: By = By.xpath('//pepperi-header//nav//a[@id="navImgLogo"]');
+    public Istek_roka_SpecificItem_DateSelect: By = By.xpath(
+        '//pep-date//span[contains(@title,"Istek roka")]/parent::div',
+    );
+    public Ekstenzija_KL_bold_title: By = By.xpath('//mat-grid-tile//span[contains(@class,"block-with-text body-md")]');
     public Kartica_kupca_results_number: By = By.xpath('//div[contains(@class,"topBar")]//b[@id="results"]');
     public Kartica_kupca_table_cell: By = By.xpath('//table//tbody//td[contains(@class,"table-td-container")]');
     public Datum_ekstenzije_od_DateField: By = By.xpath('//input[@id="TSACreditLimitDateFrom"]');
     public Broj_dana_trajanja_ekstenzije_Field: By = By.xpath(
         '//mat-label[contains(@title,"Broj ")]/ancestor::pep-textbox//mat-form-field//input',
     );
+    public Razlog_povrata_selectButton: By = By.xpath('//span[@id="TSAReturnReasonSelector"]/ancestor::pep-select/div');
     public Razlog_povecanja_DropdownOptionsField: By = By.xpath('//mat-select[@id="TSAReason"]');
-    public Razlog_povecanja_OptionsList: By = By.xpath('//div[@role="listbox"]');
+
     public Razlog_povecanja_OptionThatContainsWhiteSpace: By = By.xpath(
-        `${this.Razlog_povecanja_OptionsList.value}//mat-option[contains(@id,"mat-option-")][contains(@title," ")]`,
+        `${this.OptionsList.value}//mat-option[contains(@id,"mat-option-")][contains(@title," ")]`,
     );
     public OrderCatalogItem: By = By.xpath('//span[@id="Description"]/ancestor::mat-grid-list');
     public OrderCenterItem_OrderButton: By = By.xpath(
@@ -100,6 +121,9 @@ export class NeltPerformance extends AddonPage {
     );
     public InsightsLoaded_Indication_ChartGraph: By = By.xpath(
         `//*[local-name()='g'][contains(@class,"apexcharts-series")]/*[local-name()='path']`,
+    );
+    public InsightsLoaded_Indication_Chart_CanvasSVG: By = By.xpath(
+        `//pep-remote-loader-element//benchmark-chart-element-00000000-0000-0000-0000-0da1a0de41e5//div[@id="canvas"]//*[local-name()='svg']`,
     );
     public InsightsLoaded_Indication_Chart_SVG: By = By.xpath(
         `//pep-remote-loader-element//benchmark-chart-element-00000000-0000-0000-0000-0da1a0de41e5//div[@id="canvas"]//*[local-name()='svg']/*[local-name()='text']`,
@@ -177,18 +201,58 @@ export class NeltPerformance extends AddonPage {
     }
 
     public getSelectorOfSmartFilterFieldByName(name?: string) {
-        return By.xpath(`//pep-smart-filters//span[@title="${name}"]/ancestor::mat-expansion-panel`);
+        return By.xpath(`//pep-smart-filters//span[@title="${name || ''}"]/ancestor::mat-expansion-panel`);
+    }
+
+    public getSelectorOfSmartFilterInnerFieldDropdownByName(filterName?: string, dropdownName?: string) {
+        return By.xpath(
+            `//span[@title="${filterName || ''}"]/ancestor::mat-expansion-panel//mat-label[contains(text(),"${
+                dropdownName || ''
+            }")]/ancestor::pep-select/mat-form-field/div/div`,
+        );
+    }
+
+    public getSelectorOfSmartFilterButtonByName(filterName?: string, buttonText?: string) {
+        return By.xpath(
+            `//span[@title="${
+                filterName || ''
+            }"]/ancestor::mat-expansion-panel/pep-filter-actions//button[contains(text(),"${buttonText || ''}")]`,
+        );
     }
 
     public getSelectorOfVisitFlowAtMultipleVisitsSelectionByText(text: string) {
-        return By.xpath(`//div[contains(@class,"visit-selection")]//span[@title="${text}"]/ancestor::button`);
+        return By.xpath(`//div[contains(@class,"visit-selection")]//span[contains(@title,"${text}")]/ancestor::button`);
     }
 
     public getSelectorOfVisitGroupByText(text: string) {
-        return By.xpath(`//div[contains(@class,"flow-groups")]//span[@title="${text}"]/ancestor::button`);
+        return By.xpath(`//div[contains(@class,"flow-groups")]//span[contains(@title,"${text}")]/ancestor::button`);
     }
 
     public getSelectorOfVisitStepByText(text: string) {
         return By.xpath(`//div[contains(@class,"group-steps")]//span[contains(@title,"${text}")]/ancestor::button`);
+    }
+
+    public getSelectorOfOrderCenterItemQuantitySelectorGridLineViewByIndex(index: number) {
+        return By.xpath(`//pep-list//virtual-scroller/div[2]/div[${index}]//pep-form//input[@id="TSAAOQMQuantity1"]`);
+    }
+
+    public getSelectorOfOrderCenterItemOrderButtonGridLineViewByIndex(index: number) {
+        return By.xpath(
+            `//pep-list//virtual-scroller/div[2]/div[${index}]//pep-form//button[@id="TSAAOQMQuantity1"][@title="Order"]`,
+        );
+    }
+
+    public getSelectorOfSpecificOrderCenterItemDateSelectByIndex(index: number) {
+        return By.xpath(
+            `//pep-list//virtual-scroller/div[2]/div[${index}]//pep-date//span[contains(@title,"Istek roka")]/parent::div`,
+        );
+    }
+
+    public getSelectorOfSpecificOrderCenterItemExpiryDateByIndex(index: number) {
+        return By.xpath(`//pep-list//virtual-scroller/div[2]/div[${index}]//pep-date//span[@id="TSAExpiryDate"]`);
+    }
+
+    public getSelectorOfMatOptionByText(text: string) {
+        return By.xpath(`//span[contains(text(),"${text}")]/parent::mat-option`);
     }
 }

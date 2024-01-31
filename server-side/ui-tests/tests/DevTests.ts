@@ -159,10 +159,10 @@ export class DevTest {
     async installDependenciesInternal(userName, env, varPass) {
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
-        const testName = `Installing Dev Test Prerequisites On ${
+        const testName = `Installing Addon Prerequisites (Dependencies) On ${
             userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
-        } Env, User: ${userName}, Addon: ${this.addonName}, UUID: ${this.addonUUID}`;
-        service.PrintMemoryUseToLog('Start', testName);
+        } Env, User: ${userName}, Addon: ${this.addonName}, UUID: ${this.addonUUID}, Version: ${this.addonVersion}`;
+        service.PrintStartOfInstallation('Start', testName);
         //1. upgrade dependencys - basic: correct for all addons
         await service.baseAddonVersionsInstallation(varPass);
         //1.1 install addon-testing-framework - Chasky's addon which we need
@@ -276,7 +276,7 @@ export class DevTest {
                 `Error: can't install ${this.addonName} - ${this.addonUUID}, exception: ${installAddonResponse}`,
             );
         }
-        service.PrintMemoryUseToLog('End', testName);
+        console.log('\n#####################################################################\n');
     }
 
     async getEuUserEmail() {
@@ -350,10 +350,14 @@ export class DevTest {
     }
 
     async getTestNames() {
+        let urlToGetTestsFrom = `/addons/api/${this.addonUUID}/tests/tests`;
+        if (this.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
+            urlToGetTestsFrom = `/addons/api/00000000-0000-0000-0000-00000e1a571c/tests/tests`;
+        }
         const response = (
             await (
                 await this.getProdUser()
-            ).generalService.fetchStatus(`/addons/api/${this.addonUUID}/tests/tests`, {
+            ).generalService.fetchStatus(urlToGetTestsFrom, {
                 method: 'GET',
             })
         ).Body;
@@ -374,7 +378,7 @@ export class DevTest {
                 }  #######################`,
             );
             let addonSk = null;
-            if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX') {
+            if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
                 addonSk = await this.adminBaseUserGeneralService.getSecretfromKMS(
                     this.adminBaseUserEmail,
                     this.adminBaseUserPass,
@@ -595,16 +599,16 @@ export class DevTest {
                 const result = objectToPrintEu[index];
                 console.log(`\n***${currentTestName} EU result object: ${JSON.stringify(result)}***\n`);
             }
-            const euResults = await this.printResultsTestObject(objectToPrintEu, euUser, 'prod');
-            const prodResults = await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod');
-            const sbResults = await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage');
+            const euResults = await this.printResultsTestObject(objectToPrintEu, euUser, 'prod', currentTestName);
+            const prodResults = await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod', currentTestName);
+            const sbResults = await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage', currentTestName);
             if (shouldAlsoPrintVer) {
                 objectToPrintEu = testResultArrayEu.results[0].suites[1].suites;
                 objectToPrintProd = testResultArrayProd.results[0].suites[1].suites;
                 objectToPrintSB = testResultArraySB.results[0].suites[1].suites;
-                await this.printResultsTestObject(objectToPrintEu, euUser, 'prod');
-                await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod');
-                await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage');
+                await this.printResultsTestObject(objectToPrintEu, euUser, 'prod', currentTestName);
+                await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod', currentTestName);
+                await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage', currentTestName);
             }
             // debugger;
             //4.6. create the array of passing / failing tests
@@ -687,7 +691,7 @@ export class DevTest {
             this.devFailedEnvs = devFailedEnvs2;
             await this.reportToTeams(jenkinsLink);
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
-            return;
+            return false;
         } else if (!this.doWeHaveSuchAppTest(this.addonName)) {
             this.devPassingEnvs = devPassingEnvs2;
             this.devFailedEnvs = devFailedEnvs2;
@@ -814,16 +818,18 @@ export class DevTest {
         }
     }
 
-    async printResultsTestObject(testResultArray, userName, env) {
+    async printResultsTestObject(testResultArray, userName, env, currentTestName) {
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
         const installedAddonsArr = await service.getInstalledAddons({ page_size: -1 });
         let didSucceed = true;
         // debugger;
         console.log(
-            `####################### ${userName.includes('EU') ? 'EU' : env} Dev Test Results For Addon ${
+            `####################### ${
+                userName.includes('EU') ? 'EU' : env
+            }, User: ${userName} Dev Test Results For Addon ${
                 this.addonUUID
-            } #######################`,
+            } For Test Name: ${currentTestName} #######################`,
         );
         for (let index = 0; index < testResultArray.length; index++) {
             const testResult = testResultArray[index];
@@ -905,7 +911,7 @@ export class DevTest {
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
         let _headers;
-        const addonsTestingEndpoint = `/addons/api/async/${this.addonUUID}/tests/tests`;
+        let addonsTestingEndpoint = `/addons/api/async/${this.addonUUID}/tests/tests`;
         if (this.addonName === 'CONFIGURATIONS') {
             _headers = {
                 'x-pepperi-ownerid': '84c999c3-84b7-454e-9a86-71b7abc96554',
@@ -914,6 +920,7 @@ export class DevTest {
             };
         }
         if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
+            addonsTestingEndpoint = `/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests`; //run data index tests for ADAL
             _headers = {
                 'x-pepperi-ownerid': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                 'x-pepperi-secretkey': addonSk,

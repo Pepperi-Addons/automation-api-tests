@@ -3,7 +3,7 @@ import { Context } from 'vm';
 import { WebAppLoginPage, WebAppHomePage, WebAppHeader, WebAppList, WebAppTopBar, WebAppDialog } from '../../pom';
 import addContext from 'mochawesome/addContext';
 import { NeltPerformance } from './NeltPerformance';
-import { By } from 'selenium-webdriver';
+import { By, Key } from 'selenium-webdriver';
 
 export class NeltPerformanceService {
     public browser: Browser;
@@ -47,7 +47,12 @@ export class NeltPerformanceService {
     public async toHomeScreen(this: Context, driver: Browser) {
         const neltPerformanceSelectors = new NeltPerformance(driver);
         if (!(await driver.getCurrentUrl()).includes('HomePage')) {
-            await driver.click(neltPerformanceSelectors.Home);
+            try {
+                await driver.click(neltPerformanceSelectors.Home);
+            } catch (error) {
+                console.error(error);
+                await driver.click(neltPerformanceSelectors.NeltLogo_Home);
+            }
             driver.sleep(1000);
         }
         await neltPerformanceSelectors.isSpinnerDone();
@@ -65,9 +70,11 @@ export class NeltPerformanceService {
         const inputElement = await driver.findElement(inputSelector);
         await inputElement.clear();
         driver.sleep(0.1 * 1000);
-        await inputElement.sendKeys(text + '\n');
+        // await inputElement.sendKeys(text + '\n');
+        await inputElement.sendKeys(Key.BACK_SPACE);
+        await inputElement.sendKeys(text);
         driver.sleep(0.5 * 1000);
-        await driver.click(neltPerformanceSelectors.HtmlBody);
+        // await driver.click(neltPerformanceSelectors.HtmlBody);
         driver.sleep(0.1 * 1000);
         await neltPerformanceSelectors.isSpinnerDone();
     }
@@ -359,6 +366,30 @@ export class NeltPerformanceService {
             title: `End Button clicked -> back at Account Dashboard`,
             value: 'data:image/png;base64,' + base64ImageComponent,
         });
+        driver.sleep(0.5 * 1000);
+    }
+
+    public async chooseNonBundleItemWithOrderClickByIndex(
+        this: Context,
+        driver: Browser,
+        index: number,
+    ): Promise<void> {
+        const neltPerformanceSelectors = new NeltPerformance(driver);
+        await driver.click(neltPerformanceSelectors.getSelectorOfOrderCenterItemOrderButtonGridLineViewByIndex(index));
+        await neltPerformanceSelectors.isSpinnerDone();
+        await driver.untilIsVisible(neltPerformanceSelectors.ListNumberOfResults);
+        await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
+        await driver.untilIsVisible(neltPerformanceSelectors.OrderItem_single_details);
+        const base64ImageComponent = await driver.saveScreenshots();
+        addContext(this, {
+            title: `At Item [${index}] Details`,
+            value: 'data:image/png;base64,' + base64ImageComponent,
+        });
+        await driver.click(neltPerformanceSelectors.TopBar_Right_DoneButtton);
+        await neltPerformanceSelectors.isSpinnerDone();
+        await driver.untilIsVisible(neltPerformanceSelectors.ListNumberOfResults);
+        await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
+        await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_OrderButton_GridLineView);
         driver.sleep(0.5 * 1000);
     }
 }
