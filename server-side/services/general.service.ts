@@ -734,6 +734,10 @@ export default class GeneralService {
         this.CalculateUsedMemory();
     }
 
+    PrintStartOfInstallation(state, testName) {
+        console.log(` ####################### ${state} ${testName}`, ' ####################### ');
+    }
+
     //#region getDate
     getTime() {
         const getDate = new Date();
@@ -1995,8 +1999,9 @@ export default class GeneralService {
 
     reportResults(testResultsObj, testedAddonObject) {
         debugger;
-        console.log('Total Failures: ' + testResultsObj.failures.length);
-        console.log('Total Passes: ' + testResultsObj.passes.length);
+        console.log('Did Test Pass: ' + (testResultsObj.failures.length === 0 ? 'True' : 'False'));
+        // console.log('Total Failures: ' + testResultsObj.failures.length);
+        // console.log('Total Passes: ' + testResultsObj.passes.length);
         //1. run on all suites
         for (let index1 = 0; index1 < testResultsObj.results[0].suites.length; index1++) {
             const testSuite = testResultsObj.results[0].suites[index1];
@@ -2027,21 +2032,24 @@ export default class GeneralService {
     }
 
     reportResults2(testResultsObj, testedAddonObject) {
+        let didpass = true;
         if (!testResultsObj.title.includes('Test Data')) {
             console.log(`Tested Addon: ${testedAddonObject.Addon.Name} Version: ${testedAddonObject.Version}`);
             console.log(`Test Suite: ${testResultsObj.title}`);
             if (testResultsObj.failures) {
                 console.log('Total Failures: ' + testResultsObj.failures.length);
             } else {
-                if (testResultsObj.passed) console.log('Total Failures: ' + 0);
-                else console.log('Total Failures: ' + 1);
+                if (testResultsObj.passed) didpass = true;
+                else didpass = false;
             }
             if (testResultsObj.passes) {
                 console.log('Total Passes: ' + testResultsObj.passes.length);
             } else {
-                if (testResultsObj.passed) console.log('Total Passes: ' + 1);
-                else console.log('Total Passes: ' + 0);
+                if (testResultsObj.passed) didpass = true;
+                else didpass = false;
             }
+            console.log('Did Test Pass: ' + didpass);
+            console.log(' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ');
         }
         if (testResultsObj.tests)
             for (let index = 0; index < testResultsObj.tests.length; index++) {
