@@ -1,5 +1,6 @@
 export class PricingData06 {
     public tableName = 'PPM_Values';
+    public dummyPPM_Values_length = 49999;
 
     public config = {
         PPM_General: {
@@ -433,8 +434,6 @@ export class PricingData06 {
         ],
     };
 
-    public dummyPPM_Values_length = 49999;
-
     public documentsIn_PPM_Values = {
         'ZBASE@A002@Acc01@Frag005': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]',
         'ZBASE@A002@Acc01@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",22,"P"]]]]',
@@ -501,6 +500,147 @@ export class PricingData06 {
             '[[true,"1555891200000","2534022144999","1","1","ZDM1_A010",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZDM1_A010",[[4,"D",4,"%"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZDM1_A010",[[2,"D",2,"%"]],"BOX","BOX"]]',
         'ZDM1@A010@Acc01@Contract3@MaLi38':
             '[[true,"1555891200000","2534022144999","1","1","ZDM1_A010",[[10,"D",5,"%"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZDM1_A010",[[4,"D",15,"%"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZDM1_A010",[[2,"D",25,"%"]],"BOX","BOX"]]',
+    };
+
+    public groupRulesItems_CartTest_details = {
+        MakeUp001: {
+            '1EA': {
+                title: 'total of 11 group items',
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        MakeUp001: 26.73,
+                        MakeUp002: 27.66,
+                        MakeUp003: 22.44,
+                        MakeUp006: 31.38,
+                        MakeUp018: 13.9,
+                        MakeUp019: 14.83,
+                    },
+                    OtherAcc: {
+                        MakeUp001: 28.75,
+                        MakeUp002: 29.75,
+                        MakeUp003: 30.75,
+                        MakeUp006: 33.75,
+                        MakeUp018: 14.95,
+                        MakeUp019: 15.95,
+                    },
+                },
+            },
+        },
+        MakeUp002: {
+            '1EA': {
+                title: 'total of 10 group items',
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        MakeUp001: 26.73,
+                        MakeUp002: 27.66,
+                        MakeUp003: 22.44,
+                        MakeUp006: 31.38,
+                        MakeUp018: 13.9,
+                        MakeUp019: 14.83,
+                    },
+                    OtherAcc: {
+                        MakeUp001: 28.75,
+                        MakeUp002: 29.75,
+                        MakeUp003: 30.75,
+                        MakeUp006: 33.75,
+                        MakeUp018: 14.95,
+                        MakeUp019: 15.95,
+                    },
+                },
+            },
+        },
+        MakeUp003: {
+            '1EA': {
+                title: 'total of 11 group items',
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        MakeUp001: 26.73,
+                        MakeUp002: 27.66,
+                        MakeUp003: 22.44,
+                        MakeUp006: 31.38,
+                        MakeUp018: 13.9,
+                        MakeUp019: 14.83,
+                    },
+                    OtherAcc: {
+                        MakeUp001: 28.75,
+                        MakeUp002: 29.75,
+                        MakeUp003: 30.75,
+                        MakeUp006: 33.75,
+                        MakeUp018: 14.95,
+                        MakeUp019: 15.95,
+                    },
+                },
+            },
+        },
+        MakeUp006: {
+            '1EA': {
+                title: 'total of 11 group items',
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        MakeUp001: 26.73,
+                        MakeUp002: 27.66,
+                        MakeUp003: 22.44,
+                        MakeUp006: 31.38,
+                        MakeUp018: 13.9,
+                        MakeUp019: 14.83,
+                    },
+                    OtherAcc: {
+                        MakeUp001: 28.75,
+                        MakeUp002: 29.75,
+                        MakeUp003: 30.75,
+                        MakeUp006: 33.75,
+                        MakeUp018: 14.95,
+                        MakeUp019: 15.95,
+                    },
+                },
+            },
+        },
+        MakeUp018: {
+            '1EA': {
+                title: 'total of 10 group items',
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        MakeUp001: 26.73,
+                        MakeUp002: 27.66,
+                        MakeUp003: 22.44,
+                        MakeUp006: 31.38,
+                        MakeUp018: 13.9,
+                        MakeUp019: 14.83,
+                    },
+                    OtherAcc: {
+                        MakeUp001: 28.75,
+                        MakeUp002: 29.75,
+                        MakeUp003: 30.75,
+                        MakeUp006: 33.75,
+                        MakeUp018: 14.95,
+                        MakeUp019: 15.95,
+                    },
+                },
+            },
+        },
+        MakeUp019: {
+            '1EA': {
+                title: 'total of 6 group items',
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        MakeUp001: 27.88,
+                        MakeUp002: 28.85,
+                        MakeUp003: 29.82,
+                        MakeUp006: 32.73,
+                        MakeUp018: 14.5,
+                        MakeUp019: 15.47,
+                    },
+                    OtherAcc: {
+                        MakeUp001: 28.75,
+                        MakeUp002: 29.75,
+                        MakeUp003: 30.75,
+                        MakeUp006: 33.75,
+                        MakeUp018: 14.95,
+                        MakeUp019: 15.95,
+                    },
+                },
+            },
+        },
     };
 
     public testItemsValues = {

@@ -73,6 +73,7 @@ import {
     PricingMultipleValuesTests,
     PricingBaseTests,
     PricingAdditionalGroupsReadonlyTests,
+    PricingPartialValueTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -471,6 +472,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingMultipleValuesTests(email, pass, client);
+        // await PricingPartialValueTests(email, pass, client);
         // await Pricing06Tests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
@@ -498,6 +500,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
 
     if (tests === 'PricingMulti') {
         await PricingMultipleValuesTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests === 'PricingPartial') {
+        await PricingPartialValueTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
