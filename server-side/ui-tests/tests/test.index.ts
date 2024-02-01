@@ -37,7 +37,7 @@ import {
     VFdataPrep,
     MockTest,
     SurveyTests,
-    PricingTests,
+    // PricingTests,
     PricingDataPrep,
     ResourceListAbiTests,
     InstallationsTest,
@@ -71,6 +71,8 @@ import {
     PricingUomTests,
     PricingTotalsTests,
     PricingMultipleValuesTests,
+    PricingBaseTests,
+    PricingAdditionalGroupsReadonlyTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -463,10 +465,46 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
 
     if (tests === 'Pricing') {
         await PricingDataPrep(varPass, client);
-        await PricingTests(email, pass, client);
+        // await PricingTests(email, pass, client);
+        await PricingBaseTests(email, pass, client);
+        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingMultipleValuesTests(email, pass, client);
+        // await Pricing06Tests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests === 'PricingBase') {
+        await PricingDataPrep(varPass, client);
+        await PricingBaseTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests === 'PricingAdditional') {
+        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
+    }
+
+    if (tests === 'PricingUom') {
+        await PricingUomTests(email, pass, client);
+    }
+
+    if (tests === 'PricingTotals') {
+        await PricingTotalsTests(email, pass, client);
+    }
+
+    if (tests === 'PricingMulti') {
+        await PricingMultipleValuesTests(email, pass, client);
+    }
+
+    if (tests === 'Pricing') {
+        await PricingDataPrep(varPass, client);
+        // await PricingTests(email, pass, client);
+        await PricingBaseTests(email, pass, client);
+        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
+        // await PricingUomTests(email, pass, client);
+        // await PricingTotalsTests(email, pass, client);
+        // await PricingMultipleValuesTests(email, pass, client);
         // await Pricing06Tests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }

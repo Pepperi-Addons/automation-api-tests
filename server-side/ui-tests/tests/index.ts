@@ -20,6 +20,11 @@ import { VisitFlowTests } from './visit_flow.test';
 import { VFdataPrep } from './vf_data_prep.test';
 import { SurveyTests } from './survey.test';
 import { PricingTests } from './pricing.test';
+import { PricingBaseTests } from './pricing_base.test';
+import { PricingAdditionalGroupsReadonlyTests } from './pricing_additional_groups_readonly.test';
+import { PricingUomTests } from './pricing_uom.test';
+import { PricingTotalsTests } from './pricing_totals.test';
+import { PricingMultipleValuesTests } from './pricing_multiple_values.test';
 import { PricingDataPrep } from './pricing_data.test';
 import { Pricing06Tests } from './pricing06.test';
 import { Pricing06DataPrep } from './pricing06_data_prep.test';
@@ -50,9 +55,6 @@ import { StorybookSliderTests } from './storybook/storybook_slider.test';
 import { StorybookTextareaTests } from './storybook/storybook_textarea.test';
 import { StorybookTextboxTests } from './storybook/storybook_textbox.test';
 import { NeltPerformanceTests } from './Nelt_performance/nelt_performance.test';
-import { PricingUomTests } from './pricing_uom.test';
-import { PricingTotalsTests } from './pricing_totals.test';
-import { PricingMultipleValuesTests } from './pricing_multiple_values.test';
 
 export {
     LoginTests,
@@ -77,6 +79,8 @@ export {
     MockTest,
     SurveyTests,
     PricingTests,
+    PricingBaseTests,
+    PricingAdditionalGroupsReadonlyTests,
     PricingDataPrep,
     Pricing06Tests,
     PricingUomTests,
