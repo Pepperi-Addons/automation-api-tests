@@ -11,6 +11,8 @@ export class OrderPage extends WebAppList {
     public SubmitToCart: By = By.css('[data-qa=cartButton]'); //order
     public ChangeViewButton: By = By.xpath("//mat-icon[@title='Change View']");
     public ViewTypeOption: By = By.xpath(`//span[text()='|textToFill|']`);
+    public ListContainer: By = By.xpath(`//pep-list`);
+    public TopBar: By = By.xpath(`//pep-top-bar`);
 
     public Image_Label: By = By.xpath(`//pep-list//label[@id="Image"]`);
 
@@ -69,6 +71,7 @@ export class OrderPage extends WebAppList {
     public PriceTaxUnitDiff_Value: By = By.xpath('//span[@id="TSAPriceTaxUnitDiff"]');
 
     public Cart_ContinueOrdering_Button: By = By.xpath('//button[@data-qa="Continue ordering"]');
+    public Cart_Headline_Results: By = By.xpath('//list-total');
     public Cart_Headline_Results_Number: By = By.xpath('//pep-list-total//span[contains(@class,"bold number")]');
     public OrderCenter_Headline_Results_Number: By = By.xpath('//list-total//span[contains(@class,"bold number")]');
     public OrderCenter_SideMenu_BeautyMakeUp: By = By.xpath(

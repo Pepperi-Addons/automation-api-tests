@@ -446,7 +446,7 @@ export class PricingService {
         driver.sleep(0.1 * 1000);
         await searchInput.sendKeys(nameOfItem + '\n');
         driver.sleep(0.5 * 1000);
-        await driver.click(orderPage.HtmlBody);
+        await driver.click(orderPage.OrderCenter_Headline_Results_Number);
         driver.sleep(0.1 * 1000);
         await driver.click(orderPage.Search_Magnifier_Button);
         driver.sleep(0.1 * 1000);
@@ -585,7 +585,7 @@ export class PricingService {
             driver.sleep(0.05 * 1000);
             await driver.click(orderPage.getSelectorOfUnitOfMeasureOptionByText(uomValue));
             driver.sleep(0.1 * 1000);
-            await driver.click(orderPage.HtmlBody);
+            await driver.click(orderPage.TopBar);
             driver.sleep(0.1 * 1000);
             itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
         }
@@ -603,7 +603,7 @@ export class PricingService {
         await uomXnumber.sendKeys(quantityOfItem);
         await orderPage.isSpinnerDone();
         driver.sleep(0.05 * 1000);
-        await driver.click(orderPage.HtmlBody);
+        await driver.click(orderPage.TopBar);
         driver.sleep(1 * 1000);
         uomXnumber = await driver.findElement(
             orderPage.getSelectorOfCustomFieldInCartByItemName('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
