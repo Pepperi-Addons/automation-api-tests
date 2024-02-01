@@ -155,6 +155,41 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
             await driver.quit();
         });
 
+        it('inserting valid rules to the UDT "PPM_Values"', async () => {
+            const dataToBatch: {
+                MapDataExternalID: string;
+                MainKey: string;
+                SecondaryKey: string;
+                Values: string[];
+            }[] = [];
+            Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+                dataToBatch.push({
+                    MapDataExternalID: pricingData.tableName,
+                    MainKey: mainKey,
+                    SecondaryKey: '',
+                    Values: [pricingData.documentsIn_PPM_Values[mainKey]],
+                });
+            });
+            const batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
+            expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
+            console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
+            batchUDTresponse.map((row) => {
+                expect(row).to.have.property('InternalID').that.is.above(0);
+                expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+                expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
+                expect(row)
+                    .to.have.property('Message')
+                    .that.is.oneOf([
+                        'Row inserted.',
+                        'No changes in this row. The row is being ignored.',
+                        'Row updated.',
+                    ]);
+                expect(row)
+                    .to.have.property('URI')
+                    .that.equals('/user_defined_tables/' + row.InternalID);
+            });
+        });
+
         it('Login', async function () {
             await webAppLoginPage.login(email, password);
             base64ImageComponent = await driver.saveScreenshots();
@@ -1716,6 +1751,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                             expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                             driver.sleep(1 * 1000);
                         });
+                        // it(`setting all items amount to 1`, async function () {
                         groupRulesItems_CartTest.forEach(async (groupRuleItem_CartTest) => {
                             it(`setting "${groupRuleItem_CartTest}" item amount to 1`, async function () {
                                 await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
@@ -1726,12 +1762,18 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                 );
                                 driver.sleep(0.2 * 1000);
                             });
+                            // base64ImageComponent = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `At Cart - after change`,
+                            //     value: 'data:image/png;base64,' + base64ImageComponent,
+                            // });
                         });
+                        // it(`setting all items amount to original value`, async function () {
                         groupRulesItems_CartTest.forEach(async (groupRuleItem_CartTest) => {
                             it(`setting "${groupRuleItem_CartTest}" item amount to original value`, async function () {
                                 let testedDetails;
                                 if (groupRuleItem_CartTest === 'MakeUp018') {
-                                    // need to be removed when MakeUp018 is un-commented from groupRulesItems
+                                    // need to be removed when MakeUp018 is un-commented from groupRulesItems (only the else remains)
                                     testedDetails = {
                                         name: 'MakeUp018',
                                         Acc01: { uom: 'Each', unitQuantity: 2 },
@@ -1753,6 +1795,11 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                 );
                                 driver.sleep(0.2 * 1000);
                             });
+                            // base64ImageComponent = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `At Cart - after change`,
+                            //     value: 'data:image/png;base64,' + base64ImageComponent,
+                            // });
                         });
                         groupRulesItems.forEach((groupRuleItem) => {
                             it(`checking item "${groupRuleItem.name}"`, async function () {

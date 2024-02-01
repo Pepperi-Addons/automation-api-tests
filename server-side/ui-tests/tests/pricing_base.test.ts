@@ -101,6 +101,41 @@ export async function PricingBaseTests(email: string, password: string, client: 
             await driver.quit();
         });
 
+        it('inserting valid rules to the UDT "PPM_Values"', async () => {
+            const dataToBatch: {
+                MapDataExternalID: string;
+                MainKey: string;
+                SecondaryKey: string;
+                Values: string[];
+            }[] = [];
+            Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+                dataToBatch.push({
+                    MapDataExternalID: pricingData.tableName,
+                    MainKey: mainKey,
+                    SecondaryKey: '',
+                    Values: [pricingData.documentsIn_PPM_Values[mainKey]],
+                });
+            });
+            const batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
+            expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
+            console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
+            batchUDTresponse.map((row) => {
+                expect(row).to.have.property('InternalID').that.is.above(0);
+                expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+                expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
+                expect(row)
+                    .to.have.property('Message')
+                    .that.is.oneOf([
+                        'Row inserted.',
+                        'No changes in this row. The row is being ignored.',
+                        'Row updated.',
+                    ]);
+                expect(row)
+                    .to.have.property('URI')
+                    .that.equals('/user_defined_tables/' + row.InternalID);
+            });
+        });
+
         it('Login', async function () {
             await webAppLoginPage.login(email, password);
             base64ImageComponent = await driver.saveScreenshots();

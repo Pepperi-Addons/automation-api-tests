@@ -19,6 +19,7 @@ export async function NeltPerformanceTests(email: string, password: string, clie
     const timeMeasurementsArray: { Title: string; Sec: number; Milisec: number }[] = [];
     const generalService = new GeneralService(client);
     const pfsService: PFSService = new PFSService(generalService);
+    // const selectVisitFlow_regex = /[A-Z][0-9] poseta/;
 
     let driver: Browser;
     let neltPerfomanceService: NeltPerformanceService;

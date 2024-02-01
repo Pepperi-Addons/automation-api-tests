@@ -483,18 +483,22 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
 
     if (tests === 'PricingAdditional') {
         await PricingAdditionalGroupsReadonlyTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests === 'PricingUom') {
         await PricingUomTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests === 'PricingTotals') {
         await PricingTotalsTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests === 'PricingMulti') {
         await PricingMultipleValuesTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests === 'Pricing') {
