@@ -1210,6 +1210,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
                     errorString,
                     service,
                 );
+                await devTest.unavailableVersion();
                 throw new Error(`Error: got exception trying to get test Names: ${(error as any).message} `);
             }
             console.log(`####################### Got ${testsList.length} Tests #######################`);
