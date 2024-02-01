@@ -63,39 +63,6 @@ export default class E2EUtils extends BasePomObject {
         return;
     }
 
-    public async navigateTo_Web18(destiny: 'Resource Views' | 'Slugs' | 'Page Builder') {
-        const header: WebAppHeader = new WebAppHeader(this.browser);
-        const settingsSidePanel: WebAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
-        try {
-            await header.goHome();
-            await header.isSpinnerDone();
-            await header.webApp18_openSettings();
-            await header.isSpinnerDone();
-            await settingsSidePanel.selectSettingsByID('Pages');
-            switch (destiny) {
-                case 'Resource Views':
-                    const resourceList: ResourceList = new ResourceList(this.browser);
-                    await settingsSidePanel.clickSettingsSubCategory('views_and_editors', 'Pages');
-                    // if (await this.browser.isElementVisible(resourceList.EditPage_BackToList_Button)) {
-                    //     await resourceList.click(resourceList.EditPage_BackToList_Button);
-                    // }
-                    await resourceList.waitTillVisible(resourceList.PepTopArea_title, 30000);
-                    break;
-                case 'Slugs':
-                    await settingsSidePanel.clickSettingsSubCategory('slugs', 'Pages');
-                    break;
-                case 'Page Builder':
-                    await settingsSidePanel.clickSettingsSubCategory('pages', 'Pages');
-                    break;
-                default:
-                    throw new Error('Incorrect Path Chosen!');
-            }
-        } catch (error) {
-            console.error(error);
-        }
-        return;
-    }
-
     public async addEditor(editorData: { nameOfEditor: string; descriptionOfEditor: string; nameOfResource: string }) {
         const rlEditors: ResourceEditors = new ResourceEditors(this.browser);
         await this.navigateTo('Resource Views');
@@ -119,7 +86,7 @@ export default class E2EUtils extends BasePomObject {
 
     public async addView_Web18(viewData: { nameOfView: string; descriptionOfView: string; nameOfResource: string }) {
         const rlViews: ResourceViews = new ResourceViews(this.browser);
-        await this.navigateTo_Web18('Resource Views');
+        await this.navigateTo('Resource Views');
         await rlViews.validateViewsListPageIsLoaded();
         await rlViews.addToResourceList(viewData.nameOfView, viewData.descriptionOfView, viewData.nameOfResource);
         await rlViews.verifyViewEditPageOpen(viewData.nameOfView); // IS DIFFERENT than: Editor Edit Page !  DO NOT CHANGE (Hagit, Dec2022)
@@ -144,22 +111,6 @@ export default class E2EUtils extends BasePomObject {
     public async addPageNoSections(nameOfPage: string, descriptionOfPage: string) {
         const pageBuilder: PageBuilder = new PageBuilder(this.browser);
         await this.navigateTo('Page Builder');
-        pageBuilder.pause(1000);
-        await pageBuilder.waitTillVisible(pageBuilder.PageBuilder_Title, 15000);
-        await pageBuilder.waitTillVisible(pageBuilder.AddPage_Button, 15000);
-        pageBuilder.pause(1000);
-        await pageBuilder.addBlankPageNoSections(nameOfPage, descriptionOfPage);
-        pageBuilder.pause(2 * 1000);
-        const pageUUID = await this.getUUIDfromURL();
-        pageBuilder.pause(3 * 1000);
-        await pageBuilder.returnToPageBuilderFromPage();
-        pageBuilder.pause(1000);
-        return pageUUID;
-    }
-
-    public async addPageNoSections_Web18(nameOfPage: string, descriptionOfPage: string) {
-        const pageBuilder: PageBuilder = new PageBuilder(this.browser);
-        await this.navigateTo_Web18('Page Builder');
         pageBuilder.pause(1000);
         await pageBuilder.waitTillVisible(pageBuilder.PageBuilder_Title, 15000);
         await pageBuilder.waitTillVisible(pageBuilder.AddPage_Button, 15000);
