@@ -37,8 +37,16 @@ import {
     VFdataPrep,
     MockTest,
     SurveyTests,
-    // PricingTests,
+    PricingTests,
     PricingDataPrep,
+    Pricing06Tests,
+    Pricing06DataPrep,
+    PricingBaseTests,
+    PricingAdditionalGroupsReadonlyTests,
+    PricingUomTests,
+    PricingTotalsTests,
+    PricingMultipleValuesTests,
+    PricingPartialValueTests,
     ResourceListAbiTests,
     InstallationsTest,
     StorybookColorPickerTests,
@@ -65,15 +73,7 @@ import {
     StorybookSliderTests,
     StorybookTextareaTests,
     StorybookTextboxTests,
-    Pricing06DataPrep,
-    // Pricing06Tests,
     NeltPerformanceTests,
-    PricingUomTests,
-    PricingTotalsTests,
-    PricingMultipleValuesTests,
-    PricingBaseTests,
-    PricingAdditionalGroupsReadonlyTests,
-    PricingPartialValueTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -466,14 +466,24 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
 
     if (tests === 'Pricing') {
         await PricingDataPrep(varPass, client);
-        // await PricingTests(email, pass, client);
         await PricingBaseTests(email, pass, client);
         await PricingAdditionalGroupsReadonlyTests(email, pass, client);
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingMultipleValuesTests(email, pass, client);
         // await PricingPartialValueTests(email, pass, client);
-        // await Pricing06Tests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests === 'Pricing05') {
+        await PricingDataPrep(varPass, client);
+        await PricingTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests === 'Pricing06') {
+        await PricingDataPrep(varPass, client);
+        await Pricing06Tests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
@@ -505,27 +515,6 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
 
     if (tests === 'PricingPartial') {
         await PricingPartialValueTests(email, pass, client);
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
-
-    if (tests === 'Pricing') {
-        await PricingDataPrep(varPass, client);
-        // await PricingTests(email, pass, client);
-        await PricingBaseTests(email, pass, client);
-        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
-        // await PricingUomTests(email, pass, client);
-        // await PricingTotalsTests(email, pass, client);
-        // await PricingMultipleValuesTests(email, pass, client);
-        // await Pricing06Tests(email, pass, client);
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
-
-    if (tests.includes('Pricing06')) {
-        // await Pricing06DataPrep(varPass, client);
-        await PricingUomTests(email, pass, client);
-        await PricingTotalsTests(email, pass, client);
-        await PricingMultipleValuesTests(email, pass, client);
-        // await Pricing06Tests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
