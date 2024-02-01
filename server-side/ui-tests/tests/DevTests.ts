@@ -117,12 +117,7 @@ export class DevTest {
                 const errorString = `Error: Got Exception While Trying To Upgrade / Install Addons, Got Exception: ${
                     (error as any).message
                 }, On User: ${user.email}, Making ${this.addonName} unavailable`;
-                await this.unavailableVersion(
-                    this.addonEntryUUIDEU,
-                    this.addonEntryUUIDProd,
-                    this.addonEntryUUIDSb,
-                    this.addonVersion,
-                );
+                await this.unavailableVersion();
                 await this.reportToTeamsMessage(errorString);
                 throw new Error(errorString);
             }
@@ -336,12 +331,7 @@ export class DevTest {
             const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`;
             debugger;
             await this.reportToTeamsMessage(errorString);
-            await this.unavailableVersion(
-                addonEntryUUIDEU,
-                addonEntryUUIDProd,
-                addonEntryUUIDSb,
-                latestVersionOfTestedAddonProd,
-            );
+            await this.unavailableVersion();
             throw new Error(errorString);
         } else {
             this.addonVersion = latestVersionOfTestedAddonProd;
@@ -471,12 +461,7 @@ export class DevTest {
                     errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
                 await this.reportToTeamsMessage(errorString);
-                await this.unavailableVersion(
-                    this.addonEntryUUIDEU,
-                    this.addonEntryUUIDProd,
-                    this.addonEntryUUIDSb,
-                    this.addonVersion,
-                );
+                await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
             debugger;
@@ -501,12 +486,7 @@ export class DevTest {
                     errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
                 await this.reportToTeamsMessage(errorString);
-                await this.unavailableVersion(
-                    this.addonEntryUUIDEU,
-                    this.addonEntryUUIDProd,
-                    this.addonEntryUUIDSb,
-                    this.addonVersion,
-                );
+                await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
             let objectToPrintEu;
@@ -528,12 +508,7 @@ export class DevTest {
                 )}, On: ${currentTestName} Test`;
                 debugger;
                 await this.reportToTeamsMessage(errorString);
-                await this.unavailableVersion(
-                    this.addonEntryUUIDEU,
-                    this.addonEntryUUIDProd,
-                    this.addonEntryUUIDSb,
-                    this.addonVersion,
-                );
+                await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
             //TODO: move the parsing to another function
@@ -581,12 +556,7 @@ export class DevTest {
                     )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
                 await this.reportToTeamsMessage(errorString);
-                await this.unavailableVersion(
-                    this.addonEntryUUIDEU,
-                    this.addonEntryUUIDProd,
-                    this.addonEntryUUIDSb,
-                    this.addonVersion,
-                );
+                await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
             for (let index = 0; index < objectToPrintProd.length; index++) {
@@ -683,12 +653,7 @@ export class DevTest {
         }
         if (devFailedEnvs2.length != 0) {
             debugger;
-            await this.unavailableVersion(
-                this.addonEntryUUIDEU,
-                this.addonEntryUUIDProd,
-                this.addonEntryUUIDSb,
-                this.addonVersion,
-            );
+            await this.unavailableVersion();
             this.devPassingEnvs = devPassingEnvs2;
             this.devFailedEnvs = devFailedEnvs2;
             await this.reportToTeams(jenkinsLink);
@@ -872,30 +837,30 @@ export class DevTest {
         return { didSucceed };
     }
 
-    async unavailableVersion(addonEntryUUIDEU, addonEntryUUIDProd, addonEntryUUIDSb, latestVersionOfTestedAddonProd) {
+    async unavailableVersion() {
         debugger;
         await Promise.all([
             this.unavailableAddonVersion(
                 'prod',
                 this.addonName,
-                addonEntryUUIDEU,
-                latestVersionOfTestedAddonProd,
+                this.addonEntryUUIDEU,
+                this.addonVersion,
                 this.addonUUID,
                 this.varPassEU,
             ),
             this.unavailableAddonVersion(
                 'prod',
                 this.addonName,
-                addonEntryUUIDProd,
-                latestVersionOfTestedAddonProd,
+                this.addonEntryUUIDProd,
+                this.addonVersion,
                 this.addonUUID,
                 this.varPass,
             ),
             this.unavailableAddonVersion(
                 'stage',
                 this.addonName,
-                addonEntryUUIDSb,
-                latestVersionOfTestedAddonProd,
+                this.addonEntryUUIDSb,
+                this.addonVersion,
                 this.addonUUID,
                 this.varPassSB,
             ),
