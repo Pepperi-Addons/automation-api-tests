@@ -559,6 +559,9 @@ export class DevTest {
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
+            console.log(
+                `********* this printing is made for debugging - you can skip downward to see the prettified tests result *********\n'`,
+            );
             for (let index = 0; index < objectToPrintProd.length; index++) {
                 const result = objectToPrintProd[index];
                 console.log(`\n***${currentTestName} PROD result object: ${JSON.stringify(result)}***\n`);
@@ -571,6 +574,9 @@ export class DevTest {
                 const result = objectToPrintEu[index];
                 console.log(`\n***${currentTestName} EU result object: ${JSON.stringify(result)}***\n`);
             }
+            console.log(
+                `\n****************************************************** Prettified Tests Results Splitted To Envs ******************************************************\n'`,
+            );
             const euResults = await this.printResultsTestObject(objectToPrintEu, euUser, 'prod', currentTestName);
             const prodResults = await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod', currentTestName);
             const sbResults = await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage', currentTestName);
