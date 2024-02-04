@@ -54,7 +54,7 @@ export const testData = {
 
 //this is done because sync installations are using "phased=false"
 const testDataWithSyncForCpi = testData;
-testDataWithSyncForCpi['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', '1.0.53'];
+testDataWithSyncForCpi['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''];
 testDataWithSyncForCpi['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.2.28'];
 
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
@@ -70,7 +70,7 @@ export const testDataWithNewSyncForCpiRegression = {
 
 //this is done because sync installations are using "phased=false"
 const testDataWithSync = testData;
-testDataWithSync['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', '1.0.53'];
+testDataWithSync['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''];
 testDataWithSync['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', ''];
 
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
@@ -108,7 +108,7 @@ export const testDataForInitUser = {
     'Key Management Service': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
     'Operation Invoker': ['f8d964d7-aad0-4d29-994b-5977a8f22dca', '9.5.%'],
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
-    Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.9.%'],
+    Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
     'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', '1.2.%'],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
     'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
