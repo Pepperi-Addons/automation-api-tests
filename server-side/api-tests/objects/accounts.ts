@@ -487,7 +487,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 // expect(getCreatedAccount[0].TSAImageAPI.URL).to.include('cdn'),
                 expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include('43448bb5e0a24a448246b7bf9bc75075.png'),
                 // expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include('cdn'),
-                expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
+                expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('file-sample_150kb.pdf'),
                 // expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('cdn'),
             ]);
         });
