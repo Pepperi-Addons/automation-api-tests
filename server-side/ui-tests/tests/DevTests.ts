@@ -114,8 +114,9 @@ export class DevTest {
             try {
                 await this.installDependenciesInternal(user.email, user.env, varPass);
             } catch (error) {
-                const errorString = `Error: Got Exception While Trying To Upgrade / Install Addons, Got Exception: ${(error as any).message
-                    }, On User: ${user.email}, Making ${this.addonName} unavailable`;
+                const errorString = `Error: Got Exception While Trying To Upgrade / Install Addons, Got Exception: ${
+                    (error as any).message
+                }, On User: ${user.email}, Making ${this.addonName} unavailable`;
                 await this.unavailableVersion();
                 await this.reportToTeamsMessage(errorString);
                 throw new Error(errorString);
@@ -155,8 +156,9 @@ export class DevTest {
     async installDependenciesInternal(userName, env, varPass) {
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
-        const testName = `Installing Addon Prerequisites (Dependencies) On ${userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
-            } Env, User: ${userName}, Addon: ${this.addonName}, UUID: ${this.addonUUID}, Version: ${this.addonVersion}`;
+        const testName = `Installing Addon Prerequisites (Dependencies) On ${
+            userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
+        } Env, User: ${userName}, Addon: ${this.addonName}, UUID: ${this.addonUUID}, Version: ${this.addonVersion}`;
         service.PrintStartOfInstallation('Start', testName);
         //1. upgrade dependencys - basic: correct for all addons
         await service.baseAddonVersionsInstallation(varPass);
@@ -239,8 +241,10 @@ export class DevTest {
                         )) as any;
                         if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
                             throw new Error(
-                                `Error: can't install one of Nebulas dependency's: ${Object.entries(nebulaDepAddon)[0][0]
-                                } - ${(Object.entries(nebulaDepAddon)[0][1] as any)[0]}, error:${installAddonResponse[0]
+                                `Error: can't install one of Nebulas dependency's: ${
+                                    Object.entries(nebulaDepAddon)[0][0]
+                                } - ${(Object.entries(nebulaDepAddon)[0][1] as any)[0]}, error:${
+                                    installAddonResponse[0]
                                 }`,
                             );
                         }
@@ -313,8 +317,9 @@ export class DevTest {
                 );
         } catch (error) {
             debugger;
-            const errorString = `Error: Couldn't Get Latest Available Versions Of ${this.addonName}: ${(error as any).message
-                }`;
+            const errorString = `Error: Couldn't Get Latest Available Versions Of ${this.addonName}: ${
+                (error as any).message
+            }`;
             await this.reportToTeamsMessage(errorString);
             throw new Error(errorString);
         }
@@ -360,7 +365,8 @@ export class DevTest {
                 Name: currentTestName,
             };
             console.log(
-                `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${testNames.length
+                `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
+                    testNames.length
                 }  #######################`,
             );
             let addonSk = null;
@@ -529,22 +535,25 @@ export class DevTest {
                 debugger;
                 let errorString = '';
                 if (!objectToPrintEu) {
-                    errorString += `${euUser} got the error: ${devTestResutsEu.AuditInfo.ErrorMessage
-                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
-                            devTestResutsEu.AuditInfo,
-                        )}, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
+                    errorString += `${euUser} got the error: ${
+                        devTestResutsEu.AuditInfo.ErrorMessage
+                    } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                        devTestResutsEu.AuditInfo,
+                    )}, EXECUTION UUID: ${devTestResponseEu.Body.URI},\n`;
                 }
                 if (!objectToPrintProd) {
-                    errorString += `${prodUser} got the error: ${devTestResultsProd.AuditInfo.ErrorMessage
-                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
-                            devTestResultsProd.AuditInfo,
-                        )}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
+                    errorString += `${prodUser} got the error: ${
+                        devTestResultsProd.AuditInfo.ErrorMessage
+                    } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                        devTestResultsProd.AuditInfo,
+                    )}, EXECUTION UUID: ${devTestResponseProd.Body.URI},\n`;
                 }
                 if (!objectToPrintSB) {
-                    errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage
-                        } from Audit Log, Recived Audit Log: ${JSON.stringify(
-                            devTestResultsSb.AuditInfo,
-                        )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
+                    errorString += `${sbUser} got the error: ${
+                        devTestResultsSb.AuditInfo.ErrorMessage
+                    } from Audit Log, Recived Audit Log: ${JSON.stringify(
+                        devTestResultsSb.AuditInfo,
+                    )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
                 await this.reportToTeamsMessage(errorString);
                 await this.unavailableVersion();
@@ -720,21 +729,27 @@ export class DevTest {
         const userMails = users.map((user) => user.email);
         const stringUsers = userMails.join(',');
         const uniqFailingEnvs = [...new Set(this.devFailedEnvs.map((env) => env.toUpperCase()))];
-        const message = `Dev Test: ${this.addonName} - (${this.addonUUID}), Version:${this.addonVersion
-            }, Test Users:<br>${stringUsers}<br>${this.devPassingEnvs.length === 0 ? '' : 'Passed On: ' + this.devPassingEnvs.join(', ') + ' |||'
-            } ${this.devFailedEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')
-            },<br>Link: ${jenkinsLink}`;
-        const message2 = `${this.failedSuitesProd.length === 0
-            ? ''
-            : 'FAILED TESTS AND EXECUTION UUIDS:<br>PROD:' +
-            this.failedSuitesProd.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
-            }${this.failedSuitesEU.length === 0
+        const message = `Dev Test: ${this.addonName} - (${this.addonUUID}), Version:${
+            this.addonVersion
+        }, Test Users:<br>${stringUsers}<br>${
+            this.devPassingEnvs.length === 0 ? '' : 'Passed On: ' + this.devPassingEnvs.join(', ') + ' |||'
+        } ${
+            this.devFailedEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')
+        },<br>Link: ${jenkinsLink}`;
+        const message2 = `${
+            this.failedSuitesProd.length === 0
+                ? ''
+                : 'FAILED TESTS AND EXECUTION UUIDS:<br>PROD:' +
+                  this.failedSuitesProd.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+        }${
+            this.failedSuitesEU.length === 0
                 ? ''
                 : ',<br>EU:' + this.failedSuitesEU.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
-            }${this.failedSuitesSB.length === 0
+        }${
+            this.failedSuitesSB.length === 0
                 ? ''
                 : ',<br>SB:' + this.failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
-            }`;
+        }`;
         const bodyToSend = {
             Name: `${this.addonName} Dev Test Result Status`,
             Description: message,
@@ -742,7 +757,11 @@ export class DevTest {
             Message: message2 === '' ? '~' : message2,
             UserWebhook: await this.handleTeamsURL(this.addonName),
         };
-        console.log(`Dev Tests Results: ${this.addonName}, On Version ${this.addonVersion} Has ${bodyToSend.Status === 'ERROR' ? 'FAILED' : 'PASSED'}`);
+        console.log(
+            `Dev Tests Results: ${this.addonName}, On Version ${this.addonVersion} Has ${
+                bodyToSend.Status === 'ERROR' ? 'FAILED' : 'PASSED'
+            }`,
+        );
         if (bodyToSend.Message !== '~') {
             console.log(`FAILED TESTS:\n ${bodyToSend.Message}`);
         }
@@ -787,8 +806,10 @@ export class DevTest {
         let didSucceed = true;
         // debugger;
         console.log(
-            `####################### ${userName.includes('EU') ? 'EU' : env
-            }, User: ${userName} Dev Test Results For Addon ${this.addonUUID
+            `####################### ${
+                userName.includes('EU') ? 'EU' : env
+            }, User: ${userName} Dev Test Results For Addon ${
+                this.addonUUID
             } For Test Name: ${currentTestName} #######################`,
         );
         for (let index = 0; index < testResultArray.length; index++) {
@@ -1128,8 +1149,8 @@ export class DevTest {
             const userEnv = userEmail.toLocaleUpperCase().includes('EU')
                 ? 'EU'
                 : userEmail.toLocaleUpperCase().includes('SB')
-                    ? 'stage'
-                    : 'PROD';
+                ? 'stage'
+                : 'PROD';
             const client = await initiateTester(userEmail, userPass, userEnv);
             const service = new GeneralService(client);
             const devUser: DevTestUser = new DevTestUser(userEmail, userPass, userEnv, service);
