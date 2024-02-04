@@ -388,6 +388,16 @@ export async function PricingBaseTests(email: string, password: string, client: 
         });
 
         describe('Cleanup', () => {
+            it('Retrieving "PPM_Values" UDT values via API', async () => {
+                ppmVluesEnd = await objectsService.getUDT({
+                    where: `MapDataExternalID='${pricingData.tableName}'`,
+                    page_size: -1,
+                });
+                expect(ppmVluesEnd.length).equals(
+                    Object.keys(pricingData.documentsIn_PPM_Values).length + pricingData.dummyPPM_Values_length,
+                );
+            });
+
             it('Deleting all Activities', async () => {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
