@@ -410,7 +410,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 Type: 'Customer',
                 ZipCode: '12345',
                 TSAAttachmentAPI: {
-                    URL: 'http://www.africau.edu/images/default/sample.pdf',
+                    URL: 'https://file-examples.com/wp-content/storage/2017/10/file-sample_150kB.pdf',
                     Content: '',
                 },
                 TSACheckboxAPI: true,
