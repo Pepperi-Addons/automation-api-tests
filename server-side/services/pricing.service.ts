@@ -446,7 +446,7 @@ export class PricingService {
         driver.sleep(0.1 * 1000);
         await searchInput.sendKeys(nameOfItem + '\n');
         driver.sleep(0.5 * 1000);
-        await driver.click(orderPage.HtmlBody);
+        await driver.click(orderPage.OrderCenter_Headline_Results_Number);
         driver.sleep(0.1 * 1000);
         await driver.click(orderPage.Search_Magnifier_Button);
         driver.sleep(0.1 * 1000);
@@ -579,18 +579,22 @@ export class PricingService {
     ): Promise<void> {
         const orderPage = new OrderPage(driver);
         driver.sleep(0.05 * 1000);
-        let itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
+        let itemUomValue: WebElement = await driver.findElement(
+            orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem),
+        );
         if ((await itemUomValue.getText()) !== uomValue) {
             await itemUomValue.click();
             driver.sleep(0.05 * 1000);
             await driver.click(orderPage.getSelectorOfUnitOfMeasureOptionByText(uomValue));
             driver.sleep(0.1 * 1000);
-            await driver.click(orderPage.HtmlBody);
+            await driver.click(orderPage.TopBar);
             driver.sleep(0.1 * 1000);
             itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
         }
         driver.sleep(0.05 * 1000);
         await orderPage.isSpinnerDone();
+        itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
+        driver.sleep(0.1 * 1000);
         expect(await itemUomValue.getText()).equals(uomValue);
         let uomXnumber = await driver.findElement(
             orderPage.getSelectorOfCustomFieldInCartByItemName('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
@@ -603,7 +607,7 @@ export class PricingService {
         await uomXnumber.sendKeys(quantityOfItem);
         await orderPage.isSpinnerDone();
         driver.sleep(0.05 * 1000);
-        await driver.click(orderPage.HtmlBody);
+        await driver.click(orderPage.TopBar);
         driver.sleep(1 * 1000);
         uomXnumber = await driver.findElement(
             orderPage.getSelectorOfCustomFieldInCartByItemName('ItemQuantity_byUOM_InteractableNumber', nameOfItem),

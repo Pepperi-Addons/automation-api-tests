@@ -54,7 +54,7 @@ export const testData = {
 
 //this is done because sync installations are using "phased=false"
 const testDataWithSyncForCpi = testData;
-testDataWithSyncForCpi['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', '1.0.53'];
+testDataWithSyncForCpi['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''];
 testDataWithSyncForCpi['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.2.28'];
 
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
@@ -70,7 +70,7 @@ export const testDataWithNewSyncForCpiRegression = {
 
 //this is done because sync installations are using "phased=false"
 const testDataWithSync = testData;
-testDataWithSync['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', '1.0.53'];
+testDataWithSync['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''];
 testDataWithSync['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', ''];
 
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
@@ -108,7 +108,7 @@ export const testDataForInitUser = {
     'Key Management Service': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
     'Operation Invoker': ['f8d964d7-aad0-4d29-994b-5977a8f22dca', '9.5.%'],
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
-    Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '0.9.%'],
+    Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
     'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', '1.2.%'],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
     'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
@@ -732,6 +732,10 @@ export default class GeneralService {
     PrintMemoryUseToLog(state, testName) {
         console.log(`%c${state} ${testName} Test System Information: `, ConsoleColors.SystemInformation);
         this.CalculateUsedMemory();
+    }
+
+    PrintStartOfInstallation(state, testName) {
+        console.log(` ####################### ${state} ${testName}`, ' ####################### ');
     }
 
     //#region getDate
@@ -1995,8 +1999,9 @@ export default class GeneralService {
 
     reportResults(testResultsObj, testedAddonObject) {
         debugger;
-        console.log('Total Failures: ' + testResultsObj.failures.length);
-        console.log('Total Passes: ' + testResultsObj.passes.length);
+        console.log('Did Test Pass: ' + (testResultsObj.failures.length === 0 ? 'True' : 'False'));
+        // console.log('Total Failures: ' + testResultsObj.failures.length);
+        // console.log('Total Passes: ' + testResultsObj.passes.length);
         //1. run on all suites
         for (let index1 = 0; index1 < testResultsObj.results[0].suites.length; index1++) {
             const testSuite = testResultsObj.results[0].suites[index1];
@@ -2027,21 +2032,24 @@ export default class GeneralService {
     }
 
     reportResults2(testResultsObj, testedAddonObject) {
+        let didpass = true;
         if (!testResultsObj.title.includes('Test Data')) {
             console.log(`Tested Addon: ${testedAddonObject.Addon.Name} Version: ${testedAddonObject.Version}`);
             console.log(`Test Suite: ${testResultsObj.title}`);
             if (testResultsObj.failures) {
                 console.log('Total Failures: ' + testResultsObj.failures.length);
             } else {
-                if (testResultsObj.passed) console.log('Total Failures: ' + 0);
-                else console.log('Total Failures: ' + 1);
+                if (testResultsObj.passed) didpass = true;
+                else didpass = false;
             }
             if (testResultsObj.passes) {
                 console.log('Total Passes: ' + testResultsObj.passes.length);
             } else {
-                if (testResultsObj.passed) console.log('Total Passes: ' + 1);
-                else console.log('Total Passes: ' + 0);
+                if (testResultsObj.passed) didpass = true;
+                else didpass = false;
             }
+            console.log('Did Test Pass: ' + didpass);
+            console.log(' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ');
         }
         if (testResultsObj.tests)
             for (let index = 0; index < testResultsObj.tests.length; index++) {
@@ -2179,6 +2187,41 @@ export default class GeneralService {
         } catch (error) {
             throw new Error(`Error: ${(error as any).message}`);
         }
+    }
+
+    convertArrayOfObjectsToPFSTempFile(arrayOfObjects: Record<string, unknown>[]) {
+        return this.turnJsonObjectToCSVTextualObjectArray(arrayOfObjects[1], arrayOfObjects);
+    }
+
+    turnJsonObjectToCSVTextualObjectArray(jsonObject: Record<string, unknown>, actualArray: Record<string, unknown>[]) {
+        let csvTextualObject = '';
+        const jsonObjKeys = Object.keys(jsonObject);
+        //1. validate all keys are the same across object
+        for (let index = 0; index < actualArray.length; index++) {
+            const jsonFromArray = actualArray[index];
+            const keys = Object.keys(jsonFromArray);
+            for (let index = 0; index < keys.length; index++) {
+                const keyFromJson = keys[index];
+                if (keyFromJson !== jsonObjKeys[index]) {
+                    throw new Error(
+                        `Error: Keys are not the same across JSON: ${keyFromJson} != ${jsonObjKeys[index]}`,
+                    );
+                }
+            }
+        }
+        //2. add CSV's keys
+        csvTextualObject += jsonObjKeys + ',Hidden' + '\n';
+        //3. add all values
+        for (let index = 0; index < actualArray.length; index++) {
+            const jsonElement = actualArray[index];
+            const jsonValues = Object.values(jsonElement);
+            for (let index = 0; index < jsonValues.length; index++) {
+                const csvRow = jsonValues[index];
+                csvTextualObject += csvRow + ',';
+            }
+            csvTextualObject += 'false' + '\n';
+        }
+        return csvTextualObject;
     }
 
     async createCSVFile(

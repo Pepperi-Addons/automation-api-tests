@@ -99,6 +99,8 @@ export class DevTest {
                 return '00000000-0000-0000-0000-0000000a594c';
             case 'TRANSLATION':
                 return 'fbbac53c-c350-42c9-b9ad-17c238e55b42';
+            case 'DIMX':
+                return '44c97115-6d14-4626-91dc-83f176e9a0fc';
             default:
                 return 'none';
         }
@@ -115,12 +117,7 @@ export class DevTest {
                 const errorString = `Error: Got Exception While Trying To Upgrade / Install Addons, Got Exception: ${
                     (error as any).message
                 }, On User: ${user.email}, Making ${this.addonName} unavailable`;
-                await this.unavailableVersion(
-                    this.addonEntryUUIDEU,
-                    this.addonEntryUUIDProd,
-                    this.addonEntryUUIDSb,
-                    this.addonVersion,
-                );
+                await this.unavailableVersion();
                 await this.reportToTeamsMessage(errorString);
                 throw new Error(errorString);
             }
@@ -159,10 +156,10 @@ export class DevTest {
     async installDependenciesInternal(userName, env, varPass) {
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
-        const testName = `Installing Dev Test Prerequisites On ${
+        const testName = `Installing Addon Prerequisites (Dependencies) On ${
             userName.toLocaleUpperCase().includes('EU') ? 'EU' : env
-        } Env, User: ${userName}, Addon: ${this.addonName}, UUID: ${this.addonUUID}`;
-        service.PrintMemoryUseToLog('Start', testName);
+        } Env, User: ${userName}, Addon: ${this.addonName}, UUID: ${this.addonUUID}, Version: ${this.addonVersion}`;
+        service.PrintStartOfInstallation('Start', testName);
         //1. upgrade dependencys - basic: correct for all addons
         await service.baseAddonVersionsInstallation(varPass);
         //1.1 install addon-testing-framework - Chasky's addon which we need
@@ -276,7 +273,7 @@ export class DevTest {
                 `Error: can't install ${this.addonName} - ${this.addonUUID}, exception: ${installAddonResponse}`,
             );
         }
-        service.PrintMemoryUseToLog('End', testName);
+        console.log('\n#####################################################################\n');
     }
 
     async getEuUserEmail() {
@@ -334,12 +331,7 @@ export class DevTest {
             const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`;
             debugger;
             await this.reportToTeamsMessage(errorString);
-            await this.unavailableVersion(
-                addonEntryUUIDEU,
-                addonEntryUUIDProd,
-                addonEntryUUIDSb,
-                latestVersionOfTestedAddonProd,
-            );
+            await this.unavailableVersion();
             throw new Error(errorString);
         } else {
             this.addonVersion = latestVersionOfTestedAddonProd;
@@ -350,10 +342,14 @@ export class DevTest {
     }
 
     async getTestNames() {
+        let urlToGetTestsFrom = `/addons/api/${this.addonUUID}/tests/tests`;
+        if (this.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
+            urlToGetTestsFrom = `/addons/api/00000000-0000-0000-0000-00000e1a571c/tests/tests`;
+        }
         const response = (
             await (
                 await this.getProdUser()
-            ).generalService.fetchStatus(`/addons/api/${this.addonUUID}/tests/tests`, {
+            ).generalService.fetchStatus(urlToGetTestsFrom, {
                 method: 'GET',
             })
         ).Body;
@@ -374,7 +370,7 @@ export class DevTest {
                 }  #######################`,
             );
             let addonSk = null;
-            if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX') {
+            if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
                 addonSk = await this.adminBaseUserGeneralService.getSecretfromKMS(
                     this.adminBaseUserEmail,
                     this.adminBaseUserPass,
@@ -465,12 +461,7 @@ export class DevTest {
                     errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
                 await this.reportToTeamsMessage(errorString);
-                await this.unavailableVersion(
-                    this.addonEntryUUIDEU,
-                    this.addonEntryUUIDProd,
-                    this.addonEntryUUIDSb,
-                    this.addonVersion,
-                );
+                await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
             debugger;
@@ -495,12 +486,7 @@ export class DevTest {
                     errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
                 await this.reportToTeamsMessage(errorString);
-                await this.unavailableVersion(
-                    this.addonEntryUUIDEU,
-                    this.addonEntryUUIDProd,
-                    this.addonEntryUUIDSb,
-                    this.addonVersion,
-                );
+                await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
             let objectToPrintEu;
@@ -522,12 +508,7 @@ export class DevTest {
                 )}, On: ${currentTestName} Test`;
                 debugger;
                 await this.reportToTeamsMessage(errorString);
-                await this.unavailableVersion(
-                    this.addonEntryUUIDEU,
-                    this.addonEntryUUIDProd,
-                    this.addonEntryUUIDSb,
-                    this.addonVersion,
-                );
+                await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
             //TODO: move the parsing to another function
@@ -575,14 +556,12 @@ export class DevTest {
                     )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
                 await this.reportToTeamsMessage(errorString);
-                await this.unavailableVersion(
-                    this.addonEntryUUIDEU,
-                    this.addonEntryUUIDProd,
-                    this.addonEntryUUIDSb,
-                    this.addonVersion,
-                );
+                await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
+            console.log(
+                `********* this printing is made for debugging - you can skip downward to see the prettified tests result *********\n'`,
+            );
             for (let index = 0; index < objectToPrintProd.length; index++) {
                 const result = objectToPrintProd[index];
                 console.log(`\n***${currentTestName} PROD result object: ${JSON.stringify(result)}***\n`);
@@ -595,16 +574,19 @@ export class DevTest {
                 const result = objectToPrintEu[index];
                 console.log(`\n***${currentTestName} EU result object: ${JSON.stringify(result)}***\n`);
             }
-            const euResults = await this.printResultsTestObject(objectToPrintEu, euUser, 'prod');
-            const prodResults = await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod');
-            const sbResults = await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage');
+            console.log(
+                `\n****************************************************** Prettified Tests Results Splitted To Envs ******************************************************\n'`,
+            );
+            const euResults = await this.printResultsTestObject(objectToPrintEu, euUser, 'prod', currentTestName);
+            const prodResults = await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod', currentTestName);
+            const sbResults = await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage', currentTestName);
             if (shouldAlsoPrintVer) {
                 objectToPrintEu = testResultArrayEu.results[0].suites[1].suites;
                 objectToPrintProd = testResultArrayProd.results[0].suites[1].suites;
                 objectToPrintSB = testResultArraySB.results[0].suites[1].suites;
-                await this.printResultsTestObject(objectToPrintEu, euUser, 'prod');
-                await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod');
-                await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage');
+                await this.printResultsTestObject(objectToPrintEu, euUser, 'prod', currentTestName);
+                await this.printResultsTestObject(objectToPrintProd, prodUser, 'prod', currentTestName);
+                await this.printResultsTestObject(objectToPrintSB, sbUser, 'stage', currentTestName);
             }
             // debugger;
             //4.6. create the array of passing / failing tests
@@ -677,17 +659,12 @@ export class DevTest {
         }
         if (devFailedEnvs2.length != 0) {
             debugger;
-            await this.unavailableVersion(
-                this.addonEntryUUIDEU,
-                this.addonEntryUUIDProd,
-                this.addonEntryUUIDSb,
-                this.addonVersion,
-            );
+            await this.unavailableVersion();
             this.devPassingEnvs = devPassingEnvs2;
             this.devFailedEnvs = devFailedEnvs2;
             await this.reportToTeams(jenkinsLink);
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
-            return;
+            return false;
         } else if (!this.doWeHaveSuchAppTest(this.addonName)) {
             this.devPassingEnvs = devPassingEnvs2;
             this.devFailedEnvs = devFailedEnvs2;
@@ -814,16 +791,18 @@ export class DevTest {
         }
     }
 
-    async printResultsTestObject(testResultArray, userName, env) {
+    async printResultsTestObject(testResultArray, userName, env, currentTestName) {
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
         const installedAddonsArr = await service.getInstalledAddons({ page_size: -1 });
         let didSucceed = true;
         // debugger;
         console.log(
-            `####################### ${userName.includes('EU') ? 'EU' : env} Dev Test Results For Addon ${
+            `####################### ${
+                userName.includes('EU') ? 'EU' : env
+            }, User: ${userName} Dev Test Results For Addon ${
                 this.addonUUID
-            } #######################`,
+            } For Test Name: ${currentTestName} #######################`,
         );
         for (let index = 0; index < testResultArray.length; index++) {
             const testResult = testResultArray[index];
@@ -864,30 +843,30 @@ export class DevTest {
         return { didSucceed };
     }
 
-    async unavailableVersion(addonEntryUUIDEU, addonEntryUUIDProd, addonEntryUUIDSb, latestVersionOfTestedAddonProd) {
+    async unavailableVersion() {
         debugger;
         await Promise.all([
             this.unavailableAddonVersion(
                 'prod',
                 this.addonName,
-                addonEntryUUIDEU,
-                latestVersionOfTestedAddonProd,
+                this.addonEntryUUIDEU,
+                this.addonVersion,
                 this.addonUUID,
                 this.varPassEU,
             ),
             this.unavailableAddonVersion(
                 'prod',
                 this.addonName,
-                addonEntryUUIDProd,
-                latestVersionOfTestedAddonProd,
+                this.addonEntryUUIDProd,
+                this.addonVersion,
                 this.addonUUID,
                 this.varPass,
             ),
             this.unavailableAddonVersion(
                 'stage',
                 this.addonName,
-                addonEntryUUIDSb,
-                latestVersionOfTestedAddonProd,
+                this.addonEntryUUIDSb,
+                this.addonVersion,
                 this.addonUUID,
                 this.varPassSB,
             ),
@@ -905,7 +884,7 @@ export class DevTest {
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
         let _headers;
-        const addonsTestingEndpoint = `/addons/api/async/${this.addonUUID}/tests/tests`;
+        let addonsTestingEndpoint = `/addons/api/async/${this.addonUUID}/tests/tests`;
         if (this.addonName === 'CONFIGURATIONS') {
             _headers = {
                 'x-pepperi-ownerid': '84c999c3-84b7-454e-9a86-71b7abc96554',
@@ -914,6 +893,7 @@ export class DevTest {
             };
         }
         if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
+            addonsTestingEndpoint = `/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests`; //run data index tests for ADAL
             _headers = {
                 'x-pepperi-ownerid': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                 'x-pepperi-secretkey': addonSk,
@@ -1243,6 +1223,8 @@ export class DevTest {
                     'TranslationTesterProd@pepperitest.com',
                     'TranslationTesterSB@pepperitest.com',
                 ];
+            case 'DIMX':
+                return ['DIMXAppEU@pepperitest.com', 'DIMXAppProd@pepperitest.com', 'DimxAppSB@pepperitest.com'];
             default:
                 return [];
         }

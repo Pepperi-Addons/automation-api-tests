@@ -260,7 +260,7 @@ export class SurveyTemplateBuilder extends AddonPage {
             // added to support webapp versions older than 18, Hagit 3/1/24
             await webAppHeader.openSettings();
         } else {
-            await webAppHeader.webApp18_openSettings();
+            await webAppHeader.openSettings();
         }
         const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
         await webAppSettingsSidePanel.selectSettingsByID('Sales Activities');
