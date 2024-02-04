@@ -1,5 +1,6 @@
 export class PricingData07 {
     public tableName = 'PPM_Values';
+    public dummyPPM_Values_length = 49999;
 
     public config = {
         PPM_General: {
@@ -385,8 +386,6 @@ export class PricingData07 {
         ],
     };
 
-    public dummyPPM_Values_length = 49999;
-
     public documentsIn_PPM_Values = {
         'ZBASE@A002@Acc01@Frag005': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]',
         'ZBASE@A002@Acc01@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",22,"P"]]]]',
@@ -428,7 +427,172 @@ export class PricingData07 {
             '[[true,"1555891200000","2534022144999","1","","Free Goods",[[5,"D",100,"%","",1,"EA","Hair002",0],[20,"D",100,"%","",1,"CS","Hair012",0]],"EA","EA@CS"],[true,"1555891200000","2534022144999","1","","Free Goods",[[2,"D",100,"%","",1,"CS","Hair002",0],[4,"D",100,"%","",1,"CS","MaFa24",0]],"BOX","BOX"]]',
         'ZBASE@A005@Hand Cosmetics':
             '[[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",8,"P"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",40,"P"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",160,"P"]],"BOX","BOX"]]',
+        'ZBASE@A001@MaLi38':
+            '[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",20,"P"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",80,"P"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",440,"P"]],"BOX","BOX"]]',
         'ZBASE@A005@dummyItem': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",100,"P"]]]]',
+        'ZDM1@A006@Contract1': '[[true,"1555891200000","2534022144999","1","","ZDM1_A006",[[10,"D",5,"%"]],"EA"]]',
+        'ZDM1@A006@Contract2': '[[true,"1555891200000","2534022144999","1","","ZDM1_A006",[[10,"D",15,"%"]],"EA"]]',
+        'ZDM1@A007@Contract1@Facial Cosmetics':
+            '[[true,"1555891200000","2534022144999","1","1","ZDM1_A007",[[5,"D",5,"%"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZDM1_A007",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZDM1_A007",[[3,"D",5,"%"],[6,"D",10,"%"]],"BOX","BOX"]]',
+        'ZDM1@A007@Contract2@Facial Cosmetics':
+            '[[true,"1555891200000","2534022144999","1","1","ZDM1_A007",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZDM1_A007",[[5,"D",5,"%"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZDM1_A007",[[2,"D",5,"%"]],"BOX","BOX"]]',
+        'ZDM1@A007@Contract3@Facial Cosmetics':
+            '[[true,"1555891200000","2534022144999","1","1","ZDM1_A007",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZDM1_A007",[[5,"D",5,"%"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZDM1_A007",[[2,"D",5,"%"]],"BOX","BOX"]]',
+        'ZDM1@A008@Contract1@MaLi38':
+            '[[true,"1555891200000","2534022144999","1","1","ZDM1_A008",[[5,"D",5,"%"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZDM1_A008",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZDM1_A008",[[3,"D",5,"%"],[6,"D",10,"%"]],"BOX","BOX"]]',
+        'ZDM1@A008@Contract2@MaLi38':
+            '[[true,"1555891200000","2534022144999","1","1","ZDM1_A008",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZDM1_A008",[[5,"D",5,"%"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZDM1_A008",[[2,"D",5,"%"]],"BOX","BOX"]]',
+        'ZDM1@A009@Acc01@Contract1':
+            '[[true,"1555891200000","2534022144999","1","","ZDM1_A009",[[10,"D",10,"%"]],"EA"]]',
+        'ZDM1@A009@Acc01@Contract2':
+            '[[true,"1555891200000","2534022144999","1","","ZDM1_A009",[[10,"D",20,"%"]],"EA"]]',
+        'ZDM1@A009@Acc01@Contract3':
+            '[[true,"1555891200000","2534022144999","1","","ZDM1_A009",[[10,"D",30,"%"]],"EA"]]',
+        'ZDM1@A010@Acc01@Contract1@MaLi38':
+            '[[true,"1555891200000","2534022144999","1","1","ZDM1_A010",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZDM1_A010",[[4,"D",4,"%"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZDM1_A010",[[2,"D",2,"%"]],"BOX","BOX"]]',
+        'ZDM1@A010@Acc01@Contract3@MaLi38':
+            '[[true,"1555891200000","2534022144999","1","1","ZDM1_A010",[[10,"D",5,"%"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZDM1_A010",[[4,"D",15,"%"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZDM1_A010",[[2,"D",25,"%"]],"BOX","BOX"]]',
+    };
+
+    public groupRulesItems_CartTest_details = {
+        MakeUp001: {
+            '1EA': {
+                title: 'total of 11 group items',
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        MakeUp001: 26.73,
+                        MakeUp002: 27.66,
+                        MakeUp003: 22.44,
+                        MakeUp006: 31.38,
+                        MakeUp018: 13.9,
+                        MakeUp019: 14.83,
+                    },
+                    OtherAcc: {
+                        MakeUp001: 28.75,
+                        MakeUp002: 29.75,
+                        MakeUp003: 30.75,
+                        MakeUp006: 33.75,
+                        MakeUp018: 14.95,
+                        MakeUp019: 15.95,
+                    },
+                },
+            },
+        },
+        MakeUp002: {
+            '1EA': {
+                title: 'total of 10 group items',
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        MakeUp001: 26.73,
+                        MakeUp002: 27.66,
+                        MakeUp003: 22.44,
+                        MakeUp006: 31.38,
+                        MakeUp018: 13.9,
+                        MakeUp019: 14.83,
+                    },
+                    OtherAcc: {
+                        MakeUp001: 28.75,
+                        MakeUp002: 29.75,
+                        MakeUp003: 30.75,
+                        MakeUp006: 33.75,
+                        MakeUp018: 14.95,
+                        MakeUp019: 15.95,
+                    },
+                },
+            },
+        },
+        MakeUp003: {
+            '1EA': {
+                title: 'total of 11 group items',
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        MakeUp001: 26.73,
+                        MakeUp002: 27.66,
+                        MakeUp003: 22.44,
+                        MakeUp006: 31.38,
+                        MakeUp018: 13.9,
+                        MakeUp019: 14.83,
+                    },
+                    OtherAcc: {
+                        MakeUp001: 28.75,
+                        MakeUp002: 29.75,
+                        MakeUp003: 30.75,
+                        MakeUp006: 33.75,
+                        MakeUp018: 14.95,
+                        MakeUp019: 15.95,
+                    },
+                },
+            },
+        },
+        MakeUp006: {
+            '1EA': {
+                title: 'total of 11 group items',
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        MakeUp001: 26.73,
+                        MakeUp002: 27.66,
+                        MakeUp003: 22.44,
+                        MakeUp006: 31.38,
+                        MakeUp018: 13.9,
+                        MakeUp019: 14.83,
+                    },
+                    OtherAcc: {
+                        MakeUp001: 28.75,
+                        MakeUp002: 29.75,
+                        MakeUp003: 30.75,
+                        MakeUp006: 33.75,
+                        MakeUp018: 14.95,
+                        MakeUp019: 15.95,
+                    },
+                },
+            },
+        },
+        MakeUp018: {
+            '1EA': {
+                title: 'total of 10 group items',
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        MakeUp001: 26.73,
+                        MakeUp002: 27.66,
+                        MakeUp003: 22.44,
+                        MakeUp006: 31.38,
+                        MakeUp018: 13.9,
+                        MakeUp019: 14.83,
+                    },
+                    OtherAcc: {
+                        MakeUp001: 28.75,
+                        MakeUp002: 29.75,
+                        MakeUp003: 30.75,
+                        MakeUp006: 33.75,
+                        MakeUp018: 14.95,
+                        MakeUp019: 15.95,
+                    },
+                },
+            },
+        },
+        MakeUp019: {
+            '1EA': {
+                title: 'total of 6 group items',
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        MakeUp001: 27.88,
+                        MakeUp002: 28.85,
+                        MakeUp003: 29.82,
+                        MakeUp006: 32.73,
+                        MakeUp018: 14.5,
+                        MakeUp019: 15.47,
+                    },
+                    OtherAcc: {
+                        MakeUp001: 28.75,
+                        MakeUp002: 29.75,
+                        MakeUp003: 30.75,
+                        MakeUp006: 33.75,
+                        MakeUp018: 14.95,
+                        MakeUp019: 15.95,
+                    },
+                },
+            },
+        },
     };
 
     public testItemsValues = {

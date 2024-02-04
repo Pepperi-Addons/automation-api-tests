@@ -54,8 +54,6 @@ export async function PricingBaseTests(email: string, password: string, client: 
     let duration: string;
     let ppmVluesEnd: UserDefinedTableRow[];
 
-    const tableName = 'PPM_Values';
-    const dummyPPM_Values_length = 49999;
     const testAccounts = ['Acc01', 'OtherAcc'];
     const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
     const testItems = [
@@ -450,7 +448,7 @@ export async function PricingBaseTests(email: string, password: string, client: 
                         console.info('UDT delete response exist!');
                         const PPMvalue = pricingData.documentsIn_PPM_Values[deleteUDTresponse.MainKey];
                         expect(deleteUDTresponse).to.deep.include({
-                            MapDataExternalID: tableName,
+                            MapDataExternalID: pricingData.tableName,
                             SecondaryKey: null,
                             Values: [PPMvalue],
                         });
@@ -475,10 +473,10 @@ export async function PricingBaseTests(email: string, password: string, client: 
 
             it('validating "PPM_Values" UDT values via API', async () => {
                 ppmVluesEnd = await objectsService.getUDT({
-                    where: `MapDataExternalID='${tableName}'`,
+                    where: `MapDataExternalID='${pricingData.tableName}'`,
                     page_size: -1,
                 });
-                expect(ppmVluesEnd.length).equals(dummyPPM_Values_length);
+                expect(ppmVluesEnd.length).equals(pricingData.dummyPPM_Values_length);
             });
         });
     });
