@@ -47,6 +47,7 @@ import {
     PricingTotalsTests,
     PricingMultipleValuesTests,
     PricingPartialValueTests,
+    PricingExclusionTests,
     ResourceListAbiTests,
     InstallationsTest,
     StorybookColorPickerTests,
@@ -472,6 +473,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         await PricingTotalsTests(email, pass, client);
         await PricingMultipleValuesTests(email, pass, client);
         // await PricingPartialValueTests(email, pass, client);
+        // await PricingExclusionTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
@@ -515,6 +517,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
 
     if (tests === 'PricingPartial') {
         await PricingPartialValueTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests === 'PricingExclusion') {
+        await PricingExclusionTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 

@@ -56,6 +56,7 @@ import { StorybookTextareaTests } from './storybook/storybook_textarea.test';
 import { StorybookTextboxTests } from './storybook/storybook_textbox.test';
 import { NeltPerformanceTests } from './Nelt_performance/nelt_performance.test';
 import { PricingPartialValueTests } from './pricing_partial_value.test';
+import { PricingExclusionTests } from './pricing_exclusion.test';
 
 export {
     LoginTests,
@@ -88,6 +89,7 @@ export {
     PricingTotalsTests,
     PricingMultipleValuesTests,
     PricingPartialValueTests,
+    PricingExclusionTests,
     Pricing06DataPrep,
     ResourceListAbiTests,
     InstallationsTest,
