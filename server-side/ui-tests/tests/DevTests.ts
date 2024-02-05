@@ -758,12 +758,12 @@ export class DevTest {
             UserWebhook: await this.handleTeamsURL(this.addonName),
         };
         console.log(
-            `Dev Tests Results: ${this.addonName}, On Version ${this.addonVersion} Has ${
+            `####################### Dev Tests Results: ${this.addonName}, On Version ${this.addonVersion} Has ${
                 bodyToSend.Status === 'ERROR' ? 'FAILED' : 'PASSED'
-            }`,
+            } #######################`,
         );
         if (bodyToSend.Message !== '~') {
-            console.log(`FAILED TESTS:\n ${bodyToSend.Message}`);
+            console.log(`####################### FAILED TESTS:\n ${bodyToSend.Message}`);
         }
         const monitoringResponse = await this.adminBaseUserGeneralService.fetchStatus(
             'https://papi.pepperi.com/v1.0/system_health/notifications',
