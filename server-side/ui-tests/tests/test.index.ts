@@ -1219,10 +1219,10 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
                 `####################### Running For: ${devTest.addonName} - (${devTest.addonUUID}), version: ${devTest.addonVersion} #######################`,
             );
             //this reports to QA build tracker in Teams [https://teams.microsoft.com/l/channel/19%3ac553a2dddecb497499e4df6fc1cf25af%40thread.tacv2/QA%2520Build%2520Tracker?groupId=84e28b5e-1f7f-4e05-820f-9728916558b2&tenantId=2f2b54b7-0141-4ba7-8fcd-ab7d17a60547]
-            // await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);//EVGENY!!!!!!!!!!!!!!!
+            await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
             debugger;
             // 3. install all dependencys of tested addon latest available version on testing users then finaly install tested addon
-            // await devTest.installDependencies();//EVGENY!!!!!!!!!!!!!!!
+            await devTest.installDependencies();
             await devTest.valdateTestedAddonLatestVersionIsInstalled();
             console.log(
                 `####################### Finished Installing: ${devTest.addonName} - (${devTest.addonUUID}), version: ${
@@ -1262,11 +1262,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             process.stdout.write(`Array Of Tests:`);
             if (devTest.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
                 process.stdout.write(`Array Of Tests ADAL:`);
-                console.table(`${testsList.ADAL}`);
+                console.log(`[${testsList.ADAL}]`);
                 process.stdout.write(`Array Of Tests Data Index:`);
-                console.table(`${testsList.DataIndex}`);
+                console.log(`[${testsList.DataIndex}]`);
             } else {
-                console.table(`${testsList}`);
+                console.log(`[${testsList}]`);
             }
             debugger;
             //4. iterate on all test names and call each

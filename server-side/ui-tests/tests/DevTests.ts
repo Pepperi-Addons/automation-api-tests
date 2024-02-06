@@ -361,6 +361,9 @@ export class DevTest {
                 method: 'GET',
             })
         ).Body;
+        if (!Array.isArray(response)) {
+            throw new Error(`${response.fault.faultstring}`);
+        }
         let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
         toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
         return toReturn;
@@ -665,7 +668,6 @@ export class DevTest {
         } else {
             console.log(`No ADAL Dev Tests For Version ${this.addonVersion}`);
         }
-
         console.log('Data Index Dev Tests: ');
         await this.runDevTestInt(testNamesDataIndex);
     }
