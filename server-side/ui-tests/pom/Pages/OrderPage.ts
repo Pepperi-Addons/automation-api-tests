@@ -70,6 +70,10 @@ export class OrderPage extends WebAppList {
     public PriceTaxTotalDiff_Value: By = By.xpath('//span[@id="TSAPriceTaxTotalDiff"]');
     public PriceTaxUnitDiff_Value: By = By.xpath('//span[@id="TSAPriceTaxUnitDiff"]');
 
+    public PriceMultiAfter1_Value: By = By.xpath('//span[@id="TSAPriceMultiAfter1"]');
+    public PriceMultiAfter2_Value: By = By.xpath('//span[@id="TSAPriceMultiAfter2"]');
+    public PricePartial_Value: By = By.xpath('//span[@id="TSAPricePartial"]');
+
     public Cart_ContinueOrdering_Button: By = By.xpath('//button[@data-qa="Continue ordering"]');
     public Cart_Headline_Results: By = By.xpath('//list-total');
     public Cart_Headline_Results_Number: By = By.xpath('//pep-list-total//span[contains(@class,"bold number")]');

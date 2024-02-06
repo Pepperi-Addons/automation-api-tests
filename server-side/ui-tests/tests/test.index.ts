@@ -511,6 +511,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingMulti') {
+        await PricingDataPrep(varPass, client);
         await PricingMultipleValuesTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }

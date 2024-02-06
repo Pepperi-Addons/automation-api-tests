@@ -42,8 +42,53 @@ export async function PricingMultipleValuesTests(email: string, password: string
 
     const pricingData = new PricingData06();
     const testAccounts = ['Acc01', 'OtherAcc'];
-    const multipleValuesTestItems = ['MaFa25', 'MaLi37', 'MaLi38'];
-    const multipleValuesTestStates = ['baseline', '1 Each', '2 Case', '3 Box'];
+    // const multipleValuesTestItems_outOfCategory = ['Shampoo Three'];
+    const multipleValuesTestItems = [
+        // 'Shampoo Three 1',
+        'MaFa25',
+        'MaLi37',
+        'MaLi38',
+    ];
+    const multipleValuesTestStates_each = [
+        'baseline',
+        '1 Each',
+        '2 Each',
+        '1 Each',
+        '3 Each',
+        '2 Each',
+        '5 Each',
+        '9 Each',
+        '5 Each',
+        '10 Each',
+        '11 Each',
+        '10 Each',
+    ];
+    const multipleValuesTestStates_case = [
+        '1 Case',
+        '2 Case',
+        '1 Case',
+        '4 Case',
+        '2 Case',
+        '5 Case',
+        '4 Case',
+        '9 Case',
+        '5 Case',
+        '10 Case',
+        '11 Case',
+        '10 Case',
+    ];
+    const multipleValuesTestStates_box = [
+        '1 Box',
+        '2 Box',
+        '1 Box',
+        '3 Box',
+        '5 Box',
+        '3 Box',
+        '6 Box',
+        '5 Box',
+        '7 Box',
+        '6 Box',
+    ];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
         'PriceDiscountUnitPriceAfter1',
@@ -52,6 +97,7 @@ export async function PricingMultipleValuesTests(email: string, password: string
         'PriceTaxUnitPriceAfter1',
     ];
     const priceFields2 = ['PriceBaseUnitPriceAfter2', 'PriceDiscountUnitPriceAfter2', 'PriceTaxUnitPriceAfter2'];
+    const priceMultiFields = ['PriceMultiAfter1', 'PriceMultiAfter2'];
 
     if (installedPricingVersionShort !== '5') {
         describe(`Pricing Multiple Values UI tests  - ${
@@ -174,13 +220,13 @@ export async function PricingMultipleValuesTests(email: string, password: string
                     });
 
                     describe('Multiple Values', () => {
-                        it('Navigating to "Facial Cosmetics" at Sidebar', async function () {
-                            await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
-                            await driver.click(
-                                orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Facial Cosmetics'),
-                            );
-                            driver.sleep(0.1 * 1000);
-                        });
+                        // it('Navigating to "Facial Cosmetics" at Sidebar', async function () {
+                        //     await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
+                        //     await driver.click(
+                        //         orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Facial Cosmetics'),
+                        //     );
+                        //     driver.sleep(0.1 * 1000);
+                        // });
                         multipleValuesTestItems.forEach((multipleValuesTestItem) => {
                             describe(`Item: ***${multipleValuesTestItem}`, function () {
                                 describe('ORDER CENTER', function () {
@@ -191,9 +237,133 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                         );
                                         driver.sleep(1 * 1000);
                                     });
-                                    multipleValuesTestStates.forEach((multipleValuesTestState) => {
-                                        it(`Checking "${multipleValuesTestState}"`, async function () {
-                                            if (multipleValuesTestState != 'baseline') {
+                                    describe('Each', () => {
+                                        multipleValuesTestStates_each.forEach((multipleValuesTestState) => {
+                                            it(`Checking "${multipleValuesTestState}"`, async function () {
+                                                if (multipleValuesTestState != 'baseline') {
+                                                    const splitedStateArgs = multipleValuesTestState.split(' ');
+                                                    const chosenUom = splitedStateArgs[1];
+                                                    const amount = Number(splitedStateArgs[0]);
+                                                    addContext(this, {
+                                                        title: `State Args`,
+                                                        value: `Chosen UOM: ${chosenUom}, Amount: ${amount}`,
+                                                    });
+                                                    await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                                        this,
+                                                    )(
+                                                        chosenUom,
+                                                        multipleValuesTestItem,
+                                                        amount,
+                                                        driver,
+                                                        chosenUom === 'Each' ? '2' : undefined,
+                                                    );
+                                                }
+                                                const priceMultiTSAs = await pricingService.getTSAsOfMultiPerItem(
+                                                    'OrderCenter',
+                                                    multipleValuesTestItem,
+                                                );
+                                                console.info(
+                                                    `${multipleValuesTestItem} ${multipleValuesTestState} priceMultiTSAs:`,
+                                                    priceMultiTSAs,
+                                                );
+                                                expect(typeof priceMultiTSAs).equals('object');
+                                                expect(Object.keys(priceMultiTSAs)).to.eql([
+                                                    'PriceMultiAfter1',
+                                                    'PriceMultiAfter2',
+                                                ]);
+                                                priceMultiFields.forEach((priceField) => {
+                                                    const fieldValue = priceMultiTSAs[priceField];
+                                                    const expectedFieldValue =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                            account
+                                                        ][multipleValuesTestState];
+                                                    addContext(this, {
+                                                        title: `${priceField}`,
+                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                                    });
+                                                    // expect(fieldValue).equals(expectedFieldValue);
+                                                });
+                                                const priceTSAs = await pricingService.getItemTSAs(
+                                                    'OrderCenter',
+                                                    multipleValuesTestItem,
+                                                );
+                                                console.info(
+                                                    `${multipleValuesTestItem} ${multipleValuesTestState} priceTSAs:`,
+                                                    priceTSAs,
+                                                );
+                                                expect(typeof priceTSAs).equals('object');
+                                                expect(Object.keys(priceTSAs)).to.eql([
+                                                    'PriceBaseUnitPriceAfter1',
+                                                    'PriceDiscountUnitPriceAfter1',
+                                                    'PriceGroupDiscountUnitPriceAfter1',
+                                                    'PriceManualLineUnitPriceAfter1',
+                                                    'PriceTaxUnitPriceAfter1',
+                                                    'NPMCalcMessage',
+                                                ]);
+                                                if (multipleValuesTestState === 'baseline') {
+                                                    const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                                                    const baseline_NPMCalcMessage =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][
+                                                            'NPMCalcMessage'
+                                                        ][account][multipleValuesTestState];
+                                                    addContext(this, {
+                                                        title: `State Args`,
+                                                        value: `NPMCalcMessage from UI: ${JSON.stringify(
+                                                            UI_NPMCalcMessage,
+                                                        )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                            baseline_NPMCalcMessage,
+                                                        )}`,
+                                                    });
+                                                    // expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
+                                                } else {
+                                                    const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                                                    const baseline_NPMCalcMessage =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][
+                                                            'NPMCalcMessage'
+                                                        ][account]['baseline'];
+                                                    const data_NPMCalcMessage =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][
+                                                            'NPMCalcMessage'
+                                                        ][account][multipleValuesTestState];
+                                                    addContext(this, {
+                                                        title: `State Args`,
+                                                        value: `NPMCalcMessage from UI: ${JSON.stringify(
+                                                            UI_NPMCalcMessage,
+                                                        )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                            baseline_NPMCalcMessage,
+                                                        )}, NPMCalcMessage (at ${multipleValuesTestState}) from Data: ${JSON.stringify(
+                                                            data_NPMCalcMessage,
+                                                        )}`,
+                                                    });
+                                                    // expect(UI_NPMCalcMessage.length).equals(
+                                                    //     baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
+                                                    // );
+                                                }
+                                                priceFields.forEach((priceField) => {
+                                                    const fieldValue = priceTSAs[priceField];
+                                                    const expectedFieldValue =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                            account
+                                                        ][multipleValuesTestState];
+                                                    addContext(this, {
+                                                        title: `${priceField}`,
+                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                                    });
+                                                    // expect(fieldValue).equals(expectedFieldValue);
+                                                });
+                                                driver.sleep(0.2 * 1000);
+                                            });
+                                        });
+                                        // it('Setting AOQM2 to 0', async function () {
+                                        //     await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                        //         this,
+                                        //     )('Each', multipleValuesTestItem, 0, driver, '2');
+                                        //     driver.sleep(0.1 * 1000);
+                                        // });
+                                    });
+                                    describe('Case', () => {
+                                        multipleValuesTestStates_case.forEach((multipleValuesTestState) => {
+                                            it(`Checking "${multipleValuesTestState}"`, async function () {
                                                 const splitedStateArgs = multipleValuesTestState.split(' ');
                                                 const chosenUom = splitedStateArgs[1];
                                                 const amount = Number(splitedStateArgs[0]);
@@ -203,41 +373,49 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                                 });
                                                 await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                                     this,
-                                                )(chosenUom, multipleValuesTestItem, amount, driver);
-                                            }
-                                            const priceTSAs = await pricingService.getItemTSAs(
-                                                'OrderCenter',
-                                                multipleValuesTestItem,
-                                            );
-                                            console.info(
-                                                `${multipleValuesTestItem} ${multipleValuesTestState} priceTSAs:`,
-                                                priceTSAs,
-                                            );
-                                            expect(typeof priceTSAs).equals('object');
-                                            expect(Object.keys(priceTSAs)).to.eql([
-                                                'PriceBaseUnitPriceAfter1',
-                                                'PriceDiscountUnitPriceAfter1',
-                                                'PriceGroupDiscountUnitPriceAfter1',
-                                                'PriceManualLineUnitPriceAfter1',
-                                                'PriceTaxUnitPriceAfter1',
-                                                'NPMCalcMessage',
-                                            ]);
-                                            if (multipleValuesTestState === 'baseline') {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][
-                                                        'NPMCalcMessage'
-                                                    ][account][multipleValuesTestState];
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                    )}`,
+                                                )(chosenUom + '&Totals', multipleValuesTestItem, amount, driver);
+                                                const priceMultiTSAs = await pricingService.getTSAsOfMultiPerItem(
+                                                    'OrderCenter',
+                                                    multipleValuesTestItem,
+                                                );
+                                                console.info(
+                                                    `${multipleValuesTestItem} ${multipleValuesTestState} priceMultiTSAs:`,
+                                                    priceMultiTSAs,
+                                                );
+                                                expect(typeof priceMultiTSAs).equals('object');
+                                                expect(Object.keys(priceMultiTSAs)).to.eql([
+                                                    'PriceMultiAfter1',
+                                                    'PriceMultiAfter2',
+                                                ]);
+                                                priceMultiFields.forEach((priceField) => {
+                                                    const fieldValue = priceMultiTSAs[priceField];
+                                                    const expectedFieldValue =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                            account
+                                                        ][multipleValuesTestState];
+                                                    addContext(this, {
+                                                        title: `${priceField}`,
+                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                                    });
+                                                    // expect(fieldValue).equals(expectedFieldValue);
                                                 });
-                                                // expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
-                                            } else {
+                                                const priceTSAs = await pricingService.getItemTSAs(
+                                                    'OrderCenter',
+                                                    multipleValuesTestItem,
+                                                );
+                                                console.info(
+                                                    `${multipleValuesTestItem} ${multipleValuesTestState} priceTSAs:`,
+                                                    priceTSAs,
+                                                );
+                                                expect(typeof priceTSAs).equals('object');
+                                                expect(Object.keys(priceTSAs)).to.eql([
+                                                    'PriceBaseUnitPriceAfter1',
+                                                    'PriceDiscountUnitPriceAfter1',
+                                                    'PriceGroupDiscountUnitPriceAfter1',
+                                                    'PriceManualLineUnitPriceAfter1',
+                                                    'PriceTaxUnitPriceAfter1',
+                                                    'NPMCalcMessage',
+                                                ]);
                                                 const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                                 const baseline_NPMCalcMessage =
                                                     pricingData.testItemsValues[multipleValuesTestItem][
@@ -260,21 +438,120 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                                 // expect(UI_NPMCalcMessage.length).equals(
                                                 //     baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
                                                 // );
-                                            }
-                                            priceFields.forEach((priceField) => {
-                                                const fieldValue = priceTSAs[priceField];
-                                                const expectedFieldValue =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][priceField][
-                                                        account
-                                                    ][multipleValuesTestState];
-                                                addContext(this, {
-                                                    title: `${priceField}`,
-                                                    value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                                priceFields.forEach((priceField) => {
+                                                    const fieldValue = priceTSAs[priceField];
+                                                    const expectedFieldValue =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                            account
+                                                        ][multipleValuesTestState];
+                                                    addContext(this, {
+                                                        title: `${priceField}`,
+                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                                    });
+                                                    // expect(fieldValue).equals(expectedFieldValue);
                                                 });
-                                                // expect(fieldValue).equals(expectedFieldValue);
+                                                driver.sleep(0.2 * 1000);
                                             });
-                                            driver.sleep(0.2 * 1000);
                                         });
+                                    });
+                                    describe('Box', () => {
+                                        multipleValuesTestStates_box.forEach((multipleValuesTestState) => {
+                                            it(`Checking "${multipleValuesTestState}"`, async function () {
+                                                const splitedStateArgs = multipleValuesTestState.split(' ');
+                                                const chosenUom = splitedStateArgs[1];
+                                                const amount = Number(splitedStateArgs[0]);
+                                                addContext(this, {
+                                                    title: `State Args`,
+                                                    value: `Chosen UOM: ${chosenUom}, Amount: ${amount}`,
+                                                });
+                                                await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                                    this,
+                                                )(chosenUom + '&Totals', multipleValuesTestItem, amount, driver);
+                                                const priceMultiTSAs = await pricingService.getTSAsOfMultiPerItem(
+                                                    'OrderCenter',
+                                                    multipleValuesTestItem,
+                                                );
+                                                console.info(
+                                                    `${multipleValuesTestItem} ${multipleValuesTestState} priceMultiTSAs:`,
+                                                    priceMultiTSAs,
+                                                );
+                                                expect(typeof priceMultiTSAs).equals('object');
+                                                expect(Object.keys(priceMultiTSAs)).to.eql([
+                                                    'PriceMultiAfter1',
+                                                    'PriceMultiAfter2',
+                                                ]);
+                                                priceMultiFields.forEach((priceField) => {
+                                                    const fieldValue = priceMultiTSAs[priceField];
+                                                    const expectedFieldValue =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                            account
+                                                        ][multipleValuesTestState];
+                                                    addContext(this, {
+                                                        title: `${priceField}`,
+                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                                    });
+                                                    // expect(fieldValue).equals(expectedFieldValue);
+                                                });
+                                                const priceTSAs = await pricingService.getItemTSAs(
+                                                    'OrderCenter',
+                                                    multipleValuesTestItem,
+                                                );
+                                                console.info(
+                                                    `${multipleValuesTestItem} ${multipleValuesTestState} priceTSAs:`,
+                                                    priceTSAs,
+                                                );
+                                                expect(typeof priceTSAs).equals('object');
+                                                expect(Object.keys(priceTSAs)).to.eql([
+                                                    'PriceBaseUnitPriceAfter1',
+                                                    'PriceDiscountUnitPriceAfter1',
+                                                    'PriceGroupDiscountUnitPriceAfter1',
+                                                    'PriceManualLineUnitPriceAfter1',
+                                                    'PriceTaxUnitPriceAfter1',
+                                                    'NPMCalcMessage',
+                                                ]);
+                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                                                const baseline_NPMCalcMessage =
+                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                        'NPMCalcMessage'
+                                                    ][account]['baseline'];
+                                                const data_NPMCalcMessage =
+                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                        'NPMCalcMessage'
+                                                    ][account][multipleValuesTestState];
+                                                addContext(this, {
+                                                    title: `State Args`,
+                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
+                                                        UI_NPMCalcMessage,
+                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                        baseline_NPMCalcMessage,
+                                                    )}, NPMCalcMessage (at ${multipleValuesTestState}) from Data: ${JSON.stringify(
+                                                        data_NPMCalcMessage,
+                                                    )}`,
+                                                });
+                                                // expect(UI_NPMCalcMessage.length).equals(
+                                                //     baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
+                                                // );
+                                                priceFields.forEach((priceField) => {
+                                                    const fieldValue = priceTSAs[priceField];
+                                                    const expectedFieldValue =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                            account
+                                                        ][multipleValuesTestState];
+                                                    addContext(this, {
+                                                        title: `${priceField}`,
+                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                                    });
+                                                    // expect(fieldValue).equals(expectedFieldValue);
+                                                });
+                                                driver.sleep(0.2 * 1000);
+                                            });
+                                        });
+                                        // it('Setting AOQM1 to 0', async function () {
+                                        //     await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                        //         this,
+                                        //     )('Case', multipleValuesTestItem, 0, driver);
+                                        //     driver.sleep(0.1 * 1000);
+                                        // });
                                     });
                                 });
                             });
