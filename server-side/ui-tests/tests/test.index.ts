@@ -1203,29 +1203,29 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         const service = new GeneralService(client);
         const devTest = new DevTest(addonName, varPass, varPassEU, varPassSB, generalService, email, pass); // adding new addons tests should be done using this 'DevTest' class
-        let testsList: string[] = [];
+        let testsList: any;
         if (devTest.addonUUID === 'none') {
             //if we cant find the addon uuid - it means we dont have *DEV* tests for it (might have approvement)
             debugger;
             console.log('No Dev Test For This Addon - Proceeding To Run Approvment');
         } else {
             console.log(
-                `####################### Running For: ${devTest.addonName}(${devTest.addonUUID}) #######################`,
+                `####################### Running For: ${devTest.addonName} - (${devTest.addonUUID}) #######################`,
             );
             debugger;
             //2. validate latest available version of tested addon is equal between envs - if not: dont run
             await devTest.validateAllVersionsAreEqualBetweenEnvs();
             console.log(
-                `####################### Running For: ${devTest.addonName}(${devTest.addonUUID}), version: ${devTest.addonVersion} #######################`,
+                `####################### Running For: ${devTest.addonName} - (${devTest.addonUUID}), version: ${devTest.addonVersion} #######################`,
             );
             //this reports to QA build tracker in Teams [https://teams.microsoft.com/l/channel/19%3ac553a2dddecb497499e4df6fc1cf25af%40thread.tacv2/QA%2520Build%2520Tracker?groupId=84e28b5e-1f7f-4e05-820f-9728916558b2&tenantId=2f2b54b7-0141-4ba7-8fcd-ab7d17a60547]
-            await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
+            // await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);//EVGENY!!!!!!!!!!!!!!!
             debugger;
             // 3. install all dependencys of tested addon latest available version on testing users then finaly install tested addon
-            await devTest.installDependencies();
+            // await devTest.installDependencies();//EVGENY!!!!!!!!!!!!!!!
             await devTest.valdateTestedAddonLatestVersionIsInstalled();
             console.log(
-                `####################### Finished Installing: ${devTest.addonName}(${devTest.addonUUID}), version: ${
+                `####################### Finished Installing: ${devTest.addonName} - (${devTest.addonUUID}), version: ${
                     devTest.addonVersion
                 }, On: ${devTest.euUser.email}, ${await devTest.prodUser.email}, ${await devTest.sbUser
                     .email} #######################`,
@@ -1233,13 +1233,15 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             debugger;
             //3.1 get test names by calling tested addon
             console.log(
-                `####################### Calling GET:/tests/tests Of ${devTest.addonName}(${devTest.addonUUID}) To Get All Test Names #######################`,
+                `####################### Calling GET:/tests/tests Of ${devTest.addonName} - (${devTest.addonUUID}) To Get All Test Names #######################`,
             );
             try {
                 testsList = await devTest.getTestNames();
             } catch (error) {
                 debugger;
-                const errorString = `Error: got exception trying to get test Names: ${(error as any).message}`;
+                const errorString = `Error: Got Exception Trying To Get Test Names By Calling /tests/tests On: ${
+                    devTest.addonName
+                }, Version: ${devTest.addonVersion}, Error:\n ${(error as any).message}`;
                 await reportToTeamsMessage(
                     devTest.addonName,
                     devTest.addonUUID,
@@ -1250,11 +1252,27 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
                 await devTest.unavailableVersion();
                 throw new Error(`Error: got exception trying to get test Names: ${(error as any).message} `);
             }
-            console.log(`####################### Got ${testsList.length} Tests #######################`);
+            let numOfTests = 0;
+            if (devTest.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
+                numOfTests = testsList.ADAL.length + testsList.DataIndex.length;
+            } else {
+                numOfTests = testsList.length;
+            }
+            console.log(`####################### Got ${numOfTests} Tests #######################`);
+            process.stdout.write(`Array Of Tests:`);
+            if (devTest.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
+                process.stdout.write(`Array Of Tests ADAL:`);
+                console.table(`${testsList.ADAL}`);
+                process.stdout.write(`Array Of Tests Data Index:`);
+                console.table(`${testsList.DataIndex}`);
+            } else {
+                console.table(`${testsList}`);
+            }
+            debugger;
             //4. iterate on all test names and call each
             await devTest.runDevTest(testsList);
             //5. parse the response we got from the tests, print & report to Teams
-            const didPass = await devTest.calculateAndReportResults(isLocal);
+            const didPass = await devTest.calculateAndReportResults(isLocal, numOfTests);
             //6. no point in running app. tests after dev failed
             if (didPass !== undefined && didPass === false) {
                 return;
