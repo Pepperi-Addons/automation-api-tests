@@ -661,7 +661,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                     },
                 },
                 TSAAttachmentAPI: {
-                    URL: 'http://www.africau.edu/images/default/sample.pdf',
+                    URL: 'https://file-examples.com/wp-content/storage/2017/10/file-sample_150kB.pdf',
                     Content: '',
                 },
                 TSACheckboxAPI: true,
@@ -718,7 +718,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 // expect(getCreatedTransaction[0].TSAImageAPI.URL).to.include('cdn'),
                 expect(getCreatedTransaction[0].TSASignatureAPI.URL).to.include('43448bb5e0a24a448246b7bf9bc75075.png'),
                 // expect(getCreatedTransaction[0].TSASignatureAPI.URL).to.include('cdn'),
-                expect(getCreatedTransaction[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
+                expect(getCreatedTransaction[0].TSAAttachmentAPI.URL).to.include('file-sample_150kb.pdf'),
                 // expect(getCreatedTransaction[0].TSAAttachmentAPI.URL).to.include('cdn'),
                 expect(JSON.stringify(getCreatedTransaction[0].Account)).equals(
                     JSON.stringify({
