@@ -114,9 +114,11 @@ export class DevTest {
             try {
                 await this.installDependenciesInternal(user.email, user.env, varPass);
             } catch (error) {
-                const errorString = `Error: Got Exception While Trying To Upgrade / Install Addons, Got Exception: ${
-                    (error as any).message
-                }, On User: ${user.email}, Making ${this.addonName} unavailable`;
+                const errorString = `Error: Got Exception While Trying To Upgrade / Install ${
+                    this.addonName
+                }, Got Exception: ${(error as any).message}, On User: ${user.email}, Making ${
+                    this.addonName
+                } Unavailable As We Coludn't Install It`;
                 await this.unavailableVersion();
                 await this.reportToTeamsMessage(errorString);
                 throw new Error(errorString);
@@ -257,7 +259,9 @@ export class DevTest {
                 );
                 if (!installAddonResponse[0] || installAddonResponse[0] !== true) {
                     throw new Error(
-                        `Error: can't install ${this.addonName} - ${uuid}, error:${installAddonResponse[0]}`,
+                        `\nError: can't install: ${Object.keys(addonToInstall)[0]} - ${
+                            addonToInstall[Object.keys(addonToInstall)[0]][0]
+                        }, Recived Error: ${installAddonResponse[0]}`,
                     );
                 }
             }
@@ -328,7 +332,7 @@ export class DevTest {
             latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonEu ||
             latestVersionOfTestedAddonProd !== latestVersionOfTestedAddonSb
         ) {
-            const errorString = `Error: Latest Avalibale Addon Versions Across Envs Are Different: prod - ${latestVersionOfTestedAddonProd}, sb - ${latestVersionOfTestedAddonSb}, eu - ${latestVersionOfTestedAddonEu}`;
+            const errorString = `Error: Latest Avalibale Versions Of ${this.addonName} Across Envs Are Different: Prod - ${latestVersionOfTestedAddonProd}, Staging - ${latestVersionOfTestedAddonSb}, EU - ${latestVersionOfTestedAddonEu}`;
             debugger;
             await this.reportToTeamsMessage(errorString);
             await this.unavailableVersion();
@@ -341,11 +345,15 @@ export class DevTest {
         }
     }
 
-    async getTestNames() {
-        let urlToGetTestsFrom = `/addons/api/${this.addonUUID}/tests/tests`;
+    async getTestNames(): Promise<string[] | { ADAL: any; DataIndex: any }> {
         if (this.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
-            urlToGetTestsFrom = `/addons/api/00000000-0000-0000-0000-00000e1a571c/tests/tests`;
+            return await this.getTestNamesADAL();
         }
+        return await this.getTestNamesInt();
+    }
+
+    async getTestNamesInt() {
+        const urlToGetTestsFrom = `/addons/api/${this.addonUUID}/tests/tests`;
         const response = (
             await (
                 await this.getProdUser()
@@ -353,12 +361,53 @@ export class DevTest {
                 method: 'GET',
             })
         ).Body;
+        if (!Array.isArray(response)) {
+            throw new Error(`${response.fault.faultstring}`);
+        }
         let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
         toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
         return toReturn;
     }
 
-    async runDevTest(testNames: string[]) {
+    async getTestNamesADAL() {
+        const urlToGetTestsFromADAL = `/addons/api/${this.addonUUID}/tests/tests`;
+        const urlToGetTestsFromDataIndex = `/addons/api/00000000-0000-0000-0000-00000e1a571c/tests/tests`;
+        let responseFromAdal = (
+            await (
+                await this.getProdUser()
+            ).generalService.fetchStatus(urlToGetTestsFromADAL, {
+                method: 'GET',
+            })
+        ).Body;
+        if (!Array.isArray(responseFromAdal)) {
+            debugger;
+            const numAddonVersion = Number(
+                this.addonVersion
+                    .split('.')
+                    .splice(this.addonVersion.split('.'), this.addonVersion.split('.').length - 1, 1)
+                    .join('.'),
+            );
+            if (numAddonVersion >= 1.8) {
+                throw new Error(`${responseFromAdal.fault.faultstring}`);
+            } else {
+                responseFromAdal = [];
+            }
+        }
+        const responseFromDataIndex = (
+            await (
+                await this.getProdUser()
+            ).generalService.fetchStatus(urlToGetTestsFromDataIndex, {
+                method: 'GET',
+            })
+        ).Body;
+        let toReturnADAL = responseFromAdal.map((jsonData) => JSON.stringify(jsonData.Name));
+        toReturnADAL = toReturnADAL.map((testName) => testName.replace(/"/g, ''));
+        let roReturnDataIndex = responseFromDataIndex.map((jsonData) => JSON.stringify(jsonData.Name));
+        roReturnDataIndex = roReturnDataIndex.map((testName) => testName.replace(/"/g, ''));
+        return { ADAL: toReturnADAL, DataIndex: roReturnDataIndex };
+    }
+
+    async runDevTestInt(testNames: string[]) {
         for (let index = 0; index < testNames.length; index++) {
             const currentTestName = testNames[index];
             const body = {
@@ -560,7 +609,7 @@ export class DevTest {
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
             console.log(
-                `********* this printing is made for debugging - you can skip downward to see the prettified tests result *********\n'`,
+                `********* this printing is made for debugging - you can skip downward to see the prettified tests result *********`,
             );
             for (let index = 0; index < objectToPrintProd.length; index++) {
                 const result = objectToPrintProd[index];
@@ -612,14 +661,32 @@ export class DevTest {
             }
         }
     }
+    async runDevTestADAL(testNamesADAL: string[], testNamesDataIndex: string[]) {
+        if (testNamesADAL.length !== 0) {
+            console.log('ADAL Dev Tests: ');
+            await this.runDevTestInt(testNamesADAL);
+        } else {
+            console.log(`No ADAL Dev Tests For Version ${this.addonVersion}`);
+        }
+        console.log('Data Index Dev Tests: ');
+        await this.runDevTestInt(testNamesDataIndex);
+    }
 
-    async calculateAndReportResults(isLocal) {
+    async runDevTest(testNames: any) {
+        if (this.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
+            await this.runDevTestADAL(testNames.ADAL, testNames.DataIndex);
+        } else {
+            await this.runDevTestInt(testNames);
+        }
+    }
+
+    async calculateAndReportResults(isLocal, numOfTests) {
         const devPassingEnvs2: string[] = [];
         const devFailedEnvs2: string[] = [];
-        const testsList = await this.getTestNames();
+        // const testsList = await this.getTestNames();
         let jenkinsLink;
         if (
-            this.devPassingEnvs.filter((v) => v === 'Eu').length === testsList.length &&
+            this.devPassingEnvs.filter((v) => v === 'Eu').length === numOfTests &&
             this.devFailedEnvs.filter((v) => v === 'Eu').length === 0
         ) {
             devPassingEnvs2.push('EU');
@@ -627,7 +694,7 @@ export class DevTest {
             devFailedEnvs2.push('EU');
         }
         if (
-            this.devPassingEnvs.filter((v) => v === 'Production').length === testsList.length &&
+            this.devPassingEnvs.filter((v) => v === 'Production').length === numOfTests &&
             this.devFailedEnvs.filter((v) => v === 'Production').length === 0
         ) {
             devPassingEnvs2.push('PROD');
@@ -635,7 +702,7 @@ export class DevTest {
             devFailedEnvs2.push('PROD');
         }
         if (
-            this.devPassingEnvs.filter((v) => v === 'Stage').length === testsList.length &&
+            this.devPassingEnvs.filter((v) => v === 'Stage').length === numOfTests &&
             this.devFailedEnvs.filter((v) => v === 'Stage').length === 0
         ) {
             devPassingEnvs2.push('STAGING');
