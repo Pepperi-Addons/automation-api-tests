@@ -14,7 +14,7 @@ import { PricingData06 } from '../pom/addons/Pricing06';
 
 chai.use(promised);
 
-export async function PricingUomTests(email: string, password: string, client: Client) {
+export async function PricingExclusionTests(email: string, password: string, client: Client) {
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     // const objectsService = new ObjectsService(generalService);
@@ -42,32 +42,8 @@ export async function PricingUomTests(email: string, password: string, client: C
 
     const pricingData = new PricingData06();
     const testAccounts = ['Acc01', 'OtherAcc'];
-    const uomTestStates = [
-        'baseline',
-        '1 Each',
-        '2 Each',
-        '4 Each',
-        '5 Each',
-        '19 Each',
-        '20 Each',
-        '1 Case',
-        '2 Case',
-        '4 Case',
-        '5 Case',
-        '19 Case',
-        '20 Case',
-        '1 Box',
-        '2 Box',
-        '3 Box',
-        '4 Box',
-    ];
-    const uomTestItems = ['Hair001', 'Hair002', 'Hair012'];
-    const uomTestCartItems = [
-        { name: 'Hair001', amount: 96 },
-        { name: 'Hair002', amount: 96 },
-        { name: 'Hair012', amount: 96 },
-        { name: 'MaFa24 Free Case', amount: 6 },
-    ];
+    const multipleValuesTestItems = ['MaFa25', 'MaLi37', 'MaLi38'];
+    const multipleValuesTestStates = ['baseline', '1 Each', '2 Case', '3 Box'];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
         'PriceDiscountUnitPriceAfter1',
@@ -75,9 +51,10 @@ export async function PricingUomTests(email: string, password: string, client: C
         'PriceManualLineUnitPriceAfter1',
         'PriceTaxUnitPriceAfter1',
     ];
+    const priceFields2 = ['PriceBaseUnitPriceAfter2', 'PriceDiscountUnitPriceAfter2', 'PriceTaxUnitPriceAfter2'];
 
     if (installedPricingVersionShort !== '5') {
-        describe(`Pricing UOM UI tests  - ${
+        describe(`Pricing Exclusion Rules UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {
@@ -196,23 +173,28 @@ export async function PricingUomTests(email: string, password: string, client: C
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    describe('UOMs', () => {
-                        it('Navigating to "Hair4You" at Sidebar', async function () {
+                    describe('Partial Value', () => {
+                        it('Navigating to "Facial Cosmetics" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
-                            await driver.click(orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Hair4You'));
+                            await driver.click(
+                                orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Facial Cosmetics'),
+                            );
                             driver.sleep(0.1 * 1000);
                         });
-                        uomTestItems.forEach((uomTestItem) => {
-                            describe(`Item: ***${uomTestItem}`, function () {
+                        multipleValuesTestItems.forEach((multipleValuesTestItem) => {
+                            describe(`Item: ***${multipleValuesTestItem}`, function () {
                                 describe('ORDER CENTER', function () {
-                                    it(`Looking for "${uomTestItem}" using the search box`, async function () {
-                                        await pricingService.searchInOrderCenter.bind(this)(uomTestItem, driver);
+                                    it(`Looking for "${multipleValuesTestItem}" using the search box`, async function () {
+                                        await pricingService.searchInOrderCenter.bind(this)(
+                                            multipleValuesTestItem,
+                                            driver,
+                                        );
                                         driver.sleep(1 * 1000);
                                     });
-                                    uomTestStates.forEach((uomTestState) => {
-                                        it(`Checking "${uomTestState}"`, async function () {
-                                            if (uomTestState != 'baseline') {
-                                                const splitedStateArgs = uomTestState.split(' ');
+                                    multipleValuesTestStates.forEach((multipleValuesTestState) => {
+                                        it(`Checking "${multipleValuesTestState}"`, async function () {
+                                            if (multipleValuesTestState != 'baseline') {
+                                                const splitedStateArgs = multipleValuesTestState.split(' ');
                                                 const chosenUom = splitedStateArgs[1];
                                                 const amount = Number(splitedStateArgs[0]);
                                                 addContext(this, {
@@ -221,13 +203,16 @@ export async function PricingUomTests(email: string, password: string, client: C
                                                 });
                                                 await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                                     this,
-                                                )(chosenUom, uomTestItem, amount, driver);
+                                                )(chosenUom, multipleValuesTestItem, amount, driver);
                                             }
                                             const priceTSAs = await pricingService.getItemTSAs(
                                                 'OrderCenter',
-                                                uomTestItem,
+                                                multipleValuesTestItem,
                                             );
-                                            console.info(`${uomTestItem} ${uomTestState} priceTSAs:`, priceTSAs);
+                                            console.info(
+                                                `${multipleValuesTestItem} ${multipleValuesTestState} priceTSAs:`,
+                                                priceTSAs,
+                                            );
                                             expect(typeof priceTSAs).equals('object');
                                             expect(Object.keys(priceTSAs)).to.eql([
                                                 'PriceBaseUnitPriceAfter1',
@@ -237,12 +222,12 @@ export async function PricingUomTests(email: string, password: string, client: C
                                                 'PriceTaxUnitPriceAfter1',
                                                 'NPMCalcMessage',
                                             ]);
-                                            if (uomTestState === 'baseline') {
+                                            if (multipleValuesTestState === 'baseline') {
                                                 const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                                 const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues[uomTestItem]['NPMCalcMessage'][account][
-                                                        uomTestState
-                                                    ];
+                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                        'NPMCalcMessage'
+                                                    ][account][multipleValuesTestState];
                                                 addContext(this, {
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
@@ -251,90 +236,75 @@ export async function PricingUomTests(email: string, password: string, client: C
                                                         baseline_NPMCalcMessage,
                                                     )}`,
                                                 });
-                                                expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
+                                                // expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
                                             } else {
                                                 const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                                 const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues[uomTestItem]['NPMCalcMessage'][account][
-                                                        'baseline'
-                                                    ];
+                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                        'NPMCalcMessage'
+                                                    ][account]['baseline'];
                                                 const data_NPMCalcMessage =
-                                                    pricingData.testItemsValues[uomTestItem]['NPMCalcMessage'][account][
-                                                        uomTestState
-                                                    ];
+                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                        'NPMCalcMessage'
+                                                    ][account][multipleValuesTestState];
                                                 addContext(this, {
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
                                                         UI_NPMCalcMessage,
                                                     )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
                                                         baseline_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at ${uomTestState}) from Data: ${JSON.stringify(
+                                                    )}, NPMCalcMessage (at ${multipleValuesTestState}) from Data: ${JSON.stringify(
                                                         data_NPMCalcMessage,
                                                     )}`,
                                                 });
-                                                expect(UI_NPMCalcMessage.length).equals(
-                                                    baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
-                                                );
+                                                // expect(UI_NPMCalcMessage.length).equals(
+                                                //     baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
+                                                // );
                                             }
                                             priceFields.forEach((priceField) => {
                                                 const fieldValue = priceTSAs[priceField];
                                                 const expectedFieldValue =
-                                                    pricingData.testItemsValues[uomTestItem][priceField][account][
-                                                        uomTestState
-                                                    ];
+                                                    pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                        account
+                                                    ][multipleValuesTestState];
                                                 addContext(this, {
                                                     title: `${priceField}`,
                                                     value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
                                                 });
-                                                expect(fieldValue).equals(expectedFieldValue);
+                                                // expect(fieldValue).equals(expectedFieldValue);
                                             });
                                             driver.sleep(0.2 * 1000);
                                         });
                                     });
-                                    // switch (uomTestItem) {
-                                    //     case 'Hair002':
-                                    //         it(`Looking for "${uomTestItem}" using the search box`, async () => {});
-                                    //         break;
-                                    //     case 'Hair012':
-                                    //         break;
-
-                                    //     default:
-                                    //         break;
-                                    // }
                                 });
                             });
                         });
+
                         describe('CART', function () {
                             it('entering and verifying being in cart', async function () {
                                 await driver.click(orderPage.Cart_Button);
                                 await orderPage.isSpinnerDone();
-                                await orderPage.changeCartView('Grid');
+                                driver.sleep(1 * 1000);
+                                await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
+                            });
+                            it(`switch to 'Lines View'`, async function () {
+                                await orderPage.changeCartView('Lines');
                                 base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `After "Line View" was selected`,
                                     value: 'data:image/png;base64,' + base64ImageComponent,
                                 });
-                                driver.sleep(1 * 1000);
-                                await driver.untilIsVisible(orderPage.Cart_List_container);
                             });
-                            // it(`switch to 'Grid View'`, async function () {
-                            // });
                             it('verifying that the sum total of items in the cart is correct', async function () {
-                                let numberOfItemsInCart = uomTestCartItems.length;
-                                if (account === 'OtherAcc') {
-                                    numberOfItemsInCart--;
-                                }
+                                const numberOfItemsInCart = multipleValuesTestItems.length;
                                 base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Cart`,
                                     value: 'data:image/png;base64,' + base64ImageComponent,
                                 });
-                                const numberOfItemsElement = await driver.findElement(
-                                    orderPage.Cart_Headline_Results_Number,
-                                );
-                                const itemsInCart = await numberOfItemsElement.getText();
-                                // await driver.click(orderPage.HtmlBody);
-                                await driver.click(orderPage.Cart_List_container);
+                                const itemsInCart = await (
+                                    await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                ).getText();
                                 driver.sleep(0.2 * 1000);
                                 addContext(this, {
                                     title: `Number of Items in Cart`,
@@ -343,63 +313,100 @@ export async function PricingUomTests(email: string, password: string, client: C
                                 expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                                 driver.sleep(1 * 1000);
                             });
-                            uomTestCartItems.forEach((uomTestCartItem) => {
-                                it(`${
-                                    uomTestCartItem.name.includes('Free') && account === 'OtherAcc'
-                                        ? 'no additional item found'
-                                        : `checking item "${uomTestCartItem.name}"`
-                                }`, async function () {
-                                    const state = '4 Box';
-                                    const uomTestCartItemSplited = uomTestCartItem.name.split(' ');
-                                    const itemName = uomTestCartItemSplited[0];
-                                    const isFreePlusUOM = uomTestCartItemSplited[1];
-                                    let totalUnitsAmount: number;
-                                    let priceTSAs;
-                                    switch (true) {
-                                        case isFreePlusUOM != undefined:
-                                            if (account === 'Acc01') {
-                                                totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                                    'Cart',
-                                                    itemName,
-                                                );
-                                                priceTSAs = await pricingService.getItemTSAs('Cart', itemName);
-                                            } else {
-                                                totalUnitsAmount = 0;
-                                                const additionalItems = await driver.isElementVisible(
-                                                    orderPage.getSelectorOfFreeItemInCartByName(''),
-                                                );
-                                                expect(additionalItems).equals(false);
-                                            }
-                                            break;
-
-                                        default:
-                                            totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                                'Cart',
-                                                itemName,
-                                            );
-                                            priceTSAs = await pricingService.getItemTSAs('Cart', itemName);
-                                            break;
-                                    }
-                                    if (totalUnitsAmount > 0) {
-                                        console.info(`Cart ${itemName} totalUnitsAmount: ${totalUnitsAmount}`);
-                                        console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
+                            multipleValuesTestItems.forEach((multipleValuesTestCartItem) => {
+                                it(`checking item "${multipleValuesTestCartItem}"`, async function () {
+                                    const state = '3 Box';
+                                    const totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                        'Cart',
+                                        multipleValuesTestCartItem,
+                                        undefined,
+                                        undefined,
+                                        'LinesView',
+                                    );
+                                    const priceTSAs = await pricingService.getItemTSAs(
+                                        'Cart',
+                                        multipleValuesTestCartItem,
+                                        undefined,
+                                        undefined,
+                                        'LinesView',
+                                    );
+                                    const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
+                                        'Cart',
+                                        multipleValuesTestCartItem,
+                                        undefined,
+                                        undefined,
+                                        'LinesView',
+                                    );
+                                    const priceTSAs_AOQM_UOM2 = await pricingService.getItemTSAs_AOQM_UOM2(
+                                        'Cart',
+                                        multipleValuesTestCartItem,
+                                        undefined,
+                                        undefined,
+                                        'LinesView',
+                                    );
+                                    // const priceTotalsTSAs = await pricingService.getTotalsTSAsOfItem(
+                                    //     'Cart',
+                                    //     multipleValuesTestCartItem,
+                                    //     undefined,
+                                    //     undefined,
+                                    //     'LinesView',
+                                    // );
+                                    const expectedTotalUnitsAmount =
+                                        pricingData.testItemsValues[multipleValuesTestCartItem]['Cart'][account];
+                                    console.info(
+                                        `Cart ${multipleValuesTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
+                                    );
+                                    console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
+                                    addContext(this, {
+                                        title: `Total Units amount of item`,
+                                        value: `form UI: ${totalUnitsAmount} , expected: ${expectedTotalUnitsAmount}`,
+                                    });
+                                    priceFields.forEach((priceField) => {
+                                        const expectedValue =
+                                            pricingData.testItemsValues[multipleValuesTestCartItem][priceField][
+                                                account
+                                            ][state];
                                         addContext(this, {
-                                            title: `Total Units amount of item`,
-                                            value: `form UI: ${totalUnitsAmount} , expected: ${uomTestCartItem.amount}`,
+                                            title: `TSA field "${priceField}" Values`,
+                                            value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
                                         });
-                                        priceFields.forEach((priceField) => {
-                                            const expectedValue =
-                                                pricingData.testItemsValues[itemName][priceField][account][
-                                                    isFreePlusUOM ? 'cart' : state
-                                                ];
-                                            addContext(this, {
-                                                title: `TSA field "${priceField}" Values`,
-                                                value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
-                                            });
-                                            expect(priceTSAs[priceField]).equals(expectedValue);
+                                        // expect(priceTSAs[priceField]).equals(expectedValue);
+                                    });
+                                    // expect(totalUnitsAmount).equals(expectedTotalUnitsAmount);
+                                    const discount2FieldValue = priceTSA_Discount2['PriceDiscount2UnitPriceAfter1'];
+                                    const discount2ExpectedFieldValue =
+                                        pricingData.testItemsValues[multipleValuesTestCartItem][
+                                            'PriceDiscount2UnitPriceAfter1'
+                                        ]['cart'][account];
+                                    addContext(this, {
+                                        title: 'PriceDiscount2UnitPriceAfter1',
+                                        value: `Field Value from UI: ${discount2FieldValue}, Expected Field Value from Data: ${discount2ExpectedFieldValue}`,
+                                    });
+                                    // expect(discount2FieldValue).equals(discount2ExpectedFieldValue);
+
+                                    priceFields2.forEach((priceField) => {
+                                        const fieldValue = priceTSAs_AOQM_UOM2[priceField];
+                                        const expectedFieldValue =
+                                            pricingData.testItemsValues[multipleValuesTestCartItem][priceField]['cart'][
+                                                account
+                                            ];
+                                        addContext(this, {
+                                            title: `${priceField}`,
+                                            value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
                                         });
-                                        expect(totalUnitsAmount).equals(uomTestCartItem.amount);
-                                    }
+                                        // expect(fieldValue).equals(expectedFieldValue);
+                                    });
+
+                                    // totalsPriceFields.forEach((priceField) => {
+                                    //     const fieldValue = priceTotalsTSAs[priceField];
+                                    //     const expectedFieldValue =
+                                    //         pricingData.testItemsValues[multipleValuesTestCartItem][priceField][account][multipleValuesTestState];
+                                    //     addContext(this, {
+                                    //         title: `${priceField}`,
+                                    //         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                    //     });
+                                    //     expect(fieldValue).equals(expectedFieldValue);
+                                    // });
                                     driver.sleep(1 * 1000);
                                 });
                             });

@@ -37,16 +37,21 @@ import {
     VFdataPrep,
     MockTest,
     SurveyTests,
-    PricingTests,
+    PricingAddonsUpsert,
+    PricingConfigUpload,
+    PricingUdtInsertion,
     PricingDataPrep,
-    Pricing06Tests,
     Pricing06DataPrep,
+    PricingTests,
+    Pricing06Tests,
     PricingBaseTests,
     PricingAdditionalGroupsReadonlyTests,
     PricingUomTests,
     PricingTotalsTests,
     PricingMultipleValuesTests,
     PricingPartialValueTests,
+    PricingExclusionTests,
+    PricingUdtCleanup,
     ResourceListAbiTests,
     InstallationsTest,
     StorybookColorPickerTests,
@@ -464,13 +469,17 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'Pricing') {
-        await PricingDataPrep(varPass, client);
+        await PricingAddonsUpsert(varPass, client);
+        await PricingConfigUpload(client);
+        await PricingUdtInsertion(client);
         await PricingBaseTests(email, pass, client);
         await PricingAdditionalGroupsReadonlyTests(email, pass, client);
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
-        await PricingMultipleValuesTests(email, pass, client);
+        // await PricingMultipleValuesTests(email, pass, client);
         // await PricingPartialValueTests(email, pass, client);
+        // await PricingExclusionTests(email, pass, client);
+        await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
@@ -487,33 +496,65 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingBase') {
-        await PricingDataPrep(varPass, client);
+        await PricingAddonsUpsert(varPass, client);
+        await PricingConfigUpload(client);
+        await PricingUdtInsertion(client);
         await PricingBaseTests(email, pass, client);
+        await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests === 'PricingAdditional') {
+        await PricingAddonsUpsert(varPass, client);
+        await PricingConfigUpload(client);
+        await PricingUdtInsertion(client);
         await PricingAdditionalGroupsReadonlyTests(email, pass, client);
+        await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests === 'PricingUom') {
+        await PricingAddonsUpsert(varPass, client);
+        await PricingConfigUpload(client);
+        await PricingUdtInsertion(client);
         await PricingUomTests(email, pass, client);
+        await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests === 'PricingTotals') {
+        await PricingAddonsUpsert(varPass, client);
+        await PricingConfigUpload(client);
+        await PricingUdtInsertion(client);
         await PricingTotalsTests(email, pass, client);
+        await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests === 'PricingMulti') {
+        // await PricingAddonsUpsert(varPass, client);
+        await PricingConfigUpload(client);
+        await PricingUdtInsertion(client);
         await PricingMultipleValuesTests(email, pass, client);
+        await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
     if (tests === 'PricingPartial') {
+        await PricingAddonsUpsert(varPass, client);
+        await PricingConfigUpload(client);
+        await PricingUdtInsertion(client);
         await PricingPartialValueTests(email, pass, client);
+        await PricingUdtCleanup(client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
+    if (tests === 'PricingExclusion') {
+        await PricingAddonsUpsert(varPass, client);
+        await PricingConfigUpload(client);
+        await PricingUdtInsertion(client);
+        await PricingExclusionTests(email, pass, client);
+        await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 

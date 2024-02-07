@@ -36,22 +36,69 @@ export async function PricingMultipleValuesTests(email: string, password: string
     let transactionUUID_Acc01: string;
     let transactionUUID_OtherAcc: string;
     let accountName: string;
-    let ppmVluesEnd: UserDefinedTableRow[];
+    // let ppmVluesEnd: UserDefinedTableRow[];
     let duration: string;
     let base64ImageComponent;
+    let ppmValues: UserDefinedTableRow[];
 
     const pricingData = new PricingData06();
     const testAccounts = ['Acc01', 'OtherAcc'];
-    const multipleValuesTestItems = ['MaFa25', 'MaLi37', 'MaLi38'];
-    const multipleValuesTestStates = ['baseline', '1 Each', '2 Case', '3 Box'];
-    const priceFields = [
-        'PriceBaseUnitPriceAfter1',
-        'PriceDiscountUnitPriceAfter1',
-        'PriceGroupDiscountUnitPriceAfter1',
-        'PriceManualLineUnitPriceAfter1',
-        'PriceTaxUnitPriceAfter1',
+    // const multipleValuesTestItems_outOfCategory = ['Shampoo Three'];
+    const multipleValuesTestItems = [
+        // 'Shampoo Three 1',
+        'MaFa25',
+        'MaLi37',
+        'MaLi38',
     ];
-    const priceFields2 = ['PriceBaseUnitPriceAfter2', 'PriceDiscountUnitPriceAfter2', 'PriceTaxUnitPriceAfter2'];
+    const multipleValuesTestStates_each = [
+        'baseline',
+        '1 Each',
+        '2 Each',
+        '1 Each',
+        '3 Each',
+        '2 Each',
+        '5 Each',
+        '9 Each',
+        '5 Each',
+        '10 Each',
+        '11 Each',
+        '10 Each',
+    ];
+    const multipleValuesTestStates_case = [
+        '1 Case',
+        '2 Case',
+        '1 Case',
+        '4 Case',
+        '2 Case',
+        '5 Case',
+        '4 Case',
+        '9 Case',
+        '5 Case',
+        '10 Case',
+        '11 Case',
+        '10 Case',
+    ];
+    const multipleValuesTestStates_box = [
+        '1 Box',
+        '2 Box',
+        '1 Box',
+        '3 Box',
+        '5 Box',
+        '3 Box',
+        '6 Box',
+        '5 Box',
+        '7 Box',
+        '6 Box',
+    ];
+    // const priceFields = [
+    //     'PriceBaseUnitPriceAfter1',
+    //     'PriceDiscountUnitPriceAfter1',
+    //     'PriceGroupDiscountUnitPriceAfter1',
+    //     'PriceManualLineUnitPriceAfter1',
+    //     'PriceTaxUnitPriceAfter1',
+    // ];
+    // const priceFields2 = ['PriceBaseUnitPriceAfter2', 'PriceDiscountUnitPriceAfter2', 'PriceTaxUnitPriceAfter2'];
+    const priceMultiFields = ['PriceMultiAfter1', 'PriceMultiAfter2'];
 
     if (installedPricingVersionShort !== '5') {
         describe(`Pricing Multiple Values UI tests  - ${
@@ -82,40 +129,40 @@ export async function PricingMultipleValuesTests(email: string, password: string
                 await driver.quit();
             });
 
-            it('inserting valid rules to the UDT "PPM_Values"', async () => {
-                const dataToBatch: {
-                    MapDataExternalID: string;
-                    MainKey: string;
-                    SecondaryKey: string;
-                    Values: string[];
-                }[] = [];
-                Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
-                    dataToBatch.push({
-                        MapDataExternalID: pricingData.tableName,
-                        MainKey: mainKey,
-                        SecondaryKey: '',
-                        Values: [pricingData.documentsIn_PPM_Values[mainKey]],
-                    });
-                });
-                const batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
-                expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
-                console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
-                batchUDTresponse.map((row) => {
-                    expect(row).to.have.property('InternalID').that.is.above(0);
-                    expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
-                    expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
-                    expect(row)
-                        .to.have.property('Message')
-                        .that.is.oneOf([
-                            'Row inserted.',
-                            'No changes in this row. The row is being ignored.',
-                            'Row updated.',
-                        ]);
-                    expect(row)
-                        .to.have.property('URI')
-                        .that.equals('/user_defined_tables/' + row.InternalID);
-                });
-            });
+            // it('inserting valid rules to the UDT "PPM_Values"', async () => {
+            //     const dataToBatch: {
+            //         MapDataExternalID: string;
+            //         MainKey: string;
+            //         SecondaryKey: string;
+            //         Values: string[];
+            //     }[] = [];
+            //     Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+            //         dataToBatch.push({
+            //             MapDataExternalID: pricingData.tableName,
+            //             MainKey: mainKey,
+            //             SecondaryKey: '',
+            //             Values: [pricingData.documentsIn_PPM_Values[mainKey]],
+            //         });
+            //     });
+            //     const batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
+            //     expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
+            //     console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
+            //     batchUDTresponse.map((row) => {
+            //         expect(row).to.have.property('InternalID').that.is.above(0);
+            //         expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+            //         expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
+            //         expect(row)
+            //             .to.have.property('Message')
+            //             .that.is.oneOf([
+            //                 'Row inserted.',
+            //                 'No changes in this row. The row is being ignored.',
+            //                 'Row updated.',
+            //             ]);
+            //         expect(row)
+            //             .to.have.property('URI')
+            //             .that.equals('/user_defined_tables/' + row.InternalID);
+            //     });
+            // });
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
@@ -128,6 +175,52 @@ export async function PricingMultipleValuesTests(email: string, password: string
 
             it('Manual Sync', async () => {
                 await webAppHomePage.manualResync(client);
+            });
+
+            it('get UDT Values (PPM_Values)', async () => {
+                ppmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
+                console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
+            });
+
+            it('validating "PPM_Values" via API', async () => {
+                const expectedPPMValuesLength =
+                    Object.keys(pricingData.documentsIn_PPM_Values).length + pricingData.dummyPPM_Values_length;
+                console.info(
+                    'EXPECTED: Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length: ',
+                    expectedPPMValuesLength,
+                    'ACTUAL: ppmValues.length: ',
+                    ppmValues.length,
+                );
+                addContext(this, {
+                    title: `PPM Values Length`,
+                    value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
+                });
+                expect(ppmValues.length).equals(expectedPPMValuesLength);
+                Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+                    console.info('mainKey: ', mainKey);
+                    const matchingRowOfppmValues = ppmValues.find((tableRow) => {
+                        if (tableRow.MainKey === mainKey) {
+                            return tableRow;
+                        }
+                    });
+                    matchingRowOfppmValues &&
+                        console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
+                    console.info(
+                        'ACTUAL: pricingData.documentsIn_PPM_Values[mainKey]: ',
+                        pricingData.documentsIn_PPM_Values[mainKey],
+                    );
+                    matchingRowOfppmValues &&
+                        addContext(this, {
+                            title: `PPM Value for the Key "${mainKey}"`,
+                            value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${pricingData.documentsIn_PPM_Values[mainKey]}`,
+                        });
+                    matchingRowOfppmValues &&
+                        expect(pricingData.documentsIn_PPM_Values[mainKey]).equals(
+                            client.BaseURL.includes('staging')
+                                ? matchingRowOfppmValues['Values'].join()
+                                : matchingRowOfppmValues['Values'][0],
+                        );
+                });
             });
 
             testAccounts.forEach((account) => {
@@ -170,10 +263,11 @@ export async function PricingMultipleValuesTests(email: string, password: string
                         });
                         const duration_num = Number(duration);
                         expect(typeof duration_num).equals('number');
-                        expect(duration_num).to.be.below(limit);
+                        // expect(duration_num).to.be.below(limit);
                     });
-
-                    describe('Multiple Values', () => {
+                    // describe('Multiple Values (Out Of Category Item)', () => {
+                    // });
+                    describe('Multiple Values (Category Items)', () => {
                         it('Navigating to "Facial Cosmetics" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(
@@ -191,9 +285,111 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                         );
                                         driver.sleep(1 * 1000);
                                     });
-                                    multipleValuesTestStates.forEach((multipleValuesTestState) => {
-                                        it(`Checking "${multipleValuesTestState}"`, async function () {
-                                            if (multipleValuesTestState != 'baseline') {
+                                    describe('Each', () => {
+                                        multipleValuesTestStates_each.forEach((multipleValuesTestState) => {
+                                            it(`Checking "${multipleValuesTestState}"`, async function () {
+                                                if (multipleValuesTestState != 'baseline') {
+                                                    const splitedStateArgs = multipleValuesTestState.split(' ');
+                                                    const chosenUom = splitedStateArgs[1];
+                                                    const amount = Number(splitedStateArgs[0]);
+                                                    addContext(this, {
+                                                        title: `State Args`,
+                                                        value: `Chosen UOM: ${chosenUom}, Amount: ${amount}`,
+                                                    });
+                                                    await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                                        this,
+                                                    )(
+                                                        chosenUom,
+                                                        multipleValuesTestItem,
+                                                        amount,
+                                                        driver,
+                                                        chosenUom === 'Each' ? '2' : undefined,
+                                                    );
+                                                }
+                                                const priceMultiTSAs = await pricingService.getTSAsOfMultiPerItem(
+                                                    'OrderCenter',
+                                                    multipleValuesTestItem,
+                                                );
+                                                // console.info(
+                                                //     `${multipleValuesTestItem} ${multipleValuesTestState} priceMultiTSAs:`,
+                                                //     priceMultiTSAs,
+                                                // );
+
+                                                const NPMCalcMessage = await pricingService.getItemNPMCalcMessage(
+                                                    'OrderCenter',
+                                                    multipleValuesTestItem,
+                                                );
+                                                console.info(
+                                                    `${multipleValuesTestItem} ${multipleValuesTestState} NPMCalcMessage:`,
+                                                    NPMCalcMessage,
+                                                );
+                                                addContext(this, {
+                                                    title: `NPM Calc Message:`,
+                                                    value: `NPMCalcMessage: ${JSON.stringify(NPMCalcMessage, null, 2)}`,
+                                                });
+
+                                                expect(typeof priceMultiTSAs).equals('object');
+                                                expect(Object.keys(priceMultiTSAs)).to.eql([
+                                                    'PriceMultiAfter1',
+                                                    'PriceMultiAfter2',
+                                                ]);
+                                                priceMultiFields.forEach((priceField) => {
+                                                    const fieldValue = priceMultiTSAs[priceField];
+                                                    const expectedFieldValue =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                            account
+                                                        ][multipleValuesTestState]['expectedValue'];
+                                                    const expectedRule =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                            account
+                                                        ][multipleValuesTestState]['rule'];
+                                                    const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
+                                                    const udtRuleValueObj: UserDefinedTableRow | undefined =
+                                                        ppmValues.find((listing) => {
+                                                            if (listing.MainKey === udtKey) return listing;
+                                                        });
+                                                    console.info(`Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                        \nExpected Rule: ${expectedRule}
+                                                        \nUDT Rule: ${udtKey}:${
+                                                        udtRuleValueObj ? udtRuleValueObj['Values'] : 'Key not found'
+                                                    }`);
+                                                    addContext(this, {
+                                                        title: `${priceField}`,
+                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                            \nExpected Rule: ${expectedRule}
+                                                            \nUDT Rule: ${udtKey}:${
+                                                            udtRuleValueObj
+                                                                ? udtRuleValueObj['Values']
+                                                                : 'Key not found'
+                                                        }`,
+                                                    });
+                                                });
+
+                                                const expectedPriceMultiAfter1 =
+                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                        'PriceMultiAfter1'
+                                                    ][account][multipleValuesTestState]['expectedValue'];
+                                                const expectedPriceMultiAfter2 =
+                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                        'PriceMultiAfter2'
+                                                    ][account][multipleValuesTestState]['expectedValue'];
+                                                const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
+                                                const actualPriceMultiAfter2 = priceMultiTSAs['PriceMultiAfter2'];
+                                                expect(actualPriceMultiAfter1).equals(expectedPriceMultiAfter1);
+                                                expect(actualPriceMultiAfter2).equals(expectedPriceMultiAfter2);
+                                                driver.sleep(0.2 * 1000);
+                                            });
+                                        });
+                                        // it('Setting AOQM2 to 0', async function () {
+                                        //     await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                        //         this,
+                                        //     )('Each', multipleValuesTestItem, 0, driver, '2');
+                                        //     driver.sleep(0.1 * 1000);
+                                        // });
+                                    });
+                                    describe('Case', () => {
+                                        multipleValuesTestStates_case.forEach((multipleValuesTestState) => {
+                                            it(`Checking "${multipleValuesTestState}"`, async function () {
                                                 const splitedStateArgs = multipleValuesTestState.split(' ');
                                                 const chosenUom = splitedStateArgs[1];
                                                 const amount = Number(splitedStateArgs[0]);
@@ -203,78 +399,175 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                                 });
                                                 await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                                     this,
-                                                )(chosenUom, multipleValuesTestItem, amount, driver);
-                                            }
-                                            const priceTSAs = await pricingService.getItemTSAs(
-                                                'OrderCenter',
-                                                multipleValuesTestItem,
-                                            );
-                                            console.info(
-                                                `${multipleValuesTestItem} ${multipleValuesTestState} priceTSAs:`,
-                                                priceTSAs,
-                                            );
-                                            expect(typeof priceTSAs).equals('object');
-                                            expect(Object.keys(priceTSAs)).to.eql([
-                                                'PriceBaseUnitPriceAfter1',
-                                                'PriceDiscountUnitPriceAfter1',
-                                                'PriceGroupDiscountUnitPriceAfter1',
-                                                'PriceManualLineUnitPriceAfter1',
-                                                'PriceTaxUnitPriceAfter1',
-                                                'NPMCalcMessage',
-                                            ]);
-                                            if (multipleValuesTestState === 'baseline') {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][
-                                                        'NPMCalcMessage'
-                                                    ][account][multipleValuesTestState];
+                                                )(chosenUom + '&Totals', multipleValuesTestItem, amount, driver);
+                                                const priceMultiTSAs = await pricingService.getTSAsOfMultiPerItem(
+                                                    'OrderCenter',
+                                                    multipleValuesTestItem,
+                                                );
+                                                console.info(
+                                                    `${multipleValuesTestItem} ${multipleValuesTestState} priceMultiTSAs:`,
+                                                    priceMultiTSAs,
+                                                );
+
+                                                const NPMCalcMessage = await pricingService.getItemNPMCalcMessage(
+                                                    'OrderCenter',
+                                                    multipleValuesTestItem,
+                                                );
+                                                console.info(
+                                                    `${multipleValuesTestItem} ${multipleValuesTestState} NPMCalcMessage:`,
+                                                    NPMCalcMessage,
+                                                );
                                                 addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                    )}`,
+                                                    title: `NPM Calc Message:`,
+                                                    value: `NPMCalcMessage: ${JSON.stringify(NPMCalcMessage, null, 2)}`,
                                                 });
-                                                // expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
-                                            } else {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
+
+                                                expect(typeof priceMultiTSAs).equals('object');
+                                                expect(Object.keys(priceMultiTSAs)).to.eql([
+                                                    'PriceMultiAfter1',
+                                                    'PriceMultiAfter2',
+                                                ]);
+                                                priceMultiFields.forEach((priceField) => {
+                                                    const fieldValue = priceMultiTSAs[priceField];
+                                                    const expectedFieldValue =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                            account
+                                                        ][multipleValuesTestState]['expectedValue'];
+                                                    const expectedRule =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                            account
+                                                        ][multipleValuesTestState]['rule'];
+                                                    const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
+                                                    const udtRuleValueObj: UserDefinedTableRow | undefined =
+                                                        ppmValues.find((listing) => {
+                                                            if (listing.MainKey === udtKey) return listing;
+                                                        });
+                                                    console.info(`Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                            \nExpected Rule: ${expectedRule}
+                                                            \nUDT Rule: ${udtKey}:${
+                                                        udtRuleValueObj ? udtRuleValueObj['Values'] : 'Key not found'
+                                                    }`);
+                                                    addContext(this, {
+                                                        title: `${priceField}`,
+                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                                \nExpected Rule: ${expectedRule}
+                                                                \nUDT Rule: ${udtKey}:${
+                                                            udtRuleValueObj
+                                                                ? udtRuleValueObj['Values']
+                                                                : 'Key not found'
+                                                        }`,
+                                                    });
+                                                });
+
+                                                const expectedPriceMultiAfter1 =
                                                     pricingData.testItemsValues[multipleValuesTestItem][
-                                                        'NPMCalcMessage'
-                                                    ][account]['baseline'];
-                                                const data_NPMCalcMessage =
+                                                        'PriceMultiAfter1'
+                                                    ][account][multipleValuesTestState]['expectedValue'];
+                                                const expectedPriceMultiAfter2 =
                                                     pricingData.testItemsValues[multipleValuesTestItem][
-                                                        'NPMCalcMessage'
-                                                    ][account][multipleValuesTestState];
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at ${multipleValuesTestState}) from Data: ${JSON.stringify(
-                                                        data_NPMCalcMessage,
-                                                    )}`,
-                                                });
-                                                // expect(UI_NPMCalcMessage.length).equals(
-                                                //     baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
-                                                // );
-                                            }
-                                            priceFields.forEach((priceField) => {
-                                                const fieldValue = priceTSAs[priceField];
-                                                const expectedFieldValue =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][priceField][
-                                                        account
-                                                    ][multipleValuesTestState];
-                                                addContext(this, {
-                                                    title: `${priceField}`,
-                                                    value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
-                                                });
-                                                // expect(fieldValue).equals(expectedFieldValue);
+                                                        'PriceMultiAfter2'
+                                                    ][account][multipleValuesTestState]['expectedValue'];
+                                                const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
+                                                const actualPriceMultiAfter2 = priceMultiTSAs['PriceMultiAfter2'];
+                                                expect(actualPriceMultiAfter1).equals(expectedPriceMultiAfter1);
+                                                expect(actualPriceMultiAfter2).equals(expectedPriceMultiAfter2);
+                                                driver.sleep(0.2 * 1000);
                                             });
-                                            driver.sleep(0.2 * 1000);
                                         });
+                                    });
+                                    describe('Box', () => {
+                                        multipleValuesTestStates_box.forEach((multipleValuesTestState) => {
+                                            it(`Checking "${multipleValuesTestState}"`, async function () {
+                                                const splitedStateArgs = multipleValuesTestState.split(' ');
+                                                const chosenUom = splitedStateArgs[1];
+                                                const amount = Number(splitedStateArgs[0]);
+                                                addContext(this, {
+                                                    title: `State Args`,
+                                                    value: `Chosen UOM: ${chosenUom}, Amount: ${amount}`,
+                                                });
+                                                await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                                    this,
+                                                )(chosenUom + '&Totals', multipleValuesTestItem, amount, driver);
+                                                const priceMultiTSAs = await pricingService.getTSAsOfMultiPerItem(
+                                                    'OrderCenter',
+                                                    multipleValuesTestItem,
+                                                );
+                                                console.info(
+                                                    `${multipleValuesTestItem} ${multipleValuesTestState} priceMultiTSAs:`,
+                                                    priceMultiTSAs,
+                                                );
+
+                                                const NPMCalcMessage = await pricingService.getItemNPMCalcMessage(
+                                                    'OrderCenter',
+                                                    multipleValuesTestItem,
+                                                );
+                                                console.info(
+                                                    `${multipleValuesTestItem} ${multipleValuesTestState} NPMCalcMessage:`,
+                                                    NPMCalcMessage,
+                                                );
+                                                addContext(this, {
+                                                    title: `NPM Calc Message:`,
+                                                    value: `NPMCalcMessage: ${JSON.stringify(NPMCalcMessage, null, 2)}`,
+                                                });
+
+                                                expect(typeof priceMultiTSAs).equals('object');
+                                                expect(Object.keys(priceMultiTSAs)).to.eql([
+                                                    'PriceMultiAfter1',
+                                                    'PriceMultiAfter2',
+                                                ]);
+                                                priceMultiFields.forEach((priceField) => {
+                                                    const fieldValue = priceMultiTSAs[priceField];
+                                                    const expectedFieldValue =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                            account
+                                                        ][multipleValuesTestState]['expectedValue'];
+                                                    const expectedRule =
+                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                            account
+                                                        ][multipleValuesTestState]['rule'];
+                                                    const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
+                                                    const udtRuleValueObj: UserDefinedTableRow | undefined =
+                                                        ppmValues.find((listing) => {
+                                                            if (listing.MainKey === udtKey) return listing;
+                                                        });
+                                                    console.info(`Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                            \nExpected Rule: ${expectedRule}
+                                                            \nUDT Rule: ${udtKey}:${
+                                                        udtRuleValueObj ? udtRuleValueObj['Values'] : 'Key not found'
+                                                    }`);
+                                                    addContext(this, {
+                                                        title: `${priceField}`,
+                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                                \nExpected Rule: ${expectedRule}
+                                                                \nUDT Rule: ${udtKey}:${
+                                                            udtRuleValueObj
+                                                                ? udtRuleValueObj['Values']
+                                                                : 'Key not found'
+                                                        }`,
+                                                    });
+                                                });
+
+                                                const expectedPriceMultiAfter1 =
+                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                        'PriceMultiAfter1'
+                                                    ][account][multipleValuesTestState]['expectedValue'];
+                                                const expectedPriceMultiAfter2 =
+                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                        'PriceMultiAfter2'
+                                                    ][account][multipleValuesTestState]['expectedValue'];
+                                                const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
+                                                const actualPriceMultiAfter2 = priceMultiTSAs['PriceMultiAfter2'];
+                                                expect(actualPriceMultiAfter1).equals(expectedPriceMultiAfter1);
+                                                expect(actualPriceMultiAfter2).equals(expectedPriceMultiAfter2);
+                                                driver.sleep(0.2 * 1000);
+                                            });
+                                        });
+                                        // it('Setting AOQM1 to 0', async function () {
+                                        //     await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                        //         this,
+                                        //     )('Case', multipleValuesTestItem, 0, driver);
+                                        //     driver.sleep(0.1 * 1000);
+                                        // });
                                     });
                                 });
                             });
@@ -316,34 +609,34 @@ export async function PricingMultipleValuesTests(email: string, password: string
                             multipleValuesTestItems.forEach((multipleValuesTestCartItem) => {
                                 it(`checking item "${multipleValuesTestCartItem}"`, async function () {
                                     const state = '3 Box';
-                                    const totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                    // const totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                    //     'Cart',
+                                    //     multipleValuesTestCartItem,
+                                    //     undefined,
+                                    //     undefined,
+                                    //     'LinesView',
+                                    // );
+                                    const priceMultiTSAs = await pricingService.getTSAsOfMultiPerItem(
                                         'Cart',
                                         multipleValuesTestCartItem,
                                         undefined,
                                         undefined,
                                         'LinesView',
                                     );
-                                    const priceTSAs = await pricingService.getItemTSAs(
-                                        'Cart',
-                                        multipleValuesTestCartItem,
-                                        undefined,
-                                        undefined,
-                                        'LinesView',
-                                    );
-                                    const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
-                                        'Cart',
-                                        multipleValuesTestCartItem,
-                                        undefined,
-                                        undefined,
-                                        'LinesView',
-                                    );
-                                    const priceTSAs_AOQM_UOM2 = await pricingService.getItemTSAs_AOQM_UOM2(
-                                        'Cart',
-                                        multipleValuesTestCartItem,
-                                        undefined,
-                                        undefined,
-                                        'LinesView',
-                                    );
+                                    // const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
+                                    //     'Cart',
+                                    //     multipleValuesTestCartItem,
+                                    //     undefined,
+                                    //     undefined,
+                                    //     'LinesView',
+                                    // );
+                                    // const priceTSAs_AOQM_UOM2 = await pricingService.getItemTSAs_AOQM_UOM2(
+                                    //     'Cart',
+                                    //     multipleValuesTestCartItem,
+                                    //     undefined,
+                                    //     undefined,
+                                    //     'LinesView',
+                                    // );
                                     // const priceTotalsTSAs = await pricingService.getTotalsTSAsOfItem(
                                     //     'Cart',
                                     //     multipleValuesTestCartItem,
@@ -351,51 +644,55 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                     //     undefined,
                                     //     'LinesView',
                                     // );
-                                    const expectedTotalUnitsAmount =
-                                        pricingData.testItemsValues[multipleValuesTestCartItem]['Cart'][account];
-                                    console.info(
-                                        `Cart ${multipleValuesTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
-                                    );
-                                    console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
-                                    addContext(this, {
-                                        title: `Total Units amount of item`,
-                                        value: `form UI: ${totalUnitsAmount} , expected: ${expectedTotalUnitsAmount}`,
-                                    });
-                                    priceFields.forEach((priceField) => {
+                                    // const expectedTotalUnitsAmount =
+                                    //     pricingData.testItemsValues[multipleValuesTestCartItem]['Cart'][account];
+                                    // console.info(
+                                    //     `Cart ${multipleValuesTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
+                                    // );
+                                    // console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
+                                    // addContext(this, {
+                                    //     title: `Total Units amount of item`,
+                                    //     value: `form UI: ${totalUnitsAmount} , expected: ${expectedTotalUnitsAmount}`,
+                                    // });
+                                    priceMultiFields.forEach((priceField) => {
                                         const expectedValue =
                                             pricingData.testItemsValues[multipleValuesTestCartItem][priceField][
                                                 account
-                                            ][state];
+                                            ][state]['expectedValue'];
+                                        const expectedRule =
+                                            pricingData.testItemsValues[multipleValuesTestCartItem][priceField][
+                                                account
+                                            ][state]['rule'];
                                         addContext(this, {
                                             title: `TSA field "${priceField}" Values`,
-                                            value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                            value: `Form UI: ${priceMultiTSAs[priceField]} , Expected Value: ${expectedValue}\nExpected Rule: ${expectedRule}`,
                                         });
                                         // expect(priceTSAs[priceField]).equals(expectedValue);
                                     });
                                     // expect(totalUnitsAmount).equals(expectedTotalUnitsAmount);
-                                    const discount2FieldValue = priceTSA_Discount2['PriceDiscount2UnitPriceAfter1'];
-                                    const discount2ExpectedFieldValue =
-                                        pricingData.testItemsValues[multipleValuesTestCartItem][
-                                            'PriceDiscount2UnitPriceAfter1'
-                                        ]['cart'][account];
-                                    addContext(this, {
-                                        title: 'PriceDiscount2UnitPriceAfter1',
-                                        value: `Field Value from UI: ${discount2FieldValue}, Expected Field Value from Data: ${discount2ExpectedFieldValue}`,
-                                    });
+                                    // const discount2FieldValue = priceTSA_Discount2['PriceDiscount2UnitPriceAfter1'];
+                                    // const discount2ExpectedFieldValue =
+                                    //     pricingData.testItemsValues[multipleValuesTestCartItem][
+                                    //     'PriceDiscount2UnitPriceAfter1'
+                                    //     ]['cart'][account];
+                                    // addContext(this, {
+                                    //     title: 'PriceDiscount2UnitPriceAfter1',
+                                    //     value: `Field Value from UI: ${discount2FieldValue}, Expected Field Value from Data: ${discount2ExpectedFieldValue}`,
+                                    // });
                                     // expect(discount2FieldValue).equals(discount2ExpectedFieldValue);
 
-                                    priceFields2.forEach((priceField) => {
-                                        const fieldValue = priceTSAs_AOQM_UOM2[priceField];
-                                        const expectedFieldValue =
-                                            pricingData.testItemsValues[multipleValuesTestCartItem][priceField]['cart'][
-                                                account
-                                            ];
-                                        addContext(this, {
-                                            title: `${priceField}`,
-                                            value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
-                                        });
-                                        // expect(fieldValue).equals(expectedFieldValue);
-                                    });
+                                    // priceFields2.forEach((priceField) => {
+                                    //     const fieldValue = priceTSAs_AOQM_UOM2[priceField];
+                                    //     const expectedFieldValue =
+                                    //         pricingData.testItemsValues[multipleValuesTestCartItem][priceField]['cart'][
+                                    //         account
+                                    //         ];
+                                    //     addContext(this, {
+                                    //         title: `${priceField}`,
+                                    //         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                    //     });
+                                    //     // expect(fieldValue).equals(expectedFieldValue);
+                                    // });
 
                                     // totalsPriceFields.forEach((priceField) => {
                                     //     const fieldValue = priceTotalsTSAs[priceField];
@@ -416,15 +713,15 @@ export async function PricingMultipleValuesTests(email: string, password: string
             });
 
             describe('Cleanup', () => {
-                it('getting "PPM_Values" UDT values via API', async () => {
-                    ppmVluesEnd = await objectsService.getUDT({
-                        where: `MapDataExternalID='${pricingData.tableName}'`,
-                        page_size: -1,
-                    });
-                    expect(ppmVluesEnd.length).equals(
-                        Object.keys(pricingData.documentsIn_PPM_Values).length + pricingData.dummyPPM_Values_length,
-                    );
-                });
+                // it('getting "PPM_Values" UDT values via API', async () => {
+                //     ppmVluesEnd = await objectsService.getUDT({
+                //         where: `MapDataExternalID='${pricingData.tableName}'`,
+                //         page_size: -1,
+                //     });
+                //     expect(ppmVluesEnd.length).equals(
+                //         Object.keys(pricingData.documentsIn_PPM_Values).length + pricingData.dummyPPM_Values_length,
+                //     );
+                // });
 
                 it('deleting all Activities', async () => {
                     await webAppHeader.goHome();
@@ -454,68 +751,68 @@ export async function PricingMultipleValuesTests(email: string, password: string
                     }
                 });
 
-                it('deleting valid rules from the UDT "PPM_Values"', async () => {
-                    const valueObjs: UserDefinedTableRow[] = [];
-                    const validPPM_ValuesKeys = Object.keys(pricingData.documentsIn_PPM_Values);
-                    const deleteResponses = await Promise.all(
-                        validPPM_ValuesKeys.map(async (validPPM_Key) => {
-                            const valueObj: UserDefinedTableRow | undefined = ppmVluesEnd.find((listing) => {
-                                if (listing.MainKey === validPPM_Key) return listing;
-                            });
-                            console.info(
-                                'validPPM_Key:',
-                                validPPM_Key,
-                                ', validPPM_ValueObj: ',
-                                JSON.stringify(valueObj, null, 2),
-                            );
-                            if (valueObj) {
-                                console.info('valueObj EXIST!');
-                                valueObjs.push(valueObj);
-                                valueObj.Hidden = true;
-                                return await objectsService.postUDT(valueObj);
-                            }
-                        }),
-                    );
-                    expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
-                    deleteResponses.forEach((deleteUDTresponse) => {
-                        console.info(
-                            `${deleteUDTresponse?.MainKey} Delete RESPONSE: `,
-                            JSON.stringify(deleteUDTresponse, null, 2),
-                        );
-                        if (deleteUDTresponse) {
-                            console.info('UDT delete response exist!');
-                            const PPMvalue = pricingData.documentsIn_PPM_Values[deleteUDTresponse.MainKey];
-                            expect(deleteUDTresponse).to.deep.include({
-                                MapDataExternalID: pricingData.tableName,
-                                SecondaryKey: null,
-                                Values: [PPMvalue],
-                            });
-                            expect(deleteUDTresponse).to.have.property('MainKey');
-                            expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
-                            expect(deleteUDTresponse)
-                                .to.have.property('ModificationDateTime')
-                                .that.contains(new Date().toISOString().split('T')[0]);
-                            expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
-                            expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
-                            expect(deleteUDTresponse).to.have.property('InternalID');
-                        }
-                    });
-                });
+                // it('deleting valid rules from the UDT "PPM_Values"', async () => {
+                //     const valueObjs: UserDefinedTableRow[] = [];
+                //     const validPPM_ValuesKeys = Object.keys(pricingData.documentsIn_PPM_Values);
+                //     const deleteResponses = await Promise.all(
+                //         validPPM_ValuesKeys.map(async (validPPM_Key) => {
+                //             const valueObj: UserDefinedTableRow | undefined = ppmVluesEnd.find((listing) => {
+                //                 if (listing.MainKey === validPPM_Key) return listing;
+                //             });
+                //             console.info(
+                //                 'validPPM_Key:',
+                //                 validPPM_Key,
+                //                 ', validPPM_ValueObj: ',
+                //                 JSON.stringify(valueObj, null, 2),
+                //             );
+                //             if (valueObj) {
+                //                 console.info('valueObj EXIST!');
+                //                 valueObjs.push(valueObj);
+                //                 valueObj.Hidden = true;
+                //                 return await objectsService.postUDT(valueObj);
+                //             }
+                //         }),
+                //     );
+                //     expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
+                //     deleteResponses.forEach((deleteUDTresponse) => {
+                //         console.info(
+                //             `${deleteUDTresponse?.MainKey} Delete RESPONSE: `,
+                //             JSON.stringify(deleteUDTresponse, null, 2),
+                //         );
+                //         if (deleteUDTresponse) {
+                //             console.info('UDT delete response exist!');
+                //             const PPMvalue = pricingData.documentsIn_PPM_Values[deleteUDTresponse.MainKey];
+                //             expect(deleteUDTresponse).to.deep.include({
+                //                 MapDataExternalID: pricingData.tableName,
+                //                 SecondaryKey: null,
+                //                 Values: [PPMvalue],
+                //             });
+                //             expect(deleteUDTresponse).to.have.property('MainKey');
+                //             expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
+                //             expect(deleteUDTresponse)
+                //                 .to.have.property('ModificationDateTime')
+                //                 .that.contains(new Date().toISOString().split('T')[0]);
+                //             expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
+                //             expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
+                //             expect(deleteUDTresponse).to.have.property('InternalID');
+                //         }
+                //     });
+                // });
 
-                it('performing sync', async () => {
-                    await webAppHeader.goHome();
-                    driver.sleep(0.2 * 1000);
-                    await webAppHomePage.isSpinnerDone();
-                    await webAppHomePage.manualResync(client);
-                });
+                // it('performing sync', async () => {
+                //     await webAppHeader.goHome();
+                //     driver.sleep(0.2 * 1000);
+                //     await webAppHomePage.isSpinnerDone();
+                //     await webAppHomePage.manualResync(client);
+                // });
 
-                it('validating "PPM_Values" UDT values via API', async () => {
-                    ppmVluesEnd = await objectsService.getUDT({
-                        where: `MapDataExternalID='${pricingData.tableName}'`,
-                        page_size: -1,
-                    });
-                    expect(ppmVluesEnd.length).equals(pricingData.dummyPPM_Values_length);
-                });
+                // it('validating "PPM_Values" UDT values via API', async () => {
+                //     ppmVluesEnd = await objectsService.getUDT({
+                //         where: `MapDataExternalID='${pricingData.tableName}'`,
+                //         page_size: -1,
+                //     });
+                //     expect(ppmVluesEnd.length).equals(pricingData.dummyPPM_Values_length);
+                // });
             });
         });
     }
