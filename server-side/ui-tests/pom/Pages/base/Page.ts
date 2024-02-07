@@ -28,6 +28,25 @@ export abstract class Page extends BasePomObject {
         }
     }
 
+    public async getUrlParamValue(paramName: string): Promise<string> {
+        const currentUrlSplittedByUrlParams = (await this.browser.getCurrentUrl()).split('?');
+        let isParamNameIncludedInUrlParams = false;
+        for (let index = 0; index < currentUrlSplittedByUrlParams.length; index++) {
+            const urlSplit = currentUrlSplittedByUrlParams[index];
+            if (urlSplit.includes(paramName)) {
+                isParamNameIncludedInUrlParams = true;
+                break;
+            }
+        }
+        if (!isParamNameIncludedInUrlParams) {
+            return '';
+        }
+        const urlParamsOnly = currentUrlSplittedByUrlParams[1];
+        const splitByParamKeyNoAndSymbol = urlParamsOnly.split(`${paramName}=`)[1];
+        const actualParamVal = splitByParamKeyNoAndSymbol.split('&')[0];
+        return actualParamVal;
+    }
+
     public async click(selector: By, index = 0, waitUntil = 15000): Promise<void> {
         return await this.browser.click(selector, index, waitUntil);
     }
