@@ -35,6 +35,15 @@ export interface PriceTotalsTsaFields {
     PriceTaxUnitDiff: number;
 }
 
+export interface PriceMultiTsaFields {
+    PriceMultiAfter1: number;
+    PriceMultiAfter2: number;
+}
+
+export interface PricePartialTsaFields {
+    PricePartial: number;
+}
+
 export class PricingService {
     public browser: Browser;
     // public generalService: GeneralService;
@@ -269,6 +278,33 @@ export class PricingService {
         };
     }
 
+    public async getItemNPMCalcMessage(
+        at: 'OrderCenter' | 'Cart',
+        nameOfItem: string,
+        freeItem?: 'Free',
+        locationInElementsArray?: number,
+        view?: 'LinesView',
+    ): Promise<{ NPMCalcMessage: [any] }> {
+        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}${view ? view : ''}By${
+            freeItem ? freeItem : ''
+        }ItemName`;
+        const NPMCalcMessage_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'NPMCalcMessage_Value',
+            nameOfItem,
+        );
+        const NPMCalcMessage_Elements = await this.browser.findElements(NPMCalcMessage_Selector);
+        const NPMCalcMessage_Element = locationInElementsArray
+            ? NPMCalcMessage_Elements[locationInElementsArray]
+            : NPMCalcMessage_Elements[0];
+        const NPMCalcMessage_Value = await NPMCalcMessage_Element.getText();
+        console.info(`${nameOfItem} NPMCalcMessage_Value: `, NPMCalcMessage_Value);
+
+        this.browser.sleep(0.1 * 1000);
+        return {
+            NPMCalcMessage: JSON.parse(NPMCalcMessage_Value),
+        };
+    }
+
     public async getItemTSAs_Discount2(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -438,6 +474,71 @@ export class PricingService {
         };
     }
 
+    public async getTSAsOfMultiPerItem(
+        at: 'OrderCenter' | 'Cart',
+        nameOfItem: string,
+        freeItem?: 'Free',
+        locationInElementsArray?: number,
+        view?: 'LinesView',
+    ): Promise<PriceMultiTsaFields> {
+        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}${view ? view : ''}By${
+            freeItem ? freeItem : ''
+        }ItemName`;
+
+        const PriceMultiAfter1_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceMultiAfter1_Value',
+            nameOfItem,
+        );
+
+        const PriceMultiAfter1_Values = await this.browser.findElements(PriceMultiAfter1_Selector);
+        const PriceMultiAfter1_Value = locationInElementsArray
+            ? await PriceMultiAfter1_Values[locationInElementsArray].getText()
+            : await PriceMultiAfter1_Values[0].getText();
+        console.info(`${nameOfItem} PriceMultiAfter1_Value_Value: `, PriceMultiAfter1_Value);
+
+        const PriceMultiAfter2_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceMultiAfter2_Value',
+            nameOfItem,
+        );
+
+        const PriceMultiAfter2_Values = await this.browser.findElements(PriceMultiAfter2_Selector);
+        const PriceMultiAfter2_Value = locationInElementsArray
+            ? await PriceMultiAfter2_Values[locationInElementsArray].getText()
+            : await PriceMultiAfter2_Values[0].getText();
+        console.info(`${nameOfItem} PriceMultiAfter2_Value: `, PriceMultiAfter2_Value);
+
+        this.browser.sleep(0.1 * 1000);
+        return {
+            PriceMultiAfter1: Number(PriceMultiAfter1_Value.split(' ')[1].trim()),
+            PriceMultiAfter2: Number(PriceMultiAfter2_Value.split(' ')[1].trim()),
+        };
+    }
+
+    public async getTSAsOfPartialPerItem(
+        at: 'OrderCenter' | 'Cart',
+        nameOfItem: string,
+        freeItem?: 'Free',
+        locationInElementsArray?: number,
+        view?: 'LinesView',
+    ): Promise<PricePartialTsaFields> {
+        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}${view ? view : ''}By${
+            freeItem ? freeItem : ''
+        }ItemName`;
+
+        const PricePartial_Selector = this.orderPage[nameOfFunctionToLocateSelector]('PricePartial_Value', nameOfItem);
+
+        const PricePartial_Values = await this.browser.findElements(PricePartial_Selector);
+        const PricePartial_Value = locationInElementsArray
+            ? await PricePartial_Values[locationInElementsArray].getText()
+            : await PricePartial_Values[0].getText();
+        console.info(`${nameOfItem} PricePartial_Value_Value: `, PricePartial_Value);
+
+        this.browser.sleep(0.1 * 1000);
+        return {
+            PricePartial: Number(PricePartial_Value.split(' ')[1].trim()),
+        };
+    }
+
     public async searchInOrderCenter(this: Context, nameOfItem: string, driver: Browser): Promise<void> {
         const orderPage = new OrderPage(driver);
         await orderPage.isSpinnerDone();
@@ -460,6 +561,7 @@ export class PricingService {
     }
 
     public async changeSelectedQuantityOfSpecificItemInOrderCenter(
+        // for calculation of both AOQM fields "&Totals" needs to be added to uomValue
         this: Context,
         uomValue: string,
         nameOfItem: string,

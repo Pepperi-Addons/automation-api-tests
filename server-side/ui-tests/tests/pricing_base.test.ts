@@ -52,7 +52,8 @@ export async function PricingBaseTests(email: string, password: string, client: 
     let accountName: string;
     let base64ImageComponent;
     let duration: string;
-    let ppmVluesEnd: UserDefinedTableRow[];
+    let ppmValues: UserDefinedTableRow[];
+    // let ppmVluesEnd: UserDefinedTableRow[];
 
     const testAccounts = ['Acc01', 'OtherAcc'];
     const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
@@ -99,40 +100,40 @@ export async function PricingBaseTests(email: string, password: string, client: 
             await driver.quit();
         });
 
-        it('inserting valid rules to the UDT "PPM_Values"', async () => {
-            const dataToBatch: {
-                MapDataExternalID: string;
-                MainKey: string;
-                SecondaryKey: string;
-                Values: string[];
-            }[] = [];
-            Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
-                dataToBatch.push({
-                    MapDataExternalID: pricingData.tableName,
-                    MainKey: mainKey,
-                    SecondaryKey: '',
-                    Values: [pricingData.documentsIn_PPM_Values[mainKey]],
-                });
-            });
-            const batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
-            expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
-            console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
-            batchUDTresponse.map((row) => {
-                expect(row).to.have.property('InternalID').that.is.above(0);
-                expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
-                expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
-                expect(row)
-                    .to.have.property('Message')
-                    .that.is.oneOf([
-                        'Row inserted.',
-                        'No changes in this row. The row is being ignored.',
-                        'Row updated.',
-                    ]);
-                expect(row)
-                    .to.have.property('URI')
-                    .that.equals('/user_defined_tables/' + row.InternalID);
-            });
-        });
+        // it('inserting valid rules to the UDT "PPM_Values"', async () => {
+        //     const dataToBatch: {
+        //         MapDataExternalID: string;
+        //         MainKey: string;
+        //         SecondaryKey: string;
+        //         Values: string[];
+        //     }[] = [];
+        //     Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+        //         dataToBatch.push({
+        //             MapDataExternalID: pricingData.tableName,
+        //             MainKey: mainKey,
+        //             SecondaryKey: '',
+        //             Values: [pricingData.documentsIn_PPM_Values[mainKey]],
+        //         });
+        //     });
+        //     const batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
+        //     expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
+        //     console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
+        //     batchUDTresponse.map((row) => {
+        //         expect(row).to.have.property('InternalID').that.is.above(0);
+        //         expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+        //         expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
+        //         expect(row)
+        //             .to.have.property('Message')
+        //             .that.is.oneOf([
+        //                 'Row inserted.',
+        //                 'No changes in this row. The row is being ignored.',
+        //                 'Row updated.',
+        //             ]);
+        //         expect(row)
+        //             .to.have.property('URI')
+        //             .that.equals('/user_defined_tables/' + row.InternalID);
+        //     });
+        // });
 
         it('Login', async function () {
             await webAppLoginPage.login(email, password);
@@ -145,6 +146,52 @@ export async function PricingBaseTests(email: string, password: string, client: 
 
         it('Manual Sync', async () => {
             await webAppHomePage.manualResync(client);
+        });
+
+        it('get UDT Values (PPM_Values)', async () => {
+            ppmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
+            console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
+        });
+
+        it('validating "PPM_Values" via API', async () => {
+            const expectedPPMValuesLength =
+                Object.keys(pricingData.documentsIn_PPM_Values).length + pricingData.dummyPPM_Values_length;
+            console.info(
+                'EXPECTED: Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length: ',
+                expectedPPMValuesLength,
+                'ACTUAL: ppmValues.length: ',
+                ppmValues.length,
+            );
+            addContext(this, {
+                title: `PPM Values Length`,
+                value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
+            });
+            expect(ppmValues.length).equals(expectedPPMValuesLength);
+            Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+                console.info('mainKey: ', mainKey);
+                const matchingRowOfppmValues = ppmValues.find((tableRow) => {
+                    if (tableRow.MainKey === mainKey) {
+                        return tableRow;
+                    }
+                });
+                matchingRowOfppmValues &&
+                    console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
+                console.info(
+                    'ACTUAL: pricingData.documentsIn_PPM_Values[mainKey]: ',
+                    pricingData.documentsIn_PPM_Values[mainKey],
+                );
+                matchingRowOfppmValues &&
+                    addContext(this, {
+                        title: `PPM Value for the Key "${mainKey}"`,
+                        value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${pricingData.documentsIn_PPM_Values[mainKey]}`,
+                    });
+                matchingRowOfppmValues &&
+                    expect(pricingData.documentsIn_PPM_Values[mainKey]).equals(
+                        client.BaseURL.includes('staging')
+                            ? matchingRowOfppmValues['Values'].join()
+                            : matchingRowOfppmValues['Values'][0],
+                    );
+            });
         });
 
         testAccounts.forEach((account) => {
@@ -388,15 +435,15 @@ export async function PricingBaseTests(email: string, password: string, client: 
         });
 
         describe('Cleanup', () => {
-            it('Retrieving "PPM_Values" UDT values via API', async () => {
-                ppmVluesEnd = await objectsService.getUDT({
-                    where: `MapDataExternalID='${pricingData.tableName}'`,
-                    page_size: -1,
-                });
-                expect(ppmVluesEnd.length).equals(
-                    Object.keys(pricingData.documentsIn_PPM_Values).length + pricingData.dummyPPM_Values_length,
-                );
-            });
+            // it('Retrieving "PPM_Values" UDT values via API', async () => {
+            //     ppmVluesEnd = await objectsService.getUDT({
+            //         where: `MapDataExternalID='${pricingData.tableName}'`,
+            //         page_size: -1,
+            //     });
+            //     expect(ppmVluesEnd.length).equals(
+            //         Object.keys(pricingData.documentsIn_PPM_Values).length + pricingData.dummyPPM_Values_length,
+            //     );
+            // });
 
             it('Deleting all Activities', async () => {
                 await webAppHeader.goHome();
@@ -426,68 +473,68 @@ export async function PricingBaseTests(email: string, password: string, client: 
                 }
             });
 
-            it('deleting valid rules from the UDT "PPM_Values"', async () => {
-                const valueObjs: UserDefinedTableRow[] = [];
-                const validPPM_ValuesKeys = Object.keys(pricingData.documentsIn_PPM_Values);
-                const deleteResponses = await Promise.all(
-                    validPPM_ValuesKeys.map(async (validPPM_Key) => {
-                        const valueObj: UserDefinedTableRow | undefined = ppmVluesEnd.find((listing) => {
-                            if (listing.MainKey === validPPM_Key) return listing;
-                        });
-                        console.info(
-                            'validPPM_Key:',
-                            validPPM_Key,
-                            ', validPPM_ValueObj: ',
-                            JSON.stringify(valueObj, null, 2),
-                        );
-                        if (valueObj) {
-                            console.info('valueObj EXIST!');
-                            valueObjs.push(valueObj);
-                            valueObj.Hidden = true;
-                            return await objectsService.postUDT(valueObj);
-                        }
-                    }),
-                );
-                expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
-                deleteResponses.forEach((deleteUDTresponse) => {
-                    console.info(
-                        `${deleteUDTresponse?.MainKey} Delete RESPONSE: `,
-                        JSON.stringify(deleteUDTresponse, null, 2),
-                    );
-                    if (deleteUDTresponse) {
-                        console.info('UDT delete response exist!');
-                        const PPMvalue = pricingData.documentsIn_PPM_Values[deleteUDTresponse.MainKey];
-                        expect(deleteUDTresponse).to.deep.include({
-                            MapDataExternalID: pricingData.tableName,
-                            SecondaryKey: null,
-                            Values: [PPMvalue],
-                        });
-                        expect(deleteUDTresponse).to.have.property('MainKey');
-                        expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
-                        expect(deleteUDTresponse)
-                            .to.have.property('ModificationDateTime')
-                            .that.contains(new Date().toISOString().split('T')[0]);
-                        expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
-                        expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
-                        expect(deleteUDTresponse).to.have.property('InternalID');
-                    }
-                });
-            });
+            // it('deleting valid rules from the UDT "PPM_Values"', async () => {
+            //     const valueObjs: UserDefinedTableRow[] = [];
+            //     const validPPM_ValuesKeys = Object.keys(pricingData.documentsIn_PPM_Values);
+            //     const deleteResponses = await Promise.all(
+            //         validPPM_ValuesKeys.map(async (validPPM_Key) => {
+            //             const valueObj: UserDefinedTableRow | undefined = ppmVluesEnd.find((listing) => {
+            //                 if (listing.MainKey === validPPM_Key) return listing;
+            //             });
+            //             console.info(
+            //                 'validPPM_Key:',
+            //                 validPPM_Key,
+            //                 ', validPPM_ValueObj: ',
+            //                 JSON.stringify(valueObj, null, 2),
+            //             );
+            //             if (valueObj) {
+            //                 console.info('valueObj EXIST!');
+            //                 valueObjs.push(valueObj);
+            //                 valueObj.Hidden = true;
+            //                 return await objectsService.postUDT(valueObj);
+            //             }
+            //         }),
+            //     );
+            //     expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
+            //     deleteResponses.forEach((deleteUDTresponse) => {
+            //         console.info(
+            //             `${deleteUDTresponse?.MainKey} Delete RESPONSE: `,
+            //             JSON.stringify(deleteUDTresponse, null, 2),
+            //         );
+            //         if (deleteUDTresponse) {
+            //             console.info('UDT delete response exist!');
+            //             const PPMvalue = pricingData.documentsIn_PPM_Values[deleteUDTresponse.MainKey];
+            //             expect(deleteUDTresponse).to.deep.include({
+            //                 MapDataExternalID: pricingData.tableName,
+            //                 SecondaryKey: null,
+            //                 Values: [PPMvalue],
+            //             });
+            //             expect(deleteUDTresponse).to.have.property('MainKey');
+            //             expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
+            //             expect(deleteUDTresponse)
+            //                 .to.have.property('ModificationDateTime')
+            //                 .that.contains(new Date().toISOString().split('T')[0]);
+            //             expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
+            //             expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
+            //             expect(deleteUDTresponse).to.have.property('InternalID');
+            //         }
+            //     });
+            // });
 
-            it('performing sync', async () => {
-                await webAppHeader.goHome();
-                driver.sleep(0.2 * 1000);
-                await webAppHomePage.isSpinnerDone();
-                await webAppHomePage.manualResync(client);
-            });
+            // it('performing sync', async () => {
+            //     await webAppHeader.goHome();
+            //     driver.sleep(0.2 * 1000);
+            //     await webAppHomePage.isSpinnerDone();
+            //     await webAppHomePage.manualResync(client);
+            // });
 
-            it('validating "PPM_Values" UDT values via API', async () => {
-                ppmVluesEnd = await objectsService.getUDT({
-                    where: `MapDataExternalID='${pricingData.tableName}'`,
-                    page_size: -1,
-                });
-                expect(ppmVluesEnd.length).equals(pricingData.dummyPPM_Values_length);
-            });
+            // it('validating "PPM_Values" UDT values via API', async () => {
+            //     ppmVluesEnd = await objectsService.getUDT({
+            //         where: `MapDataExternalID='${pricingData.tableName}'`,
+            //         page_size: -1,
+            //     });
+            //     expect(ppmVluesEnd.length).equals(pricingData.dummyPPM_Values_length);
+            // });
         });
     });
 }
