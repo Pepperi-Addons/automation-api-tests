@@ -1999,7 +1999,7 @@ export default class GeneralService {
 
     reportResults(testResultsObj, testedAddonObject) {
         debugger;
-        console.log('Did Test Pass: ' + (testResultsObj.failures.length === 0 ? 'True' : 'False'));
+        console.log('Did Test Pass: ' + (testResultsObj.failures.length === 0 ? 'True √' : 'False X'));
         // console.log('Total Failures: ' + testResultsObj.failures.length);
         // console.log('Total Passes: ' + testResultsObj.passes.length);
         //1. run on all suites
@@ -2048,7 +2048,7 @@ export default class GeneralService {
                 if (testResultsObj.passed) didpass = true;
                 else didpass = false;
             }
-            console.log('Did Test Pass: ' + didpass);
+            console.log('Did Test Pass: ' + `${didpass ? 'True √' : 'False X'}`);
             console.log(' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ');
         }
         if (testResultsObj.tests)
