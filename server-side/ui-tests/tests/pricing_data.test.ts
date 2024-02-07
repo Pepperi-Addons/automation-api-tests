@@ -3,7 +3,7 @@ import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { ObjectsService } from '../../services';
+// import { ObjectsService } from '../../services';
 // import { PricingData } from '../pom/addons/Pricing';
 // import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingData05 } from '../pom/addons/Pricing05';
@@ -15,17 +15,17 @@ chai.use(promised);
 export async function PricingDataPrep(varPass: string, client: Client) {
     const dateTime = new Date();
     const generalService = new GeneralService(client);
-    const objectsService = new ObjectsService(generalService);
-    const tableName = 'PPM_Values';
+    // const objectsService = new ObjectsService(generalService);
+    // const tableName = 'PPM_Values';
     // const dummyPPMvalue = '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]';
     let installedPricingVersion;
     let pricingData;
     // const dummyPPM_ValuesKeys: any[] = [];
-    const dummyPPM_Values_length = 49999;
-    let batchUDTresponse: any;
+    // const dummyPPM_Values_length = 49999;
+    // let batchUDTresponse: any;
     // let dummyBatchUDTresponse: any;
     // let deleteUDTresponse: any;
-    let initialPpmValues: any;
+    // let initialPpmValues: any;
     // let dummyDataToBatch: {
     //     MapDataExternalID: string;
     //     MainKey: string;
@@ -145,41 +145,41 @@ export async function PricingDataPrep(varPass: string, client: Client) {
         //     // pricingData = new PricingData05();
         // });
 
-        it('inserting valid rules to the UDT "PPM_Values"', async () => {
-            // const tableName = 'PPM_Values';
-            const dataToBatch: {
-                MapDataExternalID: string;
-                MainKey: string;
-                SecondaryKey: string;
-                Values: string[];
-            }[] = [];
-            Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
-                dataToBatch.push({
-                    MapDataExternalID: tableName,
-                    MainKey: mainKey,
-                    SecondaryKey: '',
-                    Values: [pricingData.documentsIn_PPM_Values[mainKey]],
-                });
-            });
-            batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
-            expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
-            console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
-            batchUDTresponse.map((row) => {
-                expect(row).to.have.property('InternalID').that.is.above(0);
-                expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
-                expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
-                expect(row)
-                    .to.have.property('Message')
-                    .that.is.oneOf([
-                        'Row inserted.',
-                        'No changes in this row. The row is being ignored.',
-                        'Row updated.',
-                    ]);
-                expect(row)
-                    .to.have.property('URI')
-                    .that.equals('/user_defined_tables/' + row.InternalID);
-            });
-        });
+        // it('inserting valid rules to the UDT "PPM_Values"', async () => {
+        //     // const tableName = 'PPM_Values';
+        //     const dataToBatch: {
+        //         MapDataExternalID: string;
+        //         MainKey: string;
+        //         SecondaryKey: string;
+        //         Values: string[];
+        //     }[] = [];
+        //     Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+        //         dataToBatch.push({
+        //             MapDataExternalID: tableName,
+        //             MainKey: mainKey,
+        //             SecondaryKey: '',
+        //             Values: [pricingData.documentsIn_PPM_Values[mainKey]],
+        //         });
+        //     });
+        //     batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
+        //     expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
+        //     console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
+        //     batchUDTresponse.map((row) => {
+        //         expect(row).to.have.property('InternalID').that.is.above(0);
+        //         expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+        //         expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
+        //         expect(row)
+        //             .to.have.property('Message')
+        //             .that.is.oneOf([
+        //                 'Row inserted.',
+        //                 'No changes in this row. The row is being ignored.',
+        //                 'Row updated.',
+        //             ]);
+        //         expect(row)
+        //             .to.have.property('URI')
+        //             .that.equals('/user_defined_tables/' + row.InternalID);
+        //     });
+        // });
 
         // The following code uses for ONE-TIME insertion of values to PPM_Values UDT
 
@@ -218,53 +218,53 @@ export async function PricingDataPrep(varPass: string, client: Client) {
         //     // }
         // });
 
-        it('get UDT Values (PPM_Values)', async () => {
-            initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
-            // console.info('PPM_Values: ', JSON.stringify(initialPpmValues, null, 2));
-            console.info('PPM_Values Length: ', JSON.stringify(initialPpmValues.length, null, 2));
-        });
+        // it('get UDT Values (PPM_Values)', async () => {
+        //     initialPpmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
+        //     // console.info('PPM_Values: ', JSON.stringify(initialPpmValues, null, 2));
+        //     console.info('PPM_Values Length: ', JSON.stringify(initialPpmValues.length, null, 2));
+        // });
 
-        it('validating "PPM_Values" via API', async () => {
-            console.info('BASE URL: ', client.BaseURL);
-            // debugger
-            // console.info(
-            //     'EXPECTED: Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length: ',
-            //     Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length,
-            // );
-            console.info(
-                'EXPECTED: Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length: ',
-                Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
-            );
-            console.info('ACTUAL: initialPpmValues.length: ', initialPpmValues.length);
-            // expect(initialPpmValues.length).equals(
-            //     Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length,
-            // );
-            expect(initialPpmValues.length).equals(
-                Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
-            );
-            Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
-                console.info('mainKey: ', mainKey);
-                const matchingRowOfinitialPpmValues = initialPpmValues.find((tableRow) => {
-                    if (tableRow.MainKey === mainKey) {
-                        return tableRow;
-                    }
-                });
-                console.info('EXPECTED: matchingRowOfinitialPpmValues: ', matchingRowOfinitialPpmValues['Values'][0]);
-                console.info(
-                    'ACTUAL: pricingData.documentsIn_PPM_Values[mainKey]: ',
-                    pricingData.documentsIn_PPM_Values[mainKey],
-                );
-                expect(pricingData.documentsIn_PPM_Values[mainKey]).equals(
-                    client.BaseURL.includes('staging')
-                        ? matchingRowOfinitialPpmValues['Values'].join()
-                        : matchingRowOfinitialPpmValues['Values'][0],
-                );
-            });
+        // it('validating "PPM_Values" via API', async () => {
+        //     console.info('BASE URL: ', client.BaseURL);
+        //     // debugger
+        //     // console.info(
+        //     //     'EXPECTED: Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length: ',
+        //     //     Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length,
+        //     // );
+        //     console.info(
+        //         'EXPECTED: Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length: ',
+        //         Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
+        //     );
+        //     console.info('ACTUAL: initialPpmValues.length: ', initialPpmValues.length);
+        //     // expect(initialPpmValues.length).equals(
+        //     //     Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length,
+        //     // );
+        //     expect(initialPpmValues.length).equals(
+        //         Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
+        //     );
+        //     Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+        //         console.info('mainKey: ', mainKey);
+        //         const matchingRowOfinitialPpmValues = initialPpmValues.find((tableRow) => {
+        //             if (tableRow.MainKey === mainKey) {
+        //                 return tableRow;
+        //             }
+        //         });
+        //         console.info('EXPECTED: matchingRowOfinitialPpmValues: ', matchingRowOfinitialPpmValues['Values'][0]);
+        //         console.info(
+        //             'ACTUAL: pricingData.documentsIn_PPM_Values[mainKey]: ',
+        //             pricingData.documentsIn_PPM_Values[mainKey],
+        //         );
+        //         expect(pricingData.documentsIn_PPM_Values[mainKey]).equals(
+        //             client.BaseURL.includes('staging')
+        //                 ? matchingRowOfinitialPpmValues['Values'].join()
+        //                 : matchingRowOfinitialPpmValues['Values'][0],
+        //         );
+        //     });
 
-            // initialPpmValues.forEach((tableRow) => {
-            //     expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
-            // });
-        });
+        //     // initialPpmValues.forEach((tableRow) => {
+        //     //     expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
+        //     // });
+        // });
 
         // it('deleting dummy rules from the UDT "PPM_Values"', async () => {
         //     generalService.sleep(5 * 1000);

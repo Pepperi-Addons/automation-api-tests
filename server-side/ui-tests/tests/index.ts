@@ -57,6 +57,10 @@ import { StorybookTextboxTests } from './storybook/storybook_textbox.test';
 import { NeltPerformanceTests } from './Nelt_performance/nelt_performance.test';
 import { PricingPartialValueTests } from './pricing_partial_value.test';
 import { PricingExclusionTests } from './pricing_exclusion.test';
+import { PricingAddonsUpsert } from './pricing_addons_installation.test';
+import { PricingConfigUpload } from './pricing_configuration_upload.test';
+import { PricingUdtCleanup } from './pricing_udt_cleanup.test';
+import { PricingUdtInsertion } from './pricing_udt_insertion.test';
 
 export {
     LoginTests,
@@ -80,17 +84,21 @@ export {
     VFdataPrep,
     MockTest,
     SurveyTests,
+    PricingAddonsUpsert,
+    PricingConfigUpload,
+    PricingUdtInsertion,
+    PricingDataPrep,
+    Pricing06DataPrep,
     PricingTests,
     PricingBaseTests,
     PricingAdditionalGroupsReadonlyTests,
-    PricingDataPrep,
     Pricing06Tests,
     PricingUomTests,
     PricingTotalsTests,
     PricingMultipleValuesTests,
     PricingPartialValueTests,
     PricingExclusionTests,
-    Pricing06DataPrep,
+    PricingUdtCleanup,
     ResourceListAbiTests,
     InstallationsTest,
     StorybookAttachmentTests,

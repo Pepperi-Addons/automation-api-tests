@@ -278,6 +278,33 @@ export class PricingService {
         };
     }
 
+    public async getItemNPMCalcMessage(
+        at: 'OrderCenter' | 'Cart',
+        nameOfItem: string,
+        freeItem?: 'Free',
+        locationInElementsArray?: number,
+        view?: 'LinesView',
+    ): Promise<{ NPMCalcMessage: [any] }> {
+        const nameOfFunctionToLocateSelector = `getSelectorOfCustomFieldIn${at}${view ? view : ''}By${
+            freeItem ? freeItem : ''
+        }ItemName`;
+        const NPMCalcMessage_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'NPMCalcMessage_Value',
+            nameOfItem,
+        );
+        const NPMCalcMessage_Elements = await this.browser.findElements(NPMCalcMessage_Selector);
+        const NPMCalcMessage_Element = locationInElementsArray
+            ? NPMCalcMessage_Elements[locationInElementsArray]
+            : NPMCalcMessage_Elements[0];
+        const NPMCalcMessage_Value = await NPMCalcMessage_Element.getText();
+        console.info(`${nameOfItem} NPMCalcMessage_Value: `, NPMCalcMessage_Value);
+
+        this.browser.sleep(0.1 * 1000);
+        return {
+            NPMCalcMessage: JSON.parse(NPMCalcMessage_Value),
+        };
+    }
+
     public async getItemTSAs_Discount2(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
