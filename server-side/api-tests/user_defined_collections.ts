@@ -1312,6 +1312,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
                 expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
                 expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
+                console.log(`URL TO CSV TEMP FILE -- BASIC IMPORT (step1): ${tempFileResponse.TemporaryFileURL}`);
                 const csvFileName = await createInitalData(howManyRows);
                 const localPath = __dirname;
                 const combinedPath = path.join(localPath, csvFileName);
@@ -1396,6 +1397,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(tempFileNewResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
                 expect(tempFileNewResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
                 expect(tempFileNewResponse.TemporaryFileURL).to.include('pfs.');
+                console.log(
+                    `URL TO CSV TEMP FILE -- OVERWRITE IMPORT (step2): ${tempFileNewResponse.TemporaryFileURL}`,
+                );
                 const howManyOld = 98000;
                 const howManyUpdated = 1000;
                 howManyNewRowsOnOverwrite = 1000;

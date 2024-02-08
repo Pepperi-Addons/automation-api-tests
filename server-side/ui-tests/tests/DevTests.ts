@@ -794,7 +794,7 @@ export class DevTest {
         await this.reportBuildEnded();
         const users = await this.resolveUserPerTest2();
         const userMails = users.map((user) => user.email);
-        const stringUsers = userMails.join(',');
+        const stringUsers = userMails.join(', ');
         const uniqFailingEnvs = [...new Set(this.devFailedEnvs.map((env) => env.toUpperCase()))];
         const message = `Dev Test: ${this.addonName} - (${this.addonUUID}), Version:${
             this.addonVersion
@@ -803,31 +803,35 @@ export class DevTest {
         } ${
             this.devFailedEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')
         },<br>Link: ${jenkinsLink}`;
-        const message2 = `${
+        const failedTestsDesc = `${
+            this.failedSuitesProd.length === 0 && this.failedSuitesEU.length === 0 && this.failedSuitesSB.length === 0
+                ? ''
+                : 'FAILED TESTS AND EXECUTION UUIDS:<br>'
+        }${
             this.failedSuitesProd.length === 0
                 ? ''
-                : 'FAILED TESTS AND EXECUTION UUIDS:<br>PROD:' +
+                : `PROD User: ${await this.getProdUserEmail()}<br>Failed Prod Tests:<br>` +
                   this.failedSuitesProd.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
         }${
             this.failedSuitesEU.length === 0
                 ? ''
-                : ',<br>EU:' + this.failedSuitesEU.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+                : `,EU User: ${await this.getEuUserEmail()}<br>Failed EU Tests:` +
+                  this.failedSuitesEU.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
         }${
             this.failedSuitesSB.length === 0
                 ? ''
-                : ',<br>SB:' + this.failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+                : `,SB User: ${await this.getSbUserEmail()}<br>Failed SB Tests` +
+                  this.failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
         }`;
         const bodyToSend = {
-            Name: `${this.addonName} Dev Test Result Status`,
+            Name: `The Results Of Intergration Tests Written By Developer For ${this.addonName} - (${this.addonUUID}), Version: ${this.addonVersion}`,
             Description: message,
-            Status: this.devPassingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
-            Message: message2 === '' ? '~' : message2,
+            Status: this.devPassingEnvs.length < 3 ? 'FAILED' : 'PASSED',
+            Message: failedTestsDesc === '' ? '~' : failedTestsDesc,
             UserWebhook: await this.handleTeamsURL(this.addonName),
         };
         console.log(
-            `####################### Dev Tests Results: ${this.addonName}, On Version ${this.addonVersion} Has ${
-                bodyToSend.Status === 'ERROR' ? 'FAILED' : 'PASSED'
-            } #######################`,
+            `####################### Dev Tests Results: ${this.addonName}, On Version ${this.addonVersion} Has ${bodyToSend.Status} #######################`,
         );
         if (bodyToSend.Message !== '~') {
             console.log(`####################### FAILED TESTS:\n ${bodyToSend.Message}`);

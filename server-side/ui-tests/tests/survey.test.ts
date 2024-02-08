@@ -306,7 +306,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 expect(latestSurveyTemp.Active).to.equal(true);
                 expect(latestSurveyTemp.Hidden).to.equal(false);
                 expect(latestSurveyTemp).to.haveOwnProperty('Key');
-                // expect(latestSurveyTemp.CreationDateTime).to.include(false);
                 expect(latestSurveyTemp.Description).to.equal(surveyTemplateDesc);
                 expect(latestSurveyTemp.Name).to.equal(surveyTemplateName);
                 const surveyTempSections = surveyTemplateResponse.Body[0].Sections;
@@ -506,6 +505,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     await webAppHomePage.manualResync(client);
                 }
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slideshowSlugDisplayName);
+                debugger;
             });
         });
         describe('UI Test Configured Survey: Admin, Rep, Buyer', () => {
@@ -566,6 +566,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const allQuestionPositiveAns = [['A', 'C'], 'B', 'short Text12', ['1', '2'], 'Yes', '.123', '1/1/2022'];
                 const surveyFiller = new SurveyFiller(driver);
                 const surveyKey = await surveyFiller.getKeyOfSurveyFromURL();
+                debugger;
                 for (let index = 0; index < allQuestionNames.length; index++) {
                     const currentQuestionName = allQuestionNames[index];
                     const currentQuestionType = allQuestionTypes[index];

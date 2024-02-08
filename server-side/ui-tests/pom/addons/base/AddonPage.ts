@@ -130,9 +130,7 @@ export class AddonPage extends Page {
     }
 
     public async getKeyOfSurveyFromURL(): Promise<string> {
-        const currentUrl = (await this.browser.getCurrentUrl()).split('survey_key=');
-        const currentUrlSpilt = currentUrl[1].split('&blocksState=');
-        return currentUrlSpilt[0];
+        return await this.getUrlParamValue('survey_key');
     }
 
     public async isEditorTabVisible(tabID: string, waitUntil = 15000): Promise<boolean> {
