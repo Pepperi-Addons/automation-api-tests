@@ -794,7 +794,7 @@ export class DevTest {
         await this.reportBuildEnded();
         const users = await this.resolveUserPerTest2();
         const userMails = users.map((user) => user.email);
-        const stringUsers = userMails.join(',');
+        const stringUsers = userMails.join(', ');
         const uniqFailingEnvs = [...new Set(this.devFailedEnvs.map((env) => env.toUpperCase()))];
         const message = `Dev Test: ${this.addonName} - (${this.addonUUID}), Version:${
             this.addonVersion
@@ -804,9 +804,13 @@ export class DevTest {
             this.devFailedEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')
         },<br>Link: ${jenkinsLink}`;
         const message2 = `${
+            this.failedSuitesProd.length === 0 || this.failedSuitesEU.length === 0 || this.failedSuitesSB.length === 0
+                ? ''
+                : 'FAILED TESTS AND EXECUTION UUIDS:<br>'
+        }${
             this.failedSuitesProd.length === 0
                 ? ''
-                : 'FAILED TESTS AND EXECUTION UUIDS:<br>PROD:' +
+                : ',<br>PROD:' +
                   this.failedSuitesProd.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
         }${
             this.failedSuitesEU.length === 0
@@ -818,9 +822,11 @@ export class DevTest {
                 : ',<br>SB:' + this.failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
         }`;
         const bodyToSend = {
-            Name: `${this.addonName} Dev Test Result Status`,
+            Name: `The Results Of Intergration Tests Written By Developer For ${this.addonName} - (${this.addonUUID}), Version: ${this.addonVersion}`,
+            Status:
+                'Intergration Tests Written By Developer Have: ' +
+                (this.devPassingEnvs.length < 3 ? 'FAILED' : 'PASSED'),
             Description: message,
-            Status: this.devPassingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
             Message: message2 === '' ? '~' : message2,
             UserWebhook: await this.handleTeamsURL(this.addonName),
         };
