@@ -803,7 +803,7 @@ export class DevTest {
         } ${
             this.devFailedEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')
         },<br>Link: ${jenkinsLink}`;
-        const message2 = `${
+        const failedTestsDesc = `${
             this.failedSuitesProd.length === 0 && this.failedSuitesEU.length === 0 && this.failedSuitesSB.length === 0
                 ? ''
                 : 'FAILED TESTS AND EXECUTION UUIDS:<br>'
@@ -825,17 +825,13 @@ export class DevTest {
         }`;
         const bodyToSend = {
             Name: `The Results Of Intergration Tests Written By Developer For ${this.addonName} - (${this.addonUUID}), Version: ${this.addonVersion}`,
-            Status:
-                'Intergration Tests Written By Developer Have: ' +
-                (this.devPassingEnvs.length < 3 ? 'FAILED' : 'PASSED'),
             Description: message,
-            Message: message2 === '' ? '~' : message2,
+            Status: this.devPassingEnvs.length < 3 ? 'FAILED' : 'PASSED',
+            Message: failedTestsDesc === '' ? '~' : failedTestsDesc,
             UserWebhook: await this.handleTeamsURL(this.addonName),
         };
         console.log(
-            `####################### Dev Tests Results: ${this.addonName}, On Version ${this.addonVersion} Has ${
-                bodyToSend.Status === 'ERROR' ? 'FAILED' : 'PASSED'
-            } #######################`,
+            `####################### Dev Tests Results: ${this.addonName}, On Version ${this.addonVersion} Has ${bodyToSend.Status} #######################`,
         );
         if (bodyToSend.Message !== '~') {
             console.log(`####################### FAILED TESTS:\n ${bodyToSend.Message}`);
