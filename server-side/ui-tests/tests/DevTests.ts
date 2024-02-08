@@ -804,7 +804,7 @@ export class DevTest {
             this.devFailedEnvs.length === 0 ? '' : 'Failed On: ' + uniqFailingEnvs.join(', ')
         },<br>Link: ${jenkinsLink}`;
         const message2 = `${
-            this.failedSuitesProd.length === 0 || this.failedSuitesEU.length === 0 || this.failedSuitesSB.length === 0
+            this.failedSuitesProd.length === 0 && this.failedSuitesEU.length === 0 && this.failedSuitesSB.length === 0
                 ? ''
                 : 'FAILED TESTS AND EXECUTION UUIDS:<br>'
         }${
