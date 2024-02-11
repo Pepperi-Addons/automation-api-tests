@@ -1398,6 +1398,3 @@ export class DevTest {
         return arrayOfAllUUIDs;
     }
 }
-
-
-//can I push to github? can I now?
