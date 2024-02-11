@@ -1,26 +1,45 @@
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../../services/general.service';
+import GeneralService from '../../../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
-import { Browser } from '../../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../pom';
-import { OrderPage } from '../../pom/Pages/OrderPage';
-import { PricingService } from '../../../services/pricing.service';
-import { PricingData06 } from '../../pom/addons/PricingData06';
+import { Browser } from '../../../utilities/browser';
+import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../../pom';
+import { OrderPage } from '../../../pom/Pages/OrderPage';
+import { PricingService } from '../../../../services/pricing.service';
+import { PricingData06 } from '../../../pom/addons/PricingData06';
+import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
+import { ObjectsService } from '../../../../services';
+import PricingRules from '../../../pom/addons/PricingRules';
 
 chai.use(promised);
 
 export async function PricingPartialValueTests(email: string, password: string, client: Client) {
     const dateTime = new Date();
     const generalService = new GeneralService(client);
+    const objectsService = new ObjectsService(generalService);
+    const pricingData = new PricingData06();
+    const pricingRules = new PricingRules();
+
     const installedPricingVersion = (await generalService.getInstalledAddons()).find(
         (addon) => addon.Addon.Name == 'pricing',
     )?.Version;
     const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
-    const pricingData = new PricingData06();
+
+    let ppmValues_content;
+    switch (installedPricingVersion) {
+        // case '6':
+        //     console.info('AT installedPricingVersion CASE 6');
+        //     ppmValues_content = pricingRules.version06;
+        //     break;
+
+        default:
+            console.info('AT installedPricingVersion Default');
+            ppmValues_content = pricingRules.version06;
+            break;
+    }
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -34,6 +53,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
     let transactionUUID_Acc01: string;
     let accountName: string;
     let duration: string;
+    let ppmValues: UserDefinedTableRow[];
     let base64ImageComponent;
 
     const account = 'Acc01';
@@ -88,6 +108,49 @@ export async function PricingPartialValueTests(email: string, password: string, 
 
             it('Manual Sync', async () => {
                 await webAppHomePage.manualResync(client);
+            });
+
+            it('get UDT Values (PPM_Values)', async () => {
+                ppmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
+                console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
+            });
+
+            it('validating "PPM_Values" via API', async () => {
+                const expectedPPMValuesLength =
+                    Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length;
+                console.info(
+                    'EXPECTED: Object.keys(ppmValues_content).length + dummyPPM_ValuesKeys.length: ',
+                    expectedPPMValuesLength,
+                    'ACTUAL: ppmValues.length: ',
+                    ppmValues.length,
+                );
+                addContext(this, {
+                    title: `PPM Values Length`,
+                    value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
+                });
+                expect(ppmValues.length).equals(expectedPPMValuesLength);
+                Object.keys(ppmValues_content).forEach((mainKey) => {
+                    console.info('mainKey: ', mainKey);
+                    const matchingRowOfppmValues = ppmValues.find((tableRow) => {
+                        if (tableRow.MainKey === mainKey) {
+                            return tableRow;
+                        }
+                    });
+                    matchingRowOfppmValues &&
+                        console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
+                    console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
+                    matchingRowOfppmValues &&
+                        addContext(this, {
+                            title: `PPM Value for the Key "${mainKey}"`,
+                            value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${ppmValues_content[mainKey]}`,
+                        });
+                    matchingRowOfppmValues &&
+                        expect(ppmValues_content[mainKey]).equals(
+                            client.BaseURL.includes('staging')
+                                ? matchingRowOfppmValues['Values'].join()
+                                : matchingRowOfppmValues['Values'][0],
+                        );
+                });
             });
 
             // testAccounts.forEach((account) => {

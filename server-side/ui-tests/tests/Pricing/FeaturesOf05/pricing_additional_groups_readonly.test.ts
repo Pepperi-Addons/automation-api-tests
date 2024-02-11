@@ -1,17 +1,18 @@
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../../services/general.service';
+import GeneralService from '../../../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
-import { Browser } from '../../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../pom';
-import { ObjectsService } from '../../../services';
-import { OrderPage } from '../../pom/Pages/OrderPage';
-import { PricingData05 } from '../../pom/addons/PricingData05';
-import { PricingData06 } from '../../pom/addons/PricingData06';
+import { Browser } from '../../../utilities/browser';
+import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../../pom';
+import { ObjectsService } from '../../../../services';
+import { OrderPage } from '../../../pom/Pages/OrderPage';
+import { PricingData05 } from '../../../pom/addons/PricingData05';
+import { PricingData06 } from '../../../pom/addons/PricingData06';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
-import { PricingService } from '../../../services/pricing.service';
+import { PricingService } from '../../../../services/pricing.service';
+import PricingRules from '../../../pom/addons/PricingRules';
 
 interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;
@@ -33,6 +34,19 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
     const pricingData = installedPricingVersion === '5' ? new PricingData05() : new PricingData06();
+    const pricingRules = new PricingRules();
+    let ppmValues_content;
+    switch (installedPricingVersion) {
+        case '5':
+            console.info('AT installedPricingVersion CASE 5');
+            ppmValues_content = pricingRules.version05;
+            break;
+
+        default:
+            console.info('AT installedPricingVersion Default');
+            ppmValues_content = pricingRules.version06;
+            break;
+    }
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -2084,7 +2098,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                         });
                         it('changing value of group discount rule in "PPM_Values" UDT', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
-                                MapDataExternalID: pricingData.tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
                                 SecondaryKey: '',
                                 Values: [
@@ -2092,7 +2106,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                 ],
                             });
                             expect(updatedUDTRowPOST).to.deep.include({
-                                MapDataExternalID: pricingData.tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
                                 SecondaryKey: null,
                                 Values: [
@@ -2109,7 +2123,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                         });
                         it('changing value of additional item rule in "PPM_Values" UDT', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
-                                MapDataExternalID: pricingData.tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZDS3@A001@Drug0004',
                                 SecondaryKey: '',
                                 Values: [
@@ -2117,7 +2131,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                 ],
                             });
                             expect(updatedUDTRowPOST).to.deep.include({
-                                MapDataExternalID: pricingData.tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZDS3@A001@Drug0004',
                                 SecondaryKey: null,
                                 Values: [
@@ -2140,15 +2154,14 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                         });
                         it('validating "PPM_Values" UDT values via API', async () => {
                             const updatedUDT = await objectsService.getUDT({
-                                where: "MapDataExternalID='" + pricingData.tableName + "'",
+                                where: "MapDataExternalID='" + pricingRules.tableName + "'",
                                 page_size: -1,
                             });
                             console.info('updatedUDT: ', updatedUDT);
                             expect(updatedUDT)
                                 .to.be.an('array')
                                 .with.lengthOf(
-                                    Object.keys(pricingData.documentsIn_PPM_Values).length +
-                                        pricingData.dummyPPM_Values_length,
+                                    Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length,
                                 );
                             // Add verification tests
                         });
@@ -2444,7 +2457,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                     describe('Reset', () => {
                         it('reverting value of group discount rule in "PPM_Values" UDT to the original value', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
-                                MapDataExternalID: pricingData.tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
                                 SecondaryKey: '',
                                 Values: [
@@ -2452,7 +2465,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                 ],
                             });
                             expect(updatedUDTRowPOST).to.deep.include({
-                                MapDataExternalID: pricingData.tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
                                 SecondaryKey: null,
                                 Values: [
@@ -2469,7 +2482,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                         });
                         it('reverting value of additional item rule in "PPM_Values" UDT to the original value', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
-                                MapDataExternalID: pricingData.tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZDS3@A001@Drug0004',
                                 SecondaryKey: '',
                                 Values: [
@@ -2477,7 +2490,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                 ],
                             });
                             expect(updatedUDTRowPOST).to.deep.include({
-                                MapDataExternalID: pricingData.tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZDS3@A001@Drug0004',
                                 SecondaryKey: null,
                                 Values: [
@@ -2500,15 +2513,14 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                         });
                         it('validating "PPM_Values" UDT values via API', async () => {
                             ppmVluesEnd = await objectsService.getUDT({
-                                where: `MapDataExternalID='${pricingData.tableName}'`,
+                                where: `MapDataExternalID='${pricingRules.tableName}'`,
                                 page_size: -1,
                             });
                             expect(ppmVluesEnd.length).equals(
-                                Object.keys(pricingData.documentsIn_PPM_Values).length +
-                                    pricingData.dummyPPM_Values_length,
+                                Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length,
                             );
                             // ppmVluesEnd.forEach((tableRow) => {  // needs to be converted
-                            //     expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
+                            //     expect(tableRow['Values'][0]).equals(ppmValues_content[tableRow.MainKey]);
                             // });
                         });
                     });

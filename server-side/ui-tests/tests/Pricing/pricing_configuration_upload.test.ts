@@ -65,6 +65,15 @@ export async function PricingConfigUpload(client: Client, email: string, passwor
             it('Manual Sync', async () => {
                 await webAppHomePage.manualResync(client);
             });
+
+            it('Logout', async function () {
+                await webAppLoginPage.logout();
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Logged out`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
         });
     });
 

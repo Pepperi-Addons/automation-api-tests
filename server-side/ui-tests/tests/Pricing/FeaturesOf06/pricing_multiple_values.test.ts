@@ -1,16 +1,17 @@
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../../services/general.service';
+import GeneralService from '../../../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
-import { Browser } from '../../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../pom';
-import { ObjectsService } from '../../../services';
-import { OrderPage } from '../../pom/Pages/OrderPage';
-import { PricingService } from '../../../services/pricing.service';
-import { PricingData06 } from '../../pom/addons/PricingData06';
+import { Browser } from '../../../utilities/browser';
+import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../../pom';
+import { ObjectsService } from '../../../../services';
+import { OrderPage } from '../../../pom/Pages/OrderPage';
+import { PricingService } from '../../../../services/pricing.service';
+import { PricingData06 } from '../../../pom/addons/PricingData06';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
+import PricingRules from '../../../pom/addons/PricingRules';
 
 chai.use(promised);
 
@@ -24,6 +25,19 @@ export async function PricingMultipleValuesTests(email: string, password: string
     const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
     const pricingData = new PricingData06();
+    const pricingRules = new PricingRules();
+    let ppmValues_content;
+    switch (installedPricingVersion) {
+        // case '6':
+        //     console.info('AT installedPricingVersion CASE 6');
+        //     ppmValues_content = pricingRules.version06;
+        //     break;
+
+        default:
+            console.info('AT installedPricingVersion Default');
+            ppmValues_content = pricingRules.version06;
+            break;
+    }
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -148,9 +162,9 @@ export async function PricingMultipleValuesTests(email: string, password: string
 
             it('validating "PPM_Values" via API', async () => {
                 const expectedPPMValuesLength =
-                    Object.keys(pricingData.documentsIn_PPM_Values).length + pricingData.dummyPPM_Values_length;
+                    Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length;
                 console.info(
-                    'EXPECTED: Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length: ',
+                    'EXPECTED: Object.keys(ppmValues_content).length + dummyPPM_ValuesKeys.length: ',
                     expectedPPMValuesLength,
                     'ACTUAL: ppmValues.length: ',
                     ppmValues.length,
@@ -160,7 +174,7 @@ export async function PricingMultipleValuesTests(email: string, password: string
                     value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
                 });
                 expect(ppmValues.length).equals(expectedPPMValuesLength);
-                Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+                Object.keys(ppmValues_content).forEach((mainKey) => {
                     console.info('mainKey: ', mainKey);
                     const matchingRowOfppmValues = ppmValues.find((tableRow) => {
                         if (tableRow.MainKey === mainKey) {
@@ -169,17 +183,14 @@ export async function PricingMultipleValuesTests(email: string, password: string
                     });
                     matchingRowOfppmValues &&
                         console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
-                    console.info(
-                        'ACTUAL: pricingData.documentsIn_PPM_Values[mainKey]: ',
-                        pricingData.documentsIn_PPM_Values[mainKey],
-                    );
+                    console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                     matchingRowOfppmValues &&
                         addContext(this, {
                             title: `PPM Value for the Key "${mainKey}"`,
-                            value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${pricingData.documentsIn_PPM_Values[mainKey]}`,
+                            value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${ppmValues_content[mainKey]}`,
                         });
                     matchingRowOfppmValues &&
-                        expect(pricingData.documentsIn_PPM_Values[mainKey]).equals(
+                        expect(ppmValues_content[mainKey]).equals(
                             client.BaseURL.includes('staging')
                                 ? matchingRowOfppmValues['Values'].join()
                                 : matchingRowOfppmValues['Values'][0],
