@@ -29,6 +29,7 @@ import { SurveyPicker } from '../pom/addons/SurveyPicker';
 import { SurveyFiller } from '../pom/addons/SurveyFiller';
 import { UDCService } from '../../services/user-defined-collections.service';
 import { ObjectsService } from '../../services/objects.service';
+import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
@@ -566,6 +567,11 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const allQuestionPositiveAns = [['A', 'C'], 'B', 'short Text12', ['1', '2'], 'Yes', '.123', '1/1/2022'];
                 const surveyFiller = new SurveyFiller(driver);
                 const surveyKey = await surveyFiller.getKeyOfSurveyFromURL();
+                console.log(`################ SURVEY KEY: Admin ===>>>> ${surveyUUID} ########`);
+                addContext(this, {
+                    title: `SURVEY KEY => ${surveyUUID}`,
+                    value: 'NONE',
+                });
                 debugger;
                 for (let index = 0; index < allQuestionNames.length; index++) {
                     const currentQuestionName = allQuestionNames[index];
@@ -676,6 +682,11 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const allQuestionPositiveAns = [['A', 'C'], 'B', 'short Text12', ['1', '2'], 'Yes', '.123', '1/1/2022'];
                 const surveyFiller = new SurveyFiller(driver);
                 const surveyKey = await surveyFiller.getKeyOfSurveyFromURL();
+                console.log(`################ SURVEY KEY: Rep ===>>>> ${surveyUUID} ########`);
+                addContext(this, {
+                    title: `SURVEY KEY => ${surveyUUID}`,
+                    value: 'NONE',
+                });
                 for (let index = 0; index < allQuestionNames.length; index++) {
                     const currentQuestionName = allQuestionNames[index];
                     const currentQuestionType = allQuestionTypes[index];
@@ -785,6 +796,11 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const allQuestionPositiveAns = [['A', 'C'], 'B', 'short Text12', ['1', '2'], 'Yes', '.123', '1/1/2022'];
                 const surveyFiller = new SurveyFiller(driver);
                 const surveyKey = await surveyFiller.getKeyOfSurveyFromURL();
+                console.log(`################ SURVEY KEY: Buyer ===>>>> ${surveyUUID} ########`);
+                addContext(this, {
+                    title: `SURVEY KEY => ${surveyUUID}`,
+                    value: 'NONE',
+                });
                 for (let index = 0; index < allQuestionNames.length; index++) {
                     const currentQuestionName = allQuestionNames[index];
                     const currentQuestionType = allQuestionTypes[index];
