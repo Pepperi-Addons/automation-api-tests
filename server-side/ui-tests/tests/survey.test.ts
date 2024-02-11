@@ -29,6 +29,7 @@ import { SurveyPicker } from '../pom/addons/SurveyPicker';
 import { SurveyFiller } from '../pom/addons/SurveyFiller';
 import { UDCService } from '../../services/user-defined-collections.service';
 import { ObjectsService } from '../../services/objects.service';
+import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
@@ -287,6 +288,11 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     surveyTemplateDesc,
                     surveyTemplateToCreate,
                 );
+                console.log(`################ SURVEY KEY ===>>>> ${surveyUUID} ########`);
+                addContext(this, {
+                    title: `SURVEY KEY => ${surveyUUID}`,
+                    value: 'NONE',
+                });
                 const webAppHeader = new WebAppHeader(driver);
                 await webAppHeader.goHome();
                 driver.sleep(8000);
