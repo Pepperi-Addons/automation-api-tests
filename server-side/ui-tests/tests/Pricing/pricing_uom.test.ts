@@ -1,14 +1,14 @@
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../services/general.service';
+import GeneralService from '../../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
-import { Browser } from '../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../pom';
-import { OrderPage } from '../pom/Pages/OrderPage';
-import { PricingService } from '../../services/pricing.service';
-import { PricingData06 } from '../pom/addons/Pricing06';
+import { Browser } from '../../utilities/browser';
+import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../pom';
+import { OrderPage } from '../../pom/Pages/OrderPage';
+import { PricingService } from '../../../services/pricing.service';
+import { PricingData06 } from '../../pom/addons/Pricing06';
 
 chai.use(promised);
 

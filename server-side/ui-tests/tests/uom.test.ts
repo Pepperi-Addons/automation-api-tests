@@ -919,7 +919,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 });
                             });
                         });
-                        it('Submit Order, Sync & Verify Via API', async () => {
+                        it('Submit Order, Sync & Verify Via API', async function () {
                             await uom.submitOrder();
                             await webAppHomePage.manualResync(client);
                             const orderId: string = (
@@ -1345,7 +1345,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                                 });
                             });
                         });
-                        it('Submit Order, Sync & Verify Via API', async () => {
+                        it('Submit Order, Sync & Verify Via API', async function () {
                             await uom.submitOrder();
                             await webAppHomePage.manualResync(client);
                             const orderId: string = (
