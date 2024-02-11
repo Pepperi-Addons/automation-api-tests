@@ -8,7 +8,7 @@ import { Browser } from '../../utilities/browser';
 import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../pom';
 import { OrderPage } from '../../pom/Pages/OrderPage';
 import { PricingService } from '../../../services/pricing.service';
-import { PricingData06 } from '../../pom/addons/Pricing06';
+import { PricingData06 } from '../../pom/addons/PricingData06';
 
 chai.use(promised);
 

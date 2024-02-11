@@ -8,11 +8,11 @@ import { Browser } from '../../utilities/browser';
 import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../pom';
 import { ObjectsService } from '../../../services';
 import { OrderPage } from '../../pom/Pages/OrderPage';
-import { PricingData05 } from '../../pom/addons/Pricing05';
-import { PricingData06 } from '../../pom/addons/Pricing06';
+import { PricingData05 } from '../../pom/addons/PricingData05';
+import { PricingData06 } from '../../pom/addons/PricingData06';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingService } from '../../../services/pricing.service';
-import { PricingData07 } from '../../pom/addons/Pricing07';
+import { PricingData07 } from '../../pom/addons/PricingData07';
 
 interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;

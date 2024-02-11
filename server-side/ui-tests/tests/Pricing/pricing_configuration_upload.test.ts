@@ -1,27 +1,26 @@
-import { describe, it, before, after } from 'mocha';
-import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { PricingData05 } from '../../pom/addons/Pricing05';
-import { PricingData06 } from '../../pom/addons/Pricing06';
-import { PricingData07 } from '../../pom/addons/Pricing07';
+import { describe, it, before, after } from 'mocha';
+import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../utilities/browser';
 import { WebAppLoginPage, WebAppHomePage } from '../../pom';
 import addContext from 'mochawesome/addContext';
+import GeneralService from '../../../services/general.service';
+import PricingConfiguration from '../../pom/addons/PricingConfiguration';
 
 chai.use(promised);
 
 export async function PricingConfigUpload(client: Client, email: string, password: string) {
+    const pricingConfiguration = new PricingConfiguration();
     const generalService = new GeneralService(client);
     const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
     const installedPricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'pricing')?.Version;
     const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
-    let pricingData;
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let base64ImageComponent;
+    let pricingConfig;
 
     describe('Setting Configuration File', () => {
         before(async function () {
@@ -38,24 +37,19 @@ export async function PricingConfigUpload(client: Client, email: string, passwor
             switch (installedPricingVersionShort) {
                 case '5':
                     console.info('AT installedPricingVersion CASE 5');
-                    pricingData = new PricingData05();
-                    // await uploadConfiguration(pricingData.config_05);
+                    pricingConfig = pricingConfiguration.version05;
                     break;
                 case '6':
                     console.info('AT installedPricingVersion CASE 6');
-                    pricingData = new PricingData06();
-                    break;
-                case '7':
-                    console.info('AT installedPricingVersion CASE 7');
-                    pricingData = new PricingData07();
+                    pricingConfig = pricingConfiguration.version06;
                     break;
 
                 default:
                     console.info('AT installedPricingVersion Default');
-                    pricingData = new PricingData07();
+                    pricingConfig = pricingConfiguration.version07;
                     break;
             }
-            await uploadConfiguration(pricingData.config);
+            await uploadConfiguration(pricingConfig);
         });
 
         describe(`Login to Pricing Test User after Configuration Upload | Ver ${installedPricingVersion}`, () => {

@@ -6,9 +6,9 @@ import promised from 'chai-as-promised';
 // import { ObjectsService } from '../../services';
 // import { PricingData } from '../pom/addons/Pricing';
 // import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
-import { PricingData05 } from '../../pom/addons/Pricing05';
-import { PricingData06 } from '../../pom/addons/Pricing06';
-import { PricingData07 } from '../../pom/addons/Pricing07';
+import { PricingData05 } from '../../pom/addons/PricingData05';
+import { PricingData06 } from '../../pom/addons/PricingData06';
+import { PricingData07 } from '../../pom/addons/PricingData07';
 
 chai.use(promised);
 
