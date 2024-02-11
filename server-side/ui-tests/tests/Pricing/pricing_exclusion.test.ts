@@ -20,6 +20,7 @@ export async function PricingExclusionTests(email: string, password: string, cli
     )?.Version;
     const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
+    const pricingData = new PricingData06();
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -36,7 +37,6 @@ export async function PricingExclusionTests(email: string, password: string, cli
     let duration: string;
     let base64ImageComponent;
 
-    const pricingData = new PricingData06();
     const testAccounts = ['Acc01', 'OtherAcc'];
     const multipleValuesTestItems = ['MaFa25', 'MaLi37', 'MaLi38'];
     const multipleValuesTestStates = ['baseline', '1 Each', '2 Case', '3 Box'];

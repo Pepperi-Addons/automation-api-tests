@@ -23,6 +23,7 @@ export async function PricingMultipleValuesTests(email: string, password: string
     )?.Version;
     const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
+    const pricingData = new PricingData06();
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -40,7 +41,6 @@ export async function PricingMultipleValuesTests(email: string, password: string
     let base64ImageComponent;
     let ppmValues: UserDefinedTableRow[];
 
-    const pricingData = new PricingData06();
     const testAccounts = ['Acc01', 'OtherAcc'];
     // const multipleValuesTestItems_outOfCategory = ['Shampoo Three'];
     const multipleValuesTestItems = [
@@ -300,13 +300,13 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                                 priceMultiFields.forEach((priceField) => {
                                                     const fieldValue = priceMultiTSAs[priceField];
                                                     const expectedFieldValue =
-                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
-                                                            account
-                                                        ][multipleValuesTestState]['expectedValue'];
+                                                        pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                            priceField
+                                                        ][account][multipleValuesTestState]['expectedValue'];
                                                     const expectedRule =
-                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
-                                                            account
-                                                        ][multipleValuesTestState]['rule'];
+                                                        pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                            priceField
+                                                        ][account][multipleValuesTestState]['rule'];
                                                     const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
                                                     const udtRuleValueObj: UserDefinedTableRow | undefined =
                                                         ppmValues.find((listing) => {
@@ -330,11 +330,11 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                                 });
 
                                                 const expectedPriceMultiAfter1 =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                    pricingData.testItemsValues.Multiple[multipleValuesTestItem][
                                                         'PriceMultiAfter1'
                                                     ][account][multipleValuesTestState]['expectedValue'];
                                                 const expectedPriceMultiAfter2 =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                    pricingData.testItemsValues.Multiple[multipleValuesTestItem][
                                                         'PriceMultiAfter2'
                                                     ][account][multipleValuesTestState]['expectedValue'];
                                                 const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
@@ -394,13 +394,13 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                                 priceMultiFields.forEach((priceField) => {
                                                     const fieldValue = priceMultiTSAs[priceField];
                                                     const expectedFieldValue =
-                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
-                                                            account
-                                                        ][multipleValuesTestState]['expectedValue'];
+                                                        pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                            priceField
+                                                        ][account][multipleValuesTestState]['expectedValue'];
                                                     const expectedRule =
-                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
-                                                            account
-                                                        ][multipleValuesTestState]['rule'];
+                                                        pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                            priceField
+                                                        ][account][multipleValuesTestState]['rule'];
                                                     const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
                                                     const udtRuleValueObj: UserDefinedTableRow | undefined =
                                                         ppmValues.find((listing) => {
@@ -424,11 +424,11 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                                 });
 
                                                 const expectedPriceMultiAfter1 =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                    pricingData.testItemsValues.Multiple[multipleValuesTestItem][
                                                         'PriceMultiAfter1'
                                                     ][account][multipleValuesTestState]['expectedValue'];
                                                 const expectedPriceMultiAfter2 =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                    pricingData.testItemsValues.Multiple[multipleValuesTestItem][
                                                         'PriceMultiAfter2'
                                                     ][account][multipleValuesTestState]['expectedValue'];
                                                 const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
@@ -482,13 +482,13 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                                 priceMultiFields.forEach((priceField) => {
                                                     const fieldValue = priceMultiTSAs[priceField];
                                                     const expectedFieldValue =
-                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
-                                                            account
-                                                        ][multipleValuesTestState]['expectedValue'];
+                                                        pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                            priceField
+                                                        ][account][multipleValuesTestState]['expectedValue'];
                                                     const expectedRule =
-                                                        pricingData.testItemsValues[multipleValuesTestItem][priceField][
-                                                            account
-                                                        ][multipleValuesTestState]['rule'];
+                                                        pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                            priceField
+                                                        ][account][multipleValuesTestState]['rule'];
                                                     const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
                                                     const udtRuleValueObj: UserDefinedTableRow | undefined =
                                                         ppmValues.find((listing) => {
@@ -512,11 +512,11 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                                 });
 
                                                 const expectedPriceMultiAfter1 =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                    pricingData.testItemsValues.Multiple[multipleValuesTestItem][
                                                         'PriceMultiAfter1'
                                                     ][account][multipleValuesTestState]['expectedValue'];
                                                 const expectedPriceMultiAfter2 =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][
+                                                    pricingData.testItemsValues.Multiple[multipleValuesTestItem][
                                                         'PriceMultiAfter2'
                                                     ][account][multipleValuesTestState]['expectedValue'];
                                                 const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
@@ -609,7 +609,7 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                     //     'LinesView',
                                     // );
                                     // const expectedTotalUnitsAmount =
-                                    //     pricingData.testItemsValues[multipleValuesTestCartItem]['Cart'][account];
+                                    //     pricingData.testItemsValues.Multiple[multipleValuesTestCartItem]['Cart'][account];
                                     // console.info(
                                     //     `Cart ${multipleValuesTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
                                     // );
@@ -620,13 +620,13 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                     // });
                                     priceMultiFields.forEach((priceField) => {
                                         const expectedValue =
-                                            pricingData.testItemsValues[multipleValuesTestCartItem][priceField][
-                                                account
-                                            ][state]['expectedValue'];
+                                            pricingData.testItemsValues.Multiple[multipleValuesTestCartItem][
+                                                priceField
+                                            ][account][state]['expectedValue'];
                                         const expectedRule =
-                                            pricingData.testItemsValues[multipleValuesTestCartItem][priceField][
-                                                account
-                                            ][state]['rule'];
+                                            pricingData.testItemsValues.Multiple[multipleValuesTestCartItem][
+                                                priceField
+                                            ][account][state]['rule'];
                                         addContext(this, {
                                             title: `TSA field "${priceField}" Values`,
                                             value: `Form UI: ${priceMultiTSAs[priceField]} , Expected Value: ${expectedValue}\nExpected Rule: ${expectedRule}`,
@@ -636,7 +636,7 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                     // expect(totalUnitsAmount).equals(expectedTotalUnitsAmount);
                                     // const discount2FieldValue = priceTSA_Discount2['PriceDiscount2UnitPriceAfter1'];
                                     // const discount2ExpectedFieldValue =
-                                    //     pricingData.testItemsValues[multipleValuesTestCartItem][
+                                    //     pricingData.testItemsValues.Multiple[multipleValuesTestCartItem][
                                     //     'PriceDiscount2UnitPriceAfter1'
                                     //     ]['cart'][account];
                                     // addContext(this, {
@@ -648,7 +648,7 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                     // priceFields2.forEach((priceField) => {
                                     //     const fieldValue = priceTSAs_AOQM_UOM2[priceField];
                                     //     const expectedFieldValue =
-                                    //         pricingData.testItemsValues[multipleValuesTestCartItem][priceField]['cart'][
+                                    //         pricingData.testItemsValues.Multiple[multipleValuesTestCartItem][priceField]['cart'][
                                     //         account
                                     //         ];
                                     //     addContext(this, {
@@ -661,7 +661,7 @@ export async function PricingMultipleValuesTests(email: string, password: string
                                     // totalsPriceFields.forEach((priceField) => {
                                     //     const fieldValue = priceTotalsTSAs[priceField];
                                     //     const expectedFieldValue =
-                                    //         pricingData.testItemsValues[multipleValuesTestCartItem][priceField][account][multipleValuesTestState];
+                                    //         pricingData.testItemsValues.Multiple[multipleValuesTestCartItem][priceField][account][multipleValuesTestState];
                                     //     addContext(this, {
                                     //         title: `${priceField}`,
                                     //         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,

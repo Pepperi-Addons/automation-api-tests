@@ -20,6 +20,7 @@ export async function PricingUomTests(email: string, password: string, client: C
     )?.Version;
     const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
+    const pricingData = new PricingData06();
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -36,7 +37,6 @@ export async function PricingUomTests(email: string, password: string, client: C
     let duration: string;
     let base64ImageComponent;
 
-    const pricingData = new PricingData06();
     const testAccounts = ['Acc01', 'OtherAcc'];
     const uomTestStates = [
         'baseline',
@@ -201,9 +201,9 @@ export async function PricingUomTests(email: string, password: string, client: C
                                             if (uomTestState === 'baseline') {
                                                 const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                                 const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues[uomTestItem]['NPMCalcMessage'][account][
-                                                        uomTestState
-                                                    ];
+                                                    pricingData.testItemsValues.Uom[uomTestItem]['NPMCalcMessage'][
+                                                        account
+                                                    ][uomTestState];
                                                 addContext(this, {
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
@@ -216,13 +216,13 @@ export async function PricingUomTests(email: string, password: string, client: C
                                             } else {
                                                 const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                                 const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues[uomTestItem]['NPMCalcMessage'][account][
-                                                        'baseline'
-                                                    ];
+                                                    pricingData.testItemsValues.Uom[uomTestItem]['NPMCalcMessage'][
+                                                        account
+                                                    ]['baseline'];
                                                 const data_NPMCalcMessage =
-                                                    pricingData.testItemsValues[uomTestItem]['NPMCalcMessage'][account][
-                                                        uomTestState
-                                                    ];
+                                                    pricingData.testItemsValues.Uom[uomTestItem]['NPMCalcMessage'][
+                                                        account
+                                                    ][uomTestState];
                                                 addContext(this, {
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
@@ -240,7 +240,7 @@ export async function PricingUomTests(email: string, password: string, client: C
                                             priceFields.forEach((priceField) => {
                                                 const fieldValue = priceTSAs[priceField];
                                                 const expectedFieldValue =
-                                                    pricingData.testItemsValues[uomTestItem][priceField][account][
+                                                    pricingData.testItemsValues.Uom[uomTestItem][priceField][account][
                                                         uomTestState
                                                     ];
                                                 addContext(this, {
@@ -350,7 +350,7 @@ export async function PricingUomTests(email: string, password: string, client: C
                                         });
                                         priceFields.forEach((priceField) => {
                                             const expectedValue =
-                                                pricingData.testItemsValues[itemName][priceField][account][
+                                                pricingData.testItemsValues.Uom[itemName][priceField][account][
                                                     isFreePlusUOM ? 'cart' : state
                                                 ];
                                             addContext(this, {
