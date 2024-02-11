@@ -1,13 +1,13 @@
 import { describe, it } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../services/general.service';
+import GeneralService from '../../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { ObjectsService } from '../../services';
+import { ObjectsService } from '../../../services';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
-import { PricingData05 } from '../pom/addons/Pricing05';
-import { PricingData06 } from '../pom/addons/Pricing06';
-import { PricingData07 } from '../pom/addons/Pricing07';
+import { PricingData05 } from '../../pom/addons/Pricing05';
+import { PricingData06 } from '../../pom/addons/Pricing06';
+import { PricingData07 } from '../../pom/addons/Pricing07';
 
 chai.use(promised);
 

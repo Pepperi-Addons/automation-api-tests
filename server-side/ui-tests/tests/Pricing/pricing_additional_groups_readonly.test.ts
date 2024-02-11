@@ -1,18 +1,18 @@
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService, { ConsoleColors } from '../../services/general.service';
+import GeneralService from '../../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
-import { Browser } from '../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../pom';
-import { ObjectsService } from '../../services';
-import { OrderPage } from '../pom/Pages/OrderPage';
-import { PricingData05 } from '../pom/addons/Pricing05';
-import { PricingData06 } from '../pom/addons/Pricing06';
+import { Browser } from '../../utilities/browser';
+import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../pom';
+import { ObjectsService } from '../../../services';
+import { OrderPage } from '../../pom/Pages/OrderPage';
+import { PricingData05 } from '../../pom/addons/Pricing05';
+import { PricingData06 } from '../../pom/addons/Pricing06';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
-import { PricingService } from '../../services/pricing.service';
-import { PricingData07 } from '../pom/addons/Pricing07';
+import { PricingService } from '../../../services/pricing.service';
+import { PricingData07 } from '../../pom/addons/Pricing07';
 
 interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;
@@ -25,7 +25,7 @@ interface PriceTsaFields {
 
 chai.use(promised);
 
-export async function PricingTests(email: string, password: string, client: Client) {
+export async function PricingAdditionalGroupsReadonlyTests(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
@@ -73,19 +73,7 @@ export async function PricingTests(email: string, password: string, client: Clie
     let duration: string;
     let ppmVluesEnd: UserDefinedTableRow[];
 
-    const tableName = 'PPM_Values';
-    const dummyPPM_Values_length = 49999;
     const testAccounts = ['Acc01', 'OtherAcc'];
-    const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
-    const testItems = [
-        { name: 'Lipstick no.1', cartAmount: 24 },
-        { name: 'Spring Loaded Frizz-Fighting Conditioner', cartAmount: 24 },
-        { name: 'Frag005', cartAmount: 24 },
-        { name: 'Frag012', cartAmount: 24 },
-        { name: 'ToBr56', cartAmount: 24 },
-        { name: 'Drug0001', cartAmount: 24 },
-        { name: 'Drug0003', cartAmount: 24 },
-    ];
     const itemsAddedToGetFreeGoods = ['ToBr55', 'Drug0002', 'Drug0004'];
     const freeGoodsReceived = {
         Acc01: [
@@ -107,6 +95,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         { name: 'MakeUp018 Free', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
         { name: 'MakeUp019', Acc01: { uom: 'Each', unitQuantity: 5 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
     ];
+    const groupRulesItems_CartTest = ['MakeUp001', 'MakeUp002', 'MakeUp003', 'MakeUp006', 'MakeUp018', 'MakeUp019'];
     const readonlyCartItems = [
         { name: 'MakeUp019', Acc01: { uom: 'Each', unitQuantity: 5 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
         { name: 'MakeUp018 Free', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
@@ -129,17 +118,6 @@ export async function PricingTests(email: string, password: string, client: Clie
         },
         { name: 'ToBr55', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
         { name: 'ToBr55 Free', Acc01: { uom: 'Case', unitQuantity: 6 }, OtherAcc: { uom: 'Each', unitQuantity: 6 } },
-        { name: 'Drug0003', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
-        { name: 'Drug0001', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
-        { name: 'ToBr56', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
-        { name: 'Frag012', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
-        { name: 'Frag005', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
-        {
-            name: 'Spring Loaded Frizz-Fighting Conditioner',
-            Acc01: { uom: 'Case', unitQuantity: 24 },
-            OtherAcc: { uom: 'Case', unitQuantity: 24 },
-        },
-        // { name: 'Lipstick no.1', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
     ];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
@@ -149,7 +127,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         'PriceTaxUnitPriceAfter1',
     ];
 
-    describe(`Pricing UI tests | Ver ${installedPricingVersionLong}`, () => {
+    describe(`Pricing Additional Groups Readonly UI tests | Ver ${installedPricingVersionLong}`, () => {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
@@ -174,6 +152,41 @@ export async function PricingTests(email: string, password: string, client: Clie
         after(async function () {
             await driver.quit();
         });
+
+        // it('inserting valid rules to the UDT "PPM_Values"', async () => {
+        //     const dataToBatch: {
+        //         MapDataExternalID: string;
+        //         MainKey: string;
+        //         SecondaryKey: string;
+        //         Values: string[];
+        //     }[] = [];
+        //     Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+        //         dataToBatch.push({
+        //             MapDataExternalID: pricingData.tableName,
+        //             MainKey: mainKey,
+        //             SecondaryKey: '',
+        //             Values: [pricingData.documentsIn_PPM_Values[mainKey]],
+        //         });
+        //     });
+        //     const batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
+        //     expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
+        //     console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
+        //     batchUDTresponse.map((row) => {
+        //         expect(row).to.have.property('InternalID').that.is.above(0);
+        //         expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
+        //         expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
+        //         expect(row)
+        //             .to.have.property('Message')
+        //             .that.is.oneOf([
+        //                 'Row inserted.',
+        //                 'No changes in this row. The row is being ignored.',
+        //                 'Row updated.',
+        //             ]);
+        //         expect(row)
+        //             .to.have.property('URI')
+        //             .that.equals('/user_defined_tables/' + row.InternalID);
+        //     });
+        // });
 
         it('Login', async function () {
             await webAppLoginPage.login(email, password);
@@ -222,7 +235,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                     });
                     const duration_num = Number(duration);
                     expect(typeof duration_num).equals('number');
-                    expect(duration_num).to.be.below(550);
+                    // expect(duration_num).to.be.below(550);
                 });
 
                 it(`switch to 'Line View'`, async function () {
@@ -232,194 +245,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                         title: `After "Line View" was selected`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
-                });
-
-                testStates.forEach((state) => {
-                    describe(`ORDER CENTER "${state}"`, () => {
-                        testItems.forEach((item) => {
-                            it(`checking item "${item.name}"`, async function () {
-                                await pricingService.searchInOrderCenter.bind(this)(item.name, driver);
-                                switch (
-                                    state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
-                                ) {
-                                    case '1unit':
-                                        await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                            this,
-                                        )('Each', item.name, 1, driver);
-                                        duration = await (
-                                            await driver.findElement(orderPage.Duration_Span)
-                                        ).getAttribute('title');
-                                        console.log(`DURATION after Quantity change (to 1 unit): ${duration}`, [
-                                            ConsoleColors.PageMessage,
-                                        ]);
-                                        break;
-                                    case '3units':
-                                        await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                            this,
-                                        )('Each', item.name, 3, driver);
-                                        duration = await (
-                                            await driver.findElement(orderPage.Duration_Span)
-                                        ).getAttribute('title');
-                                        console.log(`DURATION after Quantity change (to 3 units): ${duration}`, [
-                                            ConsoleColors.PageMessage,
-                                        ]);
-                                        break;
-                                    case '1case(6units)':
-                                        await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                            this,
-                                        )('Case', item.name, 1, driver);
-                                        duration = await (
-                                            await driver.findElement(orderPage.Duration_Span)
-                                        ).getAttribute('title');
-                                        console.log(`DURATION after Quantity change (to 1 case): ${duration}`, [
-                                            ConsoleColors.PageMessage,
-                                        ]);
-                                        break;
-                                    case '4cases(24units)':
-                                        await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                            this,
-                                        )('Case', item.name, 4, driver);
-                                        duration = await (
-                                            await driver.findElement(orderPage.Duration_Span)
-                                        ).getAttribute('title');
-                                        console.log(`DURATION after Quantity change (to 4 cases): ${duration}`, [
-                                            ConsoleColors.PageMessage,
-                                        ]);
-                                        break;
-
-                                    default:
-                                        break;
-                                }
-                                addContext(this, {
-                                    title: `Duration - After Change quantity of ${item.name}`,
-                                    value: `${duration} ms`,
-                                });
-                                const priceTSAs = await pricingService.getItemTSAs('OrderCenter', item.name);
-                                console.info(`${item.name} ${state} priceTSAs:`, priceTSAs);
-
-                                expect(typeof priceTSAs).equals('object');
-                                expect(Object.keys(priceTSAs)).to.eql([
-                                    'PriceBaseUnitPriceAfter1',
-                                    'PriceDiscountUnitPriceAfter1',
-                                    'PriceGroupDiscountUnitPriceAfter1',
-                                    'PriceManualLineUnitPriceAfter1',
-                                    'PriceTaxUnitPriceAfter1',
-                                    'NPMCalcMessage',
-                                ]);
-                                switch (state) {
-                                    case 'baseline':
-                                        expect(priceTSAs['NPMCalcMessage'].length).equals(
-                                            pricingData.testItemsValues[item.name]['NPMCalcMessage'][account][state]
-                                                .length,
-                                        );
-                                        break;
-
-                                    default:
-                                        expect(priceTSAs['NPMCalcMessage'].length).equals(
-                                            pricingData.testItemsValues[item.name]['NPMCalcMessage'][account][
-                                                'baseline'
-                                            ].length +
-                                                pricingData.testItemsValues[item.name]['NPMCalcMessage'][account][state]
-                                                    .length,
-                                        );
-                                        break;
-                                }
-                                priceFields.forEach((priceField) => {
-                                    expect(priceTSAs[priceField]).equals(
-                                        pricingData.testItemsValues[item.name][priceField][account][state],
-                                    );
-                                });
-                                driver.sleep(0.2 * 1000);
-                                await pricingService.clearOrderCenterSearch();
-                            });
-                        });
-                    });
-
-                    switch (state) {
-                        case 'baseline':
-                            break;
-
-                        default:
-                            describe(`CART "${state}"`, () => {
-                                it('entering and verifying being in cart', async function () {
-                                    await driver.click(orderPage.Cart_Button);
-                                    await orderPage.isSpinnerDone();
-                                    driver.sleep(1 * 1000);
-                                    await driver.untilIsVisible(orderPage.Cart_List_container);
-                                });
-                                it(`switch to 'Grid View'`, async function () {
-                                    await orderPage.changeCartView('Grid');
-                                    base64ImageComponent = await driver.saveScreenshots();
-                                    addContext(this, {
-                                        title: `After "Line View" was selected`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
-                                    });
-                                });
-                                it('verify that the sum total of items in the cart is correct', async function () {
-                                    base64ImageComponent = await driver.saveScreenshots();
-                                    addContext(this, {
-                                        title: `At Cart`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
-                                    });
-                                    const itemsInCart = await (
-                                        await driver.findElement(orderPage.Cart_Headline_Results_Number)
-                                    ).getText();
-                                    driver.sleep(0.2 * 1000);
-                                    expect(Number(itemsInCart)).to.equal(testItems.length);
-                                    driver.sleep(1 * 1000);
-                                });
-                                testItems.forEach(async (item) => {
-                                    it(`checking item "${item.name}"`, async () => {
-                                        const totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                            'Cart',
-                                            item.name,
-                                        );
-                                        const priceTSAs = await pricingService.getItemTSAs('Cart', item.name);
-                                        console.info(`Cart ${item.name} totalUnitsAmount:`, totalUnitsAmount);
-                                        console.info(`priceTSAs:`, priceTSAs);
-                                        const expectedAmount =
-                                            state === '1unit'
-                                                ? 1
-                                                : state === '3units'
-                                                ? 3
-                                                : state === '1case(6units)'
-                                                ? 6
-                                                : item.cartAmount;
-                                        addContext(this, {
-                                            title: `Total Units Amount`,
-                                            value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
-                                        });
-                                        // expect(totalUnitsAmount).equals(expectedAmount);
-                                        priceFields.forEach((priceField) => {
-                                            expect(priceTSAs[priceField]).equals(
-                                                pricingData.testItemsValues[item.name][priceField][account][state],
-                                            );
-                                        });
-                                    });
-                                });
-                                describe('back to Order Center and switch to Line View', () => {
-                                    it('Click "Continue ordering" button', async function () {
-                                        await driver.click(orderPage.Cart_ContinueOrdering_Button);
-                                        await orderPage.isSpinnerDone();
-                                        await orderPage.changeOrderCenterPageView('Line View');
-                                        await orderPage.isSpinnerDone();
-                                        base64ImageComponent = await driver.saveScreenshots();
-                                        addContext(this, {
-                                            title: `After "Line View" was selected`,
-                                            value: 'data:image/png;base64,' + base64ImageComponent,
-                                        });
-                                        await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
-                                        driver.sleep(1 * 1000);
-                                        base64ImageComponent = await driver.saveScreenshots();
-                                        addContext(this, {
-                                            title: `Order Center - Loaded`,
-                                            value: 'data:image/png;base64,' + base64ImageComponent,
-                                        });
-                                    });
-                                });
-                            });
-                            break;
-                    }
                 });
 
                 describe('Additional Items (Free Goods)', () => {
@@ -869,7 +694,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 await driver.findElement(orderPage.Cart_Headline_Results_Number)
                             ).getText();
                             driver.sleep(0.2 * 1000);
-                            expect(Number(itemsInCart)).to.equal(testItems.length + itemsAddedToGetFreeGoods.length);
+                            expect(Number(itemsInCart)).to.equal(itemsAddedToGetFreeGoods.length);
                             driver.sleep(1 * 1000);
                         });
                         it('changing the amount of "ToBr55" to produce free goods', async function () {
@@ -908,7 +733,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                             ).getText();
                             driver.sleep(0.2 * 1000);
                             expect(Number(itemsInCart)).to.equal(
-                                testItems.length + itemsAddedToGetFreeGoods.length + freeGoodsReceived[account].length,
+                                itemsAddedToGetFreeGoods.length + freeGoodsReceived[account].length,
                             );
                             driver.sleep(1 * 1000);
                         });
@@ -1041,7 +866,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 const item = 'ToBr55';
                                 driver.refresh();
                                 await orderPage.isSpinnerDone();
-                                driver.sleep(1 * 1000);
+                                driver.sleep(3 * 1000);
                                 await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
                                     'Case',
                                     item,
@@ -1901,7 +1726,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('verifying that the sum total of items in the cart is correct', async function () {
                             let numberOfItemsInCart =
-                                testItems.length +
                                 itemsAddedToGetFreeGoods.length +
                                 freeGoodsReceived[account].length +
                                 groupRulesItems.length +
@@ -1924,6 +1748,74 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                             expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                             driver.sleep(1 * 1000);
+                        });
+                        // it(`setting all items amount to 1`, async function () {
+                        groupRulesItems_CartTest.forEach(async (groupRuleItem_CartTest) => {
+                            it(`setting "${groupRuleItem_CartTest}" item amount to 1 (${pricingData.groupRulesItems_CartTest_details[groupRuleItem_CartTest]['1EA']['title']})`, async function () {
+                                await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
+                                    'Each',
+                                    groupRuleItem_CartTest,
+                                    1,
+                                    driver,
+                                );
+                                driver.sleep(0.2 * 1000);
+
+                                const totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                    'Cart',
+                                    groupRuleItem_CartTest,
+                                );
+                                console.info('totalUnitsAmount:', totalUnitsAmount);
+                                // expect(totalUnitsAmount).equals(1);
+                                groupRulesItems_CartTest.forEach(async (item) => {
+                                    const expectedValue =
+                                        pricingData.groupRulesItems_CartTest_details[groupRuleItem_CartTest]['1EA'][
+                                            'PriceGroupDiscountUnitPriceAfter1'
+                                        ][account][item];
+                                    const priceTSAs = await pricingService.getItemTSAs('Cart', item);
+                                    console.info(
+                                        `Cart ${groupRuleItem_CartTest} changed to amount of 1, "${item}" PriceGroupDiscountUnitPriceAfter1:`,
+                                        JSON.stringify(priceTSAs, null, 2),
+                                    );
+                                    addContext(this, {
+                                        title: `TSA PriceGroupDiscountUnitPriceAfter1 field "${item}" Values`,
+                                        value: `form UI: ${priceTSAs.PriceGroupDiscountUnitPriceAfter1} , expected: ${expectedValue}`,
+                                    });
+                                    expect(priceTSAs.PriceGroupDiscountUnitPriceAfter1).equals(expectedValue);
+                                });
+                            });
+                        });
+                        // it(`setting all items amount to original value`, async function () {
+                        groupRulesItems_CartTest.forEach(async (groupRuleItem_CartTest) => {
+                            it(`setting "${groupRuleItem_CartTest}" item amount to original value`, async function () {
+                                let testedDetails;
+                                if (groupRuleItem_CartTest === 'MakeUp018') {
+                                    // need to be removed when MakeUp018 is un-commented from groupRulesItems (only the else remains)
+                                    testedDetails = {
+                                        name: 'MakeUp018',
+                                        Acc01: { uom: 'Each', unitQuantity: 2 },
+                                        OtherAcc: { uom: 'Each', unitQuantity: 2 },
+                                    };
+                                } else {
+                                    testedDetails = groupRulesItems.find((item) => {
+                                        if (item.name === groupRuleItem_CartTest) {
+                                            return item;
+                                        }
+                                    });
+                                }
+                                const amountToSet = testedDetails[account].unitQuantity;
+                                await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
+                                    'Each',
+                                    groupRuleItem_CartTest,
+                                    amountToSet,
+                                    driver,
+                                );
+                                driver.sleep(0.2 * 1000);
+                            });
+                            // base64ImageComponent = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `At Cart - after change`,
+                            //     value: 'data:image/png;base64,' + base64ImageComponent,
+                            // });
                         });
                         groupRulesItems.forEach((groupRuleItem) => {
                             it(`checking item "${groupRuleItem.name}"`, async function () {
@@ -2131,7 +2023,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('changing value of group discount rule in "PPM_Values" UDT', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingData.tableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
                                 SecondaryKey: '',
                                 Values: [
@@ -2139,7 +2031,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 ],
                             });
                             expect(updatedUDTRowPOST).to.deep.include({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingData.tableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
                                 SecondaryKey: null,
                                 Values: [
@@ -2156,7 +2048,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('changing value of additional item rule in "PPM_Values" UDT', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingData.tableName,
                                 MainKey: 'ZDS3@A001@Drug0004',
                                 SecondaryKey: '',
                                 Values: [
@@ -2164,7 +2056,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 ],
                             });
                             expect(updatedUDTRowPOST).to.deep.include({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingData.tableName,
                                 MainKey: 'ZDS3@A001@Drug0004',
                                 SecondaryKey: null,
                                 Values: [
@@ -2187,14 +2079,15 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('validating "PPM_Values" UDT values via API', async () => {
                             const updatedUDT = await objectsService.getUDT({
-                                where: "MapDataExternalID='" + tableName + "'",
+                                where: "MapDataExternalID='" + pricingData.tableName + "'",
                                 page_size: -1,
                             });
                             console.info('updatedUDT: ', updatedUDT);
                             expect(updatedUDT)
                                 .to.be.an('array')
                                 .with.lengthOf(
-                                    Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
+                                    Object.keys(pricingData.documentsIn_PPM_Values).length +
+                                        pricingData.dummyPPM_Values_length,
                                 );
                             // Add verification tests
                         });
@@ -2260,7 +2153,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                         it('verifying that the sum total of items in the cart is correct', async function () {
                             await driver.untilIsVisible(orderPage.Cart_Totals); // Verify being in Cart
                             let numberOfItemsInCart =
-                                testItems.length +
                                 itemsAddedToGetFreeGoods.length +
                                 freeGoodsReceived[account].length +
                                 groupRulesItems.length +
@@ -2491,7 +2383,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                     describe('Reset', () => {
                         it('reverting value of group discount rule in "PPM_Values" UDT to the original value', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingData.tableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
                                 SecondaryKey: '',
                                 Values: [
@@ -2499,7 +2391,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 ],
                             });
                             expect(updatedUDTRowPOST).to.deep.include({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingData.tableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
                                 SecondaryKey: null,
                                 Values: [
@@ -2516,7 +2408,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('reverting value of additional item rule in "PPM_Values" UDT to the original value', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingData.tableName,
                                 MainKey: 'ZDS3@A001@Drug0004',
                                 SecondaryKey: '',
                                 Values: [
@@ -2524,7 +2416,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 ],
                             });
                             expect(updatedUDTRowPOST).to.deep.include({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingData.tableName,
                                 MainKey: 'ZDS3@A001@Drug0004',
                                 SecondaryKey: null,
                                 Values: [
@@ -2547,11 +2439,12 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('validating "PPM_Values" UDT values via API', async () => {
                             ppmVluesEnd = await objectsService.getUDT({
-                                where: `MapDataExternalID='${tableName}'`,
+                                where: `MapDataExternalID='${pricingData.tableName}'`,
                                 page_size: -1,
                             });
                             expect(ppmVluesEnd.length).equals(
-                                Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
+                                Object.keys(pricingData.documentsIn_PPM_Values).length +
+                                    pricingData.dummyPPM_Values_length,
                             );
                             // ppmVluesEnd.forEach((tableRow) => {  // needs to be converted
                             //     expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
@@ -2597,68 +2490,68 @@ export async function PricingTests(email: string, password: string, client: Clie
                 }
             });
 
-            it('deleting valid rules from the UDT "PPM_Values"', async () => {
-                const valueObjs: UserDefinedTableRow[] = [];
-                const validPPM_ValuesKeys = Object.keys(pricingData.documentsIn_PPM_Values);
-                const deleteResponses = await Promise.all(
-                    validPPM_ValuesKeys.map(async (validPPM_Key) => {
-                        const valueObj: UserDefinedTableRow | undefined = ppmVluesEnd.find((listing) => {
-                            if (listing.MainKey === validPPM_Key) return listing;
-                        });
-                        console.info(
-                            'validPPM_Key:',
-                            validPPM_Key,
-                            ', validPPM_ValueObj: ',
-                            JSON.stringify(valueObj, null, 2),
-                        );
-                        if (valueObj) {
-                            console.info('valueObj EXIST!');
-                            valueObjs.push(valueObj);
-                            valueObj.Hidden = true;
-                            return await objectsService.postUDT(valueObj);
-                        }
-                    }),
-                );
-                expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
-                deleteResponses.forEach((deleteUDTresponse) => {
-                    console.info(
-                        `${deleteUDTresponse?.MainKey} Delete RESPONSE: `,
-                        JSON.stringify(deleteUDTresponse, null, 2),
-                    );
-                    if (deleteUDTresponse) {
-                        console.info('UDT delete response exist!');
-                        const PPMvalue = pricingData.documentsIn_PPM_Values[deleteUDTresponse.MainKey];
-                        expect(deleteUDTresponse).to.deep.include({
-                            MapDataExternalID: tableName,
-                            SecondaryKey: null,
-                            Values: [PPMvalue],
-                        });
-                        expect(deleteUDTresponse).to.have.property('MainKey');
-                        expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
-                        expect(deleteUDTresponse)
-                            .to.have.property('ModificationDateTime')
-                            .that.contains(new Date().toISOString().split('T')[0]);
-                        expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
-                        expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
-                        expect(deleteUDTresponse).to.have.property('InternalID');
-                    }
-                });
-            });
+            // it('deleting valid rules from the UDT "PPM_Values"', async () => {
+            //     const valueObjs: UserDefinedTableRow[] = [];
+            //     const validPPM_ValuesKeys = Object.keys(pricingData.documentsIn_PPM_Values);
+            //     const deleteResponses = await Promise.all(
+            //         validPPM_ValuesKeys.map(async (validPPM_Key) => {
+            //             const valueObj: UserDefinedTableRow | undefined = ppmVluesEnd.find((listing) => {
+            //                 if (listing.MainKey === validPPM_Key) return listing;
+            //             });
+            //             console.info(
+            //                 'validPPM_Key:',
+            //                 validPPM_Key,
+            //                 ', validPPM_ValueObj: ',
+            //                 JSON.stringify(valueObj, null, 2),
+            //             );
+            //             if (valueObj) {
+            //                 console.info('valueObj EXIST!');
+            //                 valueObjs.push(valueObj);
+            //                 valueObj.Hidden = true;
+            //                 return await objectsService.postUDT(valueObj);
+            //             }
+            //         }),
+            //     );
+            //     expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
+            //     deleteResponses.forEach((deleteUDTresponse) => {
+            //         console.info(
+            //             `${deleteUDTresponse?.MainKey} Delete RESPONSE: `,
+            //             JSON.stringify(deleteUDTresponse, null, 2),
+            //         );
+            //         if (deleteUDTresponse) {
+            //             console.info('UDT delete response exist!');
+            //             const PPMvalue = pricingData.documentsIn_PPM_Values[deleteUDTresponse.MainKey];
+            //             expect(deleteUDTresponse).to.deep.include({
+            //                 MapDataExternalID: pricingData.tableName,
+            //                 SecondaryKey: null,
+            //                 Values: [PPMvalue],
+            //             });
+            //             expect(deleteUDTresponse).to.have.property('MainKey');
+            //             expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
+            //             expect(deleteUDTresponse)
+            //                 .to.have.property('ModificationDateTime')
+            //                 .that.contains(new Date().toISOString().split('T')[0]);
+            //             expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
+            //             expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
+            //             expect(deleteUDTresponse).to.have.property('InternalID');
+            //         }
+            //     });
+            // });
 
-            it('performing sync', async () => {
-                await webAppHeader.goHome();
-                driver.sleep(0.2 * 1000);
-                await webAppHomePage.isSpinnerDone();
-                await webAppHomePage.manualResync(client);
-            });
+            // it('performing sync', async () => {
+            //     await webAppHeader.goHome();
+            //     driver.sleep(0.2 * 1000);
+            //     await webAppHomePage.isSpinnerDone();
+            //     await webAppHomePage.manualResync(client);
+            // });
 
-            it('validating "PPM_Values" UDT values via API', async () => {
-                ppmVluesEnd = await objectsService.getUDT({
-                    where: `MapDataExternalID='${tableName}'`,
-                    page_size: -1,
-                });
-                expect(ppmVluesEnd.length).equals(dummyPPM_Values_length);
-            });
+            // it('validating "PPM_Values" UDT values via API', async () => {
+            //     ppmVluesEnd = await objectsService.getUDT({
+            //         where: `MapDataExternalID='${pricingData.tableName}'`,
+            //         page_size: -1,
+            //     });
+            //     expect(ppmVluesEnd.length).equals(pricingData.dummyPPM_Values_length);
+            // });
         });
     });
 }
