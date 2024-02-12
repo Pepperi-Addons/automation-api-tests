@@ -311,8 +311,8 @@ export default class PricingConfiguration {
                         },
                     },
                     {
-                        Key: 'MultipleValues',
-                        ConditionsOrder: ['ZDM1', 'ZDM2', 'ZDM3'],
+                        Key: 'MultipleValuesGeneral',
+                        ConditionsOrder: ['ZDM3'],
                         InitialPrice: {
                             Type: 'Block',
                             Name: 'Base',
@@ -320,6 +320,42 @@ export default class PricingConfiguration {
                         CalculatedOfPrice: {
                             Type: 'Block',
                             Name: 'Base',
+                        },
+                    },
+                    // {
+                    //     Key: 'MultipleValuesCategory',
+                    //     ConditionsOrder: ['ZDM3'],
+                    //     InitialPrice: {
+                    //         Type: 'Block',
+                    //         Name: 'MultipleValuesGeneral',
+                    //     },
+                    //     CalculatedOfPrice: {
+                    //         Type: 'Block',
+                    //         Name: 'MultipleValuesGeneral',
+                    //     },
+                    // },
+                    // {
+                    //     Key: 'MultipleValuesSpecificItem',
+                    //     ConditionsOrder: ['ZDM1'],
+                    //     InitialPrice: {
+                    //         Type: 'Block',
+                    //         Name: 'MultipleValuesCategory',
+                    //     },
+                    //     CalculatedOfPrice: {
+                    //         Type: 'Block',
+                    //         Name: 'MultipleValuesCategory',
+                    //     },
+                    // },
+                    {
+                        Key: 'MultipleValues',
+                        ConditionsOrder: ['ZDM1', 'ZDM2'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesGeneral',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesGeneral',
                         },
                     },
                     {
