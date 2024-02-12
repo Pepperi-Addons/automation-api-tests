@@ -1,18 +1,18 @@
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService, { ConsoleColors } from '../../../services/general.service';
+import GeneralService, { ConsoleColors } from '../../../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
-import { Browser } from '../../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../pom';
-import { ObjectsService } from '../../../services';
-import { OrderPage } from '../../pom/Pages/OrderPage';
-import { PricingData05 } from '../../pom/addons/Pricing05';
-import { PricingData06 } from '../../pom/addons/Pricing06';
+import { Browser } from '../../../utilities/browser';
+import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../../pom';
+import { ObjectsService } from '../../../../services';
+import { OrderPage } from '../../../pom/Pages/OrderPage';
+import { PricingData05 } from '../../../pom/addons/PricingData05';
+import { PricingData06 } from '../../../pom/addons/PricingData06';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
-import { PricingService } from '../../../services/pricing.service';
-import { PricingData07 } from '../../pom/addons/Pricing07';
+import { PricingService } from '../../../../services/pricing.service';
+import PricingRules from '../../../pom/addons/PricingRules';
 
 chai.use(promised);
 
@@ -24,17 +24,18 @@ export async function PricingBaseTests(email: string, password: string, client: 
     )?.Version;
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
-    let pricingData;
-    switch (true) {
-        case installedPricingVersion === '5':
-            pricingData = new PricingData05();
-            break;
-        case installedPricingVersion === '6':
-            pricingData = new PricingData06();
+    const pricingData = installedPricingVersion === '5' ? new PricingData05() : new PricingData06();
+    const pricingRules = new PricingRules();
+    let ppmValues_content;
+    switch (installedPricingVersion) {
+        case '5':
+            console.info('AT installedPricingVersion CASE 5');
+            ppmValues_content = pricingRules.version05;
             break;
 
         default:
-            pricingData = new PricingData07();
+            console.info('AT installedPricingVersion Default');
+            ppmValues_content = pricingRules.version06;
             break;
     }
 
@@ -53,7 +54,6 @@ export async function PricingBaseTests(email: string, password: string, client: 
     let base64ImageComponent;
     let duration: string;
     let ppmValues: UserDefinedTableRow[];
-    // let ppmVluesEnd: UserDefinedTableRow[];
 
     const testAccounts = ['Acc01', 'OtherAcc'];
     const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
@@ -100,41 +100,6 @@ export async function PricingBaseTests(email: string, password: string, client: 
             await driver.quit();
         });
 
-        // it('inserting valid rules to the UDT "PPM_Values"', async () => {
-        //     const dataToBatch: {
-        //         MapDataExternalID: string;
-        //         MainKey: string;
-        //         SecondaryKey: string;
-        //         Values: string[];
-        //     }[] = [];
-        //     Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
-        //         dataToBatch.push({
-        //             MapDataExternalID: pricingData.tableName,
-        //             MainKey: mainKey,
-        //             SecondaryKey: '',
-        //             Values: [pricingData.documentsIn_PPM_Values[mainKey]],
-        //         });
-        //     });
-        //     const batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);
-        //     expect(batchUDTresponse).to.be.an('array').with.lengthOf(dataToBatch.length);
-        //     console.info('insertion to PPM_Values RESPONSE: ', JSON.stringify(batchUDTresponse, null, 2));
-        //     batchUDTresponse.map((row) => {
-        //         expect(row).to.have.property('InternalID').that.is.above(0);
-        //         expect(row).to.have.property('UUID').that.equals('00000000-0000-0000-0000-000000000000');
-        //         expect(row).to.have.property('Status').that.is.oneOf(['Insert', 'Ignore', 'Update']);
-        //         expect(row)
-        //             .to.have.property('Message')
-        //             .that.is.oneOf([
-        //                 'Row inserted.',
-        //                 'No changes in this row. The row is being ignored.',
-        //                 'Row updated.',
-        //             ]);
-        //         expect(row)
-        //             .to.have.property('URI')
-        //             .that.equals('/user_defined_tables/' + row.InternalID);
-        //     });
-        // });
-
         it('Login', async function () {
             await webAppLoginPage.login(email, password);
             base64ImageComponent = await driver.saveScreenshots();
@@ -153,11 +118,10 @@ export async function PricingBaseTests(email: string, password: string, client: 
             console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
         });
 
-        it('validating "PPM_Values" via API', async () => {
-            const expectedPPMValuesLength =
-                Object.keys(pricingData.documentsIn_PPM_Values).length + pricingData.dummyPPM_Values_length;
+        it('validating "PPM_Values" via API', async function () {
+            const expectedPPMValuesLength = Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length;
             console.info(
-                'EXPECTED: Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_ValuesKeys.length: ',
+                'EXPECTED: Object.keys(ppmValues_content).length + dummyPPM_ValuesKeys.length: ',
                 expectedPPMValuesLength,
                 'ACTUAL: ppmValues.length: ',
                 ppmValues.length,
@@ -167,7 +131,7 @@ export async function PricingBaseTests(email: string, password: string, client: 
                 value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
             });
             expect(ppmValues.length).equals(expectedPPMValuesLength);
-            Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+            Object.keys(ppmValues_content).forEach((mainKey) => {
                 console.info('mainKey: ', mainKey);
                 const matchingRowOfppmValues = ppmValues.find((tableRow) => {
                     if (tableRow.MainKey === mainKey) {
@@ -176,17 +140,14 @@ export async function PricingBaseTests(email: string, password: string, client: 
                 });
                 matchingRowOfppmValues &&
                     console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
-                console.info(
-                    'ACTUAL: pricingData.documentsIn_PPM_Values[mainKey]: ',
-                    pricingData.documentsIn_PPM_Values[mainKey],
-                );
+                console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                 matchingRowOfppmValues &&
                     addContext(this, {
                         title: `PPM Value for the Key "${mainKey}"`,
-                        value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${pricingData.documentsIn_PPM_Values[mainKey]}`,
+                        value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${ppmValues_content[mainKey]}`,
                     });
                 matchingRowOfppmValues &&
-                    expect(pricingData.documentsIn_PPM_Values[mainKey]).equals(
+                    expect(ppmValues_content[mainKey]).equals(
                         client.BaseURL.includes('staging')
                             ? matchingRowOfppmValues['Values'].join()
                             : matchingRowOfppmValues['Values'][0],
@@ -310,28 +271,31 @@ export async function PricingBaseTests(email: string, password: string, client: 
                                     'PriceTaxUnitPriceAfter1',
                                     'NPMCalcMessage',
                                 ]);
+                                let expectedNPMCalcMessageLength;
                                 switch (state) {
                                     case 'baseline':
-                                        expect(priceTSAs['NPMCalcMessage'].length).equals(
-                                            pricingData.testItemsValues[item.name]['NPMCalcMessage'][account][state]
-                                                .length,
-                                        );
+                                        expectedNPMCalcMessageLength =
+                                            pricingData.testItemsValues['Base'][item.name]['NPMCalcMessage'][account][
+                                                state
+                                            ].length;
+                                        expect(priceTSAs['NPMCalcMessage'].length).equals(expectedNPMCalcMessageLength);
                                         break;
 
                                     default:
-                                        expect(priceTSAs['NPMCalcMessage'].length).equals(
-                                            pricingData.testItemsValues[item.name]['NPMCalcMessage'][account][
+                                        expectedNPMCalcMessageLength =
+                                            pricingData.testItemsValues['Base'][item.name]['NPMCalcMessage'][account][
                                                 'baseline'
                                             ].length +
-                                                pricingData.testItemsValues[item.name]['NPMCalcMessage'][account][state]
-                                                    .length,
-                                        );
+                                            pricingData.testItemsValues['Base'][item.name]['NPMCalcMessage'][account][
+                                                state
+                                            ].length;
+                                        expect(priceTSAs['NPMCalcMessage'].length).equals(expectedNPMCalcMessageLength);
                                         break;
                                 }
                                 priceFields.forEach((priceField) => {
-                                    expect(priceTSAs[priceField]).equals(
-                                        pricingData.testItemsValues[item.name][priceField][account][state],
-                                    );
+                                    const expectedValue =
+                                        pricingData.testItemsValues['Base'][item.name][priceField][account][state];
+                                    expect(priceTSAs[priceField]).equals(expectedValue);
                                 });
                                 driver.sleep(0.2 * 1000);
                                 await pricingService.clearOrderCenterSearch();
@@ -395,9 +359,11 @@ export async function PricingBaseTests(email: string, password: string, client: 
                                         });
                                         // expect(totalUnitsAmount).equals(expectedAmount);
                                         priceFields.forEach((priceField) => {
-                                            expect(priceTSAs[priceField]).equals(
-                                                pricingData.testItemsValues[item.name][priceField][account][state],
-                                            );
+                                            const expextedValue =
+                                                pricingData.testItemsValues['Base'][item.name][priceField][account][
+                                                    state
+                                                ];
+                                            expect(priceTSAs[priceField]).equals(expextedValue);
                                         });
                                     });
                                 });
@@ -435,16 +401,6 @@ export async function PricingBaseTests(email: string, password: string, client: 
         });
 
         describe('Cleanup', () => {
-            // it('Retrieving "PPM_Values" UDT values via API', async () => {
-            //     ppmVluesEnd = await objectsService.getUDT({
-            //         where: `MapDataExternalID='${pricingData.tableName}'`,
-            //         page_size: -1,
-            //     });
-            //     expect(ppmVluesEnd.length).equals(
-            //         Object.keys(pricingData.documentsIn_PPM_Values).length + pricingData.dummyPPM_Values_length,
-            //     );
-            // });
-
             it('Deleting all Activities', async () => {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
@@ -472,69 +428,6 @@ export async function PricingBaseTests(email: string, password: string, client: 
                     }
                 }
             });
-
-            // it('deleting valid rules from the UDT "PPM_Values"', async () => {
-            //     const valueObjs: UserDefinedTableRow[] = [];
-            //     const validPPM_ValuesKeys = Object.keys(pricingData.documentsIn_PPM_Values);
-            //     const deleteResponses = await Promise.all(
-            //         validPPM_ValuesKeys.map(async (validPPM_Key) => {
-            //             const valueObj: UserDefinedTableRow | undefined = ppmVluesEnd.find((listing) => {
-            //                 if (listing.MainKey === validPPM_Key) return listing;
-            //             });
-            //             console.info(
-            //                 'validPPM_Key:',
-            //                 validPPM_Key,
-            //                 ', validPPM_ValueObj: ',
-            //                 JSON.stringify(valueObj, null, 2),
-            //             );
-            //             if (valueObj) {
-            //                 console.info('valueObj EXIST!');
-            //                 valueObjs.push(valueObj);
-            //                 valueObj.Hidden = true;
-            //                 return await objectsService.postUDT(valueObj);
-            //             }
-            //         }),
-            //     );
-            //     expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
-            //     deleteResponses.forEach((deleteUDTresponse) => {
-            //         console.info(
-            //             `${deleteUDTresponse?.MainKey} Delete RESPONSE: `,
-            //             JSON.stringify(deleteUDTresponse, null, 2),
-            //         );
-            //         if (deleteUDTresponse) {
-            //             console.info('UDT delete response exist!');
-            //             const PPMvalue = pricingData.documentsIn_PPM_Values[deleteUDTresponse.MainKey];
-            //             expect(deleteUDTresponse).to.deep.include({
-            //                 MapDataExternalID: pricingData.tableName,
-            //                 SecondaryKey: null,
-            //                 Values: [PPMvalue],
-            //             });
-            //             expect(deleteUDTresponse).to.have.property('MainKey');
-            //             expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
-            //             expect(deleteUDTresponse)
-            //                 .to.have.property('ModificationDateTime')
-            //                 .that.contains(new Date().toISOString().split('T')[0]);
-            //             expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
-            //             expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
-            //             expect(deleteUDTresponse).to.have.property('InternalID');
-            //         }
-            //     });
-            // });
-
-            // it('performing sync', async () => {
-            //     await webAppHeader.goHome();
-            //     driver.sleep(0.2 * 1000);
-            //     await webAppHomePage.isSpinnerDone();
-            //     await webAppHomePage.manualResync(client);
-            // });
-
-            // it('validating "PPM_Values" UDT values via API', async () => {
-            //     ppmVluesEnd = await objectsService.getUDT({
-            //         where: `MapDataExternalID='${pricingData.tableName}'`,
-            //         page_size: -1,
-            //     });
-            //     expect(ppmVluesEnd.length).equals(pricingData.dummyPPM_Values_length);
-            // });
         });
     });
 }

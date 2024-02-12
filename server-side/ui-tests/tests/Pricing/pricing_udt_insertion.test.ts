@@ -1,41 +1,32 @@
-import { describe, it } from 'mocha';
-import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
+import { describe, it } from 'mocha';
+import { Client } from '@pepperi-addons/debug-server';
 import { ObjectsService } from '../../../services';
-import { PricingData05 } from '../../pom/addons/Pricing05';
-import { PricingData06 } from '../../pom/addons/Pricing06';
-import { PricingData07 } from '../../pom/addons/Pricing07';
+import GeneralService from '../../../services/general.service';
+import PricingRules from '../../pom/addons/PricingRules';
 
 chai.use(promised);
 
 export async function PricingUdtInsertion(client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
+    const pricingRules = new PricingRules();
     let batchUDTresponse: any;
     let installedPricingVersion;
-    let pricingData;
+    let ppmValues_content;
 
     describe('UDT: "PPM_Values" insertion', () => {
         it('getting data object according to installed version', async () => {
             switch (installedPricingVersion) {
                 case '5':
                     console.info('AT installedPricingVersion CASE 5');
-                    pricingData = new PricingData05();
-                    break;
-                case '6':
-                    console.info('AT installedPricingVersion CASE 6');
-                    pricingData = new PricingData06();
-                    break;
-                case '7':
-                    console.info('AT installedPricingVersion CASE 7');
-                    pricingData = new PricingData07();
+                    ppmValues_content = pricingRules.version05;
                     break;
 
                 default:
                     console.info('AT installedPricingVersion Default');
-                    pricingData = new PricingData07();
+                    ppmValues_content = pricingRules.version06;
                     break;
             }
         });
@@ -47,12 +38,12 @@ export async function PricingUdtInsertion(client: Client) {
                 SecondaryKey: string;
                 Values: string[];
             }[] = [];
-            Object.keys(pricingData.documentsIn_PPM_Values).forEach((mainKey) => {
+            Object.keys(ppmValues_content).forEach((mainKey) => {
                 dataToBatch.push({
-                    MapDataExternalID: pricingData.tableName,
+                    MapDataExternalID: pricingRules.tableName,
                     MainKey: mainKey,
                     SecondaryKey: '',
-                    Values: [pricingData.documentsIn_PPM_Values[mainKey]],
+                    Values: [ppmValues_content[mainKey]],
                 });
             });
             batchUDTresponse = await objectsService.postBatchUDT(dataToBatch);

@@ -40,10 +40,6 @@ import {
     PricingAddonsUpsert,
     PricingConfigUpload,
     PricingUdtInsertion,
-    PricingDataPrep,
-    Pricing06DataPrep,
-    PricingTests,
-    Pricing06Tests,
     PricingBaseTests,
     PricingAdditionalGroupsReadonlyTests,
     PricingUomTests,
@@ -460,14 +456,6 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
-    if (tests === 'DataPrepPrc') {
-        await PricingDataPrep(varPass, client);
-    }
-
-    if (tests.includes('DataPrepPrc06')) {
-        await Pricing06DataPrep(varPass, client);
-    }
-
     if (tests === 'Pricing') {
         await PricingAddonsUpsert(varPass, client);
         await PricingConfigUpload(client, email, pass);
@@ -480,18 +468,6 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         // await PricingPartialValueTests(email, pass, client);
         // await PricingExclusionTests(email, pass, client);
         await PricingUdtCleanup(client);
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
-
-    if (tests === 'Pricing05') {
-        await PricingDataPrep(varPass, client);
-        await PricingTests(email, pass, client);
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
-
-    if (tests === 'Pricing06') {
-        await PricingDataPrep(varPass, client);
-        await Pricing06Tests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 

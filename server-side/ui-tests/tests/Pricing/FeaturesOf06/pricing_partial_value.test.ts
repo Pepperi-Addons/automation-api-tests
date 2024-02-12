@@ -1,26 +1,45 @@
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../../services/general.service';
+import GeneralService from '../../../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
-import { Browser } from '../../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../pom';
-import { OrderPage } from '../../pom/Pages/OrderPage';
-import { PricingService } from '../../../services/pricing.service';
-import { PricingData06 } from '../../pom/addons/Pricing06';
+import { Browser } from '../../../utilities/browser';
+import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../../pom';
+import { OrderPage } from '../../../pom/Pages/OrderPage';
+import { PricingService } from '../../../../services/pricing.service';
+import { PricingData06 } from '../../../pom/addons/PricingData06';
+import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
+import { ObjectsService } from '../../../../services';
+import PricingRules from '../../../pom/addons/PricingRules';
 
 chai.use(promised);
 
 export async function PricingPartialValueTests(email: string, password: string, client: Client) {
     const dateTime = new Date();
     const generalService = new GeneralService(client);
-    // const objectsService = new ObjectsService(generalService);
+    const objectsService = new ObjectsService(generalService);
+    const pricingData = new PricingData06();
+    const pricingRules = new PricingRules();
+
     const installedPricingVersion = (await generalService.getInstalledAddons()).find(
         (addon) => addon.Addon.Name == 'pricing',
     )?.Version;
     const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
+
+    let ppmValues_content;
+    switch (installedPricingVersion) {
+        // case '6':
+        //     console.info('AT installedPricingVersion CASE 6');
+        //     ppmValues_content = pricingRules.version06;
+        //     break;
+
+        default:
+            console.info('AT installedPricingVersion Default');
+            ppmValues_content = pricingRules.version06;
+            break;
+    }
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -34,12 +53,12 @@ export async function PricingPartialValueTests(email: string, password: string, 
     let transactionUUID_Acc01: string;
     let accountName: string;
     let duration: string;
+    let ppmValues: UserDefinedTableRow[];
     let base64ImageComponent;
 
     const account = 'Acc01';
-    const pricingData = new PricingData06();
-    const multipleValuesTestItems = ['Frag006', 'Frag008', 'Frag009', 'Frag011'];
-    const multipleValuesTestStates = ['baseline', '1 Each', '2 Case', '3 Box'];
+    const partialValueTestItems = ['Frag006', 'Frag008', 'Frag009', 'Frag011'];
+    const partialValueTestStates = ['baseline', '1 Each', '2 Case', '3 Box'];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
         'PriceDiscountUnitPriceAfter1',
@@ -91,6 +110,49 @@ export async function PricingPartialValueTests(email: string, password: string, 
                 await webAppHomePage.manualResync(client);
             });
 
+            it('get UDT Values (PPM_Values)', async () => {
+                ppmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
+                console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
+            });
+
+            it('validating "PPM_Values" via API', async () => {
+                const expectedPPMValuesLength =
+                    Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length;
+                console.info(
+                    'EXPECTED: Object.keys(ppmValues_content).length + dummyPPM_ValuesKeys.length: ',
+                    expectedPPMValuesLength,
+                    'ACTUAL: ppmValues.length: ',
+                    ppmValues.length,
+                );
+                addContext(this, {
+                    title: `PPM Values Length`,
+                    value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
+                });
+                expect(ppmValues.length).equals(expectedPPMValuesLength);
+                Object.keys(ppmValues_content).forEach((mainKey) => {
+                    console.info('mainKey: ', mainKey);
+                    const matchingRowOfppmValues = ppmValues.find((tableRow) => {
+                        if (tableRow.MainKey === mainKey) {
+                            return tableRow;
+                        }
+                    });
+                    matchingRowOfppmValues &&
+                        console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
+                    console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
+                    matchingRowOfppmValues &&
+                        addContext(this, {
+                            title: `PPM Value for the Key "${mainKey}"`,
+                            value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${ppmValues_content[mainKey]}`,
+                        });
+                    matchingRowOfppmValues &&
+                        expect(ppmValues_content[mainKey]).equals(
+                            client.BaseURL.includes('staging')
+                                ? matchingRowOfppmValues['Values'].join()
+                                : matchingRowOfppmValues['Values'][0],
+                        );
+                });
+            });
+
             // testAccounts.forEach((account) => {
             describe(`ACCOUNT "My Store"`, function () {
                 it('Creating new transaction', async function () {
@@ -130,17 +192,17 @@ export async function PricingPartialValueTests(email: string, password: string, 
                         );
                         driver.sleep(0.1 * 1000);
                     });
-                    multipleValuesTestItems.forEach((multipleValuesTestItem) => {
-                        describe(`Item: ***${multipleValuesTestItem}`, function () {
+                    partialValueTestItems.forEach((partialValueTestItem) => {
+                        describe(`Item: ***${partialValueTestItem}`, function () {
                             describe('ORDER CENTER', function () {
-                                it(`Looking for "${multipleValuesTestItem}" using the search box`, async function () {
-                                    await pricingService.searchInOrderCenter.bind(this)(multipleValuesTestItem, driver);
+                                it(`Looking for "${partialValueTestItem}" using the search box`, async function () {
+                                    await pricingService.searchInOrderCenter.bind(this)(partialValueTestItem, driver);
                                     driver.sleep(1 * 1000);
                                 });
-                                multipleValuesTestStates.forEach((multipleValuesTestState) => {
-                                    it(`Checking "${multipleValuesTestState}"`, async function () {
-                                        if (multipleValuesTestState != 'baseline') {
-                                            const splitedStateArgs = multipleValuesTestState.split(' ');
+                                partialValueTestStates.forEach((partialValueTestState) => {
+                                    it(`Checking "${partialValueTestState}"`, async function () {
+                                        if (partialValueTestState != 'baseline') {
+                                            const splitedStateArgs = partialValueTestState.split(' ');
                                             const chosenUom = splitedStateArgs[1];
                                             const amount = Number(splitedStateArgs[0]);
                                             addContext(this, {
@@ -149,14 +211,14 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                             });
                                             await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                                 this,
-                                            )(chosenUom, multipleValuesTestItem, amount, driver);
+                                            )(chosenUom, partialValueTestItem, amount, driver);
                                         }
                                         const priceTSAs = await pricingService.getItemTSAs(
                                             'OrderCenter',
-                                            multipleValuesTestItem,
+                                            partialValueTestItem,
                                         );
                                         console.info(
-                                            `${multipleValuesTestItem} ${multipleValuesTestState} priceTSAs:`,
+                                            `${partialValueTestItem} ${partialValueTestState} priceTSAs:`,
                                             priceTSAs,
                                         );
                                         expect(typeof priceTSAs).equals('object');
@@ -168,12 +230,12 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                             'PriceTaxUnitPriceAfter1',
                                             'NPMCalcMessage',
                                         ]);
-                                        if (multipleValuesTestState === 'baseline') {
+                                        if (partialValueTestState === 'baseline') {
                                             const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                             const baseline_NPMCalcMessage =
-                                                pricingData.testItemsValues[multipleValuesTestItem]['NPMCalcMessage'][
-                                                    account
-                                                ][multipleValuesTestState];
+                                                pricingData.testItemsValues.Partial[partialValueTestItem][
+                                                    'NPMCalcMessage'
+                                                ][account][partialValueTestState];
                                             addContext(this, {
                                                 title: `State Args`,
                                                 value: `NPMCalcMessage from UI: ${JSON.stringify(
@@ -186,20 +248,20 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                         } else {
                                             const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                             const baseline_NPMCalcMessage =
-                                                pricingData.testItemsValues[multipleValuesTestItem]['NPMCalcMessage'][
-                                                    account
-                                                ]['baseline'];
+                                                pricingData.testItemsValues.Partial[partialValueTestItem][
+                                                    'NPMCalcMessage'
+                                                ][account]['baseline'];
                                             const data_NPMCalcMessage =
-                                                pricingData.testItemsValues[multipleValuesTestItem]['NPMCalcMessage'][
-                                                    account
-                                                ][multipleValuesTestState];
+                                                pricingData.testItemsValues.Partial[partialValueTestItem][
+                                                    'NPMCalcMessage'
+                                                ][account][partialValueTestState];
                                             addContext(this, {
                                                 title: `State Args`,
                                                 value: `NPMCalcMessage from UI: ${JSON.stringify(
                                                     UI_NPMCalcMessage,
                                                 )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
                                                     baseline_NPMCalcMessage,
-                                                )}, NPMCalcMessage (at ${multipleValuesTestState}) from Data: ${JSON.stringify(
+                                                )}, NPMCalcMessage (at ${partialValueTestState}) from Data: ${JSON.stringify(
                                                     data_NPMCalcMessage,
                                                 )}`,
                                             });
@@ -210,9 +272,9 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                         priceFields.forEach((priceField) => {
                                             const fieldValue = priceTSAs[priceField];
                                             const expectedFieldValue =
-                                                pricingData.testItemsValues[multipleValuesTestItem][priceField][
+                                                pricingData.testItemsValues.Partial[partialValueTestItem][priceField][
                                                     account
-                                                ][multipleValuesTestState];
+                                                ][partialValueTestState];
                                             addContext(this, {
                                                 title: `${priceField}`,
                                                 value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
@@ -242,7 +304,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
                             });
                         });
                         it('verifying that the sum total of items in the cart is correct', async function () {
-                            const numberOfItemsInCart = multipleValuesTestItems.length;
+                            const numberOfItemsInCart = partialValueTestItems.length;
                             base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Cart`,
@@ -259,49 +321,47 @@ export async function PricingPartialValueTests(email: string, password: string, 
                             expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                             driver.sleep(1 * 1000);
                         });
-                        multipleValuesTestItems.forEach((multipleValuesTestCartItem) => {
-                            it(`checking item "${multipleValuesTestCartItem}"`, async function () {
+                        partialValueTestItems.forEach((partialValueTestCartItem) => {
+                            it(`checking item "${partialValueTestCartItem}"`, async function () {
                                 const state = '3 Box';
                                 const totalUnitsAmount = await pricingService.getItemTotalAmount(
                                     'Cart',
-                                    multipleValuesTestCartItem,
+                                    partialValueTestCartItem,
                                     undefined,
                                     undefined,
                                     'LinesView',
                                 );
                                 const priceTSAs = await pricingService.getItemTSAs(
                                     'Cart',
-                                    multipleValuesTestCartItem,
+                                    partialValueTestCartItem,
                                     undefined,
                                     undefined,
                                     'LinesView',
                                 );
                                 const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
                                     'Cart',
-                                    multipleValuesTestCartItem,
+                                    partialValueTestCartItem,
                                     undefined,
                                     undefined,
                                     'LinesView',
                                 );
                                 const priceTSAs_AOQM_UOM2 = await pricingService.getItemTSAs_AOQM_UOM2(
                                     'Cart',
-                                    multipleValuesTestCartItem,
+                                    partialValueTestCartItem,
                                     undefined,
                                     undefined,
                                     'LinesView',
                                 );
                                 // const priceTotalsTSAs = await pricingService.getTotalsTSAsOfItem(
                                 //     'Cart',
-                                //     multipleValuesTestCartItem,
+                                //     partialValueTestCartItem,
                                 //     undefined,
                                 //     undefined,
                                 //     'LinesView',
                                 // );
                                 const expectedTotalUnitsAmount =
-                                    pricingData.testItemsValues[multipleValuesTestCartItem]['Cart'][account];
-                                console.info(
-                                    `Cart ${multipleValuesTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
-                                );
+                                    pricingData.testItemsValues.Partial[partialValueTestCartItem]['Cart'][account];
+                                console.info(`Cart ${partialValueTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`);
                                 console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
                                 addContext(this, {
                                     title: `Total Units amount of item`,
@@ -309,9 +369,9 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                 });
                                 priceFields.forEach((priceField) => {
                                     const expectedValue =
-                                        pricingData.testItemsValues[multipleValuesTestCartItem][priceField][account][
-                                            state
-                                        ];
+                                        pricingData.testItemsValues.Partial[partialValueTestCartItem][priceField][
+                                            account
+                                        ][state];
                                     addContext(this, {
                                         title: `TSA field "${priceField}" Values`,
                                         value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
@@ -321,7 +381,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                 // expect(totalUnitsAmount).equals(expectedTotalUnitsAmount);
                                 const discount2FieldValue = priceTSA_Discount2['PriceDiscount2UnitPriceAfter1'];
                                 const discount2ExpectedFieldValue =
-                                    pricingData.testItemsValues[multipleValuesTestCartItem][
+                                    pricingData.testItemsValues.Partial[partialValueTestCartItem][
                                         'PriceDiscount2UnitPriceAfter1'
                                     ]['cart'][account];
                                 addContext(this, {
@@ -333,9 +393,9 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                 priceFields2.forEach((priceField) => {
                                     const fieldValue = priceTSAs_AOQM_UOM2[priceField];
                                     const expectedFieldValue =
-                                        pricingData.testItemsValues[multipleValuesTestCartItem][priceField]['cart'][
-                                            account
-                                        ];
+                                        pricingData.testItemsValues.Partial[partialValueTestCartItem][priceField][
+                                            'cart'
+                                        ][account];
                                     addContext(this, {
                                         title: `${priceField}`,
                                         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
@@ -346,7 +406,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                 // totalsPriceFields.forEach((priceField) => {
                                 //     const fieldValue = priceTotalsTSAs[priceField];
                                 //     const expectedFieldValue =
-                                //         pricingData.testItemsValues[multipleValuesTestCartItem][priceField][account][multipleValuesTestState];
+                                //         pricingData.testItemsValues.Partial[partialValueTestCartItem][priceField][account][partialValueTestState];
                                 //     addContext(this, {
                                 //         title: `${priceField}`,
                                 //         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,

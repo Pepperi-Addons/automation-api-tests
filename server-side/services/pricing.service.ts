@@ -1,6 +1,3 @@
-// import { Client } from "@pepperi-addons/debug-server/dist";
-// import GeneralService from "./general.service";
-// import { ObjectsService } from "./objects.service";
 import { Browser } from '../ui-tests/utilities/browser';
 import { expect } from 'chai';
 import { Key, WebElement } from 'selenium-webdriver';
