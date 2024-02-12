@@ -324,15 +324,15 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                         'NPMCalcMessage',
                                     ]);
                                     const expectedNPMCalcMessageLength =
-                                        pricingData.testItemsValues['Additional'][item_forFreeGoods]['NPMCalcMessage'][
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
                                             account
                                         ]['baseline'].length +
-                                        pricingData.testItemsValues['Additional'][item_forFreeGoods]['NPMCalcMessage'][
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
                                             account
                                         ][states[index]].length;
                                     priceFields.forEach((priceField) => {
                                         const expectedValue =
-                                            pricingData.testItemsValues['Additional'][item_forFreeGoods][priceField][
+                                            pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][
                                                 account
                                             ][states[index]];
                                         expect(ToBr55priceTSAs_OC[priceField]).equals(expectedValue);
@@ -365,15 +365,15 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                     'NPMCalcMessage',
                                 ]);
                                 const expectedNPMCalcMessageLength =
-                                    pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
-                                        'baseline'
-                                    ].length;
+                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                        account
+                                    ]['baseline'].length;
                                 await pricingService.clearOrderCenterSearch();
                                 priceFields.forEach((priceField) => {
                                     const expectedValue =
-                                        pricingData.testItemsValues['Additional'][item_forFreeGoods][priceField][
-                                            account
-                                        ]['baseline'];
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][account][
+                                            'baseline'
+                                        ];
                                     expect(ToBr55priceTSAs_OC[priceField]).equals(expectedValue);
                                 });
                                 expect(ToBr55priceTSAs_OC.NPMCalcMessage.length).equals(expectedNPMCalcMessageLength);
@@ -431,15 +431,15 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                         'NPMCalcMessage',
                                     ]);
                                     const expectedNPMCalcMessageLength =
-                                        pricingData.testItemsValues['Additional'][item_forFreeGoods]['NPMCalcMessage'][
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
                                             account
                                         ]['baseline'].length +
-                                        pricingData.testItemsValues['Additional'][item_forFreeGoods]['NPMCalcMessage'][
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
                                             account
                                         ][states[index]].length;
                                     priceFields.forEach((priceField) => {
                                         const expectedValue =
-                                            pricingData.testItemsValues['Additional'][item_forFreeGoods][priceField][
+                                            pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][
                                                 account
                                             ][states[index]];
                                         expect(Drug0002priceTSAs_OC[priceField]).equals(expectedValue);
@@ -451,7 +451,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                 });
                             });
 
-                            it('Back to 9 Cases', async () => {
+                            it('Back to 9 Cases', async function () {
                                 await driver.click(
                                     orderPage.getSelectorOfItemQuantityMinusButtonInOrderCenterByName(
                                         item_forFreeGoods,
@@ -479,15 +479,15 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                     'NPMCalcMessage',
                                 ]);
                                 const expectedNPMCalcMessageLength =
-                                    pricingData.testItemsValues['Additional'][item_forFreeGoods]['NPMCalcMessage'][
+                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
                                         account
                                     ]['baseline'].length;
                                 await pricingService.clearOrderCenterSearch();
                                 priceFields.forEach((priceField) => {
                                     const expectedValue =
-                                        pricingData.testItemsValues['Additional'][item_forFreeGoods][priceField][
-                                            account
-                                        ]['baseline'];
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][account][
+                                            'baseline'
+                                        ];
                                     expect(Drug0002priceTSAs_OC[priceField]).equals(expectedValue);
                                 });
                                 expect(Drug0002priceTSAs_OC['NPMCalcMessage'].length).equals(
@@ -546,15 +546,15 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                         'NPMCalcMessage',
                                     ]);
                                     const expectedNPMCalcMessageLength =
-                                        pricingData.testItemsValues['Additional'][item_forFreeGoods]['NPMCalcMessage'][
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
                                             account
                                         ]['baseline'].length +
-                                        pricingData.testItemsValues['Additional'][item_forFreeGoods]['NPMCalcMessage'][
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
                                             account
                                         ][states[index]].length;
                                     priceFields.forEach((priceField) => {
                                         const expectedValue =
-                                            pricingData.testItemsValues['Additional'][item_forFreeGoods][priceField][
+                                            pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][
                                                 account
                                             ][states[index]];
                                         expect(Drug0004priceTSAs_OC[priceField]).equals(expectedValue);
@@ -566,7 +566,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                 });
                             });
 
-                            it('Back to 2 Cases', async () => {
+                            it('Back to 2 Cases', async function () {
                                 await driver.click(
                                     orderPage.getSelectorOfItemQuantityMinusButtonInOrderCenterByName(
                                         item_forFreeGoods,
@@ -594,14 +594,14 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                     'NPMCalcMessage',
                                 ]);
                                 const expectedNPMCalcMessageLength =
-                                    pricingData.testItemsValues['Additional'][item_forFreeGoods]['NPMCalcMessage'][
+                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
                                         account
                                     ]['baseline'].length;
                                 priceFields.forEach((priceField) => {
                                     const expectedValue =
-                                        pricingData.testItemsValues['Additional'][item_forFreeGoods][priceField][
-                                            account
-                                        ]['baseline'];
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][account][
+                                            'baseline'
+                                        ];
                                     expect(Drug0004priceTSAs_OC[priceField]).equals(expectedValue);
                                 });
                                 expect(Drug0004priceTSAs_OC['NPMCalcMessage'].length).equals(
@@ -805,7 +805,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                     switch (priceField) {
                                         case 'PriceBaseUnitPriceAfter1':
                                             const expectedValue =
-                                                pricingData.testItemsValues['Additional'][item][
+                                                pricingData.testItemsValues.Additional[item][
                                                     'PriceBaseUnitPriceAfter1'
                                                 ][account]['baseline'];
                                             expect(Drug0002_priceTSAsCart[priceField]).to.equal(expectedValue);
@@ -854,7 +854,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                         switch (priceField) {
                                             case 'PriceBaseUnitPriceAfter1':
                                                 const expectedValue =
-                                                    pricingData.testItemsValues['Additional'][item].ItemPrice;
+                                                    pricingData.testItemsValues.Additional[item].ItemPrice;
                                                 expect(ToBr10_priceTSAsCart[priceField]).to.equal(expectedValue);
                                                 break;
 
@@ -931,7 +931,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                     switch (priceField) {
                                         case 'PriceBaseUnitPriceAfter1':
                                             const expectedValue =
-                                                pricingData.testItemsValues['Additional'][item].ItemPrice;
+                                                pricingData.testItemsValues.Additional[item].ItemPrice;
                                             expect(ToBr55_priceTSAsCart[priceField]).to.equal(expectedValue);
                                             break;
 
@@ -1611,20 +1611,23 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                 10,
                                 driver,
                             );
+                            driver.sleep(0.5 * 1000);
                             const MakeUp003_priceTSAsCart = await pricingService.getItemTSAs(
                                 'OrderCenter',
                                 item_forGroupRules,
                             );
                             driver.sleep(0.1 * 1000);
+                            const expected_MakeUp003_NPMCalcMessage =
+                                pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
+                                    '10units'
+                                ];
                             switch (account) {
                                 case 'Acc01':
-                                    expect(MakeUp003_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(1);
+                                    expect(MakeUp003_priceTSAsCart.NPMCalcMessage)
+                                        .to.be.an('array')
+                                        .with.lengthOf(expected_MakeUp003_NPMCalcMessage.length);
                                     expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0])).eql(
-                                        Object.keys(
-                                            pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[
-                                                account
-                                            ]['10units'][0],
-                                        ),
+                                        Object.keys(expected_MakeUp003_NPMCalcMessage[0]),
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Name).eql(
                                         pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
@@ -1632,11 +1635,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
                                         ][0].Name,
                                     );
                                     expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0])).eql(
-                                        Object.keys(
-                                            pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[
-                                                account
-                                            ]['10units'][0].Conditions[0],
-                                        ),
+                                        Object.keys(expected_MakeUp003_NPMCalcMessage[0].Conditions[0]),
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0].Name).eql(
                                         pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
