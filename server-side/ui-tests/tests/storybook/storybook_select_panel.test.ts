@@ -45,6 +45,7 @@ export async function StorybookSelectPanelTests() {
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 

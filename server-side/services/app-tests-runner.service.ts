@@ -3,6 +3,7 @@ import GeneralService from './general.service';
 import { initiateTester } from './general.service';
 
 export class AppTest {
+    JENKINS_BASE_URL = 'https://admin-box.pepperi.com/job/';
     service: GeneralService;
     base64VARCredentialsProd;
     base64VARCredentialsEU;
@@ -16,11 +17,13 @@ export class AppTest {
         base64VARCredentialsProd: string,
         base64VARCredentialsEU: string,
         base64VARCredentialsSB: string,
+        addonSK: string,
     ) {
         this.service = generalService;
         this.base64VARCredentialsProd = base64VARCredentialsProd;
         this.base64VARCredentialsEU = base64VARCredentialsEU;
         this.base64VARCredentialsSB = base64VARCredentialsSB;
+        this.kmsSecret = addonSK;
     }
 
     async jenkinsDoubleJobTestRunner(
@@ -188,7 +191,7 @@ export class AppTest {
         }
         console.log(`Asked To Run: '${addonName}' (${addonUUID}), On Version: ${addonVersionProd}`);
         await reportBuildStarted(addonName, addonUUID, addonVersionProd, this.service);
-        this.kmsSecret = await this.service.getSecretfromKMS(this.adminUser, this.adminPass, 'JenkinsBuildUserCred');
+
         const JenkinsBuildResultsAllEnvs = await Promise.all([
             this.service.runJenkinsJobRemotely(
                 this.kmsSecret,
@@ -221,6 +224,31 @@ export class AppTest {
             addonVersionEU,
             addonVersionSb,
         };
+    }
+
+    async parseTestResults(jenkinsJobUrl) {
+        debugger;
+        const bufferedJenkinsBuildCreds = Buffer.from(this.kmsSecret).toString('base64');
+        const jenkinsJobConsoleTextResponse = await this.service.fetchStatus(
+            `${this.JENKINS_BASE_URL}${jenkinsJobUrl}/lastBuild/consoleText`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Basic ` + bufferedJenkinsBuildCreds,
+                },
+            },
+        );
+        const jenkinsColnsoleTextResults =
+            jenkinsJobConsoleTextResponse.Body.Text.split('#  failure         detail')[1];
+        const parsedResultsOfTest = jenkinsColnsoleTextResults.substring(
+            jenkinsColnsoleTextResults.indexOf('01. '),
+            jenkinsColnsoleTextResults.length,
+        );
+        const parsedResultsNoEnding = parsedResultsOfTest.substring(
+            0,
+            parsedResultsOfTest.indexOf("Build step 'PowerShell' marked build as failure"),
+        );
+        return parsedResultsNoEnding;
     }
 
     async unavailableAddonVersion(env, addonName, addonEntryUUID, addonVersion, addonUUID, varCredentials) {
@@ -332,6 +360,7 @@ export class AppTest {
     ) {
         const passingEnvs: string[] = [];
         const failingEnvs: string[] = [];
+        const failMessage: { env: string; text: string }[] = [];
         let isOneOfTestFailed = false;
         for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
             const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
@@ -340,6 +369,7 @@ export class AppTest {
                 failingEnvs.push(resultAndEnv[1]);
             }
         }
+        debugger;
         if (isOneOfTestFailed) {
             await this.unavailableVersionAfterAppTestFail(
                 addonEntryUUIDEu,
@@ -355,6 +385,18 @@ export class AppTest {
                 this.base64VARCredentialsSB,
                 addonName,
             );
+            const uniqueEnvs = new Set(failingEnvs);
+            debugger;
+            for (let index = 0; index < uniqueEnvs.size; index++) {
+                const failedEnv = Array.from(uniqueEnvs)[index];
+                if (failedEnv === 'EU') {
+                    failMessage.push({ env: 'EU', text: await this.parseTestResults(jobPathEU) });
+                } else if (failedEnv === 'Production') {
+                    failMessage.push({ env: 'PROD', text: await this.parseTestResults(jobPathPROD) });
+                } else if (failedEnv === 'Stage') {
+                    failMessage.push({ env: 'Stage', text: await this.parseTestResults(jobPathSB) });
+                }
+            }
         }
         // debugger;
         if (!failingEnvs.includes('EU')) {
@@ -366,6 +408,7 @@ export class AppTest {
         if (!failingEnvs.includes('Production')) {
             passingEnvs.push('Production');
         }
+
         //3. send to Teams
         await reportToTeams(
             this.service,
@@ -388,6 +431,7 @@ export class AppTest {
             latestRunEU,
             jobPathSB,
             latestRunSB,
+            failMessage,
         );
 
         //4. run again on prev version to make tests green again

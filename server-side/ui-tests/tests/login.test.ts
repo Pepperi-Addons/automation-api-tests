@@ -15,6 +15,7 @@ export async function LoginTests(email: string, password: string, withImage?: bo
         afterEach(async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.collectEndTestData(this);
+            await driver.close();
             await driver.quit();
         });
 

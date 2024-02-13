@@ -118,6 +118,7 @@ export async function PricingUomTests(email: string, password: string, client: C
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 

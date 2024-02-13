@@ -775,7 +775,13 @@ export default class GeneralService {
     }
 
     getInstalledAddons(options?: FindOptions): Promise<InstalledAddon[]> {
-        return this.papiClient.addons.installedAddons.find(options);
+        let installedAddons;
+        try {
+            installedAddons = this.papiClient.addons.installedAddons.find(options);
+        } catch (error) {
+            throw new Error(`Error: ${(error as any).message}}`);
+        }
+        return installedAddons;
     }
 
     getSystemAddons() {

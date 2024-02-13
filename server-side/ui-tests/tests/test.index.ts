@@ -1214,7 +1214,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         }
         const addonName = addon.toUpperCase(); // this will be used across the whole CI/CD flow (Dev & App. tests)
         ///////////////////////DEV TESTS///////////////////////////////////
-        // 1.VAR credentials for all envs - used for addon installations
+        // // 1.VAR credentials for all envs - used for addon installations
         const base64VARCredentialsProd = Buffer.from(varPass).toString('base64');
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
@@ -1313,17 +1313,21 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
 
         let addonUUID: string;
         console.log(`####################### Approvment Tests For ${addonName} #######################`);
+        const jenkinsBuildUserCred = await generalService.getSecretfromKMS(email, pass, 'JenkinsBuildUserCred');
         const appTestsRunnnerService = new AppTest( //utility class for app. tests functionality
             generalService,
             base64VARCredentialsProd,
             base64VARCredentialsEU,
             base64VARCredentialsSB,
+            jenkinsBuildUserCred,
         );
+
         // 1. parse which addon should run and on which version, run the test on Jenkins
         switch (addonName) {
             //add another 'case' here when adding new addons to this mehcanisem
             case 'ADAL': {
                 addonUUID = '00000000-0000-0000-0000-00000000ada1';
+                debugger;
                 const buildToken = 'ADALApprovmentTests';
                 const jobPathPROD =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Production%20-%20ADAL';
@@ -1331,6 +1335,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL';
                 const jobPathSB =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL';
+                debugger;
                 const {
                     JenkinsBuildResultsAllEnvs,
                     latestRunProd,
@@ -1365,6 +1370,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
                 addonVersionProdEx = addonVersionProd;
                 addonVersionEUEx = addonVersionEU;
                 addonVersionSbEx = addonVersionSb;
+                debugger;
                 break;
             }
             case 'ASYNCADDON': {
@@ -1852,6 +1858,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
                 addonVersionProdEx = addonVersionProd;
                 addonVersionEUEx = addonVersionEU;
                 addonVersionSbEx = addonVersionSb;
+                debugger;
                 break;
             }
             case 'PEPPERI-FILE-STORAGE':
@@ -1906,6 +1913,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             }
             case 'CORE':
             case 'CORE-GENERIC-RESOURCES': {
+                debugger;
                 addonUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
                 const buildToken = 'COREApprovmentTests';
                 const jobPathPROD =
@@ -1948,6 +1956,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
                 addonVersionProdEx = addonVersionProd;
                 addonVersionEUEx = addonVersionEU;
                 addonVersionSbEx = addonVersionSb;
+                debugger;
                 break;
             }
             default:
@@ -2401,10 +2410,12 @@ export async function reportToTeams(
     latestRunEU?,
     jobPathSB?,
     latestRunSB?,
+    failedAppTests?,
 ) {
     let message;
     let message2;
     await reportBuildEnded(addonName, addonUUID, addonVersion, generalService);
+    debugger;
     if (isDev) {
         const stringUsers = users?.join(',');
         const uniqFailingEnvs = [...new Set(failingEnvs)];
@@ -2427,10 +2438,15 @@ export async function reportToTeams(
                 : ',<br>SB:' + failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
         }`;
     } else {
-        message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version:${addonVersion} ||| ${
+        //include new results printing here and copy the function to app-tests class
+        debugger;
+        const failedTestsOrdered = failedAppTests.map((element) => `${element.env}: ${element.text}`);
+        debugger;
+        message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version: ${addonVersion} ||| ${
             passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ') + '|||'
         }  ${failingEnvs.length === 0 ? '' : 'Failed On: ' + failingEnvs.join(', ')}`;
-        message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
+        message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console<br><br>Failed Tests:<br>${failedTestsOrdered.toString()}`;
+        debugger;
     }
     const bodyToSend = {
         Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,

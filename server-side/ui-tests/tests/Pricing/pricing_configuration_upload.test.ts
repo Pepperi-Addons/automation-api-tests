@@ -30,6 +30,7 @@ export async function PricingConfigUpload(client: Client, email: string, passwor
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 

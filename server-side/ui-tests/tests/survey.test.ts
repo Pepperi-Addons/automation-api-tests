@@ -234,6 +234,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 
@@ -517,6 +518,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 

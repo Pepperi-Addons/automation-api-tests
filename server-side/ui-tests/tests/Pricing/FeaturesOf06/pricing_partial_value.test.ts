@@ -106,6 +106,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 
