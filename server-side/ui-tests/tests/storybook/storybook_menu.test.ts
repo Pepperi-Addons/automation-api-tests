@@ -50,6 +50,7 @@ export async function StorybookMenuTests() {
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 

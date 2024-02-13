@@ -62,6 +62,7 @@ export async function StorybookChipsTests() {
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 

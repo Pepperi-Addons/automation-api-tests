@@ -58,6 +58,7 @@ export async function NeltPerformanceTests(email: string, password: string, clie
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 

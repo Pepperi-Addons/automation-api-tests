@@ -204,6 +204,7 @@ export async function ResourceListTests(email: string, password: string, varPass
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 

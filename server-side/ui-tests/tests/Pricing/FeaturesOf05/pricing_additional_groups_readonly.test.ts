@@ -203,6 +203,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 

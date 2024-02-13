@@ -32,6 +32,7 @@ export async function StorybookSeparatorTests() {
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 

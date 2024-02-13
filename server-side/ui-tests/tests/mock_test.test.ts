@@ -873,6 +873,7 @@ export async function MockTest(email: string, password: string, client: Client) 
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 

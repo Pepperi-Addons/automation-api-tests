@@ -96,6 +96,7 @@ export async function PricingTotalsTests(email: string, password: string, client
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 
