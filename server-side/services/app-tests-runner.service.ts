@@ -394,7 +394,7 @@ export class AppTest {
                 } else if (failedEnv === 'Production') {
                     failMessage.push({ env: 'PROD', text: await this.parseTestResults(jobPathPROD) });
                 } else if (failedEnv === 'Stage') {
-                    failMessage.push({ env: 'PROD', text: await this.parseTestResults(jobPathSB) });
+                    failMessage.push({ env: 'Stage', text: await this.parseTestResults(jobPathSB) });
                 }
             }
         }

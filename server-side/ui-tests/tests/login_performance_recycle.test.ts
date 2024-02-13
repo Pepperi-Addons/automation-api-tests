@@ -82,7 +82,7 @@ export async function LoginPerfTests(email: string, password: string, varPass, c
             afterEach(async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.collectEndTestData(this);
-                await driver.close()
+                await driver.close();
                 await driver.quit();
             });
             it(`THIS TEST WAS PERFORMED AT: ${dateTime}`, function () {

@@ -36,7 +36,7 @@ export async function PromotionTests(email: string, password: string, client: Cl
         afterEach(async function () {
             const webAppHomePage = new WebAppHomePage(driver);
             await webAppHomePage.collectEndTestData(this);
-            await driver.close()
+            await driver.close();
             await driver.quit();
         });
 
