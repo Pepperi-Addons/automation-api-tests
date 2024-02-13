@@ -53,6 +53,7 @@ export async function StorybookRichHtmlTextareaTests() {
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 

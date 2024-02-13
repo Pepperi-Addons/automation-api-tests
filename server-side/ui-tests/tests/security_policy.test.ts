@@ -31,6 +31,7 @@ export async function SecurityPolicyTests(email: string, password: string) {
         afterEach(async function () {
             const webAppHomePage = new WebAppHomePage(driver);
             await webAppHomePage.collectEndTestData(this);
+            await driver.close();
             await driver.quit();
         });
 

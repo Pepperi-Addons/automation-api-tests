@@ -194,6 +194,7 @@ export async function ScriptPickerTests(email: string, password: string, varPass
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 

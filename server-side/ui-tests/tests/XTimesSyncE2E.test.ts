@@ -29,6 +29,7 @@ export async function XTimesSync(email: string, password: string, client: Client
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 

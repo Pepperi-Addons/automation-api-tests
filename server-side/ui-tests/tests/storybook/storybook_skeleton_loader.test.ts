@@ -29,6 +29,7 @@ export async function StorybookSkeletonLoaderTests() {
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 

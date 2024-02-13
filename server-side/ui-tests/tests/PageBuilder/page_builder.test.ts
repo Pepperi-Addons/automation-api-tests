@@ -57,6 +57,7 @@ export async function PageBuilderTests(
             });
 
             after(async function () {
+                await browser.close();
                 await browser.quit();
             });
             describe('Load Order Tests', function () {
