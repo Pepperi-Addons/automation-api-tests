@@ -56,6 +56,7 @@ export async function CreateDistributorTests(
             afterEach(async function () {
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData(this);
+                await driver.close()
                 await driver.quit();
             });
 
@@ -240,6 +241,7 @@ export async function CreateDistributorTests(
             afterEach(async function () {
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData(this);
+                await driver.close()
                 await driver.quit();
             });
 

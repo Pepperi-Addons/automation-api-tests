@@ -64,6 +64,7 @@ export async function CloseCatalogTest(email: string, password: string, varPass:
             afterEach(async function () {
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.collectEndTestData(this);
+                await driver.close()
                 await driver.quit();
             });
 
