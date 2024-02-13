@@ -31,7 +31,7 @@ export class PricingData06 {
                                 Base: 666,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -199.8,
@@ -75,7 +75,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 666,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -99.9 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -99.9 },
                                     {
                                         Name: 'ZDM2_A007 Category_CS_Contract1',
                                         Type: '%',
@@ -248,7 +248,7 @@ export class PricingData06 {
                                 Base: 648,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -194.4,
@@ -322,7 +322,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 648,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -97.2 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -97.2 },
                                 ],
                                 New: 550.8,
                                 Amount: -97.2,
@@ -462,7 +462,7 @@ export class PricingData06 {
                                 Base: 630,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -189.0,
@@ -483,7 +483,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 630,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -94.5 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -94.5 },
                                 ],
                                 New: 535.5,
                                 Amount: -94.5,
@@ -625,7 +625,7 @@ export class PricingData06 {
                                 Base: 798,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -239.4,
@@ -660,7 +660,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 798,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -119.7 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -119.7 },
                                 ],
                                 New: 678.3,
                                 Amount: -94.5,
@@ -828,7 +828,7 @@ export class PricingData06 {
                                 Base: 708,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -212.4,
@@ -904,7 +904,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 708,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -106.2 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -106.2 },
                                 ],
                                 New: 601.8,
                                 Amount: -106.2,
@@ -1031,7 +1031,7 @@ export class PricingData06 {
                                 Base: 726,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -217.8,
@@ -1052,7 +1052,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 726,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -108.9 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -108.9 },
                                 ],
                                 New: 617.1,
                                 Amount: -108.9,
@@ -1179,7 +1179,7 @@ export class PricingData06 {
                                 Base: 774,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -232.2,
@@ -1200,7 +1200,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 774,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -116.1 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -116.1 },
                                 ],
                                 New: 657.9,
                                 Amount: -116.1,
@@ -1349,7 +1349,7 @@ export class PricingData06 {
                                 Base: 585,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -175.5,
@@ -1368,7 +1368,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 774,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -116.1 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -116.1 },
                                 ],
                                 New: 657.9,
                                 Amount: -116.1,
@@ -1477,7 +1477,7 @@ export class PricingData06 {
                                 Base: 1620,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -486.0,
@@ -1507,7 +1507,7 @@ export class PricingData06 {
                                 Base: 1800,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -540.0,
@@ -1525,7 +1525,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 1620,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -243.0 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -243.0 },
                                 ],
                                 New: 1377.0,
                                 Amount: -243.0,
@@ -1550,7 +1550,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 1800,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -270.0 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -270.0 },
                                 ],
                                 New: 1530.0,
                                 Amount: -270.0,
@@ -1665,7 +1665,7 @@ export class PricingData06 {
                                 Base: 360,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -108.0,
@@ -1695,7 +1695,7 @@ export class PricingData06 {
                                 Base: 540,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -162.0,
@@ -1713,7 +1713,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 360,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -54.0 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -54.0 },
                                 ],
                                 New: 306.0,
                                 Amount: -54.0,
@@ -1738,7 +1738,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 540,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -81.0 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -81.0 },
                                 ],
                                 New: 459.0,
                                 Amount: -81.0,
@@ -2033,7 +2033,7 @@ export class PricingData06 {
                                 Base: 307.5,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_EA_CS_BOX',
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
                                         Type: '%',
                                         Value: -30,
                                         Amount: -92.25,
@@ -2053,7 +2053,7 @@ export class PricingData06 {
                                 Name: 'MultipleValues',
                                 Base: 307.5,
                                 Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_EA_CS_BOX', Type: '%', Value: -15, Amount: -46.125 },
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -46.125 },
                                 ],
                                 New: 261.375,
                                 Amount: -46.125,
@@ -4542,287 +4542,1398 @@ export class PricingData06 {
                 NPMCalcMessage: {
                     Acc01: {
                         baseline: [],
-                        '1 Each': [],
-                        '2 Each': [],
-                        '3 Each': [],
-                        '5 Each': [],
+                        '0 Each': [],
                         '9 Each': [],
-                        '10 Each': [],
-                        '11 Each': [],
+                        '10 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 272.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -81.75,
+                                    },
+                                ],
+                                New: 190.75,
+                                Amount: -81.75,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 272.5,
+                                Conditions: [{ Name: 'ZDH1_A011 (4 Letters)', Type: '%', Value: -20, Amount: -54.5 }],
+                                New: 218,
+                                Amount: -54.5,
+                            },
+                        ],
+                        '11 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 299.75,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -89.925,
+                                    },
+                                ],
+                                New: 209.825,
+                                Amount: -89.925,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 299.75,
+                                Conditions: [{ Name: 'ZDH1_A011 (4 Letters)', Type: '%', Value: -20, Amount: -59.95 }],
+                                New: 239.8,
+                                Amount: -59.95,
+                            },
+                        ],
                         '1 Case': [],
-                        '2 Case': [],
-                        '4 Case': [],
-                        '5 Case': [],
-                        '9 Case': [],
-                        '10 Case': [],
-                        '11 Case': [],
-                        '1 Box': [],
-                        '2 Box': [],
-                        '3 Box': [],
-                        '5 Box': [],
-                        '6 Box': [],
-                        '7 Box': [],
+                        '2 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 54.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -16.35,
+                                    },
+                                ],
+                                New: 38.15,
+                                Amount: -16.35,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 54.5,
+                                Conditions: [{ Name: 'ZDH1_A011 (4 Letters)', Type: '%', Value: -20, Amount: -10.9 }],
+                                New: 43.6,
+                                Amount: -10.9,
+                            },
+                        ],
+                        '3 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 81.75,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -24.525,
+                                    },
+                                ],
+                                New: 57.225,
+                                Amount: -24.525,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 81.75,
+                                Conditions: [{ Name: 'ZDH1_A011 (4 Letters)', Type: '%', Value: -20, Amount: -16.35 }],
+                                New: 65.4,
+                                Amount: -16.35,
+                            },
+                        ],
+                        '1 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 27.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -8.175,
+                                    },
+                                ],
+                                New: 19.075,
+                                Amount: -8.175,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 27.25,
+                                Conditions: [{ Name: 'ZDH1_A011 (4 Letters)', Type: '%', Value: -20, Amount: -5.45 }],
+                                New: 21.8,
+                                Amount: -5.45,
+                            },
+                        ],
                     },
                     OtherAcc: {
                         baseline: [],
-                        '1 Each': [],
-                        '2 Each': [],
-                        '3 Each': [],
-                        '5 Each': [],
+                        '0 Each': [],
                         '9 Each': [],
-                        '10 Each': [],
-                        '11 Each': [],
+                        '10 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 272.5,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -40.875 },
+                                ],
+                                New: 231.625,
+                                Amount: -40.875,
+                            },
+                        ],
+                        '11 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 299.75,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -44.9625 },
+                                ],
+                                New: 254.7875,
+                                Amount: -44.9625,
+                            },
+                        ],
                         '1 Case': [],
-                        '2 Case': [],
-                        '4 Case': [],
-                        '5 Case': [],
-                        '9 Case': [],
-                        '10 Case': [],
-                        '11 Case': [],
-                        '1 Box': [],
-                        '2 Box': [],
-                        '3 Box': [],
-                        '5 Box': [],
-                        '6 Box': [],
-                        '7 Box': [],
+                        '2 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 54.5,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -8.175 },
+                                ],
+                                New: 46.325,
+                                Amount: -8.175,
+                            },
+                        ],
+                        '3 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 81.75,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -12.2625 },
+                                ],
+                                New: 69.4875,
+                                Amount: -12.2625,
+                            },
+                        ],
+                        '1 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 27.25,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -4.0875 },
+                                ],
+                                New: 23.1625,
+                                Amount: -4.0875,
+                            },
+                        ],
                     },
                     cart: {
                         Acc01: [],
                         OtherAcc: [],
                     },
                 },
-                PriceMultiAfter1: {
+                PricePartial: {
                     Acc01: {
-                        baseline: { expectedValue: 27.25 * 6, rule: `X` },
-                        '1 Each': { expectedValue: 27.25 * 6, rule: `X` },
-                        '2 Each': { expectedValue: 27.25 * 6, rule: `X` },
-                        '3 Each': { expectedValue: 27.25 * 6, rule: `X` },
-                        '5 Each': { expectedValue: 27.25 * 6, rule: `X` },
-                        '9 Each': { expectedValue: 27.25 * 6, rule: `X` },
+                        baseline: { expectedValue: 27.25, rules: [`X`] },
+                        '0 Each': { expectedValue: 27.25, rules: [`X`] },
+                        '9 Each': { expectedValue: 27.25, rules: [`X`] },
                         '10 Each': {
-                            expectedValue: 155.4,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 6 * 0.7 -> 155.40)`,
+                            expectedValue: 21.8, // 27.25 - 5.45
+                            rules: [
+                                `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@1000@Frag006' -> [[10,"D",20,"%"]],"EA"]] (20% -> - 27.25 * 0.2 -> -5.45)`,
+                            ],
                         },
                         '11 Each': {
-                            expectedValue: 155.4,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 6 * 0.7 -> 155.40)`,
+                            expectedValue: 21.8, // 27.25 - 5.45
+                            rules: [
+                                `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@1000@Frag006' -> [[10,"D",20,"%"]],"EA"]] (20% -> - 27.25 * 0.2 -> -5.45)`,
+                            ],
                         },
-                        '1 Case': {
-                            expectedValue: 155.4,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 6 * 0.7 -> 155.40)`,
-                        },
+                        '1 Case': { expectedValue: 27.25, rules: [`X`] },
                         '2 Case': {
-                            expectedValue: 147.63,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 6 * 0.7 -> 155.40)
-                        \n'ZDM2@A007@Contract1@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"] (5% -> 155.40 * 0.95 -> 147.63)`,
+                            expectedValue: 21.8, // 27.25 - 5.45
+                            rules: [
+                                `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@1000@Frag006' -> [[10,"D",20,"%"]],"EA"]] (20% -> - 27.25 * 0.2 -> -5.45)`,
+                            ],
                         },
-                        '4 Case': {
-                            expectedValue: 132.09,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 6 * 0.7 -> 155.40)
-                        \n'ZDM2@A007@Contract1@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"] (15% -> 155.40 * 0.85 -> 132.09)`,
-                        },
-                        '5 Case': {
-                            expectedValue: 132.09,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 6 * 0.7 -> 155.40)
-                        \n'ZDM2@A007@Contract1@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"] (15% -> 155.40 * 0.85 -> 132.09)`,
-                        },
-                        '9 Case': {
-                            expectedValue: 132.09,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 6 * 0.7 -> 155.40)
-                        \n'ZDM2@A007@Contract1@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"] (15% -> 155.40 * 0.85 -> 132.09)`,
-                        },
-                        '10 Case': {
-                            expectedValue: 116.55,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 6 * 0.7 -> 155.40)
-                        \n'ZDM2@A007@Contract1@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"] (25% -> 155.40 * 0.75 -> 116.55)`,
-                        },
-                        '11 Case': {
-                            expectedValue: 116.55,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 6 * 0.7 -> 155.40)
-                        \n'ZDM2@A007@Contract1@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"] (25% -> 155.40 * 0.75 -> 116.55)`,
+                        '3 Case': {
+                            expectedValue: 21.8, // 27.25 - 5.45
+                            rules: [
+                                `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@1000@Frag006' -> [[10,"D",20,"%"]],"EA"]] (20% -> - 27.25 * 0.2 -> -5.45)`,
+                            ],
                         },
                         '1 Box': {
-                            expectedValue: 27.25 * 24,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 24 * 0.7 -> 621.60)`,
-                        },
-                        '2 Box': {
-                            expectedValue: 590.52,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 24 * 0.7 -> 621.60)
-                        \n'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",5,"%"]],"BOX","BOX"]] (5% -> 621.60 * 0.95 -> 590.52)`,
-                        },
-                        '3 Box': {
-                            expectedValue: 590.52,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 24 * 0.7 -> 621.60)
-                        \n'ZDM2@A007@Contract1@Facial Cosmetics' -> [[3,"D",5,"%"],[6,"D",15,"%"]],"BOX","BOX"]] (5% -> 621.60 * 0.95 -> 590.52)`,
-                        },
-                        '5 Box': {
-                            expectedValue: 590.52,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 24 * 0.7 -> 621.60)
-                        \n'ZDM2@A007@Contract1@Facial Cosmetics' -> [[3,"D",5,"%"],[6,"D",15,"%"]],"BOX","BOX"]] (5% -> 621.60 * 0.95 -> 590.52)`,
-                        },
-                        '6 Box': {
-                            expectedValue: 528.36,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 24 * 0.7 -> 621.60)
-                        \n'ZDM2@A007@Contract1@Facial Cosmetics' -> [[3,"D",5,"%"],[6,"D",15,"%"]],"BOX","BOX"]] (15% -> 621.60 * 0.85 -> 528.36)`,
-                        },
-                        '7 Box': {
-                            expectedValue: 528.36,
-                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 27.25 * 24 * 0.7 -> 621.60)
-                        \n'ZDM2@A007@Contract1@Facial Cosmetics' -> [[3,"D",5,"%"],[6,"D",15,"%"]],"BOX","BOX"]] (15% -> 621.60 * 0.85 -> 528.36)`,
+                            expectedValue: 21.8, // 27.25 - 5.45
+                            rules: [
+                                `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@1000@Frag006' -> [[10,"D",20,"%"]],"EA"]] (20% -> - 27.25 * 0.2 -> -5.45)`,
+                            ],
                         },
                     },
                     OtherAcc: {
-                        baseline: { expectedValue: 27.25, rule: `X` },
-                        '1 Each': { expectedValue: 27.25, rule: `X` },
-                        '2 Each': { expectedValue: 27.25, rule: `X` },
-                        '3 Each': { expectedValue: 27.25, rule: `X` },
-                        '5 Each': { expectedValue: 27.25, rule: `X` },
-                        '9 Each': { expectedValue: 27.25, rule: `X` },
-                        '10 Each': { expectedValue: 27.25, rule: `X` },
-                        '11 Each': { expectedValue: 27.25, rule: `X` },
-                        '1 Case': { expectedValue: 27.25 * 6, rule: `X` },
+                        baseline: { expectedValue: 27.25, rules: [`X`] },
+                        '0 Each': { expectedValue: 27.25, rules: [`X`] },
+                        '9 Each': { expectedValue: 27.25, rules: [`X`] },
+                        '10 Each': {
+                            expectedValue: 27.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '11 Each': {
+                            expectedValue: 27.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '1 Case': { expectedValue: 27.25, rules: [`X`] },
                         '2 Case': {
-                            expectedValue: 210.9,
-                            rule: `'ZDM2@A007@Contract1@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"] (5% -> 222.00 * 0.95)`,
+                            expectedValue: 27.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
                         },
-                        '4 Case': {
-                            expectedValue: 188.7,
-                            rule: `'ZDM2@A007@Contract1@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"] (15% -> 222.00 * 0.85)`,
+                        '3 Case': {
+                            expectedValue: 27.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
                         },
-                        '5 Case': {
-                            expectedValue: 188.7,
-                            rule: `'ZDM2@A007@Contract1@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"] (15% -> 222.00 * 0.85)`,
-                        },
-                        '9 Case': {
-                            expectedValue: 188.7,
-                            rule: `'ZDM2@A007@Contract1@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"] (15% -> 222.00 * 0.85)`,
-                        },
-                        '10 Case': {
-                            expectedValue: 166.5,
-                            rule: `'ZDM2@A007@Contract1@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"] (25% -> 222.00 * 0.75)`,
-                        },
-                        '11 Case': {
-                            expectedValue: 166.5,
-                            rule: `'ZDM2@A007@Contract1@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"] (25% -> 222.00 * 0.75)`,
-                        },
-                        '1 Box': { expectedValue: 27.25 * 24, rule: `X` },
-                        '2 Box': {
-                            expectedValue: 870.24,
-                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",2,"%"]],"BOX","BOX"]] (2% -> 888.00 * 0.98)`,
-                        },
-                        '3 Box': {
-                            expectedValue: 843.6,
-                            rule: `'ZDM2@A007@Contract1@Facial Cosmetics' -> [[3,"D",5,"%"],[6,"D",15,"%"]],"BOX","BOX"]] (5% -> 888.00 * 0.95)`,
-                        },
-                        '5 Box': {
-                            expectedValue: 843.6,
-                            rule: `'ZDM2@A007@Contract1@Facial Cosmetics' -> [[3,"D",5,"%"],[6,"D",15,"%"]],"BOX","BOX"]] (5% -> 888.00 * 0.95)`,
-                        },
-                        '6 Box': {
-                            expectedValue: 754.8,
-                            rule: `'ZDM2@A007@Contract1@Facial Cosmetics' -> [[3,"D",5,"%"],[6,"D",15,"%"]],"BOX","BOX"]] (15% -> 888.00 * 0.85)`,
-                        },
-                        '7 Box': {
-                            expectedValue: 754.8,
-                            rule: `'ZDM2@A007@Contract1@Facial Cosmetics' -> [[3,"D",5,"%"],[6,"D",15,"%"]],"BOX","BOX"]] (15% -> 888.00 * 0.85)`,
+                        '1 Box': {
+                            expectedValue: 27.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
                         },
                     },
                     cart: {
-                        Acc01: 1,
-                        OtherAcc: 1,
-                    },
-                },
-                PriceMultiAfter2: {
-                    Acc01: {
-                        baseline: { expectedValue: 27.25, rule: `X` },
-                        '1 Each': { expectedValue: 27.25, rule: `X` },
-                        '2 Each': {
-                            expectedValue: 18.0,
-                            rule: `'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"] (10% -> 27.25 * 0.9)`,
-                        },
-                        '3 Each': {
-                            expectedValue: 18.0,
-                            rule: `'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"] (10% -> 27.25 * 0.9)`,
-                        },
-                        '5 Each': {
-                            expectedValue: 16.0,
-                            rule: `'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"] (20% -> 27.25 * 0.8)`,
-                        },
-                        '9 Each': {
-                            expectedValue: 16.0,
-                            rule: `'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"] (20% -> 27.25 * 0.8)`,
-                        },
-                        '10 Each': {
-                            expectedValue: 14.0,
-                            rule: `'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"] (30% -> 27.25 * 0.7)`,
-                        },
-                        '11 Each': {
-                            expectedValue: 14.0,
-                            rule: `'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"] (30% -> 27.25 * 0.7)`,
-                        },
-                        '1 Case': { expectedValue: 14.0, rule: `X` },
-                        '2 Case': { expectedValue: 14.0, rule: `X` },
-                        '4 Case': { expectedValue: 14.0, rule: `X` },
-                        '5 Case': { expectedValue: 14.0, rule: `X` },
-                        '9 Case': { expectedValue: 14.0, rule: `X` },
-                        '10 Case': { expectedValue: 14.0, rule: `X` },
-                        '11 Case': { expectedValue: 14.0, rule: `X` },
-                        '1 Box': { expectedValue: 14.0, rule: `X` },
-                        '2 Box': { expectedValue: 14.0, rule: `X` },
-                        '3 Box': { expectedValue: 14.0, rule: `X` },
-                        '5 Box': { expectedValue: 14.0, rule: `X` },
-                        '6 Box': { expectedValue: 14.0, rule: `X` },
-                        '7 Box': { expectedValue: 14.0, rule: `X` },
-                    },
-                    OtherAcc: {
-                        baseline: { expectedValue: 27.25, rule: `X` },
-                        '1 Each': { expectedValue: 27.25, rule: `X` },
-                        '2 Each': {
-                            expectedValue: 19.0,
-                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"] (5% -> 27.25 * 0.95)`,
-                        },
-                        '3 Each': {
-                            expectedValue: 19.0,
-                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"] (5% -> 27.25 * 0.95)`,
-                        },
-                        '5 Each': {
-                            expectedValue: 18.0,
-                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"] (10% -> 27.25 * 0.9)`,
-                        },
-                        '9 Each': {
-                            expectedValue: 18.0,
-                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"] (10% -> 27.25 * 0.9)`,
-                        },
-                        '10 Each': {
-                            expectedValue: 15.0,
-                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"] (25% -> 27.25 * 0.75)`,
-                        },
-                        '11 Each': {
-                            expectedValue: 15.0,
-                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"] (25% -> 27.25 * 0.75)`,
-                        },
-                        '1 Case': { expectedValue: 15.0, rule: `X` },
-                        '2 Case': { expectedValue: 15.0, rule: `X` },
-                        '4 Case': { expectedValue: 15.0, rule: `X` },
-                        '5 Case': { expectedValue: 15.0, rule: `X` },
-                        '9 Case': { expectedValue: 15.0, rule: `X` },
-                        '10 Case': { expectedValue: 15.0, rule: `X` },
-                        '11 Case': { expectedValue: 15.0, rule: `X` },
-                        '1 Box': { expectedValue: 15.0, rule: `X` },
-                        '2 Box': { expectedValue: 15.0, rule: `X` },
-                        '3 Box': { expectedValue: 15.0, rule: `X` },
-                        '5 Box': { expectedValue: 15.0, rule: `X` },
-                        '6 Box': { expectedValue: 15.0, rule: `X` },
-                        '7 Box': { expectedValue: 15.0, rule: `X` },
-                    },
-                    cart: {
-                        Acc01: 1,
-                        OtherAcc: 1,
+                        Acc01: 21.8, // field value
+                        OtherAcc: 27.25, // field value
                     },
                 },
                 Cart: {
-                    Acc01: 1,
-                    OtherAcc: 1,
+                    Acc01: 24, // total units
+                    OtherAcc: 24, // total units
+                },
+            },
+            Frag008: {
+                // Partial Value
+                ItemPrice: 29.25,
+                NPMCalcMessage: {
+                    Acc01: {
+                        baseline: [],
+                        '0 Each': [],
+                        '9 Each': [],
+                        '10 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 292.5, // 29.25 * 10
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -87.75,
+                                    },
+                                ],
+                                New: 204.75,
+                                Amount: -87.75,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 292.5, // 29.25 * 10
+                                Conditions: [{ Name: 'ZDH1_A011 (7 Letters)', Type: '%', Value: -30, Amount: -87.75 }],
+                                New: 204.75,
+                                Amount: -87.75,
+                            },
+                        ],
+                        '11 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 321.75, // 29.25 * 11
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -96.525,
+                                    },
+                                ],
+                                New: 225.225,
+                                Amount: -96.525,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 321.75, // 29.25 * 11
+                                Conditions: [{ Name: 'ZDH1_A011 (7 Letters)', Type: '%', Value: -30, Amount: -96.525 }],
+                                New: 225.225,
+                                Amount: -96.525,
+                            },
+                        ],
+                        '1 Case': [],
+                        '2 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 58.5, // 29.25 * 2
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -17.55,
+                                    },
+                                ],
+                                New: 40.95,
+                                Amount: -17.55,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 58.5, // 29.25 * 2
+                                Conditions: [{ Name: 'ZDH1_A011 (7 Letters)', Type: '%', Value: -30, Amount: -17.55 }],
+                                New: 40.95,
+                                Amount: -17.55,
+                            },
+                        ],
+                        '3 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 87.75, // 29.25 * 3
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -26.325,
+                                    },
+                                ],
+                                New: 61.425,
+                                Amount: -26.325,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 87.75, // 29.25 * 3
+                                Conditions: [{ Name: 'ZDH1_A011 (7 Letters)', Type: '%', Value: -30, Amount: -26.325 }],
+                                New: 61.425,
+                                Amount: -26.325,
+                            },
+                        ],
+                        '1 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 29.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -8.775,
+                                    },
+                                ],
+                                New: 20.475,
+                                Amount: -8.775,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 29.25,
+                                Conditions: [{ Name: 'ZDH1_A011 (7 Letters)', Type: '%', Value: -30, Amount: -8.775 }],
+                                New: 20.475,
+                                Amount: -8.775,
+                            },
+                        ],
+                    },
+                    OtherAcc: {
+                        baseline: [],
+                        '0 Each': [],
+                        '9 Each': [],
+                        '10 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 292.5,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -43.875 },
+                                ],
+                                New: 248.625,
+                                Amount: -43.875,
+                            },
+                        ],
+                        '11 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 321.75,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -48.2625 },
+                                ],
+                                New: 273.4875,
+                                Amount: -48.2625,
+                            },
+                        ],
+                        '1 Case': [],
+                        '2 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 58.5,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -8.775 },
+                                ],
+                                New: 49.725,
+                                Amount: -8.775,
+                            },
+                        ],
+                        '3 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 87.75,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -13.1625 },
+                                ],
+                                New: 74.5875,
+                                Amount: -13.1625,
+                            },
+                        ],
+                        '1 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 29.25,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -4.3875 },
+                                ],
+                                New: 24.8625,
+                                Amount: -4.3875,
+                            },
+                        ],
+                    },
+                    cart: {
+                        Acc01: [],
+                        OtherAcc: [],
+                    },
+                },
+                PricePartial: {
+                    Acc01: {
+                        baseline: { expectedValue: 29.25, rules: [`X`] },
+                        '0 Each': { expectedValue: 29.25, rules: [`X`] },
+                        '9 Each': { expectedValue: 29.25, rules: [`X`] },
+                        '10 Each': {
+                            expectedValue: 20.47, // 29.25 - 8.775
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@1000200@Frag008' -> [[10,"D",30,"%"]],"EA"]] (30% -> - 29.25 * 0.3 -> -8.775)`,
+                            ],
+                        },
+                        '11 Each': {
+                            expectedValue: 20.47, // 29.25 - 8.775
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@1000200@Frag008' -> [[10,"D",30,"%"]],"EA"]] (30% -> - 29.25 * 0.3 -> -8.775)`,
+                            ],
+                        },
+                        '1 Case': { expectedValue: 29.25, rules: [`X`] },
+                        '2 Case': {
+                            expectedValue: 20.47, // 29.25 - 8.775
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@1000200@Frag008' -> [[10,"D",30,"%"]],"EA"]] (30% -> - 29.25 * 0.3 -> -8.775)`,
+                            ],
+                        },
+                        '3 Case': {
+                            expectedValue: 20.47, // 29.25 - 8.775
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@1000200@Frag008' -> [[10,"D",30,"%"]],"EA"]] (30% -> - 29.25 * 0.3 -> -8.775)`,
+                            ],
+                        },
+                        '1 Box': {
+                            expectedValue: 20.47, // 29.25 - 8.775
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@1000200@Frag008' -> [[10,"D",30,"%"]],"EA"]] (30% -> - 29.25 * 0.3 -> -8.775)`,
+                            ],
+                        },
+                    },
+                    OtherAcc: {
+                        baseline: { expectedValue: 29.25, rules: [`X`] },
+                        '0 Each': { expectedValue: 29.25, rules: [`X`] },
+                        '9 Each': { expectedValue: 29.25, rules: [`X`] },
+                        '10 Each': {
+                            expectedValue: 29.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '11 Each': {
+                            expectedValue: 29.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '1 Case': { expectedValue: 29.25, rules: [`X`] },
+                        '2 Case': {
+                            expectedValue: 29.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '3 Case': {
+                            expectedValue: 29.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '1 Box': {
+                            expectedValue: 29.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                    },
+                    cart: {
+                        Acc01: 20.47, // field value
+                        OtherAcc: 29.25, // field value
+                    },
+                },
+                Cart: {
+                    Acc01: 24, // total units
+                    OtherAcc: 24, // total units
+                },
+            },
+            Frag009: {
+                // Partial Value
+                ItemPrice: 30.25,
+                NPMCalcMessage: {
+                    Acc01: {
+                        baseline: [],
+                        '0 Each': [],
+                        '9 Each': [],
+                        '10 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 302.5, // 30.25 * 10
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -90.75,
+                                    },
+                                ],
+                                New: 211.75,
+                                Amount: -90.75,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 302.5, // 30.25 * 10
+                                Conditions: [
+                                    { Name: 'ZDH1_A011 (9 Letters - full)', Type: '%', Value: -10, Amount: -30.25 },
+                                ],
+                                New: 272.25,
+                                Amount: -30.25,
+                            },
+                        ],
+                        '11 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 332.75, // 30.25 * 11
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -99.825,
+                                    },
+                                ],
+                                New: 232.925,
+                                Amount: -99.825,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 332.75, // 30.25 * 11
+                                Conditions: [
+                                    { Name: 'ZDH1_A011 (9 Letters - full)', Type: '%', Value: -10, Amount: -33.275 },
+                                ],
+                                New: 299.475,
+                                Amount: -33.275,
+                            },
+                        ],
+                        '1 Case': [],
+                        '2 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 60.5, // 30.25 * 2
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -18.15,
+                                    },
+                                ],
+                                New: 42.35,
+                                Amount: -18.15,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 60.5, // 30.25 * 2
+                                Conditions: [
+                                    { Name: 'ZDH1_A011 (9 Letters - full)', Type: '%', Value: -10, Amount: -6.05 },
+                                ],
+                                New: 54.45,
+                                Amount: -6.05,
+                            },
+                        ],
+                        '3 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 90.75, // 30.25 * 3
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -27.225,
+                                    },
+                                ],
+                                New: 63.525,
+                                Amount: -27.225,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 90.75, // 30.25 * 3
+                                Conditions: [
+                                    { Name: 'ZDH1_A011 (9 Letters - full)', Type: '%', Value: -10, Amount: -9.075 },
+                                ],
+                                New: 81.675,
+                                Amount: -9.075,
+                            },
+                        ],
+                        '1 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 30.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -9.075,
+                                    },
+                                ],
+                                New: 21.175,
+                                Amount: -9.075,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 30.25,
+                                Conditions: [
+                                    { Name: 'ZDH1_A011 (9 Letters - full)', Type: '%', Value: -10, Amount: -3.025 },
+                                ],
+                                New: 27.225,
+                                Amount: -3.025,
+                            },
+                        ],
+                    },
+                    OtherAcc: {
+                        baseline: [],
+                        '0 Each': [],
+                        '9 Each': [],
+                        '10 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 302.5,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -45.375 },
+                                ],
+                                New: 257.125,
+                                Amount: -43.875,
+                            },
+                        ],
+                        '11 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 332.75,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -49.9125 },
+                                ],
+                                New: 282.8375,
+                                Amount: -49.9125,
+                            },
+                        ],
+                        '1 Case': [],
+                        '2 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 60.5,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -9.075 },
+                                ],
+                                New: 51.425,
+                                Amount: -9.075,
+                            },
+                        ],
+                        '3 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 90.75,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -13.6125 },
+                                ],
+                                New: 77.1375,
+                                Amount: -13.6125,
+                            },
+                        ],
+                        '1 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 30.25,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -4.5375 },
+                                ],
+                                New: 25.7125,
+                                Amount: -4.5375,
+                            },
+                        ],
+                    },
+                    cart: {
+                        Acc01: [],
+                        OtherAcc: [],
+                    },
+                },
+                PricePartial: {
+                    Acc01: {
+                        baseline: { expectedValue: 30.25, rules: [`X`] },
+                        '0 Each': { expectedValue: 30.25, rules: [`X`] },
+                        '9 Each': { expectedValue: 30.25, rules: [`X`] },
+                        '10 Each': {
+                            expectedValue: 27.22, // 30.25 - 3.025
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@100020030@Frag009' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 30.25 * 0.1 -> -3.025)`,
+                            ],
+                        },
+                        '11 Each': {
+                            expectedValue: 27.22, // 30.25 - 3.025
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@100020030@Frag009' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 30.25 * 0.1 -> -3.025)`,
+                            ],
+                        },
+                        '1 Case': { expectedValue: 30.25, rules: [`X`] },
+                        '2 Case': {
+                            expectedValue: 27.22, // 30.25 - 3.025
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@100020030@Frag009' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 30.25 * 0.1 -> -3.025)`,
+                            ],
+                        },
+                        '3 Case': {
+                            expectedValue: 27.22, // 30.25 - 3.025
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@100020030@Frag009' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 30.25 * 0.1 -> -3.025)`,
+                            ],
+                        },
+                        '1 Box': {
+                            expectedValue: 27.22, // 30.25 - 3.025
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@100020030@Frag009' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 30.25 * 0.1 -> -3.025)`,
+                            ],
+                        },
+                    },
+                    OtherAcc: {
+                        baseline: { expectedValue: 30.25, rules: [`X`] },
+                        '0 Each': { expectedValue: 30.25, rules: [`X`] },
+                        '9 Each': { expectedValue: 30.25, rules: [`X`] },
+                        '10 Each': {
+                            expectedValue: 30.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '11 Each': {
+                            expectedValue: 30.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '1 Case': { expectedValue: 30.25, rules: [`X`] },
+                        '2 Case': {
+                            expectedValue: 30.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '3 Case': {
+                            expectedValue: 30.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '1 Box': {
+                            expectedValue: 30.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                    },
+                    cart: {
+                        Acc01: 27.22, // field value
+                        OtherAcc: 30.25, // field value
+                    },
+                },
+                Cart: {
+                    Acc01: 24, // total units
+                    OtherAcc: 24, // total units
+                },
+            },
+            Frag011: {
+                // Partial Value
+                ItemPrice: 32.25,
+                NPMCalcMessage: {
+                    Acc01: {
+                        baseline: [],
+                        '0 Each': [],
+                        '9 Each': [],
+                        '10 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 322.5, // 32.25 * 10
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -96.75,
+                                    },
+                                ],
+                                New: 225.75,
+                                Amount: -96.75,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 322.5, // 32.25 * 10
+                                Conditions: [
+                                    { Name: 'ZDH1_A011 (9 Letters - full)', Type: '%', Value: -10, Amount: -32.25 },
+                                ],
+                                New: 290.25,
+                                Amount: -32.25,
+                            },
+                        ],
+                        '11 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 354.75, // 32.25 * 11
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -106.425,
+                                    },
+                                ],
+                                New: 248.325,
+                                Amount: -106.425,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 354.75, // 32.25 * 11
+                                Conditions: [
+                                    { Name: 'ZDH1_A011 (9 Letters - full)', Type: '%', Value: -10, Amount: -35.475 },
+                                ],
+                                New: 319.275,
+                                Amount: -35.475,
+                            },
+                        ],
+                        '1 Case': [],
+                        '2 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 64.5, // 32.25 * 2
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -19.35,
+                                    },
+                                ],
+                                New: 45.15,
+                                Amount: -19.35,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 64.5, // 32.25 * 2
+                                Conditions: [
+                                    { Name: 'ZDH1_A011 (9 Letters - full)', Type: '%', Value: -10, Amount: -6.45 },
+                                ],
+                                New: 58.05,
+                                Amount: -6.45,
+                            },
+                        ],
+                        '3 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 96.75, // 32.25 * 3
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -29.025,
+                                    },
+                                ],
+                                New: 67.725,
+                                Amount: -29.025,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 96.75, // 32.25 * 3
+                                Conditions: [
+                                    { Name: 'ZDH1_A011 (9 Letters - full)', Type: '%', Value: -10, Amount: -9.675 },
+                                ],
+                                New: 87.075,
+                                Amount: -9.675,
+                            },
+                        ],
+                        '1 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 32.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -9.675,
+                                    },
+                                ],
+                                New: 22.575,
+                                Amount: -9.675,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 32.25,
+                                Conditions: [
+                                    { Name: 'ZDH1_A011 (9 Letters - full)', Type: '%', Value: -10, Amount: -3.225 },
+                                ],
+                                New: 29.025,
+                                Amount: -3.225,
+                            },
+                        ],
+                    },
+                    OtherAcc: {
+                        baseline: [],
+                        '0 Each': [],
+                        '9 Each': [],
+                        '10 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 322.5,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -48.375 },
+                                ],
+                                New: 274.125,
+                                Amount: -48.375,
+                            },
+                        ],
+                        '11 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 354.75,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -53.2125 },
+                                ],
+                                New: 301.5375,
+                                Amount: -53.2125,
+                            },
+                        ],
+                        '1 Case': [],
+                        '2 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 64.5,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -9.675 },
+                                ],
+                                New: 54.825,
+                                Amount: -9.675,
+                            },
+                        ],
+                        '3 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 96.75,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -14.5125 },
+                                ],
+                                New: 82.2375,
+                                Amount: -14.5125,
+                            },
+                        ],
+                        '1 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 32.25,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -4.8375 },
+                                ],
+                                New: 27.4125,
+                                Amount: -4.8375,
+                            },
+                        ],
+                    },
+                    cart: {
+                        Acc01: [],
+                        OtherAcc: [],
+                    },
+                },
+                PricePartial: {
+                    Acc01: {
+                        baseline: { expectedValue: 32.25, rules: [`X`] },
+                        '0 Each': { expectedValue: 32.25, rules: [`X`] },
+                        '9 Each': { expectedValue: 32.25, rules: [`X`] },
+                        '10 Each': {
+                            expectedValue: 29.02, // 32.25 - 3.225
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@100020030@Frag011' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 32.25 * 0.1 -> -3.225)`,
+                            ],
+                        },
+                        '11 Each': {
+                            expectedValue: 29.02, // 32.25 - 3.225
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@100020030@Frag011' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 32.25 * 0.1 -> -3.225)`,
+                            ],
+                        },
+                        '1 Case': { expectedValue: 32.25, rules: [`X`] },
+                        '2 Case': {
+                            expectedValue: 29.02, // 32.25 - 3.225
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@100020030@Frag011' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 32.25 * 0.1 -> -3.225)`,
+                            ],
+                        },
+                        '3 Case': {
+                            expectedValue: 29.02, // 32.25 - 3.225
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@100020030@Frag011' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 32.25 * 0.1 -> -3.225)`,
+                            ],
+                        },
+                        '1 Box': {
+                            expectedValue: 29.02, // 32.25 - 3.225
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@100020030@Frag011' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 32.25 * 0.1 -> -3.225)`,
+                            ],
+                        },
+                    },
+                    OtherAcc: {
+                        baseline: { expectedValue: 32.25, rules: [`X`] },
+                        '0 Each': { expectedValue: 32.25, rules: [`X`] },
+                        '9 Each': { expectedValue: 32.25, rules: [`X`] },
+                        '10 Each': {
+                            expectedValue: 32.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '11 Each': {
+                            expectedValue: 32.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '1 Case': { expectedValue: 32.25, rules: [`X`] },
+                        '2 Case': {
+                            expectedValue: 32.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '3 Case': {
+                            expectedValue: 32.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '1 Box': {
+                            expectedValue: 32.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                    },
+                    cart: {
+                        Acc01: 29.02, // field value
+                        OtherAcc: 32.25, // field value
+                    },
+                },
+                Cart: {
+                    Acc01: 24, // total units
+                    OtherAcc: 24, // total units
+                },
+            },
+            Frag021: {
+                // Partial Value - control item (no rules apply)
+                ItemPrice: 42.25,
+                NPMCalcMessage: {
+                    Acc01: {
+                        baseline: [],
+                        '0 Each': [],
+                        '9 Each': [],
+                        '10 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 422.5, // 42.25 * 10
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -126.75,
+                                    },
+                                ],
+                                New: 295.75,
+                                Amount: -126.75,
+                            },
+                        ],
+                        '11 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 422.5, // 42.25 * 10
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -126.75,
+                                    },
+                                ],
+                                New: 295.75,
+                                Amount: -126.75,
+                            },
+                        ],
+                        '1 Case': [],
+                        '2 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 84.5, // 42.25 * 2
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -25.35,
+                                    },
+                                ],
+                                New: 59.15,
+                                Amount: -25.35,
+                            },
+                        ],
+                        '3 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 126.75, // 42.25 * 3
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -38.025,
+                                    },
+                                ],
+                                New: 88.725,
+                                Amount: -38.025,
+                            },
+                        ],
+                        '1 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 42.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -12.675,
+                                    },
+                                ],
+                                New: 29.575,
+                                Amount: -12.675,
+                            },
+                        ],
+                    },
+                    OtherAcc: {
+                        baseline: [],
+                        '0 Each': [],
+                        '9 Each': [],
+                        '10 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 422.5, // 42.25 * 10
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -126.75,
+                                    },
+                                ],
+                                New: 295.75,
+                                Amount: -126.75,
+                            },
+                        ],
+                        '11 Each': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 422.5, // 42.25 * 10
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -126.75,
+                                    },
+                                ],
+                                New: 295.75,
+                                Amount: -126.75,
+                            },
+                        ],
+                        '1 Case': [],
+                        '2 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 84.5, // 42.25 * 2
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -25.35,
+                                    },
+                                ],
+                                New: 59.15,
+                                Amount: -25.35,
+                            },
+                        ],
+                        '3 Case': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 126.75, // 42.25 * 3
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -38.025,
+                                    },
+                                ],
+                                New: 88.725,
+                                Amount: -38.025,
+                            },
+                        ],
+                        '1 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 42.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -12.675,
+                                    },
+                                ],
+                                New: 29.575,
+                                Amount: -12.675,
+                            },
+                        ],
+                    },
+                    cart: {
+                        Acc01: [],
+                        OtherAcc: [],
+                    },
+                },
+                PricePartial: {
+                    Acc01: {
+                        baseline: { expectedValue: 42.25, rules: [`X`] },
+                        '0 Each': { expectedValue: 42.25, rules: [`X`] },
+                        '9 Each': { expectedValue: 42.25, rules: [`X`] },
+                        '10 Each': {
+                            expectedValue: 42.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '11 Each': {
+                            expectedValue: 42.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '1 Case': { expectedValue: 42.25, rules: [`X`] },
+                        '2 Case': {
+                            expectedValue: 42.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '3 Case': {
+                            expectedValue: 42.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '1 Box': {
+                            expectedValue: 42.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                    },
+                    OtherAcc: {
+                        baseline: { expectedValue: 42.25, rules: [`X`] },
+                        '0 Each': { expectedValue: 42.25, rules: [`X`] },
+                        '9 Each': { expectedValue: 42.25, rules: [`X`] },
+                        '10 Each': {
+                            expectedValue: 42.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '11 Each': {
+                            expectedValue: 42.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '1 Case': { expectedValue: 42.25, rules: [`X`] },
+                        '2 Case': {
+                            expectedValue: 42.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '3 Case': {
+                            expectedValue: 42.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '1 Box': {
+                            expectedValue: 42.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                    },
+                    cart: {
+                        Acc01: 42.25, // field value
+                        OtherAcc: 42.25, // field value
+                    },
+                },
+                Cart: {
+                    Acc01: 24, // total units
+                    OtherAcc: 24, // total units
                 },
             },
         },
