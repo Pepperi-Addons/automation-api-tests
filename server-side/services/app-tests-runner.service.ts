@@ -392,7 +392,7 @@ export class AppTest {
                 if (failedEnv === 'EU') {
                     failMessage.push({ env: 'EU', text: await this.parseTestResults(jobPathEU) });
                 } else if (failedEnv === 'Production') {
-                    failMessage.push({ env: 'PROD', text: await this.parseTestResults(jobPathPROD) });
+                    failMessage.push({ env: 'Production', text: await this.parseTestResults(jobPathPROD) });
                 } else if (failedEnv === 'Stage') {
                     failMessage.push({ env: 'Stage', text: await this.parseTestResults(jobPathSB) });
                 }
