@@ -2300,6 +2300,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.dropTestTableTmpStatus = false;
             logcash.dropTestTableTmpError = 'Drop table failed.';
         }
+        generalService.sleep(10000);
         await getFromElasticTable();
     }
     ////////////
