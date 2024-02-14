@@ -28,6 +28,7 @@ export async function NgxLibPOC() {
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 

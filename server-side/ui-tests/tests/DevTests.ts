@@ -45,7 +45,7 @@ export class DevTest {
         varPass,
         varPassEU,
         varPassSB,
-        adminBaseUserGeneralService,
+        adminBaseUserGeneralService: GeneralService,
         adminBaseUserEmail,
         adminBaseUserPass,
     ) {

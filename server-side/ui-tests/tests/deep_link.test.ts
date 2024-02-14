@@ -21,6 +21,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
         afterEach(async function () {
             const webAppLoginPage = new WebAppLoginPage(driver);
             await webAppLoginPage.collectEndTestData(this);
+            await driver.close();
             await driver.quit();
         });
 
@@ -103,7 +104,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
 
             const urlBefore = await driver.getCurrentUrl();
             const totalItemsBefore = await (await driver.findElement(webAppList.TotalResultsText)).getText();
-
+            await driver.close();
             await driver.quit();
             driver = await Browser.initiateChrome();
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
@@ -165,7 +166,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
                 title: `Image Before`,
                 value: 'data:image/png;base64,' + base64ImageBefore,
             });
-
+            await driver.close();
             await driver.quit();
             driver = await Browser.initiateChrome();
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
@@ -225,7 +226,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
                 title: `Image Before`,
                 value: 'data:image/png;base64,' + base64ImageBefore,
             });
-
+            await driver.close();
             await driver.quit();
             driver = await Browser.initiateChrome();
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
@@ -286,7 +287,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
                 title: `Image Before`,
                 value: 'data:image/png;base64,' + base64ImageBefore,
             });
-
+            await driver.close();
             await driver.quit();
             driver = await Browser.initiateChrome();
             const webAppLoginPageAfter = new WebAppLoginPage(driver);
@@ -349,7 +350,7 @@ export async function DeepLinkTests(email: string, password: string, client: Cli
                 title: `Image Before`,
                 value: 'data:image/png;base64,' + base64ImageBefore,
             });
-
+            await driver.close();
             await driver.quit();
             driver = await Browser.initiateChrome();
             const webAppLoginPageAfter = new WebAppLoginPage(driver);

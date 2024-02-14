@@ -216,6 +216,7 @@ export async function UDCTests(email: string, password: string, varPass: string,
                 driver = await Browser.initiateChrome();
             });
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
             afterEach(async function () {

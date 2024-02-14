@@ -34,6 +34,7 @@ export async function WorkflowTests(email: string, password: string, client: Cli
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 

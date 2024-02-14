@@ -1,56 +1,47 @@
-import { describe, it } from 'mocha';
-import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { ObjectsService } from '../../services';
+import { describe, it } from 'mocha';
+import { Client } from '@pepperi-addons/debug-server';
+import { ObjectsService } from '../../../services';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
-import { PricingData05 } from '../pom/addons/Pricing05';
-import { PricingData06 } from '../pom/addons/Pricing06';
-import { PricingData07 } from '../pom/addons/Pricing07';
+import GeneralService from '../../../services/general.service';
+import PricingRules from '../../pom/addons/PricingRules';
 
 chai.use(promised);
 
 export async function PricingUdtCleanup(client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
+    const pricingRules = new PricingRules();
     let ppmVluesEnd: UserDefinedTableRow[];
     let installedPricingVersion;
-    let pricingData;
+    let ppmValues_content;
 
     describe('UDT: "PPM_Values" cleanup', () => {
         it('getting data object according to installed version', async () => {
             switch (installedPricingVersion) {
                 case '5':
                     console.info('AT installedPricingVersion CASE 5');
-                    pricingData = new PricingData05();
-                    break;
-                case '6':
-                    console.info('AT installedPricingVersion CASE 6');
-                    pricingData = new PricingData06();
-                    break;
-                case '7':
-                    console.info('AT installedPricingVersion CASE 7');
-                    pricingData = new PricingData07();
+                    ppmValues_content = pricingRules.version05;
                     break;
 
                 default:
                     console.info('AT installedPricingVersion Default');
-                    pricingData = new PricingData07();
+                    ppmValues_content = pricingRules.version06;
                     break;
             }
         });
 
         it('retrieving "PPM_Values" UDT values via API', async () => {
             ppmVluesEnd = await objectsService.getUDT({
-                where: `MapDataExternalID='${pricingData.tableName}'`,
+                where: `MapDataExternalID='${pricingRules.tableName}'`,
                 page_size: -1,
             });
         });
 
         it('deleting valid rules from the UDT "PPM_Values"', async () => {
             const valueObjs: UserDefinedTableRow[] = [];
-            const validPPM_ValuesKeys = Object.keys(pricingData.documentsIn_PPM_Values);
+            const validPPM_ValuesKeys = Object.keys(ppmValues_content);
             const deleteResponses = await Promise.all(
                 validPPM_ValuesKeys.map(async (validPPM_Key) => {
                     const valueObj: UserDefinedTableRow | undefined = ppmVluesEnd.find((listing) => {
@@ -78,9 +69,9 @@ export async function PricingUdtCleanup(client: Client) {
                 );
                 if (deleteUDTresponse) {
                     console.info('UDT delete response exist!');
-                    const PPMvalue = pricingData.documentsIn_PPM_Values[deleteUDTresponse.MainKey];
+                    const PPMvalue = ppmValues_content[deleteUDTresponse.MainKey];
                     expect(deleteUDTresponse).to.deep.include({
-                        MapDataExternalID: pricingData.tableName,
+                        MapDataExternalID: pricingRules.tableName,
                         SecondaryKey: null,
                         Values: [PPMvalue],
                     });
@@ -98,10 +89,10 @@ export async function PricingUdtCleanup(client: Client) {
 
         it('validating "PPM_Values" UDT length after deletion via API', async () => {
             ppmVluesEnd = await objectsService.getUDT({
-                where: `MapDataExternalID='${pricingData.tableName}'`,
+                where: `MapDataExternalID='${pricingRules.tableName}'`,
                 page_size: -1,
             });
-            expect(ppmVluesEnd.length).equals(pricingData.dummyPPM_Values_length);
+            expect(ppmVluesEnd.length).equals(pricingRules.dummyPPM_Values_length);
         });
     });
 }

@@ -1,25 +1,45 @@
-import { describe, it, before, after } from 'mocha';
-import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
+import { describe, it, before, after } from 'mocha';
+import { Client } from '@pepperi-addons/debug-server';
+import { Browser } from '../../../utilities/browser';
+import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../../pom';
+import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
+import { OrderPage } from '../../../pom/Pages/OrderPage';
+import { ObjectsService } from '../../../../services';
+import { PricingService } from '../../../../services/pricing.service';
+import { PricingData06 } from '../../../pom/addons/PricingData06';
+import PricingRules from '../../../pom/addons/PricingRules';
+import GeneralService from '../../../../services/general.service';
 import addContext from 'mochawesome/addContext';
-import { Browser } from '../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../pom';
-import { OrderPage } from '../pom/Pages/OrderPage';
-import { PricingService } from '../../services/pricing.service';
-import { PricingData06 } from '../pom/addons/Pricing06';
 
 chai.use(promised);
 
 export async function PricingTotalsTests(email: string, password: string, client: Client) {
     const dateTime = new Date();
     const generalService = new GeneralService(client);
+    const objectsService = new ObjectsService(generalService);
+    const pricingData = new PricingData06();
+    const pricingRules = new PricingRules();
+
     const installedPricingVersion = (await generalService.getInstalledAddons()).find(
         (addon) => addon.Addon.Name == 'pricing',
     )?.Version;
     const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
+
+    let ppmValues_content;
+    switch (installedPricingVersion) {
+        // case '6':
+        //     console.info('AT installedPricingVersion CASE 6');
+        //     ppmValues_content = pricingRules.version06;
+        //     break;
+
+        default:
+            console.info('AT installedPricingVersion Default');
+            ppmValues_content = pricingRules.version06;
+            break;
+    }
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -34,9 +54,9 @@ export async function PricingTotalsTests(email: string, password: string, client
     let transactionUUID_OtherAcc: string;
     let accountName: string;
     let duration: string;
+    let ppmValues: UserDefinedTableRow[];
     let base64ImageComponent;
 
-    const pricingData = new PricingData06();
     const testAccounts = ['Acc01', 'OtherAcc'];
     const totalsTestItems = ['MaNa142', 'MaNa23'];
     const totalsTestStates = ['baseline', 'state1', 'state2'];
@@ -76,6 +96,7 @@ export async function PricingTotalsTests(email: string, password: string, client
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 
@@ -90,6 +111,49 @@ export async function PricingTotalsTests(email: string, password: string, client
 
             it('Manual Sync', async () => {
                 await webAppHomePage.manualResync(client);
+            });
+
+            it('get UDT Values (PPM_Values)', async () => {
+                ppmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
+                console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
+            });
+
+            it('validating "PPM_Values" via API', async () => {
+                const expectedPPMValuesLength =
+                    Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length;
+                console.info(
+                    'EXPECTED: Object.keys(ppmValues_content).length + dummyPPM_ValuesKeys.length: ',
+                    expectedPPMValuesLength,
+                    'ACTUAL: ppmValues.length: ',
+                    ppmValues.length,
+                );
+                addContext(this, {
+                    title: `PPM Values Length`,
+                    value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
+                });
+                expect(ppmValues.length).equals(expectedPPMValuesLength);
+                Object.keys(ppmValues_content).forEach((mainKey) => {
+                    console.info('mainKey: ', mainKey);
+                    const matchingRowOfppmValues = ppmValues.find((tableRow) => {
+                        if (tableRow.MainKey === mainKey) {
+                            return tableRow;
+                        }
+                    });
+                    matchingRowOfppmValues &&
+                        console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
+                    console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
+                    matchingRowOfppmValues &&
+                        addContext(this, {
+                            title: `PPM Value for the Key "${mainKey}"`,
+                            value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${ppmValues_content[mainKey]}`,
+                        });
+                    matchingRowOfppmValues &&
+                        expect(ppmValues_content[mainKey]).equals(
+                            client.BaseURL.includes('staging')
+                                ? matchingRowOfppmValues['Values'].join()
+                                : matchingRowOfppmValues['Values'][0],
+                        );
+                });
             });
 
             testAccounts.forEach((account) => {
@@ -183,19 +247,19 @@ export async function PricingTotalsTests(email: string, password: string, client
                                             });
                                             it(`Setting Amounts`, async function () {
                                                 const uom1 =
-                                                    pricingData.testItemsValues[totalsTestItem][totalsTestState][
+                                                    pricingData.testItemsValues.Totals[totalsTestItem][totalsTestState][
                                                         'uom1'
                                                     ];
                                                 const uom2 =
-                                                    pricingData.testItemsValues[totalsTestItem][totalsTestState][
+                                                    pricingData.testItemsValues.Totals[totalsTestItem][totalsTestState][
                                                         'uom2'
                                                     ];
                                                 const quantity1 =
-                                                    pricingData.testItemsValues[totalsTestItem][totalsTestState][
+                                                    pricingData.testItemsValues.Totals[totalsTestItem][totalsTestState][
                                                         'qty1'
                                                     ];
                                                 const quantity2 =
-                                                    pricingData.testItemsValues[totalsTestItem][totalsTestState][
+                                                    pricingData.testItemsValues.Totals[totalsTestItem][totalsTestState][
                                                         'qty2'
                                                     ];
                                                 switch (totalsTestState) {
@@ -276,9 +340,9 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 if (totalsTestState === 'baseline') {
                                                     const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                                     const baseline_NPMCalcMessage =
-                                                        pricingData.testItemsValues[totalsTestItem][totalsTestState][
-                                                            'NPMCalcMessage'
-                                                        ];
+                                                        pricingData.testItemsValues.Totals[totalsTestItem][
+                                                            totalsTestState
+                                                        ]['NPMCalcMessage'];
                                                     addContext(this, {
                                                         title: `State Args`,
                                                         value: `NPMCalcMessage from UI: ${JSON.stringify(
@@ -293,13 +357,13 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 } else {
                                                     const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                                     const baseline_NPMCalcMessage =
-                                                        pricingData.testItemsValues[totalsTestItem]['baseline'][
+                                                        pricingData.testItemsValues.Totals[totalsTestItem]['baseline'][
                                                             'NPMCalcMessage'
                                                         ];
                                                     const data_NPMCalcMessage =
-                                                        pricingData.testItemsValues[totalsTestItem][totalsTestState][
-                                                            'NPMCalcMessage'
-                                                        ];
+                                                        pricingData.testItemsValues.Totals[totalsTestItem][
+                                                            totalsTestState
+                                                        ]['NPMCalcMessage'];
                                                     addContext(this, {
                                                         title: `State Args`,
                                                         value: `NPMCalcMessage from UI: ${JSON.stringify(
@@ -318,9 +382,9 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 priceFields.forEach((priceField) => {
                                                     const fieldValue = priceTSAs[priceField];
                                                     const expectedFieldValue =
-                                                        pricingData.testItemsValues[totalsTestItem][totalsTestState][
-                                                            priceField
-                                                        ];
+                                                        pricingData.testItemsValues.Totals[totalsTestItem][
+                                                            totalsTestState
+                                                        ][priceField];
                                                     addContext(this, {
                                                         title: `${priceField}`,
                                                         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
@@ -331,7 +395,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 const discount2FieldValue =
                                                     priceTSA_Discount2['PriceDiscount2UnitPriceAfter1'];
                                                 const discount2ExpectedFieldValue =
-                                                    pricingData.testItemsValues[totalsTestItem][totalsTestState][
+                                                    pricingData.testItemsValues.Totals[totalsTestItem][totalsTestState][
                                                         'PriceDiscount2UnitPriceAfter1'
                                                     ];
                                                 addContext(this, {
@@ -343,9 +407,9 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 priceFields2.forEach((priceField) => {
                                                     const fieldValue = priceTSAs_AOQM_UOM2[priceField];
                                                     const expectedFieldValue =
-                                                        pricingData.testItemsValues[totalsTestItem][totalsTestState][
-                                                            priceField
-                                                        ];
+                                                        pricingData.testItemsValues.Totals[totalsTestItem][
+                                                            totalsTestState
+                                                        ][priceField];
                                                     addContext(this, {
                                                         title: `${priceField}`,
                                                         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
@@ -356,9 +420,9 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 totalsPriceFields.forEach((priceField) => {
                                                     const fieldValue = priceTotalsTSAs[priceField];
                                                     const expectedFieldValue =
-                                                        pricingData.testItemsValues[totalsTestItem][totalsTestState][
-                                                            priceField
-                                                        ];
+                                                        pricingData.testItemsValues.Totals[totalsTestItem][
+                                                            totalsTestState
+                                                        ][priceField];
                                                     addContext(this, {
                                                         title: `${priceField}`,
                                                         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
@@ -450,7 +514,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 priceFields.forEach((priceField) => {
                                                     const fieldValue = priceTSAs[priceField];
                                                     const expectedFieldValue =
-                                                        pricingData.testItemsValues[totalsTest_CartItem][
+                                                        pricingData.testItemsValues.Totals[totalsTest_CartItem][
                                                             totalsTestState
                                                         ][priceField];
                                                     addContext(this, {
@@ -463,9 +527,9 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 const discount2FieldValue =
                                                     priceTSA_Discount2['PriceDiscount2UnitPriceAfter1'];
                                                 const discount2ExpectedFieldValue =
-                                                    pricingData.testItemsValues[totalsTest_CartItem][totalsTestState][
-                                                        'PriceDiscount2UnitPriceAfter1'
-                                                    ];
+                                                    pricingData.testItemsValues.Totals[totalsTest_CartItem][
+                                                        totalsTestState
+                                                    ]['PriceDiscount2UnitPriceAfter1'];
                                                 addContext(this, {
                                                     title: 'PriceDiscount2UnitPriceAfter1',
                                                     value: `Field Value from UI: ${discount2FieldValue}, Expected Field Value from Data: ${discount2ExpectedFieldValue}`,
@@ -475,7 +539,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 priceFields2.forEach((priceField) => {
                                                     const fieldValue = priceTSAs_AOQM_UOM2[priceField];
                                                     const expectedFieldValue =
-                                                        pricingData.testItemsValues[totalsTest_CartItem][
+                                                        pricingData.testItemsValues.Totals[totalsTest_CartItem][
                                                             totalsTestState
                                                         ][priceField];
                                                     addContext(this, {
@@ -488,7 +552,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 totalsPriceFields.forEach((priceField) => {
                                                     const fieldValue = priceTotalsTSAs[priceField];
                                                     const expectedFieldValue =
-                                                        pricingData.testItemsValues[totalsTest_CartItem][
+                                                        pricingData.testItemsValues.Totals[totalsTest_CartItem][
                                                             totalsTestState
                                                         ][priceField];
                                                     addContext(this, {

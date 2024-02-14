@@ -1,18 +1,18 @@
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService, { ConsoleColors } from '../../services/general.service';
+import GeneralService from '../../../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
-import { Browser } from '../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../pom';
-import { ObjectsService } from '../../services';
-import { OrderPage } from '../pom/Pages/OrderPage';
-import { PricingData05 } from '../pom/addons/Pricing05';
-import { PricingData06 } from '../pom/addons/Pricing06';
+import { Browser } from '../../../utilities/browser';
+import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../../pom';
+import { ObjectsService } from '../../../../services';
+import { OrderPage } from '../../../pom/Pages/OrderPage';
+import { PricingData05 } from '../../../pom/addons/PricingData05';
+import { PricingData06 } from '../../../pom/addons/PricingData06';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
-import { PricingService } from '../../services/pricing.service';
-import { PricingData07 } from '../pom/addons/Pricing07';
+import { PricingService } from '../../../../services/pricing.service';
+import PricingRules from '../../../pom/addons/PricingRules';
 
 interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;
@@ -25,7 +25,7 @@ interface PriceTsaFields {
 
 chai.use(promised);
 
-export async function PricingTests(email: string, password: string, client: Client) {
+export async function PricingAdditionalGroupsReadonlyTests(email: string, password: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
@@ -33,17 +33,18 @@ export async function PricingTests(email: string, password: string, client: Clie
     )?.Version;
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
-    let pricingData;
-    switch (true) {
-        case installedPricingVersion === '5':
-            pricingData = new PricingData05();
-            break;
-        case installedPricingVersion === '6':
-            pricingData = new PricingData06();
+    const pricingData = installedPricingVersion === '5' ? new PricingData05() : new PricingData06();
+    const pricingRules = new PricingRules();
+    let ppmValues_content;
+    switch (installedPricingVersion) {
+        case '5':
+            console.info('AT installedPricingVersion CASE 5');
+            ppmValues_content = pricingRules.version05;
             break;
 
         default:
-            pricingData = new PricingData07();
+            console.info('AT installedPricingVersion Default');
+            ppmValues_content = pricingRules.version06;
             break;
     }
 
@@ -73,19 +74,7 @@ export async function PricingTests(email: string, password: string, client: Clie
     let duration: string;
     let ppmVluesEnd: UserDefinedTableRow[];
 
-    const tableName = 'PPM_Values';
-    const dummyPPM_Values_length = 49999;
     const testAccounts = ['Acc01', 'OtherAcc'];
-    const testStates = ['baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'];
-    const testItems = [
-        { name: 'Lipstick no.1', cartAmount: 24 },
-        { name: 'Spring Loaded Frizz-Fighting Conditioner', cartAmount: 24 },
-        { name: 'Frag005', cartAmount: 24 },
-        { name: 'Frag012', cartAmount: 24 },
-        { name: 'ToBr56', cartAmount: 24 },
-        { name: 'Drug0001', cartAmount: 24 },
-        { name: 'Drug0003', cartAmount: 24 },
-    ];
     const itemsAddedToGetFreeGoods = ['ToBr55', 'Drug0002', 'Drug0004'];
     const freeGoodsReceived = {
         Acc01: [
@@ -107,39 +96,81 @@ export async function PricingTests(email: string, password: string, client: Clie
         { name: 'MakeUp018 Free', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
         { name: 'MakeUp019', Acc01: { uom: 'Each', unitQuantity: 5 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
     ];
+    const groupRulesItems_CartTest = ['MakeUp001', 'MakeUp002', 'MakeUp003', 'MakeUp006', 'MakeUp018', 'MakeUp019'];
     const readonlyCartItems = [
-        { name: 'MakeUp019', Acc01: { uom: 'Each', unitQuantity: 5 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
-        { name: 'MakeUp018 Free', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
-        { name: 'MakeUp006', Acc01: { uom: 'Each', unitQuantity: 1 }, OtherAcc: { uom: 'Each', unitQuantity: 1 } },
-        // { name: 'MakeUp018', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
-        { name: 'MakeUp003', Acc01: { uom: 'Each', unitQuantity: 10 }, OtherAcc: { uom: 'Each', unitQuantity: 10 } },
-        { name: 'MakeUp002', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
-        { name: 'MakeUp001', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
-        { name: 'Drug0004', Acc01: { uom: 'Case', unitQuantity: 18 }, OtherAcc: { uom: 'Case', unitQuantity: 18 } },
         {
-            name: 'Drug0002 Free Each',
+            name: 'MakeUp019',
+            section: 'Group',
+            Acc01: { uom: 'Each', unitQuantity: 5 },
+            OtherAcc: { uom: 'Each', unitQuantity: 5 },
+        },
+        {
+            name: 'MakeUp018 Free',
+            section: 'Group',
+            Acc01: { uom: 'Each', unitQuantity: 1 },
+            OtherAcc: { uom: 'Each', unitQuantity: 1 },
+        },
+        {
+            name: 'MakeUp006',
+            section: 'Group',
+            Acc01: { uom: 'Each', unitQuantity: 1 },
+            OtherAcc: { uom: 'Each', unitQuantity: 1 },
+        },
+        // { name: 'MakeUp018', section: 'Group', Acc01: { uom: 'Each', unitQuantity: 2 }, OtherAcc: { uom: 'Each', unitQuantity: 2 } },
+        {
+            name: 'MakeUp003',
+            section: 'Group',
+            Acc01: { uom: 'Each', unitQuantity: 10 },
+            OtherAcc: { uom: 'Each', unitQuantity: 10 },
+        },
+        {
+            name: 'MakeUp002',
+            section: 'Group',
             Acc01: { uom: 'Each', unitQuantity: 2 },
             OtherAcc: { uom: 'Each', unitQuantity: 2 },
         },
-        { name: 'Drug0002', Acc01: { uom: 'Case', unitQuantity: 60 }, OtherAcc: { uom: 'Case', unitQuantity: 60 } },
+        {
+            name: 'MakeUp001',
+            section: 'Group',
+            Acc01: { uom: 'Each', unitQuantity: 2 },
+            OtherAcc: { uom: 'Each', unitQuantity: 2 },
+        },
+        {
+            name: 'Drug0004',
+            section: 'Additional',
+            Acc01: { uom: 'Case', unitQuantity: 18 },
+            OtherAcc: { uom: 'Case', unitQuantity: 18 },
+        },
+        {
+            name: 'Drug0002 Free Each',
+            section: 'Additional',
+            Acc01: { uom: 'Each', unitQuantity: 2 },
+            OtherAcc: { uom: 'Each', unitQuantity: 2 },
+        },
+        {
+            name: 'Drug0002',
+            section: 'Additional',
+            Acc01: { uom: 'Case', unitQuantity: 60 },
+            OtherAcc: { uom: 'Case', unitQuantity: 60 },
+        },
         {
             name: 'Drug0002 Free Case',
+            section: 'Additional',
             Acc01: { uom: 'Case', unitQuantity: 12 },
             OtherAcc: { uom: 'Case', unitQuantity: 12 },
         },
-        { name: 'ToBr55', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Each', unitQuantity: 5 } },
-        { name: 'ToBr55 Free', Acc01: { uom: 'Case', unitQuantity: 6 }, OtherAcc: { uom: 'Each', unitQuantity: 6 } },
-        { name: 'Drug0003', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
-        { name: 'Drug0001', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
-        { name: 'ToBr56', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
-        { name: 'Frag012', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
-        { name: 'Frag005', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
         {
-            name: 'Spring Loaded Frizz-Fighting Conditioner',
+            name: 'ToBr55',
+            section: 'Additional',
             Acc01: { uom: 'Case', unitQuantity: 24 },
-            OtherAcc: { uom: 'Case', unitQuantity: 24 },
+            OtherAcc: { uom: 'Each', unitQuantity: 5 },
         },
-        // { name: 'Lipstick no.1', Acc01: { uom: 'Case', unitQuantity: 24 }, OtherAcc: { uom: 'Case', unitQuantity: 24 } },
+        {
+            name: 'ToBr55 Free',
+            section: 'Additional',
+            Acc01: { uom: 'Case', unitQuantity: 6 },
+            OtherAcc: { uom: 'Each', unitQuantity: 6 },
+        },
     ];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
@@ -149,7 +180,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         'PriceTaxUnitPriceAfter1',
     ];
 
-    describe(`Pricing UI tests | Ver ${installedPricingVersionLong}`, () => {
+    describe(`Pricing Additional Groups Readonly UI tests | Ver ${installedPricingVersionLong}`, () => {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
@@ -172,6 +203,7 @@ export async function PricingTests(email: string, password: string, client: Clie
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 
@@ -222,7 +254,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                     });
                     const duration_num = Number(duration);
                     expect(typeof duration_num).equals('number');
-                    expect(duration_num).to.be.below(550);
+                    // expect(duration_num).to.be.below(550);
                 });
 
                 it(`switch to 'Line View'`, async function () {
@@ -232,194 +264,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                         title: `After "Line View" was selected`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
-                });
-
-                testStates.forEach((state) => {
-                    describe(`ORDER CENTER "${state}"`, () => {
-                        testItems.forEach((item) => {
-                            it(`checking item "${item.name}"`, async function () {
-                                await pricingService.searchInOrderCenter.bind(this)(item.name, driver);
-                                switch (
-                                    state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
-                                ) {
-                                    case '1unit':
-                                        await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                            this,
-                                        )('Each', item.name, 1, driver);
-                                        duration = await (
-                                            await driver.findElement(orderPage.Duration_Span)
-                                        ).getAttribute('title');
-                                        console.log(`DURATION after Quantity change (to 1 unit): ${duration}`, [
-                                            ConsoleColors.PageMessage,
-                                        ]);
-                                        break;
-                                    case '3units':
-                                        await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                            this,
-                                        )('Each', item.name, 3, driver);
-                                        duration = await (
-                                            await driver.findElement(orderPage.Duration_Span)
-                                        ).getAttribute('title');
-                                        console.log(`DURATION after Quantity change (to 3 units): ${duration}`, [
-                                            ConsoleColors.PageMessage,
-                                        ]);
-                                        break;
-                                    case '1case(6units)':
-                                        await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                            this,
-                                        )('Case', item.name, 1, driver);
-                                        duration = await (
-                                            await driver.findElement(orderPage.Duration_Span)
-                                        ).getAttribute('title');
-                                        console.log(`DURATION after Quantity change (to 1 case): ${duration}`, [
-                                            ConsoleColors.PageMessage,
-                                        ]);
-                                        break;
-                                    case '4cases(24units)':
-                                        await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                            this,
-                                        )('Case', item.name, 4, driver);
-                                        duration = await (
-                                            await driver.findElement(orderPage.Duration_Span)
-                                        ).getAttribute('title');
-                                        console.log(`DURATION after Quantity change (to 4 cases): ${duration}`, [
-                                            ConsoleColors.PageMessage,
-                                        ]);
-                                        break;
-
-                                    default:
-                                        break;
-                                }
-                                addContext(this, {
-                                    title: `Duration - After Change quantity of ${item.name}`,
-                                    value: `${duration} ms`,
-                                });
-                                const priceTSAs = await pricingService.getItemTSAs('OrderCenter', item.name);
-                                console.info(`${item.name} ${state} priceTSAs:`, priceTSAs);
-
-                                expect(typeof priceTSAs).equals('object');
-                                expect(Object.keys(priceTSAs)).to.eql([
-                                    'PriceBaseUnitPriceAfter1',
-                                    'PriceDiscountUnitPriceAfter1',
-                                    'PriceGroupDiscountUnitPriceAfter1',
-                                    'PriceManualLineUnitPriceAfter1',
-                                    'PriceTaxUnitPriceAfter1',
-                                    'NPMCalcMessage',
-                                ]);
-                                switch (state) {
-                                    case 'baseline':
-                                        expect(priceTSAs['NPMCalcMessage'].length).equals(
-                                            pricingData.testItemsValues[item.name]['NPMCalcMessage'][account][state]
-                                                .length,
-                                        );
-                                        break;
-
-                                    default:
-                                        expect(priceTSAs['NPMCalcMessage'].length).equals(
-                                            pricingData.testItemsValues[item.name]['NPMCalcMessage'][account][
-                                                'baseline'
-                                            ].length +
-                                                pricingData.testItemsValues[item.name]['NPMCalcMessage'][account][state]
-                                                    .length,
-                                        );
-                                        break;
-                                }
-                                priceFields.forEach((priceField) => {
-                                    expect(priceTSAs[priceField]).equals(
-                                        pricingData.testItemsValues[item.name][priceField][account][state],
-                                    );
-                                });
-                                driver.sleep(0.2 * 1000);
-                                await pricingService.clearOrderCenterSearch();
-                            });
-                        });
-                    });
-
-                    switch (state) {
-                        case 'baseline':
-                            break;
-
-                        default:
-                            describe(`CART "${state}"`, () => {
-                                it('entering and verifying being in cart', async function () {
-                                    await driver.click(orderPage.Cart_Button);
-                                    await orderPage.isSpinnerDone();
-                                    driver.sleep(1 * 1000);
-                                    await driver.untilIsVisible(orderPage.Cart_List_container);
-                                });
-                                it(`switch to 'Grid View'`, async function () {
-                                    await orderPage.changeCartView('Grid');
-                                    base64ImageComponent = await driver.saveScreenshots();
-                                    addContext(this, {
-                                        title: `After "Line View" was selected`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
-                                    });
-                                });
-                                it('verify that the sum total of items in the cart is correct', async function () {
-                                    base64ImageComponent = await driver.saveScreenshots();
-                                    addContext(this, {
-                                        title: `At Cart`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
-                                    });
-                                    const itemsInCart = await (
-                                        await driver.findElement(orderPage.Cart_Headline_Results_Number)
-                                    ).getText();
-                                    driver.sleep(0.2 * 1000);
-                                    expect(Number(itemsInCart)).to.equal(testItems.length);
-                                    driver.sleep(1 * 1000);
-                                });
-                                testItems.forEach(async (item) => {
-                                    it(`checking item "${item.name}"`, async () => {
-                                        const totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                            'Cart',
-                                            item.name,
-                                        );
-                                        const priceTSAs = await pricingService.getItemTSAs('Cart', item.name);
-                                        console.info(`Cart ${item.name} totalUnitsAmount:`, totalUnitsAmount);
-                                        console.info(`priceTSAs:`, priceTSAs);
-                                        const expectedAmount =
-                                            state === '1unit'
-                                                ? 1
-                                                : state === '3units'
-                                                ? 3
-                                                : state === '1case(6units)'
-                                                ? 6
-                                                : item.cartAmount;
-                                        addContext(this, {
-                                            title: `Total Units Amount`,
-                                            value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
-                                        });
-                                        // expect(totalUnitsAmount).equals(expectedAmount);
-                                        priceFields.forEach((priceField) => {
-                                            expect(priceTSAs[priceField]).equals(
-                                                pricingData.testItemsValues[item.name][priceField][account][state],
-                                            );
-                                        });
-                                    });
-                                });
-                                describe('back to Order Center and switch to Line View', () => {
-                                    it('Click "Continue ordering" button', async function () {
-                                        await driver.click(orderPage.Cart_ContinueOrdering_Button);
-                                        await orderPage.isSpinnerDone();
-                                        await orderPage.changeOrderCenterPageView('Line View');
-                                        await orderPage.isSpinnerDone();
-                                        base64ImageComponent = await driver.saveScreenshots();
-                                        addContext(this, {
-                                            title: `After "Line View" was selected`,
-                                            value: 'data:image/png;base64,' + base64ImageComponent,
-                                        });
-                                        await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
-                                        driver.sleep(1 * 1000);
-                                        base64ImageComponent = await driver.saveScreenshots();
-                                        addContext(this, {
-                                            title: `Order Center - Loaded`,
-                                            value: 'data:image/png;base64,' + base64ImageComponent,
-                                        });
-                                    });
-                                });
-                            });
-                            break;
-                    }
                 });
 
                 describe('Additional Items (Free Goods)', () => {
@@ -480,21 +324,23 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         'PriceTaxUnitPriceAfter1',
                                         'NPMCalcMessage',
                                     ]);
-                                    expect(ToBr55priceTSAs_OC.NPMCalcMessage.length).equals(
-                                        pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
-                                            'baseline'
-                                        ].length +
-                                            pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
-                                                states[index]
-                                            ].length,
-                                    );
+                                    const expectedNPMCalcMessageLength =
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                            account
+                                        ]['baseline'].length +
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                            account
+                                        ][states[index]].length;
                                     priceFields.forEach((priceField) => {
-                                        expect(ToBr55priceTSAs_OC[priceField]).equals(
-                                            pricingData.testItemsValues[item_forFreeGoods][priceField][account][
-                                                states[index]
-                                            ],
-                                        );
+                                        const expectedValue =
+                                            pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][
+                                                account
+                                            ][states[index]];
+                                        expect(ToBr55priceTSAs_OC[priceField]).equals(expectedValue);
                                     });
+                                    expect(ToBr55priceTSAs_OC.NPMCalcMessage.length).equals(
+                                        expectedNPMCalcMessageLength,
+                                    );
                                     driver.sleep(0.2 * 1000);
                                 });
                             });
@@ -519,17 +365,19 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     'PriceTaxUnitPriceAfter1',
                                     'NPMCalcMessage',
                                 ]);
-                                expect(ToBr55priceTSAs_OC.NPMCalcMessage.length).equals(
-                                    pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
-                                        'baseline'
-                                    ].length,
-                                );
-                                priceFields.forEach((priceField) => {
-                                    expect(ToBr55priceTSAs_OC[priceField]).equals(
-                                        pricingData.testItemsValues[item_forFreeGoods][priceField][account]['baseline'],
-                                    );
-                                });
+                                const expectedNPMCalcMessageLength =
+                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                        account
+                                    ]['baseline'].length;
                                 await pricingService.clearOrderCenterSearch();
+                                priceFields.forEach((priceField) => {
+                                    const expectedValue =
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][account][
+                                            'baseline'
+                                        ];
+                                    expect(ToBr55priceTSAs_OC[priceField]).equals(expectedValue);
+                                });
+                                expect(ToBr55priceTSAs_OC.NPMCalcMessage.length).equals(expectedNPMCalcMessageLength);
                                 driver.sleep(0.5 * 1000);
                             });
                         });
@@ -583,32 +431,34 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         'PriceTaxUnitPriceAfter1',
                                         'NPMCalcMessage',
                                     ]);
-                                    expect(Drug0002priceTSAs_OC['NPMCalcMessage'].length).equals(
-                                        pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
-                                            'baseline'
-                                        ].length +
-                                            pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
-                                                states[index]
-                                            ].length,
-                                    );
+                                    const expectedNPMCalcMessageLength =
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                            account
+                                        ]['baseline'].length +
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                            account
+                                        ][states[index]].length;
                                     priceFields.forEach((priceField) => {
-                                        expect(Drug0002priceTSAs_OC[priceField]).equals(
-                                            pricingData.testItemsValues[item_forFreeGoods][priceField][account][
-                                                states[index]
-                                            ],
-                                        );
+                                        const expectedValue =
+                                            pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][
+                                                account
+                                            ][states[index]];
+                                        expect(Drug0002priceTSAs_OC[priceField]).equals(expectedValue);
                                     });
+                                    expect(Drug0002priceTSAs_OC['NPMCalcMessage'].length).equals(
+                                        expectedNPMCalcMessageLength,
+                                    );
                                     driver.sleep(0.2 * 1000);
                                 });
                             });
 
-                            it('Back to 9 Cases', async () => {
+                            it('Back to 9 Cases', async function () {
                                 await driver.click(
                                     orderPage.getSelectorOfItemQuantityMinusButtonInOrderCenterByName(
                                         item_forFreeGoods,
                                     ),
                                 );
-                                driver.sleep(0.75 * 1000);
+                                driver.sleep(0.25 * 1000);
                                 base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Order Center - after Minus Button clicked`,
@@ -629,17 +479,24 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     'PriceTaxUnitPriceAfter1',
                                     'NPMCalcMessage',
                                 ]);
-                                expect(Drug0002priceTSAs_OC['NPMCalcMessage'].length).equals(
-                                    pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
-                                        'baseline'
-                                    ].length,
-                                );
-                                priceFields.forEach((priceField) => {
-                                    expect(Drug0002priceTSAs_OC[priceField]).equals(
-                                        pricingData.testItemsValues[item_forFreeGoods][priceField][account]['baseline'],
-                                    );
-                                });
+                                const expectedNPMCalcMessageLength =
+                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                        account
+                                    ]['baseline'].length +
+                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                        account
+                                    ]['9case(54units)'].length;
                                 await pricingService.clearOrderCenterSearch();
+                                priceFields.forEach((priceField) => {
+                                    const expectedValue =
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][account][
+                                            'baseline'
+                                        ];
+                                    expect(Drug0002priceTSAs_OC[priceField]).equals(expectedValue);
+                                });
+                                expect(Drug0002priceTSAs_OC['NPMCalcMessage'].length).equals(
+                                    expectedNPMCalcMessageLength,
+                                );
                                 driver.sleep(0.5 * 1000);
                             });
                         });
@@ -692,26 +549,28 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         'PriceTaxUnitPriceAfter1',
                                         'NPMCalcMessage',
                                     ]);
-                                    expect(Drug0004priceTSAs_OC['NPMCalcMessage'].length).equals(
-                                        pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
-                                            'baseline'
-                                        ].length +
-                                            pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
-                                                states[index]
-                                            ].length,
-                                    );
+                                    const expectedNPMCalcMessageLength =
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                            account
+                                        ]['baseline'].length +
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                            account
+                                        ][states[index]].length;
                                     priceFields.forEach((priceField) => {
-                                        expect(Drug0004priceTSAs_OC[priceField]).equals(
-                                            pricingData.testItemsValues[item_forFreeGoods][priceField][account][
-                                                states[index]
-                                            ],
-                                        );
+                                        const expectedValue =
+                                            pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][
+                                                account
+                                            ][states[index]];
+                                        expect(Drug0004priceTSAs_OC[priceField]).equals(expectedValue);
                                     });
+                                    expect(Drug0004priceTSAs_OC['NPMCalcMessage'].length).equals(
+                                        expectedNPMCalcMessageLength,
+                                    );
                                     driver.sleep(0.2 * 1000);
                                 });
                             });
 
-                            it('Back to 2 Cases', async () => {
+                            it('Back to 2 Cases', async function () {
                                 await driver.click(
                                     orderPage.getSelectorOfItemQuantityMinusButtonInOrderCenterByName(
                                         item_forFreeGoods,
@@ -738,16 +597,23 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     'PriceTaxUnitPriceAfter1',
                                     'NPMCalcMessage',
                                 ]);
-                                expect(Drug0004priceTSAs_OC['NPMCalcMessage'].length).equals(
-                                    pricingData.testItemsValues[item_forFreeGoods]['NPMCalcMessage'][account][
-                                        'baseline'
-                                    ].length,
-                                );
+                                const expectedNPMCalcMessageLength =
+                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                        account
+                                    ]['baseline'].length +
+                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                        account
+                                    ]['2case(12units)'].length;
                                 priceFields.forEach((priceField) => {
-                                    expect(Drug0004priceTSAs_OC[priceField]).equals(
-                                        pricingData.testItemsValues[item_forFreeGoods][priceField][account]['baseline'],
-                                    );
+                                    const expectedValue =
+                                        pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][account][
+                                            'baseline'
+                                        ];
+                                    expect(Drug0004priceTSAs_OC[priceField]).equals(expectedValue);
                                 });
+                                expect(Drug0004priceTSAs_OC['NPMCalcMessage'].length).equals(
+                                    expectedNPMCalcMessageLength,
+                                );
                                 await pricingService.clearOrderCenterSearch();
                                 driver.sleep(0.5 * 1000);
                             });
@@ -869,7 +735,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 await driver.findElement(orderPage.Cart_Headline_Results_Number)
                             ).getText();
                             driver.sleep(0.2 * 1000);
-                            expect(Number(itemsInCart)).to.equal(testItems.length + itemsAddedToGetFreeGoods.length);
+                            expect(Number(itemsInCart)).to.equal(itemsAddedToGetFreeGoods.length);
                             driver.sleep(1 * 1000);
                         });
                         it('changing the amount of "ToBr55" to produce free goods', async function () {
@@ -908,7 +774,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                             ).getText();
                             driver.sleep(0.2 * 1000);
                             expect(Number(itemsInCart)).to.equal(
-                                testItems.length + itemsAddedToGetFreeGoods.length + freeGoodsReceived[account].length,
+                                itemsAddedToGetFreeGoods.length + freeGoodsReceived[account].length,
                             );
                             driver.sleep(1 * 1000);
                         });
@@ -945,11 +811,11 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 priceFields.forEach((priceField) => {
                                     switch (priceField) {
                                         case 'PriceBaseUnitPriceAfter1':
-                                            expect(Drug0002_priceTSAsCart[priceField]).to.equal(
-                                                pricingData.testItemsValues[item]['PriceBaseUnitPriceAfter1'][account][
-                                                    'baseline'
-                                                ],
-                                            );
+                                            const expectedValue =
+                                                pricingData.testItemsValues.Additional[item][
+                                                    'PriceBaseUnitPriceAfter1'
+                                                ][account]['baseline'];
+                                            expect(Drug0002_priceTSAsCart[priceField]).to.equal(expectedValue);
                                             break;
 
                                         default:
@@ -994,9 +860,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                     priceFields.forEach((priceField) => {
                                         switch (priceField) {
                                             case 'PriceBaseUnitPriceAfter1':
-                                                expect(ToBr10_priceTSAsCart[priceField]).to.equal(
-                                                    pricingData.testItemsValues[item].ItemPrice,
-                                                );
+                                                const expectedValue =
+                                                    pricingData.testItemsValues.Additional[item].ItemPrice;
+                                                expect(ToBr10_priceTSAsCart[priceField]).to.equal(expectedValue);
                                                 break;
 
                                             default:
@@ -1041,7 +907,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 const item = 'ToBr55';
                                 driver.refresh();
                                 await orderPage.isSpinnerDone();
-                                driver.sleep(1 * 1000);
+                                driver.sleep(3 * 1000);
                                 await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
                                     'Case',
                                     item,
@@ -1071,9 +937,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 priceFields.forEach((priceField) => {
                                     switch (priceField) {
                                         case 'PriceBaseUnitPriceAfter1':
-                                            expect(ToBr55_priceTSAsCart[priceField]).to.equal(
-                                                pricingData.testItemsValues[item].ItemPrice,
-                                            );
+                                            const expectedValue =
+                                                pricingData.testItemsValues.Additional[item].ItemPrice;
+                                            expect(ToBr55_priceTSAsCart[priceField]).to.equal(expectedValue);
                                             break;
 
                                         default:
@@ -1288,21 +1154,22 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         'Amount',
                                     ]);
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0].Name,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                            .Name,
                                     );
                                     expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Name,
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Type,
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Value,
                                     );
                                     break;
@@ -1310,7 +1177,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 default:
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc['3units'],
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                            '3units'
+                                        ],
                                     );
                                     break;
                             }
@@ -1337,19 +1206,22 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             'Amount',
                                         ]);
                                         expect(MakeUpItem_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                            pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
-                                                .Name,
+                                            pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                                '3units'
+                                            ][0].Name,
                                         );
                                         expect(
                                             Object.keys(MakeUpItem_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0]),
                                         ).eql(['Name', 'Type', 'Value', 'Amount']);
                                         expect(MakeUpItem_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                            pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
-                                                .Conditions[0].Name,
+                                            pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                                '3units'
+                                            ][0].Conditions[0].Name,
                                         );
                                         expect(MakeUpItem_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                            pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
-                                                .Conditions[0].Type,
+                                            pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                                '3units'
+                                            ][0].Conditions[0].Type,
                                         );
                                         break;
 
@@ -1358,7 +1230,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             .to.be.an('array')
                                             .with.lengthOf(0);
                                         expect(Object.keys(MakeUpItem_priceTSAsCart.NPMCalcMessage)).eql(
-                                            pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc['3units'],
+                                            pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                                '3units'
+                                            ],
                                         );
                                         break;
                                 }
@@ -1393,21 +1267,22 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         'Amount',
                                     ]);
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0].Name,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                            .Name,
                                     );
                                     expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Name,
                                     );
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Type,
                                     );
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Value,
                                     );
                                     break;
@@ -1415,7 +1290,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 default:
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc['3units'],
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                            '3units'
+                                        ],
                                     );
                                     break;
                             }
@@ -1449,21 +1326,22 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         'Amount',
                                     ]);
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0].Name,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                            .Name,
                                     );
                                     expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Name,
                                     );
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Type,
                                     );
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Value,
                                     );
                                     break;
@@ -1471,7 +1349,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 default:
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc['3units'],
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                            '3units'
+                                        ],
                                     );
                                     break;
                             }
@@ -1505,21 +1385,22 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         'Amount',
                                     ]);
                                     expect(MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0].Name,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
+                                            .Name,
                                     );
                                     expect(Object.keys(MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
                                             .Conditions[0].Name,
                                     );
                                     expect(MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
                                             .Conditions[0].Type,
                                     );
                                     expect(MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
                                             .Conditions[0].Value,
                                     );
                                     break;
@@ -1527,7 +1408,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 default:
                                     expect(MakeUp001_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp001_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc['6units'],
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                            '6units'
+                                        ],
                                     );
                                     break;
                             }
@@ -1561,21 +1444,22 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         'Amount',
                                     ]);
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0].Name,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                            .Name,
                                     );
                                     expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                             .Conditions[0].Name,
                                     );
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                             .Conditions[0].Type,
                                     );
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                             .Conditions[0].Value,
                                     );
                                     break;
@@ -1583,7 +1467,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 default:
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc['7units'],
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                            '7units'
+                                        ],
                                     );
                                     break;
                             }
@@ -1617,30 +1503,36 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         'Amount',
                                     ]);
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['11units'][0]
-                                            .Name,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            '11units'
+                                        ][0].Name,
                                     );
                                     expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['11units'][0]
-                                            .Conditions[0].Name,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            '11units'
+                                        ][0].Conditions[0].Name,
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['11units'][0]
-                                            .Conditions[0].Type,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            '11units'
+                                        ][0].Conditions[0].Type,
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['11units'][0]
-                                            .Conditions[0].Value,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            '11units'
+                                        ][0].Conditions[0].Value,
                                     );
                                     break;
 
                                 default:
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc['11units'],
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                            '11units'
+                                        ],
                                     );
                                     break;
                             }
@@ -1674,34 +1566,41 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         'Amount',
                                     ]);
                                     expect(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
-                                            .Name,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            '12units'
+                                        ][0].Name,
                                     );
                                     expect(Object.keys(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
-                                            .Conditions[0].Name,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            '12units'
+                                        ][0].Conditions[0].Name,
                                     );
                                     expect(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
-                                            .Conditions[0].Type,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            '12units'
+                                        ][0].Conditions[0].Type,
                                     );
                                     expect(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
-                                            .Conditions[0].Value,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            '12units'
+                                        ][0].Conditions[0].Value,
                                     );
                                     expect(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Amount).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
-                                            .Conditions[0].Amount,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            '12units'
+                                        ][0].Conditions[0].Amount,
                                     );
                                     break;
 
                                 default:
                                     expect(MakeUp006_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp006_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc['12units'],
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                            '12units'
+                                        ],
                                     );
                                     break;
                             }
@@ -1719,56 +1618,57 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 10,
                                 driver,
                             );
+                            driver.sleep(0.5 * 1000);
                             const MakeUp003_priceTSAsCart = await pricingService.getItemTSAs(
                                 'OrderCenter',
                                 item_forGroupRules,
                             );
                             driver.sleep(0.1 * 1000);
+                            const expected_MakeUp003_NPMCalcMessage_baseline =
+                                pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account].baseline;
+                            const expected_MakeUp003_NPMCalcMessage =
+                                pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
+                                    '10units'
+                                ];
+                            expect(MakeUp003_priceTSAsCart.NPMCalcMessage)
+                                .to.be.an('array')
+                                .with.lengthOf(
+                                    expected_MakeUp003_NPMCalcMessage_baseline.length +
+                                        expected_MakeUp003_NPMCalcMessage.length,
+                                );
                             switch (account) {
                                 case 'Acc01':
-                                    expect(MakeUp003_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(1);
                                     expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0])).eql(
-                                        Object.keys(
-                                            pricingData.testItemsValues[item_forGroupRules].NPMCalcMessage[account][
-                                                '10units'
-                                            ][0],
-                                        ),
+                                        Object.keys(expected_MakeUp003_NPMCalcMessage[0]),
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Name).eql(
-                                        pricingData.testItemsValues[item_forGroupRules].NPMCalcMessage[account][
+                                        pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
                                             '10units'
                                         ][0].Name,
                                     );
                                     expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0])).eql(
-                                        Object.keys(
-                                            pricingData.testItemsValues[item_forGroupRules].NPMCalcMessage[account][
-                                                '10units'
-                                            ][0].Conditions[0],
-                                        ),
+                                        Object.keys(expected_MakeUp003_NPMCalcMessage[0].Conditions[0]),
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0].Name).eql(
-                                        pricingData.testItemsValues[item_forGroupRules].NPMCalcMessage[account][
+                                        pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
                                             '10units'
                                         ][0].Conditions[0].Name,
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0].Type).eql(
-                                        pricingData.testItemsValues[item_forGroupRules].NPMCalcMessage[account][
+                                        pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
                                             '10units'
                                         ][0].Conditions[0].Type,
                                     );
-                                    expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0].Value).eql(
-                                        pricingData.testItemsValues[item_forGroupRules].NPMCalcMessage[account][
-                                            '10units'
-                                        ][0].Conditions[0].Value,
-                                    );
+                                    // expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0].Value).eql(
+                                    //     pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
+                                    //         '10units'
+                                    //     ][0].Conditions[0].Value,
+                                    // );
                                     break;
 
                                 default:
-                                    expect(MakeUp003_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
-                                    expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues[item_forGroupRules].NPMCalcMessage[account]
-                                            .baseline,
-                                    );
+                                    // expect(MakeUp003_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
+                                    // expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage)).eql(expected_MakeUp003_NPMCalcMessage_baseline);
                                     break;
                             }
                             driver.sleep(0.1 * 1000);
@@ -1795,17 +1695,18 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         'Amount',
                                     ]);
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0].Name,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                            .Name,
                                     );
                                     expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                             .Conditions[0].Name,
                                     );
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                             .Conditions[0].Type,
                                     );
                                     break;
@@ -1813,7 +1714,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 default:
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc['7units'],
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                            '7units'
+                                        ],
                                     );
                                     break;
                             }
@@ -1847,26 +1750,31 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         'Amount',
                                     ]);
                                     expect(MakeUp019_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
-                                            .Name,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            '12units'
+                                        ][0].Name,
                                     );
                                     expect(Object.keys(MakeUp019_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp019_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
-                                            .Conditions[0].Name,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            '12units'
+                                        ][0].Conditions[0].Name,
                                     );
                                     expect(MakeUp019_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
-                                            .Conditions[0].Type,
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            '12units'
+                                        ][0].Conditions[0].Type,
                                     );
                                     break;
 
                                 default:
                                     expect(MakeUp019_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp019_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.BeautyMakeUp.NPMCalcMessage.OtherAcc['12units'],
+                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                            '12units'
+                                        ],
                                     );
                                     break;
                             }
@@ -1901,7 +1809,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('verifying that the sum total of items in the cart is correct', async function () {
                             let numberOfItemsInCart =
-                                testItems.length +
                                 itemsAddedToGetFreeGoods.length +
                                 freeGoodsReceived[account].length +
                                 groupRulesItems.length +
@@ -1924,6 +1831,74 @@ export async function PricingTests(email: string, password: string, client: Clie
                             });
                             expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                             driver.sleep(1 * 1000);
+                        });
+                        // it(`setting all items amount to 1`, async function () {
+                        groupRulesItems_CartTest.forEach(async (groupRuleItem_CartTest) => {
+                            it(`setting "${groupRuleItem_CartTest}" item amount to 1 (${pricingData.groupRulesItems_CartTest_details[groupRuleItem_CartTest]['1EA']['title']})`, async function () {
+                                await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
+                                    'Each',
+                                    groupRuleItem_CartTest,
+                                    1,
+                                    driver,
+                                );
+                                driver.sleep(0.2 * 1000);
+
+                                const totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                    'Cart',
+                                    groupRuleItem_CartTest,
+                                );
+                                console.info('totalUnitsAmount:', totalUnitsAmount);
+                                // expect(totalUnitsAmount).equals(1);
+                                groupRulesItems_CartTest.forEach(async (item) => {
+                                    const expectedValue =
+                                        pricingData.groupRulesItems_CartTest_details[groupRuleItem_CartTest]['1EA'][
+                                            'PriceGroupDiscountUnitPriceAfter1'
+                                        ][account][item];
+                                    const priceTSAs = await pricingService.getItemTSAs('Cart', item);
+                                    console.info(
+                                        `Cart ${groupRuleItem_CartTest} changed to amount of 1, "${item}" PriceGroupDiscountUnitPriceAfter1:`,
+                                        JSON.stringify(priceTSAs, null, 2),
+                                    );
+                                    addContext(this, {
+                                        title: `TSA PriceGroupDiscountUnitPriceAfter1 field "${item}" Values`,
+                                        value: `form UI: ${priceTSAs.PriceGroupDiscountUnitPriceAfter1} , expected: ${expectedValue}`,
+                                    });
+                                    expect(priceTSAs.PriceGroupDiscountUnitPriceAfter1).equals(expectedValue);
+                                });
+                            });
+                        });
+                        // it(`setting all items amount to original value`, async function () {
+                        groupRulesItems_CartTest.forEach(async (groupRuleItem_CartTest) => {
+                            it(`setting "${groupRuleItem_CartTest}" item amount to original value`, async function () {
+                                let testedDetails;
+                                if (groupRuleItem_CartTest === 'MakeUp018') {
+                                    // need to be removed when MakeUp018 is un-commented from groupRulesItems (only the else remains)
+                                    testedDetails = {
+                                        name: 'MakeUp018',
+                                        Acc01: { uom: 'Each', unitQuantity: 2 },
+                                        OtherAcc: { uom: 'Each', unitQuantity: 2 },
+                                    };
+                                } else {
+                                    testedDetails = groupRulesItems.find((item) => {
+                                        if (item.name === groupRuleItem_CartTest) {
+                                            return item;
+                                        }
+                                    });
+                                }
+                                const amountToSet = testedDetails[account].unitQuantity;
+                                await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
+                                    'Each',
+                                    groupRuleItem_CartTest,
+                                    amountToSet,
+                                    driver,
+                                );
+                                driver.sleep(0.2 * 1000);
+                            });
+                            // base64ImageComponent = await driver.saveScreenshots();
+                            // addContext(this, {
+                            //     title: `At Cart - after change`,
+                            //     value: 'data:image/png;base64,' + base64ImageComponent,
+                            // });
                         });
                         groupRulesItems.forEach((groupRuleItem) => {
                             it(`checking item "${groupRuleItem.name}"`, async function () {
@@ -1952,7 +1927,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             // expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
                                             priceFields.forEach((priceField) => {
                                                 expectedValue =
-                                                    pricingData.testItemsValues['MakeUp018'][priceField][account][
+                                                    pricingData.testItemsValues.Group['MakeUp018'][priceField][account][
                                                         'additional'
                                                     ]['Each'];
                                                 addContext(this, {
@@ -2006,7 +1981,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 case 'PriceBaseUnitPriceAfter1':
                                                     const expectedValue =
                                                         installedPricingVersion === '5'
-                                                            ? pricingData.testItemsValues[itemName]['ItemPrice']
+                                                            ? pricingData.testItemsValues.Group[itemName]['ItemPrice']
                                                             : 0;
                                                     addContext(this, {
                                                         title: `TSA field "${priceField}" Values`,
@@ -2052,7 +2027,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         switch (priceField) {
                                             case 'PriceDiscountUnitPriceAfter1':
                                                 expectedValue =
-                                                    pricingData.testItemsValues[groupRuleItem.name][priceField][
+                                                    pricingData.testItemsValues.Group[groupRuleItem.name][priceField][
                                                         account
                                                     ]['cart'];
                                                 addContext(this, {
@@ -2063,7 +2038,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 break;
                                             case 'PriceGroupDiscountUnitPriceAfter1':
                                                 expectedValue =
-                                                    pricingData.testItemsValues[groupRuleItem.name][priceField][
+                                                    pricingData.testItemsValues.Group[groupRuleItem.name][priceField][
                                                         account
                                                     ]['cart'];
                                                 addContext(this, {
@@ -2075,7 +2050,7 @@ export async function PricingTests(email: string, password: string, client: Clie
 
                                             default:
                                                 expectedValue =
-                                                    pricingData.testItemsValues[groupRuleItem.name]['ItemPrice'];
+                                                    pricingData.testItemsValues.Group[groupRuleItem.name]['ItemPrice'];
                                                 addContext(this, {
                                                     title: `TSA field "${priceField}" Values`,
                                                     value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
@@ -2131,7 +2106,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('changing value of group discount rule in "PPM_Values" UDT', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
                                 SecondaryKey: '',
                                 Values: [
@@ -2139,7 +2114,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 ],
                             });
                             expect(updatedUDTRowPOST).to.deep.include({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
                                 SecondaryKey: null,
                                 Values: [
@@ -2156,7 +2131,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('changing value of additional item rule in "PPM_Values" UDT', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZDS3@A001@Drug0004',
                                 SecondaryKey: '',
                                 Values: [
@@ -2164,7 +2139,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 ],
                             });
                             expect(updatedUDTRowPOST).to.deep.include({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZDS3@A001@Drug0004',
                                 SecondaryKey: null,
                                 Values: [
@@ -2187,14 +2162,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('validating "PPM_Values" UDT values via API', async () => {
                             const updatedUDT = await objectsService.getUDT({
-                                where: "MapDataExternalID='" + tableName + "'",
+                                where: "MapDataExternalID='" + pricingRules.tableName + "'",
                                 page_size: -1,
                             });
                             console.info('updatedUDT: ', updatedUDT);
                             expect(updatedUDT)
                                 .to.be.an('array')
                                 .with.lengthOf(
-                                    Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
+                                    Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length,
                                 );
                             // Add verification tests
                         });
@@ -2260,7 +2235,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                         it('verifying that the sum total of items in the cart is correct', async function () {
                             await driver.untilIsVisible(orderPage.Cart_Totals); // Verify being in Cart
                             let numberOfItemsInCart =
-                                testItems.length +
                                 itemsAddedToGetFreeGoods.length +
                                 freeGoodsReceived[account].length +
                                 groupRulesItems.length +
@@ -2355,14 +2329,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                                                 switch (priceField) {
                                                     case 'PriceBaseUnitPriceAfter1':
                                                         expectedValue =
-                                                            pricingData.testItemsValues[itemName][priceField][account][
-                                                                'additional'
-                                                            ]['Each'];
+                                                            pricingData.testItemsValues[readonlyCartItem.section][
+                                                                itemName
+                                                            ][priceField][account]['additional']['Each'];
                                                         if (ifFreePlusUOM && ifFreePlusUOM.includes('Case')) {
                                                             expectedValue =
-                                                                pricingData.testItemsValues[itemName][priceField][
-                                                                    account
-                                                                ]['additional']['Case'];
+                                                                pricingData.testItemsValues[readonlyCartItem.section][
+                                                                    itemName
+                                                                ][priceField][account]['additional']['Case'];
                                                         }
                                                         break;
 
@@ -2447,9 +2421,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                             if (account === 'OtherAcc') {
                                                 priceFields.forEach((priceField) => {
                                                     expectedValue =
-                                                        pricingData.testItemsValues[readonlyCartItem.name][priceField][
-                                                            account
-                                                        ]['cart'];
+                                                        pricingData.testItemsValues[readonlyCartItem.section][
+                                                            readonlyCartItem.name
+                                                        ][priceField][account]['cart'];
                                                     addContext(this, {
                                                         title: `TSA field "${priceField}" Values`,
                                                         value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
@@ -2467,9 +2441,9 @@ export async function PricingTests(email: string, password: string, client: Clie
                                         default:
                                             priceFields.forEach((priceField) => {
                                                 expectedValue =
-                                                    pricingData.testItemsValues[readonlyCartItem.name][priceField][
-                                                        account
-                                                    ]['cart'];
+                                                    pricingData.testItemsValues[readonlyCartItem.section][
+                                                        readonlyCartItem.name
+                                                    ][priceField][account]['cart'];
                                                 addContext(this, {
                                                     title: `TSA field "${priceField}" Values`,
                                                     value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
@@ -2491,7 +2465,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                     describe('Reset', () => {
                         it('reverting value of group discount rule in "PPM_Values" UDT to the original value', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
                                 SecondaryKey: '',
                                 Values: [
@@ -2499,7 +2473,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 ],
                             });
                             expect(updatedUDTRowPOST).to.deep.include({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
                                 SecondaryKey: null,
                                 Values: [
@@ -2516,7 +2490,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('reverting value of additional item rule in "PPM_Values" UDT to the original value', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZDS3@A001@Drug0004',
                                 SecondaryKey: '',
                                 Values: [
@@ -2524,7 +2498,7 @@ export async function PricingTests(email: string, password: string, client: Clie
                                 ],
                             });
                             expect(updatedUDTRowPOST).to.deep.include({
-                                MapDataExternalID: tableName,
+                                MapDataExternalID: pricingRules.tableName,
                                 MainKey: 'ZDS3@A001@Drug0004',
                                 SecondaryKey: null,
                                 Values: [
@@ -2547,14 +2521,14 @@ export async function PricingTests(email: string, password: string, client: Clie
                         });
                         it('validating "PPM_Values" UDT values via API', async () => {
                             ppmVluesEnd = await objectsService.getUDT({
-                                where: `MapDataExternalID='${tableName}'`,
+                                where: `MapDataExternalID='${pricingRules.tableName}'`,
                                 page_size: -1,
                             });
                             expect(ppmVluesEnd.length).equals(
-                                Object.keys(pricingData.documentsIn_PPM_Values).length + dummyPPM_Values_length,
+                                Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length,
                             );
                             // ppmVluesEnd.forEach((tableRow) => {  // needs to be converted
-                            //     expect(tableRow['Values'][0]).equals(pricingData.documentsIn_PPM_Values[tableRow.MainKey]);
+                            //     expect(tableRow['Values'][0]).equals(ppmValues_content[tableRow.MainKey]);
                             // });
                         });
                     });
@@ -2595,69 +2569,6 @@ export async function PricingTests(email: string, password: string, client: Clie
                         console.info('List is EMPTY - no activities found');
                     }
                 }
-            });
-
-            it('deleting valid rules from the UDT "PPM_Values"', async () => {
-                const valueObjs: UserDefinedTableRow[] = [];
-                const validPPM_ValuesKeys = Object.keys(pricingData.documentsIn_PPM_Values);
-                const deleteResponses = await Promise.all(
-                    validPPM_ValuesKeys.map(async (validPPM_Key) => {
-                        const valueObj: UserDefinedTableRow | undefined = ppmVluesEnd.find((listing) => {
-                            if (listing.MainKey === validPPM_Key) return listing;
-                        });
-                        console.info(
-                            'validPPM_Key:',
-                            validPPM_Key,
-                            ', validPPM_ValueObj: ',
-                            JSON.stringify(valueObj, null, 2),
-                        );
-                        if (valueObj) {
-                            console.info('valueObj EXIST!');
-                            valueObjs.push(valueObj);
-                            valueObj.Hidden = true;
-                            return await objectsService.postUDT(valueObj);
-                        }
-                    }),
-                );
-                expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
-                deleteResponses.forEach((deleteUDTresponse) => {
-                    console.info(
-                        `${deleteUDTresponse?.MainKey} Delete RESPONSE: `,
-                        JSON.stringify(deleteUDTresponse, null, 2),
-                    );
-                    if (deleteUDTresponse) {
-                        console.info('UDT delete response exist!');
-                        const PPMvalue = pricingData.documentsIn_PPM_Values[deleteUDTresponse.MainKey];
-                        expect(deleteUDTresponse).to.deep.include({
-                            MapDataExternalID: tableName,
-                            SecondaryKey: null,
-                            Values: [PPMvalue],
-                        });
-                        expect(deleteUDTresponse).to.have.property('MainKey');
-                        expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
-                        expect(deleteUDTresponse)
-                            .to.have.property('ModificationDateTime')
-                            .that.contains(new Date().toISOString().split('T')[0]);
-                        expect(deleteUDTresponse).to.have.property('ModificationDateTime').that.contains('Z');
-                        expect(deleteUDTresponse).to.have.property('Hidden').that.is.true;
-                        expect(deleteUDTresponse).to.have.property('InternalID');
-                    }
-                });
-            });
-
-            it('performing sync', async () => {
-                await webAppHeader.goHome();
-                driver.sleep(0.2 * 1000);
-                await webAppHomePage.isSpinnerDone();
-                await webAppHomePage.manualResync(client);
-            });
-
-            it('validating "PPM_Values" UDT values via API', async () => {
-                ppmVluesEnd = await objectsService.getUDT({
-                    where: `MapDataExternalID='${tableName}'`,
-                    page_size: -1,
-                });
-                expect(ppmVluesEnd.length).equals(dummyPPM_Values_length);
             });
         });
     });

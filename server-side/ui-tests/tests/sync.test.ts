@@ -640,6 +640,7 @@ export async function SyncTests(email: string, password: string, client: Client,
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 
@@ -842,6 +843,7 @@ export async function SyncTests(email: string, password: string, client: Client,
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 
@@ -965,6 +967,7 @@ export async function SyncTests(email: string, password: string, client: Client,
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 
@@ -1158,6 +1161,7 @@ export async function SyncTests(email: string, password: string, client: Client,
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 
@@ -1389,6 +1393,7 @@ export async function SyncTests(email: string, password: string, client: Client,
             });
 
             after(async function () {
+                await driver.close();
                 await driver.quit();
             });
 

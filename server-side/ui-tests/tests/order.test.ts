@@ -35,6 +35,7 @@ export async function OrderTests(email: string, password: string, client: Client
         afterEach(async function () {
             const webAppHomePage = new WebAppHomePage(driver);
             await webAppHomePage.collectEndTestData(this);
+            await driver.close();
             await driver.quit();
         });
 
@@ -184,6 +185,7 @@ export async function OrderTests(email: string, password: string, client: Client
         });
 
         after(async function () {
+            await driver.close();
             await driver.quit();
         });
 
