@@ -457,6 +457,13 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
+    if (tests === 'PricingSet') {
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingConfigUpload(client, email, pass);
+        await PricingUdtInsertion(client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+    }
+
     if (tests === 'Pricing') {
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
