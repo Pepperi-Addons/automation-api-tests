@@ -29,7 +29,7 @@ export async function PricingUomTests(email: string, password: string, client: C
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
 
     let ppmValues_content;
-    switch (installedPricingVersion) {
+    switch (installedPricingVersionShort) {
         // case '6':
         //     console.info('AT installedPricingVersion CASE 6');
         //     ppmValues_content = pricingRules.version06;
@@ -50,8 +50,7 @@ export async function PricingUomTests(email: string, password: string, client: C
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
-    let transactionUUID_Acc01: string;
-    let transactionUUID_OtherAcc: string;
+    let transactionUUID: string;
     let accountName: string;
     let duration: string;
     let ppmValues: UserDefinedTableRow[];
@@ -181,21 +180,9 @@ export async function PricingUomTests(email: string, password: string, client: C
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
                     it('Creating new transaction', async function () {
-                        switch (account) {
-                            case 'Acc01':
-                                accountName = 'My Store';
-                                transactionUUID_Acc01 = await pricingService.startNewSalesOrderTransaction(accountName);
-                                console.info('transactionUUID_Acc01:', transactionUUID_Acc01);
-                                break;
-
-                            default:
-                                accountName = 'Account for order scenarios';
-                                transactionUUID_OtherAcc = await pricingService.startNewSalesOrderTransaction(
-                                    accountName,
-                                );
-                                console.info('transactionUUID_OtherAcc:', transactionUUID_OtherAcc);
-                                break;
-                        }
+                        account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
+                        transactionUUID = await pricingService.startNewSalesOrderTransaction(accountName);
+                        console.info('transactionUUID:', transactionUUID);
                         await orderPage.changeOrderCenterPageView('Line View');
                     });
 

@@ -417,7 +417,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         }
     }
 
-    if (tests.includes('Uom')) {
+    if (tests === 'Uom') {
         await UomTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
@@ -465,7 +465,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         // await PricingUomTests(email, pass, client);
         // await PricingTotalsTests(email, pass, client);
         // await PricingMultipleValuesTests(email, pass, client);
-        // await PricingPartialValueTests(email, pass, client);
+        await PricingPartialValueTests(email, pass, client);
         // await PricingExclusionTests(email, pass, client);
         await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
