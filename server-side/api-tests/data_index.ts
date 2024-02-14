@@ -436,7 +436,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
             });
 
             it('All Activities Polling', async () => {
-                debugger;
+                //debugger;
                 let pollingResponse;
                 let maxLoopsCounter = 90;
                 do {
@@ -512,7 +512,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 expect(publishResponse.Ok).to.equal(true);
                 expect(publishResponse.Status).to.equal(200);
                 expect(publishResponse.Body.success).to.equal(true);
-                debugger;
+                //debugger;
                 let pollingResponse;
                 let loopCounter = 0;
                 do {
@@ -544,6 +544,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                     Where: `InternalID=${transactionInternalID}`,
                     Fields: ['Remark'],
                 };
+                generalService.sleep(2000);
                 // debugger;
                 const allActivitiesResponse = await generalService.fetchStatus(allActivitiesURL, {
                     method: 'POST',
@@ -554,6 +555,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                     Where: `Transaction.InternalID=${transactionInternalID}`,
                     Fields: ['Transaction.Remark'],
                 };
+                generalService.sleep(2000);
                 const transLinesResponse = await generalService.fetchStatus(transactionLinesURL, {
                     method: 'POST',
                     body: JSON.stringify(transLinesBody),
@@ -562,6 +564,7 @@ export async function DataIndexTests(generalService: GeneralService, request, te
                 //3. change the remark
                 const secondRemark = await updateTransaction(generalService, createdTransaction, expect);
                 //4. see it returns correctly on both transaction and transaction-line
+                generalService.sleep(2000);
                 const allActivitiesResponseAfterUpdate = await generalService.fetchStatus(allActivitiesURL, {
                     method: 'POST',
                     body: JSON.stringify(allActivitiesBody),
