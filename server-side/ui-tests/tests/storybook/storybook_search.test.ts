@@ -37,7 +37,6 @@ export async function StorybookSearchTests() {
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 

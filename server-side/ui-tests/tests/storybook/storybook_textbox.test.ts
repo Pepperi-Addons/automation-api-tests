@@ -59,7 +59,6 @@ export async function StorybookTextboxTests() {
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 

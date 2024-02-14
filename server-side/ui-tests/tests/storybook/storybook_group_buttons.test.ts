@@ -53,7 +53,6 @@ export async function StorybookGroupButtonsTests() {
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 

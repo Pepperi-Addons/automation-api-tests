@@ -95,7 +95,6 @@ export async function PricingExclusionTests(email: string, password: string, cli
             });
 
             after(async function () {
-                await driver.close();
                 await driver.quit();
             });
 
