@@ -56,28 +56,26 @@ export async function PricingPartialValueTests(email: string, password: string, 
     let ppmValues: UserDefinedTableRow[];
     let base64ImageComponent;
 
-    // const account = 'Acc01';
     const testAccounts = ['Acc01', 'OtherAcc'];
     const partialValueTestItems = ['Frag006', 'Frag008', 'Frag009', 'Frag011', 'Frag021'];
+    const partialValueCartTestItems = ['Frag021', 'Frag011', 'Frag009', 'Frag008'];
     const partialValueTestStates = [
         'baseline',
         '9 Each',
         '10 Each',
         '11 Each',
+        '10 Each',
+        '9 Each',
         '0 Each',
         '1 Case',
         '2 Case',
         '3 Case',
+        '2 Case',
+        '1 Case',
+        '1 Box',
+        '2 Box',
         '1 Box',
     ];
-    // const priceFields = [
-    //     'PriceBaseUnitPriceAfter1',
-    //     'PriceDiscountUnitPriceAfter1',
-    //     'PriceGroupDiscountUnitPriceAfter1',
-    //     'PriceManualLineUnitPriceAfter1',
-    //     'PriceTaxUnitPriceAfter1',
-    // ];
-    // const priceFields2 = ['PriceBaseUnitPriceAfter2', 'PriceDiscountUnitPriceAfter2', 'PriceTaxUnitPriceAfter2'];
     const pricePartialFields = ['PricePartial'];
 
     if (installedPricingVersionShort !== '5') {
@@ -342,7 +340,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                 expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                                 driver.sleep(1 * 1000);
                             });
-                            partialValueTestItems.forEach((partialValueTestCartItem) => {
+                            partialValueCartTestItems.forEach((partialValueTestCartItem) => {
                                 it(`checking item "${partialValueTestCartItem}"`, async function () {
                                     const pricePartialTSAs = await pricingService.getTSAsOfPartialPerItem(
                                         'Cart',
