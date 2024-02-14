@@ -4660,6 +4660,29 @@ export class PricingData06 {
                                 Amount: -5.45,
                             },
                         ],
+                        '2 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 54.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -16.35,
+                                    },
+                                ],
+                                New: 38.15,
+                                Amount: -16.35,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 54.5,
+                                Conditions: [{ Name: 'ZDH1_A011 (4 Letters)', Type: '%', Value: -20, Amount: -10.9 }],
+                                New: 43.6,
+                                Amount: -10.9,
+                            },
+                        ],
                     },
                     OtherAcc: {
                         baseline: [],
@@ -4721,6 +4744,17 @@ export class PricingData06 {
                                 Amount: -4.0875,
                             },
                         ],
+                        '2 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 54.5,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -8.175 },
+                                ],
+                                New: 46.325,
+                                Amount: -8.175,
+                            },
+                        ],
                     },
                     cart: {
                         Acc01: [],
@@ -4768,6 +4802,13 @@ export class PricingData06 {
                                 `'ZDH1@A011@1000@Frag006' -> [[10,"D",20,"%"]],"EA"]] (20% -> - 27.25 * 0.2 -> -5.45)`,
                             ],
                         },
+                        '2 Box': {
+                            expectedValue: 21.8, // 27.25 - 5.45
+                            rules: [
+                                `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@1000@Frag006' -> [[10,"D",20,"%"]],"EA"]] (20% -> - 27.25 * 0.2 -> -5.45)`,
+                            ],
+                        },
                     },
                     OtherAcc: {
                         baseline: { expectedValue: 27.25, rules: [`X`] },
@@ -4799,6 +4840,12 @@ export class PricingData06 {
                             ],
                         },
                         '1 Box': {
+                            expectedValue: 27.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '2 Box': {
                             expectedValue: 27.25,
                             rules: [
                                 `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
@@ -4939,6 +4986,29 @@ export class PricingData06 {
                                 Amount: -8.775,
                             },
                         ],
+                        '2 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 58.5, // 29.25 * 2
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -17.55,
+                                    },
+                                ],
+                                New: 40.95,
+                                Amount: -17.55,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 58.5, // 29.25 * 2
+                                Conditions: [{ Name: 'ZDH1_A011 (7 Letters)', Type: '%', Value: -30, Amount: -17.55 }],
+                                New: 40.95,
+                                Amount: -17.55,
+                            },
+                        ],
                     },
                     OtherAcc: {
                         baseline: [],
@@ -5000,6 +5070,17 @@ export class PricingData06 {
                                 Amount: -4.3875,
                             },
                         ],
+                        '2 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 58.5,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -8.775 },
+                                ],
+                                New: 49.725,
+                                Amount: -8.775,
+                            },
+                        ],
                     },
                     cart: {
                         Acc01: [],
@@ -5047,6 +5128,13 @@ export class PricingData06 {
                                 `'ZDH1@A011@1000200@Frag008' -> [[10,"D",30,"%"]],"EA"]] (30% -> - 29.25 * 0.3 -> -8.775)`,
                             ],
                         },
+                        '2 Box': {
+                            expectedValue: 20.47, // 29.25 - 8.775
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@1000200@Frag008' -> [[10,"D",30,"%"]],"EA"]] (30% -> - 29.25 * 0.3 -> -8.775)`,
+                            ],
+                        },
                     },
                     OtherAcc: {
                         baseline: { expectedValue: 29.25, rules: [`X`] },
@@ -5078,6 +5166,12 @@ export class PricingData06 {
                             ],
                         },
                         '1 Box': {
+                            expectedValue: 29.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '2 Box': {
                             expectedValue: 29.25,
                             rules: [
                                 `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
@@ -5228,6 +5322,31 @@ export class PricingData06 {
                                 Amount: -3.025,
                             },
                         ],
+                        '2 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 60.5, // 30.25 * 2
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -18.15,
+                                    },
+                                ],
+                                New: 42.35,
+                                Amount: -18.15,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 60.5, // 30.25 * 2
+                                Conditions: [
+                                    { Name: 'ZDH1_A011 (9 Letters - full)', Type: '%', Value: -10, Amount: -6.05 },
+                                ],
+                                New: 54.45,
+                                Amount: -6.05,
+                            },
+                        ],
                     },
                     OtherAcc: {
                         baseline: [],
@@ -5289,6 +5408,17 @@ export class PricingData06 {
                                 Amount: -4.5375,
                             },
                         ],
+                        '2 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 60.5,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -9.075 },
+                                ],
+                                New: 51.425,
+                                Amount: -9.075,
+                            },
+                        ],
                     },
                     cart: {
                         Acc01: [],
@@ -5336,6 +5466,13 @@ export class PricingData06 {
                                 `'ZDH1@A011@100020030@Frag009' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 30.25 * 0.1 -> -3.025)`,
                             ],
                         },
+                        '2 Box': {
+                            expectedValue: 27.22, // 30.25 - 3.025
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@100020030@Frag009' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 30.25 * 0.1 -> -3.025)`,
+                            ],
+                        },
                     },
                     OtherAcc: {
                         baseline: { expectedValue: 30.25, rules: [`X`] },
@@ -5367,6 +5504,12 @@ export class PricingData06 {
                             ],
                         },
                         '1 Box': {
+                            expectedValue: 30.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '2 Box': {
                             expectedValue: 30.25,
                             rules: [
                                 `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
@@ -5517,6 +5660,31 @@ export class PricingData06 {
                                 Amount: -3.225,
                             },
                         ],
+                        '2 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 64.5, // 32.25 * 2
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -19.35,
+                                    },
+                                ],
+                                New: 45.15,
+                                Amount: -19.35,
+                            },
+                            {
+                                Name: 'PartialValue',
+                                Base: 64.5, // 32.25 * 2
+                                Conditions: [
+                                    { Name: 'ZDH1_A011 (9 Letters - full)', Type: '%', Value: -10, Amount: -6.45 },
+                                ],
+                                New: 58.05,
+                                Amount: -6.45,
+                            },
+                        ],
                     },
                     OtherAcc: {
                         baseline: [],
@@ -5578,6 +5746,17 @@ export class PricingData06 {
                                 Amount: -4.8375,
                             },
                         ],
+                        '2 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 64.5,
+                                Conditions: [
+                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -9.675 },
+                                ],
+                                New: 54.825,
+                                Amount: -9.675,
+                            },
+                        ],
                     },
                     cart: {
                         Acc01: [],
@@ -5625,6 +5804,13 @@ export class PricingData06 {
                                 `'ZDH1@A011@100020030@Frag011' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 32.25 * 0.1 -> -3.225)`,
                             ],
                         },
+                        '2 Box': {
+                            expectedValue: 29.02, // 32.25 - 3.225
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                                `'ZDH1@A011@100020030@Frag011' -> [[10,"D",10,"%"]],"EA"]] (10% -> - 32.25 * 0.1 -> -3.225)`,
+                            ],
+                        },
                     },
                     OtherAcc: {
                         baseline: { expectedValue: 32.25, rules: [`X`] },
@@ -5656,6 +5842,12 @@ export class PricingData06 {
                             ],
                         },
                         '1 Box': {
+                            expectedValue: 32.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '2 Box': {
                             expectedValue: 32.25,
                             rules: [
                                 `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
@@ -5761,6 +5953,22 @@ export class PricingData06 {
                                 Amount: -12.675,
                             },
                         ],
+                        '2 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 84.5, // 42.25 * 2
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -25.35,
+                                    },
+                                ],
+                                New: 59.15,
+                                Amount: -25.35,
+                            },
+                        ],
                     },
                     OtherAcc: {
                         baseline: [],
@@ -5847,6 +6055,22 @@ export class PricingData06 {
                                 Amount: -12.675,
                             },
                         ],
+                        '2 Box': [
+                            {
+                                Name: 'MultipleValues',
+                                Base: 84.5, // 42.25 * 2
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009  Account_Contract3_ALL_UOMS',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -25.35,
+                                    },
+                                ],
+                                New: 59.15,
+                                Amount: -25.35,
+                            },
+                        ],
                     },
                     cart: {
                         Acc01: [],
@@ -5889,6 +6113,12 @@ export class PricingData06 {
                                 `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
                             ],
                         },
+                        '2 Box': {
+                            expectedValue: 42.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
                     },
                     OtherAcc: {
                         baseline: { expectedValue: 42.25, rules: [`X`] },
@@ -5920,6 +6150,12 @@ export class PricingData06 {
                             ],
                         },
                         '1 Box': {
+                            expectedValue: 42.25,
+                            rules: [
+                                `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
+                            ],
+                        },
+                        '2 Box': {
                             expectedValue: 42.25,
                             rules: [
                                 `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] || DO NOT affect Partial Value Calc`,
