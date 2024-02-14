@@ -2470,7 +2470,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.updateTestTableSecStatus = false;
             logcash.updateTestTableSecError = 'Update data to Accounts table failed';
         }
-        generalService.sleep(2000);
+        generalService.sleep(5000);
         await getFromElasticTable3();
     }
 
