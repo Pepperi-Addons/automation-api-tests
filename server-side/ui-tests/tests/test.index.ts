@@ -125,6 +125,7 @@ chai.use(promised);
 const tests = process.env.npm_config_tests as string;
 const email = process.env.npm_config_user_email as string;
 const pass = process.env.npm_config_user_pass as string;
+// const version = process.env.npm_config_version as string;
 const varPass = process.env.npm_config_var_pass as string;
 const varPassEU = process.env.npm_config_var_pass_eu as string;
 const varPassSB = process.env.npm_config_var_pass_sb as string;
