@@ -417,7 +417,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         }
     }
 
-    if (tests.includes('Uom')) {
+    if (tests === 'Uom') {
         await UomTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
