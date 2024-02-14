@@ -810,24 +810,27 @@ export class DevTest {
         }${
             this.failedSuitesProd.length === 0
                 ? ''
-                : `PROD User: ${await this.getProdUserEmail()}<br>Failed Prod Tests:<br>` +
-                  this.failedSuitesProd.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+                : `* PROD User: ${await this.getProdUserEmail()}<br>Failed Prod Tests:<br>` +
+                  this.failedSuitesProd.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>') +
+                  '<br>'
         }${
             this.failedSuitesEU.length === 0
                 ? ''
-                : `,EU User: ${await this.getEuUserEmail()}<br>Failed EU Tests:` +
-                  this.failedSuitesEU.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+                : `<br>* EU User: ${await this.getEuUserEmail()}<br>Failed EU Tests:<br>` +
+                  this.failedSuitesEU.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>') +
+                  '<br>'
         }${
             this.failedSuitesSB.length === 0
                 ? ''
-                : `,SB User: ${await this.getSbUserEmail()}<br>Failed SB Tests` +
-                  this.failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>')
+                : `<br>* SB User: ${await this.getSbUserEmail()}<br>Failed SB Tests:<br>` +
+                  this.failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>') +
+                  '<br>'
         }`;
         const bodyToSend = {
             Name: `The Results Of Intergration Tests Written By Developer For ${this.addonName} - (${this.addonUUID}), Version: ${this.addonVersion}`,
             Description: message,
             Status: this.devPassingEnvs.length < 3 ? 'FAILED' : 'PASSED',
-            Message: failedTestsDesc === '' ? '~' : failedTestsDesc,
+            Message: failedTestsDesc === '' ? '√' : failedTestsDesc,
             UserWebhook: await this.handleTeamsURL(this.addonName),
         };
         console.log(
