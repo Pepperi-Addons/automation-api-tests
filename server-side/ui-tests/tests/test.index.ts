@@ -124,7 +124,7 @@ chai.use(promised);
 const tests = process.env.npm_config_tests as string;
 const email = process.env.npm_config_user_email as string;
 const pass = process.env.npm_config_user_pass as string;
-// const version = process.env.npm_config_version as string;
+const prcVer = process.env.npm_config_pricing_version as string;
 const varPass = process.env.npm_config_var_pass as string;
 const varPassEU = process.env.npm_config_var_pass_eu as string;
 const varPassSB = process.env.npm_config_var_pass_sb as string;
@@ -458,7 +458,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'Pricing') {
-        await PricingAddonsUpsert(varPass, client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingBaseTests(email, pass, client);
@@ -473,7 +473,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingBase') {
-        await PricingAddonsUpsert(varPass, client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingBaseTests(email, pass, client);
@@ -482,7 +482,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingAdditional') {
-        await PricingAddonsUpsert(varPass, client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingAdditionalGroupsReadonlyTests(email, pass, client);
@@ -491,7 +491,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingUom') {
-        await PricingAddonsUpsert(varPass, client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingUomTests(email, pass, client);
@@ -500,7 +500,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingTotals') {
-        await PricingAddonsUpsert(varPass, client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingTotalsTests(email, pass, client);
@@ -509,7 +509,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingMulti') {
-        await PricingAddonsUpsert(varPass, client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingMultipleValuesTests(email, pass, client);
@@ -518,7 +518,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingPartial') {
-        await PricingAddonsUpsert(varPass, client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingPartialValueTests(email, pass, client);
@@ -527,7 +527,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingExclusion') {
-        await PricingAddonsUpsert(varPass, client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingExclusionTests(email, pass, client);
