@@ -1199,6 +1199,7 @@ export default class PricingConfiguration {
             },
         ],
     };
+<<<<<<< HEAD
 
     public version07for05data = {
         PPM_General: {
@@ -1681,3 +1682,6 @@ export default class PricingConfiguration {
         ],
     };
 }
+=======
+}
+>>>>>>> parent of 85c3ba54 (added configuration of 0.7 for 0.5 data, added callings for pricing operations at test.index)
