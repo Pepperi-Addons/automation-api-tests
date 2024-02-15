@@ -1315,6 +1315,9 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             const didPass = await devTest.calculateAndReportResults(isLocal, numOfTests);
             //6. no point in running app. tests after dev failed
             if (didPass !== undefined && didPass === false) {
+                console.log(
+                    `####################### **DEV** Tests For ${devTest.addonName} - (${devTest.addonUUID}), Version: ${devTest.addonVersion} DIDNT PASS SO WE EXIT THIS FLOW - No Point In Running Approvement #######################`,
+                );
                 return;
             }
         }
