@@ -52,7 +52,6 @@ export async function StorybookCheckboxTests() {
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 

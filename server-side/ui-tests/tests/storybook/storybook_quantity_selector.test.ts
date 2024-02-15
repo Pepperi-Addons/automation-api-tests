@@ -50,7 +50,6 @@ export async function StorybookQuantitySelectorTests() {
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 
