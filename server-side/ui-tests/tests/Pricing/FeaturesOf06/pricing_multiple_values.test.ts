@@ -139,7 +139,6 @@ export async function PricingMultipleValuesTests(email: string, password: string
             });
 
             after(async function () {
-                await driver.close();
                 await driver.quit();
             });
 

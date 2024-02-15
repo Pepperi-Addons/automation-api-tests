@@ -29,7 +29,6 @@ export async function StorybookIconTests() {
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 
