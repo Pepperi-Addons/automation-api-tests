@@ -256,8 +256,12 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
                                                         UI_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                        null,
+                                                        2,
+                                                    )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
                                                         baseline_NPMCalcMessage,
+                                                        null,
+                                                        2,
                                                     )}`,
                                                 });
                                                 // expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
@@ -275,9 +279,13 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
                                                         UI_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                        null,
+                                                        2,
+                                                    )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
                                                         baseline_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at ${multipleValuesTestState}) from Data: ${JSON.stringify(
+                                                        null,
+                                                        2,
+                                                    )}, \nNPMCalcMessage (at ${multipleValuesTestState}) from Data: ${JSON.stringify(
                                                         data_NPMCalcMessage,
                                                     )}`,
                                                 });
