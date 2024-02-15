@@ -1299,12 +1299,10 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
                 numOfTests = testsList.length;
             }
             console.log(`####################### Got ${numOfTests} Tests #######################`);
-            process.stdout.write(`Array Of Tests:`);
+            console.log(`Array Of Tests:`);
             if (devTest.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
-                process.stdout.write(`Array Of Tests ADAL:`);
-                console.log(`[${testsList.ADAL}]`);
-                process.stdout.write(`Array Of Tests Data Index:`);
-                console.log(`[${testsList.DataIndex}]`);
+                console.log(`Array Of Tests ADAL Tests: [${testsList.ADAL}]`);
+                console.log(`Array Of Tests Data Index Tests: [${testsList.DataIndex}]`);
             } else {
                 console.log(`[${testsList}]`);
             }
