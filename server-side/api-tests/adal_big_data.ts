@@ -6,7 +6,6 @@ export async function AdalBigDataTestser(generalService: GeneralService, request
 
 export async function AdalBigDataTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
-    const assert = tester.assert;
     const expect = tester.expect;
     const it = tester.it;
 
@@ -77,19 +76,19 @@ export async function AdalBigDataTests(generalService: GeneralService, request, 
                 await getSecretKey();
             });
             it('Create Schema', async () => {
-                assert(logcash.createSchemaWithPropertiesStatus, logcash.createSchemaWithPropertiesErrorMessage);
+                expect(logcash.createSchemaWithPropertiesStatus, logcash.createSchemaWithPropertiesErrorMessage);
             });
             it('Insert 100K objects', () => {
-                assert(logcash.insert500ObjectsStatus, logcash.add50InsertsToTableOverwriteFalseError);
+                expect(logcash.insert500ObjectsStatus, logcash.add50InsertsToTableOverwriteFalseError);
             });
             it('Search not hidden objects', () => {
-                assert(logcash.getDataNotHiddenStatus, logcash.getDataNotHiddenError);
+                expect(logcash.getDataNotHiddenStatus, logcash.getDataNotHiddenError);
             });
             it('Trancate created data', () => {
-                assert(logcash.truncateTestTableLastStatus, logcash.truncateTestTableLastError);
+                expect(logcash.truncateTestTableLastStatus, logcash.truncateTestTableLastError);
             });
             it('Drop created schema', () => {
-                assert(logcash.dropTableSecStatus, logcash.dropTableSecError);
+                expect(logcash.dropTableSecStatus, logcash.dropTableSecError);
             });
         });
     });
