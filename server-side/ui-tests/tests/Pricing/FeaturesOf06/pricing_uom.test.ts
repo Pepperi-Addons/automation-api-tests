@@ -277,10 +277,16 @@ export async function PricingUomTests(email: string, password: string, client: C
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
                                                         UI_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                        null,
+                                                        2,
+                                                    )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
                                                         baseline_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at ${uomTestState}) from Data: ${JSON.stringify(
+                                                        null,
+                                                        2,
+                                                    )}, \nNPMCalcMessage (at ${uomTestState}) from Data: ${JSON.stringify(
                                                         data_NPMCalcMessage,
+                                                        null,
+                                                        2,
                                                     )}`,
                                                 });
                                                 expect(UI_NPMCalcMessage.length).equals(
