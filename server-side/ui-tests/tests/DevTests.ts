@@ -407,7 +407,8 @@ export class DevTest {
         return { ADAL: toReturnADAL, DataIndex: roReturnDataIndex };
     }
 
-    async runDevTestInt(testNames: string[]) {
+    async runDevTestInt(testNames: string[], testserUuid?: string) {
+        debugger;
         for (let index = 0; index < testNames.length; index++) {
             const currentTestName = testNames[index];
             const body = {
@@ -439,9 +440,9 @@ export class DevTest {
             const [devTestResponseEu, devTestResponseProd, devTestResponseSb] = await Promise.all([
                 //devTestResponseEu,
                 //userName, env, addonSk, bodyToSend
-                this.runDevTestOnCertainEnv(euUser, 'prod', addonSk, body),
-                this.runDevTestOnCertainEnv(prodUser, 'prod', addonSk, body),
-                this.runDevTestOnCertainEnv(sbUser, 'stage', addonSk, body),
+                this.runDevTestOnCertainEnv(euUser, 'prod', addonSk, body, testserUuid),
+                this.runDevTestOnCertainEnv(prodUser, 'prod', addonSk, body, testserUuid),
+                this.runDevTestOnCertainEnv(sbUser, 'stage', addonSk, body, testserUuid),
             ]);
             if (
                 devTestResponseEu === undefined ||
@@ -664,7 +665,7 @@ export class DevTest {
     async runDevTestADAL(testNamesADAL: string[], testNamesDataIndex: string[]) {
         if (testNamesADAL.length !== 0) {
             console.log('ADAL Dev Tests: ');
-            await this.runDevTestInt(testNamesADAL);
+            await this.runDevTestInt(testNamesADAL, this.addonUUID);
         } else {
             console.log(`No ADAL Dev Tests For Version ${this.addonVersion}`);
         }
@@ -962,7 +963,7 @@ export class DevTest {
         return auditLogDevTestResponse;
     }
 
-    async runDevTestOnCertainEnv(userName, env, addonSk, bodyToSend) {
+    async runDevTestOnCertainEnv(userName, env, addonSk, bodyToSend, testerAddonUUID?) {
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
         let _headers;
@@ -975,7 +976,11 @@ export class DevTest {
             };
         }
         if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
-            addonsTestingEndpoint = `/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests`; //run data index tests for ADAL
+            if (testerAddonUUID != undefined) {
+                addonsTestingEndpoint = `/addons/api/async/${testerAddonUUID}/tests/tests`; //run data index tests for ADAL
+            } else {
+                addonsTestingEndpoint = `/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests`; //run data index tests for ADAL
+            }
             _headers = {
                 'x-pepperi-ownerid': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
                 'x-pepperi-secretkey': addonSk,
