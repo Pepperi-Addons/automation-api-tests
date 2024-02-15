@@ -1,6 +1,8 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
-//import { v4 as newUuid } from 'uuid';
-//import { Fields } from '@pepperi-addons/papi-sdk/dist/endpoints';
+
+export async function AdalBigDataTestser(generalService: GeneralService, request, tester: TesterFunctions) {
+    await AdalBigDataTests(generalService, request, tester);
+}
 
 export async function AdalBigDataTests(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
@@ -8,13 +10,8 @@ export async function AdalBigDataTests(generalService: GeneralService, request, 
     const expect = tester.expect;
     const it = tester.it;
 
-    // const whaitOwnerUUID = '2c199913-dba2-4533-ad78-747b6553acf8';
-    // const whaitSecretKey = '55cd2b56-2def-4e4e-b461-a56eb3e31689';
-    // const adalOwnerId = '00000000-0000-0000-0000-00000000ada1';
-
     const logcash: any = {};
     let counter = 0;
-    // let countNum = 0;
     let inserts_num = 0;
     logcash.randomInt = Math.floor(1000 + Math.random() * 9000);
 
@@ -40,10 +37,6 @@ export async function AdalBigDataTests(generalService: GeneralService, request, 
     }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
-    //#endregion Upgrade ADAL
-    //debugger;
-    //const chnageVersionResponseArr1 = await generalService.chnageVersion(varKey, testData, false);
-    //#region Mocha
     describe('ADAL BIG DATA Tests Suites', () => {
         describe('Prerequisites Addon for ADAL_type_data Tests', () => {
             //Test Data
