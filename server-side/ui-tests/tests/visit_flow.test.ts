@@ -117,7 +117,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
             });
 
             after(async function () {
-                await driver.close();
                 await driver.quit();
             });
 

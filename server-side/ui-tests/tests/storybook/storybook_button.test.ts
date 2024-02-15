@@ -52,7 +52,6 @@ export async function StorybookButtonTests() {
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 

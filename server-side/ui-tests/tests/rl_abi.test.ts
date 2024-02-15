@@ -316,7 +316,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             });
 
             after(async function () {
-                await driver.close();
                 await driver.quit();
             });
 

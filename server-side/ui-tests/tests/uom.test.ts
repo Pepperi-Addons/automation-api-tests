@@ -192,7 +192,6 @@ export async function UomTests(email: string, password: string, varPass: string,
             });
 
             after(async function () {
-                await driver.close();
                 await driver.quit();
             });
 

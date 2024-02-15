@@ -96,7 +96,6 @@ export async function PricingTotalsTests(email: string, password: string, client
             });
 
             after(async function () {
-                await driver.close();
                 await driver.quit();
             });
 
@@ -145,7 +144,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                     matchingRowOfppmValues &&
                         addContext(this, {
                             title: `PPM Value for the Key "${mainKey}"`,
-                            value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${ppmValues_content[mainKey]}`,
+                            value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} \nACTUAL: ${ppmValues_content[mainKey]}`,
                         });
                     matchingRowOfppmValues &&
                         expect(ppmValues_content[mainKey]).equals(
@@ -347,8 +346,12 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                         title: `State Args`,
                                                         value: `NPMCalcMessage from UI: ${JSON.stringify(
                                                             UI_NPMCalcMessage,
-                                                        )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                            null,
+                                                            2,
+                                                        )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
                                                             baseline_NPMCalcMessage,
+                                                            null,
+                                                            2,
                                                         )}`,
                                                     });
                                                     expect(UI_NPMCalcMessage.length).equals(
@@ -368,10 +371,14 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                         title: `State Args`,
                                                         value: `NPMCalcMessage from UI: ${JSON.stringify(
                                                             UI_NPMCalcMessage,
-                                                        )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                            null,
+                                                            2,
+                                                        )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
                                                             baseline_NPMCalcMessage,
-                                                        )}, NPMCalcMessage (at ${totalsTestState}) from Data: ${JSON.stringify(
+                                                        )}, \nNPMCalcMessage (at ${totalsTestState}) from Data: ${JSON.stringify(
                                                             data_NPMCalcMessage,
+                                                            null,
+                                                            2,
                                                         )}`,
                                                     });
                                                     // expect(UI_NPMCalcMessage.length).equals(

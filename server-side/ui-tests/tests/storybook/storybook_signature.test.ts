@@ -38,7 +38,6 @@ export async function StorybookSignatureTests() {
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 

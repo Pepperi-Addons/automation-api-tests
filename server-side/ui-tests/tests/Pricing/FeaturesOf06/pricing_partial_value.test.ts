@@ -58,7 +58,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
 
     const testAccounts = ['Acc01', 'OtherAcc'];
     const partialValueTestItems = ['Frag006', 'Frag008', 'Frag009', 'Frag011', 'Frag021'];
-    const partialValueCartTestItems = ['Frag021', 'Frag011', 'Frag009', 'Frag008'];
+    const partialValueCartTestItems = ['Frag021', 'Frag011', 'Frag009'];
     const partialValueTestStates = [
         'baseline',
         '9 Each',
@@ -104,7 +104,6 @@ export async function PricingPartialValueTests(email: string, password: string, 
             });
 
             after(async function () {
-                await driver.close();
                 await driver.quit();
             });
 

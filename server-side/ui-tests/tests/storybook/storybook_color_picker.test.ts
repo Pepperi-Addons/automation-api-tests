@@ -43,7 +43,6 @@ export async function StorybookColorPickerTests() {
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 
