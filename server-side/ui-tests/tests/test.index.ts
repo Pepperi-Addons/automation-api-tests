@@ -458,6 +458,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingSet') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
