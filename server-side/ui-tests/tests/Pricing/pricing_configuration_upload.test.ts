@@ -50,6 +50,10 @@ export async function PricingConfigUpload(client: Client, email: string, passwor
                     break;
             }
             await uploadConfiguration(pricingConfig);
+            addContext(this, {
+                title: `Config =`,
+                value: JSON.stringify(pricingConfig, null, 2),
+            });
         });
 
         describe(`Login to Pricing Test User after Configuration Upload | Ver ${installedPricingVersion}`, () => {
