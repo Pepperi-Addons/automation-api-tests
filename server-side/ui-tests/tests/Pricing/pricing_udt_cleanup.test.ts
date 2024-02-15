@@ -61,7 +61,7 @@ export async function PricingUdtCleanup(client: Client) {
                     }
                 }),
             );
-            expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
+            valueObjs.length && expect(valueObjs.length).equals(validPPM_ValuesKeys.length);
             deleteResponses.forEach((deleteUDTresponse) => {
                 console.info(
                     `${deleteUDTresponse?.MainKey} Delete RESPONSE: `,

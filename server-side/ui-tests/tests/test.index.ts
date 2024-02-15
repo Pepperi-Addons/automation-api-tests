@@ -105,7 +105,6 @@ import { SchedulerTester_Part2 } from '../../api-tests/code-jobs/scheduler_DI_23
 import { DevTest } from './DevTests';
 import { XTimesSync } from './XTimesSyncE2E.test';
 import { IdosPapiTests } from './ido_papi_tests.test';
-import { AdalBigDataTestser } from '../../api-tests/adal_big_data';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -465,13 +464,22 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     }
 
+    if (tests === 'PricingCleanUdt') {
+        await PricingUdtCleanup(client);
+    }
+
+    if (tests === 'PricingUploadConfig') {
+        await PricingConfigUpload(client, email, pass);
+    }
+
     if (tests === 'Pricing') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingBaseTests(email, pass, client);
         await PricingAdditionalGroupsReadonlyTests(email, pass, client);
-        // await PricingUomTests(email, pass, client);
+        await PricingUomTests(email, pass, client);
         // await PricingTotalsTests(email, pass, client);
         // await PricingMultipleValuesTests(email, pass, client);
         await PricingPartialValueTests(email, pass, client);
@@ -481,6 +489,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingBase') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
@@ -490,6 +499,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingAdditional') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
@@ -499,6 +509,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingUom') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
@@ -508,6 +519,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingTotals') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
@@ -517,6 +529,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingMulti') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
@@ -526,6 +539,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingPartial') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
@@ -535,6 +549,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
 
     if (tests === 'PricingExclusion') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
@@ -869,20 +884,6 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
     if (tests.includes('aws_logs')) {
         await AWSLogsTester(
-            generalService,
-            {
-                body: {
-                    varKeyStage: varPass,
-                    varKeyPro: varPass,
-                    varKeyEU: varPassEU,
-                },
-            },
-            { describe, expect, it } as TesterFunctions,
-        );
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-    }
-    if (tests.includes('big_data_adal')) {
-        await AdalBigDataTestser(
             generalService,
             {
                 body: {
@@ -1313,9 +1314,6 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             const didPass = await devTest.calculateAndReportResults(isLocal, numOfTests);
             //6. no point in running app. tests after dev failed
             if (didPass !== undefined && didPass === false) {
-                console.log(
-                    `####################### **DEV** Tests For ${devTest.addonName} - (${devTest.addonUUID}), Version: ${devTest.addonVersion} DIDNT PASS SO WE EXIT THIS FLOW - No Point In Running Approvement #######################`,
-                );
                 return;
             }
         }
@@ -1350,7 +1348,6 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         switch (addonName) {
             //add another 'case' here when adding new addons to this mehcanisem
             case 'ADAL': {
-                //add new ADAL BIG DATA test - here
                 addonUUID = '00000000-0000-0000-0000-00000000ada1';
                 debugger;
                 const buildToken = 'ADALApprovmentTests';
@@ -1360,45 +1357,35 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20EU%20-%20ADAL';
                 const jobPathSB =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A1%20Stage%20-%20ADAL';
-                const jobPathPROD2 =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A2%20Production%20-%20ADAL%20Part%202%20-%20CLI';
-                const jobPathEU2 =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A2%20EU%20-%20ADAL%20Part%202%20-%20CLI';
-                const jobPathSB2 =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20A2%20Stage%20-%20ADAL%20Part%202%20-%20CLI';
                 debugger;
                 const {
+                    JenkinsBuildResultsAllEnvs,
+                    latestRunProd,
+                    latestRunEU,
+                    latestRunSB,
                     addonEntryUUIDProd,
                     addonEntryUUIDEu,
                     addonEntryUUIDSb,
-                    latestRunProdReturn,
-                    latestRunEUReturn,
-                    latestRunSBReturn,
-                    JenkinsBuildResultsAllEnvsToReturn,
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                    jobPathToReturnProd,
-                    jobPathToReturnSB,
-                    jobPathToReturnEU,
-                } = await appTestsRunnnerService.jenkinsDoubleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
                     jobPathEU,
                     jobPathSB,
                     buildToken,
-                    jobPathPROD2,
-                    jobPathEU2,
-                    jobPathSB2,
                 );
-                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvsToReturn;
-                latestRunProdEx = latestRunProdReturn;
-                latestRunEUEx = latestRunEUReturn;
-                latestRunSBEx = latestRunSBReturn;
-                pathProdEx = jobPathToReturnProd;
-                pathEUEx = jobPathToReturnEU;
-                pathSBEx = jobPathToReturnSB;
+                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
+                latestRunProdEx = latestRunProd;
+                latestRunEUEx = latestRunEU;
+                latestRunSBEx = latestRunSB;
+                pathProdEx = jobPathPROD;
+                pathEUEx = jobPathEU;
+                pathSBEx = jobPathSB;
                 addonEntryUUIDProdEx = addonEntryUUIDProd;
                 addonEntryUUIDEuEx = addonEntryUUIDEu;
                 addonEntryUUIDSbEx = addonEntryUUIDSb;
