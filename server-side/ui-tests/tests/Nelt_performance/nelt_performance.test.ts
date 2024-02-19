@@ -682,131 +682,8 @@ export async function NeltPerformanceTests(email: string, password: string, clie
             });
         });
 
-        // 18 + 19
-        // describe('VisitFlow: 1. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Start --> End', async () => {
-        //     it('Navigate to first account in list from Home Screen', async function () {
-        //         await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
-        //     });
-        //     it('Choosing "Pocni Posetu" at Dropdown Menu of Hamburger Menu at Account Dashboard', async function () {
-        //         await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
-        //             driver,
-        //             'Pocni posetu',
-        //         );
-        //     });
-        //     it('Selecting Visit Flow from visits selection', async function () {
-        //         if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
-        //             await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
-        //                 driver,
-        //                 'F4 poseta',
-        //             );
-        //         }
-        //     });
-        //     it('Initiating Visit Flow', async function () {
-        //         timeInterval = 0;
-        //         await neltPerfomanceService.selectVisitGroup.bind(this)(driver, 'Start posete');
-        //         await driver.click(neltPerformanceSelectors.getSelectorOfVisitStepByText('Start posete'));
-        //         await neltPerformanceSelectors.isSpinnerDone();
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `Chose "Start posete" at Visit Selection`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //     });
-        //     it('Start Step of Visit Flow', async function () {
-        //         // time measurment
-        //         const Start_posete_opening = new Date().getTime();
-        //         await driver.click(neltPerformanceSelectors.TopBar_Right_StartButtton);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
-        //         const Start_posete_loaded = new Date().getTime();
-        //         timeInterval = Start_posete_loaded - Start_posete_opening;
-        //         console.info(
-        //             'Start_posete_opening: ',
-        //             Start_posete_opening,
-        //             'Start_posete_loaded: ',
-        //             Start_posete_loaded,
-        //             'Time Interval: ',
-        //             timeInterval,
-        //         );
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `After "Start posete" Visit Flow Step`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it(`Time Measured`, async function () {
-        //         addContext(this, {
-        //             title: `Time Interval for "Start posete" to load:`,
-        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-        //                 1,
-        //             )} s`,
-        //         });
-        //         timeMeasurements['Select visit flow --> Start'] = Number((timeInterval / 1000).toFixed(1));
-        //         timeMeasurementsRaw.push({ title: 'Select visit flow --> Start', time: timeInterval });
-        //         timeMeasurementsArray.push({
-        //             Title: 'Select visit flow --> Start',
-        //             Sec: Number((timeInterval / 1000).toFixed(1)),
-        //             Milisec: timeInterval,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it('Ending Visit Flow', async function () {
-        //         timeInterval = 0;
-        //         await neltPerfomanceService.selectVisitGroup.bind(this)(driver, 'Kraj posete');
-        //         await neltPerfomanceService.selectVisitStep.bind(this)(driver, 'Kraj posete');
-        //         await neltPerformanceSelectors.isSpinnerDone();
-        //         await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_EndButtton);
-        //     });
-        //     it('End Step of Visit Flow', async function () {
-        //         // time measurment
-        //         const Kraj_posete_opening = new Date().getTime();
-        //         await driver.click(neltPerformanceSelectors.TopBar_Right_EndButtton);
-        //         await neltPerformanceSelectors.isSpinnerDone();
-        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_BurgerMenu);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.AccountDetails_component);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.PepList);
-        //         const Kraj_posete_loaded = new Date().getTime();
-        //         timeInterval = Kraj_posete_loaded - Kraj_posete_opening;
-        //         console.info(
-        //             'Kraj_posete_opening: ',
-        //             Kraj_posete_opening,
-        //             'Kraj_posete_loaded: ',
-        //             Kraj_posete_loaded,
-        //             'Time Interval: ',
-        //             timeInterval,
-        //         );
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `After "Kraj posete" Visit Flow Step`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it(`Time Measured`, async function () {
-        //         addContext(this, {
-        //             title: `Time Interval for "Kraj posete" to load:`,
-        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-        //                 1,
-        //             )} s`,
-        //         });
-        //         timeMeasurements['Select visit flow --> Start --> End'] = Number((timeInterval / 1000).toFixed(1));
-        //         timeMeasurementsRaw.push({ title: 'Select visit flow --> Start --> End', time: timeInterval });
-        //         timeMeasurementsArray.push({
-        //             Title: 'Select visit flow --> Start --> End',
-        //             Sec: Number((timeInterval / 1000).toFixed(1)),
-        //             Milisec: timeInterval,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it('Back to Home Screen', async function () {
-        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-        //     });
-        // });
-
         // 18 + 19 + 22 + 23
-        describe('VisitFlow: 5. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Near Expiry order --> Add items --> Submit', async () => {
+        describe('VisitFlow: 5. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select Visit Flow --> Open --> Near Expiry order --> Add items --> Submit', async () => {
             it('Navigate to first account in list from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
             });
@@ -824,9 +701,6 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                     );
                 }
             });
-            // it('Starting Visit Flow', async function () {
-            //     await neltPerfomanceService.startVisit.bind(this)(driver);
-            // });
             it('Initiating Visit Flow', async function () {
                 timeInterval = 0;
                 await neltPerfomanceService.selectVisitGroup.bind(this)(driver, 'Start posete');
@@ -868,10 +742,10 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                         1,
                     )} s`,
                 });
-                timeMeasurements['Select visit flow --> Start'] = Number((timeInterval / 1000).toFixed(1));
-                timeMeasurementsRaw.push({ title: 'Select visit flow --> Start', time: timeInterval });
+                timeMeasurements['Select Visit Flow --> Start'] = Number((timeInterval / 1000).toFixed(1));
+                timeMeasurementsRaw.push({ title: 'Select Visit Flow --> Start', time: timeInterval });
                 timeMeasurementsArray.push({
-                    Title: 'Select visit flow --> Start',
+                    Title: 'Select Visit Flow --> Start',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -921,15 +795,15 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                         1,
                     )} s`,
                 });
-                timeMeasurements['Select visit flow --> Open --> Near Expiry order'] = Number(
+                timeMeasurements['Select Visit Flow --> Open --> Near Expiry order'] = Number(
                     (timeInterval / 1000).toFixed(1),
                 );
                 timeMeasurementsRaw.push({
-                    title: 'Select visit flow --> Open --> Near Expiry order',
+                    title: 'Select Visit Flow --> Open --> Near Expiry order',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Select visit flow --> Open --> Near Expiry order',
+                    Title: 'Select Visit Flow --> Open --> Near Expiry order',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1043,23 +917,20 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                         1,
                     )} s`,
                 });
-                timeMeasurements['Select visit flow --> Open --> Near Expiry order --> Add items --> Submit'] = Number(
+                timeMeasurements['Select Visit Flow --> Open --> Near Expiry order --> Add items --> Submit'] = Number(
                     (timeInterval / 1000).toFixed(1),
                 );
                 timeMeasurementsRaw.push({
-                    title: 'Select visit flow --> Open --> Near Expiry order --> Add items --> Submit',
+                    title: 'Select Visit Flow --> Open --> Near Expiry order --> Add items --> Submit',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Select visit flow --> Open --> Near Expiry order --> Add items --> Submit',
+                    Title: 'Select Visit Flow --> Open --> Near Expiry order --> Add items --> Submit',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
-            // it('Ending Visit Flow', async function () {
-            //     await neltPerfomanceService.endVisit.bind(this)(driver);
-            // });
             it('Ending Visit Flow', async function () {
                 timeInterval = 0;
                 await neltPerfomanceService.selectVisitGroup.bind(this)(driver, 'Kraj posete');
@@ -1100,12 +971,15 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                         1,
                     )} s`,
                 });
-                timeMeasurements['Select visit flow --> Going Through --> End'] = Number(
+                timeMeasurements['Select Visit Flow --> Going Through Visit --> End'] = Number(
                     (timeInterval / 1000).toFixed(1),
                 );
-                timeMeasurementsRaw.push({ title: 'Select visit flow --> Going Through --> End', time: timeInterval });
+                timeMeasurementsRaw.push({
+                    title: 'Select Visit Flow --> Going Through Visit --> End',
+                    time: timeInterval,
+                });
                 timeMeasurementsArray.push({
-                    Title: 'Select visit flow --> Going Through --> End',
+                    Title: 'Select Visit Flow --> Going Through Visit --> End',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1117,7 +991,7 @@ export async function NeltPerformanceTests(email: string, password: string, clie
         });
 
         // 20 + 21
-        describe('VisitFlow: 3. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select visit flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit', async () => {
+        describe('VisitFlow: 3. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select Visit Flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit', async () => {
             it('Navigate to first account in list from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
             });
@@ -1182,15 +1056,15 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                         1,
                     )} s`,
                 });
-                timeMeasurements['Select visit flow --> Open --> Select Povrat --> Povrat order'] = Number(
+                timeMeasurements['Select Visit Flow --> Open --> Select Povrat --> Povrat order'] = Number(
                     (timeInterval / 1000).toFixed(1),
                 );
                 timeMeasurementsRaw.push({
-                    title: 'Select visit flow --> Open --> Select Povrat --> Povrat order',
+                    title: 'Select Visit Flow --> Open --> Select Povrat --> Povrat order',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Select visit flow --> Open --> Select Povrat --> Povrat order',
+                    Title: 'Select Visit Flow --> Open --> Select Povrat --> Povrat order',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1280,26 +1154,19 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                     )} s`,
                 });
                 timeMeasurements[
-                    'Select visit flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit'
+                    'Select Visit Flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit'
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: 'Select visit flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit',
+                    title: 'Select Visit Flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Select visit flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit',
+                    Title: 'Select Visit Flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
-            // it('TEMP - puting order on hold', async function () {
-            //     await driver.click(neltPerformanceSelectors.Cart_Button);
-            //     await neltPerformanceSelectors.isSpinnerDone();
-            //     await driver.click(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
-            //     await neltPerformanceSelectors.isSpinnerDone();
-            //     driver.sleep(0.5 * 1000);
-            // });
             it('Ending Visit Flow', async function () {
                 await neltPerfomanceService.endVisit.bind(this)(driver);
             });
@@ -1308,73 +1175,9 @@ export async function NeltPerformanceTests(email: string, password: string, clie
             });
         });
 
-        // 8
-        // describe('Order: 1. Home Screen --> Kupci --> Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar)', async () => {
-        //     it('Navigate to account 1100072 from Home Screen', async function () {
-        //         await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '1100072');
-        //     });
-        //     it('Choosing "Order" at Dropdown Menu of Plus Button at Account Dashboard', async function () {
-        //         await neltPerfomanceService.selectUnderPlusButtonMenuAtAccountDashboard.bind(this)(driver, 'Order');
-        //     });
-        //     it('Choosing "CC Call Centar" at Catalogs List', async function () {
-        //         timeInterval = 0;
-        //         await driver.untilIsVisible(neltPerformanceSelectors.OrderCatalogItem);
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `Catalogs List loaded`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         // time measurment
-        //         const CC_Call_Centar_opening = new Date().getTime();
-        //         await driver.click(neltPerformanceSelectors.getSelectorOfOrderCatalogByName('CC Call Centar'));
-        //         await neltPerformanceSelectors.isSpinnerDone();
-        //         await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.TransactionID);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_OrderButton_GridLineView);
-        //         const CC_Call_Centar_loaded = new Date().getTime();
-        //         timeInterval = CC_Call_Centar_loaded - CC_Call_Centar_opening;
-        //         console.info(
-        //             'CC_Call_Centar_opening: ',
-        //             CC_Call_Centar_opening,
-        //             'CC_Call_Centar_loaded: ',
-        //             CC_Call_Centar_loaded,
-        //             'Time Interval: ',
-        //             timeInterval,
-        //         );
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `At Order Center`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //     });
-        //     it(`Time Measured`, async function () {
-        //         addContext(this, {
-        //             title: `Time Interval for "CC Call Centar" to load:`,
-        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-        //                 1,
-        //             )} s`,
-        //         });
-        //         timeMeasurements['Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar)'] =
-        //             Number((timeInterval / 1000).toFixed(1));
-        //         timeMeasurementsRaw.push({
-        //             title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar)',
-        //             time: timeInterval,
-        //         });
-        //         timeMeasurementsArray.push({
-        //             Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar)',
-        //             Sec: Number((timeInterval / 1000).toFixed(1)),
-        //             Milisec: timeInterval,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it('Back to Home Screen', async function () {
-        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-        //     });
-        // });
-
         // 8 + 10 + 11 + 12
         // describe('Order: 3. Home Screen --> Kupci --> Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select filter', async () => {
-        describe('Order: 3. Home Screen --> Kupci --> Select Account (1100072) --> Hamburger Menu --> Pocni Posetu --> Order --> Select filter', async () => {
+        describe('Order: 3. Home Screen --> Kupci --> Select Account (1100072) --> Hamburger Menu --> Pocni Posetu --> Order --> Select filter | Smart filter | Sort by', async () => {
             it('Navigate to account 1100072 from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
                     driver,
@@ -1411,15 +1214,49 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 driver.sleep(0.5 * 1000);
             });
             it('Opening Prodaja order', async function () {
+                timeInterval = 0;
+                // time measurment
+                const Prodaja_order_opening = new Date().getTime();
                 await driver.click(neltPerformanceSelectors.getSelectorOfVisitStepByText('Prodaja'));
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
                 await driver.untilIsVisible(neltPerformanceSelectors.ListNumberOfResults);
                 await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_OrderButton_GridLineView);
+                const Prodaja_order_loaded = new Date().getTime();
+                timeInterval = Prodaja_order_loaded - Prodaja_order_opening;
+                console.info(
+                    'Prodaja_order_opening: ',
+                    Prodaja_order_opening,
+                    'Prodaja_order_loaded: ',
+                    Prodaja_order_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `After "Prodaja order" Opened`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "Prodaja order" to load:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+                        1,
+                    )} s`,
+                });
+                timeMeasurements['Select Visit Flow --> Open --> Select Prodaja --> Prodaja order'] = Number(
+                    (timeInterval / 1000).toFixed(1),
+                );
+                timeMeasurementsRaw.push({
+                    title: 'Select Visit Flow --> Open --> Select Prodaja --> Prodaja order',
+                    time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: 'Select Visit Flow --> Open --> Select Prodaja --> Prodaja order',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
@@ -1437,14 +1274,10 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 await driver.click(
                     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Svi filteri'),
                 );
-                // await driver.click(neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('MSL'));
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(
                     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Food'),
                 );
-                // await driver.untilIsVisible(
-                //     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Gillette'),
-                // );
                 const Select_Filter_opening = new Date().getTime();
                 await driver.click(
                     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Food'),
@@ -1479,14 +1312,14 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                         1,
                     )} s`,
                 });
-                timeMeasurements['Select Account (1100072) --> Visit --> Hamburger --> Order --> Select filter'] =
+                timeMeasurements['Select Account (1100072) --> Hamburger --> Visit --> Order --> Select filter'] =
                     Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Select filter',
+                    title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Select filter',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Select filter',
+                    Title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Select filter',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1582,14 +1415,14 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                         1,
                     )} s`,
                 });
-                timeMeasurements['Select Account (1100072) --> Visit --> Hamburger --> Order --> Select smart filter'] =
+                timeMeasurements['Select Account (1100072) --> Hamburger --> Visit --> Order --> Select smart filter'] =
                     Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Select smart filter',
+                    title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Select smart filter',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Select smart filter',
+                    Title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Select smart filter',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1626,18 +1459,69 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 expect(Number(resultsNumberAfter)).to.not.equal(Number(resultsNumberBefore));
                 driver.sleep(0.5 * 1000);
             });
-            // it('Back to Original Filter', async function () {
-            //     resultsNumberBefore = await (
-            //         await driver.findElement(neltPerformanceSelectors.ListNumberOfResults)
-            //     ).getText();
-            //     await driver.click(
-            //         neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Svi filteri'),
-            //     );
-            //     await neltPerformanceSelectors.isSpinnerDone();
-            //     await driver.click(
-            //         neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Svi proizvodi'),
-            //     );
-            // });
+            //     it('Change sort by ********* || TODO', async function () {
+            //         // resultsNumberBefore = await (
+            //         //     await driver.findElement(neltPerformanceSelectors.ListNumberOfResults)
+            //         // ).getText();
+            //         base64ImageComponent = await driver.saveScreenshots();
+            //         addContext(this, {
+            //             title: `Order Center loaded`,
+            //             value: 'data:image/png;base64,' + base64ImageComponent,
+            //         });
+            //         await driver.click(neltPerformanceSelectors.getSelectorOfSmartFilterFieldByName('Zalihe'));
+            //         // await neltPerformanceSelectors.isSpinnerDone();
+            //         // await driver.untilIsVisible(
+            //         //     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
+            //         // );
+            //         // time measurment
+            //         const Change_sort_by_opening = new Date().getTime();
+            //         // await driver.click(
+            //         //     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
+            //         // );
+            //         // await neltPerformanceSelectors.isSpinnerDone();
+            //         // await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
+            //         // await driver.untilIsVisible(neltPerformanceSelectors.TransactionID);
+            //         // await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_QuantitySelector_GridLineView);
+            //         const Change_sort_by_loaded = new Date().getTime();
+            //         timeInterval = Change_sort_by_loaded - Change_sort_by_opening;
+            //         // resultsNumberAfter = await (
+            //         //     await driver.findElement(neltPerformanceSelectors.ListNumberOfResults)
+            //         // ).getText();
+            //         console.info(
+            //             'Change_sort_by_opening: ',
+            //             Change_sort_by_opening,
+            //             'Change_sort_by_loaded: ',
+            //             Change_sort_by_loaded,
+            //             'Time Interval: ',
+            //             timeInterval,
+            //         );
+            //         base64ImageComponent = await driver.saveScreenshots();
+            //         addContext(this, {
+            //             title: `Sort-by Changed`,
+            //             value: 'data:image/png;base64,' + base64ImageComponent,
+            //         });
+            //     });
+            //     it(`Time Measured`, async function () {
+            //         addContext(this, {
+            //             title: `Time Interval for "Change sort by" to load:`,
+            //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+            //                 1,
+            //             )} s`,
+            //         });
+            //         timeMeasurements[
+            //             'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by'
+            //         ] = Number((timeInterval / 1000).toFixed(1));
+            //         timeMeasurementsRaw.push({
+            //             title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by',
+            //             time: timeInterval,
+            //         });
+            //         timeMeasurementsArray.push({
+            //             Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by',
+            //             Sec: Number((timeInterval / 1000).toFixed(1)),
+            //             Milisec: timeInterval,
+            //         });
+            //         driver.sleep(0.5 * 1000);
+            //     });
             it('Search for "Ponuda S" (to find non-promotion products)', async function () {
                 await neltPerfomanceService.replaceContentOfInput(
                     driver,
@@ -1667,11 +1551,9 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 const Click_on_Cart_opening = new Date().getTime();
                 await driver.click(neltPerformanceSelectors.Cart_Button);
                 await neltPerformanceSelectors.isSpinnerDone();
-                // await driver.untilIsVisible(neltPerformanceSelectors.ContinueOrdering_Button);
                 await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
                 await driver.untilIsVisible(neltPerformanceSelectors.PepList);
                 await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
-                // await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
                 const Click_on_Cart_loaded = new Date().getTime();
                 timeInterval = Click_on_Cart_loaded - Click_on_Cart_opening;
                 console.info(
@@ -1696,14 +1578,14 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                     )} s`,
                 });
                 timeMeasurements[
-                    'Select Account (1100072) --> Visit --> Hamburger --> Order --> Add items --> Click on cart'
+                    'Select Account (1100072) --> Hamburger --> Visit --> Order --> Add items --> Click on cart'
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Add items --> Click on cart',
+                    title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Add items --> Click on cart',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Add items --> Click on cart',
+                    Title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Add items --> Click on cart',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1715,29 +1597,6 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
                 await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
             });
-            // it('Clicking Cart Button + Putting Order on Hold', async function () {
-            //     await driver.click(neltPerformanceSelectors.Cart_Button);
-            //     await neltPerformanceSelectors.isSpinnerDone();
-            //     base64ImageComponent = await driver.saveScreenshots();
-            //     addContext(this, {
-            //         title: `At Cart`,
-            //         value: 'data:image/png;base64,' + base64ImageComponent,
-            //     });
-            //     try {
-            //         await driver.untilIsVisible(neltPerformanceSelectors.ContinueOrdering_Button);
-            //     } catch (error) {
-            //         console.info('"Continue Ordering" is NOT FOUND');
-            //         console.error(error);
-            //         addContext(this, {
-            //             title: `"Continue Ordering" is NOT FOUND`,
-            //             value: error,
-            //         });
-            //     }
-            //     await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
-            //     await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
-            //     await driver.untilIsVisible(neltPerformanceSelectors.PepList);
-            //     await driver.click(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
-            // });
             it('Ending Visit Flow', async function () {
                 await neltPerfomanceService.endVisit.bind(this)(driver);
             });
@@ -1746,359 +1605,11 @@ export async function NeltPerformanceTests(email: string, password: string, clie
             });
         });
 
-        // 11
-        // describe('Order: 4. Home Screen --> Kupci --> Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select smart filter', async () => {
-        //     it('Navigate to account 1100072 from Home Screen', async function () {
-        //         await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '1100072', 'ID');
-        //     });
-        //     // it('Choosing "Order" at Dropdown Menu of Plus Button at Account Dashboard', async function () {
-        //     //     await neltPerfomanceService.selectUnderPlusButtonMenuAtAccountDashboard.bind(this)(driver, 'Order');
-        //     // });
-        //     // it('Choosing "CC Call Centar" at Catalogs List', async function () {
-        //     //     await neltPerfomanceService.choosingCatalogForOrder.bind(this)(driver, 'CC Call Centar');
-        //     // });
-        //     it('Choosing "Pocni Posetu" at Dropdown Menu of Hamburger Menu at Account Dashboard', async function () {
-        //         await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
-        //             driver,
-        //             'Pocni posetu',
-        //         );
-        //     });
-        //     it('Selecting Visit Flow from visits selection', async function () {
-        //         if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
-        //             await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
-        //                 driver,
-        //                 'F4 poseta',
-        //             );
-        //         }
-        //     });
-        //     it('Starting Visit Flow', async function () {
-        //         await neltPerfomanceService.startVisit.bind(this)(driver);
-        //     });
-        //     it('Selecting Prodaja', async function () {
-        //         await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
-        //         await driver.click(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Prodaja'));
-        //         await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitStepByText(''));
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `After "Prodaja" Visit Flow Group Clicked`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it('Opening Prodaja order', async function () {
-        //         await driver.click(neltPerformanceSelectors.getSelectorOfVisitStepByText('Prodaja'));
-        //         await neltPerformanceSelectors.isSpinnerDone();
-        //         await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.ListNumberOfResults);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_OrderButton_GridLineView);
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `After "Prodaja order" Opened`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it('Select Smart Filter ********* || TODO', async function () {
-        //         timeInterval = 0;
-        //         resultsNumberBefore = await (
-        //             await driver.findElement(neltPerformanceSelectors.ListNumberOfResults)
-        //         ).getText();
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `Catalogs List loaded`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         await driver.click(neltPerformanceSelectors.getSelectorOfSmartFilterFieldByName('Zalihe'));
-        //         await driver.click(
-        //             neltPerformanceSelectors.getSelectorOfSmartFilterInnerFieldDropdownByName('Zalihe', 'Type'),
-        //         );
-        //         await driver.untilIsVisible(neltPerformanceSelectors.OptionsList);
-        //         await driver.click(neltPerformanceSelectors.getSelectorOfMatOptionByText('Greater than')); //getSelectorOfSmartFilterFieldByName
-        //         // await driver.click(neltPerformanceSelectors.getSelectorOfSmartFilterFieldByName('Greater than'));
-        //         // await neltPerformanceSelectors.isSpinnerDone();
-        //         // await driver.untilIsVisible(
-        //         //     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
-        //         // );
-        //         // time measurment
-        //         const Select_Smart_Filter_opening = new Date().getTime();
-        //         await driver.click(neltPerformanceSelectors.getSelectorOfSmartFilterButtonByName('Zalihe', 'Apply'));
-        //         await neltPerformanceSelectors.isSpinnerDone();
-        //         // await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
-        //         // await driver.untilIsVisible(neltPerformanceSelectors.TransactionID);
-        //         // await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_QuantitySelector_GridLineView);
-        //         const Select_Smart_Filter_loaded = new Date().getTime();
-        //         timeInterval = Select_Smart_Filter_loaded - Select_Smart_Filter_opening;
-        //         resultsNumberAfter = await (
-        //             await driver.findElement(neltPerformanceSelectors.ListNumberOfResults)
-        //         ).getText();
-        //         console.info(
-        //             'Select_Smart_Filter_opening: ',
-        //             Select_Smart_Filter_opening,
-        //             'Select_Smart_Filter_loaded: ',
-        //             Select_Smart_Filter_loaded,
-        //             'Time Interval: ',
-        //             timeInterval,
-        //         );
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `Smart Filter Selected`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //     });
-        //     it(`Time Measured`, async function () {
-        //         addContext(this, {
-        //             title: `Time Interval for "Select Smart Filter" to load:`,
-        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-        //                 1,
-        //             )} s`,
-        //         });
-        //         timeMeasurements[
-        //             'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select smart filter'
-        //         ] = Number((timeInterval / 1000).toFixed(1));
-        //         timeMeasurementsRaw.push({
-        //             title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select smart filter',
-        //             time: timeInterval,
-        //         });
-        //         timeMeasurementsArray.push({
-        //             Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select smart filter',
-        //             Sec: Number((timeInterval / 1000).toFixed(1)),
-        //             Milisec: timeInterval,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it(`Number of results has changed Assertion`, async function () {
-        //         addContext(this, {
-        //             title: `Number Of Results - Before & After`,
-        //             value: `Before: ${resultsNumberBefore} | After: ${resultsNumberAfter}`,
-        //         });
-        //         // expect(Number(resultsNumberAfter)).to.not.equal(Number(resultsNumberBefore));
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     it('Clicking Cart Button + Putting Order on Hold', async function () {
-        //         await driver.click(neltPerformanceSelectors.Cart_Button);
-        //         await neltPerformanceSelectors.isSpinnerDone();
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `At Cart`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         try {
-        //             await driver.untilIsVisible(neltPerformanceSelectors.ContinueOrdering_Button);
-        //         } catch (error) {
-        //             console.info('"Continue Ordering" is NOT FOUND');
-        //             console.error(error);
-        //             addContext(this, {
-        //                 title: `"Continue Ordering" is NOT FOUND`,
-        //                 value: error,
-        //             });
-        //         }
-        //         await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.PepList);
-        //         await driver.click(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
-        //     });
-        //     it('Ending Visit Flow', async function () {
-        //         await neltPerfomanceService.endVisit.bind(this)(driver);
-        //     });
-        //     it('Back to Home Screen', async function () {
-        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-        //     });
-        // });
-
-        // 12
-        // describe('Order: 5. Home Screen --> Kupci --> Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by', async () => {
-        //     it('Navigate to account 1100072 from Home Screen', async function () {
-        //         timeInterval = 0;
-        //         await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '1100072', 'ID');
-        //     });
-        //     it('Choosing "Order" at Dropdown Menu of Plus Button at Account Dashboard', async function () {
-        //         await neltPerfomanceService.selectUnderPlusButtonMenuAtAccountDashboard.bind(this)(driver, 'Order');
-        //     });
-        //     it('Choosing "CC Call Centar" at Catalogs List', async function () {
-        //         await neltPerfomanceService.choosingCatalogForOrder.bind(this)(driver, 'CC Call Centar');
-        //     });
-        //     it('Change sort by ********* || TODO', async function () {
-        //         // resultsNumberBefore = await (
-        //         //     await driver.findElement(neltPerformanceSelectors.ListNumberOfResults)
-        //         // ).getText();
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `Order Center loaded`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         await driver.click(neltPerformanceSelectors.getSelectorOfSmartFilterFieldByName('Zalihe'));
-        //         // await neltPerformanceSelectors.isSpinnerDone();
-        //         // await driver.untilIsVisible(
-        //         //     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
-        //         // );
-        //         // time measurment
-        //         const Change_sort_by_opening = new Date().getTime();
-        //         // await driver.click(
-        //         //     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
-        //         // );
-        //         // await neltPerformanceSelectors.isSpinnerDone();
-        //         // await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
-        //         // await driver.untilIsVisible(neltPerformanceSelectors.TransactionID);
-        //         // await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_QuantitySelector_GridLineView);
-        //         const Change_sort_by_loaded = new Date().getTime();
-        //         timeInterval = Change_sort_by_loaded - Change_sort_by_opening;
-        //         // resultsNumberAfter = await (
-        //         //     await driver.findElement(neltPerformanceSelectors.ListNumberOfResults)
-        //         // ).getText();
-        //         console.info(
-        //             'Change_sort_by_opening: ',
-        //             Change_sort_by_opening,
-        //             'Change_sort_by_loaded: ',
-        //             Change_sort_by_loaded,
-        //             'Time Interval: ',
-        //             timeInterval,
-        //         );
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `Sort-by Changed`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //     });
-        //     it(`Time Measured`, async function () {
-        //         addContext(this, {
-        //             title: `Time Interval for "Change sort by" to load:`,
-        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-        //                 1,
-        //             )} s`,
-        //         });
-        //         timeMeasurements[
-        //             'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by'
-        //         ] = Number((timeInterval / 1000).toFixed(1));
-        //         timeMeasurementsRaw.push({
-        //             title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by',
-        //             time: timeInterval,
-        //         });
-        //         timeMeasurementsArray.push({
-        //             Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by',
-        //             Sec: Number((timeInterval / 1000).toFixed(1)),
-        //             Milisec: timeInterval,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     // it(`Number of results has changed Assertion`, async function () {
-        //     //     addContext(this, {
-        //     //         title: `Number Of Results - Before & After`,
-        //     //         value: `Before: ${resultsNumberBefore} | After: ${resultsNumberAfter}`,
-        //     //     });
-        //     //     // expect(Number(resultsNumberAfter)).to.not.equal(Number(resultsNumberBefore));
-        //     //     driver.sleep(0.5 * 1000);
-        //     // });
-        //     it('Back to Home Screen', async function () {
-        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-        //     });
-        // });
-
-        // 9
-        // describe('Order: 2. Home Screen --> Kupci --> Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Add items --> Click on cart', async () => {
-        //     it('Navigate to account 1100072 from Home Screen', async function () {
-        //         timeInterval = 0;
-        //         await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '1100072', 'ID');
-        //     });
-        //     it('Choosing "Order" at Dropdown Menu of Plus Button at Account Dashboard', async function () {
-        //         await neltPerfomanceService.selectUnderPlusButtonMenuAtAccountDashboard.bind(this)(driver, 'Order');
-        //     });
-        //     it('Choosing "CC Call Centar" at Catalogs List', async function () {
-        //         await neltPerfomanceService.choosingCatalogForOrder.bind(this)(driver, 'CC Call Centar');
-        //     });
-        //     // it('Search for "Ponuda S Ari" (to find non-promotion products)', async function () {
-        //     //     await neltPerfomanceService.replaceContentOfInput(
-        //     //         driver,
-        //     //         neltPerformanceSelectors.Search_Input,
-        //     //         'Ponuda S Ari',
-        //     //     );
-        //     //     base64ImageComponent = await driver.saveScreenshots();
-        //     //     addContext(this, {
-        //     //         title: `Sending Search String`,
-        //     //         value: 'data:image/png;base64,' + base64ImageComponent,
-        //     //     });
-        //     //     await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
-        //     // });
-        //     it('Adding Items', async function () {
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `At Order Center`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //         await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(driver, 1);
-        //         await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(driver, 2);
-        //         await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(driver, 4);
-        //         await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(driver, 10);
-        //     });
-        //     it('Clicking on Cart Button', async function () {
-        //         // time measurment
-        //         const Click_on_Cart_opening = new Date().getTime();
-        //         await driver.click(neltPerformanceSelectors.Cart_Button);
-        //         await neltPerformanceSelectors.isSpinnerDone();
-        //         // await driver.untilIsVisible(neltPerformanceSelectors.ContinueOrdering_Button);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.PepList);
-        //         await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
-        //         // await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
-        //         const Click_on_Cart_loaded = new Date().getTime();
-        //         timeInterval = Click_on_Cart_loaded - Click_on_Cart_opening;
-        //         console.info(
-        //             'Click_on_Cart_opening: ',
-        //             Click_on_Cart_opening,
-        //             'Click_on_Cart_loaded: ',
-        //             Click_on_Cart_loaded,
-        //             'Time Interval: ',
-        //             timeInterval,
-        //         );
-        //         base64ImageComponent = await driver.saveScreenshots();
-        //         addContext(this, {
-        //             title: `At Cart`,
-        //             value: 'data:image/png;base64,' + base64ImageComponent,
-        //         });
-        //     });
-        //     it(`Time Measured`, async function () {
-        //         addContext(this, {
-        //             title: `Time Interval for "Cart" to load:`,
-        //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-        //                 1,
-        //             )} s`,
-        //         });
-        //         timeMeasurements[
-        //             'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Add items --> Click on cart'
-        //         ] = Number((timeInterval / 1000).toFixed(1));
-        //         timeMeasurementsRaw.push({
-        //             title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Add items --> Click on cart',
-        //             time: timeInterval,
-        //         });
-        //         timeMeasurementsArray.push({
-        //             Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Add items --> Click on cart',
-        //             Sec: Number((timeInterval / 1000).toFixed(1)),
-        //             Milisec: timeInterval,
-        //         });
-        //         driver.sleep(0.5 * 1000);
-        //     });
-        //     // it('Putting order on hold', async function () {
-        //     //     await driver.click(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
-        //     //     await neltPerformanceSelectors.isSpinnerDone();
-        //     //     await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_PlusButton);
-        //     //     await driver.untilIsVisible(neltPerformanceSelectors.AccountDashboard_BurgerMenu);
-        //     //     await driver.untilIsVisible(neltPerformanceSelectors.AccountDetails_component);
-        //     // });
-        //     it('Back to Home Screen', async function () {
-        //         await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-        //     });
-        // });
-
         // 13
         describe('Order: 6. Home Screen --> Kupci -- Select Account (1100072) --> Visit --> Order --> Open promotions that are (bundles) --> Click Done', async () => {
             it('Navigate to account 1100072 from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '1100072', 'ID');
             });
-            // it('Choosing "Order" at Dropdown Menu of Plus Button at Account Dashboard', async function () {
-            //     await neltPerfomanceService.selectUnderPlusButtonMenuAtAccountDashboard.bind(this)(driver, 'Order');
-            // });
-            // it('Choosing "CC Call Centar" at Catalogs List', async function () {
-            //     await neltPerfomanceService.choosingCatalogForOrder.bind(this)(driver, 'CC Call Centar');
-            // });
             it('Choosing "Pocni Posetu" at Dropdown Menu of Hamburger Menu at Account Dashboard', async function () {
                 await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
                     driver,
@@ -2141,10 +1652,6 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 driver.sleep(0.5 * 1000);
             });
             it('Open promotions that are bundles ********* || TODO', async function () {
-                timeInterval = 0;
-                // resultsNumberBefore = await (
-                //     await driver.findElement(neltPerformanceSelectors.ListNumberOfResults)
-                // ).getText();
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Order Center loaded`,
@@ -2183,14 +1690,14 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                     )} s`,
                 });
                 timeMeasurements[
-                    'Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions that are bundles'
+                    'Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions that are bundles'
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions that are bundles',
+                    title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions that are bundles',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions that are bundles',
+                    Title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions that are bundles',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -2231,14 +1738,14 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                     )} s`,
                 });
                 timeMeasurements[
-                    'Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions (bundles) --> Click Done'
+                    'Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions (bundles) --> Click Done'
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions (bundles) --> Click Done',
+                    title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions (bundles) --> Click Done',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions (bundles) --> Click Done',
+                    Title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions (bundles) --> Click Done',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -2261,16 +1768,10 @@ export async function NeltPerformanceTests(email: string, password: string, clie
         });
 
         // 14
-        describe('Order: 7. Home Screen --> Kupci --> Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions (not bundles) --> Click Done', async () => {
+        describe('Order: 7. Home Screen --> Kupci --> Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions (not bundles) --> Click Done', async () => {
             it('Navigate to account 1100072 from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '1100072', 'ID');
             });
-            // it('Choosing "Order" at Dropdown Menu of Plus Button at Account Dashboard', async function () {
-            //     await neltPerfomanceService.selectUnderPlusButtonMenuAtAccountDashboard.bind(this)(driver, 'Order');
-            // });
-            // it('Choosing "CC Call Centar" at Catalogs List', async function () {
-            //     await neltPerfomanceService.choosingCatalogForOrder.bind(this)(driver, 'CC Call Centar');
-            // });
             it('Choosing "Pocni Posetu" at Dropdown Menu of Hamburger Menu at Account Dashboard', async function () {
                 await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
                     driver,
@@ -2347,14 +1848,14 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                     )} s`,
                 });
                 timeMeasurements[
-                    'Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions that are not bundles'
+                    'Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions that are not bundles'
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions that are not bundles',
+                    title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions that are not bundles',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions that are not bundles',
+                    Title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions that are not bundles',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -2395,14 +1896,14 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                     )} s`,
                 });
                 timeMeasurements[
-                    'Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions (not bundles) --> Click Done'
+                    'Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions (not bundles) --> Click Done'
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions (not bundles) --> Click Done',
+                    title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions (not bundles) --> Click Done',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Select Account (1100072) --> Visit --> Hamburger --> Order --> Open promotions (not bundles) --> Click Done',
+                    Title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions (not bundles) --> Click Done',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
