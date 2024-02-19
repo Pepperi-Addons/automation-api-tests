@@ -1079,6 +1079,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
+        return;
     }
     ///////////////////////~~~CI/CD Flow~~~///////////////////////////////////
     //****EVGENY: this code (VVV**DOWN-HERE**VVV) is ****temporary**** !!!!!! ---> once we will realize how nebula should work - with neptune or neo4J this will become redundant and nebula will run as any-other addon
@@ -1409,6 +1410,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
         }
         run();
+        return;
     }
     //****EVGENY: this is the actual CI/CD code for most addons ||| Nebula will be 'merged' here once it'll run as other addons
     if (tests.includes('Remote_Jenkins_Handler')) {
@@ -2202,6 +2204,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             latestRunSBEx,
         );
         run();
+        return;
     } else {
         throw new Error(`Error: No Test Named: '${tests}' Found On CLI Test Index!`);
     }
