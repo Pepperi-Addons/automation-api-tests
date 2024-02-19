@@ -2223,14 +2223,14 @@ export async function handleTeamsURL(addonName, service, email, pass) {
             return await service.getSecretfromKMS(email, pass, 'JourneyTeamsWebHook');
         case 'SYNC':
             return await service.getSecretfromKMS(email, pass, 'SyncTeamsWebHook');
-        case 'ADAL': //new teams
+        case 'ADAL':
             return await service.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
         case 'NEBULA':
-        case 'FEBULA': //new teams
+        case 'FEBULA':
             return await service.getSecretfromKMS(email, pass, 'NebulaTeamsWebHook');
         case 'DIMX':
             return await service.getSecretfromKMS(email, pass, 'DIMXTeamsWebHook');
-        case 'DATA INDEX': //new teams
+        case 'DATA INDEX':
         case 'DATA-INDEX':
             return await service.getSecretfromKMS(email, pass, 'DataIndexTeamsWebHook');
         case 'PFS':
@@ -2243,13 +2243,14 @@ export async function handleTeamsURL(addonName, service, email, pass) {
             return await service.getSecretfromKMS(email, pass, 'UDCTeamsWebHook');
         case 'SCHEDULER':
             return await service.getSecretfromKMS(email, pass, 'SchedulerTeamsWebHook');
-        case 'CPI-DATA': //new teams
+        case 'CPI-DATA':
         case 'CPI DATA':
+        case 'ADDONS-CPI-DATA':
             return await service.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
-        case 'CORE': //new teams
+        case 'CORE':
         case 'CORE-GENERIC-RESOURCES':
             return await service.getSecretfromKMS(email, pass, 'CORETeamsWebHook');
-        case 'RESOURCE-LIST': //new teams
+        case 'RESOURCE-LIST':
         case 'RESOURCE LIST':
             return await service.getSecretfromKMS(email, pass, 'ResourceListTeamsWebHook');
         case 'UDB':
@@ -2259,10 +2260,10 @@ export async function handleTeamsURL(addonName, service, email, pass) {
             return await service.getSecretfromKMS(email, pass, 'CONFIGURATIONSTeamsWebHook');
         case 'RELATED-ITEMS':
             return await service.getSecretfromKMS(email, pass, 'RelatedItemsTeamsWebHook');
-        case 'GENERIC-RESOURCE': //new teams
+        case 'GENERIC-RESOURCE':
         case 'GENERIC RESOURCE':
             return await service.getSecretfromKMS(email, pass, 'GenericResourceTeamsWebHook');
-        case 'NODE': //new teams
+        case 'NODE':
         case 'CPI-NODE':
             return await service.getSecretfromKMS(email, pass, 'CPINodeTeamsWebHook');
         case 'CRAWLER':
