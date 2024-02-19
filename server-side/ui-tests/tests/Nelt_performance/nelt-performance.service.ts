@@ -99,6 +99,26 @@ export class NeltPerformanceService {
         });
     }
 
+    public async searchInOrderCenter(this: Context, driver: Browser, nameOfItem: string): Promise<void> {
+        const neltPerformanceSelectors = new NeltPerformance(driver);
+        await neltPerformanceSelectors.isSpinnerDone();
+        const searchInput = await driver.findElement(neltPerformanceSelectors.Search_Input);
+        await searchInput.clear();
+        driver.sleep(0.1 * 1000);
+        await searchInput.sendKeys(nameOfItem + '\n');
+        driver.sleep(0.5 * 1000);
+        await driver.click(neltPerformanceSelectors.HtmlBody);
+        driver.sleep(0.1 * 1000);
+        await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
+        driver.sleep(0.1 * 1000);
+        await neltPerformanceSelectors.isSpinnerDone();
+        const base64Image = await driver.saveScreenshots();
+        addContext(this, {
+            title: `At Order Center - after Search for "${nameOfItem}"`,
+            value: 'data:image/png;base64,' + base64Image,
+        });
+    }
+
     public async selectAccountViaHomePageMainButton(
         this: Context,
         driver: Browser,
@@ -117,11 +137,12 @@ export class NeltPerformanceService {
         const searchInput = await driver.findElement(neltPerformanceSelectors.Search_Input);
         await searchInput.clear();
         driver.sleep(0.1 * 1000);
-        await searchInput.sendKeys(accountID + '\n');
+        accountID && (await searchInput.sendKeys(accountID + '\n'));
         driver.sleep(0.5 * 1000);
-        await driver.click(neltPerformanceSelectors.HtmlBody);
+        // await driver.click(neltPerformanceSelectors.HtmlBody);
+        await driver.click(neltPerformanceSelectors.TopBarContainer);
         driver.sleep(0.1 * 1000);
-        await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
+        accountID && (await driver.click(neltPerformanceSelectors.Search_Magnifier_Button));
         driver.sleep(0.1 * 1000);
         await neltPerformanceSelectors.isSpinnerDone();
         base64Image = await driver.saveScreenshots();
