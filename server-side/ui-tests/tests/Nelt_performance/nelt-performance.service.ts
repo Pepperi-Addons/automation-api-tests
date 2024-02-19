@@ -174,13 +174,31 @@ export class NeltPerformanceService {
             value: 'data:image/png;base64,' + base64ImageComponent,
         });
         await driver.untilIsVisible(neltPerformanceSelectors.HomeMenuDropdown);
-        await driver.click(neltPerformanceSelectors.getSelectorOfAccountDashboardPlusButtonMenuItemByName(nameOfItem));
-        await neltPerformanceSelectors.isSpinnerDone();
-        base64ImageComponent = await driver.saveScreenshots();
-        addContext(this, {
-            title: `"${nameOfItem}" chosen`,
-            value: 'data:image/png;base64,' + base64ImageComponent,
-        });
+        try {
+            await driver.click(
+                neltPerformanceSelectors.getSelectorOfAccountDashboardPlusButtonMenuItemByName(nameOfItem),
+            );
+            await neltPerformanceSelectors.isSpinnerDone();
+            base64ImageComponent = await driver.saveScreenshots();
+            addContext(this, {
+                title: `"${nameOfItem}" chosen`,
+                value: 'data:image/png;base64,' + base64ImageComponent,
+            });
+        } catch (error) {
+            console.error(error);
+            base64ImageComponent = await driver.saveScreenshots();
+            addContext(this, {
+                title: `"${nameOfItem}" NOT FOUND`,
+                value: 'data:image/png;base64,' + base64ImageComponent,
+            });
+            await driver.click(neltPerformanceSelectors.AccountDashboard_PlusButton);
+            await neltPerformanceSelectors.isSpinnerDone();
+            base64ImageComponent = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Plus Menu Closed`,
+                value: 'data:image/png;base64,' + base64ImageComponent,
+            });
+        }
         driver.sleep(0.5 * 1000);
     }
 
@@ -328,6 +346,19 @@ export class NeltPerformanceService {
             title: `Chose "Start posete" at Visit Selection`,
             value: 'data:image/png;base64,' + base64ImageComponent,
         });
+        try {
+            await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_StartButtton);
+        } catch (error) {
+            console.info('Start Visit Form NOT Loaded');
+            console.error(error);
+            addContext(this, {
+                title: `Start Visit Form NOT Loaded`,
+                value: error,
+            });
+            await driver.refresh();
+            await neltPerformanceSelectors.isSpinnerDone();
+            await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_StartButtton);
+        }
         await driver.click(neltPerformanceSelectors.TopBar_Right_StartButtton);
         await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
         await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
