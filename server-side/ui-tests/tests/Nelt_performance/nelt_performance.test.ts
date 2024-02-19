@@ -683,7 +683,7 @@ export async function NeltPerformanceTests(email: string, password: string, clie
         });
 
         // 18 + 19 + 22 + 23
-        describe('VisitFlow: 5. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select Visit Flow --> Open --> Near Expiry order --> Add items --> Submit', async () => {
+        describe('(VisitFlow) Order: 1. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select Visit Flow --> Near Expiry order --> Add items --> Submit', async () => {
             it('Navigate to first account in list from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
             });
@@ -991,7 +991,7 @@ export async function NeltPerformanceTests(email: string, password: string, clie
         });
 
         // 20 + 21
-        describe('VisitFlow: 3. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select Visit Flow --> Open --> Select Povrat --> Povrat order --> Add item --> Submit', async () => {
+        describe('(VisitFlow) Order: 2. Home Screen --> Kupci --> Select account --> Burger menu --> Pocni Posetu --> Select Visit Flow --> Povrat order --> Add item --> Submit', async () => {
             it('Navigate to first account in list from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
             });
@@ -1176,8 +1176,7 @@ export async function NeltPerformanceTests(email: string, password: string, clie
         });
 
         // 8 + 10 + 11 + 12
-        // describe('Order: 3. Home Screen --> Kupci --> Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Select filter', async () => {
-        describe('Order: 3. Home Screen --> Kupci --> Select Account (1100072) --> Hamburger Menu --> Pocni Posetu --> Order --> Select filter | Smart filter | Sort by', async () => {
+        describe('(VisitFlow) Order: 3. Home Screen --> Kupci --> Select Account (1100072) --> Burger menu --> Pocni Posetu --> Select Visit Flow --> Prodaja order --> Select filter | Smart filter | Sort by', async () => {
             it('Navigate to account 1100072 from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
                     driver,
@@ -1606,7 +1605,7 @@ export async function NeltPerformanceTests(email: string, password: string, clie
         });
 
         // 13
-        describe('Order: 6. Home Screen --> Kupci -- Select Account (1100072) --> Visit --> Order --> Open promotions that are (bundles) --> Click Done', async () => {
+        describe('(VisitFlow) Order: 4. Home Screen --> Kupci -- Select Account (1100072) --> Visit --> Order --> Open promotions (bundles) --> Click Done', async () => {
             it('Navigate to account 1100072 from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '1100072', 'ID');
             });
@@ -1768,7 +1767,7 @@ export async function NeltPerformanceTests(email: string, password: string, clie
         });
 
         // 14
-        describe('Order: 7. Home Screen --> Kupci --> Select Account (1100072) --> Hamburger --> Visit --> Order --> Open promotions (not bundles) --> Click Done', async () => {
+        describe('(VisitFlow) Order: 5. Home Screen --> Kupci --> Select Account (1100072) --> Visit --> Order --> Open promotions (not bundles) --> Click Done', async () => {
             it('Navigate to account 1100072 from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '1100072', 'ID');
             });
