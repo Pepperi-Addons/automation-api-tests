@@ -2016,6 +2016,8 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             pathSBEx,
             latestRunSBEx,
         );
+    } else {
+        throw new Error(`Error: No Test Named: '${tests}' Found On CLI Test Index!`);
     }
     run();
 })();
