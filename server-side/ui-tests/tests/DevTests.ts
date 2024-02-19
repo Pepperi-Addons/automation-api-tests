@@ -811,7 +811,7 @@ export class DevTest {
         }${
             this.failedSuitesProd.length === 0
                 ? ''
-                : `* PROD User: ${await this.getProdUserEmail()}<br>Failed Prod Tests:<br>` +
+                : `<br>* PROD User: ${await this.getProdUserEmail()}<br>Failed Prod Tests:<br>` +
                   this.failedSuitesProd.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>') +
                   '<br>'
         }${
