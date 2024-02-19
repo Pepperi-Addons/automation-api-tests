@@ -101,6 +101,10 @@ export class DevTest {
                 return 'fbbac53c-c350-42c9-b9ad-17c238e55b42';
             case 'DIMX':
                 return '44c97115-6d14-4626-91dc-83f176e9a0fc';
+            case 'CPI-DATA':
+            case 'CPI DATA':
+            case 'ADDONS-CPI-DATA':
+                return 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b';
             default:
                 return 'none';
         }
@@ -811,7 +815,7 @@ export class DevTest {
         }${
             this.failedSuitesProd.length === 0
                 ? ''
-                : `* PROD User: ${await this.getProdUserEmail()}<br>Failed Prod Tests:<br>` +
+                : `<br>* PROD User: ${await this.getProdUserEmail()}<br>Failed Prod Tests:<br>` +
                   this.failedSuitesProd.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>') +
                   '<br>'
         }${
