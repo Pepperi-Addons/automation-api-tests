@@ -64,13 +64,15 @@ export class NeltPerformance extends AddonPage {
     public TopBar_Right_StartButtton: By = By.xpath(
         `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Start"]`,
     );
-
+    public TopBar_Right_StartButtton_disabled: By = By.xpath(
+        `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Start"][@disabled="true"]`,
+    );
     public TopBar_Right_SubmitButtton_atCart: By = By.xpath(
         `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Submit"]`,
     );
 
     public TopBar_Right_PutOnHoldButtton_atCart: By = By.xpath(
-        `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Put On Hold"]`,
+        `${this.TopBar_RightContainer.value}//app-workflow//button[contains(@data-qa,"n Hold")]`,
     );
 
     public TopBar_Right_SendButtton_atCart: By = By.xpath(
@@ -156,6 +158,22 @@ export class NeltPerformance extends AddonPage {
         `//pep-list//fieldset[contains(@class,"table-header-fieldset")]//fieldset//label[@id="returnYTD"]`,
     );
 
+    public SmartFilter_Principal_Nestle_label: By = By.xpath(
+        `//span[contains(text(),"Nestle")]/ancestor::label[contains(@class,"mat-checkbox-layout")]`,
+    );
+    public SmartFilter_Principal_Nestle_checkbox: By = By.xpath(
+        `${this.SmartFilter_Principal_Nestle_label.value}//input[contains(@id,"mat-checkbox-")]/parent::span`,
+    );
+    public SmartFilter_Principal_Nestle_input_checked: By = By.xpath(
+        `${this.SmartFilter_Principal_Nestle_label.value}//input[contains(@id,"mat-checkbox-")][@aria-checked="true"]`,
+    );
+    public SmartFilter_Principal_Nestle_num: By = By.xpath(
+        `${this.SmartFilter_Principal_Nestle_label.value}//span[contains(@class,"mat-checkbox-label")]/div[contains(@class,"title")]/span[2]`,
+    );
+    public SmartFilter_Principal_ApplyButton: By = By.xpath(
+        `${this.SmartFilter_Principal_Nestle_label.value}//span[contains(@class,"mat-checkbox-label")]/div[contains(@class,"title")]/span[2]`,
+    );
+
     public getSelectorOfHomeHamburgerMenuItemByName(name: string) {
         return By.xpath(`//span[contains(text(),"${name}")]/parent::button[@role="menuitem"]`);
     }
@@ -216,7 +234,7 @@ export class NeltPerformance extends AddonPage {
         return By.xpath(
             `//span[@title="${
                 filterName || ''
-            }"]/ancestor::mat-expansion-panel/pep-filter-actions//button[contains(text(),"${buttonText || ''}")]`,
+            }"]/ancestor::mat-expansion-panel//pep-filter-actions//button[contains(text(),"${buttonText || ''}")]`,
         );
     }
 
