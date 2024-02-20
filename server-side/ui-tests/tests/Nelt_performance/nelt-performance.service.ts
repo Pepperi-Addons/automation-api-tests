@@ -87,7 +87,7 @@ export class NeltPerformanceService {
         driver.sleep(0.1 * 1000);
         await searchInput.sendKeys(nameOfItem + '\n');
         driver.sleep(0.5 * 1000);
-        await driver.click(neltPerformanceSelectors.HtmlBody);
+        // await driver.click(neltPerformanceSelectors.HtmlBody);
         driver.sleep(0.1 * 1000);
         await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
         driver.sleep(0.1 * 1000);
@@ -107,7 +107,7 @@ export class NeltPerformanceService {
         driver.sleep(0.1 * 1000);
         await searchInput.sendKeys(nameOfItem + '\n');
         driver.sleep(0.5 * 1000);
-        await driver.click(neltPerformanceSelectors.HtmlBody);
+        // await driver.click(neltPerformanceSelectors.HtmlBody);
         driver.sleep(0.1 * 1000);
         await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
         driver.sleep(0.1 * 1000);
@@ -367,14 +367,22 @@ export class NeltPerformanceService {
             title: `Chose "Start posete" at Visit Selection`,
             value: 'data:image/png;base64,' + base64ImageComponent,
         });
-        try {
-            await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_StartButtton);
-        } catch (error) {
+        driver.sleep(1 * 1000);
+        await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_StartEnd_Form_indication);
+        // try {
+        // await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_StartButtton);
+        // } catch (error) {
+        if (await driver.isElementVisible(neltPerformanceSelectors.TopBar_Right_StartButtton_disabled)) {
             console.info('Start Visit Form NOT Loaded');
-            console.error(error);
+            // console.error(error);
+            // addContext(this, {
+            //     title: `Start Visit Form NOT Loaded`,
+            //     value: error,
+            // });
+            base64ImageComponent = await driver.saveScreenshots();
             addContext(this, {
                 title: `Start Visit Form NOT Loaded`,
-                value: error,
+                value: 'data:image/png;base64,' + base64ImageComponent,
             });
             await driver.click(neltPerformanceSelectors.TopBar_Left_CancelButtton);
             const dialogMessageContent = await (
