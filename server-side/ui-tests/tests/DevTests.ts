@@ -1314,6 +1314,14 @@ export class DevTest {
                     'TranslationTesterProd@pepperitest.com',
                     'TranslationTesterSB@pepperitest.com',
                 ];
+            case 'CPI-DATA':
+            case 'ADDONS-CPI-DATA':
+            case 'CPI DATA':
+                return [
+                    'CpiDataTestEU@pepperitest.com',
+                    'CpiDataTestProd@pepperitest.com',
+                    'CpiDataTestSB@pepperitest.com',
+                ];
             case 'DIMX':
                 return ['DIMXAppEU@pepperitest.com', 'DIMXAppProd@pepperitest.com', 'DimxAppSB@pepperitest.com'];
             default:
