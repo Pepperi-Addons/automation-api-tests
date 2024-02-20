@@ -42,6 +42,7 @@ export class NeltPerformance extends AddonPage {
     public VisitFlow_GroupButton_End_disabled: By = By.xpath(
         '//visit-details//div[contains(@class,"flow-groups")]//button[@data-qa="Kraj posete"][@disabled="true"]',
     );
+    public VisitFlow_StartEnd_Form_indication: By = By.xpath('//div[@title="The Main Activity for the visit flow"]');
     public DatePicker_container: By = By.xpath('//mat-datetimepicker-content');
     public DatePicker_highlightedDate: By = By.xpath(
         `${this.DatePicker_container.value}//td[@role="button"][contains(@class,"active")]`,
