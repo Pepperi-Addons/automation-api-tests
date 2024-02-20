@@ -2667,12 +2667,14 @@ export async function reportToTeams(
     } else {
         //include new results printing here and copy the function to app-tests class
         debugger;
-        const failedTestsOrdered = failedAppTests.map((element) => `${element.env}: ${element.text}`);
+        const failedTestsOrdered: string[] = failedAppTests.map((element) => `${element.env}: ${element.text}`);
         debugger;
         message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version: ${addonVersion} ||| ${
             passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ') + '|||'
         }  ${failingEnvs.length === 0 ? '' : 'Failed On: ' + failingEnvs.join(', ')}`;
-        message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console<br><br>Failed Tests:<br>${failedTestsOrdered.toString()}`;
+        message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console<br><br>${
+            failedTestsOrdered.length > 0 ? 'Failed Tests:<br>' : ''
+        }${failedTestsOrdered.toString()}`;
         debugger;
     }
     const bodyToSend = {
