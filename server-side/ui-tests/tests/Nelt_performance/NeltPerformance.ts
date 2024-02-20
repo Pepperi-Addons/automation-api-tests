@@ -39,6 +39,9 @@ export class NeltPerformance extends AddonPage {
     public VisitFlow_singleVisit_container: By = By.xpath('//div[contains(@class,"visit-container")]');
     public VisitFlow_singleVisit_step: By = By.xpath('//div[contains(@class,"group-steps")]//pep-button');
     public VisitFlow_StartButton: By = By.xpath('//div[contains(@class,"group-steps")]//pep-button');
+    public VisitFlow_GroupButton_End_disabled: By = By.xpath(
+        '//visit-details//div[contains(@class,"flow-groups")]//button[@data-qa="Kraj posete"][@disabled="true"]',
+    );
     public DatePicker_container: By = By.xpath('//mat-datetimepicker-content');
     public DatePicker_highlightedDate: By = By.xpath(
         `${this.DatePicker_container.value}//td[@role="button"][contains(@class,"active")]`,
@@ -82,7 +85,12 @@ export class NeltPerformance extends AddonPage {
     public Information_popup: By = By.xpath(
         '//mat-dialog-container//div[contains(@id,"mat-dialog-title-")]/span[contains(text(),"Information")]',
     );
-    public PepDialog_message: By = By.xpath('//mat-dialog-container//pep-dialog/div[2]/div');
+    public PepDialog: By = By.xpath('//mat-dialog-container//pep-dialog');
+    public PepDialog_title: By = By.xpath(`${this.PepDialog.value}//div[contains(@id,"mat-dialog-title-")]/span`);
+    public PepDialog_message: By = By.xpath(`${this.PepDialog.value}//div[contains(@class,"mat-dialog-content")]/div`);
+    public PepDialog_buttonsContainer: By = By.xpath(
+        `${this.PepDialog.value}//div[contains(@class,"mat-dialog-actions")]/div`,
+    );
     public PepDialog_Cancel_button: By = By.xpath(
         '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"Cancel")]/parent::button',
     );
@@ -173,6 +181,10 @@ export class NeltPerformance extends AddonPage {
     public SmartFilter_Principal_ApplyButton: By = By.xpath(
         `${this.SmartFilter_Principal_Nestle_label.value}//span[contains(@class,"mat-checkbox-label")]/div[contains(@class,"title")]/span[2]`,
     );
+
+    public getPepDialogButtonByText(text: string) {
+        return By.xpath(`${this.PepDialog_buttonsContainer.value}//span[contains(text(),"${text}")]/parent::button`);
+    }
 
     public getSelectorOfHomeHamburgerMenuItemByName(name: string) {
         return By.xpath(`//span[contains(text(),"${name}")]/parent::button[@role="menuitem"]`);

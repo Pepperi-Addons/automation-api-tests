@@ -694,6 +694,70 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 );
             });
             it('Selecting Visit Flow from visits selection', async function () {
+                if (await driver.isElementVisible(neltPerformanceSelectors.PepDialog)) {
+                    const pepDialogTitleValue = await (
+                        await driver.findElement(neltPerformanceSelectors.PepDialog_title)
+                    ).getText();
+                    if (pepDialogTitleValue.includes('Visit In Progress')) {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Open Dialog:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        const dialogMessageContent = await (
+                            await driver.findElement(neltPerformanceSelectors.PepDialog_message)
+                        ).getText();
+                        const accountNameOfOpenVisit = dialogMessageContent
+                            .replace('Please finish visit on account ', '')
+                            .trim();
+                        await driver.click(neltPerformanceSelectors.getPepDialogButtonByText('Ok'));
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Visit is Locked:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+                        await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
+                            driver,
+                            accountNameOfOpenVisit,
+                            'name',
+                        );
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'At Account Dashboard:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                            driver,
+                            'Pocni posetu',
+                        );
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'At Open Visit:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        if (
+                            await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_GroupButton_End_disabled)
+                        ) {
+                            await neltPerfomanceService.startVisit.bind(this)(driver);
+                        }
+                        await neltPerfomanceService.endVisit.bind(this)(driver);
+                        await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+                        await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
+                        await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                            driver,
+                            'Pocni posetu',
+                        );
+                    } else {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Unexpected Dialog is shown:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        console.error('Unexpected Dialog is shown');
+                        throw new Error('Unexpected Dialog is shown');
+                    }
+                }
                 if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
                     await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
                         driver,
@@ -714,25 +778,38 @@ export async function NeltPerformanceTests(email: string, password: string, clie
             });
             it('Start Step of Visit Flow', async function () {
                 // time measurment
-                const Start_posete_opening = new Date().getTime();
-                await driver.click(neltPerformanceSelectors.TopBar_Right_StartButtton);
-                await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
-                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
-                const Start_posete_loaded = new Date().getTime();
-                timeInterval = Start_posete_loaded - Start_posete_opening;
-                console.info(
-                    'Start_posete_opening: ',
-                    Start_posete_opening,
-                    'Start_posete_loaded: ',
-                    Start_posete_loaded,
-                    'Time Interval: ',
-                    timeInterval,
-                );
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `After "Start posete" Visit Flow Step`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
+                try {
+                    const Start_posete_opening = new Date().getTime();
+                    await driver.click(neltPerformanceSelectors.TopBar_Right_StartButtton);
+                    await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
+                    await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
+                    const Start_posete_loaded = new Date().getTime();
+                    timeInterval = Start_posete_loaded - Start_posete_opening;
+                    console.info(
+                        'Start_posete_opening: ',
+                        Start_posete_opening,
+                        'Start_posete_loaded: ',
+                        Start_posete_loaded,
+                        'Time Interval: ',
+                        timeInterval,
+                    );
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `After "Start posete" Visit Flow Step`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                } catch (error) {
+                    console.error(error);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Failed to complete "Start" step`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    if (await driver.isElementVisible(neltPerformanceSelectors.TopBar_Right_StartButtton_disabled)) {
+                        console.info('START FORM DISABLED');
+                        await driver.click(neltPerformanceSelectors.TopBar_Left_CancelButtton);
+                    }
+                }
                 driver.sleep(0.5 * 1000);
             });
             it(`Time Measured`, async function () {
@@ -1002,6 +1079,70 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 );
             });
             it('Selecting Visit Flow from visits selection', async function () {
+                if (await driver.isElementVisible(neltPerformanceSelectors.PepDialog)) {
+                    const pepDialogTitleValue = await (
+                        await driver.findElement(neltPerformanceSelectors.PepDialog_title)
+                    ).getText();
+                    if (pepDialogTitleValue.includes('Visit In Progress')) {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Open Dialog:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        const dialogMessageContent = await (
+                            await driver.findElement(neltPerformanceSelectors.PepDialog_message)
+                        ).getText();
+                        const accountNameOfOpenVisit = dialogMessageContent
+                            .replace('Please finish visit on account ', '')
+                            .trim();
+                        await driver.click(neltPerformanceSelectors.getPepDialogButtonByText('Ok'));
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Visit is Locked:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+                        await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
+                            driver,
+                            accountNameOfOpenVisit,
+                            'name',
+                        );
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'At Account Dashboard:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                            driver,
+                            'Pocni posetu',
+                        );
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'At Open Visit:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        if (
+                            await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_GroupButton_End_disabled)
+                        ) {
+                            await neltPerfomanceService.startVisit.bind(this)(driver);
+                        }
+                        await neltPerfomanceService.endVisit.bind(this)(driver);
+                        await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+                        await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
+                        await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                            driver,
+                            'Pocni posetu',
+                        );
+                    } else {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Unexpected Dialog is shown:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        console.error('Unexpected Dialog is shown');
+                        throw new Error('Unexpected Dialog is shown');
+                    }
+                }
                 if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
                     await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
                         driver,
@@ -1191,6 +1332,74 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 );
             });
             it('Selecting Visit Flow from visits selection', async function () {
+                if (await driver.isElementVisible(neltPerformanceSelectors.PepDialog)) {
+                    const pepDialogTitleValue = await (
+                        await driver.findElement(neltPerformanceSelectors.PepDialog_title)
+                    ).getText();
+                    if (pepDialogTitleValue.includes('Visit In Progress')) {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Open Dialog:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        const dialogMessageContent = await (
+                            await driver.findElement(neltPerformanceSelectors.PepDialog_message)
+                        ).getText();
+                        const accountNameOfOpenVisit = dialogMessageContent
+                            .replace('Please finish visit on account ', '')
+                            .trim();
+                        await driver.click(neltPerformanceSelectors.getPepDialogButtonByText('Ok'));
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Visit is Locked:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+                        await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
+                            driver,
+                            accountNameOfOpenVisit,
+                            'name',
+                        );
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'At Account Dashboard:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                            driver,
+                            'Pocni posetu',
+                        );
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'At Open Visit:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        if (
+                            await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_GroupButton_End_disabled)
+                        ) {
+                            await neltPerfomanceService.startVisit.bind(this)(driver);
+                        }
+                        await neltPerfomanceService.endVisit.bind(this)(driver);
+                        await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+                        await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
+                            driver,
+                            'DOBROTA STR br. APR',
+                            'name',
+                        );
+                        await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                            driver,
+                            'Pocni posetu',
+                        );
+                    } else {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Unexpected Dialog is shown:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        console.error('Unexpected Dialog is shown');
+                        throw new Error('Unexpected Dialog is shown');
+                    }
+                }
                 if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
                     await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
                         driver,
@@ -1353,6 +1562,7 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                     title: `"Svi proizvodi" Filter Selected`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
+                await neltPerformanceSelectors.isSpinnerDone();
                 expect(Number(resultsNumberAfter)).to.not.equal(Number(resultsNumberBefore));
                 driver.sleep(0.5 * 1000);
             });
@@ -1616,6 +1826,74 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 );
             });
             it('Selecting Visit Flow from visits selection', async function () {
+                if (await driver.isElementVisible(neltPerformanceSelectors.PepDialog)) {
+                    const pepDialogTitleValue = await (
+                        await driver.findElement(neltPerformanceSelectors.PepDialog_title)
+                    ).getText();
+                    if (pepDialogTitleValue.includes('Visit In Progress')) {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Open Dialog:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        const dialogMessageContent = await (
+                            await driver.findElement(neltPerformanceSelectors.PepDialog_message)
+                        ).getText();
+                        const accountNameOfOpenVisit = dialogMessageContent
+                            .replace('Please finish visit on account ', '')
+                            .trim();
+                        await driver.click(neltPerformanceSelectors.getPepDialogButtonByText('Ok'));
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Visit is Locked:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+                        await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
+                            driver,
+                            accountNameOfOpenVisit,
+                            'name',
+                        );
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'At Account Dashboard:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                            driver,
+                            'Pocni posetu',
+                        );
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'At Open Visit:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        if (
+                            await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_GroupButton_End_disabled)
+                        ) {
+                            await neltPerfomanceService.startVisit.bind(this)(driver);
+                        }
+                        await neltPerfomanceService.endVisit.bind(this)(driver);
+                        await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+                        await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
+                            driver,
+                            '1100072',
+                            'ID',
+                        );
+                        await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                            driver,
+                            'Pocni posetu',
+                        );
+                    } else {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Unexpected Dialog is shown:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        console.error('Unexpected Dialog is shown');
+                        throw new Error('Unexpected Dialog is shown');
+                    }
+                }
                 if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
                     await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
                         driver,
@@ -1769,7 +2047,7 @@ export async function NeltPerformanceTests(email: string, password: string, clie
         // 14
         describe('(VisitFlow) Order: 5. Home Screen --> Kupci --> Select Account (1100072) --> Visit --> Order --> Open promotions (not bundles) --> Click Done', async () => {
             it('Navigate to account 1100072 from Home Screen', async function () {
-                await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '1100072', 'ID');
+                await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '1100072');
             });
             it('Choosing "Pocni Posetu" at Dropdown Menu of Hamburger Menu at Account Dashboard', async function () {
                 await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
@@ -1778,6 +2056,70 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 );
             });
             it('Selecting Visit Flow from visits selection', async function () {
+                if (await driver.isElementVisible(neltPerformanceSelectors.PepDialog)) {
+                    const pepDialogTitleValue = await (
+                        await driver.findElement(neltPerformanceSelectors.PepDialog_title)
+                    ).getText();
+                    if (pepDialogTitleValue.includes('Visit In Progress')) {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Open Dialog:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        const dialogMessageContent = await (
+                            await driver.findElement(neltPerformanceSelectors.PepDialog_message)
+                        ).getText();
+                        const accountNameOfOpenVisit = dialogMessageContent
+                            .replace('Please finish visit on account ', '')
+                            .trim();
+                        await driver.click(neltPerformanceSelectors.getPepDialogButtonByText('Ok'));
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Visit is Locked:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+                        await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
+                            driver,
+                            accountNameOfOpenVisit,
+                            'name',
+                        );
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'At Account Dashboard:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                            driver,
+                            'Pocni posetu',
+                        );
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'At Open Visit:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        if (
+                            await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_GroupButton_End_disabled)
+                        ) {
+                            await neltPerfomanceService.startVisit.bind(this)(driver);
+                        }
+                        await neltPerfomanceService.endVisit.bind(this)(driver);
+                        await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+                        await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '1100072');
+                        await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                            driver,
+                            'Pocni posetu',
+                        );
+                    } else {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Unexpected Dialog is shown:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        console.error('Unexpected Dialog is shown');
+                        throw new Error('Unexpected Dialog is shown');
+                    }
+                }
                 if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
                     await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
                         driver,
