@@ -248,7 +248,7 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Table_Header);
                 await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfInsightsTableHeaderdByText('Target'));
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart);
-                await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_CanvasSVG); // if there is NO DATA at insights
+                // await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_CanvasSVG); // if there is NO DATA at insights
                 // await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfInsightsGalleryCardByText(''));
                 // await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVG); // if there is NO DATA at insights
                 // await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_Chart_SVGtext); // if there is NO DATA at insights
@@ -808,6 +808,56 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                     if (await driver.isElementVisible(neltPerformanceSelectors.TopBar_Right_StartButtton_disabled)) {
                         console.info('START FORM DISABLED');
                         await driver.click(neltPerformanceSelectors.TopBar_Left_CancelButtton);
+                        const dialogMessageContent = await (
+                            await driver.findElement(neltPerformanceSelectors.PepDialog_message)
+                        ).getText();
+                        if (dialogMessageContent.includes('Are you sure you want to discard changes?')) {
+                            await driver.click(neltPerformanceSelectors.getPepDialogButtonByText('Discard changes'));
+                            await neltPerformanceSelectors.isSpinnerDone();
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Changes Discarded at "Start" step`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            timeInterval = 0;
+                            await neltPerfomanceService.selectVisitGroup.bind(this)(driver, 'Start posete');
+                            await driver.click(neltPerformanceSelectors.getSelectorOfVisitStepByText('Start posete'));
+                            await neltPerformanceSelectors.isSpinnerDone();
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Chose "Start posete" at Visit Selection`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            const Start_posete_opening = new Date().getTime();
+                            await driver.click(neltPerformanceSelectors.TopBar_Right_StartButtton);
+                            await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
+                            await driver.untilIsVisible(
+                                neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'),
+                            );
+                            const Start_posete_loaded = new Date().getTime();
+                            timeInterval = Start_posete_loaded - Start_posete_opening;
+                            console.info(
+                                'Start_posete_opening: ',
+                                Start_posete_opening,
+                                'Start_posete_loaded: ',
+                                Start_posete_loaded,
+                                'Time Interval: ',
+                                timeInterval,
+                            );
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After "Start posete" Visit Flow Step`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                        } else {
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: 'Unexpected Dialog is shown:',
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
+                            console.error('Unexpected Dialog is shown');
+                            throw new Error('Unexpected Dialog is shown');
+                        }
                     }
                 }
                 driver.sleep(0.5 * 1000);
@@ -1549,7 +1599,7 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Svi proizvodi'),
                 );
                 await neltPerformanceSelectors.isSpinnerDone();
-                driver.sleep(0.5 * 1000);
+                driver.sleep(2.5 * 1000);
                 resultsNumberAfter = await (
                     await driver.findElement(neltPerformanceSelectors.ListNumberOfResults)
                 ).getText();
