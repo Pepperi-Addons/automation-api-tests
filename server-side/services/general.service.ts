@@ -465,6 +465,14 @@ export default class GeneralService {
         return this.createClient(getToken.access_token);
     }
 
+    returnXRandomElementsFromArray(array: any[], X: number): any[] {
+        // Shuffle array
+        const shuffled = array.sort(() => 0.5 - Math.random());
+        // Get sub-array of first n elements after shuffled
+        const selected = shuffled.slice(0, X);
+        return selected;
+    }
+
     private async getToken(email: any, pass: any) {
         const urlencoded = new URLSearchParams();
         urlencoded.append('username', email);
