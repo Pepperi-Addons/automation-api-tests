@@ -94,6 +94,35 @@ export class UDCService {
         return response;
     }
 
+    async hardDeleteScheme(udcName: string) {
+        const response = await this.generalService.fetchStatus(
+            `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/hard_delete?collection_name=${udcName}`,
+            {
+                method: 'POST',
+                body: JSON.stringify({}),
+                headers: {
+                    Authorization: `Bearer ${this.generalService['client'].OAuthAccessToken}`,
+                    'X-Pepperi-OwnerID': '122c0e9d-c240-4865-b446-f37ece866c22',
+                    'x-pepperi-secretkey': 'a9cce3ed-3c77-4a40-be0a-b681a63fb2b4',
+                },
+            },
+        );
+        return response;
+    }
+
+    async truncateScheme(udcName: string) {
+        const response = await this.generalService.fetchStatus(`/addons/data/schemes/${udcName}/truncate`, {
+            method: 'POST',
+            body: JSON.stringify({}),
+            headers: {
+                Authorization: `Bearer ${this.generalService['client'].OAuthAccessToken}`,
+                'X-Pepperi-OwnerID': '122c0e9d-c240-4865-b446-f37ece866c22',
+                'x-pepperi-secretkey': 'a9cce3ed-3c77-4a40-be0a-b681a63fb2b4',
+            },
+        });
+        return response;
+    }
+
     getSchemes(options?: FindOptions) {
         return this.papiClient.userDefinedCollections.schemes.find(options);
     }
