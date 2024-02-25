@@ -35,6 +35,8 @@ export async function NeltPerformanceTests(email: string, password: string, clie
     let resultsNumberBefore;
     let resultsNumberAfter;
     let principal_Nestle_expectedNumber;
+    let firstInList_itemName_before;
+    let firstInList_itemName_after;
 
     describe(`Nelt Performance | ${dateTime}`, function () {
         before(async function () {
@@ -1718,69 +1720,71 @@ export async function NeltPerformanceTests(email: string, password: string, clie
                 expect(Number(resultsNumberAfter)).to.not.equal(Number(resultsNumberBefore));
                 driver.sleep(0.5 * 1000);
             });
-            //     it('Change sort by ********* || TODO', async function () {
-            //         // resultsNumberBefore = await (
-            //         //     await driver.findElement(neltPerformanceSelectors.ListNumberOfResults)
-            //         // ).getText();
-            //         base64ImageComponent = await driver.saveScreenshots();
-            //         addContext(this, {
-            //             title: `Order Center loaded`,
-            //             value: 'data:image/png;base64,' + base64ImageComponent,
-            //         });
-            //         await driver.click(neltPerformanceSelectors.getSelectorOfSmartFilterFieldByName('Zalihe'));
-            //         // await neltPerformanceSelectors.isSpinnerDone();
-            //         // await driver.untilIsVisible(
-            //         //     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
-            //         // );
-            //         // time measurment
-            //         const Change_sort_by_opening = new Date().getTime();
-            //         // await driver.click(
-            //         //     neltPerformanceSelectors.getSelectorOfOrderCenterSideBarTreeItemByName('Nestle Dairy'),
-            //         // );
-            //         // await neltPerformanceSelectors.isSpinnerDone();
-            //         // await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
-            //         // await driver.untilIsVisible(neltPerformanceSelectors.TransactionID);
-            //         // await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_QuantitySelector_GridLineView);
-            //         const Change_sort_by_loaded = new Date().getTime();
-            //         timeInterval = Change_sort_by_loaded - Change_sort_by_opening;
-            //         // resultsNumberAfter = await (
-            //         //     await driver.findElement(neltPerformanceSelectors.ListNumberOfResults)
-            //         // ).getText();
-            //         console.info(
-            //             'Change_sort_by_opening: ',
-            //             Change_sort_by_opening,
-            //             'Change_sort_by_loaded: ',
-            //             Change_sort_by_loaded,
-            //             'Time Interval: ',
-            //             timeInterval,
-            //         );
-            //         base64ImageComponent = await driver.saveScreenshots();
-            //         addContext(this, {
-            //             title: `Sort-by Changed`,
-            //             value: 'data:image/png;base64,' + base64ImageComponent,
-            //         });
-            //     });
-            //     it(`Time Measured`, async function () {
-            //         addContext(this, {
-            //             title: `Time Interval for "Change sort by" to load:`,
-            //             value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-            //                 1,
-            //             )} s`,
-            //         });
-            //         timeMeasurements[
-            //             'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by'
-            //         ] = Number((timeInterval / 1000).toFixed(1));
-            //         timeMeasurementsRaw.push({
-            //             title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by',
-            //             time: timeInterval,
-            //         });
-            //         timeMeasurementsArray.push({
-            //             Title: 'Select Account (1100072) --> + --> Order --> Select catalogue (CC call centar) --> Change sort by',
-            //             Sec: Number((timeInterval / 1000).toFixed(1)),
-            //             Milisec: timeInterval,
-            //         });
-            //         driver.sleep(0.5 * 1000);
-            //     });
+            it('Change sort by', async function () {
+                firstInList_itemName_before = await (
+                    await driver.findElement(neltPerformanceSelectors.ItemNameOfFirstListingAtOrderCenter_GridLineView)
+                ).getText();
+                await driver.click(neltPerformanceSelectors.OrderCenter_SortByButton);
+                await driver.untilIsVisible(neltPerformanceSelectors.DropDown_Menu);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Sort By Button Clicked:`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                // time measurment
+                const Change_sort_by_opening = new Date().getTime();
+                await driver.click(neltPerformanceSelectors.getSelectorOfDropdownItemByText('Po kolicini'));
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
+                await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_QuantitySelector_GridLineView);
+                await driver.untilIsVisible(neltPerformanceSelectors.ItemNameOfFirstListingAtOrderCenter_GridLineView);
+                const Change_sort_by_loaded = new Date().getTime();
+                timeInterval = Change_sort_by_loaded - Change_sort_by_opening;
+                firstInList_itemName_after = await (
+                    await driver.findElement(neltPerformanceSelectors.ItemNameOfFirstListingAtOrderCenter_GridLineView)
+                ).getText();
+                console.info(
+                    'Change_sort_by_opening: ',
+                    Change_sort_by_opening,
+                    'Change_sort_by_loaded: ',
+                    Change_sort_by_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Sort-by Changed:`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "Change sort by" to load:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+                        1,
+                    )} s`,
+                });
+                timeMeasurements['Select Account (1100072) --> Hamburger --> Visit --> Order --> Change sort by'] =
+                    Number((timeInterval / 1000).toFixed(1));
+                timeMeasurementsRaw.push({
+                    title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Change sort by',
+                    time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: 'Select Account (1100072) --> Hamburger --> Visit --> Order --> Change sort by',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it(`First Item in List has changed Assertion`, async function () {
+                addContext(this, {
+                    title: `Name of First Item in List - Before & After`,
+                    value: `Before: ${firstInList_itemName_before} | After: ${firstInList_itemName_after}`,
+                });
+                expect(Number(resultsNumberAfter)).to.not.equal(Number(resultsNumberBefore));
+                driver.sleep(0.5 * 1000);
+            });
             it('Search for "Ponuda S" (to find non-promotion products)', async function () {
                 await neltPerfomanceService.replaceContentOfInput(
                     driver,

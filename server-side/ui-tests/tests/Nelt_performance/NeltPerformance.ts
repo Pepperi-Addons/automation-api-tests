@@ -17,6 +17,11 @@ export class NeltPerformance extends AddonPage {
     public ViewTypeOption: By = By.xpath(`//span[text()='|textToFill|']`);
     public KupciButtonAtHome: By = By.xpath('//button[@id="mainButton"]');
     public FirstAccountInList: By = By.xpath('//virtual-scroller//fieldset//span[@id="Name"]');
+    public ItemNameOfFirstListingAtOrderCenter_GridLineView: By = By.xpath(
+        '//div[contains(@class,"table-row")]/fieldset/pep-form/fieldset/div[contains(@class,"table-cell")][6]//pep-textbox/span',
+    );
+    public OrderCenter_SortByButton: By = By.xpath('//sort-by/button');
+    public DropDown_Menu: By = By.xpath('//div[contains(@id,"cdk-overlay-")]/div[@role="menu"]');
     public AccountDashboard_PlusButton: By = By.xpath('//list-menu[@data-qa="secondMenu"]//button');
     public AccountDashboard_BurgerMenu: By = By.xpath('//list-menu[@data-qa="firstMenu"]//button');
     public Image_Label: By = By.xpath(`//pep-list//label[@id="Image"]`);
@@ -185,6 +190,10 @@ export class NeltPerformance extends AddonPage {
 
     public getPepDialogButtonByText(text: string) {
         return By.xpath(`${this.PepDialog_buttonsContainer.value}//span[contains(text(),"${text}")]/parent::button`);
+    }
+
+    public getSelectorOfDropdownItemByText(text: string) {
+        return By.xpath(`${this.DropDown_Menu.value}//span[contains(text(),"${text}")]/parent::button`);
     }
 
     public getSelectorOfHomeHamburgerMenuItemByName(name: string) {
