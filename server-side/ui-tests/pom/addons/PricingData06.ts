@@ -4252,201 +4252,889 @@ export class PricingData06 {
             MaNa142: {
                 // totals
                 ItemPrice: 37.75,
-                baseline: {
-                    uom1: 'Case',
-                    qty1: 0,
-                    uom2: 'Each',
-                    qty2: 0,
-                    unitQuantity: 0,
-                    PriceTaxTotal: 40.0 * 0 + 8.0 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                    PriceTaxTotalDiff: 40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0), // BaseTotal - TaxTotal || operand2 - operand1 || operand1 -> Block=Tax , operand2 -> Block=Base
-                    PriceTaxTotalPercent: (1 - 40.0 / 40.0) * 100, // (1 - BaseTotal / TaxTotal) * 100 || (1 - operand2 / operand1) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                    PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand2 - operand1 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
-                    PriceBaseUnitPriceAfter1: 40.0,
-                    PriceDiscountUnitPriceAfter1: 40.0,
-                    PriceGroupDiscountUnitPriceAfter1: 40.0,
-                    PriceManualLineUnitPriceAfter1: 40.0,
-                    PriceTaxUnitPriceAfter1: 40.0,
-                    PriceDiscount2UnitPriceAfter1: 40.0,
-                    PriceBaseUnitPriceAfter2: 8.0,
-                    PriceDiscountUnitPriceAfter2: 8.0,
-                    PriceTaxUnitPriceAfter2: 8.0,
-                    NPMCalcMessage: [
-                        {
-                            Name: 'Base',
-                            Base: 0,
-                            Conditions: [
-                                { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
-                                { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
-                            ],
-                            New: 0,
-                            Amount: 0,
-                        },
-                    ],
+                Acc01: {
+                    baseline: {
+                        uom1: 'Case',
+                        qty1: 0,
+                        uom2: 'Each',
+                        qty2: 0,
+                        unitQuantity: 0,
+                        PriceTaxTotal: 40.0 * 0 + 8.0 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100 || (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 8.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                    },
+                    state1: {
+                        uom1: 'Case',
+                        qty1: 1,
+                        uom2: 'Each',
+                        qty2: 1,
+                        unitQuantity: 7,
+                        PriceTaxTotal: 40.0 * 1 + 8.0 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent:
+                            Math.floor((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 10000) /
+                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 8.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                    },
+                    state2: {
+                        uom1: 'Case',
+                        qty1: 3,
+                        uom2: 'Box',
+                        qty2: 4,
+                        unitQuantity: 3 * 6 + 4 * 24,
+                        PriceTaxTotal: 40.0 * 3 + 160.0 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 3 + 160.0 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent:
+                            Math.floor((1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 10000) /
+                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 160.0,
+                        PriceDiscountUnitPriceAfter2: 160.0,
+                        PriceTaxUnitPriceAfter2: 160.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 266,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 40,
+                                        Amount: 6,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 160,
+                                        Amount: 488,
+                                        Uom: ['BOX'],
+                                    },
+                                ],
+                                New: 760,
+                                Amount: 494,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 760,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -228,
+                                    },
+                                ],
+                                New: 532,
+                                Amount: -228,
+                            },
+                        ],
+                    },
                 },
-                state1: {
-                    uom1: 'Case',
-                    qty1: 1,
-                    uom2: 'Each',
-                    qty2: 1,
-                    unitQuantity: 7,
-                    PriceTaxTotal: 40.0 * 1 + 8.0 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                    PriceTaxTotalDiff: 40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1), // BaseTotal - TaxTotal || operand2 - operand1 || operand1 -> Block=Tax , operand2 -> Block=Base
-                    PriceTaxTotalPercent: (1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1)) * 100, // (1 - BaseTotal / TaxTotal) * 100 || (1 - operand2 / operand1) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                    PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand2 - operand1 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
-                    PriceBaseUnitPriceAfter1: 40.0,
-                    PriceDiscountUnitPriceAfter1: 40.0,
-                    PriceGroupDiscountUnitPriceAfter1: 40.0,
-                    PriceManualLineUnitPriceAfter1: 40.0,
-                    PriceTaxUnitPriceAfter1: 40.0,
-                    PriceDiscount2UnitPriceAfter1: 40.0,
-                    PriceBaseUnitPriceAfter2: 8.0,
-                    PriceDiscountUnitPriceAfter2: 8.0,
-                    PriceTaxUnitPriceAfter2: 8.0,
-                    NPMCalcMessage: [
-                        {
-                            Name: 'Base',
-                            Base: 0,
-                            Conditions: [
-                                { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
-                                { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
-                            ],
-                            New: 0,
-                            Amount: 0,
-                        },
-                    ],
-                },
-                state2: {
-                    uom1: 'Case',
-                    qty1: 3,
-                    uom2: 'Box',
-                    qty2: 4,
-                    unitQuantity: 3 * 6 + 4 * 24,
-                    PriceTaxTotal: 40.0 * 3 + 160.0 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                    PriceTaxTotalDiff: 40.0 * 3 + 160.0 * 4 - (40.0 * 3 + 160.0 * 4), // BaseTotal - TaxTotal || operand2 - operand1 || operand1 -> Block=Tax , operand2 -> Block=Base
-                    PriceTaxTotalPercent: (1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 3 + 160.0 * 4)) * 100, // (1 - BaseTotal / TaxTotal) * 100 || (1 - operand2 / operand1) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                    PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand2 - operand1 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
-                    PriceBaseUnitPriceAfter1: 40.0,
-                    PriceDiscountUnitPriceAfter1: 40.0,
-                    PriceGroupDiscountUnitPriceAfter1: 40.0,
-                    PriceManualLineUnitPriceAfter1: 40.0,
-                    PriceTaxUnitPriceAfter1: 40.0,
-                    PriceDiscount2UnitPriceAfter1: 40.0,
-                    PriceBaseUnitPriceAfter2: 160.0,
-                    PriceDiscountUnitPriceAfter2: 160.0,
-                    PriceTaxUnitPriceAfter2: 160.0,
-                    NPMCalcMessage: [
-                        {
-                            Name: 'Base',
-                            Base: 0,
-                            Conditions: [
-                                { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
-                                { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
-                            ],
-                            New: 0,
-                            Amount: 0,
-                        },
-                    ],
+                OtherAcc: {
+                    baseline: {
+                        uom1: 'Case',
+                        qty1: 0,
+                        uom2: 'Each',
+                        qty2: 0,
+                        unitQuantity: 0,
+                        PriceTaxTotal: 40.0 * 0 + 8.0 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100 || (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 8.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                    },
+                    state1: {
+                        uom1: 'Case',
+                        qty1: 1,
+                        uom2: 'Each',
+                        qty2: 1,
+                        unitQuantity: 7,
+                        PriceTaxTotal: 40.0 * 1 + 8.0 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent:
+                            Math.floor((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 10000) /
+                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 8.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                    },
+                    state2: {
+                        uom1: 'Case',
+                        qty1: 3,
+                        uom2: 'Box',
+                        qty2: 4,
+                        unitQuantity: 3 * 6 + 4 * 24,
+                        PriceTaxTotal: 40.0 * 3 + 160.0 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 3 + 160.0 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent:
+                            Math.floor((1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 10000) /
+                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 160.0,
+                        PriceDiscountUnitPriceAfter2: 160.0,
+                        PriceTaxUnitPriceAfter2: 160.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 266,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 40,
+                                        Amount: 6,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 160,
+                                        Amount: 488,
+                                        Uom: ['BOX'],
+                                    },
+                                ],
+                                New: 760,
+                                Amount: 494,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 760,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -228,
+                                    },
+                                ],
+                                New: 532,
+                                Amount: -228,
+                            },
+                        ],
+                    },
                 },
             },
             MaNa23: {
                 // totals
                 ItemPrice: 40.25,
-                baseline: {
-                    uom1: 'Case',
-                    qty1: 0,
-                    uom2: 'Each',
-                    qty2: 0,
-                    unitQuantity: 0,
-                    PriceTaxTotal: 40.0 * 0 + 8.0 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                    PriceTaxTotalDiff: 40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0), // BaseTotal - TaxTotal || operand2 - operand1 || operand1 -> Block=Tax , operand2 -> Block=Base
-                    PriceTaxTotalPercent: (1 - 40.0 / 40.0) * 100, // (1 - BaseTotal / TaxTotal) * 100 || (1 - operand2 / operand1) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                    PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand2 - operand1 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
-                    PriceBaseUnitPriceAfter1: 40.0,
-                    PriceDiscountUnitPriceAfter1: 40.0,
-                    PriceGroupDiscountUnitPriceAfter1: 40.0,
-                    PriceManualLineUnitPriceAfter1: 40.0,
-                    PriceTaxUnitPriceAfter1: 40.0,
-                    PriceDiscount2UnitPriceAfter1: 40.0,
-                    PriceBaseUnitPriceAfter2: 8.0,
-                    PriceDiscountUnitPriceAfter2: 8.0,
-                    PriceTaxUnitPriceAfter2: 8.0,
-                    NPMCalcMessage: [
-                        {
-                            Name: 'Base',
-                            Base: 0,
-                            Conditions: [
-                                { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
-                                { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
-                            ],
-                            New: 0,
-                            Amount: 0,
-                        },
-                    ],
+                Acc01: {
+                    baseline: {
+                        uom1: 'Case',
+                        qty1: 0,
+                        uom2: 'Each',
+                        qty2: 0,
+                        unitQuantity: 0,
+                        PriceTaxTotal: 48.0 * 0 + 9.6 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((48.0 * 0 + 9.6 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100 || (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 48.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 48.0, // PriceBaseUnitPriceAfter1 * 1.2 (Tax 20%) -> 40.0 * 1.2 -> 48.0
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 9.6, // PriceBaseUnitPriceAfter2 * 1.2 (Tax 20%) -> 8.0 * 1.2 -> 9.6
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 40,
+                                        Amount: 0,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 8,
+                                        Amount: 0,
+                                        Uom: ['EA'],
+                                    },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                            {
+                                Name: 'Tax',
+                                Base: 0,
+                                Conditions: [
+                                    {
+                                        Name: 'MTAX_A002',
+                                        Type: '%',
+                                        Value: 20,
+                                        Amount: 0,
+                                    },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                    },
+                    state1: {
+                        uom1: 'Case',
+                        qty1: 1,
+                        uom2: 'Each',
+                        qty2: 1,
+                        unitQuantity: 7,
+                        PriceTaxTotal: 48.0 * 1 + 9.6 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((48.0 * 1 + 9.6 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent:
+                            Math.floor((1 - (40.0 * 1 + 8.0 * 1) / (48.0 * 1 + 9.6 * 1) + Number.EPSILON) * 10000) /
+                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 48.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 48.0, // PriceBaseUnitPriceAfter1 * 1.2 (Tax 20%) -> 40.0 * 1.2 -> 48.0
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 9.6, // PriceBaseUnitPriceAfter2 * 1.2 (Tax 20%) -> 8.0 * 1.2 -> 9.6
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 80.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 40,
+                                        Amount: -0.25,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 8,
+                                        Amount: -32.25,
+                                        Uom: ['EA'],
+                                    },
+                                ],
+                                New: 48,
+                                Amount: -32.5,
+                            },
+                            {
+                                Name: 'Tax',
+                                Base: 48,
+                                Conditions: [
+                                    {
+                                        Name: 'MTAX_A002',
+                                        Type: '%',
+                                        Value: 20,
+                                        Amount: 9.6,
+                                    },
+                                ],
+                                New: 57.6,
+                                Amount: 9.6,
+                            },
+                        ],
+                    },
+                    state2: {
+                        uom1: 'Case',
+                        qty1: 2,
+                        uom2: 'Each',
+                        qty2: 3,
+                        unitQuantity: 7,
+                        PriceTaxTotal: 48.0 * 2 + 9.6 * 3, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((48.0 * 2 + 9.6 * 3 - (40.0 * 2 + 8.0 * 3) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent:
+                            Math.floor((1 - (40.0 * 2 + 8.0 * 3) / (48.0 * 2 + 9.6 * 3) + Number.EPSILON) * 10000) /
+                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 48.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 48.0, // PriceBaseUnitPriceAfter1 * 1.2 (Tax 20%) -> 40.0 * 1.2 -> 48.0
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 9.6, // PriceBaseUnitPriceAfter2 * 1.2 (Tax 20%) -> 8.0 * 1.2 -> 9.6
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 201.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 40,
+                                        Amount: -0.5,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 8,
+                                        Amount: -96.75,
+                                        Uom: ['EA'],
+                                    },
+                                ],
+                                New: 104,
+                                Amount: -97.25,
+                            },
+                            {
+                                Name: 'Tax',
+                                Base: 104,
+                                Conditions: [
+                                    {
+                                        Name: 'MTAX_A002',
+                                        Type: '%',
+                                        Value: 20,
+                                        Amount: 20.8,
+                                    },
+                                ],
+                                New: 124.8,
+                                Amount: 20.8,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 104,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -31.2,
+                                    },
+                                ],
+                                New: 72.8,
+                                Amount: -31.2,
+                            },
+                        ],
+                    },
                 },
-                state1: {
-                    uom1: 'Case',
-                    qty1: 1,
-                    uom2: 'Each',
-                    qty2: 1,
-                    unitQuantity: 7,
-                    PriceTaxTotal: 40.0 * 1 + 8.0 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                    PriceTaxTotalDiff: 40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1), // BaseTotal - TaxTotal || operand2 - operand1 || operand1 -> Block=Tax , operand2 -> Block=Base
-                    PriceTaxTotalPercent: (1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1)) * 100, // (1 - BaseTotal / TaxTotal) * 100 || (1 - operand2 / operand1) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                    PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand2 - operand1 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
-                    PriceBaseUnitPriceAfter1: 40.0,
-                    PriceDiscountUnitPriceAfter1: 40.0,
-                    PriceGroupDiscountUnitPriceAfter1: 40.0,
-                    PriceManualLineUnitPriceAfter1: 40.0,
-                    PriceTaxUnitPriceAfter1: 40.0,
-                    PriceDiscount2UnitPriceAfter1: 40.0,
-                    PriceBaseUnitPriceAfter2: 8.0,
-                    PriceDiscountUnitPriceAfter2: 8.0,
-                    PriceTaxUnitPriceAfter2: 8.0,
-                    NPMCalcMessage: [
-                        {
-                            Name: 'Base',
-                            Base: 0,
-                            Conditions: [
-                                { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
-                                { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
-                            ],
-                            New: 0,
-                            Amount: 0,
-                        },
-                    ],
+                OtherAcc: {
+                    baseline: {
+                        uom1: 'Case',
+                        qty1: 0,
+                        uom2: 'Each',
+                        qty2: 0,
+                        unitQuantity: 0,
+                        PriceTaxTotal: 40.0 * 0 + 8.0 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100 || (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 8.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 40,
+                                        Amount: 0,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 8,
+                                        Amount: 0,
+                                        Uom: ['EA'],
+                                    },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                    },
+                    state1: {
+                        uom1: 'Case',
+                        qty1: 1,
+                        uom2: 'Each',
+                        qty2: 1,
+                        unitQuantity: 7,
+                        PriceTaxTotal: 40.0 * 1 + 8.0 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent:
+                            Math.floor((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 10000) /
+                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 8.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 80.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 40,
+                                        Amount: -0.25,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 8,
+                                        Amount: -32.25,
+                                        Uom: ['EA'],
+                                    },
+                                ],
+                                New: 48,
+                                Amount: -32.5,
+                            },
+                        ],
+                    },
+                    state2: {
+                        uom1: 'Case',
+                        qty1: 2,
+                        uom2: 'Each',
+                        qty2: 3,
+                        unitQuantity: 7,
+                        PriceTaxTotal: 40.0 * 2 + 8.0 * 3, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 2 + 8.0 * 3 - (40.0 * 2 + 8.0 * 3) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent:
+                            Math.floor((1 - (40.0 * 2 + 8.0 * 3) / (40.0 * 2 + 8.0 * 3) + Number.EPSILON) * 10000) /
+                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 8.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 201.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 40,
+                                        Amount: -0.5,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 8,
+                                        Amount: -96.75,
+                                        Uom: ['EA'],
+                                    },
+                                ],
+                                New: 104,
+                                Amount: -97.25,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 104,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -31.2,
+                                    },
+                                ],
+                                New: 72.8,
+                                Amount: -31.2,
+                            },
+                        ],
+                    },
                 },
-                state2: {
-                    uom1: 'Case',
-                    qty1: 2,
-                    uom2: 'Each',
-                    qty2: 3,
-                    unitQuantity: 7,
-                    PriceTaxTotal: 40.0 * 2 + 8.0 * 3, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                    PriceTaxTotalDiff: 40.0 * 2 + 8.0 * 3 - (40.0 * 2 + 8.0 * 3), // BaseTotal - TaxTotal || operand2 - operand1 || operand1 -> Block=Tax , operand2 -> Block=Base
-                    PriceTaxTotalPercent: (1 - (40.0 * 2 + 8.0 * 3) / (40.0 * 2 + 8.0 * 3)) * 100, // (1 - BaseTotal / TaxTotal) * 100 || (1 - operand2 / operand1) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                    PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand2 - operand1 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
-                    PriceBaseUnitPriceAfter1: 40.0,
-                    PriceDiscountUnitPriceAfter1: 40.0,
-                    PriceGroupDiscountUnitPriceAfter1: 40.0,
-                    PriceManualLineUnitPriceAfter1: 40.0,
-                    PriceTaxUnitPriceAfter1: 40.0,
-                    PriceDiscount2UnitPriceAfter1: 40.0,
-                    PriceBaseUnitPriceAfter2: 8.0,
-                    PriceDiscountUnitPriceAfter2: 8.0,
-                    PriceTaxUnitPriceAfter2: 8.0,
-                    NPMCalcMessage: [
-                        {
-                            Name: 'Base',
-                            Base: 0,
-                            Conditions: [
-                                { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
-                                { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
-                            ],
-                            New: 0,
-                            Amount: 0,
-                        },
-                    ],
+            },
+            MaNa18: {
+                // totals
+                ItemPrice: 39.0,
+                Acc01: {
+                    baseline: {
+                        uom1: 'Case',
+                        qty1: 0,
+                        uom2: 'Each',
+                        qty2: 0,
+                        unitQuantity: 0,
+                        PriceTaxTotal: 40.0 * 0 + 8.0 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100 || (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 8.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                    },
+                    state1: {
+                        uom1: 'Case',
+                        qty1: 1,
+                        uom2: 'Each',
+                        qty2: 1,
+                        unitQuantity: 7,
+                        PriceTaxTotal: 40.0 * 1 + 8.0 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent:
+                            Math.floor((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 10000) /
+                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 8.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                    },
+                    state2: {
+                        uom1: 'Case',
+                        qty1: 3,
+                        uom2: 'Box',
+                        qty2: 4,
+                        unitQuantity: 3 * 6 + 4 * 24,
+                        PriceTaxTotal: 40.0 * 3 + 160.0 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 3 + 160.0 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent:
+                            Math.floor((1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 10000) /
+                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 160.0,
+                        PriceDiscountUnitPriceAfter2: 160.0,
+                        PriceTaxUnitPriceAfter2: 160.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 266,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 40,
+                                        Amount: 6,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 160,
+                                        Amount: 488,
+                                        Uom: ['BOX'],
+                                    },
+                                ],
+                                New: 760,
+                                Amount: 494,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 760,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -228,
+                                    },
+                                ],
+                                New: 532,
+                                Amount: -228,
+                            },
+                        ],
+                    },
+                },
+                OtherAcc: {
+                    baseline: {
+                        uom1: 'Case',
+                        qty1: 0,
+                        uom2: 'Each',
+                        qty2: 0,
+                        unitQuantity: 0,
+                        PriceTaxTotal: 40.0 * 0 + 8.0 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100 || (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 8.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                    },
+                    state1: {
+                        uom1: 'Case',
+                        qty1: 1,
+                        uom2: 'Each',
+                        qty2: 1,
+                        unitQuantity: 7,
+                        PriceTaxTotal: 40.0 * 1 + 8.0 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent:
+                            Math.floor((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 10000) /
+                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0,
+                        PriceTaxUnitPriceAfter2: 8.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                    },
+                    state2: {
+                        uom1: 'Case',
+                        qty1: 3,
+                        uom2: 'Box',
+                        qty2: 4,
+                        unitQuantity: 3 * 6 + 4 * 24,
+                        PriceTaxTotal: 40.0 * 3 + 160.0 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotalDiff:
+                            Math.round((40.0 * 3 + 160.0 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent:
+                            Math.floor((1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 10000) /
+                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceBaseUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceGroupDiscountUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0,
+                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceDiscount2UnitPriceAfter1: 40.0,
+                        PriceBaseUnitPriceAfter2: 160.0,
+                        PriceDiscountUnitPriceAfter2: 160.0,
+                        PriceTaxUnitPriceAfter2: 160.0,
+                        NPMCalcMessage: [
+                            {
+                                Name: 'Base',
+                                Base: 266,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 40,
+                                        Amount: 6,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A005',
+                                        Type: 'S',
+                                        Value: 160,
+                                        Amount: 488,
+                                        Uom: ['BOX'],
+                                    },
+                                ],
+                                New: 760,
+                                Amount: 494,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 760,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -228,
+                                    },
+                                ],
+                                New: 532,
+                                Amount: -228,
+                            },
+                        ],
+                    },
                 },
             },
         },
