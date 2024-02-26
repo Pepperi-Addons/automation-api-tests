@@ -161,7 +161,7 @@ export async function UDC300KTests(generalService: GeneralService, request, test
                 expect(lineStats.Inserted).to.equal(howManyRows);
                 generalService.sleep(1000 * 150); //let PNS Update
                 for (let index = 1; index <= 100; index++) {
-                    console.log(`searching for 250 rows for the ${index} time - out of out of 100 sampling batch`);
+                    console.log(`searching for 250 rows for the ${index} time - out of 100 sampling batch`);
                     const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
                         dimxOverWriteCollectionName,
                         index,

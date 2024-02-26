@@ -178,6 +178,7 @@ export class DevTest {
             );
         }
         //2. get dependencys of tested addon
+        debugger;
         const addonDep = await this.getDependenciesOfAddon(service, this.addonUUID, varPass);
         //3. install dependencys
         if (addonDep !== undefined && addonDep.length !== 0) {
@@ -1382,6 +1383,7 @@ export class DevTest {
     }
 
     async getDependenciesOfAddon(service: GeneralService, addonUUID, varPass) {
+        debugger;
         const latestVer = (
             await service.fetchStatus(
                 `${service['client'].BaseURL.replace(
@@ -1410,7 +1412,13 @@ export class DevTest {
         const allAddonDependencys = await service.fetchStatus('/configuration_fields?key=AddonsForDependencies');
         const allAddonDependencysAsObject = JSON.parse(allAddonDependencys.Body.Value);
         const arrayOfAllUUIDs: any[] = [];
+        debugger;
         for (const dependecyAddon in dependenciesFromPublishConfig) {
+            if (allAddonDependencysAsObject[dependecyAddon] === undefined) {
+                throw new Error(
+                    `Error: The Name: '${dependecyAddon}' Is Not A Real Dependency Name, Call: /configuration_fields?key=AddonsForDependencies And See`,
+                );
+            }
             const depObj = {};
             depObj[dependecyAddon] = [allAddonDependencysAsObject[dependecyAddon], ''];
             arrayOfAllUUIDs.push(depObj);
