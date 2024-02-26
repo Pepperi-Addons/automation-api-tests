@@ -1153,7 +1153,7 @@ export class DevTest {
                 return await this.adminBaseUserGeneralService.getSecretfromKMS(
                     this.adminBaseUserEmail,
                     this.adminBaseUserPass,
-                    'ADALTeamsWebHook',
+                    'CPIDataTeamsWebHook',
                 );
             case 'CORE': //new teams
             case 'CORE-GENERIC-RESOURCES':
