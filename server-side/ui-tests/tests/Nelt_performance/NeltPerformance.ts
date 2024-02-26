@@ -17,6 +17,11 @@ export class NeltPerformance extends AddonPage {
     public ViewTypeOption: By = By.xpath(`//span[text()='|textToFill|']`);
     public KupciButtonAtHome: By = By.xpath('//button[@id="mainButton"]');
     public FirstAccountInList: By = By.xpath('//virtual-scroller//fieldset//span[@id="Name"]');
+    public ItemNameOfFirstListingAtOrderCenter_GridLineView: By = By.xpath(
+        '//div[contains(@class,"table-row")]/fieldset/pep-form/fieldset/div[contains(@class,"table-cell")][6]//pep-textbox/span',
+    );
+    public OrderCenter_SortByButton: By = By.xpath('//sort-by/button');
+    public DropDown_Menu: By = By.xpath('//div[contains(@id,"cdk-overlay-")]/div[@role="menu"]');
     public AccountDashboard_PlusButton: By = By.xpath('//list-menu[@data-qa="secondMenu"]//button');
     public AccountDashboard_BurgerMenu: By = By.xpath('//list-menu[@data-qa="firstMenu"]//button');
     public Image_Label: By = By.xpath(`//pep-list//label[@id="Image"]`);
@@ -39,6 +44,10 @@ export class NeltPerformance extends AddonPage {
     public VisitFlow_singleVisit_container: By = By.xpath('//div[contains(@class,"visit-container")]');
     public VisitFlow_singleVisit_step: By = By.xpath('//div[contains(@class,"group-steps")]//pep-button');
     public VisitFlow_StartButton: By = By.xpath('//div[contains(@class,"group-steps")]//pep-button');
+    public VisitFlow_GroupButton_End_disabled: By = By.xpath(
+        '//visit-details//div[contains(@class,"flow-groups")]//button[@data-qa="Kraj posete"][@disabled="true"]',
+    );
+    public VisitFlow_StartEnd_Form_indication: By = By.xpath('//div[@title="The Main Activity for the visit flow"]');
     public DatePicker_container: By = By.xpath('//mat-datetimepicker-content');
     public DatePicker_highlightedDate: By = By.xpath(
         `${this.DatePicker_container.value}//td[@role="button"][contains(@class,"active")]`,
@@ -64,13 +73,15 @@ export class NeltPerformance extends AddonPage {
     public TopBar_Right_StartButtton: By = By.xpath(
         `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Start"]`,
     );
-
+    public TopBar_Right_StartButtton_disabled: By = By.xpath(
+        `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Start"][@disabled="true"]`,
+    );
     public TopBar_Right_SubmitButtton_atCart: By = By.xpath(
         `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Submit"]`,
     );
 
     public TopBar_Right_PutOnHoldButtton_atCart: By = By.xpath(
-        `${this.TopBar_RightContainer.value}//app-workflow//button[@data-qa="Put On Hold"]`,
+        `${this.TopBar_RightContainer.value}//app-workflow//button[contains(@data-qa,"n Hold")]`,
     );
 
     public TopBar_Right_SendButtton_atCart: By = By.xpath(
@@ -80,7 +91,12 @@ export class NeltPerformance extends AddonPage {
     public Information_popup: By = By.xpath(
         '//mat-dialog-container//div[contains(@id,"mat-dialog-title-")]/span[contains(text(),"Information")]',
     );
-    public PepDialog_message: By = By.xpath('//mat-dialog-container//pep-dialog/div[2]/div');
+    public PepDialog: By = By.xpath('//mat-dialog-container//pep-dialog');
+    public PepDialog_title: By = By.xpath(`${this.PepDialog.value}//div[contains(@id,"mat-dialog-title-")]/span`);
+    public PepDialog_message: By = By.xpath(`${this.PepDialog.value}//div[contains(@class,"mat-dialog-content")]/div`);
+    public PepDialog_buttonsContainer: By = By.xpath(
+        `${this.PepDialog.value}//div[contains(@class,"mat-dialog-actions")]/div`,
+    );
     public PepDialog_Cancel_button: By = By.xpath(
         '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"Cancel")]/parent::button',
     );
@@ -156,6 +172,30 @@ export class NeltPerformance extends AddonPage {
         `//pep-list//fieldset[contains(@class,"table-header-fieldset")]//fieldset//label[@id="returnYTD"]`,
     );
 
+    public SmartFilter_Principal_Nestle_label: By = By.xpath(
+        `//span[contains(text(),"Nestle")]/ancestor::label[contains(@class,"mat-checkbox-layout")]`,
+    );
+    public SmartFilter_Principal_Nestle_checkbox: By = By.xpath(
+        `${this.SmartFilter_Principal_Nestle_label.value}//input[contains(@id,"mat-checkbox-")]/parent::span`,
+    );
+    public SmartFilter_Principal_Nestle_input_checked: By = By.xpath(
+        `${this.SmartFilter_Principal_Nestle_label.value}//input[contains(@id,"mat-checkbox-")][@aria-checked="true"]`,
+    );
+    public SmartFilter_Principal_Nestle_num: By = By.xpath(
+        `${this.SmartFilter_Principal_Nestle_label.value}//span[contains(@class,"mat-checkbox-label")]/div[contains(@class,"title")]/span[2]`,
+    );
+    public SmartFilter_Principal_ApplyButton: By = By.xpath(
+        `${this.SmartFilter_Principal_Nestle_label.value}//span[contains(@class,"mat-checkbox-label")]/div[contains(@class,"title")]/span[2]`,
+    );
+
+    public getPepDialogButtonByText(text: string) {
+        return By.xpath(`${this.PepDialog_buttonsContainer.value}//span[contains(text(),"${text}")]/parent::button`);
+    }
+
+    public getSelectorOfDropdownItemByText(text: string) {
+        return By.xpath(`${this.DropDown_Menu.value}//span[contains(text(),"${text}")]/parent::button`);
+    }
+
     public getSelectorOfHomeHamburgerMenuItemByName(name: string) {
         return By.xpath(`//span[contains(text(),"${name}")]/parent::button[@role="menuitem"]`);
     }
@@ -216,7 +256,7 @@ export class NeltPerformance extends AddonPage {
         return By.xpath(
             `//span[@title="${
                 filterName || ''
-            }"]/ancestor::mat-expansion-panel/pep-filter-actions//button[contains(text(),"${buttonText || ''}")]`,
+            }"]/ancestor::mat-expansion-panel//pep-filter-actions//button[contains(text(),"${buttonText || ''}")]`,
         );
     }
 

@@ -106,6 +106,7 @@ import { DevTest } from './DevTests';
 import { XTimesSync } from './XTimesSyncE2E.test';
 import { IdosPapiTests } from './ido_papi_tests.test';
 import { AdalBigDataTestser } from '../../api-tests/adal_big_data';
+import { CreateDistributorSystemTests } from './create_distributor_SYSTEM.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -224,7 +225,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         }
     });
 
-    if (tests.includes('Reset')) {
+    if (tests === 'Reset') {
         //Reset the needed UI Controls for the UI tests.
         await replaceUIControlsTests(this, generalService);
 
@@ -233,19 +234,25 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
 
         await newUserDependenciesTests(generalService, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('Sanity')) {
+    if (tests === 'Sanity') {
         await LoginTests(email, pass);
         await OrderTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('XTimesSync')) {
+    if (tests === 'XTimesSync') {
         await XTimesSync(email, pass, client, XForSyncTimes);
+        run();
+        return;
     }
 
-    if (tests.includes('FlowBuilder')) {
+    if (tests === 'FlowBuilder') {
         await FlowTests(email, pass, client, {
             body: {
                 varKeyStage: varPass,
@@ -254,6 +261,8 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             },
         });
         await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
     // if (tests.includes('evgeny')) {
@@ -267,7 +276,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     //     await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
     // }
 
-    if (tests.includes('UDCImportExport')) {
+    if (tests === 'UDCImportExport') {
         await UDCImportExportTests(
             generalService,
             {
@@ -280,11 +289,13 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         ); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
     //->
 
-    if (tests.includes('UDC300KOverwrite')) {
+    if (tests === 'UDC300KOverwrite') {
         await UDC300KTestser(
             generalService,
             {
@@ -297,9 +308,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         ); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('UDC150KOverwrite')) {
+    if (tests === 'UDC150KOverwrite') {
         await UDC150KOverwriteTestser(
             generalService,
             {
@@ -312,9 +325,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         ); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('UDC100KOverwrite')) {
+    if (tests === 'UDC100KOverwrite') {
         await UDC100KOverwriteTestser(
             generalService,
             {
@@ -327,9 +342,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         ); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('Dimx300KUpload')) {
+    if (tests === 'Dimx300KUpload') {
         await ImportLimitCSVAdalFromDimx(client, {
             body: {
                 varKeyStage: varPass,
@@ -338,9 +355,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             },
         }); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('Dimx250KUpload')) {
+    if (tests === 'Dimx250KUpload') {
         await Import250KToAdalFromDimx(client, {
             body: {
                 varKeyStage: varPass,
@@ -349,9 +368,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             },
         }); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('Dimx200KUpload')) {
+    if (tests === 'Dimx200KUpload') {
         await Import200KToAdalFromDimx(client, {
             body: {
                 varKeyStage: varPass,
@@ -360,9 +381,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             },
         }); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('Dimx150KUpload')) {
+    if (tests === 'Dimx150KUpload') {
         await Import150KToAdalFromDimx(client, {
             body: {
                 varKeyStage: varPass,
@@ -371,9 +394,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             },
         }); //
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('Scheduler')) {
+    if (tests === 'Scheduler') {
         await SchedulerTester(
             generalService,
             {
@@ -386,29 +411,39 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions, undefined, true);
+        run();
+        return;
     }
 
-    if (tests.includes('Workflow')) {
+    if (tests === 'Workflow') {
         await WorkflowTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('DeepLink')) {
+    if (tests === 'DeepLink') {
         await DeepLinkTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('Promotion')) {
+    if (tests === 'Promotion') {
         await PromotionTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('Security')) {
+    if (tests === 'Security') {
         await SecurityPolicyTests(email, pass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('Create')) {
+    if (tests === 'Create') {
         debugger;
         if (userNameCreate && passCreate) {
             await CreateDistributorTests(generalService, varPass, varPassEU, userNameCreate, passCreate);
@@ -417,243 +452,361 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             await CreateDistributorTests(generalService, varPass, varPassEU);
             await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         }
+        run();
+        return;
+    }
+
+    if (tests === 'Create_SYSTEM') {
+        await CreateDistributorSystemTests(generalService, varPass, varPassEU, userNameCreate, passCreate);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
     if (tests === 'Uom') {
         await UomTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('CloseCatalog')) {
+    if (tests === 'CloseCatalog') {
         await CloseCatalogTest(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('PageBuilder')) {
+    if (tests === 'PageBuilder') {
         await PageBuilderTests(email, pass, varPass, generalService);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('DataPrepRL')) {
+    if (tests === 'DataPrepRL') {
         await RLdataPrep(varPass, client);
+        run();
+        return;
     }
 
-    if (tests.includes('DataPrepVF')) {
+    if (tests === 'DataPrepVF') {
         await VFdataPrep(varPass, client);
+        run();
+        return;
     }
 
-    if (tests.includes('ResourceList')) {
+    if (tests === 'ResourceList') {
         // await RLdataPrep(client);
         await ResourceListTests(email, pass, varPass, client);
+        run();
+        return;
     }
 
-    if (tests.includes('AbiRL')) {
+    if (tests === 'AbiRL') {
         await ResourceListAbiTests(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('VisitFlow')) {
+    if (tests === 'VisitFlow') {
         await VFdataPrep(varPass, client);
         await VisitFlowTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
     if (tests === 'PricingSet') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'PricingCleanUdt') {
+        await PricingUdtCleanup(client);
+        run();
+        return;
+    }
+
+    if (tests === 'PricingUploadConfig') {
+        await PricingConfigUpload(client, email, pass);
+        run();
+        return;
     }
 
     if (tests === 'Pricing') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingBaseTests(email, pass, client);
         await PricingAdditionalGroupsReadonlyTests(email, pass, client);
-        // await PricingUomTests(email, pass, client);
-        // await PricingTotalsTests(email, pass, client);
+        await PricingUomTests(email, pass, client);
+        await PricingTotalsTests(email, pass, client);
         // await PricingMultipleValuesTests(email, pass, client);
         await PricingPartialValueTests(email, pass, client);
         // await PricingExclusionTests(email, pass, client);
         await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
     if (tests === 'PricingBase') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingBaseTests(email, pass, client);
         await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
     if (tests === 'PricingAdditional') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingAdditionalGroupsReadonlyTests(email, pass, client);
         await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
     if (tests === 'PricingUom') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingUomTests(email, pass, client);
         await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
     if (tests === 'PricingTotals') {
-        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingUdtCleanup(client);
+        // await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingTotalsTests(email, pass, client);
-        await PricingUdtCleanup(client);
+        // await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
     if (tests === 'PricingMulti') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingMultipleValuesTests(email, pass, client);
         await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
     if (tests === 'PricingPartial') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingPartialValueTests(email, pass, client);
         await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
     if (tests === 'PricingExclusion') {
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingExclusionTests(email, pass, client);
         await PricingUdtCleanup(client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookAttachment')) {
+    if (tests === 'StorybookAttachment') {
         await StorybookAttachmentTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookButton')) {
+    if (tests === 'StorybookButton') {
         await StorybookButtonTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookCheckbox')) {
+    if (tests === 'StorybookCheckbox') {
         await StorybookCheckboxTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookChips')) {
+    if (tests === 'StorybookChips') {
         await StorybookChipsTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookColorPicker')) {
+    if (tests === 'StorybookColorPicker') {
         await StorybookColorPickerTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookDateTime')) {
+    if (tests === 'StorybookDateTime') {
         await StorybookDateTimeTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookDraggableItems')) {
+    if (tests === 'StorybookDraggableItems') {
         await StorybookDraggableItemsTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookGroupButtons')) {
+    if (tests === 'StorybookGroupButtons') {
         await StorybookGroupButtonsTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookIcon')) {
+    if (tests === 'StorybookIcon') {
         await StorybookIconTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookImageFilmstrip')) {
+    if (tests === 'StorybookImageFilmstrip') {
         await StorybookImageFilmstripTests();
+        run();
+        return;
     }
 
     if (tests === 'StorybookImage') {
         await StorybookImageTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookLink')) {
+    if (tests === 'StorybookLink') {
         await StorybookLinkTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookMenu')) {
+    if (tests === 'StorybookMenu') {
         await StorybookMenuTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookQuantitySelector')) {
+    if (tests === 'StorybookQuantitySelector') {
         await StorybookQuantitySelectorTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookRichHtmlTextarea')) {
+    if (tests === 'StorybookRichHtmlTextarea') {
         await StorybookRichHtmlTextareaTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookSearch')) {
+    if (tests === 'StorybookSearch') {
         await StorybookSearchTests();
+        run();
+        return;
     }
 
     if (tests === 'StorybookSelect') {
         await StorybookSelectTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookSelectPanel')) {
+    if (tests === 'StorybookSelectPanel') {
         await StorybookSelectPanelTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookSeparator')) {
+    if (tests === 'StorybookSeparator') {
         await StorybookSeparatorTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookSignature')) {
+    if (tests === 'StorybookSignature') {
         await StorybookSignatureTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookSkeletonLoader')) {
+    if (tests === 'StorybookSkeletonLoader') {
         await StorybookSkeletonLoaderTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookSlider')) {
+    if (tests === 'StorybookSlider') {
         await StorybookSliderTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookTextarea')) {
+    if (tests === 'StorybookTextarea') {
         await StorybookTextareaTests();
+        run();
+        return;
     }
 
-    if (tests.includes('StorybookTextbox')) {
+    if (tests === 'StorybookTextbox') {
         await StorybookTextboxTests();
+        run();
+        return;
     }
 
-    if (tests.includes('NeltPerformance')) {
+    if (tests === 'NeltPerformance') {
         // await NeltPerformanceTests(email, pass);
         await NeltPerformanceTests(email, pass, client);
+        run();
+        return;
     }
 
-    if (tests.includes('MockTest')) {
+    if (tests === 'MockTest') {
         await MockTest(email, pass, client);
         // await ResourceListTests(email, pass, varPass, client);
+        run();
+        return;
     }
 
-    if (tests.includes('InstallationsTest')) {
+    if (tests === 'InstallationsTest') {
         await InstallationsTest(varPass, client);
+        run();
+        return;
     }
 
-    if (tests.includes('Distributor')) {
+    if (tests === 'Distributor') {
         await DistributorTests(
             generalService,
             {
@@ -666,9 +819,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('DimxAPI')) {
+    if (tests === 'DimxAPI') {
         await AddonDataImportExportTests(
             generalService,
             {
@@ -681,9 +836,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('PfsAPI')) {
+    if (tests === 'PfsAPI') {
         await PFSTestser(
             generalService,
             {
@@ -696,9 +853,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('ApiUDC')) {
+    if (tests === 'ApiUDC') {
         await UDCTestser(
             generalService,
             {
@@ -711,9 +870,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('maintenance3API')) {
+    if (tests === 'maintenance3API') {
         const service = new GeneralService(client);
         const testerFunctions = service.initiateTesterFunctions(client, 'maintenance3API');
         await maintenance3APITestser(
@@ -728,9 +889,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             testerFunctions,
         );
         await TestDataTests(generalService, testerFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('AsyncAddonGetRemoveCodeJobsCLI')) {
+    if (tests === 'AsyncAddonGetRemoveCodeJobsCLI') {
         await AsyncAddonGetRemoveTestser(
             generalService,
             {
@@ -743,9 +906,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('StopRestart_Async')) {
+    if (tests === 'StopRestart_Async') {
         await SchedulerTester_Part2(
             generalService,
             {
@@ -758,9 +923,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('DimxDataImport')) {
+    if (tests === 'DimxDataImport') {
         await DimxDataImportTestsTestser(
             generalService,
             {
@@ -773,9 +940,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('DimxPerformance')) {
+    if (tests === 'DimxPerformance') {
         await AddonDataImportExportPerformanceTests(
             generalService,
             {
@@ -788,9 +957,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('DimxReference')) {
+    if (tests === 'DimxReference') {
         await AddonDataImportExportReferenceTests(
             generalService,
             {
@@ -803,34 +974,48 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('UdcUI')) {
+    if (tests === 'UdcUI') {
         await UDCTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
-    if (tests.includes('IdoPapi')) {
+    if (tests === 'IdoPapi') {
         await IdosPapiTests(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
-    if (tests.includes('SyncE2E')) {
+    if (tests === 'SyncE2E') {
         await SyncTests(email, pass, client, varPass);
         await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
 
-    if (tests.includes('Survey')) {
+    if (tests === 'Survey') {
         await SurveyTests(email, pass, client, varPass); //
         await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
-    if (tests.includes('NGX_POC')) {
+    if (tests === 'NGX_POC') {
         await NgxLibPOC(); // all is needed is the client for general service as were not using an actual pepperi user
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
-    if (tests.includes('login_performance')) {
+    if (tests === 'login_performance') {
         await LoginPerfTests(email, pass, varPass, client, varPassEU);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
-    if (tests.includes('uninstall_addon_from_all_auto_users')) {
+    if (tests === 'uninstall_addon_from_all_auto_users') {
         if (!whichEnvToRun) {
             throw new Error(`Error: You Have To Pass '--envs=' To Run This Job`);
         }
@@ -858,16 +1043,22 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             envsAsArrayCapital,
             whichAddonToUninstall,
         );
+        run();
+        return;
     }
-    if (tests.includes('login_perf_sqlite')) {
+    if (tests === 'login_perf_sqlite') {
         await LoginPerfSqlitefTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
-    if (tests.includes('login_perf_reload')) {
+    if (tests === 'login_perf_reload') {
         await LoginPerfTestsReload(email, pass, varPass, client, varPassEU);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
-    if (tests.includes('aws_logs')) {
+    if (tests === 'aws_logs') {
         await AWSLogsTester(
             generalService,
             {
@@ -880,8 +1071,9 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
     }
-    if (tests.includes('big_data_adal')) {
+    if (tests === 'big_data_adal') {
         await AdalBigDataTestser(
             generalService,
             {
@@ -894,10 +1086,12 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             { describe, expect, it } as TesterFunctions,
         );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
     }
     ///////////////////////~~~CI/CD Flow~~~///////////////////////////////////
     //****EVGENY: this code (VVV**DOWN-HERE**VVV) is ****temporary**** !!!!!! ---> once we will realize how nebula should work - with neptune or neo4J this will become redundant and nebula will run as any-other addon
-    if (tests.includes('Jenkins_Neptune')) {
+    if (tests === 'Jenkins_Neptune') {
         let isLocal = true;
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
         if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
@@ -1223,9 +1417,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             );
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
         }
+        run();
+        return;
     }
     //****EVGENY: this is the actual CI/CD code for most addons ||| Nebula will be 'merged' here once it'll run as other addons
-    if (tests.includes('Remote_Jenkins_Handler')) {
+    if (tests === 'Remote_Jenkins_Handler') {
         let isLocal = true;
         //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
         if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
@@ -1299,12 +1495,10 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
                 numOfTests = testsList.length;
             }
             console.log(`####################### Got ${numOfTests} Tests #######################`);
-            process.stdout.write(`Array Of Tests:`);
+            console.log(`Array Of Tests:`);
             if (devTest.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
-                process.stdout.write(`Array Of Tests ADAL:`);
-                console.log(`[${testsList.ADAL}]`);
-                process.stdout.write(`Array Of Tests Data Index:`);
-                console.log(`[${testsList.DataIndex}]`);
+                console.log(`Array Of Tests ADAL Tests: [${testsList.ADAL}]`);
+                console.log(`Array Of Tests Data Index Tests: [${testsList.DataIndex}]`);
             } else {
                 console.log(`[${testsList}]`);
             }
@@ -2017,8 +2211,11 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
             pathSBEx,
             latestRunSBEx,
         );
+        run();
+        return;
+    } else {
+        throw new Error(`Error: No Test Named: '${tests}' Found On CLI Test Index!`);
     }
-    run();
 })();
 
 export async function handleTeamsURL(addonName, service, email, pass) {
@@ -2034,14 +2231,14 @@ export async function handleTeamsURL(addonName, service, email, pass) {
             return await service.getSecretfromKMS(email, pass, 'JourneyTeamsWebHook');
         case 'SYNC':
             return await service.getSecretfromKMS(email, pass, 'SyncTeamsWebHook');
-        case 'ADAL': //new teams
+        case 'ADAL':
             return await service.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
         case 'NEBULA':
-        case 'FEBULA': //new teams
+        case 'FEBULA':
             return await service.getSecretfromKMS(email, pass, 'NebulaTeamsWebHook');
         case 'DIMX':
             return await service.getSecretfromKMS(email, pass, 'DIMXTeamsWebHook');
-        case 'DATA INDEX': //new teams
+        case 'DATA INDEX':
         case 'DATA-INDEX':
             return await service.getSecretfromKMS(email, pass, 'DataIndexTeamsWebHook');
         case 'PFS':
@@ -2054,13 +2251,14 @@ export async function handleTeamsURL(addonName, service, email, pass) {
             return await service.getSecretfromKMS(email, pass, 'UDCTeamsWebHook');
         case 'SCHEDULER':
             return await service.getSecretfromKMS(email, pass, 'SchedulerTeamsWebHook');
-        case 'CPI-DATA': //new teams
+        case 'CPI-DATA':
         case 'CPI DATA':
+        case 'ADDONS-CPI-DATA':
             return await service.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
-        case 'CORE': //new teams
+        case 'CORE':
         case 'CORE-GENERIC-RESOURCES':
             return await service.getSecretfromKMS(email, pass, 'CORETeamsWebHook');
-        case 'RESOURCE-LIST': //new teams
+        case 'RESOURCE-LIST':
         case 'RESOURCE LIST':
             return await service.getSecretfromKMS(email, pass, 'ResourceListTeamsWebHook');
         case 'UDB':
@@ -2070,10 +2268,10 @@ export async function handleTeamsURL(addonName, service, email, pass) {
             return await service.getSecretfromKMS(email, pass, 'CONFIGURATIONSTeamsWebHook');
         case 'RELATED-ITEMS':
             return await service.getSecretfromKMS(email, pass, 'RelatedItemsTeamsWebHook');
-        case 'GENERIC-RESOURCE': //new teams
+        case 'GENERIC-RESOURCE':
         case 'GENERIC RESOURCE':
             return await service.getSecretfromKMS(email, pass, 'GenericResourceTeamsWebHook');
-        case 'NODE': //new teams
+        case 'NODE':
         case 'CPI-NODE':
             return await service.getSecretfromKMS(email, pass, 'CPINodeTeamsWebHook');
         case 'CRAWLER':
@@ -2477,12 +2675,14 @@ export async function reportToTeams(
     } else {
         //include new results printing here and copy the function to app-tests class
         debugger;
-        const failedTestsOrdered = failedAppTests.map((element) => `${element.env}: ${element.text}`);
+        const failedTestsOrdered: string[] = failedAppTests.map((element) => `${element.env}: ${element.text}`);
         debugger;
         message = `QA Approvment Test: ${addonName} - (${addonUUID}), Version: ${addonVersion} ||| ${
             passingEnvs.length === 0 ? '' : 'Passed On: ' + passingEnvs.join(', ') + '|||'
         }  ${failingEnvs.length === 0 ? '' : 'Failed On: ' + failingEnvs.join(', ')}`;
-        message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console<br><br>Failed Tests:<br>${failedTestsOrdered.toString()}`;
+        message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console<br><br>${
+            failedTestsOrdered.length > 0 ? 'Failed Tests:<br>' : ''
+        }${failedTestsOrdered.toString()}`;
         debugger;
     }
     const bodyToSend = {

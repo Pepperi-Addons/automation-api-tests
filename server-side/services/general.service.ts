@@ -23,7 +23,7 @@ import * as path from 'path';
 export const testData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON --
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version --
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi --
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.50'], //cpapi --
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.30.%'], //CPAS --
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //EVGENY 21/12/23: new node version
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
@@ -87,7 +87,7 @@ export const testDataWithNewSync = {
 export const testDataForInitUser = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on newest
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.50'], //cpapi
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.20.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi-node (Cross Platform Engine)
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.%'], //NG14 latest webapp
@@ -463,6 +463,14 @@ export default class GeneralService {
         const getToken = await this.getToken(email, pass);
 
         return this.createClient(getToken.access_token);
+    }
+
+    returnXRandomElementsFromArray(array: any[], X: number): any[] {
+        // Shuffle array
+        const shuffled = array.sort(() => 0.5 - Math.random());
+        // Get sub-array of first n elements after shuffled
+        const selected = shuffled.slice(0, X);
+        return selected;
     }
 
     private async getToken(email: any, pass: any) {

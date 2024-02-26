@@ -87,7 +87,7 @@ export class NeltPerformanceService {
         driver.sleep(0.1 * 1000);
         await searchInput.sendKeys(nameOfItem + '\n');
         driver.sleep(0.5 * 1000);
-        await driver.click(neltPerformanceSelectors.HtmlBody);
+        // await driver.click(neltPerformanceSelectors.HtmlBody);
         driver.sleep(0.1 * 1000);
         await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
         driver.sleep(0.1 * 1000);
@@ -95,6 +95,26 @@ export class NeltPerformanceService {
         const base64Image = await driver.saveScreenshots();
         addContext(this, {
             title: `At Accounts - after Search for "${nameOfItem}"`,
+            value: 'data:image/png;base64,' + base64Image,
+        });
+    }
+
+    public async searchInOrderCenter(this: Context, driver: Browser, nameOfItem: string): Promise<void> {
+        const neltPerformanceSelectors = new NeltPerformance(driver);
+        await neltPerformanceSelectors.isSpinnerDone();
+        const searchInput = await driver.findElement(neltPerformanceSelectors.Search_Input);
+        await searchInput.clear();
+        driver.sleep(0.1 * 1000);
+        await searchInput.sendKeys(nameOfItem + '\n');
+        driver.sleep(0.5 * 1000);
+        // await driver.click(neltPerformanceSelectors.HtmlBody);
+        driver.sleep(0.1 * 1000);
+        await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
+        driver.sleep(0.1 * 1000);
+        await neltPerformanceSelectors.isSpinnerDone();
+        const base64Image = await driver.saveScreenshots();
+        addContext(this, {
+            title: `At Order Center - after Search for "${nameOfItem}"`,
             value: 'data:image/png;base64,' + base64Image,
         });
     }
@@ -117,11 +137,12 @@ export class NeltPerformanceService {
         const searchInput = await driver.findElement(neltPerformanceSelectors.Search_Input);
         await searchInput.clear();
         driver.sleep(0.1 * 1000);
-        await searchInput.sendKeys(accountID + '\n');
+        accountID && (await searchInput.sendKeys(accountID + '\n'));
         driver.sleep(0.5 * 1000);
-        await driver.click(neltPerformanceSelectors.HtmlBody);
+        // await driver.click(neltPerformanceSelectors.HtmlBody);
+        await driver.click(neltPerformanceSelectors.TopBarContainer);
         driver.sleep(0.1 * 1000);
-        await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
+        accountID && (await driver.click(neltPerformanceSelectors.Search_Magnifier_Button));
         driver.sleep(0.1 * 1000);
         await neltPerformanceSelectors.isSpinnerDone();
         base64Image = await driver.saveScreenshots();
@@ -174,13 +195,31 @@ export class NeltPerformanceService {
             value: 'data:image/png;base64,' + base64ImageComponent,
         });
         await driver.untilIsVisible(neltPerformanceSelectors.HomeMenuDropdown);
-        await driver.click(neltPerformanceSelectors.getSelectorOfAccountDashboardPlusButtonMenuItemByName(nameOfItem));
-        await neltPerformanceSelectors.isSpinnerDone();
-        base64ImageComponent = await driver.saveScreenshots();
-        addContext(this, {
-            title: `"${nameOfItem}" chosen`,
-            value: 'data:image/png;base64,' + base64ImageComponent,
-        });
+        try {
+            await driver.click(
+                neltPerformanceSelectors.getSelectorOfAccountDashboardPlusButtonMenuItemByName(nameOfItem),
+            );
+            await neltPerformanceSelectors.isSpinnerDone();
+            base64ImageComponent = await driver.saveScreenshots();
+            addContext(this, {
+                title: `"${nameOfItem}" chosen`,
+                value: 'data:image/png;base64,' + base64ImageComponent,
+            });
+        } catch (error) {
+            console.error(error);
+            base64ImageComponent = await driver.saveScreenshots();
+            addContext(this, {
+                title: `"${nameOfItem}" NOT FOUND`,
+                value: 'data:image/png;base64,' + base64ImageComponent,
+            });
+            await driver.click(neltPerformanceSelectors.AccountDashboard_PlusButton);
+            await neltPerformanceSelectors.isSpinnerDone();
+            base64ImageComponent = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Plus Menu Closed`,
+                value: 'data:image/png;base64,' + base64ImageComponent,
+            });
+        }
         driver.sleep(0.5 * 1000);
     }
 
@@ -328,6 +367,69 @@ export class NeltPerformanceService {
             title: `Chose "Start posete" at Visit Selection`,
             value: 'data:image/png;base64,' + base64ImageComponent,
         });
+        driver.sleep(1 * 1000);
+        await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_StartEnd_Form_indication);
+        // try {
+        // await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_StartButtton);
+        // } catch (error) {
+        if (await driver.isElementVisible(neltPerformanceSelectors.TopBar_Right_StartButtton_disabled)) {
+            console.info('Start Visit Form NOT Loaded');
+            // console.error(error);
+            // addContext(this, {
+            //     title: `Start Visit Form NOT Loaded`,
+            //     value: error,
+            // });
+            base64ImageComponent = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Start Visit Form NOT Loaded`,
+                value: 'data:image/png;base64,' + base64ImageComponent,
+            });
+            await driver.click(neltPerformanceSelectors.TopBar_Left_CancelButtton);
+            const dialogMessageContent = await (
+                await driver.findElement(neltPerformanceSelectors.PepDialog_message)
+            ).getText();
+            if (dialogMessageContent.includes('Are you sure you want to discard changes?')) {
+                await driver.click(neltPerformanceSelectors.getPepDialogButtonByText('Discard changes'));
+                await neltPerformanceSelectors.isSpinnerDone();
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Changes Discarded at "Start" step`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
+                await driver.click(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Start posete'));
+                await neltPerformanceSelectors.isSpinnerDone();
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `"Start posete" group chosen`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitStepByText(''));
+                await driver.click(neltPerformanceSelectors.getSelectorOfVisitStepByText('Start posete'));
+                await neltPerformanceSelectors.isSpinnerDone();
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Chose "Start posete" at Visit Selection`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.click(neltPerformanceSelectors.TopBar_Right_StartButtton);
+                await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
+                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Start posete" Visit Flow Step`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            } else {
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: 'Unexpected Dialog is shown:',
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                console.error('Unexpected Dialog is shown');
+                throw new Error('Unexpected Dialog is shown');
+            }
+        }
         await driver.click(neltPerformanceSelectors.TopBar_Right_StartButtton);
         await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
         await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));

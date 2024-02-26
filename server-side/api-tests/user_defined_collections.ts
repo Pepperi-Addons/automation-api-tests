@@ -96,6 +96,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             let optionalCollectionName = '';
             let mandatoryScheme = '';
             let dimxOverWriteCollectionName = '';
+            let truncateCollectionName = '';
             let howManyNewRowsOnOverwrite = 0;
             const intVal = 15;
             const douVal = 0.129;
@@ -1445,6 +1446,91 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const insertArray = fileAfterOverwriting.Body.filter((entry) => entry.Status === 'Insert');
                 expect(insertArray.length).to.equal(howManyNewRowsOnOverwrite);
             });
+            it('Positive truncate test: 1.Create A UDC, 2.Import 1,000 Rows, 3. Truncate', async () => {
+                truncateCollectionName = 'Truncate' + generalService.generateRandomString(15);
+                const pfsService = new PFSService(generalService);
+                const howManyRows = 1000;
+                //1. create the file to import
+                const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
+                const mime = 'text/csv';
+                const tempFileResponse = await pfsService.postTempFile({
+                    FileName: fileName,
+                    MIME: mime,
+                });
+                expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
+                expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
+                expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
+                console.log(`URL TO CSV TEMP FILE -- BASIC IMPORT (step1): ${tempFileResponse.TemporaryFileURL}`);
+                const csvFileName = await createInitalData(howManyRows);
+                const localPath = __dirname;
+                const combinedPath = path.join(localPath, csvFileName);
+                const buf = fs.readFileSync(combinedPath);
+                const putResponsePart1 = await pfsService.putPresignedURL(tempFileResponse.PutURL, buf);
+                expect(putResponsePart1.ok).to.equal(true);
+                expect(putResponsePart1.status).to.equal(200);
+                //2. create the UDC to import to
+                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
+                const codeField: UdcField = {
+                    Name: 'code',
+                    Mandatory: true,
+                    Type: 'String',
+                    Indexed: true,
+                };
+                const dataFields: UdcField = {
+                    Name: 'value',
+                    Mandatory: true,
+                    Type: 'String',
+                };
+                const fieldsArray = [codeField, dataFields];
+                const response = await udcService.createUDCWithFields(
+                    truncateCollectionName,
+                    fieldsArray,
+                    'automation testing UDC',
+                    undefined,
+                    undefined,
+                    [codeField],
+                );
+                expect(response.Fail).to.be.undefined;
+                expect(response.code.Type).to.equal('String');
+                generalService.sleep(5000);
+                const documents = await udcService.getSchemes({ page_size: -1 });
+                expect(documents.length).to.equal(numOfInitialCollections + 1);
+                const newCollection = documents.filter((doc) => doc.Name === truncateCollectionName)[0];
+                expect(newCollection).to.not.equal(undefined);
+                expect(newCollection.AddonUUID).to.equal(UserDefinedCollectionsUUID);
+                expect(newCollection.Description).to.equal('automation testing UDC');
+                expect(newCollection).to.haveOwnProperty('DocumentKey');
+                //3. import file to UDC
+                const bodyToImport = {
+                    URI: tempFileResponse.TemporaryFileURL,
+                };
+                const importResponse = await generalService.fetchStatus(
+                    `/addons/data/import/file/${UserDefinedCollectionsUUID}/${truncateCollectionName}`,
+                    { method: 'POST', body: JSON.stringify(bodyToImport) },
+                );
+                const executionURI = importResponse.Body.URI;
+                const auditLogDevTestResponse = await generalService.getAuditLogResultObjectIfValid(
+                    executionURI as string,
+                    120,
+                    7000,
+                );
+                if (auditLogDevTestResponse.Status) {
+                    expect(auditLogDevTestResponse.Status.Name).to.equal('Success');
+                } else {
+                    expect(auditLogDevTestResponse.Status).to.not.be.undefined;
+                }
+                const lineStats = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject).LinesStatistics;
+                expect(lineStats.Inserted).to.equal(howManyRows);
+                generalService.sleep(1000 * 30); //let PNS Update
+                //call truncate
+                const resp = await udcService.truncateScheme(truncateCollectionName);
+                expect(resp.Ok).to.equal(true);
+                expect(resp.Status).to.equal(200);
+                expect(resp.Body.Done).to.equal(true);
+                expect(resp.Body.ProcessedCounter).to.equal(1000);
+                const fields = await udcService.getAllObjectFromCollectionCount(truncateCollectionName);
+                expect(fields.objects).to.deep.equal([]);
+            });
             it("Tear Down Part 1: cleaning all upserted UDC's", async () => {
                 const toHideCollections = await getAllUDCsForDelete(udcService);
                 console.log(`inital number of collections is: ${toHideCollections.length}`);
@@ -1510,6 +1596,31 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     const udcsAfterPurge = await udcService.getSchemes({ page_size: -1 });
                     expect(udcsBeforePurge.length).to.be.above(udcsAfterPurge.length);
                     console.log(`${udcName} was deleted, ${udcsAfterPurge.length} left`);
+                }
+            });
+            it(`Tear Down Part 3: Hard Deleting 100 UDC's Which Are Already Hidden`, async function () {
+                const allUdcsIncludingDeleted = await udcService.getSchemes({ page_size: -1, include_deleted: true });
+                const onlyDeletedUDCS = allUdcsIncludingDeleted.filter((UDC) => UDC.Hidden === true);
+                let randomElementsToDelete: any[] = [];
+                if (onlyDeletedUDCS.length >= 100) {
+                    randomElementsToDelete = generalService.returnXRandomElementsFromArray(onlyDeletedUDCS, 100);
+                }
+                for (let index = 0; index < randomElementsToDelete.length; index++) {
+                    const element = randomElementsToDelete[index];
+                    const hardDeleteResponse = await udcService.hardDeleteScheme(element.Name);
+                    expect(hardDeleteResponse.Ok).to.equal(true);
+                    expect(hardDeleteResponse.Status).to.equal(200);
+                    expect(hardDeleteResponse.Body.Done).to.equal(true);
+                }
+                const allUdcsIncludingDeletedAfterHardDelete = await udcService.getSchemes({
+                    page_size: -1,
+                    include_deleted: true,
+                });
+                const onlyDeletedUDCSAfterHardDelete = allUdcsIncludingDeletedAfterHardDelete.filter(
+                    (UDC) => UDC.Hidden === true,
+                );
+                if (onlyDeletedUDCS.length > 100) {
+                    expect(onlyDeletedUDCSAfterHardDelete.length).to.equal(onlyDeletedUDCS.length - 100);
                 }
             });
         });
@@ -1582,8 +1693,8 @@ async function getAllUDCsForDelete(udcService) {
             doc.Name.includes('AccResource') ||
             doc.Name.includes('KeyBasicTesting') ||
             doc.Name.includes('OptionalTesting') ||
-            doc.Name.includes('MandTesting'),
-        // ||(doc.Name.includes('DimxOverwrite') && !doc.Name.includes('DimxOverwriteinphssnloizjvgc')), // to no delete the collection of DI-23772
+            doc.Name.includes('MandTesting') ||
+            doc.Name.includes('Truncate'),
     );
     return toHideCollections;
 }
