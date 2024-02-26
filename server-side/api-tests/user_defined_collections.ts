@@ -1376,7 +1376,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(lineStats.Inserted).to.equal(howManyRows);
                 generalService.sleep(1000 * 80); //let PNS Update
                 for (let index = 1; index <= 85; index++) {
-                    console.log(`searching for 250 rows for the ${index} time - out of out of 85 sampling batch`);
+                    console.log(`searching for 250 rows for the ${index} time - out of 85 sampling batch`);
                     const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
                         dimxOverWriteCollectionName,
                         index,
