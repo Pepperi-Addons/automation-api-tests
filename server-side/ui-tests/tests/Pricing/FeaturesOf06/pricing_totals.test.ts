@@ -225,12 +225,18 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 value: 'data:image/png;base64,' + base64ImageComponent,
                                             });
                                         });
-                                    it('Navigating to "Hand Cosmetics" at Sidebar', async () => {
+                                    it('Navigating to "Hand Cosmetics" at Sidebar', async function () {
                                         await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                                         await driver.click(
                                             orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Hand Cosmetics'),
                                         );
-                                        driver.sleep(5 * 1000);
+                                        await orderPage.isSpinnerDone();
+                                        driver.sleep(0.5 * 1000);
+                                        base64ImageComponent = await driver.saveScreenshots();
+                                        addContext(this, {
+                                            title: `At "Hand Cosmetics"`,
+                                            value: 'data:image/png;base64,' + base64ImageComponent,
+                                        });
                                     });
                                 });
 
@@ -246,21 +252,21 @@ export async function PricingTotalsTests(email: string, password: string, client
                                             });
                                             it(`Setting Amounts`, async function () {
                                                 const uom1 =
-                                                    pricingData.testItemsValues.Totals[totalsTestItem][totalsTestState][
-                                                        'uom1'
-                                                    ];
+                                                    pricingData.testItemsValues.Totals[totalsTestItem][account][
+                                                        totalsTestState
+                                                    ]['uom1'];
                                                 const uom2 =
-                                                    pricingData.testItemsValues.Totals[totalsTestItem][totalsTestState][
-                                                        'uom2'
-                                                    ];
+                                                    pricingData.testItemsValues.Totals[totalsTestItem][account][
+                                                        totalsTestState
+                                                    ]['uom2'];
                                                 const quantity1 =
-                                                    pricingData.testItemsValues.Totals[totalsTestItem][totalsTestState][
-                                                        'qty1'
-                                                    ];
+                                                    pricingData.testItemsValues.Totals[totalsTestItem][account][
+                                                        totalsTestState
+                                                    ]['qty1'];
                                                 const quantity2 =
-                                                    pricingData.testItemsValues.Totals[totalsTestItem][totalsTestState][
-                                                        'qty2'
-                                                    ];
+                                                    pricingData.testItemsValues.Totals[totalsTestItem][account][
+                                                        totalsTestState
+                                                    ]['qty2'];
                                                 switch (totalsTestState) {
                                                     case 'baseline':
                                                         break;
@@ -273,22 +279,15 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                         await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                                             this,
                                                         )(uom2 + '&Totals', totalsTestItem, quantity2, driver, '2');
-                                                        break;
+                                                        driver.sleep(0.5 * 1000);
                                                 }
                                             });
                                             it(`Checking TSAs`, async function () {
-                                                // if (totalsTestState != 'baseline') {
-                                                //     const splitedStateArgs = totalsTestState.split(' ');
-                                                //     const chosenUom = splitedStateArgs[1];
-                                                //     const amount = Number(splitedStateArgs[0]);
-                                                //     addContext(this, {
-                                                //         title: `State Args`,
-                                                //         value: `Chosen UOM: ${chosenUom}, Amount: ${amount}`,
-                                                //     });
-                                                //     await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                                //         this,
-                                                //     )(chosenUom, totalsTestItem, amount, driver);
-                                                // }
+                                                base64ImageComponent = await driver.saveScreenshots();
+                                                addContext(this, {
+                                                    title: `${totalsTestState}`,
+                                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                                });
                                                 const priceTSAs = await pricingService.getItemTSAs(
                                                     'OrderCenter',
                                                     totalsTestItem,
@@ -335,61 +334,29 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                     'PriceTaxTotalDiff',
                                                     'PriceTaxUnitDiff',
                                                 ]);
-
-                                                if (totalsTestState === 'baseline') {
-                                                    const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                    const baseline_NPMCalcMessage =
-                                                        pricingData.testItemsValues.Totals[totalsTestItem][
-                                                            totalsTestState
-                                                        ]['NPMCalcMessage'];
-                                                    addContext(this, {
-                                                        title: `State Args`,
-                                                        value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                            UI_NPMCalcMessage,
-                                                            null,
-                                                            2,
-                                                        )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                            baseline_NPMCalcMessage,
-                                                            null,
-                                                            2,
-                                                        )}`,
-                                                    });
-                                                    expect(UI_NPMCalcMessage.length).equals(
-                                                        baseline_NPMCalcMessage.length,
-                                                    );
-                                                } else {
-                                                    const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                    const baseline_NPMCalcMessage =
-                                                        pricingData.testItemsValues.Totals[totalsTestItem]['baseline'][
-                                                            'NPMCalcMessage'
-                                                        ];
-                                                    const data_NPMCalcMessage =
-                                                        pricingData.testItemsValues.Totals[totalsTestItem][
-                                                            totalsTestState
-                                                        ]['NPMCalcMessage'];
-                                                    addContext(this, {
-                                                        title: `State Args`,
-                                                        value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                            UI_NPMCalcMessage,
-                                                            null,
-                                                            2,
-                                                        )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                            baseline_NPMCalcMessage,
-                                                        )}, \nNPMCalcMessage (at ${totalsTestState}) from Data: ${JSON.stringify(
-                                                            data_NPMCalcMessage,
-                                                            null,
-                                                            2,
-                                                        )}`,
-                                                    });
-                                                    // expect(UI_NPMCalcMessage.length).equals(
-                                                    //     baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
-                                                    // );
-                                                }
+                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                                                const data_NPMCalcMessage =
+                                                    pricingData.testItemsValues.Totals[totalsTestItem][account][
+                                                        totalsTestState
+                                                    ]['NPMCalcMessage'];
+                                                addContext(this, {
+                                                    title: `State Args`,
+                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
+                                                        UI_NPMCalcMessage,
+                                                        null,
+                                                        2,
+                                                    )}, \nNPMCalcMessage (at ${totalsTestState}) from Data: ${JSON.stringify(
+                                                        data_NPMCalcMessage,
+                                                        null,
+                                                        2,
+                                                    )}`,
+                                                });
+                                                expect(UI_NPMCalcMessage.length).equals(data_NPMCalcMessage.length);
 
                                                 priceFields.forEach((priceField) => {
                                                     const fieldValue = priceTSAs[priceField];
                                                     const expectedFieldValue =
-                                                        pricingData.testItemsValues.Totals[totalsTestItem][
+                                                        pricingData.testItemsValues.Totals[totalsTestItem][account][
                                                             totalsTestState
                                                         ][priceField];
                                                     addContext(this, {
@@ -402,9 +369,9 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 const discount2FieldValue =
                                                     priceTSA_Discount2['PriceDiscount2UnitPriceAfter1'];
                                                 const discount2ExpectedFieldValue =
-                                                    pricingData.testItemsValues.Totals[totalsTestItem][totalsTestState][
-                                                        'PriceDiscount2UnitPriceAfter1'
-                                                    ];
+                                                    pricingData.testItemsValues.Totals[totalsTestItem][account][
+                                                        totalsTestState
+                                                    ]['PriceDiscount2UnitPriceAfter1'];
                                                 addContext(this, {
                                                     title: 'PriceDiscount2UnitPriceAfter1',
                                                     value: `Field Value from UI: ${discount2FieldValue}, Expected Field Value from Data: ${discount2ExpectedFieldValue}`,
@@ -414,7 +381,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 priceFields2.forEach((priceField) => {
                                                     const fieldValue = priceTSAs_AOQM_UOM2[priceField];
                                                     const expectedFieldValue =
-                                                        pricingData.testItemsValues.Totals[totalsTestItem][
+                                                        pricingData.testItemsValues.Totals[totalsTestItem][account][
                                                             totalsTestState
                                                         ][priceField];
                                                     addContext(this, {
@@ -427,7 +394,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 totalsPriceFields.forEach((priceField) => {
                                                     const fieldValue = priceTotalsTSAs[priceField];
                                                     const expectedFieldValue =
-                                                        pricingData.testItemsValues.Totals[totalsTestItem][
+                                                        pricingData.testItemsValues.Totals[totalsTestItem][account][
                                                             totalsTestState
                                                         ][priceField];
                                                     addContext(this, {
@@ -467,9 +434,6 @@ export async function PricingTotalsTests(email: string, password: string, client
                                         });
                                         it('verifying that the sum total of items in the cart is correct', async function () {
                                             const numberOfItemsInCart = totalsTestItems.length;
-                                            // account === 'Acc01'
-                                            //     ? (numberOfItemsInCart += uomTestCartItems.length)
-                                            //     : (numberOfItemsInCart += uomTestItems.length);
                                             base64ImageComponent = await driver.saveScreenshots();
                                             addContext(this, {
                                                 title: `At Cart`,
@@ -522,8 +486,8 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                     const fieldValue = priceTSAs[priceField];
                                                     const expectedFieldValue =
                                                         pricingData.testItemsValues.Totals[totalsTest_CartItem][
-                                                            totalsTestState
-                                                        ][priceField];
+                                                            account
+                                                        ][totalsTestState][priceField];
                                                     addContext(this, {
                                                         title: `${priceField}`,
                                                         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
@@ -534,7 +498,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                 const discount2FieldValue =
                                                     priceTSA_Discount2['PriceDiscount2UnitPriceAfter1'];
                                                 const discount2ExpectedFieldValue =
-                                                    pricingData.testItemsValues.Totals[totalsTest_CartItem][
+                                                    pricingData.testItemsValues.Totals[totalsTest_CartItem][account][
                                                         totalsTestState
                                                     ]['PriceDiscount2UnitPriceAfter1'];
                                                 addContext(this, {
@@ -547,8 +511,8 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                     const fieldValue = priceTSAs_AOQM_UOM2[priceField];
                                                     const expectedFieldValue =
                                                         pricingData.testItemsValues.Totals[totalsTest_CartItem][
-                                                            totalsTestState
-                                                        ][priceField];
+                                                            account
+                                                        ][totalsTestState][priceField];
                                                     addContext(this, {
                                                         title: `${priceField}`,
                                                         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
@@ -560,8 +524,8 @@ export async function PricingTotalsTests(email: string, password: string, client
                                                     const fieldValue = priceTotalsTSAs[priceField];
                                                     const expectedFieldValue =
                                                         pricingData.testItemsValues.Totals[totalsTest_CartItem][
-                                                            totalsTestState
-                                                        ][priceField];
+                                                            account
+                                                        ][totalsTestState][priceField];
                                                     addContext(this, {
                                                         title: `${priceField}`,
                                                         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
