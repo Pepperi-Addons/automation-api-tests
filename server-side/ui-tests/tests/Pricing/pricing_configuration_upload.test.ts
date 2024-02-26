@@ -10,7 +10,12 @@ import PricingConfiguration from '../../pom/addons/PricingConfiguration';
 
 chai.use(promised);
 
-export async function PricingConfigUpload(client: Client, email: string, password: string) {
+export async function PricingConfigUpload(
+    client: Client,
+    email: string,
+    password: string,
+    specificVersion: 'version07for05data' | undefined = undefined,
+) {
     const pricingConfiguration = new PricingConfiguration();
     const generalService = new GeneralService(client);
     const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
@@ -33,28 +38,39 @@ export async function PricingConfigUpload(client: Client, email: string, passwor
             await driver.quit();
         });
 
-        it('Sending configuration object to end point', async () => {
-            switch (installedPricingVersionShort) {
-                case '5':
-                    console.info('AT installedPricingVersion CASE 5');
-                    pricingConfig = pricingConfiguration.version05;
-                    break;
-                case '6':
-                    console.info('AT installedPricingVersion CASE 6');
-                    pricingConfig = pricingConfiguration.version06;
-                    break;
+        !specificVersion &&
+            it('Sending configuration object to end point', async function () {
+                switch (installedPricingVersionShort) {
+                    case '5':
+                        console.info('AT installedPricingVersion CASE 5');
+                        pricingConfig = pricingConfiguration.version05;
+                        break;
+                    case '6':
+                        console.info('AT installedPricingVersion CASE 6');
+                        pricingConfig = pricingConfiguration.version06;
+                        break;
 
-                default:
-                    console.info('AT installedPricingVersion Default');
-                    pricingConfig = pricingConfiguration.version07;
-                    break;
-            }
-            await uploadConfiguration(pricingConfig);
-            addContext(this, {
-                title: `Config =`,
-                value: JSON.stringify(pricingConfig, null, 2),
+                    default:
+                        console.info('AT installedPricingVersion Default');
+                        pricingConfig = pricingConfiguration.version07;
+                        break;
+                }
+                await uploadConfiguration(pricingConfig);
+                addContext(this, {
+                    title: `Config =`,
+                    value: JSON.stringify(pricingConfig, null, 2),
+                });
             });
-        });
+
+        specificVersion &&
+            it('Sending version07 for 05data configuration object to end point', async function () {
+                pricingConfig = pricingConfiguration[specificVersion];
+                await uploadConfiguration(pricingConfig);
+                addContext(this, {
+                    title: `Config =`,
+                    value: JSON.stringify(pricingConfig, null, 2),
+                });
+            });
 
         describe(`Login to Pricing Test User after Configuration Upload | Ver ${installedPricingVersion}`, () => {
             it('Login', async function () {
