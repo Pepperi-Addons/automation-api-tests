@@ -44,6 +44,15 @@ export class OrderPage extends WebAppList {
     public Cart_Submit_Button: By = By.xpath('//button[@data-qa="Submit"]');
     public Cart_List_container: By = By.xpath('//app-cart//pep-list/div');
     public Cart_LinesView_List_container: By = By.xpath('//app-cart//pep-list');
+    public Cart_SmartFilter_ItemExternalID: By = By.xpath(
+        '//pep-smart-filters//span[@title="Item External ID"]/ancestor::mat-panel-title',
+    );
+    public Cart_SmartFilter_ApplyButton: By = By.xpath(
+        '//pep-smart-filters//pep-filter-actions//button[contains(text(),"Apply")]',
+    );
+    public Cart_SmartFilter_ClearButton: By = By.xpath(
+        '//pep-smart-filters//pep-filter-actions//button[contains(text(),"Clear")]',
+    );
     public TransactionUUID: By = By.id('UUID');
     public TransactionID: By = By.id('WrntyID');
 
@@ -86,10 +95,13 @@ export class OrderPage extends WebAppList {
         const path = `//div[@id="TSAAOQMUOM${
             uomIndex ? uomIndex : '1'
         }-panel"][@role="listbox"]/mat-option[@title="${text}"]`;
-        // if (uomIndex && uomIndex === '2') {
-        //     path = `//div[@id="TSAAOQMUOM2-panel"][@role="listbox"]/mat-option[@title="${text}"]`;
-        // }
         return By.xpath(path);
+    }
+
+    public getSelectorOfCheckboxOfSmartFilterItemExternalIdAtCartByText(text: string) {
+        return By.xpath(
+            `//span[contains(text(),"${text}")]/ancestor::label/span[contains(@class,"mat-checkbox-inner-container")]`,
+        );
     }
 
     public getSelectorOfItemInOrderCenterByName(name: string) {
