@@ -25,7 +25,12 @@ interface PriceTsaFields {
 
 chai.use(promised);
 
-export async function PricingAdditionalGroupsReadonlyTests(email: string, password: string, client: Client) {
+export async function PricingAdditionalGroupsReadonlyTests(
+    email: string,
+    password: string,
+    client: Client,
+    specificVersion: 'version07for05data' | undefined = undefined,
+) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
@@ -33,13 +38,24 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
     )?.Version;
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
-    const pricingData = installedPricingVersion === '5' ? new PricingData05() : new PricingData06();
+    const pricingData =
+        installedPricingVersion === '5'
+            ? new PricingData05()
+            : specificVersion === 'version07for05data'
+            ? new PricingData05()
+            : new PricingData06();
     const pricingRules = new PricingRules();
     let ppmValues_content;
     switch (installedPricingVersion) {
         case '5':
             console.info('AT installedPricingVersion CASE 5');
             ppmValues_content = pricingRules.version05;
+            break;
+
+        case '7':
+            console.info('AT installedPricingVersion CASE 7');
+            ppmValues_content =
+                specificVersion === 'version07for05data' ? pricingRules.version05 : pricingRules.version06;
             break;
 
         default:
@@ -72,6 +88,7 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
     let Drug0004priceTSAs_OC: PriceTsaFields;
     let base64ImageComponent;
     let duration: string;
+    let ppmValues: UserDefinedTableRow[];
     let ppmVluesEnd: UserDefinedTableRow[];
 
     const testAccounts = ['Acc01', 'OtherAcc'];
@@ -218,6 +235,52 @@ export async function PricingAdditionalGroupsReadonlyTests(email: string, passwo
 
         it('Manual Sync', async () => {
             await webAppHomePage.manualResync(client);
+        });
+
+        it('get UDT Values (PPM_Values)', async function () {
+            ppmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
+            console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
+            addContext(this, {
+                title: `PPM Values Expected Valid Rules Content`,
+                value: `Length: ${ppmValues_content.length} \nValues: ${JSON.stringify(ppmValues_content, null, 2)}`,
+            });
+        });
+
+        it('validating "PPM_Values" via API', async function () {
+            const expectedPPMValuesLength = Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length;
+            console.info(
+                'EXPECTED: Object.keys(ppmValues_content).length + dummyPPM_ValuesKeys.length: ',
+                expectedPPMValuesLength,
+                'ACTUAL: ppmValues.length: ',
+                ppmValues.length,
+            );
+            addContext(this, {
+                title: `PPM Values Length`,
+                value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
+            });
+            expect(ppmValues.length).equals(expectedPPMValuesLength);
+            Object.keys(ppmValues_content).forEach((mainKey) => {
+                console.info('mainKey: ', mainKey);
+                const matchingRowOfppmValues = ppmValues.find((tableRow) => {
+                    if (tableRow.MainKey === mainKey) {
+                        return tableRow;
+                    }
+                });
+                matchingRowOfppmValues &&
+                    console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
+                console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
+                matchingRowOfppmValues &&
+                    addContext(this, {
+                        title: `PPM Value for the Key "${mainKey}"`,
+                        value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${ppmValues_content[mainKey]}`,
+                    });
+                matchingRowOfppmValues &&
+                    expect(ppmValues_content[mainKey]).equals(
+                        client.BaseURL.includes('staging')
+                            ? matchingRowOfppmValues['Values'].join()
+                            : matchingRowOfppmValues['Values'][0],
+                    );
+            });
         });
 
         testAccounts.forEach((account) => {
