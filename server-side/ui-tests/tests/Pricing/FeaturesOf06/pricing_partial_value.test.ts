@@ -58,7 +58,10 @@ export async function PricingPartialValueTests(email: string, password: string, 
 
     const testAccounts = ['Acc01', 'OtherAcc'];
     const partialValueTestItems = ['Frag006', 'Frag008', 'Frag009', 'Frag011', 'Frag021'];
-    const partialValueCartTestItems = ['Frag021', 'Frag011', 'Frag009'];
+    const partialValueCartTestItemsSets = [
+        ['Frag021', 'Frag011', 'Frag009'],
+        ['Frag008', 'Frag006'],
+    ];
     const partialValueTestStates = [
         'baseline',
         '9 Each',
@@ -339,84 +342,92 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                 expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                                 driver.sleep(1 * 1000);
                             });
-                            it(`filtering cart using smart filter Item External ID`, async function () {
-                                await driver.click(orderPage.Cart_SmartFilter_ItemExternalID);
-                                driver.sleep(0.3 * 1000);
-                                partialValueCartTestItems.forEach(async (partialValueTestCartItem) => {
-                                    await driver.click(
-                                        orderPage.getSelectorOfCheckboxOfSmartFilterItemExternalIdAtCartByText(
-                                            partialValueTestCartItem,
-                                        ),
-                                    );
+                            partialValueCartTestItemsSets.forEach((partialValueCartTestItems, index) => {
+                                it(`filtering cart using smart filter Item External ID - Group ${
+                                    index + 1
+                                }`, async function () {
+                                    await driver.click(orderPage.Cart_SmartFilter_ItemExternalID);
                                     driver.sleep(0.3 * 1000);
+                                    partialValueCartTestItems.forEach(async (partialValueTestCartItem) => {
+                                        await driver.click(
+                                            orderPage.getSelectorOfCheckboxOfSmartFilterItemExternalIdAtCartByText(
+                                                partialValueTestCartItem,
+                                            ),
+                                        );
+                                        driver.sleep(0.3 * 1000);
+                                    });
+                                    await driver.click(orderPage.Cart_SmartFilter_ApplyButton);
+                                    await orderPage.isSpinnerDone();
+                                    driver.sleep(0.8 * 1000);
+                                    const itemsInCart = await (
+                                        await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                    ).getText();
+                                    driver.sleep(0.2 * 1000);
+                                    base64ImageComponent = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `After Smart Filter Activated`,
+                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                    });
+                                    addContext(this, {
+                                        title: `After Smart Filter - Number of Items in Cart`,
+                                        value: `form UI: ${itemsInCart} , expected: ${partialValueCartTestItems.length}`,
+                                    });
+                                    expect(Number(itemsInCart)).to.equal(partialValueCartTestItems.length);
                                 });
-                                await driver.click(orderPage.Cart_SmartFilter_ApplyButton);
-                                await orderPage.isSpinnerDone();
-                                driver.sleep(0.8 * 1000);
-                                const itemsInCart = await (
-                                    await driver.findElement(orderPage.Cart_Headline_Results_Number)
-                                ).getText();
-                                driver.sleep(0.2 * 1000);
-                                base64ImageComponent = await driver.saveScreenshots();
-                                addContext(this, {
-                                    title: `After Smart Filter Activated`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                partialValueCartTestItems.forEach((partialValueTestCartItem) => {
+                                    it(`checking item "${partialValueTestCartItem}"`, async function () {
+                                        const pricePartialTSAs = await pricingService.getTSAsOfPartialPerItem(
+                                            'Cart',
+                                            partialValueTestCartItem,
+                                            undefined,
+                                            undefined,
+                                            'LinesView',
+                                        );
+                                        const totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                            'Cart',
+                                            partialValueTestCartItem,
+                                            undefined,
+                                            undefined,
+                                            'LinesView',
+                                        );
+                                        const expectedPricePartial =
+                                            pricingData.testItemsValues.Partial[partialValueTestCartItem][
+                                                'PricePartial'
+                                            ]['cart'][account];
+                                        const actualPricePartial = pricePartialTSAs['PricePartial'];
+                                        const expectedTotalUnitsAmount =
+                                            pricingData.testItemsValues.Partial[partialValueTestCartItem]['Cart'][
+                                                account
+                                            ];
+                                        console.info(
+                                            `Cart ${partialValueTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
+                                        );
+                                        expect(totalUnitsAmount).equals(expectedTotalUnitsAmount);
+                                        expect(actualPricePartial).equals(expectedPricePartial);
+                                        driver.sleep(1 * 1000);
+                                    });
                                 });
-                                addContext(this, {
-                                    title: `After Smart Filter - Number of Items in Cart`,
-                                    value: `form UI: ${itemsInCart} , expected: ${partialValueCartTestItems.length}`,
+                                it(`clearing smart filter`, async function () {
+                                    await driver.click(orderPage.Cart_SmartFilter_ClearButton);
+                                    await orderPage.isSpinnerDone();
+                                    driver.sleep(0.8 * 1000);
+                                    await driver.click(orderPage.Cart_SmartFilter_ItemExternalID);
+                                    driver.sleep(0.5 * 1000);
+                                    const itemsInCart = await (
+                                        await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                    ).getText();
+                                    driver.sleep(0.2 * 1000);
+                                    base64ImageComponent = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `After Smart Filter Cleared`,
+                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                    });
+                                    addContext(this, {
+                                        title: `After Smart Filter Cleared - Number of Items in Cart`,
+                                        value: `form UI: ${itemsInCart} , expected: ${partialValueTestItems.length}`,
+                                    });
+                                    expect(Number(itemsInCart)).to.equal(partialValueTestItems.length);
                                 });
-                                expect(Number(itemsInCart)).to.equal(partialValueCartTestItems.length);
-                            });
-                            partialValueCartTestItems.forEach((partialValueTestCartItem) => {
-                                it(`checking item "${partialValueTestCartItem}"`, async function () {
-                                    const pricePartialTSAs = await pricingService.getTSAsOfPartialPerItem(
-                                        'Cart',
-                                        partialValueTestCartItem,
-                                        undefined,
-                                        undefined,
-                                        'LinesView',
-                                    );
-                                    const totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                        'Cart',
-                                        partialValueTestCartItem,
-                                        undefined,
-                                        undefined,
-                                        'LinesView',
-                                    );
-                                    const expectedPricePartial =
-                                        pricingData.testItemsValues.Partial[partialValueTestCartItem]['PricePartial'][
-                                            'cart'
-                                        ][account];
-                                    const actualPricePartial = pricePartialTSAs['PricePartial'];
-                                    const expectedTotalUnitsAmount =
-                                        pricingData.testItemsValues.Partial[partialValueTestCartItem]['Cart'][account];
-                                    console.info(
-                                        `Cart ${partialValueTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
-                                    );
-                                    expect(totalUnitsAmount).equals(expectedTotalUnitsAmount);
-                                    expect(actualPricePartial).equals(expectedPricePartial);
-                                    driver.sleep(1 * 1000);
-                                });
-                            });
-                            it(`clearing smart filter`, async function () {
-                                await driver.click(orderPage.Cart_SmartFilter_ClearButton);
-                                await orderPage.isSpinnerDone();
-                                driver.sleep(0.8 * 1000);
-                                const itemsInCart = await (
-                                    await driver.findElement(orderPage.Cart_Headline_Results_Number)
-                                ).getText();
-                                driver.sleep(0.2 * 1000);
-                                base64ImageComponent = await driver.saveScreenshots();
-                                addContext(this, {
-                                    title: `After Smart Filter Cleared`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
-                                });
-                                addContext(this, {
-                                    title: `After Smart Filter Cleared - Number of Items in Cart`,
-                                    value: `form UI: ${itemsInCart} , expected: ${partialValueTestItems.length}`,
-                                });
-                                expect(Number(itemsInCart)).to.equal(partialValueTestItems.length);
                             });
                         });
                     });
