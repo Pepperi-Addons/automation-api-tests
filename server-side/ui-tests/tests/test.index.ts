@@ -549,9 +549,9 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         await PricingAdditionalGroupsReadonlyTests(email, pass, client);
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
-        // await PricingMultipleValuesTests(email, pass, client);
-        await PricingPartialValueTests(email, pass, client);
         // await PricingExclusionTests(email, pass, client);
+        await PricingPartialValueTests(email, pass, client);
+        // await PricingMultipleValuesTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
@@ -605,7 +605,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
 
     if (tests === 'PricingTotals') {
         await PricingUdtCleanup(client);
-        // await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingTotalsTests(email, pass, client);
@@ -627,7 +627,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
 
     if (tests === 'PricingPartial') {
         await PricingUdtCleanup(client);
-        // await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingPartialValueTests(email, pass, client);
