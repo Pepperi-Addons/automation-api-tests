@@ -6,6 +6,7 @@ import { ObjectsService } from '../../../services';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import GeneralService from '../../../services/general.service';
 import PricingRules from '../../pom/addons/PricingRules';
+import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
@@ -23,7 +24,7 @@ export async function PricingUdtCleanup(client: Client, specificVersion: 'versio
     describe(`UDT: "PPM_Values" cleanup - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
     } | ${dateTime}`, () => {
-        it('getting data object according to installed version', async () => {
+        it('getting data object according to installed version', async function () {
             switch (installedPricingVersionShort) {
                 case '5':
                     console.info('AT installedPricingVersion CASE 5');
@@ -41,16 +42,24 @@ export async function PricingUdtCleanup(client: Client, specificVersion: 'versio
                     ppmValues_content = pricingRules.version06;
                     break;
             }
+            addContext(this, {
+                title: `ppmValues_content.length`,
+                value: ppmValues_content.length,
+            });
         });
 
-        it('retrieving "PPM_Values" UDT values via API', async () => {
+        it('retrieving "PPM_Values" UDT values via API', async function () {
             ppmVluesEnd = await objectsService.getUDT({
                 where: `MapDataExternalID='${pricingRules.tableName}'`,
                 page_size: -1,
             });
+            addContext(this, {
+                title: `ppmVluesEnd.length`,
+                value: ppmVluesEnd.length,
+            });
         });
 
-        it('deleting valid rules from the UDT "PPM_Values"', async () => {
+        it('deleting valid rules from the UDT "PPM_Values"', async function () {
             const valueObjs: UserDefinedTableRow[] = [];
             const validPPM_ValuesKeys = Object.keys(ppmValues_content);
             const deleteResponses = await Promise.all(
@@ -66,9 +75,14 @@ export async function PricingUdtCleanup(client: Client, specificVersion: 'versio
                     );
                     if (valueObj) {
                         console.info(`valueObj for key "${validPPM_Key}" EXIST!`);
-                        valueObjs.push(valueObj);
                         valueObj.Hidden = true;
-                        return await objectsService.postUDT(valueObj);
+                        valueObjs.push(valueObj);
+                        const deleteResponse = await objectsService.postUDT(valueObj);
+                        addContext(this, {
+                            title: `key "${validPPM_Key}" EXIST in UDT`,
+                            value: deleteResponse,
+                        });
+                        return deleteResponse;
                     }
                 }),
             );
