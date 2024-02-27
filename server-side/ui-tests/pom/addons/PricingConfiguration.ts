@@ -196,10 +196,6 @@ export default class PricingConfiguration {
                 Key: 'A004',
                 KeyFields: ['TransactionAccountExternalID'],
             },
-            {
-                Key: 'A005',
-                KeyFields: ['ItemMainCategory'],
-            },
         ],
     };
 
