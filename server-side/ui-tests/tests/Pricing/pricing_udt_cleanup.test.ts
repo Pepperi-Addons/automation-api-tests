@@ -9,20 +9,31 @@ import PricingRules from '../../pom/addons/PricingRules';
 
 chai.use(promised);
 
-export async function PricingUdtCleanup(client: Client) {
+export async function PricingUdtCleanup(client: Client, specificVersion: 'version07for05data' | undefined = undefined) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const pricingRules = new PricingRules();
+    const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
+    const installedPricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'pricing')?.Version;
+    const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
+    const dateTime = new Date();
     let ppmVluesEnd: UserDefinedTableRow[];
-    let installedPricingVersion;
     let ppmValues_content;
 
-    describe('UDT: "PPM_Values" cleanup', () => {
+    describe(`UDT: "PPM_Values" cleanup - ${
+        client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
+    } | ${dateTime}`, () => {
         it('getting data object according to installed version', async () => {
-            switch (installedPricingVersion) {
+            switch (installedPricingVersionShort) {
                 case '5':
                     console.info('AT installedPricingVersion CASE 5');
                     ppmValues_content = pricingRules.version05;
+                    break;
+
+                case '7':
+                    console.info('AT installedPricingVersion CASE 7');
+                    ppmValues_content =
+                        specificVersion === 'version07for05data' ? pricingRules.version05 : pricingRules.version06;
                     break;
 
                 default:

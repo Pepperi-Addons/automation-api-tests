@@ -27,7 +27,9 @@ export async function PricingConfigUpload(
     let base64ImageComponent;
     let pricingConfig;
 
-    describe('Setting Configuration File', () => {
+    describe(`Setting Configuration File - Pricing Version: ${installedPricingVersion} ${
+        specificVersion ? `| with 05 data` : ''
+    }`, () => {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
@@ -38,7 +40,7 @@ export async function PricingConfigUpload(
             await driver.quit();
         });
 
-        !specificVersion &&
+        specificVersion === undefined &&
             it('Sending configuration object to end point', async function () {
                 switch (installedPricingVersionShort) {
                     case '5':
@@ -62,7 +64,7 @@ export async function PricingConfigUpload(
                 });
             });
 
-        specificVersion &&
+        specificVersion !== undefined &&
             it('Sending version07 for 05data configuration object to end point', async function () {
                 pricingConfig = pricingConfiguration[specificVersion];
                 await uploadConfiguration(pricingConfig);

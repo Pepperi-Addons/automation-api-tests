@@ -354,7 +354,7 @@ export async function PricingBaseTests(
                                     driver.sleep(1 * 1000);
                                 });
                                 testItems.forEach(async (item) => {
-                                    it(`checking item "${item.name}"`, async () => {
+                                    it(`checking item "${item.name}"`, async function () {
                                         const totalUnitsAmount = await pricingService.getItemTotalAmount(
                                             'Cart',
                                             item.name,

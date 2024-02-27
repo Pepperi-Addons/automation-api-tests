@@ -16,13 +16,15 @@ export async function PricingUdtInsertion(
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const pricingRules = new PricingRules();
+    const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
+    const installedPricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'pricing')?.Version;
+    const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     let batchUDTresponse: any;
-    let installedPricingVersion;
     let ppmValues_content;
 
     describe('UDT: "PPM_Values" insertion', () => {
         it('getting data object according to installed version', async function () {
-            switch (installedPricingVersion) {
+            switch (installedPricingVersionShort) {
                 case '5':
                     console.info('AT installedPricingVersion CASE 5');
                     ppmValues_content = pricingRules.version05;
