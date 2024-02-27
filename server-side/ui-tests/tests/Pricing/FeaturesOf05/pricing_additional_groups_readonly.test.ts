@@ -1957,11 +1957,6 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                 );
                                 driver.sleep(0.2 * 1000);
                             });
-                            // base64ImageComponent = await driver.saveScreenshots();
-                            // addContext(this, {
-                            //     title: `At Cart - after change`,
-                            //     value: 'data:image/png;base64,' + base64ImageComponent,
-                            // });
                         });
                         groupRulesItems.forEach((groupRuleItem) => {
                             it(`checking item "${groupRuleItem.name}"`, async function () {
