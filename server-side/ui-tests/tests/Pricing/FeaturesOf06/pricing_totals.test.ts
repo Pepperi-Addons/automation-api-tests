@@ -128,7 +128,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                 );
                 addContext(this, {
                     title: `PPM Values Length`,
-                    value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
+                    value: `ACTUAL: ${ppmValues.length} \nEXPECTED: ${expectedPPMValuesLength}`,
                 });
                 expect(ppmValues.length).equals(expectedPPMValuesLength);
                 Object.keys(ppmValues_content).forEach((mainKey) => {
@@ -144,7 +144,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                     matchingRowOfppmValues &&
                         addContext(this, {
                             title: `PPM Key "${mainKey}"`,
-                            value: `ACTUAL: ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
+                            value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
                         });
                     matchingRowOfppmValues &&
                         expect(ppmValues_content[mainKey]).equals(
