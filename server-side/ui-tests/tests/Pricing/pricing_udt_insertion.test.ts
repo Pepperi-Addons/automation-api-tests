@@ -42,12 +42,16 @@ export async function PricingUdtInsertion(
                     break;
             }
             addContext(this, {
-                title: `ppmValues_content =`,
+                title: `ppmValues_content length`,
+                value: ppmValues_content.length,
+            });
+            addContext(this, {
+                title: `ppmValues_content`,
                 value: JSON.stringify(ppmValues_content, null, 2),
             });
         });
 
-        it('inserting valid rules to the UDT "PPM_Values"', async () => {
+        it('inserting valid rules to the UDT "PPM_Values"', async function () {
             const dataToBatch: {
                 MapDataExternalID: string;
                 MainKey: string;
@@ -79,6 +83,14 @@ export async function PricingUdtInsertion(
                 expect(row)
                     .to.have.property('URI')
                     .that.equals('/user_defined_tables/' + row.InternalID);
+            });
+            addContext(this, {
+                title: `batchUDTresponse length`,
+                value: batchUDTresponse.length,
+            });
+            addContext(this, {
+                title: `batchUDTresponse`,
+                value: JSON.stringify(batchUDTresponse, null, 2),
             });
         });
     });
