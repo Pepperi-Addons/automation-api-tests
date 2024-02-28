@@ -114,7 +114,7 @@ export async function PricingMultipleValuesTests(email: string, password: string
     const priceMultiFields = ['PriceMultiAfter1', 'PriceMultiAfter2'];
 
     if (installedPricingVersionShort !== '5') {
-        describe(`Pricing Multiple Values UI tests  - ${
+        describe(`Pricing ** Multiple Values ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {

@@ -82,7 +82,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
     const pricePartialFields = ['PricePartial'];
 
     if (installedPricingVersionShort !== '5') {
-        describe(`Pricing Partial Value UI tests  - ${
+        describe(`Pricing ** Partial Value ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {

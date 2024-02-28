@@ -71,7 +71,7 @@ export async function PricingTotalsTests(email: string, password: string, client
     const totalsPriceFields = ['PriceTaxTotal', 'PriceTaxTotalPercent', 'PriceTaxTotalDiff', 'PriceTaxUnitDiff'];
 
     if (installedPricingVersionShort !== '5') {
-        describe(`Pricing Totals UI tests  - ${
+        describe(`Pricing ** Totals ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {
