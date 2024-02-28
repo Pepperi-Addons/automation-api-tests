@@ -360,7 +360,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                     await driver.untilIsVisible(orderPage.Cart_SmartFilter_ApplyButton);
                                     await driver.click(orderPage.Cart_SmartFilter_ApplyButton);
                                     await orderPage.isSpinnerDone();
-                                    driver.sleep(0.8 * 1000);
+                                    driver.sleep(2 * 1000);
                                     const itemsInCart = await (
                                         await driver.findElement(orderPage.Cart_Headline_Results_Number)
                                     ).getText();
