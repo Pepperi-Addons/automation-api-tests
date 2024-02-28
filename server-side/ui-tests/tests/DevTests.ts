@@ -1151,6 +1151,7 @@ export class DevTest {
                 );
             case 'CPI-DATA': //new teams
             case 'CPI DATA':
+            case 'ADDONS-CPI-DATA':
                 return await this.adminBaseUserGeneralService.getSecretfromKMS(
                     this.adminBaseUserEmail,
                     this.adminBaseUserPass,
