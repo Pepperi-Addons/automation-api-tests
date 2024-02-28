@@ -7,7 +7,6 @@ import promised from 'chai-as-promised';
 chai.use(promised);
 
 export async function PricingAddonsUpsert(varPass: string, client: Client, prcVer = '') {
-    const dateTime = new Date();
     const generalService = new GeneralService(client);
     let installedPricingVersion;
 
@@ -43,7 +42,7 @@ export async function PricingAddonsUpsert(varPass: string, client: Client, prcVe
 
     describe(`Prerequisites Addons for PRICING Tests - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-    } | ${dateTime}`, async () => {
+    }`, async () => {
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];

@@ -16,7 +16,12 @@ import PricingRules from '../../../pom/addons/PricingRules';
 
 chai.use(promised);
 
-export async function PricingBaseTests(email: string, password: string, client: Client) {
+export async function PricingBaseTests(
+    email: string,
+    password: string,
+    client: Client,
+    specificVersion: 'version07for05data' | undefined = undefined,
+) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
@@ -24,13 +29,24 @@ export async function PricingBaseTests(email: string, password: string, client: 
     )?.Version;
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
-    const pricingData = installedPricingVersion === '5' ? new PricingData05() : new PricingData06();
+    const pricingData =
+        installedPricingVersion === '5'
+            ? new PricingData05()
+            : specificVersion === 'version07for05data'
+            ? new PricingData05()
+            : new PricingData06();
     const pricingRules = new PricingRules();
     let ppmValues_content;
     switch (installedPricingVersion) {
         case '5':
             console.info('AT installedPricingVersion CASE 5');
             ppmValues_content = pricingRules.version05;
+            break;
+
+        case '7':
+            console.info('AT installedPricingVersion CASE 7');
+            ppmValues_content =
+                specificVersion === 'version07for05data' ? pricingRules.version05 : pricingRules.version06;
             break;
 
         default:
@@ -338,7 +354,7 @@ export async function PricingBaseTests(email: string, password: string, client: 
                                     driver.sleep(1 * 1000);
                                 });
                                 testItems.forEach(async (item) => {
-                                    it(`checking item "${item.name}"`, async () => {
+                                    it(`checking item "${item.name}"`, async function () {
                                         const totalUnitsAmount = await pricingService.getItemTotalAmount(
                                             'Cart',
                                             item.name,
