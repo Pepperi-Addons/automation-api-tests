@@ -160,8 +160,8 @@ export async function PricingBaseTests(
                 console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                 matchingRowOfppmValues &&
                     addContext(this, {
-                        title: `PPM Value for the Key "${mainKey}"`,
-                        value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${ppmValues_content[mainKey]}`,
+                        title: `PPM Key "${mainKey}"`,
+                        value: `ACTUAL: ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
                     });
                 matchingRowOfppmValues &&
                     expect(ppmValues_content[mainKey]).equals(
