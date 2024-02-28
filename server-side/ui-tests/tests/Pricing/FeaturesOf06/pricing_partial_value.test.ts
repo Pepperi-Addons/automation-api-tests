@@ -356,7 +356,6 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                         );
                                         driver.sleep(0.3 * 1000);
                                     });
-                                    await driver.click(orderPage.Cart_SmartFilter_buttonsContainer);
                                     await driver.untilIsVisible(orderPage.Cart_SmartFilter_ApplyButton);
                                     await driver.click(orderPage.Cart_SmartFilter_ApplyButton);
                                     await orderPage.isSpinnerDone();
