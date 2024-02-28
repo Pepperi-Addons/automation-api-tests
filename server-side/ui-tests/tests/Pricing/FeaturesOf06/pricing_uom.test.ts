@@ -92,7 +92,7 @@ export async function PricingUomTests(email: string, password: string, client: C
     ];
 
     if (installedPricingVersionShort !== '5') {
-        describe(`Pricing UOM UI tests  - ${
+        describe(`Pricing ** UOM ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {
@@ -138,7 +138,7 @@ export async function PricingUomTests(email: string, password: string, client: C
                 console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
             });
 
-            it('validating "PPM_Values" via API', async () => {
+            it('validating "PPM_Values" via API', async function () {
                 const expectedPPMValuesLength =
                     Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length;
                 console.info(
@@ -149,7 +149,7 @@ export async function PricingUomTests(email: string, password: string, client: C
                 );
                 addContext(this, {
                     title: `PPM Values Length`,
-                    value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
+                    value: `ACTUAL: ${ppmValues.length} \nEXPECTED: ${expectedPPMValuesLength}`,
                 });
                 expect(ppmValues.length).equals(expectedPPMValuesLength);
                 Object.keys(ppmValues_content).forEach((mainKey) => {
@@ -164,8 +164,8 @@ export async function PricingUomTests(email: string, password: string, client: C
                     console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                     matchingRowOfppmValues &&
                         addContext(this, {
-                            title: `PPM Value for the Key "${mainKey}"`,
-                            value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${ppmValues_content[mainKey]}`,
+                            title: `PPM Key "${mainKey}"`,
+                            value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
                         });
                     matchingRowOfppmValues &&
                         expect(ppmValues_content[mainKey]).equals(

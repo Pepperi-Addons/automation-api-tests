@@ -90,7 +90,7 @@ export async function PricingBaseTests(
         'PriceTaxUnitPriceAfter1',
     ];
 
-    describe(`Pricing Base UI tests | Ver ${installedPricingVersionLong}`, () => {
+    describe(`Pricing ** Base ** UI tests | Ver ${installedPricingVersionLong}`, () => {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
@@ -145,7 +145,7 @@ export async function PricingBaseTests(
             );
             addContext(this, {
                 title: `PPM Values Length`,
-                value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
+                value: `ACTUAL: ${ppmValues.length} \nEXPECTED: ${expectedPPMValuesLength}`,
             });
             expect(ppmValues.length).equals(expectedPPMValuesLength);
             Object.keys(ppmValues_content).forEach((mainKey) => {
@@ -160,8 +160,8 @@ export async function PricingBaseTests(
                 console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                 matchingRowOfppmValues &&
                     addContext(this, {
-                        title: `PPM Value for the Key "${mainKey}"`,
-                        value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${ppmValues_content[mainKey]}`,
+                        title: `PPM Key "${mainKey}"`,
+                        value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
                     });
                 matchingRowOfppmValues &&
                     expect(ppmValues_content[mainKey]).equals(
