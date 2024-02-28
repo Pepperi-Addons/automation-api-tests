@@ -43,7 +43,7 @@ export async function PricingUdtInsertion(
             }
             addContext(this, {
                 title: `ppmValues_content length`,
-                value: ppmValues_content.length,
+                value: Object.keys(ppmValues_content).length,
             });
             addContext(this, {
                 title: `ppmValues_content`,
