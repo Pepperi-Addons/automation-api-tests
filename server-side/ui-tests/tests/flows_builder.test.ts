@@ -241,6 +241,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                     expect(stepFromAPI.Configuration).to.deep.equal(stepInput.Configuration);
                 }
                 driver.sleep(10000); //wait for eveything to sync or whatever
+                debugger;
                 //-> enter flow
                 await flowService.enterFlowBySearchingName(positiveFlow.Name);
                 //->validate all steps are there with correct names
@@ -250,9 +251,10 @@ export async function FlowTests(email: string, password: string, client: Client,
                     expect(isCreatedSecsefully).to.equal(true);
                 }
                 //-> validate the script inside the step and its params
+                debugger;
                 for (let index = 0; index < newFlowSteps.length; index++) {
                     const step = newFlowSteps[index];
-                    const isCreatedSuccessfully = await flowService.validateStepScript(index + 1, step, generalService);
+                    const isCreatedSuccessfully = await flowService.validateStepScript(index + 1, step, generalService); // issues is here
                     expect(isCreatedSuccessfully).to.equal(true);
                     await flowService.closeScriptModal();
                 }
@@ -274,6 +276,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                 expect(newFlow.Body.Steps).to.deep.equal(positiveFlow.Steps);
             });
             it('6. Run Flow And See Result', async function () {
+                debugger;
                 const flowService = new FlowService(driver);
                 //->run flow and see result
                 const isRunFlowPresentedCorrectly = await flowService.getToRunPageOfFlowByKeyUsingNav(
@@ -354,7 +357,23 @@ export async function FlowTests(email: string, password: string, client: Client,
                 expect(returnedValueCopyFlow).to.equal(expectedResult);
                 await flowService.backToList();
             });
-            it('9. Delete The Copy - See It Dosnet Show In The List, Call API See It Was Deleted', async function () {
+            it('9. Dissable All Steps On Flow And Run Once Again', async function () {
+                const flowService = new FlowService(driver);
+                await flowService.enterFlowBySearchingName(duplicatedFlow.Name);
+                for (let index = 0; index < newFlowSteps.length; index++) {
+                    await flowService.disableStep(index + 1);
+                }
+                await flowService.saveFlow();
+                const isRunFlowPresentedCorrectlyCopyFlow = await flowService.getToRunPageOfFlowByKeyUsingNav(
+                    duplicatedFlow.Key,
+                    duplicatedFlow,
+                );
+                expect(isRunFlowPresentedCorrectlyCopyFlow).to.equal(true);
+                await flowService.runFlow();
+                const returnedValue = await flowService.validateRunResultStepsAreDisabled();
+                expect(returnedValue).to.include(`finished running flow ${duplicatedFlow.Name}, result is {}. `);
+            });
+            it('10. Delete The Copy - See It Dosnet Show In The List, Call API See It Was Deleted', async function () {
                 const flowService = new FlowService(driver);
                 //3. delete the duplicate using pencil menu - see only the first one is left
                 await flowService.searchFlowByName(duplicatedFlow.Name);
