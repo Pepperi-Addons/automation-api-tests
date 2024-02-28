@@ -2259,7 +2259,7 @@ export async function handleTeamsURL(addonName, service, email, pass) {
         case 'CPI-DATA':
         case 'CPI DATA':
         case 'ADDONS-CPI-DATA':
-            return await service.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
+            return await service.getSecretfromKMS(email, pass, 'CPIDataTeamsWebHook');
         case 'CORE':
         case 'CORE-GENERIC-RESOURCES':
             return await service.getSecretfromKMS(email, pass, 'CORETeamsWebHook');
