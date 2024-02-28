@@ -1374,7 +1374,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 }
                 const lineStats = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject).LinesStatistics;
                 expect(lineStats.Inserted).to.equal(howManyRows);
-                generalService.sleep(1000 * 80); //let PNS Update
+                generalService.sleep(1000 * 120); //let PNS Update
                 for (let index = 1; index <= 85; index++) {
                     console.log(`searching for 250 rows for the ${index} time - out of 85 sampling batch`);
                     const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
@@ -1432,7 +1432,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(overwriteLineStats.Updated).to.equal(howManyUpdated);
                 expect(overwriteLineStats.Inserted).to.equal(howManyNewRowsOnOverwrite);
                 expect(overwriteLineStats.Total).to.equal(howManyOld + howManyUpdated + howManyNewRowsOnOverwrite);
-                generalService.sleep(1000 * 80); //let PNS Update
+                generalService.sleep(1000 * 140); //let PNS Update
                 const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
                     dimxOverWriteCollectionName,
                     1,
