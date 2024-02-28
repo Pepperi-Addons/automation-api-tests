@@ -443,7 +443,9 @@ export class FlowService extends AddonPage {
 
     async validateRunResultStepsAreDisabled() {
         const resultOfDisabledStepsFlowXPathSelector = "//mat-label[@title='run logs']//..//..//..//pre";
-        const resultText = await (await this.browser.findElement(By.xpath(resultOfDisabledStepsFlowXPathSelector))).getText();
+        const resultText = await (
+            await this.browser.findElement(By.xpath(resultOfDisabledStepsFlowXPathSelector))
+        ).getText();
         return resultText;
     }
 
