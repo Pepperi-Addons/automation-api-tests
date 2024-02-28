@@ -92,7 +92,7 @@ export async function PricingUomTests(email: string, password: string, client: C
     ];
 
     if (installedPricingVersionShort !== '5') {
-        describe(`Pricing UOM UI tests  - ${
+        describe(`Pricing ** UOM ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {

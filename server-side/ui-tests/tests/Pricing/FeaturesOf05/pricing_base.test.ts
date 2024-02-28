@@ -90,7 +90,7 @@ export async function PricingBaseTests(
         'PriceTaxUnitPriceAfter1',
     ];
 
-    describe(`Pricing Base UI tests | Ver ${installedPricingVersionLong}`, () => {
+    describe(`Pricing ** Base ** UI tests | Ver ${installedPricingVersionLong}`, () => {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);

@@ -47,11 +47,12 @@ export class OrderPage extends WebAppList {
     public Cart_SmartFilter_ItemExternalID: By = By.xpath(
         '//pep-smart-filters//span[@title="Item External ID"]/ancestor::mat-panel-title',
     );
+    public Cart_SmartFilter_buttonsContainer: By = By.xpath('//pep-smart-filters//pep-filter-actions');
     public Cart_SmartFilter_ApplyButton: By = By.xpath(
-        '//pep-smart-filters//pep-filter-actions//button[contains(text(),"Apply")]',
+        `${this.Cart_SmartFilter_buttonsContainer.value}//button[contains(text(),"Apply")]`,
     );
     public Cart_SmartFilter_ClearButton: By = By.xpath(
-        '//pep-smart-filters//pep-filter-actions//button[contains(text(),"Clear")]',
+        `${this.Cart_SmartFilter_buttonsContainer.value}//button[contains(text(),"Clear")]`,
     );
     public TransactionUUID: By = By.id('UUID');
     public TransactionID: By = By.id('WrntyID');

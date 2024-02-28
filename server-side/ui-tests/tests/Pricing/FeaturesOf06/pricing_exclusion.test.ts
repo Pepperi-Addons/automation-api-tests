@@ -70,7 +70,7 @@ export async function PricingExclusionTests(email: string, password: string, cli
     const priceFields2 = ['PriceBaseUnitPriceAfter2', 'PriceDiscountUnitPriceAfter2', 'PriceTaxUnitPriceAfter2'];
 
     if (installedPricingVersionShort !== '5') {
-        describe(`Pricing Exclusion Rules UI tests  - ${
+        describe(`Pricing ** Exclusion Rules ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {

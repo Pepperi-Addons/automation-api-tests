@@ -82,7 +82,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
     const pricePartialFields = ['PricePartial'];
 
     if (installedPricingVersionShort !== '5') {
-        describe(`Pricing Partial Value UI tests  - ${
+        describe(`Pricing ** Partial Value ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {
@@ -356,6 +356,8 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                         );
                                         driver.sleep(0.3 * 1000);
                                     });
+                                    await driver.click(orderPage.Cart_SmartFilter_buttonsContainer);
+                                    await driver.untilIsVisible(orderPage.Cart_SmartFilter_ApplyButton);
                                     await driver.click(orderPage.Cart_SmartFilter_ApplyButton);
                                     await orderPage.isSpinnerDone();
                                     driver.sleep(0.8 * 1000);
