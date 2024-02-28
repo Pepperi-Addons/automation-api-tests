@@ -197,7 +197,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
         'PriceTaxUnitPriceAfter1',
     ];
 
-    describe(`Pricing ** Additional Groups Readonly ** UI tests | Ver ${installedPricingVersionLong}`, () => {
+    describe(`Pricing ** Additional, Groups, Readonly ** UI tests | Ver ${installedPricingVersionLong}`, () => {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);

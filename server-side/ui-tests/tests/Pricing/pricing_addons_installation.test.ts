@@ -22,9 +22,15 @@ export async function PricingAddonsUpsert(varPass: string, client: Client, prcVe
         // 'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''], // current phased version 0.7.112 | dependency > 0.7.104
         // 'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.31'], // CPAPI | dependency > 9.6.43
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.30.7'], //CPAS | dependency > 17.3
-        // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.20.%'], //CPAS | dependency > 17.3
+        'WebApp API Framework': [
+            '00000000-0000-0000-0000-0000003eba91',
+            `${prcVer?.startsWith('0.5') ? '17.20.%' : ''}`,
+        ], //CPAS | dependency > 17.3
+        'Cross Platform Engine': [
+            'bb6ee826-1c6b-4a11-9758-40a46acb69c5',
+            `${prcVer?.startsWith('0.5') ? '1.4.%' : ''}`,
+        ], //CPI-NODE (Cross Platform Engine) | dependency > 1.5.39
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.5.57'], //CPI-NODE (Cross Platform Engine) | dependency > 1.5.39
-        // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.4.%'], //CPI-NODE (Cross Platform Engine) | dependency > 1.5.39
         // Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], // current phased version 0.9.38 | dependency > 0.9.31
         // Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''], // current phased version 1.0.23 | dependency > 1.0.23
         // 'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], // UDC current phased version 0.8.29 | dependency > 0.8.11
