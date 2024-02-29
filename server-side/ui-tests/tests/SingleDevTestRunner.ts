@@ -281,8 +281,10 @@ export class SingleDevTestRunner {
                 console.log(`${currentTestName} passed!`);
             } else {
                 console.log(`${currentTestName} failed!`);
+                return false;
             }
         }
+        return true;
     }
     // async runDevTestADAL(testNamesADAL: string[], testNamesDataIndex: string[]) {
     //     if (testNamesADAL.length !== 0) {

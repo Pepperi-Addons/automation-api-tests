@@ -87,8 +87,8 @@ export async function ConfigurationTests(email: string, password: string, client
             });
             it(`2. Run Tests`, async function () {
                 debugger;
-                const x = await devTestRunner.runDevTest(testNames);
-                console.log(x);
+                const configDevResults = await devTestRunner.runDevTest(testNames);
+                expect(configDevResults).to.be.true;
                 debugger;
             });
         });
