@@ -1367,7 +1367,9 @@ export default class GeneralService {
         let informativeMessage = `Latest available version ${
             version ? `that starts with ${version} ` : ''
         }retrieved successfully`;
-        const searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
+        const searchString = `AND Version Like '${
+            version === undefined || version === '' ? '%' : version
+        }' AND Available Like 1`;
         const fetchVarResponse = await this.fetchStatus(
             `${this.client.BaseURL.replace(
                 'papi-eu',
