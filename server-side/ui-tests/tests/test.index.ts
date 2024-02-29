@@ -2696,12 +2696,16 @@ export async function reportToTeams(
             failedTestsOrdered.length > 0 ? 'Failed Tests:<br>' : ''
         }${failedTestsOrdered.toString()}`;
         debugger;
+        if (message2.length > 20000) {
+            message2 =
+                message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console<br><br>Failed Tests:<br>ARE TOO MANY - CANNOT SEND SO MUCH DATA VIA TEAMS PLEASE CHECK JENKINS!`;
+        }
     }
     const bodyToSend = {
         Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
         Description: message,
         Status: passingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
-        Message: message2 === '' ? '~' : message2,
+        Message: message2 === '' ? '~' : message2.trim(),
         UserWebhook: await handleTeamsURL(addonName, generalService, email, pass),
     };
     const monitoringResponse = await generalService.fetchStatus(
