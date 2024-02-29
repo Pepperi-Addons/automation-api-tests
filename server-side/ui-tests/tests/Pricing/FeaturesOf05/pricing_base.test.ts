@@ -91,6 +91,61 @@ export async function PricingBaseTests(
     ];
 
     describe(`Pricing ** Base ** UI tests | Ver ${installedPricingVersionLong}`, () => {
+        /*
+             _________________ 
+             _________________ Brief:
+                          
+                * Basic Pricing tests
+                * Pricing is calculated according to Configuration and matching rules that are hosted at "PPM_Values" UDT
+                * 7 selected test items (some has rules applied to them and other don't), 2 test accounts, 5 test states, 5 pricing fields (Base, Discount, Group Discount, Manual Line, Tax)
+                * for each of the accounts, then each of the states - every one of the items UI values are being retrieved and compared with expected data (that is held in an object pricingData)
+             _________________ 
+             _________________ The Relevant Rules:
+                          
+             . 'ZBASE@A002@Acc01@Frag005': 
+                '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]',
+    
+             . 'ZBASE@A002@Acc01@ToBr56': 
+                '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",22,"P"]]]]',
+    
+             . 'ZBASE@A001@ToBr56': 
+                '[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",50,"P"]]]]',
+    
+             . 'ZBASE@A001@Frag012':  
+                '[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",20,"P"]]]]',
+    
+             . 'ZBASE@A003@Acc01@Pharmacy':  
+                '[[true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",30,"P"]]]]',
+    
+             . 'ZDS1@A001@ToBr56':   
+                '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]',
+            
+             . 'ZDS1@A001@Spring Loaded Frizz-Fighting Conditioner':
+                '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",5,"%"],[5,"D",10,"%"],[20,"D",15,"%"]]]]',
+    
+             . 'MTAX@A002@Acc01@Frag005': 
+                '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
+    
+             . 'MTAX@A002@Acc01@Frag012': 
+                '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
+    
+             _________________ 
+             _________________ Order Of Actions:
+                          
+                1. Looping over accounts
+    
+                    2. Looping over states
+    
+                        3. At Order Center: Looping over items
+                        ----> retrieving pricing fields values from UI and comparing to expected data ( pricingData.testItemsValues.Base[item.name][priceField][account][state] )
+    
+                        4. At Cart (for each state apart of "baseline"): Looping over items
+                        ----> same check as at order center
+    
+             _________________ 
+             _________________ 
+         */
+
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
@@ -292,7 +347,7 @@ export async function PricingBaseTests(
                                 switch (state) {
                                     case 'baseline':
                                         expectedNPMCalcMessageLength =
-                                            pricingData.testItemsValues['Base'][item.name]['NPMCalcMessage'][account][
+                                            pricingData.testItemsValues.Base[item.name]['NPMCalcMessage'][account][
                                                 state
                                             ].length;
                                         expect(priceTSAs['NPMCalcMessage'].length).equals(expectedNPMCalcMessageLength);
@@ -300,10 +355,10 @@ export async function PricingBaseTests(
 
                                     default:
                                         expectedNPMCalcMessageLength =
-                                            pricingData.testItemsValues['Base'][item.name]['NPMCalcMessage'][account][
+                                            pricingData.testItemsValues.Base[item.name]['NPMCalcMessage'][account][
                                                 'baseline'
                                             ].length +
-                                            pricingData.testItemsValues['Base'][item.name]['NPMCalcMessage'][account][
+                                            pricingData.testItemsValues.Base[item.name]['NPMCalcMessage'][account][
                                                 state
                                             ].length;
                                         expect(priceTSAs['NPMCalcMessage'].length).equals(expectedNPMCalcMessageLength);
@@ -311,7 +366,7 @@ export async function PricingBaseTests(
                                 }
                                 priceFields.forEach((priceField) => {
                                     const expectedValue =
-                                        pricingData.testItemsValues['Base'][item.name][priceField][account][state];
+                                        pricingData.testItemsValues.Base[item.name][priceField][account][state];
                                     expect(priceTSAs[priceField]).equals(expectedValue);
                                 });
                                 driver.sleep(0.2 * 1000);
@@ -377,9 +432,7 @@ export async function PricingBaseTests(
                                         // expect(totalUnitsAmount).equals(expectedAmount);
                                         priceFields.forEach((priceField) => {
                                             const expextedValue =
-                                                pricingData.testItemsValues['Base'][item.name][priceField][account][
-                                                    state
-                                                ];
+                                                pricingData.testItemsValues.Base[item.name][priceField][account][state];
                                             expect(priceTSAs[priceField]).equals(expextedValue);
                                         });
                                     });
