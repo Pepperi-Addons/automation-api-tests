@@ -177,7 +177,7 @@ export class SingleDevTestRunner {
                 body,
                 testserUuid,
             );
-            if (devTestResponse) {
+            if (!devTestResponse) {
                 const errorString = `Error: got undefined when trying to run ${this.addonName} tests - no EXECUTION UUID!`;
                 throw new Error(`${errorString}`);
             }
@@ -301,7 +301,7 @@ export class SingleDevTestRunner {
         // if (this.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
         //     await this.runDevTestADAL(testNames.ADAL, testNames.DataIndex);
         // } else {
-        await this.runDevTestInt(testNames);
+        return await this.runDevTestInt(testNames);
         // }
     }
 
