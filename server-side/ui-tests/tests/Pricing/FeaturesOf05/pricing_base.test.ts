@@ -22,6 +22,60 @@ export async function PricingBaseTests(
     client: Client,
     specificVersion: 'version07for05data' | undefined = undefined,
 ) {
+/*
+_________________ 
+_________________ Brief:
+            
+* Basic Pricing tests
+* Pricing is calculated according to Configuration and matching rules that are hosted at "PPM_Values" UDT
+* 7 selected test items (some has rules applied to them and other don't), 2 test accounts, 5 test states, 5 pricing fields (Base, Discount, Group Discount, Manual Line, Tax)
+* for each of the accounts, then each of the states - every one of the items UI values are being retrieved and compared with expected data (that is held in an object pricingData)
+_________________ 
+_________________ The Relevant Rules:
+            
+. 'ZBASE@A002@Acc01@Frag005': 
+'[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]',
+
+. 'ZBASE@A002@Acc01@ToBr56': 
+'[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",22,"P"]]]]',
+
+. 'ZBASE@A001@ToBr56': 
+'[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",50,"P"]]]]',
+
+. 'ZBASE@A001@Frag012':  
+'[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",20,"P"]]]]',
+
+. 'ZBASE@A003@Acc01@Pharmacy':  
+'[[true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",30,"P"]]]]',
+
+. 'ZDS1@A001@ToBr56':   
+'[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]',
+
+. 'ZDS1@A001@Spring Loaded Frizz-Fighting Conditioner':
+'[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",5,"%"],[5,"D",10,"%"],[20,"D",15,"%"]]]]',
+
+. 'MTAX@A002@Acc01@Frag005': 
+'[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
+
+. 'MTAX@A002@Acc01@Frag012': 
+'[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
+
+_________________ 
+_________________ Order Of Actions:
+            
+1. Looping over accounts
+
+    2. Looping over states
+
+        3. At Order Center: Looping over items
+        ----> retrieving pricing fields values from UI and comparing to expected data ( pricingData.testItemsValues.Base[item.name][priceField][account][state] )
+
+        4. At Cart (for each state apart of "baseline"): Looping over items
+        ----> same check as at order center
+
+_________________ 
+_________________ 
+ */
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
@@ -33,8 +87,8 @@ export async function PricingBaseTests(
         installedPricingVersion === '5'
             ? new PricingData05()
             : specificVersion === 'version07for05data'
-            ? new PricingData05()
-            : new PricingData06();
+                ? new PricingData05()
+                : new PricingData06();
     const pricingRules = new PricingRules();
     let ppmValues_content;
     switch (installedPricingVersion) {
@@ -91,61 +145,6 @@ export async function PricingBaseTests(
     ];
 
     describe(`Pricing ** Base ** UI tests | Ver ${installedPricingVersionLong}`, () => {
-        /*
-             _________________ 
-             _________________ Brief:
-                          
-                * Basic Pricing tests
-                * Pricing is calculated according to Configuration and matching rules that are hosted at "PPM_Values" UDT
-                * 7 selected test items (some has rules applied to them and other don't), 2 test accounts, 5 test states, 5 pricing fields (Base, Discount, Group Discount, Manual Line, Tax)
-                * for each of the accounts, then each of the states - every one of the items UI values are being retrieved and compared with expected data (that is held in an object pricingData)
-             _________________ 
-             _________________ The Relevant Rules:
-                          
-             . 'ZBASE@A002@Acc01@Frag005': 
-                '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]',
-    
-             . 'ZBASE@A002@Acc01@ToBr56': 
-                '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",22,"P"]]]]',
-    
-             . 'ZBASE@A001@ToBr56': 
-                '[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",50,"P"]]]]',
-    
-             . 'ZBASE@A001@Frag012':  
-                '[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",20,"P"]]]]',
-    
-             . 'ZBASE@A003@Acc01@Pharmacy':  
-                '[[true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",30,"P"]]]]',
-    
-             . 'ZDS1@A001@ToBr56':   
-                '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",20,"%"]]]]',
-            
-             . 'ZDS1@A001@Spring Loaded Frizz-Fighting Conditioner':
-                '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",5,"%"],[5,"D",10,"%"],[20,"D",15,"%"]]]]',
-    
-             . 'MTAX@A002@Acc01@Frag005': 
-                '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
-    
-             . 'MTAX@A002@Acc01@Frag012': 
-                '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
-    
-             _________________ 
-             _________________ Order Of Actions:
-                          
-                1. Looping over accounts
-    
-                    2. Looping over states
-    
-                        3. At Order Center: Looping over items
-                        ----> retrieving pricing fields values from UI and comparing to expected data ( pricingData.testItemsValues.Base[item.name][priceField][account][state] )
-    
-                        4. At Cart (for each state apart of "baseline"): Looping over items
-                        ----> same check as at order center
-    
-             _________________ 
-             _________________ 
-         */
-
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
@@ -277,7 +276,7 @@ export async function PricingBaseTests(
                             it(`checking item "${item.name}"`, async function () {
                                 await pricingService.searchInOrderCenter.bind(this)(item.name, driver);
                                 switch (
-                                    state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
+                                state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
                                 ) {
                                     case '1unit':
                                         await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
@@ -421,10 +420,10 @@ export async function PricingBaseTests(
                                             state === '1unit'
                                                 ? 1
                                                 : state === '3units'
-                                                ? 3
-                                                : state === '1case(6units)'
-                                                ? 6
-                                                : item.cartAmount;
+                                                    ? 3
+                                                    : state === '1case(6units)'
+                                                        ? 6
+                                                        : item.cartAmount;
                                         addContext(this, {
                                             title: `Total Units Amount`,
                                             value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
