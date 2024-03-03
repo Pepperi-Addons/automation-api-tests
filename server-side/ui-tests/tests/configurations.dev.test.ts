@@ -87,7 +87,7 @@ export async function ConfigurationTests(email: string, password: string, client
             });
             it(`2. Run Tests`, async function () {
                 debugger;
-                const configDevResults = await devTestRunner.runDevTest(testNames);
+                const configDevResults = await devTestRunner.runSingleDevTest(testNames, generalService);
                 expect(configDevResults).to.be.true;
                 debugger;
             });

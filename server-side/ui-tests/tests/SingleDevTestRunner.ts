@@ -286,6 +286,144 @@ export class SingleDevTestRunner {
         }
         return true;
     }
+
+    async runSingleDevTestInt(testNames: string[], service: GeneralService, testserUuid?: string) {
+        debugger;
+        for (let index = 0; index < testNames.length; index++) {
+            const currentTestName = testNames[index];
+            const body = {
+                Name: currentTestName,
+            };
+            console.log(
+                `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
+                    testNames.length
+                }  #######################`,
+            );
+            const addonSk = null;
+            // if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
+            //     addonSk = await this.adminBaseUserGeneralService.getSecretfromKMS(
+            //         this.adminBaseUserEmail,
+            //         this.adminBaseUserPass,
+            //         'AutomationAddonSecretKey',
+            //     );
+            // }
+            // if (this.addonName === 'CONFIGURATIONS') {
+            //     addonSk = await this.adminBaseUserGeneralService.getSecretfromKMS(
+            //         this.adminBaseUserEmail,
+            //         this.adminBaseUserPass,
+            //         'AutomationAddonSecretKeyConfigAddon',
+            //     );
+            // }
+            const devTestResponse: any = await this.runSingleDevTestOnCertainEnv(service, addonSk, body, testserUuid);
+            if (!devTestResponse) {
+                const errorString = `Error: got undefined when trying to run ${this.addonName} tests - no EXECUTION UUID!`;
+                throw new Error(`${errorString}`);
+            }
+            if (devTestResponse.Body.URI === undefined) {
+                const errorString = `Error: got undefined when trying to run ${this.addonName} tests - no EXECUTION UUID!`;
+                throw new Error(`${errorString}`);
+            }
+            console.log(
+                `####################### ${currentTestName}: EXECUTION UUID: ${devTestResponse.Body.URI} ####################### `,
+            );
+            debugger;
+            this.service.sleep(1000 * 15);
+            const devTestResults = await this.getTestResponse(
+                this.devTestUserObject.email,
+                'prod',
+                devTestResponse.Body.URI,
+            );
+            if (
+                devTestResults.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                devTestResults.AuditInfo.ErrorMessage.includes('Task timed out after')
+            ) {
+                debugger;
+                let errorString = '';
+                if (
+                    devTestResults.AuditInfo.hasOwnProperty('ErrorMessage') &&
+                    devTestResults.AuditInfo.ErrorMessage.includes('Task timed out after')
+                ) {
+                    errorString += `got the error: ${devTestResults.AuditInfo.ErrorMessage} from Audit Log, On Test: ${currentTestName}, EXECUTION UUID: ${devTestResponse.Body.URI},\n`;
+                }
+                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            }
+            debugger;
+            //4.3. parse the response
+            let testResultArray;
+            try {
+                testResultArray = JSON.parse(devTestResults.AuditInfo.ResultObject);
+            } catch (error) {
+                debugger;
+                let errorString = '';
+                if (!devTestResults.AuditInfo.ResultObject) {
+                    errorString += `got the error: ${devTestResults.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName} ,EXECUTION UUID: ${devTestResponse.Body.URI},\n`;
+                }
+                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            }
+
+            let objectToPrint;
+            let shouldAlsoPrintVer = false;
+            if (testResultArray.results === undefined && testResultArray.tests === undefined) {
+                const errorString = `Cannot Parse Result Object, Recieved: ${JSON.stringify(testResultArray)}`;
+                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            }
+            //TODO: move the parsing to another function
+            if (
+                testResultArray.results &&
+                testResultArray.results[0].suites[0].suites &&
+                testResultArray.results[0].suites[0].suites.length > 0
+            ) {
+                shouldAlsoPrintVer = true;
+                objectToPrint = testResultArray.results[0].suites[0].suites;
+            } else if (testResultArray.results) {
+                //add an if to catch the other result config also
+                objectToPrint = testResultArray.results[0].suites;
+            } else {
+                objectToPrint = testResultArray.tests;
+            }
+            if (objectToPrint === undefined) {
+                debugger;
+                let errorString = '';
+                errorString += `${this.devTestUserObject.email} got the error: ${
+                    devTestResults.AuditInfo.ErrorMessage
+                } from Audit Log, Recived Audit Log: ${JSON.stringify(devTestResults.AuditInfo)}, EXECUTION UUID: ${
+                    devTestResponse.Body.URI
+                },\n`;
+                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
+            }
+            console.log(
+                `********* this printing is made for debugging - you can skip downward to see the prettified tests result *********`,
+            );
+            for (let index = 0; index < objectToPrint.length; index++) {
+                const result = objectToPrint[index];
+                console.log(`\n***${currentTestName} result object: ${JSON.stringify(result)}***\n`);
+            }
+            console.log(
+                `\n****************************************************** Prettified Tests Results Splitted To Envs ******************************************************\n'`,
+            );
+            const results = await this.printResultsTestObject(
+                objectToPrint,
+                this.devTestUserObject.email,
+                'prod',
+                currentTestName,
+            );
+            if (shouldAlsoPrintVer) {
+                objectToPrint = testResultArray.results[0].suites[1].suites;
+                await this.printResultsTestObject(objectToPrint, this.devTestUserObject.email, 'prod', currentTestName);
+            }
+            // debugger;
+            //4.6. create the array of passing / failing tests
+            // debugger;
+            if (results.didSucceed) {
+                //devPassingEnvs  devFailedEnvs   failedSuitesEU   failedSuitesProd   failedSuitesSB
+                console.log(`${currentTestName} passed!`);
+            } else {
+                console.log(`${currentTestName} failed!`);
+                return false;
+            }
+        }
+        return true;
+    }
     // async runDevTestADAL(testNamesADAL: string[], testNamesDataIndex: string[]) {
     //     if (testNamesADAL.length !== 0) {
     //         console.log('ADAL Dev Tests: ');
@@ -304,6 +442,14 @@ export class SingleDevTestRunner {
         //     await this.runDevTestADAL(testNames.ADAL, testNames.DataIndex);
         // } else {
         return await this.runDevTestInt(testNames);
+        // }
+    }
+
+    async runSingleDevTest(testNames: any, service: GeneralService) {
+        // if (this.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
+        //     await this.runDevTestADAL(testNames.ADAL, testNames.DataIndex);
+        // } else {
+        return await this.runSingleDevTestInt(testNames, service);
         // }
     }
 
@@ -369,6 +515,36 @@ export class SingleDevTestRunner {
     async runDevTestOnCertainEnv(userName, env, addonSk, bodyToSend, testerAddonUUID?) {
         const client = await initiateTester(userName, 'Aa123456', env);
         const service = new GeneralService(client);
+        let _headers;
+        let addonsTestingEndpoint = `/addons/api/async/${this.addonUUID}/tests/tests`;
+        if (this.addonName === 'CONFIGURATIONS') {
+            _headers = {
+                'x-pepperi-ownerid': '84c999c3-84b7-454e-9a86-71b7abc96554',
+                'x-pepperi-secretkey': addonSk,
+                Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
+            };
+        }
+        if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
+            if (testerAddonUUID != undefined) {
+                addonsTestingEndpoint = `/addons/api/async/${testerAddonUUID}/tests/tests`; //run data index tests for ADAL
+            } else {
+                addonsTestingEndpoint = `/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests`; //run data index tests for ADAL
+            }
+            _headers = {
+                'x-pepperi-ownerid': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+                'x-pepperi-secretkey': addonSk,
+                Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
+            };
+        }
+        const testResponse = await service.fetchStatus(addonsTestingEndpoint, {
+            body: JSON.stringify(bodyToSend),
+            method: 'POST',
+            headers: _headers ? _headers : { Authorization: `Bearer ${service['client'].OAuthAccessToken}` },
+        });
+        return testResponse;
+    }
+
+    async runSingleDevTestOnCertainEnv(service, addonSk, bodyToSend, testerAddonUUID?) {
         let _headers;
         let addonsTestingEndpoint = `/addons/api/async/${this.addonUUID}/tests/tests`;
         if (this.addonName === 'CONFIGURATIONS') {
