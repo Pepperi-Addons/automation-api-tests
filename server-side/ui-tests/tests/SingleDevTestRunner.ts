@@ -266,12 +266,17 @@ export class SingleDevTestRunner {
             const results = await this.printResultsTestObject(
                 objectToPrint,
                 this.devTestUserObject.email,
-                'prod',
+                this.devTestUserObject.env,
                 currentTestName,
             );
             if (shouldAlsoPrintVer) {
                 objectToPrint = testResultArray.results[0].suites[1].suites;
-                await this.printResultsTestObject(objectToPrint, this.devTestUserObject.email, 'prod', currentTestName);
+                await this.printResultsTestObject(
+                    objectToPrint,
+                    this.devTestUserObject.email,
+                    this.devTestUserObject.env,
+                    currentTestName,
+                );
             }
             // debugger;
             //4.6. create the array of passing / failing tests
@@ -330,7 +335,7 @@ export class SingleDevTestRunner {
             this.service.sleep(1000 * 15);
             const devTestResults = await this.getTestResponse(
                 this.devTestUserObject.email,
-                'prod',
+                this.devTestUserObject.env,
                 devTestResponse.Body.URI,
             );
             if (
