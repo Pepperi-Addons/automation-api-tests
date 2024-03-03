@@ -1388,6 +1388,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                         expect(row.code).to.contain('data_');
                         expect(row.value).to.contain('old_value_');
                     }
+                    generalService.sleep(1000 * 5);
                 }
                 //4. create new file which overwrites
                 const newFileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
