@@ -16,6 +16,63 @@ import PricingRules from '../../../pom/addons/PricingRules';
 chai.use(promised);
 
 export async function PricingPartialValueTests(email: string, password: string, client: Client) {
+    /*
+_________________ 
+_________________ Brief:
+    
+* Pricing Partial Value
+* the totals calculations are used for 2 purposes:  
+* 1. when there are different UOM price sets - that each quantity would be multiplied by the correct price and thus the total sum would be accurate
+* 2. to compare two blocks (or unit fields) results in terms of absolute value or percentage, and to able to say: this discount block saved X money or got % discount..
+* 
+* field "PriceTaxTotal" calculation:  PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+* field "PriceTaxTotalDiff" calculation:  TaxTotal - BaseTotal  || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+* field "PriceTaxTotalPercent" calculation: (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base"
+* field "PriceTaxUnitDiff" calculation: PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+* 
+* the test agenda is to 
+_________________ 
+_________________ The Relevant Rules:
+    
+. 'ZGD1@A002@Acc01@MakeUp003':
+'[[true,"1555891200000","2534022144999","1","","ZGD1_A002",[[10,"D",20,"%"]],"EA"]]',
+
+. 'ZGD1@A003@Acc01@Beauty Make Up':
+'[[true,"1555891200000","2534022144999","1","","additionalItem",[[12,"D",100,"%","",1,"EA","MakeUp018",0]],"EA"]]',
+
+. 'ZGD2@A002@Acc01@MakeUp018':
+'[[true,"1555891200000","2534022144999","1","","additionalItem",[[2,"D",100,"%","",1,"EA","MakeUp018",0]],"EA"]]',
+
+. 'ZGD2@A003@Acc01@Beauty Make Up':
+'[[true,"1555891200000","2534022144999","1","","ZGD2_A003",[[3,"D",3,"%"],[7,"D",7,"%"]],"EA"]]',
+_________________ 
+_________________ Order Of Actions:
+    
+1. MakeUp001 - clicking plus button once
+2. MakeUp002 - clicking plus button once
+3. MakeUp003 - changing value to 1
+----> checking that discount for total of 3 group items is applied
+
+4. MakeUp018 - clicking plus button once
+5. MakeUp018 - changing value to 2
+6. MakeUp001 - changing value to 2
+7. MakeUp002 - changing value to 2
+----> checking that discount for total of 7 group items is applied
+
+8. MakeUp003 - changing value to 5
+9. MakeUp006 - clicking plus button once
+----> checking that an additional item (MakeUp018) is given for group total of 12 items
+
+10. MakeUp003 - changing value to 10
+----> checking that group total count is reduced to 7 because a singular rule for MakeUp003 excludes the item from the group
+        (additional item disappear and discount is calculated 7% for each of the group items + 20% discount is calculated for MakeUp003 specifically)
+    
+11. MakeUp019 - changing value to 5
+----> checking that group total count is 10 (MakeUp018 is excluded from the group and given an additional item of the same due to a singular rule)
+        making sure the additional item do not appear twice
+_________________ 
+_________________ 
+*/
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);

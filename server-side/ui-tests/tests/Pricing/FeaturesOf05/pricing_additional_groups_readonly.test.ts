@@ -330,7 +330,62 @@ export async function PricingAdditionalGroupsReadonlyTests(
                 });
 
                 describe('Additional Items (Free Goods)', () => {
-                    // 'ToBr55', 'Drug0002', 'Drug0004'
+                    /*
+                     _________________ 
+                     _________________ Brief:
+                      
+                        * Additional Item is a discount rule with 100% value, the UOM of the given item needs to be set
+                        * item ToBr55   -> different given free item for different counts (from 5 each -> ToBr10 (1 EA), from 20 each -> ToBr55 (1 CS))
+                        * item Drug0002 -> when the count of that item in the cart exceeds 10 cases -> 2 CS of the same item are given for free
+                        * item Drug0004 -> when the count of that item in the cart exceeds 3 cases -> 2 CS of item Drug0002 are given for free
+                     _________________ 
+                     _________________ The Relevant Rules:
+                      
+                     . 'ZDS2@A002@Acc01@ToBr55':
+                        '[[true,"1555891200000","2534022144999","1","","Free Goods",[[5,"D",100,"%","",1,"EA","ToBr10",0],[20,"D",100,"%","",1,"CS","ToBr55",0]],"EA"]]',
+
+                     . 'ZDS3@A001@Drug0002':
+                        '[[true,"1555891200000","2534022144999","1","","additionalItem",[[10,"D",100,"%","",2,"CS","Drug0002",0]],"CS"]]',
+
+                     . 'ZDS3@A001@Drug0004':
+                        '[[true,"1555891200000","2534022144999","1","","additionalItem",[[3,"D",100,"%","",2,"EA","Drug0002",0]],"CS"]]',
+                     _________________ 
+                     _________________ Order Of Actions:
+                      
+                        1. ToBr55 - changing value of quantity1 to 4 Each
+                        ----> checking that no rule is applied (NPMCalcMessage is empty)
+
+                        2. ToBr55 - clicking plus button once
+                        ----> checking that a rule of AdditionalItem is applied (NPMCalcMessage contains 1 rule of type additionalItem), given item is ToBr10 (relevent at Cart)
+
+                        3. ToBr55 - changing value to 20
+                        ----> checking that a rule of AdditionalItem is applied (NPMCalcMessage contains 1 rule of type additionalItem), given item is ToBr55 (relevent at Cart)
+
+                        4. ToBr55 - changing value to 4
+                        ----> checking that no rule is applied (NPMCalcMessage is empty)
+
+                        5. Drug0002 - changing value of quantity1 to 9 Case
+                        ----> checking that no additional item rule is applied (NPMCalcMessage contains 1 rule of set base price)
+
+                        6. Drug0002 - clicking plus button once
+                        ----> checking that a rule of AdditionalItem is applied (NPMCalcMessage contains 1 rule of type additionalItem), given item is Drug0002 2 CS (relevent at Cart)
+
+                        7. Drug0002 - changing value to 9
+                        ----> checking that no additional item rule is applied (NPMCalcMessage contains 1 rule of set base price)
+
+                        8. Drug0004 - changing value of quantity1 to 2 Case
+                        ----> checking that no additional item rule is applied (NPMCalcMessage contains 1 rule of set base price and 1 rule of MultipleValues)
+
+                        9. Drug0004 - clicking plus button once
+                        ----> checking that a rule of AdditionalItem is applied (NPMCalcMessage contains 1 rule of type additionalItem), given item is Drug0002 2 EA (relevent at Cart)
+
+                        10. Drug0004 - changing value to 2
+                        ----> checking that no additional item rule is applied (NPMCalcMessage contains 1 rule of set base price and 1 rule of MultipleValues)
+                        
+                        11. Testing the same at CART
+                     _________________ 
+                     _________________ 
+                    */
                     describe('ORDER CENTER', () => {
                         describe('item "ToBr55" - quantity that gets 1 item of "ToBr10" for free (from 5 units "Each") (only on "My store")', () => {
                             ['4 Each', '5 Each', '20 Each'].forEach(function (unitAmount, index) {
@@ -1108,7 +1163,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                               (additional item disappear and discount is calculated 7% for each of the group items + 20% discount is calculated for MakeUp003 specifically)
                         
                         11. MakeUp019 - changing value to 5
-                        ----> checking that group total count is 10 (MakeUp018 is excluded from the group and given an additional item of the same due to singular rule)
+                        ----> checking that group total count is 10 (MakeUp018 is excluded from the group and given an additional item of the same due to a singular rule)
                                making sure the additional item do not appear twice
                      _________________ 
                      _________________ 
@@ -2131,6 +2186,31 @@ export async function PricingAdditionalGroupsReadonlyTests(
                 });
 
                 describe('Read Only', () => {
+                    /*
+                     _________________ 
+                     _________________ Brief:
+                      
+                        * Read Only is meant to test that no pricing have been re-calculated after an order was submitted
+                        * UDT rules are changed via API after the order submission, and are reverted back when the test section is completed
+                     _________________ 
+                     _________________ Order Of Actions:
+                      
+                        1. validating order is in status "submitted"
+                        ----> checking at account dashboard for the latest activity
+
+                        2. changing selected rules value at "PPM_Values" UDT
+                        ----> checking that the API call was successful and performing another GET to validate the new values
+
+                        3. performing sync
+
+                        4. entering the Cart and repeating the checks of the latest previous test of the cart
+                        ----> checking that no pricing values has changed
+
+                        5. reverting the values of selected UDT rules to original
+                        ----> checking that the API call was successful and performing another GET to validate the new values
+                     _________________ 
+                     _________________ 
+                    */
                     describe('Validating Submission & UTD Changes via API', () => {
                         it('entering the same transaction post submission, checking the latest activity - ID', async function () {
                             await webAppList.isSpinnerDone();
