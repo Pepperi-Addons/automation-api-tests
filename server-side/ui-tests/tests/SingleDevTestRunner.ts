@@ -293,6 +293,7 @@ export class SingleDevTestRunner {
     }
 
     async runSingleDevTestInt(testNames: string[], service: GeneralService, testserUuid?: string) {
+        const arrayOfResults: { testName: string; passed: boolean }[] = [];
         debugger;
         for (let index = 0; index < testNames.length; index++) {
             const currentTestName = testNames[index];
@@ -427,12 +428,14 @@ export class SingleDevTestRunner {
             if (results.didSucceed) {
                 //devPassingEnvs  devFailedEnvs   failedSuitesEU   failedSuitesProd   failedSuitesSB
                 console.log(`${currentTestName} passed!`);
+                arrayOfResults.push({ testName: currentTestName, passed: true });
             } else {
                 console.log(`${currentTestName} failed!`);
-                return false;
+                arrayOfResults.push({ testName: currentTestName, passed: false });
+                // return false;
             }
         }
-        return true;
+        return arrayOfResults;
     }
     // async runDevTestADAL(testNamesADAL: string[], testNamesDataIndex: string[]) {
     //     if (testNamesADAL.length !== 0) {
