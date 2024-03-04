@@ -32,7 +32,7 @@ export async function ConfigurationTests(email: string, password: string, client
         addonVersion,
         varPass,
     );
-    await generalService.baseAddonVersionsInstallationNewSync(varPass);
+    await generalService.baseAddonVersionsInstallation(varPass);
     const testData = {
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
@@ -86,21 +86,8 @@ export async function ConfigurationTests(email: string, password: string, client
                 );
             });
             it(`2. Run Tests`, async function () {
-                debugger;
-                let didPass = true;
-                const configDevResults = await devTestRunner.runSingleDevTest(testNames, generalService);
-                console.log(`\nConfigurations - ${devTestRunner.addonUUID}, Version: ${addonVersion} TEST RESULTS:\n`);
-                for (let index = 0; index < configDevResults.length; index++) {
-                    const testResult = configDevResults[index];
-                    if (!testResult.passed) {
-                        console.log(`The Test ${testResult.testName} has FAILED!`);
-                        didPass = false;
-                    } else {
-                        console.log(`The Test ${testResult.testName} has PASSED!`);
-                    }
-                }
-                expect(didPass).to.equal(true);
-                debugger;
+                const didTestsPassed = await devTestRunner.handleSingleDevTest(testNames, generalService);
+                expect(didTestsPassed).to.equal(true);
             });
         });
     });

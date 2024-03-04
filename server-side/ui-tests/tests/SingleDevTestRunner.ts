@@ -458,12 +458,39 @@ export class SingleDevTestRunner {
         // }
     }
 
+    async handleSingleDevTest(testNames, generalService) {
+        const configDevResults = await this.runSingleDevTest(testNames, generalService);
+        return this.handleSingleDevTestResults(configDevResults);
+    }
+
     async runSingleDevTest(testNames: any, service: GeneralService) {
         // if (this.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
         //     await this.runDevTestADAL(testNames.ADAL, testNames.DataIndex);
         // } else {
         return await this.runSingleDevTestInt(testNames, service);
         // }
+    }
+
+    async handleSingleDevTestResults(testResults) {
+        let didPass = true;
+        console.log(`\n${this.addonName} - ${this.addonUUID}, Version: ${this.addonVersion} TEST RESULTS:\n`);
+        for (let index = 0; index < testResults.length; index++) {
+            const testResult = testResults[index];
+            if (!testResult.passed) {
+                console.log(`The Test ${testResult.testName} has FAILED!`);
+                didPass = false;
+            } else {
+                console.log(`The Test ${testResult.testName} has PASSED!`);
+            }
+        }
+        const failedTestsObjects = testResults.filter((result) => result.passed === false);
+        const failedTestsList = failedTestsObjects.map((result) => result.testName);
+        if (failedTestsList.length !== 0) {
+            console.log(
+                `Failed Tests For ${this.addonName}, Version: ${this.addonVersion}: [${failedTestsList as string[]}]`,
+            );
+        }
+        return didPass;
     }
 
     async printResultsTestObject(testResultArray, userName, env, currentTestName) {
