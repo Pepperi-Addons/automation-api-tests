@@ -38,6 +38,7 @@ export async function SyncTests(email: string, password: string, client: Client,
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', ''],
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
@@ -101,6 +102,12 @@ export async function SyncTests(email: string, password: string, client: Client,
                     } else {
                         console.log(`The Test ${testResult.testName} has PASSED!`);
                     }
+                }
+                const failedTests = syncDevResults.filter((result) => result.passed === false);
+                if (failedTests.length !== 0) {
+                    console.log(
+                        `Failed Tests For ${devTestRunner.addonName}, Version: ${devTestRunner.addonVersion}: [${failedTests}]`,
+                    );
                 }
                 expect(didPass).to.equal(true);
                 debugger;
