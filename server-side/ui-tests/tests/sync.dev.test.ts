@@ -103,6 +103,12 @@ export async function SyncTests(email: string, password: string, client: Client,
                         console.log(`The Test ${testResult.testName} has PASSED!`);
                     }
                 }
+                const failedTests = syncDevResults.filter((result) => result.passed === false);
+                if (failedTests.length !== 0) {
+                    console.log(
+                        `Failed Tests For ${devTestRunner.addonName}, Version: ${devTestRunner.addonVersion}: [${failedTests}]`,
+                    );
+                }
                 expect(didPass).to.equal(true);
                 debugger;
             });
