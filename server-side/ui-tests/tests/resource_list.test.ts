@@ -185,7 +185,7 @@ export async function ResourceListTests(email: string, password: string, varPass
 
     describe(`Resource List UI tests  - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-    } || Ver ${installedResourceListVersion} || ${date}`, async () => {
+    } || Ver ${installedResourceListVersion} || ${date}`, async function () {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
@@ -207,17 +207,17 @@ export async function ResourceListTests(email: string, password: string, varPass
             await driver.quit();
         });
 
-        it('Login', async () => {
+        it('Login', async function () {
             await webAppLoginPage.login(email, password);
         });
 
-        describe('Views & Editors Full Functionality test', async () => {
+        describe('Views & Editors Full Functionality test', async function () {
             afterEach(async function () {
                 driver.sleep(500);
                 await webAppHomePage.collectEndTestData(this);
             });
 
-            it('Resource Views settings is loaded and Elements exist', async () => {
+            it('Resource Views settings is loaded and Elements exist', async function () {
                 // navigation
                 await resourceListUtils.navigateTo('Resource Views');
                 await resourceList.isSpinnerDone();
@@ -252,14 +252,14 @@ export async function ResourceListTests(email: string, password: string, varPass
                 // expect(noData).to.be.oneOf(['No Data Found', 'No results were found.']);
             });
 
-            // it('Editors Tab', async () => {
+            // it('Editors Tab', async function () {
             //     await resourceList.clickTab('Editors_Tab');
             //     //TODO
             // });
         });
 
-        describe('Operations (e.g Addition, Deletion)', async () => {
-            it('Neviagte to Editors, Add Editor and Delete it', async () => {
+        describe('Operations (e.g Addition, Deletion)', async function () {
+            it('Neviagte to Editors, Add Editor and Delete it', async function () {
                 resource_name = 'SchemeOnlyObject';
                 editorName = `RL_Editors_${resource_name}_Test_${random_name}`;
                 editor_decsription = `Editor ${resource_name} ${test_generic_decsription}`;
@@ -275,7 +275,7 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
         });
 
-        // describe('Pre-clean', async () => {
+        // describe('Pre-clean', async function () {
         //     before(function () {
         //         resource_name = 'NameAge';
         //         random_name = generalService.generateRandomString(5);
@@ -285,18 +285,18 @@ export async function ResourceListTests(email: string, password: string, varPass
         //         await webAppHomePage.collectEndTestData(this);
         //     });
 
-        //     it('Delete All Views', async () => {
+        //     it('Delete All Views', async function () {
         //         await resourceListUtils.deleteAllViewsViaUI();
         //     });
-        //     it('Delete All Editors', async () => {
+        //     it('Delete All Editors', async function () {
         //         await resourceListUtils.deleteAllEditorsViaUI();
         //     });
-        //     it('Delete All Pages', async () => {
+        //     it('Delete All Pages', async function () {
         //         await resourceListUtils.deleteAllPagesViaUI();
         //     });
         // });
 
-        describe('Pipeline', async () => {
+        describe('Pipeline', async function () {
             // conditions for this section: tested user must have UDC = NameAgeAuto
             before(function () {
                 resource_name = 'NameAgeAuto';
@@ -307,7 +307,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await webAppHomePage.collectEndTestData(this);
             });
 
-            it('Add & Configure Editor', async () => {
+            it('Add & Configure Editor', async function () {
                 // Add Editor
                 editorName = `${resource_name} Editor _(${random_name})`;
                 editor_decsription = `Editor of resource: ${resource_name} - ${test_generic_decsription}`;
@@ -316,6 +316,9 @@ export async function ResourceListTests(email: string, password: string, varPass
                     descriptionOfEditor: editor_decsription,
                     nameOfResource: resource_name,
                 });
+                if (await driver.isElementVisible(resourceEditors.EditPage_BackToList_Button)) {
+                    await driver.click(resourceEditors.EditPage_BackToList_Button);
+                }
                 // Configure Editor
                 await resourceListUtils.gotoEditPageOfSelectedEditorByName(editorName);
                 editorKey = await resourceListUtils.getUUIDfromURL();
@@ -340,7 +343,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 });
                 resourceEditors.pause(5 * 1000);
             });
-            it('Add & Configure View', async () => {
+            it('Add & Configure View', async function () {
                 // Add View
                 viewName = `${resource_name} View _(${random_name})`;
                 view_decsription = `View of resource: ${resource_name} - ${test_generic_decsription}`;
@@ -349,6 +352,9 @@ export async function ResourceListTests(email: string, password: string, varPass
                     descriptionOfView: view_decsription,
                     nameOfResource: resource_name,
                 });
+                if (await driver.isElementVisible(resourceViews.EditPage_BackToList_Button)) {
+                    await driver.click(resourceViews.EditPage_BackToList_Button);
+                }
                 // Configure View
                 await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
                 viewKey = await resourceListUtils.getUUIDfromURL();
@@ -374,7 +380,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 });
                 resourceViews.pause(5 * 1000);
             });
-            it('Create Page', async () => {
+            it('Create Page', async function () {
                 await resourceListUtils.navigateTo('Page Builder');
                 // debugger
                 await pageBuilder.validatePageBuilderIsLoaded();
@@ -421,7 +427,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 pageBuilder.pause(1 * 1000);
                 await webAppHeader.goHome();
             });
-            it('Create & Map Slug', async () => {
+            it('Create & Map Slug', async function () {
                 slugDisplayName = `${resource_name} ${random_name}`;
                 slug_path = `${resource_name.toLowerCase()}_${random_name}`;
                 await resourceListUtils.createSlug(slugDisplayName, slug_path, pageKey, email, password, client);
@@ -434,7 +440,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await webAppHomePage.manualResync(client);
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slugDisplayName);
             });
-            it('Go to Block', async () => {
+            it('Go to Block', async function () {
                 resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
                 await webAppHomePage.isSpinnerDone();
                 await webAppHomePage.clickOnBtn(slugDisplayName);
@@ -459,7 +465,7 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
         });
 
-        describe('Teardown', async () => {
+        describe('Teardown', async function () {
             afterEach(async function () {
                 driver.sleep(500);
                 await webAppHomePage.collectEndTestData(this);
@@ -473,21 +479,21 @@ export async function ResourceListTests(email: string, password: string, varPass
                 expect(deleteSlugResponse.Status).to.equal(200);
                 expect(deleteSlugResponse.Body.success).to.equal(true);
             });
-            it('Delete Editor Via API', async () => {
+            it('Delete Editor Via API', async function () {
                 const deleteEditorResponse = await resourceEditors.deleteEditorViaAPI(editorKey, client);
                 expect(deleteEditorResponse.Ok).to.equal(true);
                 expect(deleteEditorResponse.Status).to.equal(200);
                 expect(deleteEditorResponse.Body.Name).to.equal(editorName);
                 expect(deleteEditorResponse.Body.Hidden).to.equal(true);
             });
-            it('Delete View Via API', async () => {
+            it('Delete View Via API', async function () {
                 const deleteViewResponse = await resourceViews.deleteViewViaApiByUUID(viewKey, client);
                 expect(deleteViewResponse.Ok).to.equal(true);
                 expect(deleteViewResponse.Status).to.equal(200);
                 expect(deleteViewResponse.Body.Name).to.equal(viewName);
                 expect(deleteViewResponse.Body.Hidden).to.equal(true);
             });
-            //     it('Delete Editor', async () => {
+            //     it('Delete Editor', async function () {
             //     for (let index = 0; index < 3; index++) {
             //         try {
             //             await resourceListUtils.navigateTo('Resource Views');
@@ -500,7 +506,7 @@ export async function ResourceListTests(email: string, password: string, varPass
             //         }
             //     }
             // });
-            // it('Delete View', async () => {
+            // it('Delete View', async function () {
             //     await webAppHeader.goHome();
             //     for (let index = 0; index < 3; index++) {
             //         try {
@@ -534,7 +540,7 @@ export async function ResourceListTests(email: string, password: string, varPass
         });
 
         simpleResources.forEach((resource) => {
-            describe(`Flow Tests for "${resource}"`, async () => {
+            describe(`Flow Tests for "${resource}"`, async function () {
                 // conditions for this section: tested user must have UDC = NameAgeAuto
                 before(function () {
                     slugDisplayName = 'Auto Test';
@@ -546,7 +552,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                     await webAppHomePage.collectEndTestData(this);
                 });
 
-                it('Add & Configure View', async () => {
+                it('Add & Configure View', async function () {
                     // Add View
                     viewName = `${resource} View _(${random_name})`;
                     view_decsription = `View of resource: ${resource} - ${test_generic_decsription}`;
@@ -563,6 +569,9 @@ export async function ResourceListTests(email: string, password: string, varPass
                             await driver.refresh();
                         }
                     }
+                    // if (await driver.isElementVisible(resourceViews.EditPage_BackToList_Button)) {
+                    //     await driver.click(resourceViews.EditPage_BackToList_Button);
+                    // }
                     // Configure View
                     await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
                     viewKey = await resourceListUtils.getUUIDfromURL();
@@ -580,10 +589,10 @@ export async function ResourceListTests(email: string, password: string, varPass
                     });
                     resourceViews.pause(5 * 1000);
                 });
-                it('Perform Manual Sync', async () => {
+                it('Perform Manual Sync', async function () {
                     await resourceListUtils.performManualSync(client);
                 });
-                it('Create Page', async () => {
+                it('Create Page', async function () {
                     await resourceListUtils.navigateTo('Page Builder');
                     await driver.refresh();
                     await resourceList.isSpinnerDone();
@@ -628,10 +637,10 @@ export async function ResourceListTests(email: string, password: string, varPass
                     pageBuilder.pause(1 * 1000);
                     await webAppHeader.goHome();
                 });
-                it('Perform Manual Sync', async () => {
+                it('Perform Manual Sync', async function () {
                     await resourceListUtils.performManualSync(client);
                 });
-                it('Map the Slug with the Page', async () => {
+                it('Map the Slug with the Page', async function () {
                     // const mapPage = await resourceListUtils.changePageAtMappedSlugs([{ slug_path: slug_path, pageUUID: pageKey }], client); // TODO
                     const mapPage = await resourceListUtils.addToMappedSlugs(
                         [{ slug_path: slug_path, pageUUID: pageKey }],
@@ -642,10 +651,10 @@ export async function ResourceListTests(email: string, password: string, varPass
                     // expect(mapPage.postResponse.Ok).to.be.true;
                     // expect(mapPage.postResponse.Status).to.equal(200);
                 });
-                it('Perform Manual Sync', async () => {
+                it('Perform Manual Sync', async function () {
                     await resourceListUtils.performManualSync(client);
                 });
-                it('Block Tests', async () => {
+                it('Block Tests', async function () {
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn(slugDisplayName);
                     await resourceListBlock.isSpinnerDone();
@@ -676,7 +685,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                     expect(deletePageResponse.Body.Hidden).to.equal(true);
                     expect(deletePageResponse.Body.Name).to.equal(pageName);
                 });
-                it('Delete View Via API', async () => {
+                it('Delete View Via API', async function () {
                     const deleteViewResponse = await resourceViews.deleteViewViaApiByUUID(viewKey, client);
                     expect(deleteViewResponse.Ok).to.equal(true);
                     expect(deleteViewResponse.Status).to.equal(200);
@@ -685,7 +694,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 });
             });
         });
-        // describe('E2E Method', async () => {
+        // describe('E2E Method', async function () {
         //     beforeEach(async function () {
         //         random_name = generalService.generateRandomString(5);
         //     });
@@ -694,17 +703,17 @@ export async function ResourceListTests(email: string, password: string, varPass
         //         await webAppHomePage.collectEndTestData(this);
         //     });
 
-        //     it('Full Flow for resource: accounts', async () => {
+        //     it('Full Flow for resource: accounts', async function () {
         //         await resourceListUtils.createBlock('accounts', random_name);
         //     });
         // });
 
-        // describe('Blocks', async () => {
+        // describe('Blocks', async function () {
         //     beforeEach(async function () {
         //         await driver.navigate(`https://app.pepperi.com/HomePage`);
         //         await webAppHomePage.isSpinnerDone();
         //     });
-        //     describe('PAPI Resources', async () => {
+        //     describe('PAPI Resources', async function () {
         //         before(function () {
         //             slugDisplayName = 'Auto Test';
         //             slug_path = 'auto_test';
@@ -715,7 +724,7 @@ export async function ResourceListTests(email: string, password: string, varPass
         //             await webAppHomePage.collectEndTestData(this);
         //         });
 
-        //         it(`accounts`, async () => {
+        //         it(`accounts`, async function () {
         //             resource_at_block = 'accounts';
         //             pageName = `${resource_at_block} Page`;
         //             await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
@@ -731,13 +740,13 @@ export async function ResourceListTests(email: string, password: string, varPass
         //             expect(columnsTitles.length).to.equal(
         //                 detailsByResource[resource_at_block].view_fields_names.length,
         //             );
-        //             columnsTitles.forEach(async (columnTitle) => {
+        //             columnsTitles.forEach(async (columnTitlfunction e) {
         //                 const columnTitleText = await columnTitle.getText();
         //                 expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
         //             });
         //             driver.sleep(10 * 1000);
         //         });
-        //         it('users', async () => {
+        //         it('users', async function () {
         //             resource_at_block = 'users';
         //             pageName = `${resource_at_block} Page`;
         //             await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
@@ -753,13 +762,13 @@ export async function ResourceListTests(email: string, password: string, varPass
         //             expect(columnsTitles.length).to.equal(
         //                 detailsByResource[resource_at_block].view_fields_names.length,
         //             );
-        //             columnsTitles.forEach(async (columnTitle) => {
+        //             columnsTitles.forEach(async (columnTitlfunction e) {
         //                 const columnTitleText = await columnTitle.getText();
         //                 expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
         //             });
         //             driver.sleep(10 * 1000);
         //         });
-        //         it('items', async () => {
+        //         it('items', async function () {
         //             resource_at_block = 'items';
         //             pageName = `${resource_at_block} Page`;
         //             await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
@@ -775,14 +784,14 @@ export async function ResourceListTests(email: string, password: string, varPass
         //             expect(columnsTitles.length).to.equal(
         //                 detailsByResource[resource_at_block].view_fields_names.length,
         //             );
-        //             columnsTitles.forEach(async (columnTitle) => {
+        //             columnsTitles.forEach(async (columnTitlfunction e) {
         //                 const columnTitleText = await columnTitle.getText();
         //                 expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
         //             });
         //             driver.sleep(10 * 1000);
         //         });
         //     });
-        //     describe('Arrays Block', async () => {
+        //     describe('Arrays Block', async function () {
         //         before(function () {
         //             slugDisplayName = 'Arrays';
         //             slug_path = 'arrays';
@@ -795,7 +804,7 @@ export async function ResourceListTests(email: string, password: string, varPass
         //             await webAppHomePage.collectEndTestData(this);
         //         });
 
-        //         it('Arrays Block is Shown in Table', async () => {
+        //         it('Arrays Block is Shown in Table', async function () {
         //             await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
         //             await webAppHeader.goHome();
         //             await webAppHomePage.isSpinnerDone();
@@ -809,14 +818,14 @@ export async function ResourceListTests(email: string, password: string, varPass
         //             expect(columnsTitles.length).to.equal(
         //                 detailsByResource[resource_at_block].view_fields_names.length,
         //             );
-        //             columnsTitles.forEach(async (columnTitle) => {
+        //             columnsTitles.forEach(async (columnTitlfunction e) {
         //                 const columnTitleText = await columnTitle.getText();
         //                 expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
         //             });
         //             driver.sleep(10 * 1000);
         //         });
         //     });
-        //     describe('Simple Collection Block', async () => {
+        //     describe('Simple Collection Block', async function () {
         //         before(function () {
         //             slugDisplayName = 'Manual Tests';
         //             slug_path = 'manual_tests';
@@ -829,7 +838,7 @@ export async function ResourceListTests(email: string, password: string, varPass
         //             await webAppHomePage.collectEndTestData(this);
         //         });
 
-        //         it(`Mapping Page to Slug`, async () => {
+        //         it(`Mapping Page to Slug`, async function () {
         //             await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
         //             await webAppHeader.goHome();
         //             await webAppHomePage.isSpinnerDone();
@@ -837,26 +846,26 @@ export async function ResourceListTests(email: string, password: string, varPass
         //             await webAppHomePage.isSpinnerDone();
         //             // expect(await webAppHeader.safeUntilIsVisible(webAppHeader.UserBtn)).eventually.to.be.true;
         //         });
-        //         it('Navigating to Slug via Deeplink', async () => {
+        //         it('Navigating to Slug via Deeplink', async function () {
         //             // Check Data Viewer Block Table Appears
         //             await resourceListBlock.navigate();
         //             await resourceListBlock.isSpinnerDone();
         //         });
-        //         it('NameAge Block is Shown in Table', async () => {
+        //         it('NameAge Block is Shown in Table', async function () {
         //             await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
         //             driver.sleep(5 * 1000);
         //             const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
         //             expect(columnsTitles.length).to.equal(
         //                 detailsByResource[resource_at_block].view_fields_names.length,
         //             );
-        //             columnsTitles.forEach(async (columnTitle) => {
+        //             columnsTitles.forEach(async (columnTitlfunction e) {
         //                 const columnTitleText = await columnTitle.getText();
         //                 expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
         //             });
         //             driver.sleep(10 * 1000);
         //         });
         //     });
-        //     describe('NoScheme Block', async () => {
+        //     describe('NoScheme Block', async function () {
         //         before(function () {
         //             slugDisplayName = 'Manual Tests';
         //             slug_path = 'manual_tests';
@@ -869,7 +878,7 @@ export async function ResourceListTests(email: string, password: string, varPass
         //             await webAppHomePage.collectEndTestData(this);
         //         });
 
-        //         it(`Mapping Page to Slug`, async () => {
+        //         it(`Mapping Page to Slug`, async function () {
         //             await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
         //             await webAppHeader.goHome();
         //             await webAppHomePage.isSpinnerDone();
@@ -877,7 +886,7 @@ export async function ResourceListTests(email: string, password: string, varPass
         //             await webAppHomePage.isSpinnerDone();
         //             // expect(await webAppHeader.safeUntilIsVisible(webAppHeader.UserBtn)).eventually.to.be.true;
         //         });
-        //         it('Click Button from Homepage', async () => {
+        //         it('Click Button from Homepage', async function () {
         //             // Check Data Viewer Block Table Appears
         //             await webAppHeader.goHome();
         //             await webAppHomePage.isSpinnerDone();
@@ -888,19 +897,19 @@ export async function ResourceListTests(email: string, password: string, varPass
         //             await webAppHeader.goHome();
         //             await webAppHomePage.isSpinnerDone();
         //         });
-        //         it('Navigating to Slug via Deeplink', async () => {
+        //         it('Navigating to Slug via Deeplink', async function () {
         //             // Check Data Viewer Block Table Appears
         //             await resourceListBlock.navigate();
         //             await resourceListBlock.isSpinnerDone();
         //         });
-        //         it('Dataless Block is Shown in Table', async () => {
+        //         it('Dataless Block is Shown in Table', async function () {
         //             await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
         //             driver.sleep(5 * 1000);
         //             const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
         //             expect(columnsTitles.length).to.equal(
         //                 detailsByResource[resource_at_block].view_fields_names.length,
         //             );
-        //             columnsTitles.forEach(async (columnTitle) => {
+        //             columnsTitles.forEach(async (columnTitlfunction e) {
         //                 const columnTitleText = await columnTitle.getText();
         //                 expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
         //             });
