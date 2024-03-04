@@ -519,6 +519,24 @@ ________________________________________________________________________________
                                             driver.sleep(1 * 1000);
                                         });
                                     });
+                                    it('Click "Continue ordering" button', async function () {
+                                        await driver.click(orderPage.Cart_ContinueOrdering_Button);
+                                        await orderPage.isSpinnerDone();
+                                        await orderPage.changeOrderCenterPageView('Line View');
+                                        await orderPage.isSpinnerDone();
+                                        base64ImageComponent = await driver.saveScreenshots();
+                                        addContext(this, {
+                                            title: `After "Line View" was selected`,
+                                            value: 'data:image/png;base64,' + base64ImageComponent,
+                                        });
+                                        await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
+                                        driver.sleep(1 * 1000);
+                                        base64ImageComponent = await driver.saveScreenshots();
+                                        addContext(this, {
+                                            title: `Order Center - Loaded`,
+                                            value: 'data:image/png;base64,' + base64ImageComponent,
+                                        });
+                                    });
                                 });
                             });
                         });
