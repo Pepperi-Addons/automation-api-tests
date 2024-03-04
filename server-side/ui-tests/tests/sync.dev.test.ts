@@ -90,8 +90,19 @@ export async function SyncTests(email: string, password: string, client: Client,
             });
             it(`2. Run Tests`, async function () {
                 debugger;
+                let didPass = true;
                 const syncDevResults = await devTestRunner.runSingleDevTest(testNames, generalService);
-                expect(syncDevResults).to.be.true;
+                console.log(`\nSync - ${devTestRunner.addonUUID}, Version: ${addonVersion} TEST RESULTS:\n`);
+                for (let index = 0; index < syncDevResults.length; index++) {
+                    const testResult = syncDevResults[index];
+                    if (!testResult.passed) {
+                        console.log(`The Test ${testResult.testName} has FAILED!`);
+                        didPass = false;
+                    } else {
+                        console.log(`The Test ${testResult.testName} has PASSED!`);
+                    }
+                }
+                expect(didPass).to.equal(true);
                 debugger;
             });
         });
