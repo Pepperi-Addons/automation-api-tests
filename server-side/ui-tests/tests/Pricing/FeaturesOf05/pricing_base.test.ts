@@ -22,7 +22,7 @@ export async function PricingBaseTests(
     client: Client,
     specificVersion: 'version07for05data' | undefined = undefined,
 ) {
-/*
+    /*
 _________________ 
 _________________ Brief:
             
@@ -87,8 +87,8 @@ _________________
         installedPricingVersion === '5'
             ? new PricingData05()
             : specificVersion === 'version07for05data'
-                ? new PricingData05()
-                : new PricingData06();
+            ? new PricingData05()
+            : new PricingData06();
     const pricingRules = new PricingRules();
     let ppmValues_content;
     switch (installedPricingVersion) {
@@ -276,7 +276,7 @@ _________________
                             it(`checking item "${item.name}"`, async function () {
                                 await pricingService.searchInOrderCenter.bind(this)(item.name, driver);
                                 switch (
-                                state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
+                                    state //'baseline', '1unit', '3units', '1case(6units)', '4cases(24units)'
                                 ) {
                                     case '1unit':
                                         await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
@@ -420,10 +420,10 @@ _________________
                                             state === '1unit'
                                                 ? 1
                                                 : state === '3units'
-                                                    ? 3
-                                                    : state === '1case(6units)'
-                                                        ? 6
-                                                        : item.cartAmount;
+                                                ? 3
+                                                : state === '1case(6units)'
+                                                ? 6
+                                                : item.cartAmount;
                                         addContext(this, {
                                             title: `Total Units Amount`,
                                             value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
