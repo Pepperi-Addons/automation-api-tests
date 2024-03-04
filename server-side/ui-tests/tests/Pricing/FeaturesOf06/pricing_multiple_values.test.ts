@@ -16,6 +16,99 @@ import PricingRules from '../../../pom/addons/PricingRules';
 chai.use(promised);
 
 export async function PricingMultipleValuesTests(email: string, password: string, client: Client) {
+    /*
+________________________ 
+_________________ Brief:
+ 
+* Pricing Multiple Values
+* at the account level there are multiple contracts definitions (field "PricingContracts" on account Edit)  
+* each contract would have UDT rules applying to it
+* 
+* under the same condition ('ZDM1' || 'ZDM2' || 'ZDM3') - the contract that offers the best deal would be chosen.
+*  for example between rule 'ZDM3@A006@Contract1' and rule 'ZDM3@A006@Contract2' - contract2 should be chosen since it offers 15% discount versus 5% of contract1
+* 
+* when different UOMs are definted - the choise between contracts would be per each UOM separately
+*  for example between rule 'ZDM2@A007@Contract1@Facial Cosmetics', rule 'ZDM2@A007@Contract2@Facial Cosmetics' and rule 'ZDM2@A007@Contract3@Facial Cosmetics' :
+*    EA UOM  - contract3 should be chosen (but it applies only on Acc01), otherwise contart2 would be chosen
+*    CS UOM  - contract1 should be chosen at all accounts 
+*    BOX UOM - for 2 units: contart3 at Acc01, contract2 for other account | from 3 units and above: contract1 for all accounts
+* 
+* the test agenda is to 
+________________________________ 
+____________ The Relevant Rules:
+ 
+. 'ZDM3@A006@Contract1':
+    '[[true,"1555891200000","2534022144999","1","","ZDM3_A006 Contract1_ALL_UOMS",[[10,"D",5,"%"]],"EA"]]',
+
+. 'ZDM3@A006@Contract2':
+    '[[true,"1555891200000","2534022144999","1","","ZDM3_A006 Contract2_ALL_UOMS",[[10,"D",15,"%"]],"EA"]]',
+
+. 'ZDM3@A009@Acc01@Contract1':
+    '[[true,"1555891200000","2534022144999","1","","ZDM3_A009 Account_Contract1_ALL_UOMS",[[10,"D",10,"%"]],"EA"]]',
+
+. 'ZDM3@A009@Acc01@Contract2':
+    '[[true,"1555891200000","2534022144999","1","","ZDM3_A009 Account_Contract2_ALL_UOMS",[[10,"D",20,"%"]],"EA"]]',
+
+. 'ZDM3@A009@Acc01@Contract3':
+    '[[true,"1555891200000","2534022144999","1","","ZDM3_A009 Account_Contract3_ALL_UOMS",[[10,"D",30,"%"]],"EA"]]',
+
+. 'ZDM2@A007@Contract1@Facial Cosmetics':
+    '[[true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_EA_Contract1",[[5,"D",5,"%"]],"EA","EA"],
+      [true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_CS_Contract1",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"],
+      [true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_BOX_Contract1",[[3,"D",5,"%"],[6,"D",15,"%"]],"BOX","BOX"]]',
+
+. 'ZDM2@A007@Contract2@Facial Cosmetics':
+    '[[true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_EA_Contract2",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"],
+      [true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_CS_Contract2",[[5,"D",10,"%"]],"CS","CS"],
+      [true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_BOX_Contract2",[[2,"D",2,"%"]],"BOX","BOX"]]',
+
+. 'ZDM2@A007@Contract3@Facial Cosmetics':
+    '[[true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_EA_Contract3",[[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"],
+      [true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_CS_Contract3",[[5,"D",5,"%"]],"CS","CS"],
+      [true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_BOX_Contract3",[[2,"D",5,"%"]],"BOX","BOX"]]',
+
+. 'ZDM1@A008@Contract1@MaLi38':
+    '[[true,"1555891200000","2534022144999","1","1","ZDM1_A008 Item_EA_Contract1",[[5,"D",5,"%"]],"EA","EA"],
+      [true,"1555891200000","2534022144999","1","1","ZDM1_A008 Item_CS_Contract1",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"CS","CS"],
+      [true,"1555891200000","2534022144999","1","1","ZDM1_A008 Item_BOX_Contract1",[[3,"D",5,"%"],[6,"D",10,"%"]],"BOX","BOX"]]',
+
+. 'ZDM1@A008@Contract2@MaLi38':
+    '[[true,"1555891200000","2534022144999","1","1","ZDM1_A008 Item_EA_Contract2",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",50,"%"]],"EA","EA"],
+      [true,"1555891200000","2534022144999","1","1","ZDM1_A008 Item_CS_Contract2",[[5,"D",5,"%"]],"CS","CS"],
+      [true,"1555891200000","2534022144999","1","1","ZDM1_A008 Item_BOX_Contract2",[[6,"D",15,"%"]],"BOX","BOX"]]',
+
+. 'ZDM1@A010@Acc01@Contract1@MaLi38':
+    '[[true,"1555891200000","2534022144999","1","1","ZDM1_A010 Account_Item_EA_Contract1",[[2,"D",5,"%"],[5,"D",20,"%"],[10,"D",25,"%"]],"EA","EA"],
+      [true,"1555891200000","2534022144999","1","1","ZDM1_A010 Account_Item_CS_Contract1",[[4,"D",4,"%"]],"CS","CS"],
+      [true,"1555891200000","2534022144999","1","1","ZDM1_A010 Account_Item_BOX_Contract1",[[2,"D",2,"%"]],"BOX","BOX"]]',
+
+. 'ZDM1@A010@Acc01@Contract3@MaLi38':
+    '[[true,"1555891200000","2534022144999","1","1","ZDM1_A010 Account_Item_EA_Contract3",[[10,"D",5,"%"]],"EA","EA"],
+      [true,"1555891200000","2534022144999","1","1","ZDM1_A010 Account_Item_CS_Contract3",[[4,"D",15,"%"]],"CS","CS"],
+      [true,"1555891200000","2534022144999","1","1","ZDM1_A010 Account_Item_BOX_Contract3",[[3,"D",25,"%"]],"BOX","BOX"]]',
+
+______________________________ 
+____________ Order Of Actions:
+           
+   1. Looping over accounts
+ 
+       2. At Order Center: Looping over items
+ 
+           2.1. Looping over states of Eachs
+           ----> retrieving pricing fields values from UI and comparing to expected data ( pricingData.testItemsValues.Multiple[multipleValuesTestItem][priceField][account][multipleValuesTestState]['expectedValue'] )
+
+           2.2. Looping over states of Cases
+           ----> retrieving pricing fields values from UI and comparing to expected data ( pricingData.testItemsValues.Multiple[multipleValuesTestItem][priceField][account][multipleValuesTestState]['expectedValue'] )
+
+           2.3. Looping over states of Boxs
+           ----> retrieving pricing fields values from UI and comparing to expected data ( pricingData.testItemsValues.Multiple[multipleValuesTestItem][priceField][account][multipleValuesTestState]['expectedValue'] )
+ 
+       3. At Cart: Looping over items
+       ----> same check as at order center (just for the last state that OC got to)
+ 
+_____________________________________________________________________________________________________________________________________________________________ 
+_____________________________________________________________________________________________________________________________________________________________ 
+*/
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);

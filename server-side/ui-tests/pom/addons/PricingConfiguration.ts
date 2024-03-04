@@ -654,7 +654,7 @@ export default class PricingConfiguration {
             },
             {
                 Key: 'ZDM3',
-                Name: 'ZDM3 Best Out Of Multiple Options Discount',
+                Name: 'ZDM3 Best Out Of Multiple Options Discount For Account',
                 TablesSearchOrder: ['A009', 'A006'],
             },
             {

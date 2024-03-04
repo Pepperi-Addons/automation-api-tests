@@ -5141,7 +5141,7 @@ export class PricingData06 {
         Multiple: {
             'Shampoo Three': {
                 // Multiple Values (not in 'Faicial Cosmetics' category)
-                ItemPrice: 55.25,
+                ItemPrice: 36.95,
                 NPMCalcMessage: {
                     Acc01: {
                         baseline: [],
@@ -5160,162 +5160,172 @@ export class PricingData06 {
                         OtherAcc: [],
                     },
                 },
-                PriceBaseUnitPriceAfter1: {
+                PriceMultiAfter1: {
                     Acc01: {
-                        baseline: 50.0,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
+                        baseline: { expectedValue: 36.95, rule: `X` },
+                        '1 Each': { expectedValue: 36.95, rule: `X` },
+                        '2 Each': { expectedValue: 36.95, rule: `X` },
+                        '3 Each': { expectedValue: 36.95, rule: `X` },
+                        '5 Each': { expectedValue: 36.95, rule: `X` },
+                        '9 Each': { expectedValue: 36.95, rule: `X` },
+                        '10 Each': {
+                            expectedValue: 25.86,
+                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 36.95 * 0.7 -> 25.86)`,
+                        },
+                        '11 Each': {
+                            expectedValue: 25.86,
+                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 36.95 * 0.7 -> 25.86)`,
+                        },
+                        '1 Case': { expectedValue: 36.95, rule: `X` },
+                        '2 Case': { expectedValue: 36.95, rule: `X` },
+                        '4 Case': { expectedValue: 36.95, rule: `X` },
+                        '5 Case': { expectedValue: 36.95, rule: `X` },
+                        '9 Case': { expectedValue: 36.95, rule: `X` },
+                        '10 Case': {
+                            expectedValue: 25.86,
+                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 36.95 * 0.7 -> 25.86)`,
+                        },
+                        '11 Case': {
+                            expectedValue: 25.86,
+                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 36.95 * 0.7 -> 25.86)`,
+                        },
+                        '1 Box': { expectedValue: 36.95, rule: `X` },
+                        '2 Box': { expectedValue: 36.95, rule: `X` },
+                        '3 Box': { expectedValue: 36.95, rule: `X` },
+                        '5 Box': { expectedValue: 36.95, rule: `X` },
+                        '6 Box': { expectedValue: 36.95, rule: `X` },
+                        '7 Box': { expectedValue: 36.95, rule: `X` },
+                        '10 Box': {
+                            expectedValue: 25.86,
+                            rule: `'ZDM3@A009@Acc01@Contract3' -> [[10,"D",30,"%"]],"EA"]] (30% -> 36.95 * 0.7 -> 25.86)`,
+                        },
                     },
                     OtherAcc: {
-                        baseline: 55.25,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
+                        baseline: { expectedValue: 36.95, rule: `X` },
+                        '1 Each': { expectedValue: 36.95, rule: `X` },
+                        '2 Each': { expectedValue: 36.95, rule: `X` },
+                        '3 Each': { expectedValue: 36.95, rule: `X` },
+                        '5 Each': { expectedValue: 36.95, rule: `X` },
+                        '9 Each': { expectedValue: 36.95, rule: `X` },
+                        '10 Each': {
+                            expectedValue: 31.4,
+                            rule: `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] (15% -> 36.95 * 0.85 -> 31.40)`,
+                        },
+                        '11 Each': {
+                            expectedValue: 31.4,
+                            rule: `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] (15% -> 36.95 * 0.85 -> 31.40)`,
+                        },
+                        '1 Case': { expectedValue: 36.95, rule: `X` },
+                        '2 Case': { expectedValue: 36.95, rule: `X` },
+                        '4 Case': { expectedValue: 36.95, rule: `X` },
+                        '5 Case': { expectedValue: 36.95, rule: `X` },
+                        '9 Case': { expectedValue: 36.95, rule: `X` },
+                        '10 Case': {
+                            expectedValue: 31.4,
+                            rule: `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] (15% -> 36.95 * 0.85 -> 31.40)`,
+                        },
+                        '11 Case': {
+                            expectedValue: 31.4,
+                            rule: `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] (15% -> 36.95 * 0.85 -> 31.40)`,
+                        },
+                        '1 Box': { expectedValue: 36.95, rule: `X` },
+                        '2 Box': { expectedValue: 36.95, rule: `X` },
+                        '3 Box': { expectedValue: 36.95, rule: `X` },
+                        '5 Box': { expectedValue: 36.95, rule: `X` },
+                        '6 Box': { expectedValue: 36.95, rule: `X` },
+                        '7 Box': { expectedValue: 36.95, rule: `X` },
+                        '10 Box': {
+                            expectedValue: 31.4,
+                            rule: `'ZDM3@A006@Contract2' -> [[10,"D",15,"%"]],"EA"]] (15% -> 36.95 * 0.85 -> 31.40)`,
+                        },
                     },
                     cart: {
                         Acc01: 1,
                         OtherAcc: 1,
                     },
                 },
-                PriceDiscountUnitPriceAfter1: {
+                PriceMultiAfter2: {
                     Acc01: {
-                        baseline: 50.0,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
+                        baseline: { expectedValue: 20.0, rule: `X` },
+                        '1 Each': { expectedValue: 20.0, rule: `X` },
+                        '2 Each': {
+                            expectedValue: 18.0,
+                            rule: `'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"] (10% -> 20.00 * 0.9)`,
+                        },
+                        '3 Each': {
+                            expectedValue: 18.0,
+                            rule: `'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"] (10% -> 20.00 * 0.9)`,
+                        },
+                        '5 Each': {
+                            expectedValue: 16.0,
+                            rule: `'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"] (20% -> 20.00 * 0.8)`,
+                        },
+                        '9 Each': {
+                            expectedValue: 16.0,
+                            rule: `'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"] (20% -> 20.00 * 0.8)`,
+                        },
+                        '10 Each': {
+                            expectedValue: 14.0,
+                            rule: `'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"] (30% -> 20.00 * 0.7)`,
+                        },
+                        '11 Each': {
+                            expectedValue: 14.0,
+                            rule: `'ZDM2@A007@Contract3@Facial Cosmetics' -> [[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"] (30% -> 20.00 * 0.7)`,
+                        },
+                        '1 Case': { expectedValue: 14.0, rule: `X` },
+                        '2 Case': { expectedValue: 14.0, rule: `X` },
+                        '4 Case': { expectedValue: 14.0, rule: `X` },
+                        '5 Case': { expectedValue: 14.0, rule: `X` },
+                        '9 Case': { expectedValue: 14.0, rule: `X` },
+                        '10 Case': { expectedValue: 14.0, rule: `X` },
+                        '11 Case': { expectedValue: 14.0, rule: `X` },
+                        '1 Box': { expectedValue: 14.0, rule: `X` },
+                        '2 Box': { expectedValue: 14.0, rule: `X` },
+                        '3 Box': { expectedValue: 14.0, rule: `X` },
+                        '5 Box': { expectedValue: 14.0, rule: `X` },
+                        '6 Box': { expectedValue: 14.0, rule: `X` },
+                        '7 Box': { expectedValue: 14.0, rule: `X` },
                     },
                     OtherAcc: {
-                        baseline: 55.25,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    cart: {
-                        Acc01: 1,
-                        OtherAcc: 1,
-                    },
-                },
-                PriceGroupDiscountUnitPriceAfter1: {
-                    Acc01: {
-                        baseline: 50.0,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    OtherAcc: {
-                        baseline: 55.25,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    cart: {
-                        Acc01: 1,
-                        OtherAcc: 1,
-                    },
-                },
-                PriceManualLineUnitPriceAfter1: {
-                    Acc01: {
-                        baseline: 50.0,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    OtherAcc: {
-                        baseline: 55.25,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    cart: {
-                        Acc01: 1,
-                        OtherAcc: 1,
-                    },
-                },
-                PriceTaxUnitPriceAfter1: {
-                    Acc01: {
-                        baseline: 50.0,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    OtherAcc: {
-                        baseline: 55.25,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    cart: {
-                        Acc01: 1,
-                        OtherAcc: 1,
-                    },
-                },
-                PriceDiscount2UnitPriceAfter1: {
-                    Acc01: {
-                        baseline: 50.0,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    OtherAcc: {
-                        baseline: 55.25,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    cart: {
-                        Acc01: 1,
-                        OtherAcc: 1,
-                    },
-                },
-                PriceBaseUnitPriceAfter2: {
-                    Acc01: {
-                        baseline: 50.0,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    OtherAcc: {
-                        baseline: 55.25,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    cart: {
-                        Acc01: 1,
-                        OtherAcc: 1,
-                    },
-                },
-                PriceDiscountUnitPriceAfter2: {
-                    Acc01: {
-                        baseline: 50.0,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    OtherAcc: {
-                        baseline: 55.25,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    cart: {
-                        Acc01: 1,
-                        OtherAcc: 1,
-                    },
-                },
-                PriceTaxUnitPriceAfter2: {
-                    Acc01: {
-                        baseline: 50.0,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
-                    },
-                    OtherAcc: {
-                        baseline: 55.25,
-                        '9 EA': 55.25,
-                        '10 EA': 55.25,
-                        '11 EA': 55.25,
+                        baseline: { expectedValue: 20.0, rule: `X` },
+                        '1 Each': { expectedValue: 20.0, rule: `X` },
+                        '2 Each': {
+                            expectedValue: 19.0,
+                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"] (5% -> 20.00 * 0.95)`,
+                        },
+                        '3 Each': {
+                            expectedValue: 19.0,
+                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"] (5% -> 20.00 * 0.95)`,
+                        },
+                        '5 Each': {
+                            expectedValue: 18.0,
+                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"] (10% -> 20.00 * 0.9)`,
+                        },
+                        '9 Each': {
+                            expectedValue: 18.0,
+                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"] (10% -> 20.00 * 0.9)`,
+                        },
+                        '10 Each': {
+                            expectedValue: 15.0,
+                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"] (25% -> 20.00 * 0.75)`,
+                        },
+                        '11 Each': {
+                            expectedValue: 15.0,
+                            rule: `'ZDM2@A007@Contract2@Facial Cosmetics' -> [[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"] (25% -> 20.00 * 0.75)`,
+                        },
+                        '1 Case': { expectedValue: 15.0, rule: `X` },
+                        '2 Case': { expectedValue: 15.0, rule: `X` },
+                        '4 Case': { expectedValue: 15.0, rule: `X` },
+                        '5 Case': { expectedValue: 15.0, rule: `X` },
+                        '9 Case': { expectedValue: 15.0, rule: `X` },
+                        '10 Case': { expectedValue: 15.0, rule: `X` },
+                        '11 Case': { expectedValue: 15.0, rule: `X` },
+                        '1 Box': { expectedValue: 15.0, rule: `X` },
+                        '2 Box': { expectedValue: 15.0, rule: `X` },
+                        '3 Box': { expectedValue: 15.0, rule: `X` },
+                        '5 Box': { expectedValue: 15.0, rule: `X` },
+                        '6 Box': { expectedValue: 15.0, rule: `X` },
+                        '7 Box': { expectedValue: 15.0, rule: `X` },
                     },
                     cart: {
                         Acc01: 1,
