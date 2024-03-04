@@ -26,6 +26,7 @@ _________________ Brief:
 * 
 * under the same condition ('ZDM1' || 'ZDM2' || 'ZDM3') - the contract that offers the best deal would be chosen.
 *  for example between rule 'ZDM3@A006@Contract1' and rule 'ZDM3@A006@Contract2' - contract2 should be chosen since it offers 15% discount versus 5% of contract1
+*   important - for a rule of the type of "applied on all UOMs" - both of the multiple calculation fields "PriceMultiAfter1" & "PriceMultiAfter2" will be afected!
 * 
 * when different UOMs are definted - the choise between contracts would be per each UOM separately
 *  for example between rule 'ZDM2@A007@Contract1@Facial Cosmetics', rule 'ZDM2@A007@Contract2@Facial Cosmetics' and rule 'ZDM2@A007@Contract3@Facial Cosmetics' :
