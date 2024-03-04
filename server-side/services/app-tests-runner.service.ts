@@ -238,16 +238,30 @@ export class AppTest {
                 },
             },
         );
-        const jenkinsColnsoleTextResults =
-            jenkinsJobConsoleTextResponse.Body.Text.split('#  failure         detail')[1];
-        const parsedResultsOfTest = jenkinsColnsoleTextResults.substring(
-            jenkinsColnsoleTextResults.indexOf('01. '),
-            jenkinsColnsoleTextResults.length,
-        );
-        const parsedResultsNoEnding = parsedResultsOfTest.substring(
-            0,
-            parsedResultsOfTest.indexOf("Build step 'PowerShell' marked build as failure"),
-        );
+        let jenkinsColnsoleTextResults;
+        let parsedResultsOfTest;
+        let parsedResultsNoEnding;
+        if (jenkinsJobConsoleTextResponse.Body.Text.includes('#  failure         detail')) {
+            jenkinsColnsoleTextResults = jenkinsJobConsoleTextResponse.Body.Text.split('#  failure         detail')[1];
+            parsedResultsOfTest = jenkinsColnsoleTextResults.substring(
+                jenkinsColnsoleTextResults.indexOf('01. '),
+                jenkinsColnsoleTextResults.length,
+            );
+            parsedResultsNoEnding = parsedResultsOfTest.substring(
+                0,
+                parsedResultsOfTest.indexOf("Build step 'PowerShell' marked build as failure"),
+            );
+        } else if (jenkinsJobConsoleTextResponse.Body.Text.includes('failing')) {
+            jenkinsColnsoleTextResults = jenkinsJobConsoleTextResponse.Body.Text.split('failing')[1];
+            parsedResultsOfTest = jenkinsColnsoleTextResults.substring(
+                jenkinsColnsoleTextResults.indexOf(' 1) '),
+                jenkinsColnsoleTextResults.length,
+            );
+            parsedResultsNoEnding = parsedResultsOfTest.substring(
+                0,
+                parsedResultsOfTest.indexOf('[mochawesome] Report JSON saved to '),
+            );
+        }
         return parsedResultsNoEnding;
     }
 

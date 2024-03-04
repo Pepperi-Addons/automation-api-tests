@@ -107,6 +107,7 @@ import { XTimesSync } from './XTimesSyncE2E.test';
 import { IdosPapiTests } from './ido_papi_tests.test';
 import { AdalBigDataTestser } from '../../api-tests/adal_big_data';
 import { CreateDistributorSystemTests } from './create_distributor_SYSTEM.test';
+import { ConfigurationTests } from './configurations.dev.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -991,6 +992,12 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
     if (tests === 'IdoPapi') {
         await IdosPapiTests(email, pass, client, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+    if (tests === 'DevTest_Configuration') {
+        await ConfigurationTests(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
@@ -2259,7 +2266,7 @@ export async function handleTeamsURL(addonName, service, email, pass) {
         case 'CPI-DATA':
         case 'CPI DATA':
         case 'ADDONS-CPI-DATA':
-            return await service.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
+            return await service.getSecretfromKMS(email, pass, 'CPIDataTeamsWebHook');
         case 'CORE':
         case 'CORE-GENERIC-RESOURCES':
             return await service.getSecretfromKMS(email, pass, 'CORETeamsWebHook');
@@ -2689,12 +2696,16 @@ export async function reportToTeams(
             failedTestsOrdered.length > 0 ? 'Failed Tests:<br>' : ''
         }${failedTestsOrdered.toString()}`;
         debugger;
+        if (message2.length > 20000) {
+            message2 =
+                message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console<br><br>Failed Tests:<br>ARE TOO MANY - CANNOT SEND SO MUCH DATA VIA TEAMS PLEASE CHECK JENKINS!`;
+        }
     }
     const bodyToSend = {
         Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
         Description: message,
         Status: passingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
-        Message: message2 === '' ? '~' : message2,
+        Message: message2 === '' ? '~' : message2.trim(),
         UserWebhook: await handleTeamsURL(addonName, generalService, email, pass),
     };
     const monitoringResponse = await generalService.fetchStatus(
