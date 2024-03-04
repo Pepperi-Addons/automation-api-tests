@@ -7,10 +7,10 @@ import { SingleDevTestRunner } from './SingleDevTestRunner';
 
 chai.use(promised);
 
-export async function ConfigurationTests(email: string, password: string, client: Client, varPass) {
+export async function SyncTests(email: string, password: string, client: Client, varPass) {
     const generalService = new GeneralService(client);
     const addonVersion = (
-        await generalService.getAddonLatestAvailableVersion('84c999c3-84b7-454e-9a86-71b7abc96554', varPass)
+        await generalService.getAddonLatestAvailableVersion('5122dc6d-745b-4f46-bb8e-bd25225d350a', varPass)
     ).latestVersion;
     let env;
     let testNames: string[] = [];
@@ -28,17 +28,20 @@ export async function ConfigurationTests(email: string, password: string, client
         client,
         generalService,
         env,
-        'CONFIGURATIONS',
+        'SYNC',
         addonVersion,
         varPass,
     );
     await generalService.baseAddonVersionsInstallationNewSync(varPass);
     const testData = {
+        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', ''],
+        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
-        configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+        'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
@@ -46,8 +49,8 @@ export async function ConfigurationTests(email: string, password: string, client
 
     // #endregion Upgrade survey dependencies
 
-    describe('Configuration Dev Tests Suit', async function () {
-        describe('Prerequisites Addons for Configurations Dev Tests', () => {
+    describe('Sync Dev Tests Suit', async function () {
+        describe('Prerequisites Addons for Sync Dev Tests', () => {
             //Test Data
             isInstalledArr.forEach((isInstalled, index) => {
                 it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
@@ -77,18 +80,18 @@ export async function ConfigurationTests(email: string, password: string, client
             }
         });
 
-        describe('Configuration Addon Dev Tests Runner', () => {
+        describe('Sync Addon Dev Tests Runner', () => {
             this.retries(0);
             it(`1. Get Test Names`, async function () {
                 testNames = (await devTestRunner.getTestNames()) as string[];
                 console.log(
-                    `Configuration - ${devTestRunner.addonUUID}, Version: ${addonVersion}, Got These Dev Tests From '/tests' Endpoint: [${testNames}]`,
+                    `Sync - ${devTestRunner.addonUUID}, Version: ${addonVersion}, Got These Dev Tests From '/tests' Endpoint: [${testNames}]`,
                 );
             });
             it(`2. Run Tests`, async function () {
                 debugger;
-                const configDevResults = await devTestRunner.runSingleDevTest(testNames, generalService);
-                expect(configDevResults).to.be.true;
+                const syncDevResults = await devTestRunner.runSingleDevTest(testNames, generalService);
+                expect(syncDevResults).to.be.true;
                 debugger;
             });
         });

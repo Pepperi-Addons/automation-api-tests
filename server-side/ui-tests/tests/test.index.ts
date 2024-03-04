@@ -108,6 +108,7 @@ import { IdosPapiTests } from './ido_papi_tests.test';
 import { AdalBigDataTestser } from '../../api-tests/adal_big_data';
 import { CreateDistributorSystemTests } from './create_distributor_SYSTEM.test';
 import { ConfigurationTests } from './configurations.dev.test';
+import { SyncTests as SyncDevTests } from './sync.dev.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -998,6 +999,12 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
     }
     if (tests === 'DevTest_Configuration') {
         await ConfigurationTests(email, pass, client, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+    if (tests === 'DevTest_Sync') {
+        await SyncDevTests(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
