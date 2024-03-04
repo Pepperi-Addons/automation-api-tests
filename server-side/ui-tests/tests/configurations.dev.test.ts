@@ -86,21 +86,8 @@ export async function ConfigurationTests(email: string, password: string, client
                 );
             });
             it(`2. Run Tests`, async function () {
-                debugger;
-                let didPass = true;
-                const configDevResults = await devTestRunner.runSingleDevTest(testNames, generalService);
-                console.log(`\nConfigurations - ${devTestRunner.addonUUID}, Version: ${addonVersion} TEST RESULTS:\n`);
-                for (let index = 0; index < configDevResults.length; index++) {
-                    const testResult = configDevResults[index];
-                    if (!testResult.passed) {
-                        console.log(`The Test ${testResult.testName} has FAILED!`);
-                        didPass = false;
-                    } else {
-                        console.log(`The Test ${testResult.testName} has PASSED!`);
-                    }
-                }
-                expect(didPass).to.equal(true);
-                debugger;
+                const didTestsPassed = await devTestRunner.handleSingleDevTest(testNames, generalService);
+                expect(didTestsPassed).to.equal(true);
             });
         });
     });
