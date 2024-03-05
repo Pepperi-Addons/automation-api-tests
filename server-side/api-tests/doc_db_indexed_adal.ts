@@ -1112,6 +1112,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     //Name: 'Test-positive' + newUuid(),
                     Name: 'Test_positive' + generalService.generateRandomString(16),
                     Type: 'abstract', // will be abstract type
+                    GenericResource: true, //oleg 03/03/24 adal 1.7
                     DataSourceData: {
                         IndexName: 'my_index_' + generalService.generateRandomString(3),
                     },
@@ -1145,6 +1146,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 body: JSON.stringify({
                     Name: 'search1_test' + generalService.generateRandomString(16),
                     Type: 'data',
+                    GenericResource: true, //olef adal 1.7
                     DataSourceData: {
                         IndexName: 'my_index_' + generalService.generateRandomString(3),
                         //NumberOfShards: 3
@@ -1267,6 +1269,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 body: JSON.stringify({
                     Name: 'search2_test' + generalService.generateRandomString(16),
                     Type: 'data',
+                    GenericResource: true, //olef adal 1.7
                     // DataSourceData: {
                     //     IndexName: 'my_index_' + generalService.generateRandomString(3),
                     //NumberOfShards: 3
@@ -2330,18 +2333,54 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     },
                 },
             )
-            .then((res) => res.Body);
+            .then((res) => res.Body); //elastic slownes fixing -adding poling 15/02 adal 1.7
         //debugger;
-        if (
-            logcash.getFromElasticTable.length == 25 &&
-            //logcash.getFromElasticTable[0].Field2 == 0 &&
-            logcash.getFromElasticTable[0].Field1 == undefined
-        ) {
-            logcash.getFromElasticTableStatus = true;
-        } else {
-            logcash.getFromElasticTableStatus = false;
-            logcash.getFromElasticTableError = 'Wrong value in elastic table';
+        for (let index = 0; index < 20; index++) {
+            if (logcash.getFromElasticTable.length < 25) {
+                generalService.sleep(10000);
+                logcash.getFromElasticTable = await generalService
+                    .fetchStatus(
+                        baseURL +
+                            '/addons/shared_index/index/' +
+                            logcash.createSchemaDI24110.DataSourceData.IndexName +
+                            '/' +
+                            adalOwnerId +
+                            '/' +
+                            whaitOwnerUUID +
+                            '~' +
+                            logcash.createSchemaDI24110.Name,
+                        //  +
+                        // '?fields=testString1,ElasticSearchType,Key',
+                        {
+                            method: 'GET',
+                            headers: {
+                                Authorization: 'Bearer ' + token,
+                                //'X-Pepperi-OwnerID': addonUUID,
+                                //'X-Pepperi-SecretKey': logcash.secretKey,
+                                'x-pepperi-await-indexing': 'true',
+                            },
+                        },
+                    )
+                    .then((res) => res.Body);
+            } else {
+                if (logcash.getFromElasticTable.length == 25 && logcash.getFromElasticTable[0].Field1 == undefined) {
+                    logcash.getFromElasticTableStatus = true;
+                } else {
+                    logcash.getFromElasticTableStatus = false;
+                    logcash.getFromElasticTableError = 'Wrong value in elastic table';
+                }
+            }
         }
+        // if (
+        //     logcash.getFromElasticTable.length == 25 &&
+        //     //logcash.getFromElasticTable[0].Field2 == 0 &&
+        //     logcash.getFromElasticTable[0].Field1 == undefined
+        // ) {
+        //     logcash.getFromElasticTableStatus = true;
+        // } else {
+        //     logcash.getFromElasticTableStatus = false;
+        //     logcash.getFromElasticTableError = 'Wrong value in elastic table';
+        // }
         //debugger;
         await updateTestTable();
     }
@@ -2471,7 +2510,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.updateTestTableSecStatus = false;
             logcash.updateTestTableSecError = 'Update data to Accounts table failed';
         }
-        generalService.sleep(5000);
+        generalService.sleep(10000);
         await getFromElasticTable3();
     }
 
