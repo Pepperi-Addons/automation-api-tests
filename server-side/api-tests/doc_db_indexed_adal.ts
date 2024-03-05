@@ -1112,6 +1112,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     //Name: 'Test-positive' + newUuid(),
                     Name: 'Test_positive' + generalService.generateRandomString(16),
                     Type: 'abstract', // will be abstract type
+                    GenericResource: true,//oleg 03/03/24 adal 1.7
                     DataSourceData: {
                         IndexName: 'my_index_' + generalService.generateRandomString(3),
                     },
@@ -1145,6 +1146,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 body: JSON.stringify({
                     Name: 'search1_test' + generalService.generateRandomString(16),
                     Type: 'data',
+                    GenericResource: true,//olef adal 1.7
                     DataSourceData: {
                         IndexName: 'my_index_' + generalService.generateRandomString(3),
                         //NumberOfShards: 3
@@ -1267,6 +1269,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 body: JSON.stringify({
                     Name: 'search2_test' + generalService.generateRandomString(16),
                     Type: 'data',
+                    GenericResource: true,//olef adal 1.7
                     // DataSourceData: {
                     //     IndexName: 'my_index_' + generalService.generateRandomString(3),
                     //NumberOfShards: 3
