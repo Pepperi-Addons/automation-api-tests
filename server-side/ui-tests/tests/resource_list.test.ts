@@ -558,6 +558,9 @@ export async function ResourceListTests(email: string, password: string, varPass
                     view_decsription = `View of resource: ${resource} - ${test_generic_decsription}`;
                     for (let index = 0; index < 3; index++) {
                         try {
+                            if (await driver.isElementVisible(resourceViews.EditPage_BackToList_Button)) {
+                                await driver.click(resourceViews.EditPage_BackToList_Button);
+                            }
                             await resourceListUtils.addView({
                                 nameOfView: viewName,
                                 descriptionOfView: view_decsription,
