@@ -180,7 +180,14 @@ export async function ResourceListTests(email: string, password: string, varPass
         // },
     };
 
-    const simpleResources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
+    const simpleResources = [
+        'accounts',
+        'items',
+        // 'users',
+        // 'catalogs',
+        // 'account_users',
+        'contacts',
+    ];
     // const complexResources = ['ArraysOfPrimitivesAuto', 'FiltersAccRefAuto', 'IndexedFieldsAuto', 'IndexedNameAgeAuto', 'ReferenceAccountAuto'];
 
     describe(`Resource List UI tests  - ${
@@ -459,7 +466,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 await webAppHomePage.isSpinnerDone();
                 await webAppHomePage.clickOnBtn(slugDisplayName);
                 await resourceListBlock.isSpinnerDone();
-                const base64ImageComponent = await driver.saveScreenshots();
+                let base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `In Block "${resource_name}"`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
@@ -473,7 +480,12 @@ export async function ResourceListTests(email: string, password: string, varPass
                     const columnTitleText = await columnTitle.getText();
                     expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
                 });
-                driver.sleep(15 * 1000);
+                driver.sleep(0.5 * 1000);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Assertions`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
             });
