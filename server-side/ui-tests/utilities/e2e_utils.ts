@@ -24,6 +24,7 @@ import { Client } from '@pepperi-addons/debug-server/dist';
 import { expect } from 'chai';
 import { CollectionDefinition, UDCService } from '../../services/user-defined-collections.service';
 import { SelectedView, ViewerBlock, BasePageLayoutSectionColumn } from '../blueprints/PageBlocksBlueprints';
+import { AddonLoadCondition } from '../pom/addons/base/AddonPage';
 
 export default class E2EUtils extends BasePomObject {
     public constructor(protected browser: Browser) {
@@ -43,9 +44,8 @@ export default class E2EUtils extends BasePomObject {
                 case 'Resource Views':
                     const resourceList: ResourceList = new ResourceList(this.browser);
                     await settingsSidePanel.clickSettingsSubCategory('views_and_editors', 'Pages');
-                    // if (await this.browser.isElementVisible(resourceList.EditPage_BackToList_Button)) {
-                    //     await resourceList.click(resourceList.EditPage_BackToList_Button);
-                    // }
+                    this.browser.sleep(0.2 * 1000);
+                    await this.browser.refresh();
                     await resourceList.waitTillVisible(resourceList.PepTopArea_title, 30000);
                     break;
                 case 'Slugs':
@@ -427,19 +427,22 @@ export default class E2EUtils extends BasePomObject {
     }
 
     public async changePageAtMappedSlugs(
-        slugsPagesPairsToAdd: { slug_path: string; pageUUID: string }[],
+        slugsPagesPairsToChange: { slug_path: string; pageUUID: string }[],
         client: Client,
     ) {
-        // TODO
         const generalService = new GeneralService(client);
         const dataViewsService = new DataViewsService(generalService.papiClient);
         const slugs: Slugs = new Slugs(this.browser);
         const existingMappedSlugs = await slugs.getExistingMappedSlugsList(dataViewsService);
-        const slugsFields: MenuDataViewField[] = this.prepareDataForDragAndDropAtSlugs(
-            slugsPagesPairsToAdd,
-            existingMappedSlugs,
-        );
-        console.info(`slugsFields: ${JSON.stringify(slugsFields, null, 4)}`);
+        slugsPagesPairsToChange.forEach((pair) => {
+            existingMappedSlugs.find((mappedSlug) => {
+                if (mappedSlug['FieldID'] === pair.slug_path) {
+                    mappedSlug['Title'] = pair.pageUUID;
+                }
+            });
+        });
+        console.info(`slugsPagesPairsToChange: ${JSON.stringify(slugsPagesPairsToChange, null, 4)}`);
+        const slugsFields: MenuDataViewField[] = this.prepareDataForDragAndDropAtSlugs([], existingMappedSlugs);
         const slugsFieldsToAddToMappedSlugsObj = new UpsertFieldsToMappedSlugs(slugsFields);
         console.info(`slugsFieldsToAddToMappedSlugs: ${JSON.stringify(slugsFieldsToAddToMappedSlugsObj, null, 4)}`);
         const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
@@ -614,5 +617,74 @@ export default class E2EUtils extends BasePomObject {
             await this.performManualSync(client);
             await webAppHomePage.validateATDIsApearingOnHomeScreen(resourceData.homePageButton.slugDisplayName);
         }
+    }
+
+    public async addHomePageButtonByProfile(
+        nameOfItemToAdd: string,
+        profile: 'Admin' | 'Rep' | 'Buyer' = 'Rep',
+    ): Promise<void> {
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        const webAppHomePage: WebAppHomePage = new WebAppHomePage(this.browser);
+        const brandedApp: BrandedApp = new BrandedApp(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
+        await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
+        try {
+            await brandedApp.isSpinnerDone();
+            await this.browser.switchTo(brandedApp.AddonContainerIframe);
+            await brandedApp.isAddonFullyLoaded(AddonLoadCondition.Content);
+        } catch (error) {
+            this.browser.refresh();
+            this.browser.sleep(6.5 * 1000);
+            await brandedApp.isSpinnerDone();
+            await this.browser.switchTo(brandedApp.AddonContainerIframe);
+            await brandedApp.isAddonFullyLoaded(AddonLoadCondition.Content);
+        }
+
+        await this.browser.click(brandedApp.getSelectorOfEditCardByProfile(profile));
+        await this.browser.sendKeys(brandedApp.SettingsFrameworkEditorSearch, nameOfItemToAdd);
+        await this.browser.click(
+            brandedApp.getSelectorOfSearchResultListRowPlusButtonByPartialTextAtCardEdit(nameOfItemToAdd),
+        );
+        await this.browser.untilIsVisible(
+            brandedApp.getSelectorOfItemConfiguredToCardByTextAtCardEdit(nameOfItemToAdd),
+        );
+        await this.browser.click(brandedApp.getSelectorOfFooterButtonByText('Save'));
+        this.browser.sleep(3.5 * 1000);
+
+        await this.browser.switchToDefaultContent();
+        await webAppHomePage.returnToHomePage();
+        return;
+    }
+
+    public async removeHomePageButtonByProfile(
+        nameOfItemToRemove: string,
+        profile: 'Admin' | 'Rep' | 'Buyer' = 'Rep',
+    ): Promise<void> {
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        const brandedApp: BrandedApp = new BrandedApp(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
+        await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
+
+        try {
+            await brandedApp.isSpinnerDone();
+            await this.browser.switchTo(brandedApp.AddonContainerIframe);
+            await brandedApp.isAddonFullyLoaded(AddonLoadCondition.Content);
+        } catch (error) {
+            this.browser.refresh();
+            this.browser.sleep(6500);
+            await brandedApp.isSpinnerDone();
+            await this.browser.switchTo(brandedApp.AddonContainerIframe);
+            await brandedApp.isAddonFullyLoaded(AddonLoadCondition.Content);
+        }
+
+        await this.browser.click(brandedApp.getSelectorOfEditCardByProfile(profile));
+        await this.browser.click(
+            brandedApp.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(nameOfItemToRemove),
+        );
+        await this.browser.click(brandedApp.getSelectorOfFooterButtonByText('Save'));
+
+        await webAppHomePage.returnToHomePage();
+        return;
     }
 }
