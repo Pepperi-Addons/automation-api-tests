@@ -353,7 +353,7 @@ export class ResourceViews extends ResourceList {
         this.browser.sleep(2000);
         const viewEditTitle = await (await this.browser.findElement(this.View_Edit_Title)).getText();
         expect(viewEditTitle).to.contain(viewName);
-        await this.click(this.EditPage_BackToList_Button);
+        // await this.click(this.EditPage_BackToList_Button);
     }
 
     public async selectEditor(dropdownElement: By, editorName: string) {
@@ -599,7 +599,7 @@ export class ResourceEditors extends ResourceList {
         await expect(this.untilIsVisible(selector, 15000)).eventually.to.be.true;
         const editPageTitle = await (await this.browser.findElement(this.EditPage_Title)).getText();
         expect(editPageTitle).to.contain(editorName);
-        await this.click(this.EditPage_BackToList_Button);
+        // await this.click(this.EditPage_BackToList_Button);
     }
 
     public async gotoEditPageOfEditor(editorName: string) {
