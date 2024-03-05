@@ -443,6 +443,11 @@ export async function ResourceListTests(email: string, password: string, varPass
 
                 const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
                 console.info(`RESPONSE: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Page Creation`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 expect(responseOfPublishPage.Ok).to.be.true;
                 expect(responseOfPublishPage.Status).to.equal(200);
                 pageBuilder.pause(1 * 1000);
@@ -453,19 +458,28 @@ export async function ResourceListTests(email: string, password: string, varPass
                 slug_path = `${resource_name.toLowerCase()}_${random_name}`;
                 await resourceListUtils.createSlug(slugDisplayName, slug_path, pageKey, email, password, client);
             });
-            it('Create A Button On Homepage', async function () {
+            it(`Create A Button On Homepage (${slugDisplayName})`, async function () {
                 await webAppHeader.openSettings();
                 await webAppHeader.isSpinnerDone();
                 driver.sleep(0.1 * 1000);
                 await resourceListUtils.addHomePageButtonByProfile(slugDisplayName, 'Rep');
                 await webAppHomePage.manualResync(client);
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slugDisplayName);
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Home Page Button Creation`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
             });
-            it('Go to Block', async function () {
+            it('Go to Block and perform checks', async function () {
                 resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
                 await webAppHomePage.isSpinnerDone();
                 await webAppHomePage.clickOnBtn(slugDisplayName);
                 await resourceListBlock.isSpinnerDone();
+                addContext(this, {
+                    title: `Current URL`,
+                    value: `${await driver.getCurrentUrl()}`,
+                });
                 let base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `In Block "${resource_name}"`,
@@ -628,6 +642,11 @@ export async function ResourceListTests(email: string, password: string, varPass
 
                     const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
                     console.info(`RESPONSE: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `After Page Creation`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     expect(responseOfPublishPage.Ok).to.be.true;
                     expect(responseOfPublishPage.Status).to.equal(200);
                     pageBuilder.pause(1 * 1000);
