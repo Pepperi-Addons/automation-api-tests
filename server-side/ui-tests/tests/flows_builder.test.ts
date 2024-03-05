@@ -12,9 +12,9 @@ import jwt_decode from 'jwt-decode';
 chai.use(promised);
 
 export async function FlowTests(email: string, password: string, client: Client, varPass) {
-    //, varPass
+    let driver: Browser;
+    let flowService: FlowService;
     const generalService = new GeneralService(client);
-
     let varKey;
     if (generalService.papiClient['options'].baseURL.includes('staging')) {
         varKey = varPass.body.varKeyStage;
@@ -23,7 +23,7 @@ export async function FlowTests(email: string, password: string, client: Client,
     }
     const parsedToken = jwt_decode(generalService.papiClient['options'].token);
     const userName = parsedToken.email;
-    let driver: Browser;
+
     let firstScriptUUID = '';
     let secondScriptUUID = '';
     const firstScriptParam = { name: 'first', desc: 'test', type: 'String' };
@@ -154,6 +154,7 @@ export async function FlowTests(email: string, password: string, client: Client,
             let duplicatedFlow;
             before(async function () {
                 driver = await Browser.initiateChrome();
+                flowService = new FlowService(driver);
             });
 
             after(async function () {
@@ -190,7 +191,6 @@ export async function FlowTests(email: string, password: string, client: Client,
                 await webAppHomePage.returnToHomePage();
             });
             it('2. Enter Flows Main Page, Validate Everything Is Shown, Create Flow', async function () {
-                const flowService = new FlowService(driver);
                 //enter flows from settings
                 const isFlowBuilderMainPageShown = await flowService.enterFlowBuilderSettingsPage();
                 expect(isFlowBuilderMainPageShown).to.equal(true);
@@ -206,7 +206,6 @@ export async function FlowTests(email: string, password: string, client: Client,
                 expect(isGeneralDataShownCorrectly).to.equal(true);
             });
             it('3. Add Parameter To The Flow', async function () {
-                const flowService = new FlowService(driver);
                 //2. add parameters by given flow
                 const isParamTabShown = await flowService.enterParamTab();
                 expect(isParamTabShown).to.equal(true);
@@ -220,7 +219,6 @@ export async function FlowTests(email: string, password: string, client: Client,
                 expect(isFlowPagePresentedAfterSaving).to.equal(true);
             });
             it('4. Add Steps Using API And Validate By UI All Is Shown', async function () {
-                const flowService = new FlowService(driver);
                 //->add steps via API
                 stepsResponse = await flowService.addStepViaAPI(
                     generalService,
@@ -241,6 +239,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                     expect(stepFromAPI.Configuration).to.deep.equal(stepInput.Configuration);
                 }
                 driver.sleep(10000); //wait for eveything to sync or whatever
+                debugger;
                 //-> enter flow
                 await flowService.enterFlowBySearchingName(positiveFlow.Name);
                 //->validate all steps are there with correct names
@@ -250,9 +249,10 @@ export async function FlowTests(email: string, password: string, client: Client,
                     expect(isCreatedSecsefully).to.equal(true);
                 }
                 //-> validate the script inside the step and its params
+                debugger;
                 for (let index = 0; index < newFlowSteps.length; index++) {
                     const step = newFlowSteps[index];
-                    const isCreatedSuccessfully = await flowService.validateStepScript(index + 1, step, generalService);
+                    const isCreatedSuccessfully = await flowService.validateStepScript(index + 1, step, generalService); // issues is here
                     expect(isCreatedSuccessfully).to.equal(true);
                     await flowService.closeScriptModal();
                 }
@@ -260,7 +260,6 @@ export async function FlowTests(email: string, password: string, client: Client,
                 await flowService.saveFlow();
             });
             it('5. Get All Flows By API And See We Got Only One Which Is Setup Correctly', async function () {
-                const flowService = new FlowService(driver);
                 //->get flow via api
                 const newFlow = await flowService.getFlowByKeyViaAPI(generalService, flowKey);
                 //->validate flow from api
@@ -274,7 +273,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                 expect(newFlow.Body.Steps).to.deep.equal(positiveFlow.Steps);
             });
             it('6. Run Flow And See Result', async function () {
-                const flowService = new FlowService(driver);
+                debugger;
                 //->run flow and see result
                 const isRunFlowPresentedCorrectly = await flowService.getToRunPageOfFlowByKeyUsingNav(
                     flowKey,
@@ -291,7 +290,6 @@ export async function FlowTests(email: string, password: string, client: Client,
                 await flowService.backToList();
             });
             it('7. Enter Flows Logs And See Everything Was Recoreded', async function () {
-                const flowService = new FlowService(driver);
                 //enter Logs For The Same Flow
                 const isLogsPagePresentedCorrectly = await flowService.getToLogsPageOfFlowByKeyUsingNav(
                     flowKey,
@@ -323,7 +321,6 @@ export async function FlowTests(email: string, password: string, client: Client,
                 await flowService.backToList();
             });
             it('8. Duplicate The Flow - Run The Copy - See Everything Was Created Correctly', async function () {
-                const flowService = new FlowService(driver);
                 //2. Duplicate The Flow & run it - see everything is good
                 const duplicateResponse = await flowService.duplicateFlowByKeyUsingAPI(
                     generalService,
@@ -354,8 +351,24 @@ export async function FlowTests(email: string, password: string, client: Client,
                 expect(returnedValueCopyFlow).to.equal(expectedResult);
                 await flowService.backToList();
             });
-            it('9. Delete The Copy - See It Dosnet Show In The List, Call API See It Was Deleted', async function () {
+            it('9. Dissable All Steps On Flow And Run Once Again', async function () {
                 const flowService = new FlowService(driver);
+                await flowService.enterFlowBySearchingName(duplicatedFlow.Name);
+                for (let index = 0; index < newFlowSteps.length; index++) {
+                    await flowService.disableStep(index + 1);
+                }
+                await flowService.saveFlow();
+                const isRunFlowPresentedCorrectlyCopyFlow = await flowService.getToRunPageOfFlowByKeyUsingNav(
+                    duplicatedFlow.Key,
+                    duplicatedFlow,
+                );
+                expect(isRunFlowPresentedCorrectlyCopyFlow).to.equal(true);
+                await flowService.runFlow();
+                const returnedValue = await flowService.validateRunResultStepsAreDisabled();
+                expect(returnedValue).to.include(`finished running flow ${duplicatedFlow.Name}, result is {}. `);
+                await flowService.backToList();
+            });
+            it('10. Delete The Copy - See It Dosnet Show In The List, Call API See It Was Deleted', async function () {
                 //3. delete the duplicate using pencil menu - see only the first one is left
                 await flowService.searchFlowByName(duplicatedFlow.Name);
                 const deleteResponse = await flowService.deleteFlowByKeyUsingAPI(generalService, duplicatedFlow.Key);
@@ -399,7 +412,6 @@ export async function FlowTests(email: string, password: string, client: Client,
             });
             it('Data Cleansing: 2. Flows', async function () {
                 //delete the script
-                const flowService = new FlowService(driver);
                 const flowResponse = await flowService.getAllFlowsViaAPI(generalService);
                 const allFlows = flowResponse.Body;
                 console.log(`There Are: ${allFlows.length} Flows`);

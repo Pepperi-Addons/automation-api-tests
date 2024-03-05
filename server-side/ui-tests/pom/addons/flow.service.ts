@@ -441,6 +441,14 @@ export class FlowService extends AddonPage {
         return totValue;
     }
 
+    async validateRunResultStepsAreDisabled() {
+        const resultOfDisabledStepsFlowXPathSelector = "//mat-label[@title='run logs']//..//..//..//pre";
+        const resultText = await (
+            await this.browser.findElement(By.xpath(resultOfDisabledStepsFlowXPathSelector))
+        ).getText();
+        return resultText;
+    }
+
     async validateRunData() {
         const flowKeyTitle = await (await this.browser.findElement(this.FlowKeyTitle)).getText();
         const flowKeyData = (await (await this.browser.findElement(this.FlowKeyData)).getText()).replace(/"/g, '');
@@ -551,7 +559,15 @@ export class FlowService extends AddonPage {
         await this.browser.click(this.SaveParamModalButton);
     }
 
+    async disableStep(stepIndex: number) {
+        const stepByIndex: string = this.StepBlockElement.valueOf()['value'].replace('|PLACEHOLDER|', stepIndex);
+        const disableCheckboxOfStepBlock = stepByIndex + '//mat-checkbox//input';
+        await this.browser.click(By.xpath(disableCheckboxOfStepBlock));
+        this.browser.sleep(1500);
+    }
+
     async validateStepScript(stepIndex: number, step: FlowStep, service) {
+        debugger;
         const stepByIndex: string = this.StepBlockElement.valueOf()['value'].replace('|PLACEHOLDER|', stepIndex);
         //script
         const editButtonOfStepBlock = stepByIndex + "//pep-button[@title='Edit']";

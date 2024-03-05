@@ -16,6 +16,63 @@ import PricingRules from '../../../pom/addons/PricingRules';
 chai.use(promised);
 
 export async function PricingPartialValueTests(email: string, password: string, client: Client) {
+    /*
+_________________ 
+_________________ Brief:
+    
+* Pricing Partial Value
+* the totals calculations are used for 2 purposes:  
+* 1. when there are different UOM price sets - that each quantity would be multiplied by the correct price and thus the total sum would be accurate
+* 2. to compare two blocks (or unit fields) results in terms of absolute value or percentage, and to able to say: this discount block saved X money or got % discount..
+* 
+* field "PriceTaxTotal" calculation:  PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+* field "PriceTaxTotalDiff" calculation:  TaxTotal - BaseTotal  || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+* field "PriceTaxTotalPercent" calculation: (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base"
+* field "PriceTaxUnitDiff" calculation: PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+* 
+* the test agenda is to 
+_________________ 
+_________________ The Relevant Rules:
+    
+. 'ZGD1@A002@Acc01@MakeUp003':
+'[[true,"1555891200000","2534022144999","1","","ZGD1_A002",[[10,"D",20,"%"]],"EA"]]',
+
+. 'ZGD1@A003@Acc01@Beauty Make Up':
+'[[true,"1555891200000","2534022144999","1","","additionalItem",[[12,"D",100,"%","",1,"EA","MakeUp018",0]],"EA"]]',
+
+. 'ZGD2@A002@Acc01@MakeUp018':
+'[[true,"1555891200000","2534022144999","1","","additionalItem",[[2,"D",100,"%","",1,"EA","MakeUp018",0]],"EA"]]',
+
+. 'ZGD2@A003@Acc01@Beauty Make Up':
+'[[true,"1555891200000","2534022144999","1","","ZGD2_A003",[[3,"D",3,"%"],[7,"D",7,"%"]],"EA"]]',
+_________________ 
+_________________ Order Of Actions:
+    
+1. MakeUp001 - clicking plus button once
+2. MakeUp002 - clicking plus button once
+3. MakeUp003 - changing value to 1
+----> checking that discount for total of 3 group items is applied
+
+4. MakeUp018 - clicking plus button once
+5. MakeUp018 - changing value to 2
+6. MakeUp001 - changing value to 2
+7. MakeUp002 - changing value to 2
+----> checking that discount for total of 7 group items is applied
+
+8. MakeUp003 - changing value to 5
+9. MakeUp006 - clicking plus button once
+----> checking that an additional item (MakeUp018) is given for group total of 12 items
+
+10. MakeUp003 - changing value to 10
+----> checking that group total count is reduced to 7 because a singular rule for MakeUp003 excludes the item from the group
+        (additional item disappear and discount is calculated 7% for each of the group items + 20% discount is calculated for MakeUp003 specifically)
+    
+11. MakeUp019 - changing value to 5
+----> checking that group total count is 10 (MakeUp018 is excluded from the group and given an additional item of the same due to a singular rule)
+        making sure the additional item do not appear twice
+_________________ 
+_________________ 
+*/
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
@@ -58,7 +115,10 @@ export async function PricingPartialValueTests(email: string, password: string, 
 
     const testAccounts = ['Acc01', 'OtherAcc'];
     const partialValueTestItems = ['Frag006', 'Frag008', 'Frag009', 'Frag011', 'Frag021'];
-    const partialValueCartTestItems = ['Frag021', 'Frag011', 'Frag009'];
+    const partialValueCartTestItemsSets = [
+        ['Frag021', 'Frag011', 'Frag009'],
+        ['Frag008', 'Frag006'],
+    ];
     const partialValueTestStates = [
         'baseline',
         '9 Each',
@@ -79,7 +139,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
     const pricePartialFields = ['PricePartial'];
 
     if (installedPricingVersionShort !== '5') {
-        describe(`Pricing Partial Value UI tests  - ${
+        describe(`Pricing ** Partial Value ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {
@@ -116,7 +176,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
                 });
             });
 
-            it('Manual Sync', async () => {
+            it('Manual Sync', async function () {
                 await webAppHomePage.manualResync(client);
             });
 
@@ -125,7 +185,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
                 console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
             });
 
-            it('validating "PPM_Values" via API', async () => {
+            it('validating "PPM_Values" via API', async function () {
                 const expectedPPMValuesLength =
                     Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length;
                 console.info(
@@ -136,7 +196,7 @@ export async function PricingPartialValueTests(email: string, password: string, 
                 );
                 addContext(this, {
                     title: `PPM Values Length`,
-                    value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
+                    value: `ACTUAL: ${ppmValues.length} \nEXPECTED: ${expectedPPMValuesLength}`,
                 });
                 expect(ppmValues.length).equals(expectedPPMValuesLength);
                 Object.keys(ppmValues_content).forEach((mainKey) => {
@@ -151,8 +211,8 @@ export async function PricingPartialValueTests(email: string, password: string, 
                     console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                     matchingRowOfppmValues &&
                         addContext(this, {
-                            title: `PPM Value for the Key "${mainKey}"`,
-                            value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${ppmValues_content[mainKey]}`,
+                            title: `PPM Key "${mainKey}"`,
+                            value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
                         });
                     matchingRowOfppmValues &&
                         expect(ppmValues_content[mainKey]).equals(
@@ -339,35 +399,92 @@ export async function PricingPartialValueTests(email: string, password: string, 
                                 expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                                 driver.sleep(1 * 1000);
                             });
-                            partialValueCartTestItems.forEach((partialValueTestCartItem) => {
-                                it(`checking item "${partialValueTestCartItem}"`, async function () {
-                                    const pricePartialTSAs = await pricingService.getTSAsOfPartialPerItem(
-                                        'Cart',
-                                        partialValueTestCartItem,
-                                        undefined,
-                                        undefined,
-                                        'LinesView',
-                                    );
-                                    const totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                        'Cart',
-                                        partialValueTestCartItem,
-                                        undefined,
-                                        undefined,
-                                        'LinesView',
-                                    );
-                                    const expectedPricePartial =
-                                        pricingData.testItemsValues.Partial[partialValueTestCartItem]['PricePartial'][
-                                            'cart'
-                                        ][account];
-                                    const actualPricePartial = pricePartialTSAs['PricePartial'];
-                                    const expectedTotalUnitsAmount =
-                                        pricingData.testItemsValues.Partial[partialValueTestCartItem]['Cart'][account];
-                                    console.info(
-                                        `Cart ${partialValueTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
-                                    );
-                                    expect(totalUnitsAmount).equals(expectedTotalUnitsAmount);
-                                    expect(actualPricePartial).equals(expectedPricePartial);
-                                    driver.sleep(1 * 1000);
+                            partialValueCartTestItemsSets.forEach((partialValueCartTestItems, index) => {
+                                it(`filtering cart using smart filter Item External ID - Group ${
+                                    index + 1
+                                }`, async function () {
+                                    await driver.click(orderPage.Cart_SmartFilter_ItemExternalID);
+                                    driver.sleep(0.3 * 1000);
+                                    partialValueCartTestItems.forEach(async (partialValueTestCartItem) => {
+                                        await driver.click(
+                                            orderPage.getSelectorOfCheckboxOfSmartFilterItemExternalIdAtCartByText(
+                                                partialValueTestCartItem,
+                                            ),
+                                        );
+                                        driver.sleep(0.3 * 1000);
+                                    });
+                                    await driver.untilIsVisible(orderPage.Cart_SmartFilter_ApplyButton);
+                                    await driver.click(orderPage.Cart_SmartFilter_ApplyButton);
+                                    await orderPage.isSpinnerDone();
+                                    driver.sleep(2 * 1000);
+                                    const itemsInCart = await (
+                                        await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                    ).getText();
+                                    driver.sleep(0.2 * 1000);
+                                    base64ImageComponent = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `After Smart Filter Activated`,
+                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                    });
+                                    addContext(this, {
+                                        title: `After Smart Filter - Number of Items in Cart`,
+                                        value: `form UI: ${itemsInCart} , expected: ${partialValueCartTestItems.length}`,
+                                    });
+                                    expect(Number(itemsInCart)).to.equal(partialValueCartTestItems.length);
+                                });
+                                partialValueCartTestItems.forEach((partialValueTestCartItem) => {
+                                    it(`checking item "${partialValueTestCartItem}"`, async function () {
+                                        const pricePartialTSAs = await pricingService.getTSAsOfPartialPerItem(
+                                            'Cart',
+                                            partialValueTestCartItem,
+                                            undefined,
+                                            undefined,
+                                            'LinesView',
+                                        );
+                                        const totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                            'Cart',
+                                            partialValueTestCartItem,
+                                            undefined,
+                                            undefined,
+                                            'LinesView',
+                                        );
+                                        const expectedPricePartial =
+                                            pricingData.testItemsValues.Partial[partialValueTestCartItem][
+                                                'PricePartial'
+                                            ]['cart'][account];
+                                        const actualPricePartial = pricePartialTSAs['PricePartial'];
+                                        const expectedTotalUnitsAmount =
+                                            pricingData.testItemsValues.Partial[partialValueTestCartItem]['Cart'][
+                                                account
+                                            ];
+                                        console.info(
+                                            `Cart ${partialValueTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
+                                        );
+                                        expect(totalUnitsAmount).equals(expectedTotalUnitsAmount);
+                                        expect(actualPricePartial).equals(expectedPricePartial);
+                                        driver.sleep(1 * 1000);
+                                    });
+                                });
+                                it(`clearing smart filter`, async function () {
+                                    await driver.click(orderPage.Cart_SmartFilter_ClearButton);
+                                    await orderPage.isSpinnerDone();
+                                    driver.sleep(0.8 * 1000);
+                                    await driver.click(orderPage.Cart_SmartFilter_ItemExternalID);
+                                    driver.sleep(0.5 * 1000);
+                                    const itemsInCart = await (
+                                        await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                    ).getText();
+                                    driver.sleep(0.2 * 1000);
+                                    base64ImageComponent = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `After Smart Filter Cleared`,
+                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                    });
+                                    addContext(this, {
+                                        title: `After Smart Filter Cleared - Number of Items in Cart`,
+                                        value: `form UI: ${itemsInCart} , expected: ${partialValueTestItems.length}`,
+                                    });
+                                    expect(Number(itemsInCart)).to.equal(partialValueTestItems.length);
                                 });
                             });
                         });

@@ -1202,17 +1202,17 @@ export default class GeneralService {
                 addonName == 'Data Index Framework' || //evgeny
                 addonName == 'system_health' || //evgeny
                 addonName == 'Cross Platform Engine' || //evgeny
-                addonName == 'WebApp API Framework' || // 8/5: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
-                addonName == 'Relations Framework' || // evgeny 4/12: done to be able to test latest relation fw version
+                addonName == 'WebApp API Framework' || // 8/5/23: CPAS MUST ALWAYS BE SENT WITH FULL VERSION (xx.xx.xx)
+                addonName == 'Relations Framework' || // evgeny 4/12/23: done to be able to test latest relation fw version
                 addonName == 'Pepperitest (Jenkins Special Addon) - Code Jobs' || // evgeny 6/12: trying to fix wiered jenkins issue
-                addonName == 'Audit Log' || // evgeny 13/12: newest audit to fix SB
+                addonName == 'Audit Log' || // evgeny 13/12/23: newest audit to fix SB
+                addonName == 'Async Task Execution' || // evgeny 3/3/24: async versions barely get phased (they do but after lots of time in 'available testing') - so its better to get latest available ASAP
                 addonName == 'Notification Service' || // evgeny 15/1/23: to get newest PNS we have
                 addonName == 'Export and Import Framework' ||
                 addonName == 'Export and Import Framework (DIMX)' || // evgeny 15/1/23: to get newest DIMX
-                addonName == 'Nebula' || //
-                addonName == 'sync' || //
-                addonName == 'Core Data Source Interface' || //
-                addonName == 'Core Resources' || //
+                addonName == 'sync' || //new sync addons
+                addonName == 'Core Data Source Interface' || //new sync addons
+                addonName == 'Core Resources' || //new sync addons
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
@@ -1367,7 +1367,9 @@ export default class GeneralService {
         let informativeMessage = `Latest available version ${
             version ? `that starts with ${version} ` : ''
         }retrieved successfully`;
-        const searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
+        const searchString = `AND Version Like '${
+            version === undefined || version === '' ? '%' : version
+        }' AND Available Like 1`;
         const fetchVarResponse = await this.fetchStatus(
             `${this.client.BaseURL.replace(
                 'papi-eu',

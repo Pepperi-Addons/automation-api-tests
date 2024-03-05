@@ -16,6 +16,47 @@ import addContext from 'mochawesome/addContext';
 chai.use(promised);
 
 export async function PricingTotalsTests(email: string, password: string, client: Client) {
+    /*
+_________________ 
+_________________ Brief:
+             
+   * Pricing Totals
+   * the totals calculations are used for 2 purposes:  
+   * 1. when there are different UOM price sets - that each quantity would be multiplied by the correct price and thus the total sum would be accurate
+   * 2. to compare two blocks (or unit fields) results in terms of absolute value or percentage, and to able to say: this discount block saved X money or got % discount..
+   * 
+   * field "PriceTaxTotal" calculation:  PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+   * field "PriceTaxTotalDiff" calculation:  TaxTotal - BaseTotal  || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+   * field "PriceTaxTotalPercent" calculation: (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base"
+   * field "PriceTaxUnitDiff" calculation: PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+   * 
+   * the test agenda is to 
+_________________ 
+_________________ The Relevant Rules:
+             
+. 'ZBASE@A005@Hand Cosmetics':
+    '[[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",8,"P"]],"EA","EA"],
+      [true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",40,"P"]],"CS","CS"],
+      [true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",160,"P"]],"BOX","BOX"]]',
+ 
+. 'MTAX@A002@Acc01@MaNa23': '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",20,"%"]]]]',
+ 
+_________________ 
+_________________ Order Of Actions:
+             
+   1. Looping over accounts
+ 
+       2. Looping over items
+ 
+           3. At Order Center: Looping over states
+           ----> retrieving pricing fields values from UI and comparing to expected data ( pricingData.testItemsValues.Totals[totalsTestItem][account][totalsTestState][priceField] )
+ 
+           4. At Cart: Looping over states
+           ----> same check as at order center
+ 
+_________________ 
+_________________ 
+*/
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
@@ -71,7 +112,7 @@ export async function PricingTotalsTests(email: string, password: string, client
     const totalsPriceFields = ['PriceTaxTotal', 'PriceTaxTotalPercent', 'PriceTaxTotalDiff', 'PriceTaxUnitDiff'];
 
     if (installedPricingVersionShort !== '5') {
-        describe(`Pricing Totals UI tests  - ${
+        describe(`Pricing ** Totals ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {
@@ -117,7 +158,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                 console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
             });
 
-            it('validating "PPM_Values" via API', async () => {
+            it('validating "PPM_Values" via API', async function () {
                 const expectedPPMValuesLength =
                     Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length;
                 console.info(
@@ -128,7 +169,7 @@ export async function PricingTotalsTests(email: string, password: string, client
                 );
                 addContext(this, {
                     title: `PPM Values Length`,
-                    value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
+                    value: `ACTUAL: ${ppmValues.length} \nEXPECTED: ${expectedPPMValuesLength}`,
                 });
                 expect(ppmValues.length).equals(expectedPPMValuesLength);
                 Object.keys(ppmValues_content).forEach((mainKey) => {
@@ -143,8 +184,8 @@ export async function PricingTotalsTests(email: string, password: string, client
                     console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                     matchingRowOfppmValues &&
                         addContext(this, {
-                            title: `PPM Value for the Key "${mainKey}"`,
-                            value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} \nACTUAL: ${ppmValues_content[mainKey]}`,
+                            title: `PPM Key "${mainKey}"`,
+                            value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
                         });
                     matchingRowOfppmValues &&
                         expect(ppmValues_content[mainKey]).equals(

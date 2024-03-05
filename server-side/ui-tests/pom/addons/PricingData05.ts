@@ -1619,7 +1619,7 @@ export class PricingData05 {
                     OtherAcc: { cart: 28.75, baseline: 28.75 },
                 },
                 PriceGroupDiscountUnitPriceAfter1: {
-                    Acc01: { cart: 28.75, baseline: 26.73 },
+                    Acc01: { cart: 26.73, baseline: 26.73 },
                     OtherAcc: { cart: 28.75, baseline: 28.75 },
                 },
                 PriceManualLineUnitPriceAfter1: {
@@ -1643,7 +1643,7 @@ export class PricingData05 {
                     OtherAcc: { cart: 29.75, baseline: 29.75 },
                 },
                 PriceGroupDiscountUnitPriceAfter1: {
-                    Acc01: { cart: 29.75, baseline: 27.66 },
+                    Acc01: { cart: 27.66, baseline: 27.66 },
                     OtherAcc: { cart: 29.75, baseline: 29.75 },
                 },
                 PriceManualLineUnitPriceAfter1: {
@@ -1742,7 +1742,7 @@ export class PricingData05 {
                 },
                 PriceGroupDiscountUnitPriceAfter1: {
                     Acc01: {
-                        cart: 24.6,
+                        cart: 22.44,
                         baseline: 30.75,
                         '1unit': 30.75,
                         '3units': 30.75,
@@ -1807,7 +1807,7 @@ export class PricingData05 {
                     OtherAcc: { cart: 33.75, baseline: 33.75 },
                 },
                 PriceGroupDiscountUnitPriceAfter1: {
-                    Acc01: { cart: 33.75, baseline: 31.38 },
+                    Acc01: { cart: 31.38, baseline: 31.38 },
                     OtherAcc: { cart: 33.75, baseline: 33.75 },
                 },
                 PriceManualLineUnitPriceAfter1: {
@@ -1831,7 +1831,7 @@ export class PricingData05 {
                     OtherAcc: { cart: 14.95, baseline: 14.95, additional: { Each: null, Case: null } },
                 },
                 PriceGroupDiscountUnitPriceAfter1: {
-                    Acc01: { cart: 14.95, baseline: 13.9, additional: { Each: 0.0, Case: 0.0 } },
+                    Acc01: { cart: 13.9, baseline: 13.9, additional: { Each: 0.0, Case: 0.0 } },
                     OtherAcc: { cart: 14.95, baseline: 14.95, additional: { Each: null, Case: null } },
                 },
                 PriceManualLineUnitPriceAfter1: {
@@ -1855,7 +1855,7 @@ export class PricingData05 {
                     OtherAcc: { cart: 15.95, baseline: 15.95 },
                 },
                 PriceGroupDiscountUnitPriceAfter1: {
-                    Acc01: { cart: 15.95, baseline: 15.95 },
+                    Acc01: { cart: 14.83, baseline: 15.95 },
                     OtherAcc: { cart: 15.95, baseline: 15.95 },
                 },
                 PriceManualLineUnitPriceAfter1: {

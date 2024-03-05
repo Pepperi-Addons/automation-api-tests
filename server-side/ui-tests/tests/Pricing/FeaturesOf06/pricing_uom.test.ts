@@ -16,6 +16,46 @@ import addContext from 'mochawesome/addContext';
 chai.use(promised);
 
 export async function PricingUomTests(email: string, password: string, client: Client) {
+    /*
+_________________ 
+_________________ Brief:
+          
+* Pricing Per UOM
+* in previous version there was set price to only one Unit Of Measure, and the others were multiplication by the UOM factor 
+* now a set price is available for each UOM separately
+* the test agenda is to make sure calculations per each UOM are performed correctly
+_________________ 
+_________________ The Relevant Rules:
+          
+. 'ZBASE@A003@Acc01@Hair4You':
+'[[true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",10,"P"]],"EA","EA"],
+  [true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",50,"P"]],"CS","CS"],
+  [true,"1555891200000","2534022144999","1","1","ZBASE_A003",[[0,"S",200,"P"]],"BOX","BOX"]]',
+ 
+. 'ZDS1@A001@Hair002':
+'[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[2,"D",2,"%"],[5,"D",5,"%"],[20,"D",10,"%"]],"EA","EA"],
+  [true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[4,"D",7.5,"P"]],"CS","CS"]]',
+ 
+. 'ZDS2@A002@Acc01@Hair012':
+'[[true,"1555891200000","2534022144999","1","","Free Goods",[[5,"D",100,"%","",1,"EA","Hair002",0],[20,"D",100,"%","",1,"CS","Hair012",0]],"EA","EA@CS"],
+  [true,"1555891200000","2534022144999","1","","Free Goods",[[2,"D",100,"%","",1,"CS","Hair002",0],[4,"D",100,"%","",1,"CS","MaFa24",0]],"BOX","BOX"]]',
+ 
+_________________ 
+_________________ Order Of Actions:
+          
+1. Looping over accounts
+ 
+    2. Looping over items
+ 
+        3. At Order Center: Looping over states
+        ----> retrieving pricing fields values from UI and comparing to expected data ( pricingData.testItemsValues.Uom[uomTestItem][priceField][account][uomTestState] )
+ 
+        4. At Cart: Looping over states
+        ----> same check as at order center
+ 
+_________________ 
+_________________ 
+*/
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
@@ -92,7 +132,7 @@ export async function PricingUomTests(email: string, password: string, client: C
     ];
 
     if (installedPricingVersionShort !== '5') {
-        describe(`Pricing UOM UI tests  - ${
+        describe(`Pricing ** UOM ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {
@@ -138,7 +178,7 @@ export async function PricingUomTests(email: string, password: string, client: C
                 console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
             });
 
-            it('validating "PPM_Values" via API', async () => {
+            it('validating "PPM_Values" via API', async function () {
                 const expectedPPMValuesLength =
                     Object.keys(ppmValues_content).length + pricingRules.dummyPPM_Values_length;
                 console.info(
@@ -149,7 +189,7 @@ export async function PricingUomTests(email: string, password: string, client: C
                 );
                 addContext(this, {
                     title: `PPM Values Length`,
-                    value: `EXPECTED: ${expectedPPMValuesLength} ACTUAL: ${ppmValues.length}`,
+                    value: `ACTUAL: ${ppmValues.length} \nEXPECTED: ${expectedPPMValuesLength}`,
                 });
                 expect(ppmValues.length).equals(expectedPPMValuesLength);
                 Object.keys(ppmValues_content).forEach((mainKey) => {
@@ -164,8 +204,8 @@ export async function PricingUomTests(email: string, password: string, client: C
                     console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                     matchingRowOfppmValues &&
                         addContext(this, {
-                            title: `PPM Value for the Key "${mainKey}"`,
-                            value: `EXPECTED: ${matchingRowOfppmValues['Values'][0]} ACTUAL: ${ppmValues_content[mainKey]}`,
+                            title: `PPM Key "${mainKey}"`,
+                            value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
                         });
                     matchingRowOfppmValues &&
                         expect(ppmValues_content[mainKey]).equals(
