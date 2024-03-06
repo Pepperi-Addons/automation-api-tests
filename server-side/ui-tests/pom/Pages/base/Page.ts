@@ -16,6 +16,34 @@ export abstract class Page extends BasePomObject {
     public PepperiHiddenLoadingSpinner: By = By.css('#loadingSpinnerModal[hidden]');
     public HtmlBody: By = By.css('html body');
 
+    public getSelectorOfCardContainerByProfile(profile: 'Rep' | 'Admin' | 'Buyer' = 'Rep') {
+        return By.xpath(`//span[@title="${profile}"]/parent::div/parent::div`);
+    }
+
+    public getSelectorOfEditCardByProfile(profile: 'Rep' | 'Admin' | 'Buyer' = 'Rep') {
+        return By.xpath(
+            `${this.getSelectorOfCardContainerByProfile(profile).value}//span[contains(@class,"editPenIcon")]`,
+        );
+    }
+
+    public getSelectorOfSearchResultListRowPlusButtonByPartialTextAtCardEdit(text: string) {
+        return By.xpath(`//span[contains(text(),"${text}")]/ancestor::li//div[contains(@class,"plusIcon")]`);
+    }
+
+    public getSelectorOfItemConfiguredToCardByTextAtCardEdit(text: string) {
+        return By.xpath(`//div[text()="Layout"]/following-sibling::ul//div[@title="${text}"]/ancestor::li`);
+    }
+
+    public getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(text: string) {
+        return By.xpath(
+            `//div[text()="Layout"]/following-sibling::ul//div[@title="${text}"]/ancestor::li//span[contains(@class,"trashCanIcon")]`,
+        );
+    }
+
+    public getSelectorOfFooterButtonByText(text: string) {
+        return By.xpath(`//div[contains(@class,"footer-buttons")]//div[contains(text(),"${text}")]`);
+    }
+
     protected setUrl(url: string) {
         this.url = url;
     }

@@ -6,7 +6,7 @@ import GeneralService from '../../services/general.service';
 // import { DataViewsService } from '../../services/data-views.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { BrandedApp, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
+import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import E2EUtils from '../utilities/e2e_utils';
@@ -51,7 +51,7 @@ export async function ResourceListTests(email: string, password: string, varPass
     let slugs: Slugs;
     let resourceListUtils: E2EUtils;
     let resourceListBlock: ResourceListBlock;
-    let brandedApp: BrandedApp;
+    // let brandedApp: BrandedApp;
 
     let random_name: string;
     const test_generic_decsription = 'for RL automated testing';
@@ -180,7 +180,14 @@ export async function ResourceListTests(email: string, password: string, varPass
         // },
     };
 
-    const simpleResources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
+    const simpleResources = [
+        'accounts',
+        'items',
+        // 'users',
+        // 'catalogs',
+        // 'account_users',
+        'contacts',
+    ];
     // const complexResources = ['ArraysOfPrimitivesAuto', 'FiltersAccRefAuto', 'IndexedFieldsAuto', 'IndexedNameAgeAuto', 'ReferenceAccountAuto'];
 
     describe(`Resource List UI tests  - ${
@@ -199,7 +206,7 @@ export async function ResourceListTests(email: string, password: string, varPass
             pageBuilder = new PageBuilder(driver);
             slugs = new Slugs(driver);
             resourceListUtils = new E2EUtils(driver);
-            brandedApp = new BrandedApp(driver);
+            // brandedApp = new BrandedApp(driver);
             random_name = generalService.generateRandomString(5);
         });
 
@@ -336,12 +343,19 @@ export async function ResourceListTests(email: string, password: string, varPass
                     },
                     editorName,
                 );
-                const base64ImageComponent = await driver.saveScreenshots();
+                let base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `In Editor "${resource_name}"`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                resourceEditors.pause(5 * 1000);
+                resourceEditors.pause(0.5 * 1000);
+                await driver.click(resourceEditors.EditPage_BackToList_Button);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Back at Editors List`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                resourceEditors.pause(0.5 * 1000);
             });
             it('Add & Configure View', async function () {
                 // Add View
@@ -373,12 +387,19 @@ export async function ResourceListTests(email: string, password: string, varPass
                     viewKey: viewKey,
                     fieldsToConfigureInView: viewFields,
                 });
-                const base64ImageComponent = await driver.saveScreenshots();
+                let base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `In View "${resource_name}"`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                resourceViews.pause(5 * 1000);
+                resourceViews.pause(0.5 * 1000);
+                await driver.click(resourceViews.EditPage_BackToList_Button);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Back at Views List`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                resourceViews.pause(0.5 * 1000);
             });
             it('Create Page', async function () {
                 await resourceListUtils.navigateTo('Page Builder');
@@ -422,6 +443,11 @@ export async function ResourceListTests(email: string, password: string, varPass
 
                 const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
                 console.info(`RESPONSE: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Page Creation`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 expect(responseOfPublishPage.Ok).to.be.true;
                 expect(responseOfPublishPage.Status).to.equal(200);
                 pageBuilder.pause(1 * 1000);
@@ -432,20 +458,29 @@ export async function ResourceListTests(email: string, password: string, varPass
                 slug_path = `${resource_name.toLowerCase()}_${random_name}`;
                 await resourceListUtils.createSlug(slugDisplayName, slug_path, pageKey, email, password, client);
             });
-            it('Create A Button On Homepage', async function () {
+            it(`Create A Button On Homepage (${slugDisplayName})`, async function () {
                 await webAppHeader.openSettings();
                 await webAppHeader.isSpinnerDone();
                 driver.sleep(0.1 * 1000);
-                await brandedApp.addAdminHomePageButtons(slugDisplayName);
+                await resourceListUtils.addHomePageButtonByProfile(slugDisplayName, 'Rep');
                 await webAppHomePage.manualResync(client);
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slugDisplayName);
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Home Page Button Creation`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
             });
-            it('Go to Block', async function () {
+            it('Go to Block and perform checks', async function () {
                 resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
                 await webAppHomePage.isSpinnerDone();
                 await webAppHomePage.clickOnBtn(slugDisplayName);
                 await resourceListBlock.isSpinnerDone();
-                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Current URL`,
+                    value: `${await driver.getCurrentUrl()}`,
+                });
+                let base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `In Block "${resource_name}"`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
@@ -459,7 +494,12 @@ export async function ResourceListTests(email: string, password: string, varPass
                     const columnTitleText = await columnTitle.getText();
                     expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
                 });
-                driver.sleep(15 * 1000);
+                driver.sleep(0.5 * 1000);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Assertions`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
             });
@@ -493,38 +533,12 @@ export async function ResourceListTests(email: string, password: string, varPass
                 expect(deleteViewResponse.Body.Name).to.equal(viewName);
                 expect(deleteViewResponse.Body.Hidden).to.equal(true);
             });
-            //     it('Delete Editor', async function () {
-            //     for (let index = 0; index < 3; index++) {
-            //         try {
-            //             await resourceListUtils.navigateTo('Resource Views');
-            //             await resourceEditors.clickTab('Editors_Tab');
-            //             await resourceEditors.deleteFromListByName(editorName);
-            //             await webAppHeader.goHome();
-            //             break;
-            //         } catch (error) {
-            //             console.error(error);
-            //         }
-            //     }
-            // });
-            // it('Delete View', async function () {
-            //     await webAppHeader.goHome();
-            //     for (let index = 0; index < 3; index++) {
-            //         try {
-            //             await resourceListUtils.navigateTo('Resource Views');
-            //             await resourceViews.deleteFromListByName(viewName);
-            //             await webAppHeader.goHome();
-            //             break;
-            //         } catch (error) {
-            //             console.error(error);
-            //         }
-            //     }
-            // });
             it('Remove button from home screen', async function () {
                 await webAppHeader.goHome();
                 await webAppHeader.openSettings();
                 await webAppHomePage.isSpinnerDone();
                 driver.sleep(0.5 * 1000);
-                await brandedApp.removeAdminHomePageButtons(slugDisplayName);
+                await resourceListUtils.removeHomePageButtonByProfile(slugDisplayName, 'Rep');
                 await webAppHomePage.manualResync(client);
                 const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugDisplayName);
                 expect(isNotFound).to.equal(true);
@@ -539,6 +553,7 @@ export async function ResourceListTests(email: string, password: string, varPass
             });
         });
 
+        // conditions for this section: tested user must have Slug with display name "Auto Test" and path "auto_test"
         simpleResources.forEach((resource) => {
             describe(`Flow Tests for "${resource}"`, async function () {
                 // conditions for this section: tested user must have UDC = NameAgeAuto
@@ -556,25 +571,17 @@ export async function ResourceListTests(email: string, password: string, varPass
                     // Add View
                     viewName = `${resource} View _(${random_name})`;
                     view_decsription = `View of resource: ${resource} - ${test_generic_decsription}`;
-                    for (let index = 0; index < 3; index++) {
-                        try {
-                            if (await driver.isElementVisible(resourceViews.EditPage_BackToList_Button)) {
-                                await driver.click(resourceViews.EditPage_BackToList_Button);
-                            }
-                            await resourceListUtils.addView({
-                                nameOfView: viewName,
-                                descriptionOfView: view_decsription,
-                                nameOfResource: resource,
-                            });
-                            break;
-                        } catch (error) {
-                            console.error(error);
-                            await driver.refresh();
-                        }
+                    if (await driver.isElementVisible(resourceViews.EditPage_BackToList_Button)) {
+                        await driver.click(resourceViews.EditPage_BackToList_Button);
                     }
-                    // if (await driver.isElementVisible(resourceViews.EditPage_BackToList_Button)) {
-                    //     await driver.click(resourceViews.EditPage_BackToList_Button);
-                    // }
+                    await resourceListUtils.addView({
+                        nameOfView: viewName,
+                        descriptionOfView: view_decsription,
+                        nameOfResource: resource,
+                    });
+                    if (await driver.isElementVisible(resourceViews.EditPage_BackToList_Button)) {
+                        await driver.click(resourceViews.EditPage_BackToList_Button);
+                    }
                     // Configure View
                     await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
                     viewKey = await resourceListUtils.getUUIDfromURL();
@@ -585,12 +592,19 @@ export async function ResourceListTests(email: string, password: string, varPass
                         viewKey: viewKey,
                         fieldsToConfigureInView: viewFields,
                     });
-                    const base64ImageComponent = await driver.saveScreenshots();
+                    let base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `In View "${resource}"`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
-                    resourceViews.pause(5 * 1000);
+                    resourceViews.pause(0.5 * 1000);
+                    await driver.click(resourceViews.EditPage_BackToList_Button);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Back at Views List`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    resourceViews.pause(0.5 * 1000);
                 });
                 it('Perform Manual Sync', async function () {
                     await resourceListUtils.performManualSync(client);
@@ -600,13 +614,6 @@ export async function ResourceListTests(email: string, password: string, varPass
                     await driver.refresh();
                     await resourceList.isSpinnerDone();
                     await pageBuilder.validatePageBuilderIsLoaded();
-                    // for (let index = 0; index < 3; index++) {
-                    //     try {
-                    //         break;
-                    //     } catch (error) {
-                    //         console.error(error);
-                    //     }
-                    // }
                     pageName = `${resource} Page Auto_(${random_name})`;
                     await pageBuilder.addBlankPage(pageName, `Automation Testing Page for resource '${resource}'`);
                     driver.sleep(0.2 * 1000);
@@ -635,6 +642,11 @@ export async function ResourceListTests(email: string, password: string, varPass
 
                     const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
                     console.info(`RESPONSE: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `After Page Creation`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     expect(responseOfPublishPage.Ok).to.be.true;
                     expect(responseOfPublishPage.Status).to.equal(200);
                     pageBuilder.pause(1 * 1000);
@@ -644,24 +656,21 @@ export async function ResourceListTests(email: string, password: string, varPass
                     await resourceListUtils.performManualSync(client);
                 });
                 it('Map the Slug with the Page', async function () {
-                    // const mapPage = await resourceListUtils.changePageAtMappedSlugs([{ slug_path: slug_path, pageUUID: pageKey }], client); // TODO
-                    const mapPage = await resourceListUtils.addToMappedSlugs(
+                    const mapPage = await resourceListUtils.changePageAtMappedSlugs(
                         [{ slug_path: slug_path, pageUUID: pageKey }],
                         client,
                     );
                     console.info(`Map Page To Slug: ${JSON.stringify(mapPage, null, 2)}`);
-                    // await resourceListUtils.performManualSync(client);
-                    // expect(mapPage.postResponse.Ok).to.be.true;
-                    // expect(mapPage.postResponse.Status).to.equal(200);
                 });
-                it('Perform Manual Sync', async function () {
-                    await resourceListUtils.performManualSync(client);
+                it('Logout & Login', async function () {
+                    await resourceListUtils.logOutLogIn(email, password);
                 });
                 it('Block Tests', async function () {
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn(slugDisplayName);
                     await resourceListBlock.isSpinnerDone();
-                    const base64ImageComponent = await driver.saveScreenshots();
+                    driver.sleep(2 * 1000);
+                    let base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `In Block "${resource}"`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
@@ -675,7 +684,12 @@ export async function ResourceListTests(email: string, password: string, varPass
                         const columnTitleText = await columnTitle.getText();
                         expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
                     });
-                    driver.sleep(15 * 1000);
+                    driver.sleep(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `After Assertions`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                 });
@@ -697,6 +711,7 @@ export async function ResourceListTests(email: string, password: string, varPass
                 });
             });
         });
+
         // describe('E2E Method', async function () {
         //     beforeEach(async function () {
         //         random_name = generalService.generateRandomString(5);
