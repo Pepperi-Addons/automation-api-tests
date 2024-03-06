@@ -331,8 +331,8 @@ export async function ResourceListTests(email: string, password: string, varPass
                 editorKey = await resourceListUtils.getUUIDfromURL();
                 const editorFields: BaseFormDataViewField[] =
                     resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-                        { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                        { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                        { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                        { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: true },
                     ]);
                 await resourceEditors.customEditorConfig(
                     generalService,
@@ -378,9 +378,9 @@ export async function ResourceListTests(email: string, password: string, varPass
                     mandatory: boolean;
                     readonly: boolean;
                 }[] = [
-                    { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                    { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                    { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: true },
                 ];
                 await resourceViews.customViewConfig(client, {
                     matchingEditorName: editorName,
