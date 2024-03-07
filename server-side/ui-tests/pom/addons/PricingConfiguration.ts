@@ -1112,6 +1112,78 @@ export default class PricingConfiguration {
                         },
                     },
                     {
+                        Name: 'TSAPriceMultiAccountAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesAccount',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 1,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiAccountAfter2',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesAccount',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiCategoryAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesCategory',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 1,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiCategoryAfter2',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesCategory',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiItemAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesItem',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 1,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiItemAfter2',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesItem',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
                         Name: 'TSAPricePartial',
                         Type: '=',
                         Operand1: {
@@ -1589,78 +1661,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Single',
-                            UomIndex: 2,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiAccountAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesAccount',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 1,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiAccountAfter2',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesAccount',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 2,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiCategoryAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesCategory',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 1,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiCategoryAfter2',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesCategory',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 2,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiItemAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesItem',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 1,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiItemAfter2',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesItem',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
                             UomIndex: 2,
                         },
                     },
