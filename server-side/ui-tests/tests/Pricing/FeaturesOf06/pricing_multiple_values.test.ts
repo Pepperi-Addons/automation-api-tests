@@ -201,7 +201,16 @@ ________________________________________________________________________________
     //     'PriceTaxUnitPriceAfter1',
     // ];
     // const priceFields2 = ['PriceBaseUnitPriceAfter2', 'PriceDiscountUnitPriceAfter2', 'PriceTaxUnitPriceAfter2'];
-    const priceMultiFields = ['PriceMultiAfter1', 'PriceMultiAfter2'];
+    const priceMultiFields = [
+        'PriceMultiAfter1',
+        'PriceMultiAfter2',
+        'PriceMultiAccountAfter1',
+        'PriceMultiAccountAfter2',
+        'PriceMultiCategoryAfter1',
+        'PriceMultiCategoryAfter2',
+        'PriceMultiItemAfter1',
+        'PriceMultiItemAfter2',
+    ];
 
     if (installedPricingVersionShort !== '5') {
         describe(`Pricing ** Multiple Values ** UI tests  - ${
@@ -396,16 +405,7 @@ ________________________________________________________________________________
                                                     });
 
                                                     expect(typeof priceMultiTSAs).equals('object');
-                                                    expect(Object.keys(priceMultiTSAs)).to.eql([
-                                                        'PriceMultiAfter1',
-                                                        'PriceMultiAfter2',
-                                                        'PriceMultiAccountAfter1',
-                                                        'PriceMultiAccountAfter2',
-                                                        'PriceMultiCategoryAfter1',
-                                                        'PriceMultiCategoryAfter2',
-                                                        'PriceMultiItemAfter1',
-                                                        'PriceMultiItemAfter2',
-                                                    ]);
+                                                    expect(Object.keys(priceMultiTSAs)).to.eql(priceMultiFields);
                                                     priceMultiFields.forEach((priceField) => {
                                                         const fieldValue = priceMultiTSAs[priceField];
                                                         const expectedFieldValue =
@@ -609,16 +609,7 @@ ________________________________________________________________________________
                                                 });
 
                                                 expect(typeof priceMultiTSAs).equals('object');
-                                                expect(Object.keys(priceMultiTSAs)).to.eql([
-                                                    'PriceMultiAfter1',
-                                                    'PriceMultiAfter2',
-                                                    'PriceMultiAccountAfter1',
-                                                    'PriceMultiAccountAfter2',
-                                                    'PriceMultiCategoryAfter1',
-                                                    'PriceMultiCategoryAfter2',
-                                                    'PriceMultiItemAfter1',
-                                                    'PriceMultiItemAfter2',
-                                                ]);
+                                                expect(Object.keys(priceMultiTSAs)).to.eql(priceMultiFields);
                                                 priceMultiFields.forEach((priceField) => {
                                                     const fieldValue = priceMultiTSAs[priceField];
                                                     const expectedFieldValue =
@@ -747,16 +738,7 @@ ________________________________________________________________________________
                                                 });
 
                                                 expect(typeof priceMultiTSAs).equals('object');
-                                                expect(Object.keys(priceMultiTSAs)).to.eql([
-                                                    'PriceMultiAfter1',
-                                                    'PriceMultiAfter2',
-                                                    'PriceMultiAccountAfter1',
-                                                    'PriceMultiAccountAfter2',
-                                                    'PriceMultiCategoryAfter1',
-                                                    'PriceMultiCategoryAfter2',
-                                                    'PriceMultiItemAfter1',
-                                                    'PriceMultiItemAfter2',
-                                                ]);
+                                                expect(Object.keys(priceMultiTSAs)).to.eql(priceMultiFields);
                                                 priceMultiFields.forEach((priceField) => {
                                                     const fieldValue = priceMultiTSAs[priceField];
                                                     const expectedFieldValue =
@@ -879,16 +861,7 @@ ________________________________________________________________________________
                                                 });
 
                                                 expect(typeof priceMultiTSAs).equals('object');
-                                                expect(Object.keys(priceMultiTSAs)).to.eql([
-                                                    'PriceMultiAfter1',
-                                                    'PriceMultiAfter2',
-                                                    'PriceMultiAccountAfter1',
-                                                    'PriceMultiAccountAfter2',
-                                                    'PriceMultiCategoryAfter1',
-                                                    'PriceMultiCategoryAfter2',
-                                                    'PriceMultiItemAfter1',
-                                                    'PriceMultiItemAfter2',
-                                                ]);
+                                                expect(Object.keys(priceMultiTSAs)).to.eql(priceMultiFields);
                                                 priceMultiFields.forEach((priceField) => {
                                                     const fieldValue = priceMultiTSAs[priceField];
                                                     const expectedFieldValue =
