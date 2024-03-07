@@ -63,6 +63,9 @@ export class DevTest {
 
     convertNameToUUIDForDevTests(addonName: string) {
         switch (addonName) {
+            case 'GENERIC-RESOURCE':
+            case 'GENERIC RESOURCE':
+                return 'df90dba6-e7cc-477b-95cf-2c70114e44e0';
             case 'UDB':
             case 'USER DEFINED BLOCKS':
                 return '9abbb634-9df5-49ab-91d1-41ad7a2632a6';
@@ -1326,6 +1329,13 @@ export class DevTest {
                 ];
             case 'DIMX':
                 return ['DIMXAppEU@pepperitest.com', 'DIMXAppProd@pepperitest.com', 'DimxAppSB@pepperitest.com'];
+            case 'GENERIC-RESOURCE': //cannot create prod user so Im using temp user for this
+            case 'GENERIC RESOURCE':
+                return [
+                    'GenericResourceEuTester@pepperitest.com',
+                    'UITests1Jenkins@pepperitest.com',
+                    'GenericResourceSBTester@pepperitest.com',
+                ];
             default:
                 return [];
         }
