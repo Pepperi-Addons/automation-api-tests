@@ -359,7 +359,7 @@ ________________________________________________________________________________
                                             it('Setting AOQM2 to 0', async function () {
                                                 await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                                     this,
-                                                )('Each', multipleValuesTestItem, 0, driver, '2');
+                                                )('Each' + '&Totals', multipleValuesTestItem, 0, driver, '2');
                                                 driver.sleep(0.1 * 1000);
                                             });
                                             uomStatesVeriable.forEach((multipleValuesTestState) => {
