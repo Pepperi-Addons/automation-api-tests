@@ -331,8 +331,8 @@ export async function ResourceListTests(email: string, password: string, varPass
                 editorKey = await resourceListUtils.getUUIDfromURL();
                 const editorFields: BaseFormDataViewField[] =
                     resourceListUtils.prepareDataForDragAndDropAtEditorAndView([
-                        { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                        { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                        { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                        { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: true },
                     ]);
                 await resourceEditors.customEditorConfig(
                     generalService,
@@ -378,9 +378,9 @@ export async function ResourceListTests(email: string, password: string, varPass
                     mandatory: boolean;
                     readonly: boolean;
                 }[] = [
-                    { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                    { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                    { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                    { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                    { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: true },
                 ];
                 await resourceViews.customViewConfig(client, {
                     matchingEditorName: editorName,
@@ -458,13 +458,17 @@ export async function ResourceListTests(email: string, password: string, varPass
                 slug_path = `${resource_name.toLowerCase()}_${random_name}`;
                 await resourceListUtils.createSlug(slugDisplayName, slug_path, pageKey, email, password, client);
             });
-            it(`Create A Button On Homepage (${slugDisplayName})`, async function () {
+            it(`Create A Button On Homepage`, async function () {
                 await webAppHeader.openSettings();
                 await webAppHeader.isSpinnerDone();
                 driver.sleep(0.1 * 1000);
                 await resourceListUtils.addHomePageButtonByProfile(slugDisplayName, 'Rep');
                 await webAppHomePage.manualResync(client);
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slugDisplayName);
+                addContext(this, {
+                    title: `${slugDisplayName}`,
+                    value: 'button name',
+                });
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `After Home Page Button Creation`,

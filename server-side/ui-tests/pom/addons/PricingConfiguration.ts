@@ -307,6 +307,42 @@ export default class PricingConfiguration {
                         },
                     },
                     {
+                        Key: 'MultipleValuesAccount',
+                        ConditionsOrder: ['ZDM3'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                    },
+                    {
+                        Key: 'MultipleValuesCategory',
+                        ConditionsOrder: ['ZDM2'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                    },
+                    {
+                        Key: 'MultipleValuesItem',
+                        ConditionsOrder: ['ZDM1'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                    },
+                    {
                         Key: 'MultipleValuesGeneral',
                         ConditionsOrder: ['ZDM3'],
                         InitialPrice: {
@@ -318,30 +354,6 @@ export default class PricingConfiguration {
                             Name: 'Base',
                         },
                     },
-                    // {
-                    //     Key: 'MultipleValuesCategory',
-                    //     ConditionsOrder: ['ZDM3'],
-                    //     InitialPrice: {
-                    //         Type: 'Block',
-                    //         Name: 'MultipleValuesGeneral',
-                    //     },
-                    //     CalculatedOfPrice: {
-                    //         Type: 'Block',
-                    //         Name: 'MultipleValuesGeneral',
-                    //     },
-                    // },
-                    // {
-                    //     Key: 'MultipleValuesSpecificItem',
-                    //     ConditionsOrder: ['ZDM1'],
-                    //     InitialPrice: {
-                    //         Type: 'Block',
-                    //         Name: 'MultipleValuesCategory',
-                    //     },
-                    //     CalculatedOfPrice: {
-                    //         Type: 'Block',
-                    //         Name: 'MultipleValuesCategory',
-                    //     },
-                    // },
                     {
                         Key: 'MultipleValues',
                         ConditionsOrder: ['ZDM1', 'ZDM2'],
@@ -484,6 +496,78 @@ export default class PricingConfiguration {
                         BlockPriceField: {
                             Type: 'Unit',
                             UomIndex: 1,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiAccountAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesAccount',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 1,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiAccountAfter2',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesAccount',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiCategoryAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesCategory',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 1,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiCategoryAfter2',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesCategory',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiItemAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesItem',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 1,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiItemAfter2',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesItem',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
                         },
                     },
                     {
@@ -821,6 +905,42 @@ export default class PricingConfiguration {
                         CalculatedOfPrice: {
                             Type: 'Block',
                             Name: 'ManualLine',
+                        },
+                    },
+                    {
+                        Key: 'MultipleValuesAccount',
+                        ConditionsOrder: ['ZDM3'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                    },
+                    {
+                        Key: 'MultipleValuesCategory',
+                        ConditionsOrder: ['ZDM2'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                    },
+                    {
+                        Key: 'MultipleValuesItem',
+                        ConditionsOrder: ['ZDM1'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'Base',
                         },
                     },
                     {
@@ -1469,6 +1589,78 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Single',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiAccountAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesAccount',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 1,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiAccountAfter2',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesAccount',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiCategoryAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesCategory',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 1,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiCategoryAfter2',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesCategory',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 2,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiItemAfter1',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesItem',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
+                            UomIndex: 1,
+                        },
+                    },
+                    {
+                        Name: 'TSAPriceMultiItemAfter2',
+                        Type: '=',
+                        Operand1: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesItem',
+                        },
+                        BlockPriceField: {
+                            Type: 'Unit',
                             UomIndex: 2,
                         },
                     },

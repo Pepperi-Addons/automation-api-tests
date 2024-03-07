@@ -35,6 +35,12 @@ export interface PriceTotalsTsaFields {
 export interface PriceMultiTsaFields {
     PriceMultiAfter1: number;
     PriceMultiAfter2: number;
+    PriceMultiAccountAfter1: number;
+    PriceMultiAccountAfter2: number;
+    PriceMultiCategoryAfter1: number;
+    PriceMultiCategoryAfter2: number;
+    PriceMultiItemAfter1: number;
+    PriceMultiItemAfter2: number;
 }
 
 export interface PricePartialTsaFields {
@@ -504,10 +510,82 @@ export class PricingService {
             : await PriceMultiAfter2_Values[0].getText();
         console.info(`${nameOfItem} PriceMultiAfter2_Value: `, PriceMultiAfter2_Value);
 
+        const PriceMultiAccountAfter1_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceMultiAccountAfter1_Value',
+            nameOfItem,
+        );
+
+        const PriceMultiAccountAfter1_Values = await this.browser.findElements(PriceMultiAccountAfter1_Selector);
+        const PriceMultiAccountAfter1_Value = locationInElementsArray
+            ? await PriceMultiAccountAfter1_Values[locationInElementsArray].getText()
+            : await PriceMultiAccountAfter1_Values[0].getText();
+        console.info(`${nameOfItem} PriceMultiAccountAfter1_Value_Value: `, PriceMultiAccountAfter1_Value);
+
+        const PriceMultiAccountAfter2_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceMultiAccountAfter2_Value',
+            nameOfItem,
+        );
+
+        const PriceMultiAccountAfter2_Values = await this.browser.findElements(PriceMultiAccountAfter2_Selector);
+        const PriceMultiAccountAfter2_Value = locationInElementsArray
+            ? await PriceMultiAccountAfter2_Values[locationInElementsArray].getText()
+            : await PriceMultiAccountAfter2_Values[0].getText();
+        console.info(`${nameOfItem} PriceMultiAccountAfter2_Value: `, PriceMultiAccountAfter2_Value);
+
+        const PriceMultiCategoryAfter1_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceMultiCategoryAfter1_Value',
+            nameOfItem,
+        );
+
+        const PriceMultiCategoryAfter1_Values = await this.browser.findElements(PriceMultiCategoryAfter1_Selector);
+        const PriceMultiCategoryAfter1_Value = locationInElementsArray
+            ? await PriceMultiCategoryAfter1_Values[locationInElementsArray].getText()
+            : await PriceMultiCategoryAfter1_Values[0].getText();
+        console.info(`${nameOfItem} PriceMultiCategoryAfter1_Value: `, PriceMultiCategoryAfter1_Value);
+
+        const PriceMultiCategoryAfter2_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceMultiCategoryAfter2_Value',
+            nameOfItem,
+        );
+
+        const PriceMultiCategoryAfter2_Values = await this.browser.findElements(PriceMultiCategoryAfter2_Selector);
+        const PriceMultiCategoryAfter2_Value = locationInElementsArray
+            ? await PriceMultiCategoryAfter2_Values[locationInElementsArray].getText()
+            : await PriceMultiCategoryAfter2_Values[0].getText();
+        console.info(`${nameOfItem} PriceMultiCategoryAfter2_Value: `, PriceMultiCategoryAfter2_Value);
+
+        const PriceMultiItemAfter1_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceMultiItemAfter1_Value',
+            nameOfItem,
+        );
+
+        const PriceMultiItemAfter1_Values = await this.browser.findElements(PriceMultiItemAfter1_Selector);
+        const PriceMultiItemAfter1_Value = locationInElementsArray
+            ? await PriceMultiItemAfter1_Values[locationInElementsArray].getText()
+            : await PriceMultiItemAfter1_Values[0].getText();
+        console.info(`${nameOfItem} PriceMultiItemAfter1_Value: `, PriceMultiItemAfter1_Value);
+
+        const PriceMultiItemAfter2_Selector = this.orderPage[nameOfFunctionToLocateSelector](
+            'PriceMultiItemAfter2_Value',
+            nameOfItem,
+        );
+
+        const PriceMultiItemAfter2_Values = await this.browser.findElements(PriceMultiItemAfter2_Selector);
+        const PriceMultiItemAfter2_Value = locationInElementsArray
+            ? await PriceMultiItemAfter2_Values[locationInElementsArray].getText()
+            : await PriceMultiItemAfter2_Values[0].getText();
+        console.info(`${nameOfItem} PriceMultiItemAfter2_Value: `, PriceMultiItemAfter2_Value);
+
         this.browser.sleep(0.1 * 1000);
         return {
             PriceMultiAfter1: Number(PriceMultiAfter1_Value.split(' ')[1].trim()),
             PriceMultiAfter2: Number(PriceMultiAfter2_Value.split(' ')[1].trim()),
+            PriceMultiAccountAfter1: Number(PriceMultiAccountAfter1_Value.split(' ')[1].trim()),
+            PriceMultiAccountAfter2: Number(PriceMultiAccountAfter2_Value.split(' ')[1].trim()),
+            PriceMultiCategoryAfter1: Number(PriceMultiCategoryAfter1_Value.split(' ')[1].trim()),
+            PriceMultiCategoryAfter2: Number(PriceMultiCategoryAfter2_Value.split(' ')[1].trim()),
+            PriceMultiItemAfter1: Number(PriceMultiItemAfter1_Value.split(' ')[1].trim()),
+            PriceMultiItemAfter2: Number(PriceMultiItemAfter2_Value.split(' ')[1].trim()),
         };
     }
 
