@@ -151,12 +151,7 @@ ________________________________________________________________________________
 
     const testAccounts = ['Acc01', 'OtherAcc'];
     const multipleValuesTestItems_outOfCategory = ['Shampoo Three'];
-    const multipleValuesTestItems = [
-        // 'Shampoo Three',
-        'MaFa25',
-        'MaLi37',
-        'MaLi38',
-    ];
+    const multipleValuesTestItems = ['MaFa25', 'MaLi37', 'MaLi38'];
     const multipleValuesTestStates_each = [
         'baseline',
         '1 Each',
@@ -413,31 +408,35 @@ ________________________________________________________________________________
                                                             ][priceField][account][multipleValuesTestState][
                                                                 'expectedValue'
                                                             ];
-                                                        const expectedRule =
+                                                        const expectedRules =
                                                             pricingData.testItemsValues.Multiple[
                                                                 multipleValuesTestItem
-                                                            ][priceField][account][multipleValuesTestState]['rule'];
-                                                        const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
-                                                        const udtRuleValueObj: UserDefinedTableRow | undefined =
-                                                            ppmValues.find((listing) => {
-                                                                if (listing.MainKey === udtKey) return listing;
-                                                            });
-                                                        console.info(`Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                            ][priceField][account][multipleValuesTestState]['rules'];
+                                                        expectedRules.forEach((expectedRule) => {
+                                                            const udtKey = expectedRule
+                                                                .split(`' ->`)[0]
+                                                                .replace(`'`, '');
+                                                            const udtRuleValueObj: UserDefinedTableRow | undefined =
+                                                                ppmValues.find((listing) => {
+                                                                    if (listing.MainKey === udtKey) return listing;
+                                                                });
+                                                            console.info(`Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
                                                         \nExpected Rule: ${expectedRule}
                                                         \nUDT Rule: ${udtKey}: ${
-                                                            udtRuleValueObj
-                                                                ? udtRuleValueObj['Values']
-                                                                : 'Key not found'
-                                                        }`);
-                                                        addContext(this, {
-                                                            title: `${priceField}`,
-                                                            value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
-                                                            \nExpected Rule: ${expectedRule}
-                                                            \nUDT Rule: ${udtKey}: ${
                                                                 udtRuleValueObj
                                                                     ? udtRuleValueObj['Values']
                                                                     : 'Key not found'
-                                                            }`,
+                                                            }`);
+                                                            addContext(this, {
+                                                                title: `${priceField}`,
+                                                                value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                            \nExpected Rule: ${expectedRule}
+                                                            \nUDT Rule: ${udtKey}: ${
+                                                                    udtRuleValueObj
+                                                                        ? udtRuleValueObj['Values']
+                                                                        : 'Key not found'
+                                                                }`,
+                                                            });
                                                         });
                                                     });
 
@@ -492,7 +491,7 @@ ________________________________________________________________________________
                                         expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                                         driver.sleep(1 * 1000);
                                     });
-                                    multipleValuesTestItems.forEach((multipleValuesTestCartItem) => {
+                                    multipleValuesTestItems_outOfCategory.forEach((multipleValuesTestCartItem) => {
                                         it(`checking item "${multipleValuesTestCartItem}"`, async function () {
                                             const state = '10 Box';
                                             const priceMultiTSAs = await pricingService.getTSAsOfMultiPerItem(
@@ -510,7 +509,7 @@ ________________________________________________________________________________
                                                 const expectedRule =
                                                     pricingData.testItemsValues.Multiple[multipleValuesTestCartItem][
                                                         priceField
-                                                    ][account][state]['rule'];
+                                                    ][account][state]['rules'];
                                                 addContext(this, {
                                                     title: `TSA field "${priceField}" Values`,
                                                     value: `Form UI: ${priceMultiTSAs[priceField]} , Expected Value: ${expectedValue}\nExpected Rule: ${expectedRule}`,
@@ -614,29 +613,33 @@ ________________________________________________________________________________
                                                         pricingData.testItemsValues.Multiple[multipleValuesTestItem][
                                                             priceField
                                                         ][account][multipleValuesTestState]['expectedValue'];
-                                                    const expectedRule =
+                                                    const expectedRules =
                                                         pricingData.testItemsValues.Multiple[multipleValuesTestItem][
                                                             priceField
-                                                        ][account][multipleValuesTestState]['rule'];
-                                                    const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
-                                                    const udtRuleValueObj: UserDefinedTableRow | undefined =
-                                                        ppmValues.find((listing) => {
-                                                            if (listing.MainKey === udtKey) return listing;
-                                                        });
-                                                    console.info(`Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                        ][account][multipleValuesTestState]['rules'];
+                                                    expectedRules.forEach((expectedRule) => {
+                                                        const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
+                                                        const udtRuleValueObj: UserDefinedTableRow | undefined =
+                                                            ppmValues.find((listing) => {
+                                                                if (listing.MainKey === udtKey) return listing;
+                                                            });
+                                                        console.info(`Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
                                                         \nExpected Rule: ${expectedRule}
                                                         \nUDT Rule: ${udtKey}: ${
-                                                        udtRuleValueObj ? udtRuleValueObj['Values'] : 'Key not found'
-                                                    }`);
-                                                    addContext(this, {
-                                                        title: `${priceField}`,
-                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
-                                                            \nExpected Rule: ${expectedRule}
-                                                            \nUDT Rule: ${udtKey}: ${
                                                             udtRuleValueObj
                                                                 ? udtRuleValueObj['Values']
                                                                 : 'Key not found'
-                                                        }`,
+                                                        }`);
+                                                        addContext(this, {
+                                                            title: `${priceField}`,
+                                                            value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                            \nExpected Rule: ${expectedRule}
+                                                            \nUDT Rule: ${udtKey}: ${
+                                                                udtRuleValueObj
+                                                                    ? udtRuleValueObj['Values']
+                                                                    : 'Key not found'
+                                                            }`,
+                                                        });
                                                     });
                                                 });
 
@@ -650,6 +653,40 @@ ________________________________________________________________________________
                                                     ][account][multipleValuesTestState]['expectedValue'];
                                                 const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
                                                 const actualPriceMultiAfter2 = priceMultiTSAs['PriceMultiAfter2'];
+
+                                                // const expectedPriceMultiAccountAfter1 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiAccountAfter1'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const expectedPriceMultiAccountAfter2 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiAccountAfter2'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const actualPriceMultiAccountAfter1 = priceMultiTSAs['PriceMultiAccountAfter1'];
+                                                // const actualPriceMultiAccountAfter2 = priceMultiTSAs['PriceMultiAccountAfter2'];
+
+                                                // const expectedPriceMultiCategoryAfter1 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiCategoryAfter1'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const expectedPriceMultiCategoryAfter2 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiCategoryAfter2'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const actualPriceMultiCategoryAfter1 = priceMultiTSAs['PriceMultiCategoryAfter1'];
+                                                // const actualPriceMultiCategoryAfter2 = priceMultiTSAs['PriceMultiCategoryAfter2'];
+
+                                                // const expectedPriceMultiItemAfter1 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiItemAfter1'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const expectedPriceMultiItemAfter2 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiItemAfter2'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const actualPriceMultiItemAfter1 = priceMultiTSAs['PriceMultiItemAfter1'];
+                                                // const actualPriceMultiItemAfter2 = priceMultiTSAs['PriceMultiItemAfter2'];
+
                                                 expect(actualPriceMultiAfter1).equals(expectedPriceMultiAfter1);
                                                 expect(actualPriceMultiAfter2).equals(expectedPriceMultiAfter2);
                                                 driver.sleep(0.2 * 1000);
@@ -708,29 +745,33 @@ ________________________________________________________________________________
                                                         pricingData.testItemsValues.Multiple[multipleValuesTestItem][
                                                             priceField
                                                         ][account][multipleValuesTestState]['expectedValue'];
-                                                    const expectedRule =
+                                                    const expectedRules =
                                                         pricingData.testItemsValues.Multiple[multipleValuesTestItem][
                                                             priceField
-                                                        ][account][multipleValuesTestState]['rule'];
-                                                    const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
-                                                    const udtRuleValueObj: UserDefinedTableRow | undefined =
-                                                        ppmValues.find((listing) => {
-                                                            if (listing.MainKey === udtKey) return listing;
-                                                        });
-                                                    console.info(`Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                        ][account][multipleValuesTestState]['rules'];
+                                                    expectedRules.forEach((expectedRule) => {
+                                                        const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
+                                                        const udtRuleValueObj: UserDefinedTableRow | undefined =
+                                                            ppmValues.find((listing) => {
+                                                                if (listing.MainKey === udtKey) return listing;
+                                                            });
+                                                        console.info(`Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
                                                             \nExpected Rule: ${expectedRule}
                                                             \nUDT Rule: ${udtKey}: ${
-                                                        udtRuleValueObj ? udtRuleValueObj['Values'] : 'Key not found'
-                                                    }`);
-                                                    addContext(this, {
-                                                        title: `${priceField}`,
-                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
-                                                                \nExpected Rule: ${expectedRule}
-                                                                \nUDT Rule: ${udtKey}: ${
                                                             udtRuleValueObj
                                                                 ? udtRuleValueObj['Values']
                                                                 : 'Key not found'
-                                                        }`,
+                                                        }`);
+                                                        addContext(this, {
+                                                            title: `${priceField}`,
+                                                            value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                                \nExpected Rule: ${expectedRule}
+                                                                \nUDT Rule: ${udtKey}: ${
+                                                                udtRuleValueObj
+                                                                    ? udtRuleValueObj['Values']
+                                                                    : 'Key not found'
+                                                            }`,
+                                                        });
                                                     });
                                                 });
 
@@ -744,6 +785,40 @@ ________________________________________________________________________________
                                                     ][account][multipleValuesTestState]['expectedValue'];
                                                 const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
                                                 const actualPriceMultiAfter2 = priceMultiTSAs['PriceMultiAfter2'];
+
+                                                // const expectedPriceMultiAccountAfter1 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiAccountAfter1'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const expectedPriceMultiAccountAfter2 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiAccountAfter2'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const actualPriceMultiAccountAfter1 = priceMultiTSAs['PriceMultiAccountAfter1'];
+                                                // const actualPriceMultiAccountAfter2 = priceMultiTSAs['PriceMultiAccountAfter2'];
+
+                                                // const expectedPriceMultiCategoryAfter1 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiCategoryAfter1'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const expectedPriceMultiCategoryAfter2 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiCategoryAfter2'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const actualPriceMultiCategoryAfter1 = priceMultiTSAs['PriceMultiCategoryAfter1'];
+                                                // const actualPriceMultiCategoryAfter2 = priceMultiTSAs['PriceMultiCategoryAfter2'];
+
+                                                // const expectedPriceMultiItemAfter1 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiItemAfter1'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const expectedPriceMultiItemAfter2 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiItemAfter2'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const actualPriceMultiItemAfter1 = priceMultiTSAs['PriceMultiItemAfter1'];
+                                                // const actualPriceMultiItemAfter2 = priceMultiTSAs['PriceMultiItemAfter2'];
+
                                                 expect(actualPriceMultiAfter1).equals(expectedPriceMultiAfter1);
                                                 expect(actualPriceMultiAfter2).equals(expectedPriceMultiAfter2);
                                                 driver.sleep(0.2 * 1000);
@@ -796,29 +871,33 @@ ________________________________________________________________________________
                                                         pricingData.testItemsValues.Multiple[multipleValuesTestItem][
                                                             priceField
                                                         ][account][multipleValuesTestState]['expectedValue'];
-                                                    const expectedRule =
+                                                    const expectedRules =
                                                         pricingData.testItemsValues.Multiple[multipleValuesTestItem][
                                                             priceField
-                                                        ][account][multipleValuesTestState]['rule'];
-                                                    const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
-                                                    const udtRuleValueObj: UserDefinedTableRow | undefined =
-                                                        ppmValues.find((listing) => {
-                                                            if (listing.MainKey === udtKey) return listing;
-                                                        });
-                                                    console.info(`Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                        ][account][multipleValuesTestState]['rules'];
+                                                    expectedRules.forEach((expectedRule) => {
+                                                        const udtKey = expectedRule.split(`' ->`)[0].replace(`'`, '');
+                                                        const udtRuleValueObj: UserDefinedTableRow | undefined =
+                                                            ppmValues.find((listing) => {
+                                                                if (listing.MainKey === udtKey) return listing;
+                                                            });
+                                                        console.info(`Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
                                                             \nExpected Rule: ${expectedRule}
                                                             \nUDT Rule: ${udtKey}: ${
-                                                        udtRuleValueObj ? udtRuleValueObj['Values'] : 'Key not found'
-                                                    }`);
-                                                    addContext(this, {
-                                                        title: `${priceField}`,
-                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
-                                                                \nExpected Rule: ${expectedRule}
-                                                                \nUDT Rule: ${udtKey}: ${
                                                             udtRuleValueObj
                                                                 ? udtRuleValueObj['Values']
                                                                 : 'Key not found'
-                                                        }`,
+                                                        }`);
+                                                        addContext(this, {
+                                                            title: `${priceField}`,
+                                                            value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}
+                                                                \nExpected Rule: ${expectedRule}
+                                                                \nUDT Rule: ${udtKey}: ${
+                                                                udtRuleValueObj
+                                                                    ? udtRuleValueObj['Values']
+                                                                    : 'Key not found'
+                                                            }`,
+                                                        });
                                                     });
                                                 });
 
@@ -832,6 +911,40 @@ ________________________________________________________________________________
                                                     ][account][multipleValuesTestState]['expectedValue'];
                                                 const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
                                                 const actualPriceMultiAfter2 = priceMultiTSAs['PriceMultiAfter2'];
+
+                                                // const expectedPriceMultiAccountAfter1 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiAccountAfter1'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const expectedPriceMultiAccountAfter2 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiAccountAfter2'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const actualPriceMultiAccountAfter1 = priceMultiTSAs['PriceMultiAccountAfter1'];
+                                                // const actualPriceMultiAccountAfter2 = priceMultiTSAs['PriceMultiAccountAfter2'];
+
+                                                // const expectedPriceMultiCategoryAfter1 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiCategoryAfter1'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const expectedPriceMultiCategoryAfter2 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiCategoryAfter2'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const actualPriceMultiCategoryAfter1 = priceMultiTSAs['PriceMultiCategoryAfter1'];
+                                                // const actualPriceMultiCategoryAfter2 = priceMultiTSAs['PriceMultiCategoryAfter2'];
+
+                                                // const expectedPriceMultiItemAfter1 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiItemAfter1'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const expectedPriceMultiItemAfter2 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiItemAfter2'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const actualPriceMultiItemAfter1 = priceMultiTSAs['PriceMultiItemAfter1'];
+                                                // const actualPriceMultiItemAfter2 = priceMultiTSAs['PriceMultiItemAfter2'];
+
                                                 expect(actualPriceMultiAfter1).equals(expectedPriceMultiAfter1);
                                                 expect(actualPriceMultiAfter2).equals(expectedPriceMultiAfter2);
                                                 driver.sleep(0.2 * 1000);
@@ -968,7 +1081,7 @@ ________________________________________________________________________________
                                         const expectedRule =
                                             pricingData.testItemsValues.Multiple[multipleValuesTestCartItem][
                                                 priceField
-                                            ][account][state]['rule'];
+                                            ][account][state]['rules'];
                                         addContext(this, {
                                             title: `TSA field "${priceField}" Values`,
                                             value: `Form UI: ${priceMultiTSAs[priceField]} , Expected Value: ${expectedValue}\nExpected Rule: ${expectedRule}`,
