@@ -72,7 +72,7 @@ export async function AsyncAddonGetRemoveTests(generalService: GeneralService, r
             clientArr.push({ Email: distributorEmail, Password: distributorPassword });
 
             console.log(
-                `* user about to be created has the next mail: ${distributorEmail} & the next password: ${distributorPassword} `,
+                `* user about to be created has the next mail: '${distributorEmail}' & the next password: '${distributorPassword}'`,
             );
 
             const newDistributor = await distributorService.createDistributor({
