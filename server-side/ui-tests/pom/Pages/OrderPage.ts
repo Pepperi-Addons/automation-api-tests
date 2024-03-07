@@ -82,6 +82,13 @@ export class OrderPage extends WebAppList {
 
     public PriceMultiAfter1_Value: By = By.xpath('//span[@id="TSAPriceMultiAfter1"]');
     public PriceMultiAfter2_Value: By = By.xpath('//span[@id="TSAPriceMultiAfter2"]');
+    public PriceMultiAccountAfter1_Value: By = By.xpath('//span[@id="TSAPriceMultiAccountAfter1"]');
+    public PriceMultiAccountAfter2_Value: By = By.xpath('//span[@id="TSAPriceMultiAccountAfter2"]');
+    public PriceMultiCategoryAfter1_Value: By = By.xpath('//span[@id="TSAPriceMultiCategoryAfter1"]');
+    public PriceMultiCategoryAfter2_Value: By = By.xpath('//span[@id="TSAPriceMultiCategoryAfter2"]');
+    public PriceMultiItemAfter1_Value: By = By.xpath('//span[@id="TSAPriceMultiItemAfter1"]');
+    public PriceMultiItemAfter2_Value: By = By.xpath('//span[@id="TSAPriceMultiItemAfter2"]');
+
     public PricePartial_Value: By = By.xpath('//span[@id="TSAPricePartial"]');
 
     public Cart_ContinueOrdering_Button: By = By.xpath('//button[@data-qa="Continue ordering"]');
