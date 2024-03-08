@@ -943,9 +943,21 @@ export default class PricingConfiguration {
                             Name: 'Base',
                         },
                     },
+                    // {
+                    //     Key: 'MultipleValues',
+                    //     ConditionsOrder: ['ZDM3', 'ZDM1', 'ZDM2'],
+                    //     InitialPrice: {
+                    //         Type: 'Block',
+                    //         Name: 'Base',
+                    //     },
+                    //     CalculatedOfPrice: {
+                    //         Type: 'Block',
+                    //         Name: 'Base',
+                    //     },
+                    // },
                     {
-                        Key: 'MultipleValues',
-                        ConditionsOrder: ['ZDM3', 'ZDM1', 'ZDM2'],
+                        Key: 'MultipleValuesGeneral',
+                        ConditionsOrder: ['ZDM3'],
                         InitialPrice: {
                             Type: 'Block',
                             Name: 'Base',
@@ -953,6 +965,18 @@ export default class PricingConfiguration {
                         CalculatedOfPrice: {
                             Type: 'Block',
                             Name: 'Base',
+                        },
+                    },
+                    {
+                        Key: 'MultipleValues',
+                        ConditionsOrder: ['ZDM1', 'ZDM2'],
+                        InitialPrice: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesGeneral',
+                        },
+                        CalculatedOfPrice: {
+                            Type: 'Block',
+                            Name: 'MultipleValuesGeneral',
                         },
                     },
                     {
@@ -1327,7 +1351,7 @@ export default class PricingConfiguration {
             },
             {
                 Key: 'ZDM3',
-                Name: 'ZDM3 Best Out Of Multiple Options Discount',
+                Name: 'ZDM3 Best Out Of Multiple Options Discount For Account',
                 TablesSearchOrder: ['A009', 'A006'],
             },
             {
