@@ -955,28 +955,28 @@ export default class PricingConfiguration {
                     //         Name: 'Base',
                     //     },
                     // },
-                    {
-                        Key: 'MultipleValuesGeneral',
-                        ConditionsOrder: ['ZDM3'],
-                        InitialPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                        CalculatedOfPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                    },
+                    // {
+                    //     Key: 'MultipleValuesGeneral',
+                    //     ConditionsOrder: ['ZDM3'],
+                    //     InitialPrice: {
+                    //         Type: 'Block',
+                    //         Name: 'Base',
+                    //     },
+                    //     CalculatedOfPrice: {
+                    //         Type: 'Block',
+                    //         Name: 'Base',
+                    //     },
+                    // },
                     {
                         Key: 'MultipleValues',
                         ConditionsOrder: ['ZDM1', 'ZDM2'],
                         InitialPrice: {
                             Type: 'Block',
-                            Name: 'MultipleValuesGeneral',
+                            Name: 'MultipleValuesAccount',
                         },
                         CalculatedOfPrice: {
                             Type: 'Block',
-                            Name: 'MultipleValuesGeneral',
+                            Name: 'MultipleValuesAccount',
                         },
                     },
                     {
