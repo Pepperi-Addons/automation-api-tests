@@ -1333,11 +1333,11 @@ export class DevTest {
                 ];
             case 'DIMX':
                 return ['DIMXAppEU@pepperitest.com', 'DIMXAppProd@pepperitest.com', 'DimxAppSB@pepperitest.com'];
-            case 'GENERIC-RESOURCE': //cannot create prod user so Im using temp user for this
+            case 'GENERIC-RESOURCE':
             case 'GENERIC RESOURCE':
                 return [
                     'GenericResourceEuTester@pepperitest.com',
-                    'UITests1Jenkins@pepperitest.com',
+                    'GenResProdCiCd@pepperitest.com',
                     'GenericResourceSBTester@pepperitest.com',
                 ];
             default:
