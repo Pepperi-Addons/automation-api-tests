@@ -5685,20 +5685,8 @@ export class PricingData06 {
                                 Name: 'Base',
                                 Base: 266,
                                 Conditions: [
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 40,
-                                        Amount: 6,
-                                        Uom: ['CS'],
-                                    },
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 160,
-                                        Amount: 488,
-                                        Uom: ['BOX'],
-                                    },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 6, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 160, Amount: 488, Uom: ['BOX'] },
                                 ],
                                 New: 760,
                                 Amount: 494,
@@ -5706,31 +5694,10 @@ export class PricingData06 {
                             {
                                 Name: 'MultipleValuesAccount',
                                 Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -228,
-                                    },
-                                ],
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -228 }],
                                 New: 532,
                                 Amount: -228,
                             },
-                            // {
-                            //     Name: 'MultipleValues',
-                            //     Base: 760,
-                            //     Conditions: [
-                            //         {
-                            //             Name: 'ZDM3_A009',
-                            //             Type: '%',
-                            //             Value: -30,
-                            //             Amount: -228,
-                            //         },
-                            //     ],
-                            //     New: 532,
-                            //     Amount: -228,
-                            // },
                         ],
                     },
                 },
@@ -5830,20 +5797,8 @@ export class PricingData06 {
                                 Name: 'Base',
                                 Base: 266,
                                 Conditions: [
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 40,
-                                        Amount: 6,
-                                        Uom: ['CS'],
-                                    },
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 160,
-                                        Amount: 488,
-                                        Uom: ['BOX'],
-                                    },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 6, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 160, Amount: 488, Uom: ['BOX'] },
                                 ],
                                 New: 760,
                                 Amount: 494,
@@ -5851,31 +5806,10 @@ export class PricingData06 {
                             {
                                 Name: 'MultipleValuesAccount',
                                 Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -228,
-                                    },
-                                ],
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -228 }],
                                 New: 532,
                                 Amount: -228,
                             },
-                            // {
-                            //     Name: 'MultipleValues',
-                            //     Base: 760,
-                            //     Conditions: [
-                            //         {
-                            //             Name: 'ZDM3_A009',
-                            //             Type: '%',
-                            //             Value: -30,
-                            //             Amount: -228,
-                            //         },
-                            //     ],
-                            //     New: 532,
-                            //     Amount: -228,
-                            // },
                         ],
                     },
                 },
@@ -5909,20 +5843,8 @@ export class PricingData06 {
                                 Name: 'Base',
                                 Base: 0,
                                 Conditions: [
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 40,
-                                        Amount: 0,
-                                        Uom: ['CS'],
-                                    },
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 8,
-                                        Amount: 0,
-                                        Uom: ['EA'],
-                                    },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
                                 ],
                                 New: 0,
                                 Amount: 0,
@@ -5930,14 +5852,7 @@ export class PricingData06 {
                             {
                                 Name: 'Tax',
                                 Base: 0,
-                                Conditions: [
-                                    {
-                                        Name: 'MTAX_A002',
-                                        Type: '%',
-                                        Value: 20,
-                                        Amount: 0,
-                                    },
-                                ],
+                                Conditions: [{ Name: 'MTAX_A002', Type: '%', Value: 20, Amount: 0 }],
                                 New: 0,
                                 Amount: 0,
                             },
@@ -5970,20 +5885,8 @@ export class PricingData06 {
                                 Name: 'Base',
                                 Base: 80.5,
                                 Conditions: [
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 40,
-                                        Amount: -0.25,
-                                        Uom: ['CS'],
-                                    },
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 8,
-                                        Amount: -32.25,
-                                        Uom: ['EA'],
-                                    },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: -0.25, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: -32.25, Uom: ['EA'] },
                                 ],
                                 New: 48,
                                 Amount: -32.5,
@@ -5991,14 +5894,7 @@ export class PricingData06 {
                             {
                                 Name: 'Tax',
                                 Base: 48,
-                                Conditions: [
-                                    {
-                                        Name: 'MTAX_A002',
-                                        Type: '%',
-                                        Value: 20,
-                                        Amount: 9.6,
-                                    },
-                                ],
+                                Conditions: [{ Name: 'MTAX_A002', Type: '%', Value: 20, Amount: 9.6 }],
                                 New: 57.6,
                                 Amount: 9.6,
                             },
@@ -6031,20 +5927,8 @@ export class PricingData06 {
                                 Name: 'Base',
                                 Base: 201.25,
                                 Conditions: [
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 40,
-                                        Amount: -0.5,
-                                        Uom: ['CS'],
-                                    },
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 8,
-                                        Amount: -96.75,
-                                        Uom: ['EA'],
-                                    },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: -0.5, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: -96.75, Uom: ['EA'] },
                                 ],
                                 New: 104,
                                 Amount: -97.25,
@@ -6052,45 +5936,17 @@ export class PricingData06 {
                             {
                                 Name: 'Tax',
                                 Base: 104,
-                                Conditions: [
-                                    {
-                                        Name: 'MTAX_A002',
-                                        Type: '%',
-                                        Value: 20,
-                                        Amount: 20.8,
-                                    },
-                                ],
+                                Conditions: [{ Name: 'MTAX_A002', Type: '%', Value: 20, Amount: 20.8 }],
                                 New: 124.8,
                                 Amount: 20.8,
                             },
                             {
                                 Name: 'MultipleValuesAccount',
                                 Base: 104,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -31.2,
-                                    },
-                                ],
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -31.2 }],
                                 New: 72.8,
                                 Amount: -31.2,
                             },
-                            // {
-                            //     Name: 'MultipleValues',
-                            //     Base: 104,
-                            //     Conditions: [
-                            //         {
-                            //             Name: 'ZDM3_A009',
-                            //             Type: '%',
-                            //             Value: -30,
-                            //             Amount: -31.2,
-                            //         },
-                            //     ],
-                            //     New: 72.8,
-                            //     Amount: -31.2,
-                            // },
                         ],
                     },
                 },
@@ -6120,20 +5976,8 @@ export class PricingData06 {
                                 Name: 'Base',
                                 Base: 0,
                                 Conditions: [
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 40,
-                                        Amount: 0,
-                                        Uom: ['CS'],
-                                    },
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 8,
-                                        Amount: 0,
-                                        Uom: ['EA'],
-                                    },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
                                 ],
                                 New: 0,
                                 Amount: 0,
@@ -6167,20 +6011,8 @@ export class PricingData06 {
                                 Name: 'Base',
                                 Base: 80.5,
                                 Conditions: [
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 40,
-                                        Amount: -0.25,
-                                        Uom: ['CS'],
-                                    },
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 8,
-                                        Amount: -32.25,
-                                        Uom: ['EA'],
-                                    },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: -0.25, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: -32.25, Uom: ['EA'] },
                                 ],
                                 New: 48,
                                 Amount: -32.5,
@@ -6214,20 +6046,8 @@ export class PricingData06 {
                                 Name: 'Base',
                                 Base: 201.25,
                                 Conditions: [
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 40,
-                                        Amount: -0.5,
-                                        Uom: ['CS'],
-                                    },
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 8,
-                                        Amount: -96.75,
-                                        Uom: ['EA'],
-                                    },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: -0.5, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: -96.75, Uom: ['EA'] },
                                 ],
                                 New: 104,
                                 Amount: -97.25,
@@ -6235,31 +6055,10 @@ export class PricingData06 {
                             {
                                 Name: 'MultipleValuesAccount',
                                 Base: 104,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -31.2,
-                                    },
-                                ],
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -31.2 }],
                                 New: 72.8,
                                 Amount: -31.2,
                             },
-                            // {
-                            //     Name: 'MultipleValues',
-                            //     Base: 104,
-                            //     Conditions: [
-                            //         {
-                            //             Name: 'ZDM3_A009',
-                            //             Type: '%',
-                            //             Value: -30,
-                            //             Amount: -31.2,
-                            //         },
-                            //     ],
-                            //     New: 72.8,
-                            //     Amount: -31.2,
-                            // },
                         ],
                     },
                 },
@@ -6307,12 +6106,13 @@ export class PricingData06 {
                         uom2: 'Each',
                         qty2: 1,
                         unitQuantity: 7,
-                        PriceTaxTotal: 40.0 * 1 + 8.0 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 40.0 * 1 + 8.0 * 0.95 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
                         PriceTaxTotalDiff:
-                            Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                            Math.round((40.0 * 1 + 8.0 * 0.95 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
                         PriceTaxTotalPercent:
-                            Math.floor((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 10000) /
-                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                            Math.round(
+                                (1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 0.95 * 1) + Number.EPSILON) * 10000,
+                            ) / 100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
                         PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
@@ -6321,18 +6121,25 @@ export class PricingData06 {
                         PriceTaxUnitPriceAfter1: 40.0,
                         PriceDiscount2UnitPriceAfter1: 40.0,
                         PriceBaseUnitPriceAfter2: 8.0,
-                        PriceDiscountUnitPriceAfter2: 8.0,
-                        PriceTaxUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0 * 0.95,
+                        PriceTaxUnitPriceAfter2: 8.0 * 0.95,
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 0,
+                                Base: 78,
                                 Conditions: [
-                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
-                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 1, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: -31, Uom: ['EA'] },
                                 ],
-                                New: 0,
-                                Amount: 0,
+                                New: 48,
+                                Amount: -30,
+                            },
+                            {
+                                Name: 'Discount',
+                                Base: 48,
+                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -5, Amount: -0.4, Uom: ['EA'] }],
+                                New: 47.6,
+                                Amount: -0.4,
                             },
                         ],
                     },
@@ -6342,73 +6149,54 @@ export class PricingData06 {
                         uom2: 'Box',
                         qty2: 4,
                         unitQuantity: 3 * 6 + 4 * 24,
-                        PriceTaxTotal: 40.0 * 3 + 160.0 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 40.0 * 0.9 * 3 + 160.0 * 0.98 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
                         PriceTaxTotalDiff:
-                            Math.round((40.0 * 3 + 160.0 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                            Math.round(
+                                (40.0 * 0.9 * 3 + 160.0 * 0.98 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100,
+                            ) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
                         PriceTaxTotalPercent:
-                            Math.floor((1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 10000) /
-                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                            Math.round(
+                                (1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 0.9 * 3 + 160.0 * 0.98 * 4) + Number.EPSILON) *
+                                    10000,
+                            ) / 100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 * 0.9 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
                         PriceBaseUnitPriceAfter1: 40.0,
-                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0 * 0.9,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
-                        PriceManualLineUnitPriceAfter1: 40.0,
-                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0 * 0.9,
+                        PriceTaxUnitPriceAfter1: 40.0 * 0.9,
                         PriceDiscount2UnitPriceAfter1: 40.0,
                         PriceBaseUnitPriceAfter2: 160.0,
-                        PriceDiscountUnitPriceAfter2: 160.0,
-                        PriceTaxUnitPriceAfter2: 160.0,
+                        PriceDiscountUnitPriceAfter2: 160.0 * 0.98,
+                        PriceTaxUnitPriceAfter2: 160.0 * 0.98,
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 266,
+                                Base: 273,
                                 Conditions: [
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 40,
-                                        Amount: 6,
-                                        Uom: ['CS'],
-                                    },
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 160,
-                                        Amount: 488,
-                                        Uom: ['BOX'],
-                                    },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 3, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 160, Amount: 484, Uom: ['BOX'] },
                                 ],
                                 New: 760,
-                                Amount: 494,
+                                Amount: 487,
+                            },
+                            {
+                                Name: 'Discount',
+                                Base: 760,
+                                Conditions: [
+                                    { Name: 'ZDS1_A001', Type: '%', Value: -10, Amount: -12, Uom: ['CS'] },
+                                    { Name: 'ZDS1_A001', Type: '%', Value: -2, Amount: -12.8, Uom: ['BOX'] },
+                                ],
+                                New: 735.2,
+                                Amount: -24.8,
                             },
                             {
                                 Name: 'MultipleValuesAccount',
                                 Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -228,
-                                    },
-                                ],
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -228 }],
                                 New: 532,
                                 Amount: -228,
                             },
-                            // {
-                            //     Name: 'MultipleValues',
-                            //     Base: 760,
-                            //     Conditions: [
-                            //         {
-                            //             Name: 'ZDM3_A009',
-                            //             Type: '%',
-                            //             Value: -30,
-                            //             Amount: -228,
-                            //         },
-                            //     ],
-                            //     New: 532,
-                            //     Amount: -228,
-                            // },
                         ],
                     },
                 },
@@ -6452,12 +6240,13 @@ export class PricingData06 {
                         uom2: 'Each',
                         qty2: 1,
                         unitQuantity: 7,
-                        PriceTaxTotal: 40.0 * 1 + 8.0 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 40.0 * 1 + 8.0 * 0.95 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
                         PriceTaxTotalDiff:
-                            Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                            Math.round((40.0 * 1 + 8.0 * 0.95 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
                         PriceTaxTotalPercent:
-                            Math.floor((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 10000) /
-                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                            Math.round(
+                                (1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 0.95 * 1) + Number.EPSILON) * 10000,
+                            ) / 100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
                         PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
@@ -6466,18 +6255,25 @@ export class PricingData06 {
                         PriceTaxUnitPriceAfter1: 40.0,
                         PriceDiscount2UnitPriceAfter1: 40.0,
                         PriceBaseUnitPriceAfter2: 8.0,
-                        PriceDiscountUnitPriceAfter2: 8.0,
-                        PriceTaxUnitPriceAfter2: 8.0,
+                        PriceDiscountUnitPriceAfter2: 8.0 * 0.95,
+                        PriceTaxUnitPriceAfter2: 8.0 * 0.95,
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 0,
+                                Base: 78,
                                 Conditions: [
-                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 0, Uom: ['CS'] },
-                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: 0, Uom: ['EA'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 1, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 8, Amount: -31, Uom: ['EA'] },
                                 ],
-                                New: 0,
-                                Amount: 0,
+                                New: 48,
+                                Amount: -30,
+                            },
+                            {
+                                Name: 'Discount',
+                                Base: 48,
+                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -5, Amount: -0.4, Uom: ['EA'] }],
+                                New: 47.6,
+                                Amount: -0.4,
                             },
                         ],
                     },
@@ -6487,73 +6283,54 @@ export class PricingData06 {
                         uom2: 'Box',
                         qty2: 4,
                         unitQuantity: 3 * 6 + 4 * 24,
-                        PriceTaxTotal: 40.0 * 3 + 160.0 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 40.0 * 0.9 * 3 + 160.0 * 0.98 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
                         PriceTaxTotalDiff:
-                            Math.round((40.0 * 3 + 160.0 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                            Math.round(
+                                (40.0 * 0.9 * 3 + 160.0 * 0.98 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100,
+                            ) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
                         PriceTaxTotalPercent:
-                            Math.floor((1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 10000) /
-                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: 40.0 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                            Math.round(
+                                (1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 0.9 * 3 + 160.0 * 0.98 * 4) + Number.EPSILON) *
+                                    10000,
+                            ) / 100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxUnitDiff: 40.0 * 0.9 - 40.0, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
                         PriceBaseUnitPriceAfter1: 40.0,
-                        PriceDiscountUnitPriceAfter1: 40.0,
+                        PriceDiscountUnitPriceAfter1: 40.0 * 0.9,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
-                        PriceManualLineUnitPriceAfter1: 40.0,
-                        PriceTaxUnitPriceAfter1: 40.0,
+                        PriceManualLineUnitPriceAfter1: 40.0 * 0.9,
+                        PriceTaxUnitPriceAfter1: 40.0 * 0.9,
                         PriceDiscount2UnitPriceAfter1: 40.0,
                         PriceBaseUnitPriceAfter2: 160.0,
-                        PriceDiscountUnitPriceAfter2: 160.0,
-                        PriceTaxUnitPriceAfter2: 160.0,
+                        PriceDiscountUnitPriceAfter2: 160.0 * 0.98,
+                        PriceTaxUnitPriceAfter2: 160.0 * 0.98,
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 266,
+                                Base: 273,
                                 Conditions: [
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 40,
-                                        Amount: 6,
-                                        Uom: ['CS'],
-                                    },
-                                    {
-                                        Name: 'ZBASE_A005',
-                                        Type: 'S',
-                                        Value: 160,
-                                        Amount: 488,
-                                        Uom: ['BOX'],
-                                    },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 40, Amount: 3, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A005', Type: 'S', Value: 160, Amount: 484, Uom: ['BOX'] },
                                 ],
                                 New: 760,
-                                Amount: 494,
+                                Amount: 487,
+                            },
+                            {
+                                Name: 'Discount',
+                                Base: 760,
+                                Conditions: [
+                                    { Name: 'ZDS1_A001', Type: '%', Value: -10, Amount: -12, Uom: ['CS'] },
+                                    { Name: 'ZDS1_A001', Type: '%', Value: -2, Amount: -12.8, Uom: ['BOX'] },
+                                ],
+                                New: 735.2,
+                                Amount: -24.8,
                             },
                             {
                                 Name: 'MultipleValuesAccount',
                                 Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -228,
-                                    },
-                                ],
-                                New: 532,
-                                Amount: -228,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -114 }],
+                                New: 646,
+                                Amount: -114,
                             },
-                            // {
-                            //     Name: 'MultipleValues',
-                            //     Base: 760,
-                            //     Conditions: [
-                            //         {
-                            //             Name: 'ZDM3_A009',
-                            //             Type: '%',
-                            //             Value: -30,
-                            //             Amount: -228,
-                            //         },
-                            //     ],
-                            //     New: 532,
-                            //     Amount: -228,
-                            // },
                         ],
                     },
                 },

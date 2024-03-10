@@ -99,7 +99,7 @@ _________________
     let base64ImageComponent;
 
     const testAccounts = ['Acc01', 'OtherAcc'];
-    const totalsTestItems = ['MaNa142', 'MaNa23'];
+    const totalsTestItems = ['MaNa142', 'MaNa23', 'MaNa18'];
     const totalsTestStates = ['baseline', 'state1', 'state2'];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
