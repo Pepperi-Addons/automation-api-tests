@@ -787,6 +787,10 @@ export class DevTest {
             case 'CORE': {
                 return true;
             }
+            case 'GENERIC-RESOURCE':
+            case 'GENERIC RESOURCE': {
+                return true;
+            }
             case 'ASYNCADDON': {
                 return true;
             }
