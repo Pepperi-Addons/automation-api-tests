@@ -59,12 +59,12 @@ ____________ The Relevant Rules:
       [true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_BOX_Contract1",[[3,"D",5,"%"],[6,"D",15,"%"]],"BOX","BOX"]]',
 
 . 'ZDM2@A007@Contract2@Facial Cosmetics':
-    '[[true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_EA_Contract2",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",25,"%"]],"EA","EA"],
+    '[[true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_EA_Contract2",[[2,"D",5,"%"],[5,"D",10,"%"],[10,"D",30,"%"]],"EA","EA"],
       [true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_CS_Contract2",[[5,"D",10,"%"]],"CS","CS"],
       [true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_BOX_Contract2",[[2,"D",2,"%"]],"BOX","BOX"]]',
 
 . 'ZDM2@A007@Contract3@Facial Cosmetics':
-    '[[true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_EA_Contract3",[[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",30,"%"]],"EA","EA"],
+    '[[true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_EA_Contract3",[[2,"D",10,"%"],[5,"D",20,"%"],[10,"D",25,"%"]],"EA","EA"],
       [true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_CS_Contract3",[[5,"D",5,"%"]],"CS","CS"],
       [true,"1555891200000","2534022144999","1","1","ZDM2_A007 Category_BOX_Contract3",[[2,"D",5,"%"]],"BOX","BOX"]]',
 
@@ -201,7 +201,16 @@ ________________________________________________________________________________
     //     'PriceTaxUnitPriceAfter1',
     // ];
     // const priceFields2 = ['PriceBaseUnitPriceAfter2', 'PriceDiscountUnitPriceAfter2', 'PriceTaxUnitPriceAfter2'];
-    const priceMultiFields = ['PriceMultiAfter1', 'PriceMultiAfter2'];
+    const priceMultiFields = [
+        'PriceMultiAfter1',
+        'PriceMultiAfter2',
+        'PriceMultiAccountAfter1',
+        'PriceMultiAccountAfter2',
+        'PriceMultiCategoryAfter1',
+        'PriceMultiCategoryAfter2',
+        'PriceMultiItemAfter1',
+        'PriceMultiItemAfter2',
+    ];
 
     if (installedPricingVersionShort !== '5') {
         describe(`Pricing ** Multiple Values ** UI tests  - ${
@@ -347,12 +356,13 @@ ________________________________________________________________________________
                                         multipleValuesTestStates_box,
                                     ].forEach((uomStatesVeriable, index) => {
                                         describe(`${index == 0 ? 'Each' : index == 1 ? 'Case' : 'Box'}`, () => {
-                                            it('Setting AOQM2 to 0', async function () {
-                                                await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                                    this,
-                                                )('Each', multipleValuesTestItem, 0, driver, '2');
-                                                driver.sleep(0.1 * 1000);
-                                            });
+                                            index == 1 &&
+                                                it('Setting AOQM2 to 0', async function () {
+                                                    await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
+                                                        this,
+                                                    )('Each' + '&Totals', multipleValuesTestItem, 0, driver, '2');
+                                                    driver.sleep(0.1 * 1000);
+                                                });
                                             uomStatesVeriable.forEach((multipleValuesTestState) => {
                                                 it(`Checking "${multipleValuesTestState}"`, async function () {
                                                     if (multipleValuesTestState != 'baseline') {
@@ -396,10 +406,7 @@ ________________________________________________________________________________
                                                     });
 
                                                     expect(typeof priceMultiTSAs).equals('object');
-                                                    expect(Object.keys(priceMultiTSAs)).to.eql([
-                                                        'PriceMultiAfter1',
-                                                        'PriceMultiAfter2',
-                                                    ]);
+                                                    expect(Object.keys(priceMultiTSAs)).to.eql(priceMultiFields);
                                                     priceMultiFields.forEach((priceField) => {
                                                         const fieldValue = priceMultiTSAs[priceField];
                                                         const expectedFieldValue =
@@ -603,10 +610,7 @@ ________________________________________________________________________________
                                                 });
 
                                                 expect(typeof priceMultiTSAs).equals('object');
-                                                expect(Object.keys(priceMultiTSAs)).to.eql([
-                                                    'PriceMultiAfter1',
-                                                    'PriceMultiAfter2',
-                                                ]);
+                                                expect(Object.keys(priceMultiTSAs)).to.eql(priceMultiFields);
                                                 priceMultiFields.forEach((priceField) => {
                                                     const fieldValue = priceMultiTSAs[priceField];
                                                     const expectedFieldValue =
@@ -735,10 +739,7 @@ ________________________________________________________________________________
                                                 });
 
                                                 expect(typeof priceMultiTSAs).equals('object');
-                                                expect(Object.keys(priceMultiTSAs)).to.eql([
-                                                    'PriceMultiAfter1',
-                                                    'PriceMultiAfter2',
-                                                ]);
+                                                expect(Object.keys(priceMultiTSAs)).to.eql(priceMultiFields);
                                                 priceMultiFields.forEach((priceField) => {
                                                     const fieldValue = priceMultiTSAs[priceField];
                                                     const expectedFieldValue =
@@ -861,10 +862,7 @@ ________________________________________________________________________________
                                                 });
 
                                                 expect(typeof priceMultiTSAs).equals('object');
-                                                expect(Object.keys(priceMultiTSAs)).to.eql([
-                                                    'PriceMultiAfter1',
-                                                    'PriceMultiAfter2',
-                                                ]);
+                                                expect(Object.keys(priceMultiTSAs)).to.eql(priceMultiFields);
                                                 priceMultiFields.forEach((priceField) => {
                                                     const fieldValue = priceMultiTSAs[priceField];
                                                     const expectedFieldValue =
