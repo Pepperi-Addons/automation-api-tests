@@ -250,7 +250,7 @@ export default class PricingConfiguration {
                     },
                     {
                         Key: 'Discount2', // Exclusion & Date
-                        ConditionsOrder: ['ZDS1', 'ZDS4', 'ZDS5', 'ZDS6', 'ZDS7'],
+                        ConditionsOrder: ['ZDS4', 'ZDS5', 'ZDS6', 'ZDS7'],
                         InitialPrice: {
                             Type: 'Block',
                             Name: 'Base',
@@ -370,7 +370,7 @@ export default class PricingConfiguration {
                 ExclusionRules: [
                     {
                         Condition: 'ZDS4',
-                        ExcludeConditions: ['ZDS7'],
+                        ExcludeConditions: ['ZDS6', 'ZDS7'],
                     },
                     {
                         Condition: 'ZDS1',
@@ -839,7 +839,7 @@ export default class PricingConfiguration {
                     },
                     {
                         Key: 'Discount2', // Exclusion & Date
-                        ConditionsOrder: ['ZDS1', 'ZDS4', 'ZDS5', 'ZDS6', 'ZDS7'],
+                        ConditionsOrder: ['ZDS4', 'ZDS5', 'ZDS6', 'ZDS7'],
                         InitialPrice: {
                             Type: 'Block',
                             Name: 'Base',
@@ -959,7 +959,7 @@ export default class PricingConfiguration {
                 ExclusionRules: [
                     {
                         Condition: 'ZDS4',
-                        ExcludeConditions: ['ZDS7'],
+                        ExcludeConditions: ['ZDS6', 'ZDS7'],
                     },
                     {
                         Condition: 'ZDS1',
