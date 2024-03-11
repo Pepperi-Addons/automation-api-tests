@@ -74,6 +74,7 @@ export async function DevTestReporter(email: string, password: string, client: C
             }
         }
     }
+    let messageToReport = '';
     for (let index = 0; index < failedTestsAddonNames.length; index++) {
         const failedTest = failedTestsAddonNames[index];
         const consoleTextRaw = await generalService.getConsoleDataFromJenkinsJob(
@@ -83,11 +84,14 @@ export async function DevTestReporter(email: string, password: string, client: C
         const consoleTextParsed = consoleTextRaw.Body.Text;
         if (consoleTextParsed.includes(`*** Failed Tests With Execution UUID's ***`)) {
             //real failure
+            messageToReport = 'aaa';
             debugger;
         } else {
             //some BS
+            messageToReport = 'bbb';
             debugger;
         }
     }
+    console.log(messageToReport);
     debugger;
 }
