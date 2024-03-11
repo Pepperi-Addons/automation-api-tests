@@ -246,7 +246,7 @@ export class SingleDevTestRunner {
             } else {
                 console.log(`${currentTestName} failed!`);
                 arrayOfResults.push({ testName: currentTestName, passed: false });
-                this.failedTests.push({ name: currentTestName, executionUuid: devTestResponse.Body.URI });
+                this.failedTests.push({ name: currentTestName, executionUUID: devTestResponse.Body.URI });
                 // return false;
             }
         }
@@ -287,11 +287,7 @@ export class SingleDevTestRunner {
             console.log(`*** Failed Tests With Execution UUID's ***`);
             for (let index = 0; index < this.failedTests.length; index++) {
                 const failedTest = this.failedTests[index];
-                console.log(
-                    `Failed Tests For ${this.addonName}, Version: ${this.addonVersion}: Test Name: ${
-                        failedTest.name
-                    } Execution UUID: [${failedTest.executionUUID as string[]}]`,
-                );
+                console.log(`Test Name: ${failedTest.name} - Execution UUID: ${failedTest.executionUUID}`);
             }
         }
         return didPass;
