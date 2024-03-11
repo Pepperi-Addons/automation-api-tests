@@ -75,5 +75,4 @@ export async function DevTestReporter(email: string, password: string, client: C
         }
     }
     debugger;
-    
 }

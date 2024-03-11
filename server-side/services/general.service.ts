@@ -721,7 +721,7 @@ export default class GeneralService {
         return jenkinsJobResponsePolling.Body.number;
     }
 
-    async getConsoleDataFromJenkinsJob(bufferedJenkinsBuildCreds,jenkinsJobUrl){
+    async getConsoleDataFromJenkinsJob(bufferedJenkinsBuildCreds, jenkinsJobUrl) {
         const JENKINS_BASE_URL = 'https://admin-box.pepperi.com/job/';
         const jenkinsJobConsoleTextResponse = await this.fetchStatus(
             `${JENKINS_BASE_URL}${jenkinsJobUrl}/lastBuild/consoleText`,
