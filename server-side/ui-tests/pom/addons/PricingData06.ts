@@ -6341,7 +6341,15 @@ export class PricingData06 {
                 ItemPrice: 50.25,
                 NPMCalcMessage: {
                     Acc01: {
-                        baseline: [],
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 12562.5,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 12437.5 }],
+                                New: 25000,
+                                Amount: 12437.5,
+                            },
+                        ],
                         '250 Each': [],
                         '253 Each': [],
                         '255 Each': [],
