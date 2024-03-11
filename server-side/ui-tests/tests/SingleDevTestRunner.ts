@@ -23,6 +23,7 @@ export class SingleDevTestRunner {
     public varPass;
     public service;
     public addonVersion;
+    public failedTests: any[] = [];
 
     constructor(userEmail, userPass, client, service, userEnv, addonName: string, addonVersion, varPass) {
         this.devTestUserObject = new DevTestUser(userEmail, userPass, userEnv, service);
@@ -103,193 +104,6 @@ export class SingleDevTestRunner {
         let toReturn = response.map((jsonData) => JSON.stringify(jsonData.Name));
         toReturn = toReturn.map((testName) => testName.replace(/"/g, ''));
         return toReturn;
-    }
-
-    // async getTestNamesADAL() {
-    //     const urlToGetTestsFromADAL = `/addons/api/${this.addonUUID}/tests/tests`;
-    //     const urlToGetTestsFromDataIndex = `/addons/api/00000000-0000-0000-0000-00000e1a571c/tests/tests`;
-    //     let responseFromAdal = (
-    //         await (
-    //             await this.devTestUserObject
-    //         ).generalService.fetchStatus(urlToGetTestsFromADAL, {
-    //             method: 'GET',
-    //         })
-    //     ).Body;
-    //     if (!Array.isArray(responseFromAdal)) {
-    //         debugger;
-    //         const numAddonVersion = Number(
-    //             this.addonVersion
-    //                 .split('.')
-    //                 .splice(this.addonVersion.split('.'), this.addonVersion.split('.').length - 1, 1)
-    //                 .join('.'),
-    //         );
-    //         if (numAddonVersion >= 1.8) {
-    //             throw new Error(`${responseFromAdal.fault.faultstring}`);
-    //         } else {
-    //             responseFromAdal = [];
-    //         }
-    //     }
-    //     const responseFromDataIndex = (
-    //         await (
-    //             await this.devTestUserObject
-    //         ).generalService.fetchStatus(urlToGetTestsFromDataIndex, {
-    //             method: 'GET',
-    //         })
-    //     ).Body;
-    //     let toReturnADAL = responseFromAdal.map((jsonData) => JSON.stringify(jsonData.Name));
-    //     toReturnADAL = toReturnADAL.map((testName) => testName.replace(/"/g, ''));
-    //     let roReturnDataIndex = responseFromDataIndex.map((jsonData) => JSON.stringify(jsonData.Name));
-    //     roReturnDataIndex = roReturnDataIndex.map((testName) => testName.replace(/"/g, ''));
-    //     return { ADAL: toReturnADAL, DataIndex: roReturnDataIndex };
-    // }
-
-    async runDevTestInt(testNames: string[], testserUuid?: string) {
-        debugger;
-        for (let index = 0; index < testNames.length; index++) {
-            const currentTestName = testNames[index];
-            const body = {
-                Name: currentTestName,
-            };
-            console.log(
-                `####################### Running: ${currentTestName}, number: ${index + 1} out of: ${
-                    testNames.length
-                }  #######################`,
-            );
-            const addonSk = null;
-            // if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
-            //     addonSk = await this.adminBaseUserGeneralService.getSecretfromKMS(
-            //         this.adminBaseUserEmail,
-            //         this.adminBaseUserPass,
-            //         'AutomationAddonSecretKey',
-            //     );
-            // }
-            // if (this.addonName === 'CONFIGURATIONS') {
-            //     addonSk = await this.adminBaseUserGeneralService.getSecretfromKMS(
-            //         this.adminBaseUserEmail,
-            //         this.adminBaseUserPass,
-            //         'AutomationAddonSecretKeyConfigAddon',
-            //     );
-            // }
-            const devTestResponse: any = await this.runDevTestOnCertainEnv(
-                this.devTestUserObject.email,
-                this.devTestUserObject.env,
-                addonSk,
-                body,
-                testserUuid,
-            );
-            if (!devTestResponse) {
-                const errorString = `Error: got undefined when trying to run ${this.addonName} tests - no EXECUTION UUID!`;
-                throw new Error(`${errorString}`);
-            }
-            if (devTestResponse.Body.URI === undefined) {
-                const errorString = `Error: got undefined when trying to run ${this.addonName} tests - no EXECUTION UUID!`;
-                throw new Error(`${errorString}`);
-            }
-            console.log(
-                `####################### ${currentTestName}: EXECUTION UUID: ${devTestResponse.Body.URI} ####################### `,
-            );
-            debugger;
-            this.service.sleep(1000 * 15);
-            const devTestResults = await this.getTestResponse(
-                this.devTestUserObject.email,
-                this.devTestUserObject.env,
-                devTestResponse.Body.URI,
-            );
-            if (
-                devTestResults.AuditInfo.hasOwnProperty('ErrorMessage') &&
-                devTestResults.AuditInfo.ErrorMessage.includes('Task timed out after')
-            ) {
-                debugger;
-                let errorString = '';
-                if (
-                    devTestResults.AuditInfo.hasOwnProperty('ErrorMessage') &&
-                    devTestResults.AuditInfo.ErrorMessage.includes('Task timed out after')
-                ) {
-                    errorString += `got the error: ${devTestResults.AuditInfo.ErrorMessage} from Audit Log, On Test: ${currentTestName}, EXECUTION UUID: ${devTestResponse.Body.URI},\n`;
-                }
-                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
-            }
-            debugger;
-            //4.3. parse the response
-            let testResultArray;
-            try {
-                testResultArray = JSON.parse(devTestResults.AuditInfo.ResultObject);
-            } catch (error) {
-                debugger;
-                let errorString = '';
-                if (!devTestResults.AuditInfo.ResultObject) {
-                    errorString += `got the error: ${devTestResults.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName} ,EXECUTION UUID: ${devTestResponse.Body.URI},\n`;
-                }
-                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
-            }
-
-            let objectToPrint;
-            let shouldAlsoPrintVer = false;
-            if (testResultArray.results === undefined && testResultArray.tests === undefined) {
-                const errorString = `Cannot Parse Result Object, Recieved: ${JSON.stringify(testResultArray)}`;
-                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
-            }
-            //TODO: move the parsing to another function
-            if (
-                testResultArray.results &&
-                testResultArray.results[0].suites[0].suites &&
-                testResultArray.results[0].suites[0].suites.length > 0
-            ) {
-                shouldAlsoPrintVer = true;
-                objectToPrint = testResultArray.results[0].suites[0].suites;
-            } else if (testResultArray.results) {
-                //add an if to catch the other result config also
-                objectToPrint = testResultArray.results[0].suites;
-            } else {
-                objectToPrint = testResultArray.tests;
-            }
-            if (objectToPrint === undefined) {
-                debugger;
-                let errorString = '';
-                errorString += `${this.devTestUserObject.email} got the error: ${
-                    devTestResults.AuditInfo.ErrorMessage
-                } from Audit Log, Recived Audit Log: ${JSON.stringify(devTestResults.AuditInfo)}, EXECUTION UUID: ${
-                    devTestResponse.Body.URI
-                },\n`;
-                throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
-            }
-            console.log(
-                `********* this printing is made for debugging - you can skip downward to see the prettified tests result *********`,
-            );
-            for (let index = 0; index < objectToPrint.length; index++) {
-                const result = objectToPrint[index];
-                console.log(`\n***${currentTestName} result object: ${JSON.stringify(result)}***\n`);
-            }
-            console.log(
-                `\n****************************************************** Prettified Tests Results Splitted To Envs ******************************************************\n'`,
-            );
-            const results = await this.printResultsTestObject(
-                objectToPrint,
-                this.devTestUserObject.email,
-                this.devTestUserObject.env,
-                currentTestName,
-            );
-            if (shouldAlsoPrintVer) {
-                objectToPrint = testResultArray.results[0].suites[1].suites;
-                await this.printResultsTestObject(
-                    objectToPrint,
-                    this.devTestUserObject.email,
-                    this.devTestUserObject.env,
-                    currentTestName,
-                );
-            }
-            // debugger;
-            //4.6. create the array of passing / failing tests
-            // debugger;
-            if (results.didSucceed) {
-                //devPassingEnvs  devFailedEnvs   failedSuitesEU   failedSuitesProd   failedSuitesSB
-                console.log(`${currentTestName} passed!`);
-            } else {
-                console.log(`${currentTestName} failed!`);
-                return false;
-            }
-        }
-        return true;
     }
 
     async runSingleDevTestInt(testNames: string[], service: GeneralService, testserUuid?: string) {
@@ -432,30 +246,11 @@ export class SingleDevTestRunner {
             } else {
                 console.log(`${currentTestName} failed!`);
                 arrayOfResults.push({ testName: currentTestName, passed: false });
+                this.failedTests.push({ name: currentTestName, executionUuid: devTestResponse.Body.URI });
                 // return false;
             }
         }
         return arrayOfResults;
-    }
-    // async runDevTestADAL(testNamesADAL: string[], testNamesDataIndex: string[]) {
-    //     if (testNamesADAL.length !== 0) {
-    //         console.log('ADAL Dev Tests: ');
-    //         await this.runDevTestInt(testNamesADAL, this.addonUUID);
-    //     } else {
-    //         console.log(`No ADAL Dev Tests For Version ${this.addonVersion}`);
-    //     }
-    //     console.log('Data Index Dev Tests: ');
-    //     await this.runDevTestInt(testNamesDataIndex);
-    // }
-
-    // async getBaseUser(testNamesADAL: string[], testNamesDataIndex: string[]) {}
-
-    async runDevTest(testNames: any) {
-        // if (this.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
-        //     await this.runDevTestADAL(testNames.ADAL, testNames.DataIndex);
-        // } else {
-        return await this.runDevTestInt(testNames);
-        // }
     }
 
     async handleSingleDevTest(testNames, generalService) {
@@ -489,6 +284,15 @@ export class SingleDevTestRunner {
             console.log(
                 `Failed Tests For ${this.addonName}, Version: ${this.addonVersion}: [${failedTestsList as string[]}]`,
             );
+            console.log(`*** Failed Tests With Execution UUID's ***`);
+            for (let index = 0; index < this.failedTests.length; index++) {
+                const failedTest = this.failedTests[index];
+                console.log(
+                    `Failed Tests For ${this.addonName}, Version: ${this.addonVersion}: Test Name: ${
+                        failedTest.name
+                    } Execution UUID: [${failedTest.executionUUID as string[]}]`,
+                );
+            }
         }
         return didPass;
     }
@@ -550,38 +354,6 @@ export class SingleDevTestRunner {
         const service = new GeneralService(client);
         const auditLogDevTestResponse = await service.getAuditLogResultObjectIfValid(URI as string, 120, 7000);
         return auditLogDevTestResponse;
-    }
-
-    async runDevTestOnCertainEnv(userName, env, addonSk, bodyToSend, testerAddonUUID?) {
-        const client = await initiateTester(userName, 'Aa123456', env);
-        const service = new GeneralService(client);
-        let _headers;
-        let addonsTestingEndpoint = `/addons/api/async/${this.addonUUID}/tests/tests`;
-        if (this.addonName === 'CONFIGURATIONS') {
-            _headers = {
-                'x-pepperi-ownerid': '84c999c3-84b7-454e-9a86-71b7abc96554',
-                'x-pepperi-secretkey': addonSk,
-                Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
-            };
-        }
-        if (this.addonName === 'DATA INDEX' || this.addonName === 'DATA-INDEX' || this.addonName === 'ADAL') {
-            if (testerAddonUUID != undefined) {
-                addonsTestingEndpoint = `/addons/api/async/${testerAddonUUID}/tests/tests`; //run data index tests for ADAL
-            } else {
-                addonsTestingEndpoint = `/addons/api/async/00000000-0000-0000-0000-00000e1a571c/tests/tests`; //run data index tests for ADAL
-            }
-            _headers = {
-                'x-pepperi-ownerid': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-                'x-pepperi-secretkey': addonSk,
-                Authorization: `Bearer ${service['client'].OAuthAccessToken}`,
-            };
-        }
-        const testResponse = await service.fetchStatus(addonsTestingEndpoint, {
-            body: JSON.stringify(bodyToSend),
-            method: 'POST',
-            headers: _headers ? _headers : { Authorization: `Bearer ${service['client'].OAuthAccessToken}` },
-        });
-        return testResponse;
     }
 
     async runSingleDevTestOnCertainEnv(service, addonSk, bodyToSend, testerAddonUUID?) {

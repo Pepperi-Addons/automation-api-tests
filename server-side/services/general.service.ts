@@ -650,6 +650,21 @@ export default class GeneralService {
         return;
     }
 
+    //didLastJenkinsRunSucceed
+    async didLastJenkinsRunSucceed(buildUserCredsBase64: string, jobPath: string) {
+        const jenkinsLastBuildJobResponse = await this.fetchStatus(
+            `https://admin-box.pepperi.com/job/${jobPath}/lastBuild/api/json`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Basic ` + buildUserCredsBase64,
+                },
+            },
+        );
+        const gottenResultFromJenkins = jenkinsLastBuildJobResponse.Body.result;
+        return gottenResultFromJenkins === 'SUCCESS';
+    }
+
     async pollJenkinsEndPointUntillJobEnded(
         buildUserCredsBase64: string,
         jobName: string,
@@ -704,6 +719,20 @@ export default class GeneralService {
             },
         );
         return jenkinsJobResponsePolling.Body.number;
+    }
+
+    async getConsoleDataFromJenkinsJob(bufferedJenkinsBuildCreds, jenkinsJobUrl) {
+        const JENKINS_BASE_URL = 'https://admin-box.pepperi.com/job/';
+        const jenkinsJobConsoleTextResponse = await this.fetchStatus(
+            `${JENKINS_BASE_URL}${jenkinsJobUrl}/lastBuild/consoleText`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Basic ` + bufferedJenkinsBuildCreds,
+                },
+            },
+        );
+        return jenkinsJobConsoleTextResponse;
     }
 
     getSecret() {
