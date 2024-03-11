@@ -256,9 +256,9 @@ export async function PricingExclusionTests(email: string, password: string, cli
 
                                             const UI_NPMCalcMessage = NPMCalcMessage['NPMCalcMessage'];
                                             const data_NPMCalcMessage =
-                                                pricingData.testItemsValues.Exclusion[exclusionRulesTestItem][
-                                                    'NPMCalcMessage'
-                                                ][account][exclusionRulesTestState];
+                                                pricingData.testItemsValues.Exclusion[exclusionRulesTestItem][account][
+                                                    exclusionRulesTestState
+                                                ]['NPMCalcMessage'];
                                             addContext(this, {
                                                 title: `NPMCalcMessage (at ${exclusionRulesTestState})`,
                                                 value: `From UI  : ${JSON.stringify(
@@ -273,8 +273,8 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                                 const fieldValue = priceTSA_Discount2[priceField];
                                                 const expectedFieldValue =
                                                     pricingData.testItemsValues.Exclusion[exclusionRulesTestItem][
-                                                        priceField
-                                                    ][account][exclusionRulesTestState];
+                                                        account
+                                                    ][exclusionRulesTestState][priceField];
                                                 addContext(this, {
                                                     title: `${priceField}`,
                                                     value: `Field Value from UI           : ${fieldValue} \nExpected Field Value from Data: ${expectedFieldValue}`,
@@ -345,9 +345,9 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                         'LinesView',
                                     );
                                     const expectedNPMCalcMessage =
-                                        pricingData.testItemsValues.Exclusion[exclusionRulesTestCartItem][
-                                            'NPMCalcMessage'
-                                        ][account]['cart'];
+                                        pricingData.testItemsValues.Exclusion[exclusionRulesTestCartItem][account][
+                                            'cart'
+                                        ]['NPMCalcMessage'];
                                     console.info(
                                         `Cart NPMCalcMessage \nFrom UI : ${JSON.stringify(
                                             NPMCalcMessage,
@@ -365,8 +365,8 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                         )} \nExpected: ${JSON.stringify(expectedNPMCalcMessage, null, 2)}`,
                                     });
                                     const expectedTotalUnitsAmount =
-                                        pricingData.testItemsValues.Exclusion[exclusionRulesTestCartItem]['Cart'][
-                                            account
+                                        pricingData.testItemsValues.Exclusion[exclusionRulesTestCartItem][account][
+                                            'Cart'
                                         ];
                                     console.info(
                                         `Cart ${exclusionRulesTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
@@ -378,9 +378,9 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                     });
                                     priceExclusionDiscountFields.forEach((priceField) => {
                                         const expectedValue =
-                                            pricingData.testItemsValues.Exclusion[exclusionRulesTestCartItem][
-                                                priceField
-                                            ][account]['cart'];
+                                            pricingData.testItemsValues.Exclusion[exclusionRulesTestCartItem][account][
+                                                'cart'
+                                            ][priceField];
                                         addContext(this, {
                                             title: `TSA field "${priceField}" Values`,
                                             value: `form UI: ${priceTSA_Discount2[priceField]} , expected: ${expectedValue}`,
