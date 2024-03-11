@@ -246,7 +246,7 @@ export class SingleDevTestRunner {
             } else {
                 console.log(`${currentTestName} failed!`);
                 arrayOfResults.push({ testName: currentTestName, passed: false });
-                this.failedTests.push({ name: currentTestName, executionUuid: devTestResponse.Body.URI });
+                this.failedTests.push({ name: currentTestName, executionUUID: devTestResponse.Body.URI });
                 // return false;
             }
         }
