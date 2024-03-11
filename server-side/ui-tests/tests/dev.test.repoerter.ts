@@ -52,7 +52,7 @@ export async function DevTestReporter(email: string, password: string, client: C
 
     const failedTestsAddonNames: any[] = [];
     const jenkinsBuildUserCred = await generalService.getSecretfromKMS(email, password, 'JenkinsBuildUserCred');
-    const base64Credentials = Buffer.from(jenkinsBuildUserCred).toString('base64');
+    const bufferedJenkinsBuildCreds = Buffer.from(jenkinsBuildUserCred).toString('base64');
     const addons = Object.keys(testsAndJenkinsLinksList);
     for (let i = 0; i < addons.length; i++) {
         const addon = addons[i];
@@ -61,7 +61,7 @@ export async function DevTestReporter(email: string, password: string, client: C
         for (let index = 0; index < jenkinsDataKeys.length; index++) {
             const jenkinsEntry = jenkinsData[jenkinsDataKeys[index]];
             const didTestPassOnJenkins = await generalService.didLastJenkinsRunSucceed(
-                base64Credentials,
+                bufferedJenkinsBuildCreds,
                 jenkinsEntry.jenkinsLink,
             );
             if (!didTestPassOnJenkins) {
@@ -73,6 +73,20 @@ export async function DevTestReporter(email: string, password: string, client: C
                 });
             }
         }
+    }
+    for (let index = 0; index < failedTestsAddonNames.length; index++) {
+        const failedTest = failedTestsAddonNames[index];
+        const consoleTextRaw = await generalService.getConsoleDataFromJenkinsJob(
+            bufferedJenkinsBuildCreds,
+            failedTest.jenkinsLink,
+        );
+        const consoleTextParsed = consoleTextRaw.Body.Text;
+        if (consoleTextParsed.includes(`*** Failed Tests With Execution UUID's ***`)) {
+            //real failure
+        } else {
+            //some BS
+        }
+        debugger;
     }
     debugger;
 }
