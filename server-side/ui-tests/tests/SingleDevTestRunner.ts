@@ -23,6 +23,7 @@ export class SingleDevTestRunner {
     public varPass;
     public service;
     public addonVersion;
+    public failedTests: any[] = [];
 
     constructor(userEmail, userPass, client, service, userEnv, addonName: string, addonVersion, varPass) {
         this.devTestUserObject = new DevTestUser(userEmail, userPass, userEnv, service);
@@ -286,6 +287,7 @@ export class SingleDevTestRunner {
                 console.log(`${currentTestName} passed!`);
             } else {
                 console.log(`${currentTestName} failed!`);
+                this.failedTests.push({ name: currentTestName, executionUuid: devTestResponse.Body.URI });
                 return false;
             }
         }
@@ -489,6 +491,15 @@ export class SingleDevTestRunner {
             console.log(
                 `Failed Tests For ${this.addonName}, Version: ${this.addonVersion}: [${failedTestsList as string[]}]`,
             );
+            console.log(`*** Failed Tests With Execution UUID's ***`);
+            for (let index = 0; index < this.failedTests.length; index++) {
+                const failedTest = this.failedTests[index];
+                console.log(
+                    `Failed Tests For ${this.addonName}, Version: ${this.addonVersion}: Test Name: ${
+                        failedTest.name
+                    } Execution UUID: [${failedTest.executionUUID as string[]}]`,
+                );
+            }
         }
         return didPass;
     }
