@@ -249,8 +249,8 @@ export default class PricingConfiguration {
                         },
                     },
                     {
-                        Key: 'Discount2',
-                        ConditionsOrder: ['ZDS4', 'ZDS5', 'ZDS6', 'ZDS7'],
+                        Key: 'Discount2', // Exclusion & Date
+                        ConditionsOrder: ['ZDS1', 'ZDS4', 'ZDS5', 'ZDS6', 'ZDS7'],
                         InitialPrice: {
                             Type: 'Block',
                             Name: 'Base',
@@ -369,12 +369,12 @@ export default class PricingConfiguration {
                 ],
                 ExclusionRules: [
                     {
-                        Condition: 'ZDS1',
-                        ExcludeConditions: ['ZDS4'],
+                        Condition: 'ZDS4',
+                        ExcludeConditions: ['ZDS7'],
                     },
                     {
-                        Condition: 'ZDS6',
-                        ExcludeConditions: ['ZDS7'],
+                        Condition: 'ZDS1',
+                        ExcludeConditions: ['ZDS6'],
                     },
                 ],
                 CalculatedItemFields: [
@@ -838,8 +838,8 @@ export default class PricingConfiguration {
                         },
                     },
                     {
-                        Key: 'Discount2',
-                        ConditionsOrder: ['ZDS4', 'ZDS5', 'ZDS6', 'ZDS7'],
+                        Key: 'Discount2', // Exclusion & Date
+                        ConditionsOrder: ['ZDS1', 'ZDS4', 'ZDS5', 'ZDS6', 'ZDS7'],
                         InitialPrice: {
                             Type: 'Block',
                             Name: 'Base',
@@ -958,12 +958,12 @@ export default class PricingConfiguration {
                 ],
                 ExclusionRules: [
                     {
-                        Condition: 'ZDS1',
-                        ExcludeConditions: ['ZDS4'],
+                        Condition: 'ZDS4',
+                        ExcludeConditions: ['ZDS7'],
                     },
                     {
-                        Condition: 'ZDS6',
-                        ExcludeConditions: ['ZDS7'],
+                        Condition: 'ZDS1',
+                        ExcludeConditions: ['ZDS6'],
                     },
                 ],
                 CalculatedItemFields: [
