@@ -229,15 +229,7 @@ export class AppTest {
     async parseTestResults(jenkinsJobUrl) {
         debugger;
         const bufferedJenkinsBuildCreds = Buffer.from(this.kmsSecret).toString('base64');
-        const jenkinsJobConsoleTextResponse = await this.service.fetchStatus(
-            `${this.JENKINS_BASE_URL}${jenkinsJobUrl}/lastBuild/consoleText`,
-            {
-                method: 'GET',
-                headers: {
-                    Authorization: `Basic ` + bufferedJenkinsBuildCreds,
-                },
-            },
-        );
+        const jenkinsJobConsoleTextResponse = await this.generalService.getConsoleDataFromJenkinsJob(bufferedJenkinsBuildCreds, jenkinsJobUrl);
         let jenkinsColnsoleTextResults;
         let parsedResultsOfTest;
         let parsedResultsNoEnding;
