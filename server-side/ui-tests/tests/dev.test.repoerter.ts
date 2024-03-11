@@ -83,10 +83,11 @@ export async function DevTestReporter(email: string, password: string, client: C
         const consoleTextParsed = consoleTextRaw.Body.Text;
         if (consoleTextParsed.includes(`*** Failed Tests With Execution UUID's ***`)) {
             //real failure
+            debugger;
         } else {
             //some BS
+            debugger;
         }
-        debugger;
     }
     debugger;
 }
