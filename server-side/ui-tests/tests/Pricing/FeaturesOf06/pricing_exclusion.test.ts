@@ -58,16 +58,24 @@ export async function PricingExclusionTests(email: string, password: string, cli
     let base64ImageComponent;
 
     const testAccounts = ['Acc01', 'OtherAcc'];
-    const multipleValuesTestItems = ['MaFa25', 'MaLi37', 'MaLi38'];
-    const multipleValuesTestStates = ['baseline', '1 Each', '2 Case', '3 Box'];
-    const priceFields = [
-        'PriceBaseUnitPriceAfter1',
-        'PriceDiscountUnitPriceAfter1',
-        'PriceGroupDiscountUnitPriceAfter1',
-        'PriceManualLineUnitPriceAfter1',
-        'PriceTaxUnitPriceAfter1',
+    const exclusionRulesTestItems = ['PMS-03-FBC6_l_2', 'MaLi36', 'Frag008'];
+    const exclusionRulesTestStates = [
+        'baseline',
+        '250 Each',
+        '253 Each',
+        '255 Each',
+        '260 Each',
+        '275 Each',
+        '42 Case', // 252 units
+        '43 Case', // 258 units
+        '45 Case', // 270 units
+        '46 Case', // 276 units
+        '10 Box', // 240 units
+        '11 Box', // 264 units
+        '12 Box', // 288 units
     ];
-    const priceFields2 = ['PriceBaseUnitPriceAfter2', 'PriceDiscountUnitPriceAfter2', 'PriceTaxUnitPriceAfter2'];
+
+    const priceExclusionDiscountFields = ['PriceDiscount2UnitPriceAfter1'];
 
     if (installedPricingVersionShort !== '5') {
         describe(`Pricing ** Exclusion Rules ** UI tests  - ${
@@ -197,28 +205,21 @@ export async function PricingExclusionTests(email: string, password: string, cli
                         // expect(duration_num).to.be.below(limit);
                     });
 
-                    describe('Partial Value', () => {
-                        it('Navigating to "Facial Cosmetics" at Sidebar', async function () {
-                            await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
-                            await driver.click(
-                                orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Facial Cosmetics'),
-                            );
-                            driver.sleep(0.1 * 1000);
-                        });
-                        multipleValuesTestItems.forEach((multipleValuesTestItem) => {
-                            describe(`Item: ***${multipleValuesTestItem}`, function () {
+                    describe('Exclusion Rules', () => {
+                        exclusionRulesTestItems.forEach((exclusionRulesTestItem) => {
+                            describe(`Item: ***${exclusionRulesTestItem}`, function () {
                                 describe('ORDER CENTER', function () {
-                                    it(`Looking for "${multipleValuesTestItem}" using the search box`, async function () {
+                                    it(`Looking for "${exclusionRulesTestItem}" using the search box`, async function () {
                                         await pricingService.searchInOrderCenter.bind(this)(
-                                            multipleValuesTestItem,
+                                            exclusionRulesTestItem,
                                             driver,
                                         );
                                         driver.sleep(1 * 1000);
                                     });
-                                    multipleValuesTestStates.forEach((multipleValuesTestState) => {
-                                        it(`Checking "${multipleValuesTestState}"`, async function () {
-                                            if (multipleValuesTestState != 'baseline') {
-                                                const splitedStateArgs = multipleValuesTestState.split(' ');
+                                    exclusionRulesTestStates.forEach((exclusionRulesTestState) => {
+                                        it(`Checking "${exclusionRulesTestState}"`, async function () {
+                                            if (exclusionRulesTestState != 'baseline') {
+                                                const splitedStateArgs = exclusionRulesTestState.split(' ');
                                                 const chosenUom = splitedStateArgs[1];
                                                 const amount = Number(splitedStateArgs[0]);
                                                 addContext(this, {
@@ -227,81 +228,56 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                                 });
                                                 await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                                     this,
-                                                )(chosenUom, multipleValuesTestItem, amount, driver);
+                                                )(chosenUom, exclusionRulesTestItem, amount, driver);
                                             }
-                                            const priceTSAs = await pricingService.getItemTSAs(
+                                            const NPMCalcMessage = await pricingService.getItemNPMCalcMessage(
                                                 'OrderCenter',
-                                                multipleValuesTestItem,
+                                                exclusionRulesTestItem,
                                             );
                                             console.info(
-                                                `${multipleValuesTestItem} ${multipleValuesTestState} priceTSAs:`,
-                                                priceTSAs,
+                                                `${exclusionRulesTestItem} ${exclusionRulesTestItem} NPMCalcMessage:`,
+                                                NPMCalcMessage,
                                             );
-                                            expect(typeof priceTSAs).equals('object');
-                                            expect(Object.keys(priceTSAs)).to.eql([
-                                                'PriceBaseUnitPriceAfter1',
-                                                'PriceDiscountUnitPriceAfter1',
-                                                'PriceGroupDiscountUnitPriceAfter1',
-                                                'PriceManualLineUnitPriceAfter1',
-                                                'PriceTaxUnitPriceAfter1',
-                                                'NPMCalcMessage',
-                                            ]);
-                                            if (multipleValuesTestState === 'baseline') {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][
-                                                        'NPMCalcMessage'
-                                                    ][account][multipleValuesTestState];
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}`,
-                                                });
-                                                // expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
-                                            } else {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][
-                                                        'NPMCalcMessage'
-                                                    ][account]['baseline'];
-                                                const data_NPMCalcMessage =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][
-                                                        'NPMCalcMessage'
-                                                    ][account][multipleValuesTestState];
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}, \nNPMCalcMessage (at ${multipleValuesTestState}) from Data: ${JSON.stringify(
-                                                        data_NPMCalcMessage,
-                                                    )}`,
-                                                });
-                                                // expect(UI_NPMCalcMessage.length).equals(
-                                                //     baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
-                                                // );
-                                            }
-                                            priceFields.forEach((priceField) => {
-                                                const fieldValue = priceTSAs[priceField];
+                                            expect(typeof NPMCalcMessage).equals('object');
+                                            expect(Object.keys(NPMCalcMessage)).to.eql(['NPMCalcMessage']);
+
+                                            const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
+                                                'OrderCenter',
+                                                exclusionRulesTestItem,
+                                            );
+                                            console.info(
+                                                `${exclusionRulesTestItem} ${exclusionRulesTestState} priceTSA_Discount2:`,
+                                                priceTSA_Discount2,
+                                            );
+                                            expect(typeof priceTSA_Discount2).equals('object');
+                                            expect(Object.keys(priceTSA_Discount2)).to.eql(
+                                                priceExclusionDiscountFields,
+                                            );
+
+                                            const UI_NPMCalcMessage = NPMCalcMessage['NPMCalcMessage'];
+                                            const data_NPMCalcMessage =
+                                                pricingData.testItemsValues.Exclusion[exclusionRulesTestItem][
+                                                    'NPMCalcMessage'
+                                                ][account][exclusionRulesTestState];
+                                            addContext(this, {
+                                                title: `NPMCalcMessage (at ${exclusionRulesTestState})`,
+                                                value: `From UI  : ${JSON.stringify(
+                                                    UI_NPMCalcMessage,
+                                                    null,
+                                                    2,
+                                                )}, \nFrom Data: ${JSON.stringify(data_NPMCalcMessage, null, 2)}`,
+                                            });
+                                            // expect(UI_NPMCalcMessage.length).equals(data_NPMCalcMessage.length);
+
+                                            priceExclusionDiscountFields.forEach((priceField) => {
+                                                const fieldValue = priceTSA_Discount2[priceField];
                                                 const expectedFieldValue =
-                                                    pricingData.testItemsValues[multipleValuesTestItem][priceField][
-                                                        account
-                                                    ][multipleValuesTestState];
+                                                    pricingData.testItemsValues.Exclusion[exclusionRulesTestItem][
+                                                        priceField
+                                                    ][account][exclusionRulesTestState];
                                                 addContext(this, {
                                                     title: `${priceField}`,
-                                                    value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                                    value: `Field Value from UI           : ${fieldValue} \nExpected Field Value from Data: ${expectedFieldValue}`,
                                                 });
                                                 // expect(fieldValue).equals(expectedFieldValue);
                                             });
@@ -328,7 +304,7 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                 });
                             });
                             it('verifying that the sum total of items in the cart is correct', async function () {
-                                const numberOfItemsInCart = multipleValuesTestItems.length;
+                                const numberOfItemsInCart = exclusionRulesTestItems.length;
                                 base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Cart`,
@@ -345,100 +321,73 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                 expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                                 driver.sleep(1 * 1000);
                             });
-                            multipleValuesTestItems.forEach((multipleValuesTestCartItem) => {
-                                it(`checking item "${multipleValuesTestCartItem}"`, async function () {
-                                    const state = '3 Box';
-                                    const totalUnitsAmount = await pricingService.getItemTotalAmount(
+                            exclusionRulesTestItems.forEach((exclusionRulesTestCartItem) => {
+                                it(`checking item "${exclusionRulesTestCartItem}"`, async function () {
+                                    const NPMCalcMessage = await pricingService.getItemNPMCalcMessage(
                                         'Cart',
-                                        multipleValuesTestCartItem,
+                                        exclusionRulesTestCartItem,
                                         undefined,
                                         undefined,
                                         'LinesView',
                                     );
-                                    const priceTSAs = await pricingService.getItemTSAs(
+                                    const totalUnitsAmount = await pricingService.getItemTotalAmount(
                                         'Cart',
-                                        multipleValuesTestCartItem,
+                                        exclusionRulesTestCartItem,
                                         undefined,
                                         undefined,
                                         'LinesView',
                                     );
                                     const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
                                         'Cart',
-                                        multipleValuesTestCartItem,
+                                        exclusionRulesTestCartItem,
                                         undefined,
                                         undefined,
                                         'LinesView',
                                     );
-                                    const priceTSAs_AOQM_UOM2 = await pricingService.getItemTSAs_AOQM_UOM2(
-                                        'Cart',
-                                        multipleValuesTestCartItem,
-                                        undefined,
-                                        undefined,
-                                        'LinesView',
-                                    );
-                                    // const priceTotalsTSAs = await pricingService.getTotalsTSAsOfItem(
-                                    //     'Cart',
-                                    //     multipleValuesTestCartItem,
-                                    //     undefined,
-                                    //     undefined,
-                                    //     'LinesView',
-                                    // );
-                                    const expectedTotalUnitsAmount =
-                                        pricingData.testItemsValues[multipleValuesTestCartItem]['Cart'][account];
+                                    const expectedNPMCalcMessage =
+                                        pricingData.testItemsValues.Exclusion[exclusionRulesTestCartItem][
+                                            'NPMCalcMessage'
+                                        ][account]['cart'];
                                     console.info(
-                                        `Cart ${multipleValuesTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
+                                        `Cart NPMCalcMessage \nFrom UI : ${JSON.stringify(
+                                            NPMCalcMessage,
+                                            null,
+                                            2,
+                                        )} \nExpected: ${JSON.stringify(expectedNPMCalcMessage, null, 2)}`,
                                     );
-                                    console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
+                                    console.info(`priceTSA_Discount2:`, JSON.stringify(priceTSA_Discount2, null, 2));
+                                    addContext(this, {
+                                        title: `Cart NPMCalcMessage`,
+                                        value: `From UI : ${JSON.stringify(
+                                            NPMCalcMessage,
+                                            null,
+                                            2,
+                                        )} \nExpected: ${JSON.stringify(expectedNPMCalcMessage, null, 2)}`,
+                                    });
+                                    const expectedTotalUnitsAmount =
+                                        pricingData.testItemsValues.Exclusion[exclusionRulesTestCartItem]['Cart'][
+                                            account
+                                        ];
+                                    console.info(
+                                        `Cart ${exclusionRulesTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
+                                    );
+                                    console.info(`priceTSA_Discount2:`, JSON.stringify(priceTSA_Discount2, null, 2));
                                     addContext(this, {
                                         title: `Total Units amount of item`,
                                         value: `form UI: ${totalUnitsAmount} , expected: ${expectedTotalUnitsAmount}`,
                                     });
-                                    priceFields.forEach((priceField) => {
+                                    priceExclusionDiscountFields.forEach((priceField) => {
                                         const expectedValue =
-                                            pricingData.testItemsValues[multipleValuesTestCartItem][priceField][
-                                                account
-                                            ][state];
+                                            pricingData.testItemsValues.Exclusion[exclusionRulesTestCartItem][
+                                                priceField
+                                            ][account]['cart'];
                                         addContext(this, {
                                             title: `TSA field "${priceField}" Values`,
-                                            value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                            value: `form UI: ${priceTSA_Discount2[priceField]} , expected: ${expectedValue}`,
                                         });
                                         // expect(priceTSAs[priceField]).equals(expectedValue);
                                     });
                                     // expect(totalUnitsAmount).equals(expectedTotalUnitsAmount);
-                                    const discount2FieldValue = priceTSA_Discount2['PriceDiscount2UnitPriceAfter1'];
-                                    const discount2ExpectedFieldValue =
-                                        pricingData.testItemsValues[multipleValuesTestCartItem][
-                                            'PriceDiscount2UnitPriceAfter1'
-                                        ]['cart'][account];
-                                    addContext(this, {
-                                        title: 'PriceDiscount2UnitPriceAfter1',
-                                        value: `Field Value from UI: ${discount2FieldValue}, Expected Field Value from Data: ${discount2ExpectedFieldValue}`,
-                                    });
-                                    // expect(discount2FieldValue).equals(discount2ExpectedFieldValue);
-
-                                    priceFields2.forEach((priceField) => {
-                                        const fieldValue = priceTSAs_AOQM_UOM2[priceField];
-                                        const expectedFieldValue =
-                                            pricingData.testItemsValues[multipleValuesTestCartItem][priceField]['cart'][
-                                                account
-                                            ];
-                                        addContext(this, {
-                                            title: `${priceField}`,
-                                            value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
-                                        });
-                                        // expect(fieldValue).equals(expectedFieldValue);
-                                    });
-
-                                    // totalsPriceFields.forEach((priceField) => {
-                                    //     const fieldValue = priceTotalsTSAs[priceField];
-                                    //     const expectedFieldValue =
-                                    //         pricingData.testItemsValues[multipleValuesTestCartItem][priceField][account][multipleValuesTestState];
-                                    //     addContext(this, {
-                                    //         title: `${priceField}`,
-                                    //         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
-                                    //     });
-                                    //     expect(fieldValue).equals(expectedFieldValue);
-                                    // });
                                     driver.sleep(1 * 1000);
                                 });
                             });
