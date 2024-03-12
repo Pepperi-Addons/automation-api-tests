@@ -30,6 +30,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
     const token = generalService['client'].OAuthAccessToken;
 
     //#region Upgrade ADAL
+    
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
@@ -48,6 +49,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
     }
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
+    await generalService.baseAddonVersionsInstallation(varKey);
     //#endregion Upgrade ADAL
     //debugger;
     //const chnageVersionResponseArr1 = await generalService.chnageVersion(varKey, testData, false);
@@ -2495,6 +2497,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     Authorization: 'Bearer ' + token,
                     //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
                     'X-Pepperi-SecretKey': whaitSecretKey,
+                    'x-pepperi-await-indexing': 'true',
                 },
                 body: JSON.stringify({
                     Key: '0',
