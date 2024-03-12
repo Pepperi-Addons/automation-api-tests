@@ -2756,6 +2756,48 @@ export async function reportToTeams(
     }
 }
 
+export async function genericReportToTeams(addonName, env, uuid, message, user, version, generalService) {
+    const bodyToSend = {
+        Name: `Nightly Regression Failure: ${addonName}, ${version}`,
+        Description: `${env} user: ${user}`,
+        Status: 'ERROR',
+        Message: message,
+        UserWebhook: await handleTeamsURL(addonName, generalService, email, pass),
+    };
+    const monitoringResponse = await generalService.fetchStatus(
+        'https://papi.pepperi.com/v1.0/system_health/notifications',
+        {
+            method: 'POST',
+            headers: {
+                'X-Pepperi-SecretKey': await generalService.getSecret()[1],
+                'X-Pepperi-OwnerID': 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
+            },
+            body: JSON.stringify(bodyToSend),
+        },
+    );
+    if (monitoringResponse.Ok !== true) {
+        throw new Error(
+            `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
+                monitoringResponse,
+            )}`,
+        );
+    }
+    if (monitoringResponse.Status !== 200) {
+        throw new Error(
+            `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
+                monitoringResponse,
+            )}`,
+        );
+    }
+    if (Object.keys(monitoringResponse.Error).length !== 0) {
+        throw new Error(
+            `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
+                monitoringResponse,
+            )}`,
+        );
+    }
+}
+
 export async function reportToTeamsNeptune(
     generalService: GeneralService,
     email,
