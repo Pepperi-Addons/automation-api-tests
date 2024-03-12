@@ -16,6 +16,88 @@ import addContext from 'mochawesome/addContext';
 chai.use(promised);
 
 export async function PricingExclusionTests(email: string, password: string, client: Client) {
+    /*
+________________________ 
+_________________ Brief:
+ 
+* Pricing Exclusion Rules
+* once a condition is met - other rules which are difined excluded will be over-looked
+* the definition at configuration:
+* 
+* PPM_CalcProcedures: [
+    {
+        .
+        .
+        .
+        ExclusionRules: [
+            {
+                Condition: 'ZDS4',
+                ExcludeConditions: ['ZDS6', 'ZDS7'],
+            },
+            {
+                Condition: 'ZDS1',
+                ExcludeConditions: ['ZDS6'],
+            },
+        ],
+        .
+        .
+        .
+    }
+* 
+* exclusion can be defined between conditions that are operated through the same block, or through different blocks
+*  'ZDS1' & 'ZDS6' belong to different blocks
+*  'ZDS4' & 'ZDS6' & 'ZDS7' belong to the same block
+* 
+* the test agenda is to check that at the same NPMCalcMessage 2 rules that are excluding one another will never show together
+*
+________________________________ 
+____________ The Relevant Rules:
+ 
+. 'ZDS4@A001@PMS-03-FBC6_l_2': 
+    '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[275,"D",20,"%"]]]]',
+
+. 'ZDS7@A005@Paul Pitchell': 
+    '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[250,"D",10,"%"]]]]',
+
+. 'ZDS7@A002@Acc01@PMS-03-FBC6_l_2':
+    '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[260,"D",25,"%"]]]]',
+
+. 'ZDS7@A004@Account for order scenarios':
+    '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[255,"D",15,"%"]]]]',
+
+. 'ZDS7@A002@Account for order scenarios@MaLi36':
+    '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[260,"D",40,"%"]]]]',
+
+. 'ZDS1@A002@Acc01@Frag008':
+    '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[260,"D",40,"%"]]]]',
+
+. 'ZDS6@A004@Acc01': 
+    '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[260,"D",40,"%"]]]]',
+
+. 'ZDS6@A001@Frag008': 
+    '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[255,"D",40,"%"]]]]',
+
+. 'ZDS6@A003@Acc01@Paul Pitchell':
+            '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[260,"D",40,"%"]]]]',
+
+______________________________ 
+____________ Order Of Actions:
+           
+   1. Looping over accounts
+ 
+       2. At Order Center: Looping over items
+ 
+           2.1. Looping over states
+           ----> retrieving pricing fields values from UI and comparing to expected data 
+                    ( pricingData.testItemsValues.Exclusion[exclusionRulesTestItem][account][exclusionRulesTestState][priceField] )
+           ----> deep equaly comparing NPMCalcMessage
+ 
+       3. At Cart: Looping over items
+       ----> same check as at order center (just for the last state that OC got to)
+ 
+_____________________________________________________________________________________________________________________________________________________________ 
+_____________________________________________________________________________________________________________________________________________________________ 
+*/
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
@@ -267,7 +349,8 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                                     2,
                                                 )}, \nFrom Data: ${JSON.stringify(data_NPMCalcMessage, null, 2)}`,
                                             });
-                                            // expect(UI_NPMCalcMessage.length).equals(data_NPMCalcMessage.length);
+                                            expect(UI_NPMCalcMessage.length).equals(data_NPMCalcMessage.length);
+                                            expect(UI_NPMCalcMessage).eql(data_NPMCalcMessage);
 
                                             priceExclusionDiscountFields.forEach((priceField) => {
                                                 const fieldValue = priceTSA_Discount2[priceField];
@@ -279,7 +362,7 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                                     title: `${priceField}`,
                                                     value: `Field Value from UI           : ${fieldValue} \nExpected Field Value from Data: ${expectedFieldValue}`,
                                                 });
-                                                // expect(fieldValue).equals(expectedFieldValue);
+                                                expect(fieldValue).equals(expectedFieldValue);
                                             });
                                             driver.sleep(0.2 * 1000);
                                         });
@@ -350,7 +433,7 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                         ]['NPMCalcMessage'];
                                     console.info(
                                         `Cart NPMCalcMessage \nFrom UI : ${JSON.stringify(
-                                            NPMCalcMessage,
+                                            NPMCalcMessage['NPMCalcMessage'],
                                             null,
                                             2,
                                         )} \nExpected: ${JSON.stringify(expectedNPMCalcMessage, null, 2)}`,
@@ -359,7 +442,7 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                     addContext(this, {
                                         title: `Cart NPMCalcMessage`,
                                         value: `From UI : ${JSON.stringify(
-                                            NPMCalcMessage,
+                                            NPMCalcMessage['NPMCalcMessage'],
                                             null,
                                             2,
                                         )} \nExpected: ${JSON.stringify(expectedNPMCalcMessage, null, 2)}`,
@@ -385,9 +468,13 @@ export async function PricingExclusionTests(email: string, password: string, cli
                                             title: `TSA field "${priceField}" Values`,
                                             value: `form UI: ${priceTSA_Discount2[priceField]} , expected: ${expectedValue}`,
                                         });
-                                        // expect(priceTSAs[priceField]).equals(expectedValue);
+                                        expect(priceTSA_Discount2[priceField]).equals(expectedValue);
                                     });
-                                    // expect(totalUnitsAmount).equals(expectedTotalUnitsAmount);
+                                    expect(totalUnitsAmount).equals(expectedTotalUnitsAmount);
+                                    expect(NPMCalcMessage['NPMCalcMessage'].length).equals(
+                                        expectedNPMCalcMessage.length,
+                                    );
+                                    expect(NPMCalcMessage['NPMCalcMessage']).eql(expectedNPMCalcMessage);
                                     driver.sleep(1 * 1000);
                                 });
                             });
