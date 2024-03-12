@@ -30,7 +30,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
     const token = generalService['client'].OAuthAccessToken;
 
     //#region Upgrade ADAL
-    
+
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [addonUUID, '0.0.1'],
