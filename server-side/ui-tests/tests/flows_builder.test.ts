@@ -115,13 +115,13 @@ export async function FlowTests(email: string, password: string, client: Client,
         Value: 10,
     };
     const expectedResult = 'evgenyosXXX';
-    await generalService.baseAddonVersionsInstallationNewSync(varKey);
+    // await generalService.baseAddonVersionsInstallationNewSync(varKey);
     // #region Upgrade survey dependencies
 
     const testData = {
-        configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
-        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
-        'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''],
+        // configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+        // Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
+        // 'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
@@ -284,6 +284,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                 expect(newFlow.Body.Steps).to.deep.equal(positiveFlow.Steps);
             });
             it('6. Run Flow And See Result', async function () {
+                debugger;
                 const isRunFlowPresentedCorrectly = await flowService.getToRunPageOfFlowByKeyUsingNav(
                     flowKey,
                     positiveFlow,
@@ -376,7 +377,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                 expect(returnedValue).to.include(`finished running flow ${duplicatedFlow.Name}, result is {}. `);
                 await flowService.backToList();
             });
-            it('10. configure disable if on the copy - set the param to ', async function () {
+            it(`10. Configure 'Disable If' On The Copied Flow: Run When Condition Is False - See It Works, Run When Condition True - See It Doesn't Run`, async function () {
                 await flowService.enterFlowBySearchingName(duplicatedFlow.Name); //
                 for (let index = 0; index < newFlowSteps.length; index++) {
                     await flowService.disableStepIf(index + 1, ifFilter);

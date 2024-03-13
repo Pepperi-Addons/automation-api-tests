@@ -148,7 +148,9 @@ export class FlowService extends AddonPage {
     public RunScreenParamValue: By = By.xpath('//mat-form-field//input');
     public RunScreenParamName: By = By.xpath('//pep-select//pep-field-title//mat-label');
     public RunFlowButton: By = By.css('[data-qa="Run Flow"]');
-    public RunResultValues: By = By.xpath('((//ngx-json-viewer)[4]//span)[|PLACEHOLDER|]');
+    public RunResultValues: By = By.xpath(
+        '(//ngx-json-viewer[2]//section//section//span[@class="segment-value ng-star-inserted"])[|PLACEHOLDER|]',
+    );
     public FlowKeyTitle: By = By.xpath('((//ngx-json-viewer)[1]//span)[1]');
     public FlowKeyData: By = By.xpath('((//ngx-json-viewer)[1]//span)[3]');
     public RunParamInput: By = By.xpath(`//input[@name='test']`);
@@ -463,8 +465,9 @@ export class FlowService extends AddonPage {
     }
 
     async validateRunResult(expectedResult: string) {
+        //=>
         let totValue = '';
-        for (let index = 3; index < 3 + expectedResult.length * 3; index = index + 3) {
+        for (let index = 1; index < expectedResult.length + 1; index++) {
             const valueToRead: string = this.RunResultValues.valueOf()['value'].replace('|PLACEHOLDER|', index);
             const value = await this.browser.findElement(By.xpath(valueToRead));
             totValue += (await value.getText()).replace(/"/g, '');
