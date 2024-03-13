@@ -396,6 +396,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                 await flowService.runFlow();
                 const returnedValue = await flowService.validateRunResultStepsAreDisabled();
                 expect(returnedValue).to.include(`finished running flow ${duplicatedFlow.Name}, result is {}. `);
+                await flowService.backToList();
             });
             it('10. Delete The Copy - See It Dosnet Show In The List, Call API See It Was Deleted', async function () {
                 //3. delete the duplicate using pencil menu - see only the first one is left
