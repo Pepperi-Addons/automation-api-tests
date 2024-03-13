@@ -6,7 +6,7 @@ import { genericReportToTeams } from './test.index';
 
 chai.use(promised);
 
-export async function DevTestReporter(email: string, password: string, client: Client) {
+export async function DevTestReporter(email: string, password: string, client: Client, var_pass) {
     const generalService = new GeneralService(client);
     const testsAndJenkinsLinksList = {
         COVGIGURTIONS: {
@@ -50,6 +50,12 @@ export async function DevTestReporter(email: string, password: string, client: C
             },
         },
     };
+    //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
+    if (generalService['client'].AddonSecretKey == '00000000-0000-0000-0000-000000000000') {
+        const addonSecretKey = await generalService.getSecretKey(generalService['client'].AddonUUID, var_pass);
+        generalService['client'].AddonSecretKey = addonSecretKey;
+        generalService.papiClient['options'].addonSecretKey = addonSecretKey;
+    }
 
     const failedTestsAddonNames: any[] = [];
     const jenkinsBuildUserCred = await generalService.getSecretfromKMS(email, password, 'JenkinsBuildUserCred');

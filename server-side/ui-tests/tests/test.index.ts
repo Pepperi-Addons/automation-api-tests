@@ -1011,7 +1011,7 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         return;
     }
     if (tests === 'DevTest_Reporter') {
-        await DevTestReporter(email, pass, client);
+        await DevTestReporter(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
