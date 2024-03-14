@@ -60,9 +60,9 @@ export async function NeltPerformanceTests(
         bundlePromotion: bundlePromotionString || '27235',
         nonBundlePromotion: nonBundlePromotionString || 'Ponuda S',
         nonPromotionItems: nonPromotionItemsString || '40g',
-        nonPromotionItemsIndices: nonPromotionItemsIndices || [2, 4, 5],
+        nonPromotionItemsIndices: nonPromotionItemsIndices || [1, 2, 3],
         nonPromotionItemsQuantities: nonPromotionItemsQuantities || [10, 7, 8],
-        nonBundlePromotionItemsIndices: nonBundlePromotionItemsIndices || [1, 3, 6, 9],
+        nonBundlePromotionItemsIndices: nonBundlePromotionItemsIndices || [1, 2, 3, 4],
     };
 
     let driver: Browser;
@@ -2104,6 +2104,12 @@ export async function NeltPerformanceTests(
                 });
                 await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
                 await neltPerformanceSelectors.isSpinnerDone();
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Search`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(0.5 * 1000);
             });
             it('Adding Items (non-promotion)', async function () {
                 base64ImageComponent = await driver.saveScreenshots();
@@ -2154,6 +2160,12 @@ export async function NeltPerformanceTests(
                 });
                 await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
                 await neltPerformanceSelectors.isSpinnerDone();
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Search`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(0.5 * 1000);
             });
             it('Adding Items (non-bundle-promotion)', async function () {
                 base64ImageComponent = await driver.saveScreenshots();
