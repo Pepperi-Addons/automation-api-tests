@@ -115,13 +115,13 @@ export async function FlowTests(email: string, password: string, client: Client,
         Value: 10,
     };
     const expectedResult = 'evgenyosXXX';
-    // await generalService.baseAddonVersionsInstallationNewSync(varKey);
+    await generalService.baseAddonVersionsInstallationNewSync(varKey);
     // #region Upgrade survey dependencies
 
     const testData = {
-        // configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
-        // Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
-        // 'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''],
+        configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
+        'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, false);
