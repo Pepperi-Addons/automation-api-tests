@@ -67,6 +67,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
             this.retries(0);
 
             before(async function () {
+                debugger;
                 driver = await Browser.initiateChrome();
             });
 
