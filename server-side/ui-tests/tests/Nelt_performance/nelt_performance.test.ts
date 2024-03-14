@@ -120,7 +120,7 @@ export async function NeltPerformanceTests(
         });
 
         // 1
-        describe('ResourceView: 1. Home Screen --> Finansijski podaci ********* || BUG', async () => {
+        describe('ResourceView: 1. Home Screen --> Finansijski podaci ********* || Content not loaded - over 2000 accounts', async () => {
             it('Navigating from Home Screen (through Burger Menu) to "Finansijski podaci"', async function () {
                 timeInterval = 0;
                 await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
@@ -1767,14 +1767,14 @@ export async function NeltPerformanceTests(
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Select smart filter`
+                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Select smart filter (${testParameters.smartFilterCategory})`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Select smart filter`,
+                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Select smart filter (${testParameters.smartFilterCategory})`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Select smart filter`,
+                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Select smart filter (${testParameters.smartFilterCategory})`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -2153,6 +2153,7 @@ export async function NeltPerformanceTests(
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
+                await neltPerformanceSelectors.isSpinnerDone();
             });
             it('Adding Items (non-bundle-promotion)', async function () {
                 base64ImageComponent = await driver.saveScreenshots();
