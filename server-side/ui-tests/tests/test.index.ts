@@ -580,6 +580,29 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
         return;
     }
 
+    if (tests === 'Pricing05') {
+        await PricingUdtCleanup(client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingConfigUpload(client, email, pass);
+        await PricingUdtInsertion(client);
+        await PricingBaseTests(email, pass, client);
+        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'Pricing06') {
+        await PricingUomTests(email, pass, client);
+        await PricingTotalsTests(email, pass, client);
+        await PricingExclusionTests(email, pass, client);
+        await PricingPartialValueTests(email, pass, client);
+        await PricingMultipleValuesTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
     if (tests === 'Pricing07with05data') {
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, '0.7.%');
