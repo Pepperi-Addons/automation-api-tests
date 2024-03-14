@@ -740,8 +740,8 @@ export async function NeltPerformanceTests(
         });
 
         // 18 + 19 + 22 + 23
-        describe(`(VisitFlow) Order: 1. Home Screen --> Kupci --> Select Account (first in list) --> Burger menu --> ${testParameters.burgerMenuVisitFlow} 
-        \n--> Select Visit Flow (${testParameters.visitFlowName}) --> Near Expiry order --> Add items --> Submit`, async () => {
+        describe(`(VisitFlow) Order: 1. Home Screen --> Kupci --> Select Account (first in list) --> Burger menu --> 
+        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> Near Expiry order --> Add items --> Submit`, async () => {
             it('Navigate to first account in list from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
             });
@@ -1185,8 +1185,8 @@ export async function NeltPerformanceTests(
         });
 
         // 20 + 21
-        describe(`(VisitFlow) Order: 2. Home Screen --> Kupci --> Select account (first in list) --> Burger menu --> ${testParameters.burgerMenuVisitFlow} 
-        \n--> Select Visit Flow (${testParameters.visitFlowName}) --> ${testParameters.orderOfReturnsVisitStep} order --> Add item --> Submit`, async () => {
+        describe(`(VisitFlow) Order: 2. Home Screen --> Kupci --> Select account (first in list) --> Burger menu --> 
+        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> ${testParameters.orderOfReturnsVisitStep} order --> Add item --> Submit`, async () => {
             it('Navigate to first account in list from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
             });
@@ -1441,7 +1441,8 @@ export async function NeltPerformanceTests(
         // 8 + 10 + 11 + 12 + 13 + 14
         describe(`(VisitFlow) Order: 3. Home Screen --> Kupci --> Select Account (${testParameters.accountNameForOrder}) --> Burger menu --> 
         \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> ${testParameters.orderOfReturnsVisitStep} order --> Select filter | Smart filter | Sort by 
-        \n Bundle Promotion Item (${testParameters.bundlePromotion}) | Non-bundle Promotion Item (${testParameters.nonBundlePromotion}) --> Add Items (non-promotion & non-bundle-promotion) --> Cart`, async () => {
+        \n| Bundle Promotion Item (${testParameters.bundlePromotion}) | Non-bundle Promotion Item (${testParameters.nonBundlePromotion}) 
+        \n--> Add Items (non-promotion & non-bundle-promotion) --> Cart`, async () => {
             it(`Navigate to account "${testParameters.accountNameForOrder}" from Home Screen`, async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
                     driver,
@@ -2102,6 +2103,7 @@ export async function NeltPerformanceTests(
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
+                await neltPerformanceSelectors.isSpinnerDone();
             });
             it('Adding Items (non-promotion)', async function () {
                 base64ImageComponent = await driver.saveScreenshots();
