@@ -2485,7 +2485,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
         }
 
         //debugger;
-        generalService.sleep(500);
+        generalService.sleep(7000); // Oleg - async after rebuild slep changed from 500ms
         await updateTestTableSec();
     }
 
