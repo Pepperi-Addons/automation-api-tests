@@ -1920,14 +1920,14 @@ export async function NeltPerformanceTests(
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are bundles`
+                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are bundles (${testParameters.bundlePromotion})`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are bundles`,
+                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are bundles (${testParameters.bundlePromotion})`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are bundles`,
+                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are bundles (${testParameters.bundlePromotion})`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -2026,14 +2026,14 @@ export async function NeltPerformanceTests(
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are not bundles`
+                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are not bundles (${testParameters.nonBundlePromotion})`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are not bundles`,
+                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are not bundles (${testParameters.nonBundlePromotion})`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are not bundles`,
+                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are not bundles (${testParameters.nonBundlePromotion})`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -2092,6 +2092,14 @@ export async function NeltPerformanceTests(
                 driver.sleep(0.5 * 1000);
             });
             it(`Search for "${testParameters.nonPromotionItems}" (to find non-promotion products)`, async function () {
+                await driver.click(neltPerformanceSelectors.Search_X_Button);
+                driver.sleep(2.5 * 1000);
+                await neltPerformanceSelectors.isSpinnerDone();
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Search Cleared`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 await neltPerfomanceService.replaceContentOfInput(
                     driver,
                     neltPerformanceSelectors.Search_Input,
@@ -2103,6 +2111,7 @@ export async function NeltPerformanceTests(
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 await driver.click(neltPerformanceSelectors.Search_Magnifier_Button);
+                driver.sleep(2.5 * 1000);
                 await neltPerformanceSelectors.isSpinnerDone();
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
