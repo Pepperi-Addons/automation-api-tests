@@ -85,6 +85,15 @@ export const testDataWithNewSync = {
     sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
 };
 
+export const testDataWithNewSyncNoNebula = {
+    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+    ...testDataWithSync,
+    'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+    'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
+    'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
+};
+
 export const testDataForInitUser = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on newest
@@ -1803,6 +1812,18 @@ export default class GeneralService {
         const chnageVersionResponseArr = await this.changeVersion(
             varPass,
             otherTestData ? otherTestData : testDataWithNewSync,
+            false,
+        );
+        return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
+    }
+
+    async baseAddonVersionsInstallationNewSyncNoNebula(varPass: string, otherTestData?: any) {
+        const isInstalledArr = await this.areAddonsInstalled(
+            otherTestData ? otherTestData : testDataWithNewSyncNoNebula,
+        );
+        const chnageVersionResponseArr = await this.changeVersion(
+            varPass,
+            otherTestData ? otherTestData : testDataWithNewSyncNoNebula,
             false,
         );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
