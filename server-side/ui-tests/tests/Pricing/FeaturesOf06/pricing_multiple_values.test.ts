@@ -28,11 +28,14 @@ _________________ Brief:
 *  for example between rule 'ZDM3@A006@Contract1' and rule 'ZDM3@A006@Contract2' - contract2 should be chosen since it offers 15% discount versus 5% of contract1
 *   important - for a rule of the type of "applied on all UOMs" - both of the multiple calculation fields "PriceMultiAfter1" & "PriceMultiAfter2" will be afected!
 * 
-* when different UOMs are definted - the choise between contracts would be per each UOM separately
-*  for example between rule 'ZDM2@A007@Contract1@Facial Cosmetics', rule 'ZDM2@A007@Contract2@Facial Cosmetics' and rule 'ZDM2@A007@Contract3@Facial Cosmetics' :
-*    EA UOM  - contract3 should be chosen (but it applies only on Acc01), otherwise contart2 would be chosen
-*    CS UOM  - contract1 should be chosen at all accounts 
-*    BOX UOM - for 2 units: contart3 at Acc01, contract2 for other account | from 3 units and above: contract1 for all accounts
+* 
+* IMPORTANT! 
+* after a conversation with Lihi (she explored it with Eyal Rozenberg) - different UOMs are NOT supported! (and no plan for it any time soon) 11/3/24
+* XXX when different UOMs are definted - the choise between contracts would be per each UOM separately
+* XXX for example between rule 'ZDM2@A007@Contract1@Facial Cosmetics', rule 'ZDM2@A007@Contract2@Facial Cosmetics' and rule 'ZDM2@A007@Contract3@Facial Cosmetics' :
+* XXX   EA UOM  - contract3 should be chosen (but it applies only on Acc01), otherwise contart2 would be chosen
+* XXX   CS UOM  - contract1 should be chosen at all accounts 
+* XXX   BOX UOM - for 2 units: contart3 at Acc01, contract2 for other account | from 3 units and above: contract1 for all accounts
 * 
 * the test agenda is to 
 ________________________________ 
@@ -193,14 +196,6 @@ ________________________________________________________________________________
         '6 Box',
         '10 Box',
     ];
-    // const priceFields = [
-    //     'PriceBaseUnitPriceAfter1',
-    //     'PriceDiscountUnitPriceAfter1',
-    //     'PriceGroupDiscountUnitPriceAfter1',
-    //     'PriceManualLineUnitPriceAfter1',
-    //     'PriceTaxUnitPriceAfter1',
-    // ];
-    // const priceFields2 = ['PriceBaseUnitPriceAfter2', 'PriceDiscountUnitPriceAfter2', 'PriceTaxUnitPriceAfter2'];
     const priceMultiFields = [
         'PriceMultiAfter1',
         'PriceMultiAfter2',
@@ -591,10 +586,6 @@ ________________________________________________________________________________
                                                     'OrderCenter',
                                                     multipleValuesTestItem,
                                                 );
-                                                // console.info(
-                                                //     `${multipleValuesTestItem} ${multipleValuesTestState} priceMultiTSAs:`,
-                                                //     priceMultiTSAs,
-                                                // );
 
                                                 const NPMCalcMessage = await pricingService.getItemNPMCalcMessage(
                                                     'OrderCenter',
@@ -646,62 +637,43 @@ ________________________________________________________________________________
                                                         });
                                                     });
                                                 });
+                                                // For now this section is not relevant see remark on top 11/3/24:
+                                                // const expectedPriceMultiAfter1 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiAfter1'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const expectedPriceMultiAfter2 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiAfter2'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
+                                                // const actualPriceMultiAfter2 = priceMultiTSAs['PriceMultiAfter2'];
 
-                                                const expectedPriceMultiAfter1 =
+                                                // expect(actualPriceMultiAfter1).equals(expectedPriceMultiAfter1);
+                                                // expect(actualPriceMultiAfter2).equals(expectedPriceMultiAfter2);
+
+                                                const expectedPriceMultiAccountAfter1 =
                                                     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                        'PriceMultiAfter1'
+                                                        'PriceMultiAccountAfter1'
                                                     ][account][multipleValuesTestState]['expectedValue'];
-                                                const expectedPriceMultiAfter2 =
+                                                const expectedPriceMultiAccountAfter2 =
                                                     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                        'PriceMultiAfter2'
+                                                        'PriceMultiAccountAfter2'
                                                     ][account][multipleValuesTestState]['expectedValue'];
-                                                const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
-                                                const actualPriceMultiAfter2 = priceMultiTSAs['PriceMultiAfter2'];
+                                                const actualPriceMultiAccountAfter1 =
+                                                    priceMultiTSAs['PriceMultiAccountAfter1'];
+                                                const actualPriceMultiAccountAfter2 =
+                                                    priceMultiTSAs['PriceMultiAccountAfter2'];
 
-                                                // const expectedPriceMultiAccountAfter1 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiAccountAfter1'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const expectedPriceMultiAccountAfter2 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiAccountAfter2'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const actualPriceMultiAccountAfter1 = priceMultiTSAs['PriceMultiAccountAfter1'];
-                                                // const actualPriceMultiAccountAfter2 = priceMultiTSAs['PriceMultiAccountAfter2'];
-
-                                                // const expectedPriceMultiCategoryAfter1 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiCategoryAfter1'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const expectedPriceMultiCategoryAfter2 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiCategoryAfter2'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const actualPriceMultiCategoryAfter1 = priceMultiTSAs['PriceMultiCategoryAfter1'];
-                                                // const actualPriceMultiCategoryAfter2 = priceMultiTSAs['PriceMultiCategoryAfter2'];
-
-                                                // const expectedPriceMultiItemAfter1 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiItemAfter1'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const expectedPriceMultiItemAfter2 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiItemAfter2'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const actualPriceMultiItemAfter1 = priceMultiTSAs['PriceMultiItemAfter1'];
-                                                // const actualPriceMultiItemAfter2 = priceMultiTSAs['PriceMultiItemAfter2'];
-
-                                                expect(actualPriceMultiAfter1).equals(expectedPriceMultiAfter1);
-                                                expect(actualPriceMultiAfter2).equals(expectedPriceMultiAfter2);
+                                                expect(actualPriceMultiAccountAfter1).equals(
+                                                    expectedPriceMultiAccountAfter1,
+                                                );
+                                                expect(actualPriceMultiAccountAfter2).equals(
+                                                    expectedPriceMultiAccountAfter2,
+                                                );
                                                 driver.sleep(0.2 * 1000);
                                             });
                                         });
-                                        // it('Setting AOQM2 to 0', async function () {
-                                        //     await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                        //         this,
-                                        //     )('Each', multipleValuesTestItem, 0, driver, '2');
-                                        //     driver.sleep(0.1 * 1000);
-                                        // });
                                     });
                                     describe('Case', () => {
                                         multipleValuesTestStates_case.forEach((multipleValuesTestState) => {
@@ -775,53 +747,39 @@ ________________________________________________________________________________
                                                         });
                                                     });
                                                 });
+                                                // For now this section is not relevant see remark on top 11/3/24:
+                                                // const expectedPriceMultiAfter1 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiAfter1'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const expectedPriceMultiAfter2 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiAfter2'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
+                                                // const actualPriceMultiAfter2 = priceMultiTSAs['PriceMultiAfter2'];
 
-                                                const expectedPriceMultiAfter1 =
+                                                // expect(actualPriceMultiAfter1).equals(expectedPriceMultiAfter1);
+                                                // expect(actualPriceMultiAfter2).equals(expectedPriceMultiAfter2);
+                                                const expectedPriceMultiAccountAfter1 =
                                                     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                        'PriceMultiAfter1'
+                                                        'PriceMultiAccountAfter1'
                                                     ][account][multipleValuesTestState]['expectedValue'];
-                                                const expectedPriceMultiAfter2 =
+                                                const expectedPriceMultiAccountAfter2 =
                                                     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                        'PriceMultiAfter2'
+                                                        'PriceMultiAccountAfter2'
                                                     ][account][multipleValuesTestState]['expectedValue'];
-                                                const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
-                                                const actualPriceMultiAfter2 = priceMultiTSAs['PriceMultiAfter2'];
+                                                const actualPriceMultiAccountAfter1 =
+                                                    priceMultiTSAs['PriceMultiAccountAfter1'];
+                                                const actualPriceMultiAccountAfter2 =
+                                                    priceMultiTSAs['PriceMultiAccountAfter2'];
 
-                                                // const expectedPriceMultiAccountAfter1 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiAccountAfter1'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const expectedPriceMultiAccountAfter2 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiAccountAfter2'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const actualPriceMultiAccountAfter1 = priceMultiTSAs['PriceMultiAccountAfter1'];
-                                                // const actualPriceMultiAccountAfter2 = priceMultiTSAs['PriceMultiAccountAfter2'];
-
-                                                // const expectedPriceMultiCategoryAfter1 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiCategoryAfter1'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const expectedPriceMultiCategoryAfter2 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiCategoryAfter2'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const actualPriceMultiCategoryAfter1 = priceMultiTSAs['PriceMultiCategoryAfter1'];
-                                                // const actualPriceMultiCategoryAfter2 = priceMultiTSAs['PriceMultiCategoryAfter2'];
-
-                                                // const expectedPriceMultiItemAfter1 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiItemAfter1'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const expectedPriceMultiItemAfter2 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiItemAfter2'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const actualPriceMultiItemAfter1 = priceMultiTSAs['PriceMultiItemAfter1'];
-                                                // const actualPriceMultiItemAfter2 = priceMultiTSAs['PriceMultiItemAfter2'];
-
-                                                expect(actualPriceMultiAfter1).equals(expectedPriceMultiAfter1);
-                                                expect(actualPriceMultiAfter2).equals(expectedPriceMultiAfter2);
+                                                expect(actualPriceMultiAccountAfter1).equals(
+                                                    expectedPriceMultiAccountAfter1,
+                                                );
+                                                expect(actualPriceMultiAccountAfter2).equals(
+                                                    expectedPriceMultiAccountAfter2,
+                                                );
                                                 driver.sleep(0.2 * 1000);
                                             });
                                         });
@@ -898,62 +856,42 @@ ________________________________________________________________________________
                                                         });
                                                     });
                                                 });
+                                                // For now this section is not relevant see remark on top 11/3/24:
+                                                // const expectedPriceMultiAfter1 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiAfter1'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const expectedPriceMultiAfter2 =
+                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
+                                                //         'PriceMultiAfter2'
+                                                //     ][account][multipleValuesTestState]['expectedValue'];
+                                                // const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
+                                                // const actualPriceMultiAfter2 = priceMultiTSAs['PriceMultiAfter2'];
 
-                                                const expectedPriceMultiAfter1 =
+                                                // expect(actualPriceMultiAfter1).equals(expectedPriceMultiAfter1);
+                                                // expect(actualPriceMultiAfter2).equals(expectedPriceMultiAfter2);
+                                                const expectedPriceMultiAccountAfter1 =
                                                     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                        'PriceMultiAfter1'
+                                                        'PriceMultiAccountAfter1'
                                                     ][account][multipleValuesTestState]['expectedValue'];
-                                                const expectedPriceMultiAfter2 =
+                                                const expectedPriceMultiAccountAfter2 =
                                                     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                        'PriceMultiAfter2'
+                                                        'PriceMultiAccountAfter2'
                                                     ][account][multipleValuesTestState]['expectedValue'];
-                                                const actualPriceMultiAfter1 = priceMultiTSAs['PriceMultiAfter1'];
-                                                const actualPriceMultiAfter2 = priceMultiTSAs['PriceMultiAfter2'];
+                                                const actualPriceMultiAccountAfter1 =
+                                                    priceMultiTSAs['PriceMultiAccountAfter1'];
+                                                const actualPriceMultiAccountAfter2 =
+                                                    priceMultiTSAs['PriceMultiAccountAfter2'];
 
-                                                // const expectedPriceMultiAccountAfter1 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiAccountAfter1'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const expectedPriceMultiAccountAfter2 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiAccountAfter2'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const actualPriceMultiAccountAfter1 = priceMultiTSAs['PriceMultiAccountAfter1'];
-                                                // const actualPriceMultiAccountAfter2 = priceMultiTSAs['PriceMultiAccountAfter2'];
-
-                                                // const expectedPriceMultiCategoryAfter1 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiCategoryAfter1'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const expectedPriceMultiCategoryAfter2 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiCategoryAfter2'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const actualPriceMultiCategoryAfter1 = priceMultiTSAs['PriceMultiCategoryAfter1'];
-                                                // const actualPriceMultiCategoryAfter2 = priceMultiTSAs['PriceMultiCategoryAfter2'];
-
-                                                // const expectedPriceMultiItemAfter1 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiItemAfter1'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const expectedPriceMultiItemAfter2 =
-                                                //     pricingData.testItemsValues.Multiple[multipleValuesTestItem][
-                                                //         'PriceMultiItemAfter2'
-                                                //     ][account][multipleValuesTestState]['expectedValue'];
-                                                // const actualPriceMultiItemAfter1 = priceMultiTSAs['PriceMultiItemAfter1'];
-                                                // const actualPriceMultiItemAfter2 = priceMultiTSAs['PriceMultiItemAfter2'];
-
-                                                expect(actualPriceMultiAfter1).equals(expectedPriceMultiAfter1);
-                                                expect(actualPriceMultiAfter2).equals(expectedPriceMultiAfter2);
+                                                expect(actualPriceMultiAccountAfter1).equals(
+                                                    expectedPriceMultiAccountAfter1,
+                                                );
+                                                expect(actualPriceMultiAccountAfter2).equals(
+                                                    expectedPriceMultiAccountAfter2,
+                                                );
                                                 driver.sleep(0.2 * 1000);
                                             });
                                         });
-                                        // it('Setting AOQM1 to 0', async function () {
-                                        //     await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                                        //         this,
-                                        //     )('Case', multipleValuesTestItem, 0, driver);
-                                        //     driver.sleep(0.1 * 1000);
-                                        // });
                                     });
                                 });
                             });
@@ -1026,13 +964,6 @@ ________________________________________________________________________________
                             multipleValuesTestItems.forEach((multipleValuesTestCartItem) => {
                                 it(`checking item "${multipleValuesTestCartItem}"`, async function () {
                                     const state = '10 Box';
-                                    // const totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                    //     'Cart',
-                                    //     multipleValuesTestCartItem,
-                                    //     undefined,
-                                    //     undefined,
-                                    //     'LinesView',
-                                    // );
                                     const priceMultiTSAs = await pricingService.getTSAsOfMultiPerItem(
                                         'Cart',
                                         multipleValuesTestCartItem,
@@ -1040,37 +971,6 @@ ________________________________________________________________________________
                                         undefined,
                                         'LinesView',
                                     );
-                                    // const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
-                                    //     'Cart',
-                                    //     multipleValuesTestCartItem,
-                                    //     undefined,
-                                    //     undefined,
-                                    //     'LinesView',
-                                    // );
-                                    // const priceTSAs_AOQM_UOM2 = await pricingService.getItemTSAs_AOQM_UOM2(
-                                    //     'Cart',
-                                    //     multipleValuesTestCartItem,
-                                    //     undefined,
-                                    //     undefined,
-                                    //     'LinesView',
-                                    // );
-                                    // const priceTotalsTSAs = await pricingService.getTotalsTSAsOfItem(
-                                    //     'Cart',
-                                    //     multipleValuesTestCartItem,
-                                    //     undefined,
-                                    //     undefined,
-                                    //     'LinesView',
-                                    // );
-                                    // const expectedTotalUnitsAmount =
-                                    //     pricingData.testItemsValues.Multiple[multipleValuesTestCartItem]['Cart'][account];
-                                    // console.info(
-                                    //     `Cart ${multipleValuesTestCartItem} totalUnitsAmount: ${totalUnitsAmount}`,
-                                    // );
-                                    // console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
-                                    // addContext(this, {
-                                    //     title: `Total Units amount of item`,
-                                    //     value: `form UI: ${totalUnitsAmount} , expected: ${expectedTotalUnitsAmount}`,
-                                    // });
                                     priceMultiFields.forEach((priceField) => {
                                         const expectedValue =
                                             pricingData.testItemsValues.Multiple[multipleValuesTestCartItem][
@@ -1084,43 +984,17 @@ ________________________________________________________________________________
                                             title: `TSA field "${priceField}" Values`,
                                             value: `Form UI: ${priceMultiTSAs[priceField]} , Expected Value: ${expectedValue}\nExpected Rule: ${expectedRule}`,
                                         });
-                                        // expect(priceTSAs[priceField]).equals(expectedValue);
+                                        // For now the only correct value fields are of Account (where the rules are applied to all UOMs and not separate) 11/3/24:
+                                        switch (priceField) {
+                                            case 'PriceMultiAccountAfter1':
+                                            case 'PriceMultiAccountAfter2':
+                                                expect(priceMultiTSAs[priceField]).equals(expectedValue);
+                                                break;
+
+                                            default:
+                                                break;
+                                        }
                                     });
-                                    // expect(totalUnitsAmount).equals(expectedTotalUnitsAmount);
-                                    // const discount2FieldValue = priceTSA_Discount2['PriceDiscount2UnitPriceAfter1'];
-                                    // const discount2ExpectedFieldValue =
-                                    //     pricingData.testItemsValues.Multiple[multipleValuesTestCartItem][
-                                    //     'PriceDiscount2UnitPriceAfter1'
-                                    //     ]['cart'][account];
-                                    // addContext(this, {
-                                    //     title: 'PriceDiscount2UnitPriceAfter1',
-                                    //     value: `Field Value from UI: ${discount2FieldValue}, Expected Field Value from Data: ${discount2ExpectedFieldValue}`,
-                                    // });
-                                    // expect(discount2FieldValue).equals(discount2ExpectedFieldValue);
-
-                                    // priceFields2.forEach((priceField) => {
-                                    //     const fieldValue = priceTSAs_AOQM_UOM2[priceField];
-                                    //     const expectedFieldValue =
-                                    //         pricingData.testItemsValues.Multiple[multipleValuesTestCartItem][priceField]['cart'][
-                                    //         account
-                                    //         ];
-                                    //     addContext(this, {
-                                    //         title: `${priceField}`,
-                                    //         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
-                                    //     });
-                                    //     // expect(fieldValue).equals(expectedFieldValue);
-                                    // });
-
-                                    // totalsPriceFields.forEach((priceField) => {
-                                    //     const fieldValue = priceTotalsTSAs[priceField];
-                                    //     const expectedFieldValue =
-                                    //         pricingData.testItemsValues.Multiple[multipleValuesTestCartItem][priceField][account][multipleValuesTestState];
-                                    //     addContext(this, {
-                                    //         title: `${priceField}`,
-                                    //         value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
-                                    //     });
-                                    //     expect(fieldValue).equals(expectedFieldValue);
-                                    // });
                                     driver.sleep(1 * 1000);
                                 });
                             });
