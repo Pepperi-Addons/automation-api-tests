@@ -139,6 +139,26 @@ const passCreate = process.env.npm_config_pass_create as string;
 const whichEnvToRun = process.env.npm_config_envs as string;
 const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 const XForSyncTimes = Number(process.env.npm_config_x as any);
+// const neltTestParams = process.env.npm_config_nelt_test_params as string;
+// const burgerMenuVisitFlowName = process.env.npm_config_nelt_burger_vf_name as string;
+// const visitFlowName = process.env.npm_config_nelt_vf_name as string;
+// const nearExpiryVisitGroupName = process.env.npm_config_nelt_expiry_vf_group as string;
+// const nearExpiryVisitStepName = process.env.npm_config_nelt_expiry_vf_step as string;
+// const orderOfReturnsVisitGroupName = process.env.npm_config_nelt_returns_vf_group as string;
+// const orderOfReturnsVisitStepName = process.env.npm_config_nelt_returns_vf_step as string;
+// const orderVisitGroupName = process.env.npm_config_nelt_order_vf_group as string;
+// const orderVisitStepName = process.env.npm_config_nelt_order_vf_step as string;
+// const orderAccountName = process.env.npm_config_nelt_order_account as string;
+// const originalFilterName = process.env.npm_config_nelt_original_filter as string;
+// const filterCategoryName = process.env.npm_config_nelt_filter as string;
+// const filterSubCategoryName = process.env.npm_config_nelt_sub_filter as string;
+// const smartFilterCategoryName = process.env.npm_config_nelt_smart_filter as string;
+// const bundlePromotionString = process.env.npm_config_nelt_bundle as string;
+// const nonBundlePromotionString = process.env.npm_config_nelt_promotion as string;
+// const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
+// const nonPromotionItemsIndices = process.env.npm_config_nelt_items_indices ? JSON.parse(process.env.npm_config_nelt_items_indices as string) as number[] : undefined;
+// const nonPromotionItemsQuantities = process.env.npm_config_nelt_items_qty ? JSON.parse(process.env.npm_config_nelt_items_qty as string) as number[] : undefined;
+// const nonBundlePromotionItemsIndices = process.env.npm_config_nelt_promotion_indices ? JSON.parse(process.env.npm_config_nelt_promotion_indices as string) as number[] : undefined;
 
 (async function () {
     const tempGeneralService = new GeneralService({
@@ -796,7 +816,30 @@ const XForSyncTimes = Number(process.env.npm_config_x as any);
 
     if (tests === 'NeltPerformance') {
         // await NeltPerformanceTests(email, pass);
-        await NeltPerformanceTests(email, pass, client);
+        await NeltPerformanceTests(
+            email,
+            pass,
+            client,
+            // burgerMenuVisitFlowName,
+            // visitFlowName,
+            // nearExpiryVisitGroupName,
+            // nearExpiryVisitStepName,
+            // orderOfReturnsVisitGroupName,
+            // orderOfReturnsVisitStepName,
+            // orderVisitGroupName,
+            // orderVisitStepName,
+            // orderAccountName,
+            // originalFilterName,
+            // filterCategoryName,
+            // filterSubCategoryName,
+            // smartFilterCategoryName,
+            // bundlePromotionString,
+            // nonBundlePromotionString,
+            // nonPromotionItemsString,
+            // nonPromotionItemsIndices,
+            // nonPromotionItemsQuantities,
+            // nonBundlePromotionItemsIndices,
+        );
         run();
         return;
     }

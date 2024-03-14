@@ -282,6 +282,12 @@ export class NeltPerformance extends AddonPage {
         );
     }
 
+    public getSelectorOfOrderCenterItemOrderButtonGridLineViewByText(text: string) {
+        return By.xpath(
+            `//pep-list//virtual-scroller//span[contains(text(),"${text}")]/ancestor::pep-form//button[@id="TSAAOQMQuantity1"][@title="Order"]`,
+        );
+    }
+
     public getSelectorOfSpecificOrderCenterItemDateSelectByIndex(index: number) {
         return By.xpath(
             `//pep-list//virtual-scroller/div[2]/div[${index}]//pep-date//span[contains(@title,"Istek roka")]/parent::div`,
