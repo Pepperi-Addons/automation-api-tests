@@ -12,6 +12,12 @@ export interface FlowParam {
     Internal?: boolean;
 }
 
+export interface FlowBuilderFilter {
+    paramName: string;
+    Operation: 'Equal' | 'Not equal' | 'Less than' | 'Greater than' | 'Between' | 'Equal to (variable)';
+    Value: number | string;
+}
+
 export interface FlowStep {
     Name: string;
     Disabled: boolean; //
@@ -142,13 +148,38 @@ export class FlowService extends AddonPage {
     public RunScreenParamValue: By = By.xpath('//mat-form-field//input');
     public RunScreenParamName: By = By.xpath('//pep-select//pep-field-title//mat-label');
     public RunFlowButton: By = By.css('[data-qa="Run Flow"]');
-    public RunResultValues: By = By.xpath('((//ngx-json-viewer)[4]//span)[|PLACEHOLDER|]');
+    public RunResultValues: By = By.xpath(
+        '(//ngx-json-viewer[2]//section//section//span[@class="segment-value ng-star-inserted"])[|PLACEHOLDER|]',
+    );
     public FlowKeyTitle: By = By.xpath('((//ngx-json-viewer)[1]//span)[1]');
     public FlowKeyData: By = By.xpath('((//ngx-json-viewer)[1]//span)[3]');
     public RunParamInput: By = By.xpath(`//input[@name='test']`);
     public BackToListButton: By = By.css(`[data-qa="Back to list"]`);
     public refreshLogsButton: By = By.xpath('//button[@data-qa="Refresh"]');
     //->
+    public arrowDownDropDownButton: By = By.xpath(
+        `(//input[@title='|PLACEHOLDER|']//..//..//..//..//..//..//..//..//pep-icon)[4]`,
+    );
+    public addFilterButton: By = By.xpath('(//*[@data-qa="Add Filter"])[|PLACEHOLDER|]');
+    //=>
+    public openDropDownParam: By = By.xpath(
+        `//input[@title='|PLACEHOLDER|']//..//..//..//..//..//..//..//pep-query-builder-section//pep-query-builder-item//pep-select`,
+    );
+    public dropdownValue: By = By.xpath(`//mat-option//span[text()='|PLACEHOLDER|']`);
+    public operationOpenDropDown: By = By.xpath(
+        `//input[@title='|PLACEHOLDER|']//..//..//..//..//..//..//..//pep-query-builder-section//pep-query-builder-item//pep-number-filter//pep-select`,
+    );
+    public operationSelector: By = By.xpath(`//div[@role='listbox']//mat-option//span[text()='|PLACEHOLDER|']`);
+    public valueFilterInput: By = By.xpath(
+        `//input[@title='|PLACEHOLDER|']//..//..//..//..//..//..//..//pep-query-builder-section//pep-query-builder-item//pep-number-filter//pep-textbox//input`,
+    );
+    public EmptyPlaceBetweenFilters: By = By.xpath(`//label[text()='Used Logic Blocks']`);
+    public ParamTypeDropDown: By = By.xpath(
+        `(//mat-label[contains(text(),'|PLACEHOLDER|')])[1]/parent::div//..//..//mat-select`,
+    );
+    public ParamValueInput: By = By.xpath(
+        `(//mat-label[contains(text(),'|PLACEHOLDER|')])[2]/parent::div//..//..//input`,
+    );
 
     public async enterFlowBuilderSettingsPage(): Promise<boolean> {
         const webAppHeader = new WebAppHeader(this.browser);
@@ -244,16 +275,18 @@ export class FlowService extends AddonPage {
     async addParam(flowBuilder: Flow) {
         //1. goto param tab and validate title
         await this.enterParamTab();
-        //2. click on add parameter
-        await this.click(this.AddParameterButton);
-        //3. validate add param modal
-        const isModalShownCorrectly = await this.validateAddParamModal();
-        //4.  enter values by given flow
-        //4.1. check that cannot save w/o data
-        const saveButtonDisability = await (
-            await this.browser.findElement(this.SaveParamModalButton)
-        ).getAttribute('disabled');
+        let isModalShownCorrectly;
+        let saveButtonDisability;
         for (let index = 0; index < flowBuilder.Params.length; index++) {
+            //2. click on add parameter
+            await this.click(this.AddParameterButton);
+            //3. validate add param modal
+            isModalShownCorrectly = await this.validateAddParamModal();
+            //4.  enter values by given flow
+            //4.1. check that cannot save w/o data
+            saveButtonDisability = await (
+                await this.browser.findElement(this.SaveParamModalButton)
+            ).getAttribute('disabled');
             const param = flowBuilder.Params[index];
             await this.fillParamForm(param);
         }
@@ -432,8 +465,9 @@ export class FlowService extends AddonPage {
     }
 
     async validateRunResult(expectedResult: string) {
+        //=>
         let totValue = '';
-        for (let index = 3; index < 3 + expectedResult.length * 3; index = index + 3) {
+        for (let index = 1; index < expectedResult.length + 1; index++) {
             const valueToRead: string = this.RunResultValues.valueOf()['value'].replace('|PLACEHOLDER|', index);
             const value = await this.browser.findElement(By.xpath(valueToRead));
             totValue += (await value.getText()).replace(/"/g, '');
@@ -566,6 +600,62 @@ export class FlowService extends AddonPage {
         this.browser.sleep(1500);
     }
 
+    async disableStepIf(stepIndex: number, filter: FlowBuilderFilter) {
+        //click the arrow down button
+        if (stepIndex % 2 === 1) {
+            const arrowDropDownByIndex: string = this.arrowDownDropDownButton
+                .valueOf()
+                ['value'].replace('|PLACEHOLDER|', 'Step1');
+            await this.browser.click(By.xpath(arrowDropDownByIndex));
+        } else {
+            //click on an empty space
+            await this.browser.click(this.EmptyPlaceBetweenFilters);
+            //click on arrow down
+            const arrowDropDownByIndex: string = this.arrowDownDropDownButton
+                .valueOf()
+                ['value'].replace('|PLACEHOLDER|', 'Step2');
+            await this.browser.click(By.xpath(arrowDropDownByIndex));
+        }
+        //click add filter button
+        const addFilterByIndex: string = this.addFilterButton.valueOf()['value'].replace('|PLACEHOLDER|', stepIndex);
+        await this.browser.click(By.xpath(addFilterByIndex));
+        //~~~~~~ set filter component function:
+        await this.setFilterComponent(stepIndex, filter);
+    }
+
+    async setFilterComponent(stepIndex, filter: FlowBuilderFilter) {
+        //1. select the param
+        //open d.d
+        let placeholderReplacer;
+        if (stepIndex % 2 == 0) {
+            placeholderReplacer = 'Step2';
+        } else {
+            placeholderReplacer = 'Step1';
+        }
+        const openDropDownParamByIndex: string = this.openDropDownParam
+            .valueOf()
+            ['value'].replace('|PLACEHOLDER|', placeholderReplacer);
+        await this.browser.click(By.xpath(openDropDownParamByIndex));
+        //select the value
+        const ddValue: string = this.dropdownValue.valueOf()['value'].replace('|PLACEHOLDER|', filter.paramName);
+        await this.browser.click(By.xpath(ddValue));
+        //open the d.d for operation
+        const openDropDownOperationByIndex: string = this.operationOpenDropDown
+            .valueOf()
+            ['value'].replace('|PLACEHOLDER|', placeholderReplacer);
+        await this.browser.click(By.xpath(openDropDownOperationByIndex));
+        //select the operation
+        const operationSelector: string = this.operationSelector
+            .valueOf()
+            ['value'].replace('|PLACEHOLDER|', filter.Operation);
+        await this.browser.click(By.xpath(operationSelector));
+        //set the value
+        const valueFilterInpurByIndex: string = this.valueFilterInput
+            .valueOf()
+            ['value'].replace('|PLACEHOLDER|', placeholderReplacer);
+        await this.browser.sendKeys(By.xpath(valueFilterInpurByIndex), filter.Value);
+    }
+
     async validateStepScript(stepIndex: number, step: FlowStep, service) {
         debugger;
         const stepByIndex: string = this.StepBlockElement.valueOf()['value'].replace('|PLACEHOLDER|', stepIndex);
@@ -576,6 +666,7 @@ export class FlowService extends AddonPage {
         await this.browser.untilIsVisible(this.scriptPickerTitle, 10000);
         const nameOfParamInput = Object.keys(step.Configuration.runScriptData.ScriptData)[0];
         const realScriptName = await this.convertScriptKeyToName(service, step.Configuration.runScriptData.ScriptKey);
+        debugger;
         const scriptFromUI = await (await this.browser.findElement(this.ScriptNameValueInsideDD)).getAttribute('title');
         const isScriptNameSimilar = realScriptName === scriptFromUI;
         const modalParamNameFromUI = await (await this.browser.findElement(this.ModalParamName)).getAttribute('title');
@@ -591,6 +682,7 @@ export class FlowService extends AddonPage {
     }
 
     async convertScriptKeyToName(service, scriptKey) {
+        debugger; //Cannot read properties of undefined (reading 'Name')
         const scripts = await service.fetchStatus(`/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts`, {
             method: 'GET',
         });
@@ -677,5 +769,22 @@ export class FlowService extends AddonPage {
         );
         await this.browser.click(By.xpath(whichDDValueToClickAcc));
         await this.browser.click(this.SaveParamModalButton);
+    }
+
+    async setParamValueInsideRunPage(paraName, paramValue) {
+        //1. find dd by param name
+        const numberParamTypeDropDown: string = this.ParamTypeDropDown.valueOf()['value'].replace(
+            '|PLACEHOLDER|',
+            paraName,
+        );
+        await this.browser.click(By.xpath(numberParamTypeDropDown));
+        //2. change to 'Static'
+        const dropDownStaticValue: string = this.operationSelector
+            .valueOf()
+            ['value'].replace('|PLACEHOLDER|', 'Static');
+        await this.browser.click(By.xpath(dropDownStaticValue));
+        //3. set value
+        const numberParamInput: string = this.ParamValueInput.valueOf()['value'].replace('|PLACEHOLDER|', paraName);
+        await this.browser.sendKeys(By.xpath(numberParamInput), paramValue);
     }
 }

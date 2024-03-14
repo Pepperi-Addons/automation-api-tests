@@ -21,30 +21,45 @@ _________________
 _________________ Brief:
     
 * Pricing Partial Value
-* the totals calculations are used for 2 purposes:  
-* 1. when there are different UOM price sets - that each quantity would be multiplied by the correct price and thus the total sum would be accurate
-* 2. to compare two blocks (or unit fields) results in terms of absolute value or percentage, and to able to say: this discount block saved X money or got % discount..
+* at the account level there is a string definition (field "PricingHierarchy" on account Edit - value: 100020030)  
+* there is an option at configuration to define a length of the main string as "table" by itself at the condition level, the code:
 * 
-* field "PriceTaxTotal" calculation:  PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-* field "PriceTaxTotalDiff" calculation:  TaxTotal - BaseTotal  || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-* field "PriceTaxTotalPercent" calculation: (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base"
-* field "PriceTaxUnitDiff" calculation: PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
-* 
+* PPM_Conditions: [
+    .
+    .
+    .
+    {
+        Key: 'ZDH1',
+        Name: 'ZDH1 Hierarchy Discount',
+        TablesSearchOrder: [
+            { Name: 'A011' },
+            { Name: 'A011', Keys: [{ Name: 'TransactionAccountTSAPricingHierarchy', Split: 7 }] },
+            { Name: 'A011', Keys: [{ Name: 'TransactionAccountTSAPricingHierarchy', Split: 4 }] },
+        ],
+    },
+],
+
+* UDT rules are defined with the actual partial string as a key (for example: 'ZDH1@A011@1000200@Frag008' , the third key is a 7 letter partial value)
+
 * the test agenda is to 
 _________________ 
 _________________ The Relevant Rules:
     
-. 'ZGD1@A002@Acc01@MakeUp003':
-'[[true,"1555891200000","2534022144999","1","","ZGD1_A002",[[10,"D",20,"%"]],"EA"]]',
+. 'ZDH1@A011@1000@Frag006':
+    '[[true,"1555891200000","2534022144999","1","","ZDH1_A011 (4 Letters)",[[10,"D",20,"%"]],"EA"]]',
 
-. 'ZGD1@A003@Acc01@Beauty Make Up':
-'[[true,"1555891200000","2534022144999","1","","additionalItem",[[12,"D",100,"%","",1,"EA","MakeUp018",0]],"EA"]]',
+. 'ZDH1@A011@1000200@Frag008':
+    '[[true,"1555891200000","2534022144999","1","","ZDH1_A011 (7 Letters)",[[10,"D",30,"%"]],"EA"]]',
 
-. 'ZGD2@A002@Acc01@MakeUp018':
-'[[true,"1555891200000","2534022144999","1","","additionalItem",[[2,"D",100,"%","",1,"EA","MakeUp018",0]],"EA"]]',
+. 'ZDH1@A011@100020030@Frag009':
+    '[[true,"1555891200000","2534022144999","1","","ZDH1_A011 (9 Letters - full)",[[10,"D",10,"%"]],"EA"]]',
 
-. 'ZGD2@A003@Acc01@Beauty Make Up':
-'[[true,"1555891200000","2534022144999","1","","ZGD2_A003",[[3,"D",3,"%"],[7,"D",7,"%"]],"EA"]]',
+. 'ZDH1@A011@100020030@Frag011':
+    '[[true,"1555891200000","2534022144999","1","","ZDH1_A011 (9 Letters - full)",[[10,"D",10,"%"]],"EA"]]',
+
+. 'ZDH1@A011@1000200@Frag011':
+    '[[true,"1555891200000","2534022144999","1","","ZDH1_A011 (7 Letters)",[[10,"D",30,"%"]],"EA"]]',
+
 _________________ 
 _________________ Order Of Actions:
     
@@ -53,23 +68,6 @@ _________________ Order Of Actions:
 3. MakeUp003 - changing value to 1
 ----> checking that discount for total of 3 group items is applied
 
-4. MakeUp018 - clicking plus button once
-5. MakeUp018 - changing value to 2
-6. MakeUp001 - changing value to 2
-7. MakeUp002 - changing value to 2
-----> checking that discount for total of 7 group items is applied
-
-8. MakeUp003 - changing value to 5
-9. MakeUp006 - clicking plus button once
-----> checking that an additional item (MakeUp018) is given for group total of 12 items
-
-10. MakeUp003 - changing value to 10
-----> checking that group total count is reduced to 7 because a singular rule for MakeUp003 excludes the item from the group
-        (additional item disappear and discount is calculated 7% for each of the group items + 20% discount is calculated for MakeUp003 specifically)
-    
-11. MakeUp019 - changing value to 5
-----> checking that group total count is 10 (MakeUp018 is excluded from the group and given an additional item of the same due to a singular rule)
-        making sure the additional item do not appear twice
 _________________ 
 _________________ 
 */

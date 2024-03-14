@@ -5,7 +5,7 @@ import promised from 'chai-as-promised';
 import { WebAppHomePage, WebAppLoginPage } from '../pom';
 import GeneralService from '../../services/general.service';
 import { Client } from '@pepperi-addons/debug-server/dist';
-import { Flow, FlowParam, FlowService, FlowStep } from '../pom/addons/flow.service';
+import { Flow, FlowBuilderFilter, FlowParam, FlowService, FlowStep } from '../pom/addons/flow.service';
 import { ScriptEditor } from '../pom/addons/ScriptPicker';
 import jwt_decode from 'jwt-decode';
 
@@ -48,6 +48,13 @@ export async function FlowTests(email: string, password: string, client: Client,
             Description: 'evgeny_test_desc',
             Internal: false,
             Name: 'test',
+        },
+        {
+            DefaultValue: '10',
+            Type: 'Integer',
+            Description: 'for Disabaling',
+            Internal: false,
+            Name: 'number',
         },
     ];
     const newFlowSteps: FlowStep[] = [
@@ -100,6 +107,12 @@ export async function FlowTests(email: string, password: string, client: Client,
         Hidden: false,
         Steps: newFlowSteps,
         Name: newFlowName,
+    };
+
+    const ifFilter: FlowBuilderFilter = {
+        paramName: newFlowParams[1].Name,
+        Operation: 'Less than',
+        Value: 10,
     };
     const expectedResult = 'evgenyosXXX';
     await generalService.baseAddonVersionsInstallationNewSync(varKey);
@@ -239,7 +252,6 @@ export async function FlowTests(email: string, password: string, client: Client,
                     expect(stepFromAPI.Configuration).to.deep.equal(stepInput.Configuration);
                 }
                 driver.sleep(10000); //wait for eveything to sync or whatever
-                debugger;
                 //-> enter flow
                 await flowService.enterFlowBySearchingName(positiveFlow.Name);
                 //->validate all steps are there with correct names
@@ -249,10 +261,9 @@ export async function FlowTests(email: string, password: string, client: Client,
                     expect(isCreatedSecsefully).to.equal(true);
                 }
                 //-> validate the script inside the step and its params
-                debugger;
                 for (let index = 0; index < newFlowSteps.length; index++) {
                     const step = newFlowSteps[index];
-                    const isCreatedSuccessfully = await flowService.validateStepScript(index + 1, step, generalService); // issues is here
+                    const isCreatedSuccessfully = await flowService.validateStepScript(index + 1, step, generalService);
                     expect(isCreatedSuccessfully).to.equal(true);
                     await flowService.closeScriptModal();
                 }
@@ -274,7 +285,6 @@ export async function FlowTests(email: string, password: string, client: Client,
             });
             it('6. Run Flow And See Result', async function () {
                 debugger;
-                //->run flow and see result
                 const isRunFlowPresentedCorrectly = await flowService.getToRunPageOfFlowByKeyUsingNav(
                     flowKey,
                     positiveFlow,
@@ -321,12 +331,11 @@ export async function FlowTests(email: string, password: string, client: Client,
                 await flowService.backToList();
             });
             it('8. Duplicate The Flow - Run The Copy - See Everything Was Created Correctly', async function () {
-                //2. Duplicate The Flow & run it - see everything is good
                 const duplicateResponse = await flowService.duplicateFlowByKeyUsingAPI(
                     generalService,
                     flowKey,
                     positiveFlow,
-                ); //this worked
+                );
                 expect(duplicateResponse.Status).to.equal(200);
                 expect(duplicateResponse.Ok).to.equal(true);
                 await driver.refresh();
@@ -363,6 +372,27 @@ export async function FlowTests(email: string, password: string, client: Client,
                     duplicatedFlow,
                 );
                 expect(isRunFlowPresentedCorrectlyCopyFlow).to.equal(true);
+                await flowService.runFlow();
+                const returnedValue = await flowService.validateRunResultStepsAreDisabled();
+                expect(returnedValue).to.include(`finished running flow ${duplicatedFlow.Name}, result is {}. `);
+                await flowService.backToList();
+            });
+            it(`10. Configure 'Disable If' On The Copied Flow: Run When Condition Is False - See It Works, Run When Condition True - See It Doesn't Run`, async function () {
+                await flowService.enterFlowBySearchingName(duplicatedFlow.Name); //
+                for (let index = 0; index < newFlowSteps.length; index++) {
+                    await flowService.disableStepIf(index + 1, ifFilter);
+                }
+                await flowService.saveFlow();
+                const isRunFlowPresentedCorrectlyCopyFlow = await flowService.getToRunPageOfFlowByKeyUsingNav(
+                    duplicatedFlow.Key,
+                    duplicatedFlow,
+                );
+                //add the flow of changing the param
+                expect(isRunFlowPresentedCorrectlyCopyFlow).to.equal(true);
+                await flowService.runFlow();
+                const runParamShownCopyFlow = await flowService.validateRunParam();
+                expect(runParamShownCopyFlow).to.equal('evgenyos');
+                await flowService.setParamValueInsideRunPage(ifFilter.paramName, 5);
                 await flowService.runFlow();
                 const returnedValue = await flowService.validateRunResultStepsAreDisabled();
                 expect(returnedValue).to.include(`finished running flow ${duplicatedFlow.Name}, result is {}. `);
