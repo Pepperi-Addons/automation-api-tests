@@ -30,15 +30,20 @@ export async function PricingUdtInsertion(
                     ppmValues_content = pricingRules.version05;
                     break;
 
+                case '6':
+                    console.info('AT installedPricingVersion CASE 6');
+                    ppmValues_content = pricingRules.version06;
+                    break;
+
                 case '7':
                     console.info('AT installedPricingVersion CASE 7');
                     ppmValues_content =
-                        specificVersion === 'version07for05data' ? pricingRules.version05 : pricingRules.version06;
+                        specificVersion === 'version07for05data' ? pricingRules.version05 : pricingRules.version07;
                     break;
 
                 default:
                     console.info('AT installedPricingVersion Default');
-                    ppmValues_content = pricingRules.version06;
+                    ppmValues_content = pricingRules.version07;
                     break;
             }
             addContext(this, {

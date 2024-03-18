@@ -225,8 +225,9 @@ _________________
                     it(`PERFORMANCE: making sure Sales Order Loading Duration is acceptable`, async function () {
                         let limit: number;
                         switch (installedPricingVersionShort) {
-                            case '7':
-                                limit = 500;
+                            case '5':
+                            case '6':
+                                limit = 600;
                                 break;
 
                             default:

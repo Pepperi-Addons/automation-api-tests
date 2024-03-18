@@ -576,7 +576,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         await PricingTotalsTests(email, pass, client);
         await PricingExclusionTests(email, pass, client);
         await PricingPartialValueTests(email, pass, client);
-        // await PricingMultipleValuesTests(email, pass, client);
+        await PricingMultipleValuesTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
