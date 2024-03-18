@@ -107,7 +107,6 @@ export async function NeltPerformanceTests(
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 
