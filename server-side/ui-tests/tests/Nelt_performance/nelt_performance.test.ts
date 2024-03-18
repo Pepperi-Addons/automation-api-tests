@@ -17,7 +17,7 @@ export async function NeltPerformanceTests(
     password: string,
     client: Client,
     burgerMenuVisitFlowName?: string,
-    visitFlowName?: string,
+    divisionName?: string,
     nearExpiryVisitGroupName?: string,
     nearExpiryVisitStepName?: string,
     orderOfReturnsVisitGroupName?: string,
@@ -35,7 +35,7 @@ export async function NeltPerformanceTests(
     nonPromotionItemsString?: string,
     nonPromotionItemsIndices?: number[],
     nonPromotionItemsQuantities?: number[],
-    nonBundlePromotionItemsIndices?: number[],
+    bundlePromotionItemsIndices?: number[],
 ) {
     const dateTime = new Date();
     const timeMeasurements = {};
@@ -46,7 +46,7 @@ export async function NeltPerformanceTests(
     // const selectVisitFlow_regex = /[A-Z][0-9] poseta/;
     const testParameters = {
         burgerMenuVisitFlow: burgerMenuVisitFlowName || 'Pocni posetu',
-        visitFlowName: visitFlowName || 'F4 poseta',
+        visitFlowName: `${divisionName} poseta` || 'F4 poseta',
         nearExpiryVisitGroup: nearExpiryVisitGroupName || 'Knjizna za rokove',
         nearExpiryVisitStep: nearExpiryVisitStepName || 'Odobrenje',
         orderOfReturnsVisitGroup: orderOfReturnsVisitGroupName || 'Povrati',
@@ -64,7 +64,7 @@ export async function NeltPerformanceTests(
         nonPromotionItems: nonPromotionItemsString || '40g',
         nonPromotionItemsIndices: nonPromotionItemsIndices || [1, 2, 3],
         nonPromotionItemsQuantities: nonPromotionItemsQuantities || [10, 7, 8],
-        nonBundlePromotionItemsIndices: nonBundlePromotionItemsIndices || [1, 2, 3, 4],
+        bundlePromotionItemsIndices: bundlePromotionItemsIndices || [1, 2, 3, 4],
     };
 
     let driver: Browser;
@@ -2157,11 +2157,11 @@ export async function NeltPerformanceTests(
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Search for "${testParameters.nonBundlePromotion}" (to find bundle-promotion products)`, async function () {
+            it(`Search for "${testParameters.bundlePromotion}" (to find bundle-promotion products)`, async function () {
                 await neltPerfomanceService.replaceContentOfInput(
                     driver,
                     neltPerformanceSelectors.Search_Input,
-                    testParameters.nonBundlePromotion,
+                    testParameters.bundlePromotion,
                 );
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -2185,22 +2185,22 @@ export async function NeltPerformanceTests(
                 });
                 await neltPerfomanceService.chooseBundleItemWithOrderClickByIndex.bind(this)(
                     driver,
-                    testParameters.nonBundlePromotionItemsIndices[0],
+                    testParameters.bundlePromotionItemsIndices[0],
                 );
                 driver.sleep(0.1 * 1000);
                 await neltPerfomanceService.chooseBundleItemWithOrderClickByIndex.bind(this)(
                     driver,
-                    testParameters.nonBundlePromotionItemsIndices[1],
+                    testParameters.bundlePromotionItemsIndices[1],
                 );
                 driver.sleep(0.1 * 1000);
                 await neltPerfomanceService.chooseBundleItemWithOrderClickByIndex.bind(this)(
                     driver,
-                    testParameters.nonBundlePromotionItemsIndices[2],
+                    testParameters.bundlePromotionItemsIndices[2],
                 );
                 driver.sleep(0.1 * 1000);
                 await neltPerfomanceService.chooseBundleItemWithOrderClickByIndex.bind(this)(
                     driver,
-                    testParameters.nonBundlePromotionItemsIndices[3],
+                    testParameters.bundlePromotionItemsIndices[3],
                 );
                 driver.sleep(0.1 * 1000);
                 base64ImageComponent = await driver.saveScreenshots();
