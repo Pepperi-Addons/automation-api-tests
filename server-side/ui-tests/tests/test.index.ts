@@ -149,6 +149,7 @@ const orderOfReturnsVisitGroupName = process.env.npm_config_nelt_returns_vf_grou
 const orderOfReturnsVisitStepName = process.env.npm_config_nelt_returns_vf_step as string;
 const orderVisitGroupName = process.env.npm_config_nelt_order_vf_group as string;
 const orderVisitStepName = process.env.npm_config_nelt_order_vf_step as string;
+const chooseAccountBy = process.env.npm_config_nelt_choose_account_by as 'name' | 'ID';
 const orderAccountName = process.env.npm_config_nelt_order_account as string;
 const originalFilterName = process.env.npm_config_nelt_original_filter as string;
 const filterCategoryName = process.env.npm_config_nelt_filter as string;
@@ -581,7 +582,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         return;
     }
 
-    if (tests === 'Pricing05') {
+    if (tests === 'Pricing05Features') {
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
@@ -593,7 +594,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         return;
     }
 
-    if (tests === 'Pricing06') {
+    if (tests === 'Pricing06Features') {
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingExclusionTests(email, pass, client);
@@ -852,6 +853,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
             orderOfReturnsVisitStepName,
             orderVisitGroupName,
             orderVisitStepName,
+            chooseAccountBy,
             orderAccountName,
             originalFilterName,
             filterCategoryName,

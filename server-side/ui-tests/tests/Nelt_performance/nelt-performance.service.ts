@@ -471,11 +471,7 @@ export class NeltPerformanceService {
         driver.sleep(0.5 * 1000);
     }
 
-    public async chooseNonBundleItemWithOrderClickByIndex(
-        this: Context,
-        driver: Browser,
-        index: number,
-    ): Promise<void> {
+    public async chooseBundleItemWithOrderClickByIndex(this: Context, driver: Browser, index: number): Promise<void> {
         const neltPerformanceSelectors = new NeltPerformance(driver);
         await driver.click(neltPerformanceSelectors.getSelectorOfOrderCenterItemOrderButtonGridLineViewByIndex(index));
         await neltPerformanceSelectors.isSpinnerDone();

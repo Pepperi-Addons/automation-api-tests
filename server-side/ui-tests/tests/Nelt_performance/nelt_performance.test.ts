@@ -24,6 +24,7 @@ export async function NeltPerformanceTests(
     orderOfReturnsVisitStepName?: string,
     orderVisitGroupName?: string,
     orderVisitStepName?: string,
+    chooseAccountBy?: 'name' | 'ID',
     orderAccountName?: string,
     originalFilterName?: string,
     filterCategoryName?: string,
@@ -52,6 +53,7 @@ export async function NeltPerformanceTests(
         orderOfReturnsVisitStep: orderOfReturnsVisitStepName || 'Povrat - ',
         orderVisitGroup: orderVisitGroupName || 'Prodaja',
         orderVisitStep: orderVisitStepName || 'Prodaja',
+        chooseAccountBy: chooseAccountBy || 'name',
         accountNameForOrder: orderAccountName || 'DOBROTA STR br. APR',
         originalFilter: originalFilterName || 'Svi proizvodi',
         filterCategory: filterCategoryName || 'Svi filteri',
@@ -1442,12 +1444,12 @@ export async function NeltPerformanceTests(
         describe(`(VisitFlow) Order: 3. Home Screen --> Kupci --> Select Account (${testParameters.accountNameForOrder}) --> Burger menu --> 
         \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> ${testParameters.orderOfReturnsVisitStep} order --> Select filter | Smart filter | Sort by 
         \n| Bundle Promotion Item (${testParameters.bundlePromotion}) | Non-bundle Promotion Item (${testParameters.nonBundlePromotion}) 
-        \n--> Add Items (non-promotion & non-bundle-promotion) --> Cart`, async () => {
+        \n--> Add Items (non-promotion & bundle-promotion) --> Cart`, async () => {
             it(`Navigate to account "${testParameters.accountNameForOrder}" from Home Screen`, async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
                     driver,
                     testParameters.accountNameForOrder,
-                    'name',
+                    testParameters.chooseAccountBy,
                 );
             });
             it(`Choosing "${testParameters.burgerMenuVisitFlow}" at Dropdown Options of Hamburger Menu at Account Dashboard`, async function () {
@@ -1509,7 +1511,7 @@ export async function NeltPerformanceTests(
                         await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
                             driver,
                             testParameters.accountNameForOrder,
-                            'name',
+                            testParameters.chooseAccountBy,
                         );
                         await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
                             driver,
@@ -1884,18 +1886,25 @@ export async function NeltPerformanceTests(
                 expect(Number(resultsNumberAfter)).to.not.equal(Number(resultsNumberBefore));
                 driver.sleep(0.5 * 1000);
             });
-            it(`Open promotions that are bundles (${testParameters.bundlePromotion}) ********* || TODO`, async function () {
+            it(`Open promotions that are bundles (${testParameters.bundlePromotion})`, async function () {
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Order Center loaded`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                //searchInOrderCenter
+                // Search In Order Center
                 await neltPerfomanceService.searchInOrderCenter.bind(this)(driver, testParameters.bundlePromotion);
-                //  await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(driver, 1);
                 // time measurment
                 const Open_promotions_bundles_opening = new Date().getTime();
-
+                await driver.click(
+                    neltPerformanceSelectors.getSelectorOfOrderCenterItemOrderButtonGridLineViewByText(
+                        testParameters.nonBundlePromotion,
+                    ),
+                );
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.ListNumberOfResults);
+                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
+                await driver.untilIsVisible(neltPerformanceSelectors.OrderItem_single_details);
                 const Open_promotions_bundles_loaded = new Date().getTime();
                 timeInterval = Open_promotions_bundles_loaded - Open_promotions_bundles_opening;
                 console.info(
@@ -1933,7 +1942,7 @@ export async function NeltPerformanceTests(
                 });
                 driver.sleep(0.5 * 1000);
             });
-            it('Click on Done button ********* || TODO', async function () {
+            it('Click on Done button', async function () {
                 timeInterval = 0;
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -1943,7 +1952,11 @@ export async function NeltPerformanceTests(
 
                 // time measurment
                 const Open_promotions_bundles_Done_opening = new Date().getTime();
-
+                await driver.click(neltPerformanceSelectors.TopBar_Right_DoneButtton);
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.ListNumberOfResults);
+                await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
+                await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_OrderButton_GridLineView);
                 const Open_promotions_bundles_Done_loaded = new Date().getTime();
                 timeInterval = Open_promotions_bundles_Done_loaded - Open_promotions_bundles_Done_opening;
                 console.info(
@@ -1981,7 +1994,7 @@ export async function NeltPerformanceTests(
                 });
                 driver.sleep(0.5 * 1000);
             });
-            it(`Open promotions that are NOT bundles (${testParameters.nonBundlePromotion})`, async function () {
+            it(`Open promotions that are NOT bundles (${testParameters.nonBundlePromotion}) ********* || TODO`, async function () {
                 timeInterval = 0;
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -1993,15 +2006,7 @@ export async function NeltPerformanceTests(
 
                 // time measurment
                 const Open_promotions_not_bundles_opening = new Date().getTime();
-                await driver.click(
-                    neltPerformanceSelectors.getSelectorOfOrderCenterItemOrderButtonGridLineViewByText(
-                        testParameters.nonBundlePromotion,
-                    ),
-                );
-                await neltPerformanceSelectors.isSpinnerDone();
-                await driver.untilIsVisible(neltPerformanceSelectors.ListNumberOfResults);
-                await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_DoneButtton);
-                await driver.untilIsVisible(neltPerformanceSelectors.OrderItem_single_details);
+
                 const Open_promotions_not_bundles_loaded = new Date().getTime();
                 timeInterval = Open_promotions_not_bundles_loaded - Open_promotions_not_bundles_opening;
                 console.info(
@@ -2039,7 +2044,7 @@ export async function NeltPerformanceTests(
                 });
                 driver.sleep(0.5 * 1000);
             });
-            it('Click on Done button', async function () {
+            it('Click on Done button ********* || TODO', async function () {
                 timeInterval = 0;
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -2049,11 +2054,7 @@ export async function NeltPerformanceTests(
 
                 // time measurment
                 const Open_promotions_not_bundles_Done_opening = new Date().getTime();
-                await driver.click(neltPerformanceSelectors.TopBar_Right_DoneButtton);
-                await neltPerformanceSelectors.isSpinnerDone();
-                await driver.untilIsVisible(neltPerformanceSelectors.ListNumberOfResults);
-                await driver.untilIsVisible(neltPerformanceSelectors.Cart_Button);
-                await driver.untilIsVisible(neltPerformanceSelectors.OrderCenterItem_OrderButton_GridLineView);
+
                 const Open_promotions_not_bundles_Done_loaded = new Date().getTime();
                 timeInterval = Open_promotions_not_bundles_Done_loaded - Open_promotions_not_bundles_Done_opening;
                 console.info(
@@ -2156,7 +2157,7 @@ export async function NeltPerformanceTests(
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
-            it(`Search for "${testParameters.nonBundlePromotion}" (to find non-bundle-promotion products)`, async function () {
+            it(`Search for "${testParameters.nonBundlePromotion}" (to find bundle-promotion products)`, async function () {
                 await neltPerfomanceService.replaceContentOfInput(
                     driver,
                     neltPerformanceSelectors.Search_Input,
@@ -2176,28 +2177,28 @@ export async function NeltPerformanceTests(
                 });
                 driver.sleep(0.5 * 1000);
             });
-            it('Adding Items (non-bundle-promotion)', async function () {
+            it('Adding Items (bundle-promotion)', async function () {
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Order Center`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
-                await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(
+                await neltPerfomanceService.chooseBundleItemWithOrderClickByIndex.bind(this)(
                     driver,
                     testParameters.nonBundlePromotionItemsIndices[0],
                 );
                 driver.sleep(0.1 * 1000);
-                await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(
+                await neltPerfomanceService.chooseBundleItemWithOrderClickByIndex.bind(this)(
                     driver,
                     testParameters.nonBundlePromotionItemsIndices[1],
                 );
                 driver.sleep(0.1 * 1000);
-                await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(
+                await neltPerfomanceService.chooseBundleItemWithOrderClickByIndex.bind(this)(
                     driver,
                     testParameters.nonBundlePromotionItemsIndices[2],
                 );
                 driver.sleep(0.1 * 1000);
-                await neltPerfomanceService.chooseNonBundleItemWithOrderClickByIndex.bind(this)(
+                await neltPerfomanceService.chooseBundleItemWithOrderClickByIndex.bind(this)(
                     driver,
                     testParameters.nonBundlePromotionItemsIndices[3],
                 );
