@@ -84,7 +84,7 @@ export async function NeltPerformanceTests(
     let firstInList_itemName_before;
     let firstInList_itemName_after;
 
-    describe(`Nelt Performance | ${dateTime}`, function () {
+    describe(`Nelt Performance | Tested user: ${email} | ${dateTime}`, function () {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
@@ -107,7 +107,6 @@ export async function NeltPerformanceTests(
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 
