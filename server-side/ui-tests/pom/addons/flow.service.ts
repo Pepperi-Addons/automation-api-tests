@@ -657,32 +657,37 @@ export class FlowService extends AddonPage {
     }
 
     async validateStepScript(stepIndex: number, step: FlowStep, service) {
-        debugger;
         const stepByIndex: string = this.StepBlockElement.valueOf()['value'].replace('|PLACEHOLDER|', stepIndex);
         //script
         const editButtonOfStepBlock = stepByIndex + "//pep-button[@title='Edit']";
         await this.browser.click(By.xpath(editButtonOfStepBlock));
         this.browser.sleep(6000);
         await this.browser.untilIsVisible(this.scriptPickerTitle, 10000);
-        const nameOfParamInput = Object.keys(step.Configuration.runScriptData.ScriptData)[0];
+        let isScriptNameSimilar = true;
+        let isParamNameSimilar = true;
+        let isParamSourceSimilar = true;
+        let isParamSourceNameSimilar = true;
         const realScriptName = await this.convertScriptKeyToName(service, step.Configuration.runScriptData.ScriptKey);
-        debugger;
         const scriptFromUI = await (await this.browser.findElement(this.ScriptNameValueInsideDD)).getAttribute('title');
-        const isScriptNameSimilar = realScriptName === scriptFromUI;
-        const modalParamNameFromUI = await (await this.browser.findElement(this.ModalParamName)).getAttribute('title');
-        const isParamNameSimilar = modalParamNameFromUI === nameOfParamInput;
-        const paramSourceFromUI = await (await this.browser.findElement(this.ModalParamSource)).getText();
-        const isParamSourceSimilar =
-            paramSourceFromUI.toLocaleLowerCase() ===
-            step.Configuration.runScriptData.ScriptData[nameOfParamInput].Source;
-        const paramSourceNameFromUI = await (await this.browser.findElement(this.ModalParamSourceName)).getText();
-        const isParamSourceNameSimilar =
-            paramSourceNameFromUI === step.Configuration.runScriptData.ScriptData[nameOfParamInput].Value;
+        isScriptNameSimilar = realScriptName === scriptFromUI;
+        if (Object.keys(step.Configuration.runScriptData.ScriptData).length !== 0) {
+            const nameOfParamInput = Object.keys(step.Configuration.runScriptData.ScriptData)[0];
+            const modalParamNameFromUI = await (
+                await this.browser.findElement(this.ModalParamName)
+            ).getAttribute('title');
+            isParamNameSimilar = modalParamNameFromUI === nameOfParamInput;
+            const paramSourceFromUI = await (await this.browser.findElement(this.ModalParamSource)).getText();
+            isParamSourceSimilar =
+                paramSourceFromUI.toLocaleLowerCase() ===
+                step.Configuration.runScriptData.ScriptData[nameOfParamInput].Source;
+            const paramSourceNameFromUI = await (await this.browser.findElement(this.ModalParamSourceName)).getText();
+            isParamSourceNameSimilar =
+                paramSourceNameFromUI === step.Configuration.runScriptData.ScriptData[nameOfParamInput].Value;
+        }
         return isScriptNameSimilar && isParamNameSimilar && isParamSourceSimilar && isParamSourceNameSimilar;
     }
 
     async convertScriptKeyToName(service, scriptKey) {
-        debugger; //Cannot read properties of undefined (reading 'Name')
         const scripts = await service.fetchStatus(`/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts`, {
             method: 'GET',
         });

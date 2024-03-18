@@ -2,7 +2,7 @@ import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage, WebAppLoginPage } from '../pom';
+import { WebAppHomePage } from '../pom';
 import GeneralService, { testDataNoSync } from '../../services/general.service';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { AppHeaderObject, ApplicationHeader } from '../pom/addons/AppHeaderService';
@@ -31,12 +31,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
             Disabled: false,
             Configuration: {
                 runScriptData: {
-                    ScriptData: {
-                        first: {
-                            Source: 'dynamic',
-                            Value: 'test',
-                        },
-                    },
+                    ScriptData: {},
                     ScriptKey: '',
                 },
             },
@@ -54,7 +49,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
     const headerObject: AppHeaderObject = {
         Name: 'test_header_' + generalService.generateRandomString(5),
         Description: 'test',
-        Button: [{ ButtonName: 'evgeny_test_button' }],
+        Button: [{ ButtonName: 'evgeny_test_button', ButtonKey: 'Notification' }],
         Menu: [{ FlowKey: '', Name: 'evgeny_test_menu', FlowName: '' }],
     };
     // #region Upgrade survey dependencies
@@ -139,16 +134,16 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 const syncVersion = installedAddons.find(
                     (addonObject) => addonObject.Addon.UUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a',
                 )?.Version;
+                const nebulaObject = installedAddons.find(
+                    (addonObject) => addonObject.Addon.UUID === '00000000-0000-0000-0000-000000006a91',
+                );
                 expect(syncVersion).to.include('2.0');
-                console.log(`Sync Version: ${syncVersion}`);
+                expect(nebulaObject).to.be.undefined;
+                console.log(`Sync Version: ${syncVersion}, With NO Nebula!`);
             });
             it(`1. Basic UI Test: Using Admin Login To WebApp, Create A Basic Flow, Set App. Header To Show This Flow And Notifications Button Using Legacy Resources And See It Changes The Header On Admin And Buyer`, async function () {
-                debugger;
-                //1. login to webapp
-                const webAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.login(email, password);
-                //2. create a flow
-                const flowKey = await createFlowUsingE2E(
+                //1. login to webapp & create a flow
+                const [flowKey, flowName] = await createFlowUsingE2E(
                     driver,
                     generalService,
                     email,
@@ -158,17 +153,33 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                     flowToAdd,
                 );
                 headerObject.Menu[0].FlowKey = flowKey;
+                headerObject.Menu[0].FlowName = flowName;
                 //2. goto legacy settings - app. header - configure menu and buttons - menu is based on flow, button is based on notifications addon
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.returnToHomePage();
                 const appHeaderService = new ApplicationHeader(driver);
                 const isAppHeaderPagePresented = await appHeaderService.enterApplicationHeaderPage();
                 expect(isAppHeaderPagePresented).to.equal(true);
                 const appHeaderUUID = await appHeaderService.addNewAppHeader(headerObject);
-                await appHeaderService.configureMenuAndButtonViaAPI(generalService, headerObject);
+                const headerCreationRespone = await appHeaderService.configureMenuAndButtonViaAPI(
+                    generalService,
+                    headerObject,
+                    appHeaderUUID,
+                );
+                expect(headerCreationRespone.Ok).to.equal(true);
+                expect(headerCreationRespone.Status).to.equal(200);
+                expect(headerCreationRespone.Body.success).to.equal(true);
+                expect(headerCreationRespone.Body.body.publish.VersionKey).to.not.be.null;
+                expect(headerCreationRespone.Body.body.publish.VersionKey).to.be.a.string;
                 //3. shortly validate
                 const isMenuAndButtonAreCreated = await appHeaderService.validateMenuAndButtonsViaUI(headerObject);
                 expect(isMenuAndButtonAreCreated).to.equal(true);
                 //4. goto slugs and set Application_Header to use just created header
                 await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
+                await webAppHomePage.reSyncApp();
+                //TODO: test that the button + menu are there on the header
+                //TODO: logout from Admin - login to buyer - tests the header
+                debugger;
             });
             it(`2. Integration Test: Push Data To Configurations Which Is Our Source Addon And See It Changes The UI - Admin And Buyer`, async function () {
                 console.log('dsfsfds');

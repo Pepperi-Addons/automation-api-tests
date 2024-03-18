@@ -482,7 +482,7 @@ export async function createFlowUsingE2E(
                 script.actualScript,
                 script.scriptName,
                 script.scriptDesc,
-                [script.params],
+                [],
                 generalService,
             ),
         );
@@ -508,10 +508,12 @@ export async function createFlowUsingE2E(
     //3. add parameters by given flow
     const isParamTabShown = await flowService.enterParamTab();
     expect(isParamTabShown).to.equal(true);
-    const [isModalShownCorrectly, saveButtonDisability, areValuesSimilar] = await flowService.addParam(flowToAdd);
-    expect(isModalShownCorrectly).to.equal(true);
-    expect(saveButtonDisability).to.equal('true');
-    expect(areValuesSimilar).to.equal(true);
+    if (flowToAdd.Params.length !== 0) {
+        const [isModalShownCorrectly, saveButtonDisability, areValuesSimilar] = await flowService.addParam(flowToAdd);
+        expect(isModalShownCorrectly).to.equal(true);
+        expect(saveButtonDisability).to.equal('true');
+        expect(areValuesSimilar).to.equal(true);
+    }
     const isFlowPagePresentedAfterSaving = await flowService.saveFlow();
     expect(isFlowPagePresentedAfterSaving).to.equal(true);
     //4. add steps using API and validate by UI
@@ -546,5 +548,5 @@ export async function createFlowUsingE2E(
     }
     //->save
     await flowService.saveFlow();
-    return flowKey;
+    return [flowKey, flowToAdd.Name];
 }
