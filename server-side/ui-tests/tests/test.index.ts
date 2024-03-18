@@ -110,6 +110,7 @@ import { CreateDistributorSystemTests } from './create_distributor_SYSTEM.test';
 import { ConfigurationTests } from './configurations.dev.test';
 import { SyncTests as SyncDevTests } from './sync.dev.test';
 import { DevTestReporter } from './dev.test.repoerter';
+import { SyncE2ETester } from './syncE2ETester.test';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -1054,6 +1055,12 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
 
     if (tests === 'UdcUI') {
         await UDCTests(email, pass, varPass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+    if (tests === 'SyncE2ETester') {
+        await SyncE2ETester(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
