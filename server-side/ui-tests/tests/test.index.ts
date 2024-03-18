@@ -580,7 +580,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         return;
     }
 
-    if (tests === 'Pricing05') {
+    if (tests === 'Pricing05Features') {
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
@@ -592,7 +592,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         return;
     }
 
-    if (tests === 'Pricing06') {
+    if (tests === 'Pricing06Features') {
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingExclusionTests(email, pass, client);
