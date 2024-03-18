@@ -268,8 +268,9 @@ ________________________________________________________________________________
                     it(`PERFORMANCE: making sure Sales Order Loading Duration is acceptable`, async function () {
                         let limit: number;
                         switch (installedPricingVersionShort) {
-                            case '7':
-                                limit = 500;
+                            case '5':
+                            case '6':
+                                limit = 600;
                                 break;
 
                             default:
@@ -284,7 +285,7 @@ ________________________________________________________________________________
                         });
                         const duration_num = Number(duration);
                         expect(typeof duration_num).equals('number');
-                        // expect(duration_num).to.be.below(limit);
+                        expect(duration_num).to.be.below(limit);
                     });
 
                     describe('Exclusion Rules', () => {
