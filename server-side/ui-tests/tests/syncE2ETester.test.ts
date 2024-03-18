@@ -8,6 +8,7 @@ import { Client } from '@pepperi-addons/debug-server/dist';
 import { AppHeaderObject, ApplicationHeader } from '../pom/addons/AppHeaderService';
 import { createFlowUsingE2E } from './flows_builder.test';
 import { Flow, FlowStep } from '../pom/addons/flow.service';
+import { ConfigurationsService } from '../../services/configurations.service';
 
 chai.use(promised);
 
@@ -182,7 +183,18 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 debugger;
             });
             it(`2. Integration Test: Push Data To Configurations Which Is Our Source Addon And See It Changes The UI - Admin And Buyer`, async function () {
-                console.log('dsfsfds');
+                //1. get all schemes and validate
+                const configService = new ConfigurationsService(generalService);
+                const appHeaderUUID = '9bc8af38-dd67-4d33-beb0-7d6b39a6e98d';
+                const configResponse = await configService.getSchemes();
+                expect(configResponse.Ok).to.equal(true);
+                expect(configResponse.Status).to.equal(200);
+                expect(configResponse.Error).to.deep.equal({});
+                expect(configResponse.Body).to.be.an('array');
+                const configSchemes = configResponse.Body;
+                const appHeaderConfigScheme = configSchemes.find((config) => config.AddonUUID === appHeaderUUID);
+                expect(appHeaderConfigScheme.length).to.equal(1);
+                debugger;
             });
             it(`3. Data Aspect API Test: Check the Data Inside The ADAL Inside Chache And All This`, async function () {
                 console.log('dsfsfds');
