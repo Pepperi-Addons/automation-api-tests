@@ -309,6 +309,17 @@ export async function PricingAdditionalGroupsReadonlyTests(
                 });
 
                 it(`PERFORMANCE: making sure Sales Order Loading Duration is acceptable`, async function () {
+                    let limit: number;
+                    switch (installedPricingVersion) {
+                        case '5':
+                        case '6':
+                            limit = 600;
+                            break;
+
+                        default:
+                            limit = 550;
+                            break;
+                    }
                     duration = await (await driver.findElement(orderPage.Duration_Span)).getAttribute('title');
                     console.info(`DURATION at Sales Order Load: ${duration}`);
                     addContext(this, {
@@ -317,7 +328,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                     });
                     const duration_num = Number(duration);
                     expect(typeof duration_num).equals('number');
-                    // expect(duration_num).to.be.below(550);
+                    expect(duration_num).to.be.below(limit);
                 });
 
                 it(`switch to 'Line View'`, async function () {
