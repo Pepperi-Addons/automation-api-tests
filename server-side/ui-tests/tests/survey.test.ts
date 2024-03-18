@@ -1051,7 +1051,7 @@ async function CreateSlug(
     await webAppHeader.goHome();
 }
 
-async function CreateSlug_Web18(
+export async function CreateSlug_Web18(
     email: string,
     password: string,
     driver: Browser,

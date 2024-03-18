@@ -5,7 +5,7 @@ import promised from 'chai-as-promised';
 import { WebAppHomePage, WebAppLoginPage } from '../pom';
 import GeneralService, { testDataNoSync } from '../../services/general.service';
 import { Client } from '@pepperi-addons/debug-server/dist';
-import { ApplicationHeader } from '../pom/addons/AppHeader';
+import { AppHeaderObject, ApplicationHeader } from '../pom/addons/AppHeaderService';
 import { createFlowUsingE2E } from './flows_builder.test';
 import { Flow, FlowStep } from '../pom/addons/flow.service';
 
@@ -49,6 +49,13 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
         Hidden: false,
         Steps: newFlowSteps,
         Name: 'test_flow_' + generalService.generateRandomString(5),
+    };
+
+    const headerObject: AppHeaderObject = {
+        Name: 'test_header_' + generalService.generateRandomString(5),
+        Description: 'test',
+        Button: [{ ButtonName: 'evgeny_test_button' }],
+        Menu: [{ FlowKey: '', Name: 'evgeny_test_menu', FlowName: '' }],
     };
     // #region Upgrade survey dependencies
     await generalService.baseAddonVersionsInstallation(varPass, testDataNoSync);
@@ -128,12 +135,10 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 await webAppHomePage.collectEndTestData(this);
             });
             it(`0. Pre-Test Step: Check That Sync Version Is Above 2`, async function () {
-                debugger;
                 const installedAddons = await generalService.getInstalledAddons();
                 const syncVersion = installedAddons.find(
                     (addonObject) => addonObject.Addon.UUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a',
                 )?.Version;
-                debugger;
                 expect(syncVersion).to.include('2.0');
                 console.log(`Sync Version: ${syncVersion}`);
             });
@@ -143,8 +148,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
                 //2. create a flow
-
-                await createFlowUsingE2E(
+                const flowKey = await createFlowUsingE2E(
                     driver,
                     generalService,
                     email,
@@ -153,11 +157,18 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                     newFlowSteps,
                     flowToAdd,
                 );
-                //2. goto legacy settings - app. header
+                headerObject.Menu[0].FlowKey = flowKey;
+                //2. goto legacy settings - app. header - configure menu and buttons - menu is based on flow, button is based on notifications addon
                 const appHeaderService = new ApplicationHeader(driver);
                 const isAppHeaderPagePresented = await appHeaderService.enterApplicationHeaderPage();
                 expect(isAppHeaderPagePresented).to.equal(true);
-                // await appHeaderService.addNewAppHeader();
+                const appHeaderUUID = await appHeaderService.addNewAppHeader(headerObject);
+                await appHeaderService.configureMenuAndButtonViaAPI(generalService, headerObject);
+                //3. shortly validate
+                const isMenuAndButtonAreCreated = await appHeaderService.validateMenuAndButtonsViaUI(headerObject);
+                expect(isMenuAndButtonAreCreated).to.equal(true);
+                //4. goto slugs and set Application_Header to use just created header
+                await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
             });
             it(`2. Integration Test: Push Data To Configurations Which Is Our Source Addon And See It Changes The UI - Admin And Buyer`, async function () {
                 console.log('dsfsfds');
