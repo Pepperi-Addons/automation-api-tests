@@ -546,4 +546,5 @@ export async function createFlowUsingE2E(
     }
     //->save
     await flowService.saveFlow();
+    return flowKey;
 }
