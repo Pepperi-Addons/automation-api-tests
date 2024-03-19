@@ -141,6 +141,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(syncVersion).to.include('2.0');
                 expect(nebulaObject).to.be.undefined;
                 console.log(`Sync Version: ${syncVersion}, With NO Nebula!`);
+                debugger;
             });
             it(`1. Basic UI Test: Using Admin Login To WebApp, Create A Basic Flow, Set App. Header To Show This Flow And Notifications Button Using Legacy Resources And See It Changes The Header On Admin And Buyer`, async function () {
                 //1. login to webapp & create a flow
