@@ -333,7 +333,7 @@ ________________________________________________________________________________
                         });
                         const duration_num = Number(duration);
                         expect(typeof duration_num).equals('number');
-                        // expect(duration_num).to.be.below(limit);
+                        expect(duration_num).to.be.below(limit);
                     });
                     describe('Multiple Values (Out Of Category Item)', () => {
                         multipleValuesTestItems_outOfCategory.forEach((multipleValuesTestItem) => {
