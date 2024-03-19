@@ -76,14 +76,14 @@ _________________
 
     let ppmValues_content;
     switch (installedPricingVersion) {
-        // case '6':
-        //     console.info('AT installedPricingVersion CASE 6');
-        //     ppmValues_content = pricingRules.version06;
-        //     break;
+        case '6':
+            console.info('AT installedPricingVersion CASE 6');
+            ppmValues_content = pricingRules.version06;
+            break;
 
         default:
             console.info('AT installedPricingVersion Default');
-            ppmValues_content = pricingRules.version06;
+            ppmValues_content = pricingRules.version07;
             break;
     }
 
