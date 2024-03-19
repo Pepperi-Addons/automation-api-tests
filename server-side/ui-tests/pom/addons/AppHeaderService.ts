@@ -80,6 +80,13 @@ export class ApplicationHeader extends AddonPage {
         return headerUUID;
     }
 
+    public async publiushHeader() {
+        this.browser.sleep(1500);
+        await this.click(this.HeaderPublishButton);
+        await this.isSpinnerDone();
+        this.browser.sleep(2500);
+    }
+
     public async goBackFromHeaderToMainPage() {
         await this.browser.click(this.HeaderPageBackButton);
     }
@@ -92,29 +99,44 @@ export class ApplicationHeader extends AddonPage {
         await this.browser.click(this.MenuTab);
         await this.browser.untilIsVisible(this.MenuTabSubTitle);
         this.browser.sleep(2000);
+        let displayName,
+            actionName,
+            buttonKey,
+            buttonName = '';
         //3. read display name & action
-        const displayNameComponent = await this.browser.findElement(this.MenuItemDisplayName);
-        const displayName = await displayNameComponent.getAttribute('title');
-        this.browser.sleep(1000);
-        const actionNameComponent = await this.browser.findElement(this.MenuItemActionName);
-        const actionName = await actionNameComponent.getText();
+        if (appHeader.Menu.length > 0) {
+            const displayNameComponent = await this.browser.findElement(this.MenuItemDisplayName);
+            displayName = await displayNameComponent.getAttribute('title');
+            this.browser.sleep(1000);
+            const actionNameComponent = await this.browser.findElement(this.MenuItemActionName);
+            actionName = await actionNameComponent.getText();
+        }
         //4. goto buttons tab
         await this.browser.click(this.ButtonsTab);
         await this.browser.untilIsVisible(this.ButtonsTabSubTitle);
         this.browser.sleep(2000);
-        //5. read button name & button key
-        const buttonKeyComponent = await this.browser.findElement(this.ButtonItemKey);
-        const buttonKey = await buttonKeyComponent.getAttribute('title');
-        this.browser.sleep(1000);
-        const buttonNameComponent = await this.browser.findElement(this.ButtonItemName);
-        const buttonName = await buttonNameComponent.getAttribute('title');
+        if (appHeader.Button.length > 0) {
+            const buttonKeyComponent = await this.browser.findElement(this.ButtonItemKey);
+            buttonKey = await buttonKeyComponent.getAttribute('title');
+            this.browser.sleep(1000);
+            const buttonNameComponent = await this.browser.findElement(this.ButtonItemName);
+            buttonName = await buttonNameComponent.getAttribute('title');
+            //publish the header
+        }
+        if (appHeader.Button.length > 0 || appHeader.Menu.length > 0) {
+            await this.publiushHeader();
+        }
         await this.goBackFromHeaderToMainPage();
-        return (
-            displayName === appHeader.Menu[0].Name &&
-            actionName === appHeader.Menu[0].FlowName &&
-            appHeader.Button[0].ButtonName === buttonName &&
-            appHeader.Button[0].ButtonKey === buttonKey
-        );
+        //5. read button name & button key
+        return appHeader.Menu.length > 0
+            ? displayName === appHeader.Menu[0].Name
+            : true && appHeader.Menu.length > 0
+            ? actionName === appHeader.Menu[0].FlowName
+            : true && appHeader.Button.length > 0
+            ? buttonKey === appHeader.Button[0].ButtonKey
+            : true && appHeader.Button.length > 0
+            ? buttonName === appHeader.Button[0].ButtonName
+            : true;
     }
 
     public async configureMenuAndButtonViaAPI(

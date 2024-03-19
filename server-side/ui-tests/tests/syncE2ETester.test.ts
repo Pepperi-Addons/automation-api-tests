@@ -1,14 +1,14 @@
-import { Browser } from '../utilities/browser';
-import { describe, it, afterEach, before, after } from 'mocha';
+import { Client } from '@pepperi-addons/debug-server/dist';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHomePage } from '../pom';
-import GeneralService, { testDataNoSync } from '../../services/general.service';
-import { Client } from '@pepperi-addons/debug-server/dist';
-import { AppHeaderObject, ApplicationHeader } from '../pom/addons/AppHeaderService';
-import { createFlowUsingE2E } from './flows_builder.test';
-import { Flow, FlowStep } from '../pom/addons/flow.service';
+import { after, afterEach, before, describe, it } from 'mocha';
 import { ConfigurationsService } from '../../services/configurations.service';
+import GeneralService, { testDataNoSync } from '../../services/general.service';
+import { WebAppHomePage } from '../pom';
+import { AppHeaderObject, ApplicationHeader } from '../pom/addons/AppHeaderService';
+import { Flow, FlowStep } from '../pom/addons/flow.service';
+import { Browser } from '../utilities/browser';
+import { createFlowUsingE2E } from './flows_builder.test';
 
 chai.use(promised);
 
@@ -17,7 +17,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
     let driver: Browser;
     const flowStepScript = {
         actualScript: `export async function main(data){return 'evgeny123';}`,
-        scriptName: 'flowScriptForFlowStep',
+        scriptName: generalService.generateRandomString(5) + '_fowFlow',
         scriptDesc: 'forFlow',
         params: '',
     };
@@ -51,9 +51,9 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
         Name: 'test_header_' + generalService.generateRandomString(5),
         Description: 'test',
         Button: [{ ButtonName: 'evgeny_test_button', ButtonKey: 'Notification' }],
-        Menu: [{ FlowKey: '', Name: 'evgeny_test_menu', FlowName: '' }],
+        Menu: [{ FlowKey: '', Name: 'evgeny_test_menu', FlowName: '' }], //
     };
-    // #region Upgrade survey dependencies
+    // #region Upgrade open sync dependencies
     await generalService.baseAddonVersionsInstallation(varPass, testDataNoSync);
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
@@ -64,7 +64,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
-        // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.0.20'],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.0.%'],
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
@@ -81,7 +81,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
-    // #endregion Upgrade survey dependencies
+    // #endregion Upgrade open sync dependencies
 
     describe('Sync E2E Tests Suit', async function () {
         describe('Prerequisites Addons for Survey Builder Tests', () => {
@@ -156,13 +156,33 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 );
                 headerObject.Menu[0].FlowKey = flowKey;
                 headerObject.Menu[0].FlowName = flowName;
-                //2. goto legacy settings - app. header - configure menu and buttons - menu is based on flow, button is based on notifications addon
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.returnToHomePage();
+                //2. add new naked header
                 const appHeaderService = new ApplicationHeader(driver);
                 const isAppHeaderPagePresented = await appHeaderService.enterApplicationHeaderPage();
                 expect(isAppHeaderPagePresented).to.equal(true);
                 const appHeaderUUID = await appHeaderService.addNewAppHeader(headerObject);
+                //3. validate it was created correctly using API: confguration drafts
+                const draftsResponsePreButtonsAndMenu = await generalService.fetchStatus(
+                    '/addons/configurations/9bc8af38-dd67-4d33-beb0-7d6b39a6e98d/AppHeaderConfiguration/drafts',
+                );
+                expect(draftsResponsePreButtonsAndMenu.Ok).to.equal(true);
+                expect(draftsResponsePreButtonsAndMenu.Status).to.equal(200);
+                expect(draftsResponsePreButtonsAndMenu.Body).to.be.an('Array');
+                expect(draftsResponsePreButtonsAndMenu.Body.length).to.be.above(0);
+                //4. this spesific header validation
+                const newlyCreatedHeader = draftsResponsePreButtonsAndMenu.Body.find(
+                    (header) => header.Key === appHeaderUUID,
+                );
+                expect(newlyCreatedHeader.AddonUUID).to.equal('9bc8af38-dd67-4d33-beb0-7d6b39a6e98d');
+                expect(newlyCreatedHeader.ConfigurationSchemaName).to.equal('AppHeaderConfiguration');
+                expect(newlyCreatedHeader.Description).to.equal(headerObject.Description);
+                expect(newlyCreatedHeader.Name).to.equal(headerObject.Name);
+                expect(newlyCreatedHeader.Hidden).to.equal(false);
+                expect(newlyCreatedHeader.Data.Published).to.equal(true);
+                expect(newlyCreatedHeader.Data.Draft).to.equal(true);
+                //5. adding button and menu using API (d&d)
                 const headerCreationRespone = await appHeaderService.configureMenuAndButtonViaAPI(
                     generalService,
                     headerObject,
@@ -173,11 +193,38 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(headerCreationRespone.Body.success).to.equal(true);
                 expect(headerCreationRespone.Body.body.publish.VersionKey).to.not.be.null;
                 expect(headerCreationRespone.Body.body.publish.VersionKey).to.be.a.string;
-                //3. shortly validate
+                //-- is working?
+                const draftsResponsePostButtonsAndMenu_1 = await generalService.fetchStatus(
+                    '/addons/configurations/9bc8af38-dd67-4d33-beb0-7d6b39a6e98d/AppHeaderConfiguration/drafts',
+                );
+                expect(draftsResponsePostButtonsAndMenu_1.Ok).to.equal(true);
+                expect(draftsResponsePostButtonsAndMenu_1.Status).to.equal(200);
+                expect(draftsResponsePostButtonsAndMenu_1.Body).to.be.an('Array');
+                expect(draftsResponsePostButtonsAndMenu_1.Body.length).to.be.above(0);
+                const newlyCreatedHeaderWithButtonAndMenu1 = draftsResponsePostButtonsAndMenu_1.Body.find(
+                    (header) => header.Key === appHeaderUUID,
+                ); //this doesn't return new menu and buttons
+                expect(newlyCreatedHeaderWithButtonAndMenu1.Name).to.equal(headerObject.Name);
+                expect(newlyCreatedHeaderWithButtonAndMenu1.ConfigurationSchemaName).to.equal('AppHeaderConfiguration');
+                expect(newlyCreatedHeaderWithButtonAndMenu1.AddonUUID).to.equal('9bc8af38-dd67-4d33-beb0-7d6b39a6e98d');
+                expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Published).to.equal(true);
+                expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Hidden).to.equal(false);
+                expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Buttons[0].Title).to.equal(
+                    headerObject.Button[0].ButtonName,
+                );
+                expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Buttons[0].FieldID).to.equal(
+                    headerObject.Button[0].ButtonKey,
+                );
+                expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Buttons[0].Visible).to.equal(true);
+                expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Menu[0].Title).to.equal(headerObject.Menu[0].Name);
+                expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Menu[0].Flow.Key).to.equal(flowKey);
+                expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Menu[0].Visible).to.equal(true);
+                //6. shortly validate - using UI
                 const isMenuAndButtonAreCreated = await appHeaderService.validateMenuAndButtonsViaUI(headerObject);
                 expect(isMenuAndButtonAreCreated).to.equal(true);
-                //4. goto slugs and set Application_Header to use just created header
+                //7. goto slugs and set Application_Header to use just created header
                 await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
+                //8. re-sync
                 await webAppHomePage.reSyncApp();
                 //TODO: test that the button + menu are there on the header
                 //TODO: logout from Admin - login to buyer - tests the header
