@@ -193,7 +193,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(headerCreationRespone.Body.success).to.equal(true);
                 expect(headerCreationRespone.Body.body.publish.VersionKey).to.not.be.null;
                 expect(headerCreationRespone.Body.body.publish.VersionKey).to.be.a.string;
-                //-- is working?
+                // 6. validate these menu & button got to confugurations
                 const draftsResponsePostButtonsAndMenu_1 = await generalService.fetchStatus(
                     '/addons/configurations/9bc8af38-dd67-4d33-beb0-7d6b39a6e98d/AppHeaderConfiguration/drafts',
                 );
@@ -203,7 +203,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(draftsResponsePostButtonsAndMenu_1.Body.length).to.be.above(0);
                 const newlyCreatedHeaderWithButtonAndMenu1 = draftsResponsePostButtonsAndMenu_1.Body.find(
                     (header) => header.Key === appHeaderUUID,
-                ); //this doesn't return new menu and buttons
+                );
                 expect(newlyCreatedHeaderWithButtonAndMenu1.Name).to.equal(headerObject.Name);
                 expect(newlyCreatedHeaderWithButtonAndMenu1.ConfigurationSchemaName).to.equal('AppHeaderConfiguration');
                 expect(newlyCreatedHeaderWithButtonAndMenu1.AddonUUID).to.equal('9bc8af38-dd67-4d33-beb0-7d6b39a6e98d');
@@ -219,12 +219,12 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Menu[0].Title).to.equal(headerObject.Menu[0].Name);
                 expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Menu[0].Flow.Key).to.equal(flowKey);
                 expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Menu[0].Visible).to.equal(true);
-                //6. shortly validate - using UI
+                //7. shortly validate - using UI
                 const isMenuAndButtonAreCreated = await appHeaderService.validateMenuAndButtonsViaUI(headerObject);
                 expect(isMenuAndButtonAreCreated).to.equal(true);
-                //7. goto slugs and set Application_Header to use just created header
+                //8. goto slugs and set Application_Header to use just created header
                 await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
-                //8. re-sync
+                //9. re-sync
                 await webAppHomePage.reSyncApp();
                 //TODO: test that the button + menu are there on the header
                 //TODO: logout from Admin - login to buyer - tests the header
