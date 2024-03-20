@@ -349,12 +349,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 enteredAbiSlug = true;
             });
 
-            enteredAbiSlug &&
-                describe('List Content Tests', async () => {
-                    afterEach(async function () {
-                        driver.sleep(0.5 * 1000);
-                    });
-
+            describe('List Content Tests', async () => {
+                afterEach(async function () {
+                    driver.sleep(0.5 * 1000);
+                });
+                if (enteredAbiSlug) {
                     Object.keys(lists).forEach((listTitle) => {
                         describe(listTitle, async () => {
                             after(async function () {
@@ -657,7 +656,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             }
                         });
                     });
-                });
+                }
+            });
         });
     });
 
