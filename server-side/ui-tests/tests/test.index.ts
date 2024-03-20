@@ -75,6 +75,7 @@ import {
     StorybookTextareaTests,
     StorybookTextboxTests,
     NeltPerformanceTests,
+    ListsAbiTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -531,6 +532,13 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
 
     if (tests === 'AbiRL') {
         await ResourceListAbiTests(email, pass, client, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'ListsAbi') {
+        await ListsAbiTests(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
