@@ -29,7 +29,6 @@ export async function ListsAbiTests(email: string, password: string, client: Cli
     const objectsService = new ObjectsService(generalService);
     const openCatalogService = new OpenCatalogService(generalService);
     const dateTime = new Date();
-    let enteredAbiSlug: boolean;
 
     await generalService.baseAddonVersionsInstallation(varPass);
 
@@ -44,7 +43,7 @@ export async function ListsAbiTests(email: string, password: string, client: Cli
 
     describe(`Prerequisites Addons for Lists Tests - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-    } | Date Time: ${dateTime}`, () => {
+    } | Tested user: ${email} | Date Time: ${dateTime}`, () => {
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
@@ -71,6 +70,10 @@ export async function ListsAbiTests(email: string, password: string, client: Cli
             });
         }
     });
+
+    const installedListsVersion = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'lists',
+    )?.Version;
 
     const items = await openCatalogService.getItems('?page_size=-1');
     const accounts = await objectsService.getAccounts({ page_size: -1 });
@@ -125,8 +128,9 @@ export async function ListsAbiTests(email: string, password: string, client: Cli
     let webAppHeader: WebAppHeader;
     let webAppList: WebAppList;
     let listsABI: ListsABI;
+    let enteredAbiSlug: boolean;
 
-    describe(`Lists ABI Test Suite`, async () => {
+    describe(`Lists ABI Test Suite | Ver: ${installedListsVersion}`, async () => {
         before(async function () {
             console.info('numOfListingsIn_accounts: ', JSON.stringify(numOfListingsIn_accounts, null, 2));
             console.info('numOfListingsIn_items: ', JSON.stringify(numOfListingsIn_items, null, 2));
