@@ -57,6 +57,7 @@ import { PricingAddonsUpsert } from './Pricing/pricing_addons_installation.test'
 import { PricingConfigUpload } from './Pricing/pricing_configuration_upload.test';
 import { PricingUdtCleanup } from './Pricing/pricing_udt_cleanup.test';
 import { PricingUdtInsertion } from './Pricing/pricing_udt_insertion.test';
+import { ListsAbiTests } from './lists_abi.test';
 
 export {
     LoginTests,
@@ -92,6 +93,7 @@ export {
     PricingExclusionTests,
     PricingUdtCleanup,
     ResourceListAbiTests,
+    ListsAbiTests,
     InstallationsTest,
     StorybookAttachmentTests,
     StorybookButtonTests,
