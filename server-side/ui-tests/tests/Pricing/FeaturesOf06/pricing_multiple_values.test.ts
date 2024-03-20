@@ -125,14 +125,14 @@ ________________________________________________________________________________
     const pricingRules = new PricingRules();
     let ppmValues_content;
     switch (installedPricingVersion) {
-        // case '6':
-        //     console.info('AT installedPricingVersion CASE 6');
-        //     ppmValues_content = pricingRules.version06;
-        //     break;
+        case '6':
+            console.info('AT installedPricingVersion CASE 6');
+            ppmValues_content = pricingRules.version06;
+            break;
 
         default:
             console.info('AT installedPricingVersion Default');
-            ppmValues_content = pricingRules.version06;
+            ppmValues_content = pricingRules.version07;
             break;
     }
 
@@ -333,7 +333,7 @@ ________________________________________________________________________________
                         });
                         const duration_num = Number(duration);
                         expect(typeof duration_num).equals('number');
-                        // expect(duration_num).to.be.below(limit);
+                        expect(duration_num).to.be.below(limit);
                     });
                     describe('Multiple Values (Out Of Category Item)', () => {
                         multipleValuesTestItems_outOfCategory.forEach((multipleValuesTestItem) => {
