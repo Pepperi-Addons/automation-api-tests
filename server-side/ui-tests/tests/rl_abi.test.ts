@@ -118,7 +118,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
 
     describe(`Prerequisites Addons for Resource List Tests - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-    } | Date Time: ${dateTime}`, () => {
+    } | Tested user: ${email} | Date Time: ${dateTime}`, () => {
         // const addonsLatestVersionList = Object.keys(testData);
 
         // isInstalledArr.forEach((isInstalled, index) => {
@@ -206,6 +206,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         // }
     });
 
+    const installedResourceListVersion = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'lists',
+    )?.Version;
+
     const items = await openCatalogService.getItems('?page_size=-1');
     const accounts = await objectsService.getAccounts({ page_size: -1 });
     // console.info('items: ', JSON.stringify(items, null, 2));
@@ -259,8 +263,9 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     let webAppHeader: WebAppHeader;
     let webAppList: WebAppList;
     let resourceListABI: ResourceListABI;
+    let enteredAbiSlug: boolean;
 
-    describe(`Resource List ABI Test Suite`, async () => {
+    describe(`Resource List ABI Test Suite | Ver: ${installedResourceListVersion}`, async () => {
         before(async function () {
             console.info('numOfListingsIn_accounts: ', JSON.stringify(numOfListingsIn_accounts, null, 2));
             console.info('numOfListingsIn_items: ', JSON.stringify(numOfListingsIn_items, null, 2));
@@ -341,54 +346,66 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 expect(dropdownTitle).to.contain('Select List Data');
                 await driver.refresh();
                 await resourceListABI.isSpinnerDone();
+                enteredAbiSlug = true;
             });
 
-            describe('List Content Tests', async () => {
-                afterEach(async function () {
-                    driver.sleep(0.5 * 1000);
-                });
+            enteredAbiSlug &&
+                describe('List Content Tests', async () => {
+                    afterEach(async function () {
+                        driver.sleep(0.5 * 1000);
+                    });
 
-                Object.keys(lists).forEach((listTitle) => {
-                    describe(listTitle, async () => {
-                        after(async function () {
-                            await driver.refresh();
-                        });
-                        afterEach(async function () {
-                            await webAppHomePage.collectEndTestData(this);
-                        });
-                        let enteringListTitle = '';
-
-                        switch (listTitle) {
-                            case '1. Items - Basic':
-                                enteringListTitle = 'Entering Default Selected List';
-                                break;
-
-                            default:
-                                enteringListTitle = 'Choosing List Data and Opening the Dialog';
-                                break;
-                        }
-                        it(enteringListTitle, async function () {
-                            const list = lists[listTitle].listToSelect;
-                            const expectedTitle = lists[listTitle].expectedTitle;
-                            const expectedNumOfResults = lists[listTitle].expectedNumOfResults;
+                    Object.keys(lists).forEach((listTitle) => {
+                        describe(listTitle, async () => {
+                            after(async function () {
+                                await driver.refresh();
+                            });
+                            afterEach(async function () {
+                                await webAppHomePage.collectEndTestData(this);
+                            });
+                            let enteringListTitle = '';
 
                             switch (listTitle) {
-                                case '34. Accounts - Propagated Error':
-                                    const errorMessage =
-                                        "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files";
-                                    await listPickAndVerify.bind(this)(
-                                        list,
-                                        expectedTitle,
-                                        expectedNumOfResults,
-                                        '',
-                                        true,
-                                        errorMessage,
-                                    );
+                                case '1. Items - Basic':
+                                    enteringListTitle = 'Entering Default Selected List';
                                     break;
-                                case '32. ReferenceAccount - 2 Views':
-                                    // https://pepperi.atlassian.net/browse/DI-24602
-                                    // fix-version: Resource List 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
-                                    if (email.includes('.stage') === false) {
+
+                                default:
+                                    enteringListTitle = 'Choosing List Data and Opening the Dialog';
+                                    break;
+                            }
+                            it(enteringListTitle, async function () {
+                                const list = lists[listTitle].listToSelect;
+                                const expectedTitle = lists[listTitle].expectedTitle;
+                                const expectedNumOfResults = lists[listTitle].expectedNumOfResults;
+
+                                switch (listTitle) {
+                                    case '34. Accounts - Propagated Error':
+                                        const errorMessage =
+                                            "Error: Addon with uuid 0e2ae61b-a26a-4c26-81fe doesn't exist or isn't installed or doesn't have any cpi-side files";
+                                        await listPickAndVerify.bind(this)(
+                                            list,
+                                            expectedTitle,
+                                            expectedNumOfResults,
+                                            '',
+                                            true,
+                                            errorMessage,
+                                        );
+                                        break;
+                                    case '32. ReferenceAccount - 2 Views':
+                                        // https://pepperi.atlassian.net/browse/DI-24602
+                                        // fix-version: Resource List 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
+                                        if (email.includes('.stage') === false) {
+                                            const listDefaultView = lists[listTitle].views[0];
+                                            await listPickAndVerify.bind(this)(
+                                                list,
+                                                expectedTitle,
+                                                expectedNumOfResults,
+                                                listDefaultView,
+                                            );
+                                        }
+                                        break;
+                                    default:
                                         const listDefaultView = lists[listTitle].views[0];
                                         await listPickAndVerify.bind(this)(
                                             list,
@@ -396,29 +413,37 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                             expectedNumOfResults,
                                             listDefaultView,
                                         );
+                                        break;
+                                }
+                                resourceListABI.pause(0.1 * 1000);
+                                await resourceListABI.isSpinnerDone();
+                            });
+                            switch (listTitle) {
+                                case '34. Accounts - Propagated Error':
+                                    break;
+
+                                case '32. ReferenceAccount - 2 Views':
+                                    // https://pepperi.atlassian.net/browse/DI-24602
+                                    // fix-version: Resource List 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
+                                    if (email.includes('.stage') === false) {
+                                        it('Validate Views', async function () {
+                                            const currentListExpectedViews = lists[listTitle].views;
+                                            const currentListExpectedHeadersPerView =
+                                                lists[listTitle].columnHeadersPerView;
+                                            await validateViewsTitles.bind(this)(
+                                                currentListExpectedViews.length,
+                                                currentListExpectedViews,
+                                            );
+                                            await validateViewsListHeaders(
+                                                currentListExpectedViews.length,
+                                                currentListExpectedViews,
+                                                currentListExpectedHeadersPerView,
+                                            );
+                                        });
                                     }
                                     break;
-                                default:
-                                    const listDefaultView = lists[listTitle].views[0];
-                                    await listPickAndVerify.bind(this)(
-                                        list,
-                                        expectedTitle,
-                                        expectedNumOfResults,
-                                        listDefaultView,
-                                    );
-                                    break;
-                            }
-                            resourceListABI.pause(0.1 * 1000);
-                            await resourceListABI.isSpinnerDone();
-                        });
-                        switch (listTitle) {
-                            case '34. Accounts - Propagated Error':
-                                break;
 
-                            case '32. ReferenceAccount - 2 Views':
-                                // https://pepperi.atlassian.net/browse/DI-24602
-                                // fix-version: Resource List 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
-                                if (email.includes('.stage') === false) {
+                                default:
                                     it('Validate Views', async function () {
                                         const currentListExpectedViews = lists[listTitle].views;
                                         const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
@@ -432,218 +457,207 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                             currentListExpectedHeadersPerView,
                                         );
                                     });
+                                    break;
+                            }
+
+                            if (!email.includes('.stage') || listTitle !== '32. ReferenceAccount - 2 Views') {
+                                // DI-24602
+                                Object.keys(lists[listTitle].elements).forEach((element) => {
+                                    const isDisplayed = lists[listTitle].elements[element];
+                                    it(`${element} - ${
+                                        isDisplayed ? 'DISPLAYED' : 'NOT Displayed'
+                                    }`, async function () {
+                                        switch (element) {
+                                            case 'Menu':
+                                                isDisplayed
+                                                    ? await elemntExist('Menu')
+                                                    : await elemntDoNotExist('Menu');
+                                                break;
+                                            case 'Search Input':
+                                                isDisplayed
+                                                    ? await elemntExist('Search')
+                                                    : await elemntDoNotExist('Search');
+                                                break;
+                                            case 'Smart Search':
+                                                isDisplayed
+                                                    ? await elemntExist('SmartSearch')
+                                                    : await elemntDoNotExist('SmartSearch');
+                                                break;
+                                            case 'Single Radio Button':
+                                                isDisplayed
+                                                    ? await elemntExist('SingleRadioButton')
+                                                    : await elemntDoNotExist('SingleRadioButton');
+                                                break;
+                                            case 'Select All Checkbox':
+                                                isDisplayed
+                                                    ? await elemntExist('MultiCheckbox')
+                                                    : await elemntDoNotExist('MultiCheckbox');
+                                                break;
+                                            case 'Pager':
+                                                isDisplayed
+                                                    ? await elemntExist('Pager')
+                                                    : await elemntDoNotExist('Pager');
+                                                break;
+                                            case 'Line Menu':
+                                                switch (listTitle) {
+                                                    case '10. Accounts - Line Menu':
+                                                    case '30. Items - Full - with 2 Views':
+                                                        await lineMenuSingleExist.bind(this)();
+                                                        break;
+
+                                                    case '11. Items - Line Menu - Selection Type Multi':
+                                                    case '29. Accounts - Full':
+                                                    case '32. ReferenceAccount - 2 Views':
+                                                    case '33. FiltersAccRef - 2 Views':
+                                                        await lineMenuMultiExist.bind(this)();
+                                                        break;
+
+                                                    case '1. Items - Basic':
+                                                    case '2. Accounts - Basic':
+                                                    case '5. Accounts - Selection - Single':
+                                                        await lineMenuSingleDoNotExist.bind(this)();
+                                                        break;
+
+                                                    case '4. Accounts - Selection - Multi':
+                                                    case '31. Accounts - Draw Grid Relation':
+                                                        await lineMenuMultiDoNotExist.bind(this)();
+                                                        break;
+
+                                                    case '6. Accounts - Selection - None':
+                                                        await webAppList.clickOnRowByIndex();
+                                                        await webAppList.isSpinnerDone();
+                                                        const base64ImageBuild = await driver.saveScreenshots();
+                                                        addContext(this, {
+                                                            title: `After row of type "None" was clicked (not really selected)`,
+                                                            value: 'data:image/png;base64,' + base64ImageBuild,
+                                                        });
+                                                        await elemntDoNotExist('LineMenu');
+                                                        resourceListABI.pause(0.2 * 1000);
+                                                        break;
+
+                                                    default:
+                                                        isDisplayed
+                                                            ? await elemntExist('LineMenu')
+                                                            : await elemntDoNotExist('LineMenu');
+                                                        break;
+                                                }
+                                                break;
+
+                                            default:
+                                                break;
+                                        }
+                                    });
+                                });
+                                if (
+                                    lists[listTitle].elements['Line Menu'] &&
+                                    lists[listTitle].elements['Select All Checkbox']
+                                ) {
+                                    it('Line Menu - Disappear', async function () {
+                                        await lineMenuMultiDisappear.bind(this)();
+                                    });
                                 }
-                                break;
+                            }
+                            switch (listTitle) {
+                                case '1. Items - Basic':
+                                    break;
+                                case '2. Accounts - Basic':
+                                    break;
+                                case '3. Accounts - Default Draw':
+                                    break;
+                                case '4. Accounts - Selection - Multi':
+                                    break;
+                                case '5. Accounts - Selection - Single':
+                                    break;
+                                case '6. Accounts - Selection - None':
+                                    break;
+                                case '7. Accounts - Menu':
+                                    // open menu and check that the items are there - Recycle Bin | Import | Export
+                                    break;
+                                case '8. Accounts - Menu - Hosting Addon Functionality':
+                                    // open menu and check that the items are there - Test | Go To Home Page
+                                    // click "Go To Home Page" button and check to be on home page
+                                    break;
+                                case '9. Accounts - Menu - Full':
+                                    // open menu and check that the items are there - Recycle Bin | Import | Export | Test | Go To Home Page
+                                    break;
+                                case '10. Accounts - Line Menu':
+                                    break;
+                                case '11. Items - Line Menu - Selection Type Multi':
+                                    break;
+                                case '12. Items - Search':
+                                    break;
+                                case '13. Accounts - Smart Search':
+                                    break;
+                                case '14. Accounts - Sorting Ascending':
+                                    break;
+                                case '15. Accounts - Sorting Descending':
+                                    break;
+                                case '16. Items - Search String':
+                                    // check that search input holds the correct string
+                                    break;
+                                case '17. Items - Page Type Pages':
+                                    break;
+                                case '18. Items - Page Type Pages - Page size':
+                                    break;
+                                case '19. Items - Page Type Pages - Page Index':
+                                    break;
+                                case '20. Items - Page Type Pages - Top Scroll Index':
+                                    break;
+                                case '21. Items - Page Type Pages - Page Size & Page Index':
+                                    break;
+                                case '22. Items - Page Type Pages - Page Size, Page Index & Top Scroll Index':
+                                    break;
+                                case '23. Items - Page Type Scroll':
+                                    break;
+                                case '24. Items - Page Type Scroll - Top Scroll Index':
+                                    break;
+                                case '25. Items - Page Type Scroll - Page Index':
+                                    break;
+                                case '26. Items - Page Type Scroll - Page Index & Top Scroll Index':
+                                    break;
+                                case '27. Items - Page Type Scroll - Page Size & Page Index':
+                                    break;
+                                case '28. Items - Page Type Scroll - Page Size & Page Index & Top Scroll Index':
+                                    break;
+                                case '29. Accounts - Full':
+                                    // click "Test" button in Menu and check that "Hello World" appear in search input and search response
+                                    break;
+                                case '30. Items - Full - with 2 Views':
+                                    break;
+                                case '31. Accounts - Draw Grid Relation':
+                                    // DI-22735
+                                    break;
+                                case '32. ReferenceAccount - 2 Views':
+                                    break;
+                                case '33. FiltersAccRef - 2 Views':
+                                    break;
+                                case '34. Accounts - Propagated Error':
+                                    break;
+                                case '35. ArraysOfPrimitives - Numbers, Names, Reals':
+                                    // test the content on the list cells - that it is displayed correctly
+                                    break;
+                                case '36. ContainedArray - Scheme Only: Name, Age':
+                                    // test the content on the list cells - that it is displayed correctly
+                                    break;
+                                case '37. ':
+                                    // test the content on the list cells - that it is displayed correctly
+                                    break;
 
-                            default:
-                                it('Validate Views', async function () {
-                                    const currentListExpectedViews = lists[listTitle].views;
-                                    const currentListExpectedHeadersPerView = lists[listTitle].columnHeadersPerView;
-                                    await validateViewsTitles.bind(this)(
-                                        currentListExpectedViews.length,
-                                        currentListExpectedViews,
-                                    );
-                                    await validateViewsListHeaders(
-                                        currentListExpectedViews.length,
-                                        currentListExpectedViews,
-                                        currentListExpectedHeadersPerView,
-                                    );
+                                default:
+                                    break;
+                            }
+                            if (email.includes('.stage') && listTitle === '32. ReferenceAccount - 2 Views') {
+                                it('Dialog Not Shown', async function () {
+                                    // await resourceListABI.clickElement('ListAbi_dialogButton_done');
                                 });
-                                break;
-                        }
-
-                        if (!email.includes('.stage') || listTitle !== '32. ReferenceAccount - 2 Views') {
-                            // DI-24602
-                            Object.keys(lists[listTitle].elements).forEach((element) => {
-                                const isDisplayed = lists[listTitle].elements[element];
-                                it(`${element} - ${isDisplayed ? 'DISPLAYED' : 'NOT Displayed'}`, async function () {
-                                    switch (element) {
-                                        case 'Menu':
-                                            isDisplayed ? await elemntExist('Menu') : await elemntDoNotExist('Menu');
-                                            break;
-                                        case 'Search Input':
-                                            isDisplayed
-                                                ? await elemntExist('Search')
-                                                : await elemntDoNotExist('Search');
-                                            break;
-                                        case 'Smart Search':
-                                            isDisplayed
-                                                ? await elemntExist('SmartSearch')
-                                                : await elemntDoNotExist('SmartSearch');
-                                            break;
-                                        case 'Single Radio Button':
-                                            isDisplayed
-                                                ? await elemntExist('SingleRadioButton')
-                                                : await elemntDoNotExist('SingleRadioButton');
-                                            break;
-                                        case 'Select All Checkbox':
-                                            isDisplayed
-                                                ? await elemntExist('MultiCheckbox')
-                                                : await elemntDoNotExist('MultiCheckbox');
-                                            break;
-                                        case 'Pager':
-                                            isDisplayed ? await elemntExist('Pager') : await elemntDoNotExist('Pager');
-                                            break;
-                                        case 'Line Menu':
-                                            switch (listTitle) {
-                                                case '10. Accounts - Line Menu':
-                                                case '30. Items - Full - with 2 Views':
-                                                    await lineMenuSingleExist.bind(this)();
-                                                    break;
-
-                                                case '11. Items - Line Menu - Selection Type Multi':
-                                                case '29. Accounts - Full':
-                                                case '32. ReferenceAccount - 2 Views':
-                                                case '33. FiltersAccRef - 2 Views':
-                                                    await lineMenuMultiExist.bind(this)();
-                                                    break;
-
-                                                case '1. Items - Basic':
-                                                case '2. Accounts - Basic':
-                                                case '5. Accounts - Selection - Single':
-                                                    await lineMenuSingleDoNotExist.bind(this)();
-                                                    break;
-
-                                                case '4. Accounts - Selection - Multi':
-                                                case '31. Accounts - Draw Grid Relation':
-                                                    await lineMenuMultiDoNotExist.bind(this)();
-                                                    break;
-
-                                                case '6. Accounts - Selection - None':
-                                                    await webAppList.clickOnRowByIndex();
-                                                    await webAppList.isSpinnerDone();
-                                                    const base64ImageBuild = await driver.saveScreenshots();
-                                                    addContext(this, {
-                                                        title: `After row of type "None" was clicked (not really selected)`,
-                                                        value: 'data:image/png;base64,' + base64ImageBuild,
-                                                    });
-                                                    await elemntDoNotExist('LineMenu');
-                                                    resourceListABI.pause(0.2 * 1000);
-                                                    break;
-
-                                                default:
-                                                    isDisplayed
-                                                        ? await elemntExist('LineMenu')
-                                                        : await elemntDoNotExist('LineMenu');
-                                                    break;
-                                            }
-                                            break;
-
-                                        default:
-                                            break;
-                                    }
-                                });
-                            });
-                            if (
-                                lists[listTitle].elements['Line Menu'] &&
-                                lists[listTitle].elements['Select All Checkbox']
-                            ) {
-                                it('Line Menu - Disappear', async function () {
-                                    await lineMenuMultiDisappear.bind(this)();
+                            } else {
+                                it('Close Dialog', async function () {
+                                    await resourceListABI.clickElement('ListAbi_dialogButton_done');
                                 });
                             }
-                        }
-                        switch (listTitle) {
-                            case '1. Items - Basic':
-                                break;
-                            case '2. Accounts - Basic':
-                                break;
-                            case '3. Accounts - Default Draw':
-                                break;
-                            case '4. Accounts - Selection - Multi':
-                                break;
-                            case '5. Accounts - Selection - Single':
-                                break;
-                            case '6. Accounts - Selection - None':
-                                break;
-                            case '7. Accounts - Menu':
-                                // open menu and check that the items are there - Recycle Bin | Import | Export
-                                break;
-                            case '8. Accounts - Menu - Hosting Addon Functionality':
-                                // open menu and check that the items are there - Test | Go To Home Page
-                                // click "Go To Home Page" button and check to be on home page
-                                break;
-                            case '9. Accounts - Menu - Full':
-                                // open menu and check that the items are there - Recycle Bin | Import | Export | Test | Go To Home Page
-                                break;
-                            case '10. Accounts - Line Menu':
-                                break;
-                            case '11. Items - Line Menu - Selection Type Multi':
-                                break;
-                            case '12. Items - Search':
-                                break;
-                            case '13. Accounts - Smart Search':
-                                break;
-                            case '14. Accounts - Sorting Ascending':
-                                break;
-                            case '15. Accounts - Sorting Descending':
-                                break;
-                            case '16. Items - Search String':
-                                // check that search input holds the correct string
-                                break;
-                            case '17. Items - Page Type Pages':
-                                break;
-                            case '18. Items - Page Type Pages - Page size':
-                                break;
-                            case '19. Items - Page Type Pages - Page Index':
-                                break;
-                            case '20. Items - Page Type Pages - Top Scroll Index':
-                                break;
-                            case '21. Items - Page Type Pages - Page Size & Page Index':
-                                break;
-                            case '22. Items - Page Type Pages - Page Size, Page Index & Top Scroll Index':
-                                break;
-                            case '23. Items - Page Type Scroll':
-                                break;
-                            case '24. Items - Page Type Scroll - Top Scroll Index':
-                                break;
-                            case '25. Items - Page Type Scroll - Page Index':
-                                break;
-                            case '26. Items - Page Type Scroll - Page Index & Top Scroll Index':
-                                break;
-                            case '27. Items - Page Type Scroll - Page Size & Page Index':
-                                break;
-                            case '28. Items - Page Type Scroll - Page Size & Page Index & Top Scroll Index':
-                                break;
-                            case '29. Accounts - Full':
-                                // click "Test" button in Menu and check that "Hello World" appear in search input and search response
-                                break;
-                            case '30. Items - Full - with 2 Views':
-                                break;
-                            case '31. Accounts - Draw Grid Relation':
-                                // DI-22735
-                                break;
-                            case '32. ReferenceAccount - 2 Views':
-                                break;
-                            case '33. FiltersAccRef - 2 Views':
-                                break;
-                            case '34. Accounts - Propagated Error':
-                                break;
-                            case '35. ArraysOfPrimitives - Numbers, Names, Reals':
-                                // test the content on the list cells - that it is displayed correctly
-                                break;
-                            case '36. ContainedArray - Scheme Only: Name, Age':
-                                // test the content on the list cells - that it is displayed correctly
-                                break;
-                            case '37. ':
-                                // test the content on the list cells - that it is displayed correctly
-                                break;
-
-                            default:
-                                break;
-                        }
-                        if (email.includes('.stage') && listTitle === '32. ReferenceAccount - 2 Views') {
-                            it('Dialog Not Shown', async function () {
-                                // await resourceListABI.clickElement('ListAbi_dialogButton_done');
-                            });
-                        } else {
-                            it('Close Dialog', async function () {
-                                await resourceListABI.clickElement('ListAbi_dialogButton_done');
-                            });
-                        }
+                        });
                     });
                 });
-            });
         });
     });
 
