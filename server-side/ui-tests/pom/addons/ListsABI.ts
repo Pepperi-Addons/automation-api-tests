@@ -16,7 +16,7 @@ export class ListsABI extends AddonPage {
 
     // pep-generic-list
     public ListAbi_container: By = By.xpath(
-        '//list-abi-element-0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/resource-list/list-ui',
+        '//selection-list-element-c7928eb4-d931-43bb-83c6-90e939667b45/resource-list/list-ui',
     );
     public ListAbi_title: By = By.xpath(`${this.ListAbi_container.value}//pep-top-bar/div/div/div/div/div/div[2]/span`);
     public ListAbi_results_number: By = By.xpath(
