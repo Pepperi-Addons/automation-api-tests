@@ -4,7 +4,7 @@ import { Browser } from '../utilities/browser';
 import { WebAppLoginPage, WebAppHomePage, WebAppHeader, WebAppList } from '../pom';
 import { describe, it, afterEach, before, after, Context } from 'mocha';
 import chai, { expect } from 'chai';
-import { ResourceListABI } from '../pom/addons/ResourceListABI';
+import { ListsABI } from '../pom/addons/ListsABI';
 import { By } from 'selenium-webdriver';
 import GeneralService from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
@@ -15,14 +15,14 @@ import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
-export async function ResourceListAbiTests(email: string, password: string, client: Client, varPass: string) {
+export async function ListsAbiTests(email: string, password: string, client: Client, varPass: string) {
     /** Description **/
-    /* for the purpose of this test an Addon named "ResourceListABI_Addon" was created *
-    /* it's code can be found at the following repository: https://github.com/Pepperi-Addons/resource-list-abi-tests/tree/main/client-side/src/app/settings/rl-abi *
-    /* the Addon provides a set of list containers that through the "Resource List ABI" are displayed as Generic List inside a Dialog - upon a button click *
+    /* this test utiliezes an Addon named "ResourceListABI_Addon" that is also used for Resource-List tests *
+    /* it's code can be found at the following repository: https://github.com/Pepperi-Addons/resource-list-abi-tests/tree/main/client-side/src/app/settings/lists-abi *
+    /* the Addon provides a set of list containers that through the "Lists ABI" are displayed as Generic List inside a Dialog - upon a button click *
     /* the access to the UI of the Addon is either via the Settings Side Panel, or through the path:
-    * https://app.pepperi.com/settings_block/cd3ba412-66a4-42f4-8abc-65768c5dc606/resource_list_abi/view *
-    * or through the Home Page Slug: "Resource List ABI" */
+    * https://app.pepperi.com/settings_block/cd3ba412-66a4-42f4-8abc-65768c5dc606/resource_list_abi/lists *
+    * or through the Home Page Slug: "Lists ABI" */
 
     const generalService = new GeneralService(client);
     const udcService = new UDCService(generalService);
@@ -30,102 +30,20 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const openCatalogService = new OpenCatalogService(generalService);
     const dateTime = new Date();
 
-    // const setOfAddonsForTheTest = [
-    //     // Hagit, July 2023
-    //     // { addonName: string, addonUUID: string, setToVersion?: string, setToLatestAvailable?: boolean, setToLatestPhased?: boolean, }
-    //     // { addonName: 'API Testing Framework', addonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', setToLatestAvailable: true, },
-    //     { addonName: 'Resource List', addonUUID: '0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', setToLatestAvailable: true },
-    //     {
-    //         addonName: 'ResourceListABI_Addon',
-    //         addonUUID: 'cd3ba412-66a4-42f4-8abc-65768c5dc606',
-    //         setToLatestAvailable: true,
-    //     },
-    //     { addonName: 'sync', addonUUID: '5122dc6d-745b-4f46-bb8e-bd25225d350a', setToLatestAvailable: true },
-    // ];
-
-    // const changedVersionsResponses = await generalService.changeSetOfAddonsToRequestedVersions(
-    //     setOfAddonsForTheTest,
-    //     varPass,
-    // );
-    // console.info('changedVersionsResponses: ', JSON.stringify(changedVersionsResponses, null, 2));
-
-    // describe('Prerequisites Addons for Resource List Tests', async () => {
-    //     // debugger;
-    //     // const installedAddonsList = await generalService.getInstalledAddons();
-    //     // console.info('Installed Addons Length: ', installedAddonsList.length);
-    //     changedVersionsResponses.forEach((changeResponse) => {
-    //         it(`Validate That The Needed Addon: ${changeResponse.addonName} - Is Installed.`, () => {
-    //             expect(generalService.papiClient.addons.installedAddons.addonUUID(changeResponse.addonUUID).get()).to.be
-    //                 .true;
-    //         });
-    //         describe(`"${changeResponse.addonName}"`, () => {
-    //             it(`${changeResponse.auditLogResponseChangeType} To ${changeResponse.setToLatestPhased ? 'Latest Phased Version' : ''
-    //                 }${changeResponse.setToLatestAvailable ? 'Latest Available Version' : ''}${changeResponse.setToVersion ? `Latest Version That Start With: ${changeResponse.setToVersion}` : ''
-    //                 }`, () => {
-    //                     if (changeResponse.auditLogResponseStatusName == 'Failure') {
-    //                         expect(changeResponse.auditLogResponseErrorMessage).to.include('is already working on version');
-    //                     } else {
-    //                         expect(changeResponse.auditLogResponseStatusName).to.include('Success');
-    //                     }
-    //                 });
-    //             it(`${changeResponse.setToLatestPhased
-    //                     ? `Latest Phased Version: "${changeResponse.latestPhasedVersion}"`
-    //                     : ''
-    //                 }${changeResponse.setToLatestAvailable
-    //                     ? `Latest Available Version: "${changeResponse.latestAvailableVersion}"`
-    //                     : ''
-    //                 }${changeResponse.setToVersion
-    //                     ? `Latest Version That Start With: "${changeResponse.setToVersion}"`
-    //                     : ''
-    //                 } Is Installed`, async () => {
-    //                     const expectedVersion = changeResponse.setToLatestPhased
-    //                         ? changeResponse.latestPhasedVersion
-    //                         : changeResponse.setToLatestAvailable
-    //                             ? changeResponse.latestAvailableVersion
-    //                             : changeResponse.setToVersion
-    //                                 ? changeResponse.setToVersion
-    //                                 : '';
-    //                     await expect(
-    //                         generalService.papiClient.addons.installedAddons.addonUUID(changeResponse.addonUUID).get(),
-    //                     )
-    //                         .eventually.to.have.property('Version')
-    //                         .a('string')
-    //                         .that.is.equal(expectedVersion);
-    //                 });
-    //         });
-    //     });
-    // });
-
-    /* Addons Installation */
-    // TO USE FOR PHASED LEVELING:
-    // const areBaseAddonsPhased = await generalService.setBaseAddonsToPhasedForE2E(varPass);
-    // console.info('Are Base Addons Phased: ', JSON.stringify(areBaseAddonsPhased, null, 2));
-    // const areAddonsPhased = await generalService.setToLatestPhasedVersion(varPass, generalService.testDataWithNewSync);
-    // console.info('Are Addons Phased: ', JSON.stringify(areAddonsPhased, null, 2));
-
     await generalService.baseAddonVersionsInstallation(varPass);
 
     const testData = {
-        'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
-        ResourceListABI_Addon: ['cd3ba412-66a4-42f4-8abc-65768c5dc606', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.0.%'], // to prevent open sync from being installed (2.0.%)
-        // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        lists: ['c7928eb4-d931-43bb-83c6-90e939667b45', ''],
+        // ResourceListABI_Addon: ['cd3ba412-66a4-42f4-8abc-65768c5dc606', ''],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.0.%'], // open-sync
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
-    // const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
-    describe(`Prerequisites Addons for Resource List Tests - ${
+    describe(`Prerequisites Addons for Lists Tests - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
     } | Tested user: ${email} | Date Time: ${dateTime}`, () => {
-        // const addonsLatestVersionList = Object.keys(testData);
-
-        // isInstalledArr.forEach((isInstalled, index) => {
-        //     it(`Validate That The Needed Addon: ${addonsLatestVersionList[index]} - Is Installed.`, () => {
-        //         expect(isInstalled).to.be.true;
-        //     });
-        // });
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
@@ -151,63 +69,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 });
             });
         }
-        // TO USE FOR PHASED LEVELING:
-        // for (const addonName in areAddonsPhased) {
-        //     if (!Object.keys(testData).includes(addonName)) {
-        //         const currentAddonChnageVersionResponse = areAddonsPhased[addonName];
-        //         const addonUUID = currentAddonChnageVersionResponse[0];
-        //         const latestPhasedVersion = currentAddonChnageVersionResponse[2];
-        //         const changeType = currentAddonChnageVersionResponse[3];
-        //         const status = currentAddonChnageVersionResponse[4];
-        //         const note = currentAddonChnageVersionResponse[5] || '';
-
-        //         describe(`"${addonName}"`, () => {
-        //             it(`${changeType} To Latest PHASED Version`, () => {
-        //                 if (status == 'Failure') {
-        //                     expect(note).to.include('is already working on version');
-        //                 } else {
-        //                     expect(status).to.include('Success');
-        //                 }
-        //             });
-        //             it(`Latest Phased Version Is Installed ${latestPhasedVersion}`, async () => {
-        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-        //                     .eventually.to.have.property('Version')
-        //                     .a('string')
-        //                     .that.is.equal(latestPhasedVersion);
-        //             });
-        //         });
-        //     }
-        // }
-        // for (const addonName in areBaseAddonsPhased) {
-        //     if (!Object.keys(testData).includes(addonName) && !Object.keys(areAddonsPhased).includes(addonName)) {
-        //         const currentAddonChnageVersionResponse = areBaseAddonsPhased[addonName];
-        //         const addonUUID = currentAddonChnageVersionResponse[0];
-        //         const latestPhasedVersion = currentAddonChnageVersionResponse[2];
-        //         const changeType = currentAddonChnageVersionResponse[3];
-        //         const status = currentAddonChnageVersionResponse[4];
-        //         const note = currentAddonChnageVersionResponse[5] || '';
-
-        //         describe(`"${addonName}"`, () => {
-        //             it(`${changeType} To Latest PHASED Version`, () => {
-        //                 if (status == 'Failure') {
-        //                     expect(note).to.include('is already working on version');
-        //                 } else {
-        //                     expect(status).to.include('Success');
-        //                 }
-        //             });
-        //             it(`Latest Phased Version Is Installed ${latestPhasedVersion}`, async () => {
-        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-        //                     .eventually.to.have.property('Version')
-        //                     .a('string')
-        //                     .that.is.equal(latestPhasedVersion);
-        //             });
-        //         });
-        //     }
-        // }
     });
 
-    const installedResourceListVersion = (await generalService.getInstalledAddons()).find(
-        (addon) => addon.Addon.Name == 'Resource List',
+    const installedListsVersion = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'lists',
     )?.Version;
 
     const items = await openCatalogService.getItems('?page_size=-1');
@@ -262,10 +127,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
     let webAppList: WebAppList;
-    let resourceListABI: ResourceListABI;
+    let listsABI: ListsABI;
     let enteredAbiSlug = true;
 
-    describe(`Resource List ABI Test Suite | Ver: ${installedResourceListVersion}`, async () => {
+    describe(`Lists ABI Test Suite | Ver: ${installedListsVersion}`, async () => {
         before(async function () {
             console.info('numOfListingsIn_accounts: ', JSON.stringify(numOfListingsIn_accounts, null, 2));
             console.info('numOfListingsIn_items: ', JSON.stringify(numOfListingsIn_items, null, 2));
@@ -310,14 +175,14 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expect(typeof numOfListingsIn_ContainedArray).to.equal('number');
         });
 
-        describe('RL ABI UI tests', async () => {
+        describe('Lists ABI UI tests', async () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
                 webAppLoginPage = new WebAppLoginPage(driver);
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
                 webAppList = new WebAppList(driver);
-                resourceListABI = new ResourceListABI(driver);
+                listsABI = new ListsABI(driver);
             });
 
             after(async function () {
@@ -332,21 +197,23 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 await webAppHomePage.manualResync(client);
             });
 
-            it('Entering Resource List ABI tests Addon', async () => {
+            it('Entering Lists ABI tests Addon', async () => {
                 try {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     driver.sleep(2 * 1000);
-                    await webAppHomePage.clickOnBtn('Resource List ABI');
-                    await resourceListABI.waitTillVisible(resourceListABI.TestsAddon_container, 15000);
-                    await resourceListABI.waitTillVisible(resourceListABI.TestsAddon_dropdownElement, 15000);
-                    resourceListABI.pause(2 * 1000);
+                    await webAppHomePage.clickOnBtn('Lists ABI');
+                    await listsABI.isSpinnerDone();
+                    driver.sleep(0.5 * 1000);
+                    await listsABI.waitTillVisible(listsABI.TestsAddon_container, 15000);
+                    await listsABI.waitTillVisible(listsABI.TestsAddon_dropdownElement, 15000);
+                    listsABI.pause(2 * 1000);
                     const dropdownTitle = await (
-                        await driver.findElement(resourceListABI.TestsAddon_dropdownTitle)
+                        await driver.findElement(listsABI.TestsAddon_dropdownTitle)
                     ).getAttribute('title');
                     expect(dropdownTitle).to.contain('Select List Data');
                     await driver.refresh();
-                    await resourceListABI.isSpinnerDone();
+                    await listsABI.isSpinnerDone();
                 } catch (error) {
                     enteredAbiSlug = false;
                     console.error(error);
@@ -398,7 +265,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                         break;
                                     case '32. ReferenceAccount - 2 Views':
                                         // https://pepperi.atlassian.net/browse/DI-24602
-                                        // fix-version: Resource List 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
+                                        // fix-version: Lists 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
                                         if (email.includes('.stage') === false) {
                                             const listDefaultView = lists[listTitle].views[0];
                                             await listPickAndVerify.bind(this)(
@@ -419,8 +286,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                         );
                                         break;
                                 }
-                                resourceListABI.pause(0.1 * 1000);
-                                await resourceListABI.isSpinnerDone();
+                                listsABI.pause(0.1 * 1000);
+                                await listsABI.isSpinnerDone();
                             });
                             switch (listTitle) {
                                 case '34. Accounts - Propagated Error':
@@ -428,7 +295,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
 
                                 case '32. ReferenceAccount - 2 Views':
                                     // https://pepperi.atlassian.net/browse/DI-24602
-                                    // fix-version: Resource List 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
+                                    // fix-version: Lists 1.0 https://pepperi.atlassian.net/projects/DI/versions/19610/tab/release-report-all-issues
                                     if (email.includes('.stage') === false) {
                                         it('Validate Views', async function () {
                                             const currentListExpectedViews = lists[listTitle].views;
@@ -536,7 +403,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                                             value: 'data:image/png;base64,' + base64ImageBuild,
                                                         });
                                                         await elemntDoNotExist('LineMenu');
-                                                        resourceListABI.pause(0.2 * 1000);
+                                                        listsABI.pause(0.2 * 1000);
                                                         break;
 
                                                     default:
@@ -652,11 +519,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                             }
                             if (email.includes('.stage') && listTitle === '32. ReferenceAccount - 2 Views') {
                                 it('Dialog Not Shown', async function () {
-                                    // await resourceListABI.clickElement('ListAbi_dialogButton_done');
+                                    // await listsABI.clickElement('ListAbi_dialogButton_done');
                                 });
                             } else {
                                 it('Close Dialog', async function () {
-                                    await resourceListABI.clickElement('ListAbi_dialogButton_done');
+                                    await listsABI.clickElement('ListAbi_dialogButton_done');
                                 });
                             }
                         });
@@ -675,12 +542,12 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         err = false,
         errorText?: string,
     ) {
-        await resourceListABI.isSpinnerDone();
+        await listsABI.isSpinnerDone();
         if (listToSelect) {
-            await resourceListABI.selectDropBoxByString(resourceListABI.TestsAddon_dropdownElement, listToSelect);
-            await resourceListABI.isSpinnerDone();
-            await resourceListABI.clickElement('TestsAddon_chooseList_mainDiv');
-            await resourceListABI.isSpinnerDone();
+            await listsABI.selectDropBoxByString(listsABI.TestsAddon_dropdownElement, listToSelect);
+            await listsABI.isSpinnerDone();
+            await listsABI.clickElement('TestsAddon_chooseList_mainDiv');
+            await listsABI.isSpinnerDone();
         }
         driver.sleep(1 * 1000);
         let base64ImageBuild = await driver.saveScreenshots();
@@ -688,36 +555,32 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             title: `List Selected from Dropdown`,
             value: 'data:image/png;base64,' + base64ImageBuild,
         });
-        await resourceListABI.clickElement('TestsAddon_openABI_button');
-        await resourceListABI.isSpinnerDone();
+        await listsABI.clickElement('TestsAddon_openABI_button');
+        await listsABI.isSpinnerDone();
         driver.sleep(2.5 * 1000);
-        await resourceListABI.isSpinnerDone();
-        await resourceListABI.waitTillVisible(resourceListABI.ListAbi_container, 15000);
+        await listsABI.isSpinnerDone();
+        await listsABI.waitTillVisible(listsABI.ListAbi_container, 15000);
         if (!err) {
-            await resourceListABI.waitTillVisible(webAppList.ListRowElements, 15000);
-            const listAbiTitle = await (await driver.findElement(resourceListABI.ListAbi_title)).getAttribute('title');
+            await listsABI.waitTillVisible(webAppList.ListRowElements, 15000);
+            const listAbiTitle = await (await driver.findElement(listsABI.ListAbi_title)).getAttribute('title');
             expect(listAbiTitle.trim()).to.equal(expectedTitle);
-            await resourceListABI.waitTillVisible(resourceListABI.ListAbi_ViewsDropdown, 15000);
-            const listAbi_ViewTitle = await (
-                await driver.findElement(resourceListABI.ListAbi_ViewsDropdown_value)
-            ).getText();
+            await listsABI.waitTillVisible(listsABI.ListAbi_ViewsDropdown, 15000);
+            const listAbi_ViewTitle = await (await driver.findElement(listsABI.ListAbi_ViewsDropdown_value)).getText();
             expect(listAbi_ViewTitle.trim()).to.equal(defaultView);
-            resourceListABI.pause(0.1 * 1000);
+            listsABI.pause(0.1 * 1000);
             if (expectedNumOfResults > 0) {
                 await elemntExist('ListRow');
-                resourceListABI.pause(0.2 * 1000);
+                listsABI.pause(0.2 * 1000);
             }
         } else {
-            const listAbiErrorTitle = await (
-                await driver.findElement(resourceListABI.ListAbi_Empty_Error_title)
-            ).getText();
+            const listAbiErrorTitle = await (await driver.findElement(listsABI.ListAbi_Empty_Error_title)).getText();
             const listAbiErrorDescription = await (
-                await driver.findElement(resourceListABI.ListAbi_Empty_Error_description)
+                await driver.findElement(listsABI.ListAbi_Empty_Error_description)
             ).getText();
             expect(listAbiErrorTitle.trim()).to.equal('Error');
             expect(listAbiErrorDescription.trim()).to.contain(errorText);
         }
-        const listAbiResultsNumber = await (await driver.findElement(resourceListABI.ListAbi_results_number)).getText();
+        const listAbiResultsNumber = await (await driver.findElement(listsABI.ListAbi_results_number)).getText();
         expect(Number(listAbiResultsNumber.trim())).to.equal(expectedNumOfResults);
         base64ImageBuild = await driver.saveScreenshots();
         addContext(this, {
@@ -746,23 +609,23 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         let selectorName: string;
         switch (elemName) {
             case 'Menu':
-                selectorOfElemToFind = resourceListABI.ListAbi_Menu_button;
+                selectorOfElemToFind = listsABI.ListAbi_Menu_button;
                 selectorName = 'Menu Button';
                 break;
             case 'New Button':
-                selectorOfElemToFind = resourceListABI.ListAbi_New_button;
+                selectorOfElemToFind = listsABI.ListAbi_New_button;
                 selectorName = 'New Button';
                 break;
             case 'LineMenu':
-                selectorOfElemToFind = resourceListABI.ListAbi_LineMenu_button;
+                selectorOfElemToFind = listsABI.ListAbi_LineMenu_button;
                 selectorName = 'LineMenu Button';
                 break;
             case 'Search':
-                selectorOfElemToFind = resourceListABI.ListAbi_Search_input;
+                selectorOfElemToFind = listsABI.ListAbi_Search_input;
                 selectorName = 'Search Input';
                 break;
             case 'SmartSearch':
-                selectorOfElemToFind = resourceListABI.ListAbi_SmartSearch_container;
+                selectorOfElemToFind = listsABI.ListAbi_SmartSearch_container;
                 selectorName = 'SmartSearch (Filters) Container';
                 break;
             case 'ListRow':
@@ -778,11 +641,11 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 selectorName = 'Selection Type Single (Radio Button)';
                 break;
             case 'Pager':
-                selectorOfElemToFind = resourceListABI.ListAbi_Pager_container;
+                selectorOfElemToFind = listsABI.ListAbi_Pager_container;
                 selectorName = 'Pager Box';
                 break;
             case 'Scroll':
-                selectorOfElemToFind = resourceListABI.ListAbi_VerticalScroll;
+                selectorOfElemToFind = listsABI.ListAbi_VerticalScroll;
                 selectorName = 'Vertical Scroll';
                 break;
             case 'RadioButtonSelected':
@@ -794,12 +657,12 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 selectorName = 'Selected Checkbox';
                 break;
             case 'Views':
-                selectorOfElemToFind = resourceListABI.ListAbi_ViewsDropdown;
+                selectorOfElemToFind = listsABI.ListAbi_ViewsDropdown;
                 selectorName = 'Views Box';
                 break;
 
             default:
-                selectorOfElemToFind = resourceListABI.ListAbi_container;
+                selectorOfElemToFind = listsABI.ListAbi_container;
                 selectorName = '';
                 break;
         }
@@ -869,7 +732,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             value: 'data:image/png;base64,' + base64ImageBuild,
         });
         await elemntDoNotExist('LineMenu');
-        resourceListABI.pause(0.2 * 1000);
+        listsABI.pause(0.2 * 1000);
         await webAppList.clickOnCheckBoxByElementIndex();
         await webAppList.isSpinnerDone();
         await elemntDoNotExist('CheckboxSelected');
@@ -879,7 +742,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             value: 'data:image/png;base64,' + base64ImageBuild,
         });
         await elemntDoNotExist('LineMenu');
-        resourceListABI.pause(2 * 1000);
+        listsABI.pause(2 * 1000);
     }
 
     async function lineMenuSingleDoNotExist(this: Context) {
@@ -893,7 +756,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             value: 'data:image/png;base64,' + base64ImageBuild,
         });
         await elemntDoNotExist('LineMenu');
-        resourceListABI.pause(0.2 * 1000);
+        listsABI.pause(0.2 * 1000);
         await webAppList.clickOnRadioButtonByElementIndex();
         await webAppList.isSpinnerDone();
         base64ImageBuild = await driver.saveScreenshots();
@@ -902,7 +765,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             value: 'data:image/png;base64,' + base64ImageBuild,
         });
         await elemntDoNotExist('LineMenu');
-        resourceListABI.pause(2 * 1000);
+        listsABI.pause(2 * 1000);
     }
 
     async function lineMenuSingleExist(this: Context) {
@@ -916,7 +779,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             value: 'data:image/png;base64,' + base64ImageBuild,
         });
         await elemntExist('LineMenu');
-        resourceListABI.pause(0.2 * 1000);
+        listsABI.pause(0.2 * 1000);
     }
 
     async function lineMenuMultiExist(this: Context) {
@@ -930,7 +793,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             value: 'data:image/png;base64,' + base64ImageBuild,
         });
         await elemntExist('LineMenu');
-        resourceListABI.pause(0.2 * 1000);
+        listsABI.pause(0.2 * 1000);
     }
 
     async function lineMenuMultiDisappear(this: Context) {
@@ -949,13 +812,13 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         });
         await elemntDoNotExist('CheckboxSelected');
         await elemntDoNotExist('LineMenu');
-        resourceListABI.pause(2 * 1000);
+        listsABI.pause(2 * 1000);
     }
 
     async function validateView(expectedViewTitle: string, expectedColumnHeaders: string[]) {
         console.info(`***In Validate View*** ${expectedViewTitle}`);
         const listHeaders = await driver.findElements(webAppList.Headers);
-        const viewTitle = await (await driver.findElement(resourceListABI.ListAbi_ViewsDropdown_value)).getText();
+        const viewTitle = await (await driver.findElement(listsABI.ListAbi_ViewsDropdown_value)).getText();
         driver.sleep(0.1 * 1000);
         console.info(`in validateView, expectedColumnHeaders: ${expectedColumnHeaders}`);
         console.info(`in validateView, viewTitle: ${viewTitle}`);
@@ -975,18 +838,18 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     }
 
     async function validateViewsTitles(this: Context, expectedNumOfViews: number, expectedViewsTitles: string[]) {
-        await driver.click(resourceListABI.ListAbi_ViewsDropdown);
-        await driver.untilIsVisible(resourceListABI.ListAbi_ViewsDropdownOptions_container);
+        await driver.click(listsABI.ListAbi_ViewsDropdown);
+        await driver.untilIsVisible(listsABI.ListAbi_ViewsDropdownOptions_container);
         const base64ImageBuild = await driver.saveScreenshots();
         addContext(this, {
             title: `Views List Open`,
             value: 'data:image/png;base64,' + base64ImageBuild,
         });
-        const views = await driver.findElements(resourceListABI.ListAbi_ViewsDropdownSingleOption_textContent);
-        resourceListABI.pause(0.2 * 1000);
+        const views = await driver.findElements(listsABI.ListAbi_ViewsDropdownSingleOption_textContent);
+        listsABI.pause(0.2 * 1000);
         expect(views.length).to.equal(expectedNumOfViews);
         await views[0].click();
-        resourceListABI.pause(0.1 * 1000);
+        listsABI.pause(0.1 * 1000);
         views.forEach(async (view) => {
             try {
                 const viewTitle = await view.getText();
@@ -1010,7 +873,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         for (let viewIndex = 0; viewIndex < expectedNumOfViews; viewIndex++) {
             console.info(`In validateViews, viewIndex: ${viewIndex}`);
             await switchViewByName(expectedViewsTitles[viewIndex]);
-            resourceListABI.isSpinnerDone();
+            listsABI.isSpinnerDone();
             await validateView(expectedViewsTitles[viewIndex], columnHeadersOfEachView[viewIndex]);
         }
         driver.sleep(5 * 1000);
@@ -1019,13 +882,13 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     async function switchViewByName(viewText: string) {
         console.info('***In Switch View***');
         driver.sleep(0.1 * 1000);
-        await driver.untilIsVisible(resourceListABI.ListAbi_ViewsDropdown);
+        await driver.untilIsVisible(listsABI.ListAbi_ViewsDropdown);
         driver.sleep(0.1 * 1000);
-        await resourceListABI.selectDropBoxByString(resourceListABI.ListAbi_ViewsDropdown, viewText);
+        await listsABI.selectDropBoxByString(listsABI.ListAbi_ViewsDropdown, viewText);
         driver.sleep(0.1 * 1000);
-        await driver.click(resourceListABI.ListAbi_title);
+        await driver.click(listsABI.ListAbi_title);
         driver.sleep(1 * 1000);
-        const currentView = await (await driver.findElement(resourceListABI.ListAbi_ViewsDropdown_value)).getText();
+        const currentView = await (await driver.findElement(listsABI.ListAbi_ViewsDropdown_value)).getText();
         expect(currentView).equals(viewText);
     }
 }
