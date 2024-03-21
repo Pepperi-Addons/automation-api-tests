@@ -159,6 +159,21 @@ export async function upgrade_dependencies_with_new_sync(
     return await testerFunctions.run();
 }
 
+export async function upgrade_dependencies_with_new_sync_no_nebula(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Upgrade_Dependencies_New_Sync_Included';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await UpgradeDependenciesTestsWithNewSync(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
 export async function upload_local_file(client: Client, request: Request, testerFunctions: TesterFunctions) {
     const service = new GeneralService(client);
     testName = 'Local_Addon_File_Creator_Tests';

@@ -39,6 +39,12 @@ export class ApplicationHeader extends AddonPage {
     public ButtonItemKey: By = By.xpath(`(//mat-form-field//input)[1]`);
     public ButtonItemName: By = By.xpath(`(//mat-form-field//input)[2]`);
     public HeaderPageBackButton: By = By.xpath(`//pep-top-bar//pep-button`);
+    public HeaderSlugDeleteButton: By = By.xpath(
+        `//input[@title='Application_Header']//..//..//..//..//..//..//pep-button[@iconname="system_bin"]//button`,
+    );
+    public SaveSlugs: By = By.css(`[data-qa="Save"]`);
+    public CancelButtonSlugs: By = By.css(`[data-qa="Cancel"]`);
+    public CloseModalButton: By = By.xpath('//mat-dialog-container//button');
 
     public async enterApplicationHeaderPage(): Promise<boolean> {
         const webAppHeader = new WebAppHeader(this.browser);
@@ -203,6 +209,31 @@ export class ApplicationHeader extends AddonPage {
         const flowsLinkInsideList: string = this.ListLink.valueOf()['value'].replace('|PLACEHOLDER|', flowName);
         await this.browser.untilIsVisible(By.xpath(flowsLinkInsideList));
         await this.browser.click(By.xpath(flowsLinkInsideList));
+    }
+
+    async deleteAppHeaderSlug() {
+        const e2eUiService = new E2EUtils(this.browser);
+        await e2eUiService.navigateTo('Slugs');
+        const slugs: Slugs = new Slugs(this.browser);
+        this.browser.sleep(2000);
+        if (await this.browser.isElementVisible(slugs.Slugs_Tab)) {
+            await slugs.clickTab('Mapping_Tab');
+        }
+        this.browser.sleep(2000);
+        await slugs.waitTillVisible(slugs.EditPage_ConfigProfileCard_EditButton_Rep, 5000);
+        await slugs.click(slugs.EditPage_ConfigProfileCard_EditButton_Rep);
+        await slugs.isSpinnerDone();
+        this.browser.sleep(2500);
+        const isHeaderAlreadyWasConfigured = await this.browser.isElementVisible(this.HeaderSlugDeleteButton);
+        if (isHeaderAlreadyWasConfigured) {
+            await this.browser.click(this.HeaderSlugDeleteButton);
+            await this.browser.click(this.SaveSlugs);
+            this.browser.sleep(2000);
+            await this.browser.click(this.CloseModalButton);
+        } else {
+            await this.browser.click(this.CancelButtonSlugs);
+            this.browser.sleep(1500);
+        }
     }
 
     async mapASlugToAppHeader(
