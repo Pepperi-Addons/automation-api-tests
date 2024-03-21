@@ -128,7 +128,7 @@ export async function ListsAbiTests(email: string, password: string, client: Cli
     let webAppHeader: WebAppHeader;
     let webAppList: WebAppList;
     let listsABI: ListsABI;
-    let enteredAbiSlug: boolean;
+    let enteredAbiSlug = true;
 
     describe(`Lists ABI Test Suite | Ver: ${installedListsVersion}`, async () => {
         before(async function () {
@@ -198,20 +198,27 @@ export async function ListsAbiTests(email: string, password: string, client: Cli
             });
 
             it('Entering Lists ABI tests Addon', async () => {
-                await webAppHeader.goHome();
-                await webAppHomePage.isSpinnerDone();
-                driver.sleep(2 * 1000);
-                await webAppHomePage.clickOnBtn('Lists ABI');
-                await listsABI.waitTillVisible(listsABI.TestsAddon_container, 15000);
-                await listsABI.waitTillVisible(listsABI.TestsAddon_dropdownElement, 15000);
-                listsABI.pause(2 * 1000);
-                const dropdownTitle = await (
-                    await driver.findElement(listsABI.TestsAddon_dropdownTitle)
-                ).getAttribute('title');
-                expect(dropdownTitle).to.contain('Select List Data');
-                await driver.refresh();
-                await listsABI.isSpinnerDone();
-                enteredAbiSlug = true;
+                try {
+                    await webAppHeader.goHome();
+                    await webAppHomePage.isSpinnerDone();
+                    driver.sleep(2 * 1000);
+                    await webAppHomePage.clickOnBtn('Lists ABI');
+                    await listsABI.isSpinnerDone();
+                    driver.sleep(0.5 * 1000);
+                    await listsABI.waitTillVisible(listsABI.TestsAddon_container, 15000);
+                    await listsABI.waitTillVisible(listsABI.TestsAddon_dropdownElement, 15000);
+                    listsABI.pause(2 * 1000);
+                    const dropdownTitle = await (
+                        await driver.findElement(listsABI.TestsAddon_dropdownTitle)
+                    ).getAttribute('title');
+                    expect(dropdownTitle).to.contain('Select List Data');
+                    await driver.refresh();
+                    await listsABI.isSpinnerDone();
+                } catch (error) {
+                    enteredAbiSlug = false;
+                    console.error(error);
+                    throw new Error('Problem with opening ABI addon slug');
+                }
             });
 
             describe('List Content Tests', async () => {

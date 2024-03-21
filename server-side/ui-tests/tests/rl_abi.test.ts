@@ -263,7 +263,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     let webAppHeader: WebAppHeader;
     let webAppList: WebAppList;
     let resourceListABI: ResourceListABI;
-    let enteredAbiSlug: boolean;
+    let enteredAbiSlug = true;
 
     describe(`Resource List ABI Test Suite | Ver: ${installedResourceListVersion}`, async () => {
         before(async function () {
@@ -333,20 +333,25 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             });
 
             it('Entering Resource List ABI tests Addon', async () => {
-                await webAppHeader.goHome();
-                await webAppHomePage.isSpinnerDone();
-                driver.sleep(2 * 1000);
-                await webAppHomePage.clickOnBtn('Resource List ABI');
-                await resourceListABI.waitTillVisible(resourceListABI.TestsAddon_container, 15000);
-                await resourceListABI.waitTillVisible(resourceListABI.TestsAddon_dropdownElement, 15000);
-                resourceListABI.pause(2 * 1000);
-                const dropdownTitle = await (
-                    await driver.findElement(resourceListABI.TestsAddon_dropdownTitle)
-                ).getAttribute('title');
-                expect(dropdownTitle).to.contain('Select List Data');
-                await driver.refresh();
-                await resourceListABI.isSpinnerDone();
-                enteredAbiSlug = true;
+                try {
+                    await webAppHeader.goHome();
+                    await webAppHomePage.isSpinnerDone();
+                    driver.sleep(2 * 1000);
+                    await webAppHomePage.clickOnBtn('Resource List ABI');
+                    await resourceListABI.waitTillVisible(resourceListABI.TestsAddon_container, 15000);
+                    await resourceListABI.waitTillVisible(resourceListABI.TestsAddon_dropdownElement, 15000);
+                    resourceListABI.pause(2 * 1000);
+                    const dropdownTitle = await (
+                        await driver.findElement(resourceListABI.TestsAddon_dropdownTitle)
+                    ).getAttribute('title');
+                    expect(dropdownTitle).to.contain('Select List Data');
+                    await driver.refresh();
+                    await resourceListABI.isSpinnerDone();
+                } catch (error) {
+                    enteredAbiSlug = false;
+                    console.error(error);
+                    throw new Error('Problem with opening ABI addon slug');
+                }
             });
 
             describe('List Content Tests', async () => {
