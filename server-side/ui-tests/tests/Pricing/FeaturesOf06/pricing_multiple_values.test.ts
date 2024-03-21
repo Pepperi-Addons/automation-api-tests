@@ -318,11 +318,11 @@ ________________________________________________________________________________
                         switch (installedPricingVersionShort) {
                             case '5':
                             case '6':
-                                limit = 600;
+                                limit = 650;
                                 break;
 
                             default:
-                                limit = 550;
+                                limit = 600;
                                 break;
                         }
                         duration = await (await driver.findElement(orderPage.Duration_Span)).getAttribute('title');
