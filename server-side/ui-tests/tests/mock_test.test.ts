@@ -63,6 +63,118 @@ export async function MockTest(email: string, password: string, client: Client) 
     describe('Resource List Test Suite', () => {
         describe('API Creation of UDCs', () => {
             /********************  RL Data Prep  ********************/
+            it('Creating UDC of Contained Resource with API', async () => {
+                const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                    nameOfCollection: 'SchemeOnlyObject',
+                    descriptionOfCollection: 'Created with Automation',
+                    fieldsOfCollection: [
+                        {
+                            classType: 'Primitive',
+                            fieldName: 'name',
+                            fieldTitle: 'Name',
+                            field: {
+                                Type: 'String',
+                                Description: '',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                                // IndexedFields: {},
+                                // OptionalValues: [],
+                            },
+                        },
+                        {
+                            classType: 'Primitive',
+                            fieldName: 'age',
+                            fieldTitle: 'Age',
+                            field: {
+                                Type: 'Integer',
+                                Description: '',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                                // IndexedFields: {},
+                                // OptionalValues: [],
+                            },
+                        },
+                    ],
+                    typeOfCollection: 'contained',
+                    syncDefinitionOfCollection: { Sync: false },
+                });
+                const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+                console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+
+                expect(upsertResponse.Ok).to.be.true;
+                expect(upsertResponse.Status).to.equal(200);
+                expect(upsertResponse.Error).to.eql({});
+            });
+
+            it('Creating UDC of Contained Array with API', async () => {
+                const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                    nameOfCollection: 'ContainedArray',
+                    descriptionOfCollection: 'Created with Automation',
+                    fieldsOfCollection: [
+                        {
+                            classType: 'Primitive',
+                            fieldName: 'title',
+                            fieldTitle: 'Title',
+                            field: {
+                                Type: 'String',
+                                Description: '',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                            },
+                        },
+                        {
+                            classType: 'ContainedArray',
+                            fieldName: 'contained_scheme_only_name_age',
+                            fieldTitle: 'Name Age scheme',
+                            field: {
+                                Type: 'Array',
+                                Description: '',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                                Resource: 'SchemeOnlyObject',
+                                Sync: false,
+                            },
+                        },
+                    ],
+                    typeOfCollection: 'data',
+                    syncDefinitionOfCollection: { Sync: false },
+                });
+                const upsertResponse = await udcService.upsertUDC(bodyOfCollection, 'schemes');
+                console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+
+                expect(upsertResponse.Ok).to.be.true;
+                expect(upsertResponse.Status).to.equal(200);
+                expect(upsertResponse.Error).to.eql({});
+            });
+
+            // Collection: ==========>   ContainedArray   <==========   //
+            // it('Adding Values to Collection: ContainedArray', async () => {
+            //     const collectionName = 'ContainedArray';
+            //     const upsertingValues_Response = await udcService.upsertValuesToCollection(
+            //         {
+            //             numbers: [1, 2, 3, 4],
+            //             names: ['Happy', 'New', 'Year', '!!!'],
+            //             reals: [0.1, 0.2, 0.3, 0.4],
+            //         },
+            //         collectionName,
+            //     );
+            //     console.info(
+            //         `Response of POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName} :\n`,
+            //         `${JSON.stringify(upsertingValues_Response, null, 2)}`,
+            //     );
+            //     expect(upsertingValues_Response.Ok).to.be.true;
+            //     expect(upsertingValues_Response.Status).to.equal(200);
+            //     expect(upsertingValues_Response.Error).to.eql({});
+            // });
+
             // it('Creating UDC of Arrays of Primiteve Types Fields with API', async () => {
             //     //  Strings Array  |  Integers Array  |  Doubles Array  //
             //     const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -71,8 +183,8 @@ export async function MockTest(email: string, password: string, client: Client) 
             //         fieldsOfCollection: [
             //             {
             //                 classType: 'Array',
-            //                 fieldName: 'numbers',
-            //                 fieldTitle: 'Numbers',
+            //                 fieldName: 'names',
+            //                 fieldTitle: 'Names',
             //                 field: {
             //                     Type: 'String',
             //                     Description: 'list of products',
@@ -86,8 +198,8 @@ export async function MockTest(email: string, password: string, client: Client) 
             //             },
             //             {
             //                 classType: 'Array',
-            //                 fieldName: 'names',
-            //                 fieldTitle: 'Names',
+            //                 fieldName: 'numbers',
+            //                 fieldTitle: 'Numbers',
             //                 field: {
             //                     Type: 'Integer',
             //                     Description: 'in stock quantity',
