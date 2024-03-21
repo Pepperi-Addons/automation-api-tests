@@ -3,7 +3,7 @@ import { AddonPage } from './base/AddonPage';
 
 export class ListsABI extends AddonPage {
     public TestsAddon_container: By = By.xpath(
-        '//div[contains(@class,pep-center-layout)]/pep-remote-loader-element/settings-element-cd3ba412-66a4-42f4-8abc-65768c5dc606//rl-abi',
+        '//div[contains(@class,pep-center-layout)]/pep-remote-loader-element/settings-element-cd3ba412-66a4-42f4-8abc-65768c5dc606//lists-abi',
     );
     public TestsAddon_dropdownTitle: By = By.xpath(
         `${this.TestsAddon_container.value}//pep-select//pep-field-title//mat-label`,
