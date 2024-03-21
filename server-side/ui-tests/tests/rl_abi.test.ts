@@ -207,7 +207,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     });
 
     const installedResourceListVersion = (await generalService.getInstalledAddons()).find(
-        (addon) => addon.Addon.Name == 'lists',
+        (addon) => addon.Addon.Name == 'Resource List',
     )?.Version;
 
     const items = await openCatalogService.getItems('?page_size=-1');
