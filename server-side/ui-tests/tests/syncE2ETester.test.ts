@@ -3,7 +3,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { after, afterEach, before, describe, it } from 'mocha';
 import { ConfigurationsService } from '../../services/configurations.service';
-import GeneralService, { testDataNoSync } from '../../services/general.service';
+import GeneralService, { testData as testDataBase } from '../../services/general.service';
 import { WebAppHomePage } from '../pom';
 import { AppHeaderObject, ApplicationHeader } from '../pom/addons/AppHeaderService';
 import { Flow, FlowStep } from '../pom/addons/flow.service';
@@ -55,7 +55,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
         Menu: [{ FlowKey: '', Name: 'evgeny_test_menu', FlowName: '' }], //
     };
     // #region Upgrade open sync dependencies
-    await generalService.baseAddonVersionsInstallation(varPass, testDataNoSync);
+    await generalService.baseAddonVersionsInstallation(varPass, testDataBase);
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi-node
