@@ -9,6 +9,7 @@ import { AppHeaderObject, ApplicationHeader } from '../pom/addons/AppHeaderServi
 import { Flow, FlowStep } from '../pom/addons/flow.service';
 import { Browser } from '../utilities/browser';
 import { createFlowUsingE2E } from './flows_builder.test';
+import { OpenSyncService } from '../../services/open-sync.service';
 
 chai.use(promised);
 
@@ -223,13 +224,33 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 //7. shortly validate - using UI
                 const isMenuAndButtonAreCreated = await appHeaderService.validateMenuAndButtonsViaUI(headerObject);
                 expect(isMenuAndButtonAreCreated).to.equal(true);
-                //8. goto slugs and set Application_Header to use just created header
+                //* check open sync object got this published header + cpi data schemes
+                const openSyncService = new OpenSyncService(generalService);
+                const sources = [
+                    { AddonUUID: '84c999c3-84b7-454e-9a86-71b7abc96554', LastSyncDateTime: '1970-02-18T08:48:44.880Z' },
+                ];
+                const openSyncResponse = await openSyncService.getSyncedConfigurationObjectBasedOnResource(
+                    sources,
+                    '1970-11-23T14:39:50.781Z',
+                );
+                const filteredForSyncedConfigObject = openSyncResponse.Body.Resources.Data.filter((data) =>
+                    data.Schema.Name.includes('synced_configuration_objects'),
+                );
+                const xx = filteredForSyncedConfigObject.Objects.filter((obj) => obj.Key === appHeaderUUID);
+                expect(xx.length).to.be.above(0);
+                //ConfigurationSchemeName - > AppHeaderConfiguration
+                //AddonUUID -> '9bc8af38-dd67-4d33-beb0-7d6b39a6e98d'
+                //Hidden -> false
+                //Profile??
+                //Version??
+                //Data.Buttons
+                //Data.Menu
                 debugger;
+                //8. goto slugs and set Application_Header to use just created header
                 await appHeaderService.deleteAppHeaderSlug();
                 await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
                 //9. re-sync
                 await webAppHomePage.reSyncApp();
-
                 //TODO: test that the button + menu are there on the header
                 //TODO: logout from Admin - login to buyer - tests the header
                 debugger;
