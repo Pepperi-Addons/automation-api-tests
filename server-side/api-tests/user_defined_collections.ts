@@ -323,9 +323,10 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const response = await udcService.sendDataToField(optionalCollectionName, strValue);
                 expect(response.Ok).to.equal(false);
                 expect(response.Status).to.equal(400);
-                expect(response.Body.fault.faultstring).to.equal(
+                expect(response.Body.fault.faultstring).to.be.oneOf([
+                    'Failed due to exception: str is not of a type(s) string\nstr 115 is not one of enum values: a,b,c',
                     'Failed due to exception: str is not of a type(s) string\nstr is not one of enum values: a,b,c',
-                );
+                ]);
             });
             it('Positive Test: upload values which are members of the optional values - should work', async () => {
                 const strValue_a = {

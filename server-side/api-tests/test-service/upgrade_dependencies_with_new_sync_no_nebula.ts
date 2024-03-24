@@ -4,7 +4,7 @@ import GeneralService, {
     TesterFunctions,
 } from '../../services/general.service';
 
-export async function UpgradeDependenciesTestsWithNewSync(
+export async function UpgradeDependenciesTestsWithNewSyncNoNebula(
     generalService: GeneralService,
     request,
     tester: TesterFunctions,
