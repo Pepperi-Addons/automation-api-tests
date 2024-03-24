@@ -31,6 +31,7 @@ export const testData = {
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''], // evgeny - 24/3/24; new CPI Data addon versions
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //1.4.22 in the interim 1.4.X PFS version
     'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''],
+    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
     sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], //sync is now public
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.0.%'],
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', ''],
@@ -60,7 +61,6 @@ testDataWithSyncForCpi['File Service Framework'] = ['00000000-0000-0000-0000-000
 
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
 export const testDataWithNewSyncForCpiRegression = {
-    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
     ...testDataWithSyncForCpi,
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
@@ -76,7 +76,6 @@ testDataWithSync['File Service Framework'] = ['00000000-0000-0000-0000-0000000f1
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
 
 export const testDataWithNewSyncAndNebula = {
-    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
     ...testData, // already has sync
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
@@ -85,7 +84,6 @@ export const testDataWithNewSyncAndNebula = {
 };
 
 export const testDataWithNewSyncNoNebula = {
-    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
     ...testData, // already has sync
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
