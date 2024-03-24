@@ -236,8 +236,11 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 const filteredForSyncedConfigObject = openSyncResponse.Body.Resources.Data.filter((data) =>
                     data.Schema.Name.includes('synced_configuration_objects'),
                 );
-                const xx = filteredForSyncedConfigObject.Objects.filter((obj) => obj.Key === appHeaderUUID);
-                expect(xx.length).to.be.above(0);
+                const spesificHeaderWeJustCreated = filteredForSyncedConfigObject.Objects.filter(
+                    (obj) => obj.Key === appHeaderUUID,
+                );
+                debugger;
+                expect(spesificHeaderWeJustCreated.length).to.be.above(0); //to equal one?
                 //ConfigurationSchemeName - > AppHeaderConfiguration
                 //AddonUUID -> '9bc8af38-dd67-4d33-beb0-7d6b39a6e98d'
                 //Hidden -> false
@@ -251,6 +254,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
                 //9. re-sync
                 await webAppHomePage.reSyncApp();
+                debugger;
                 //TODO: test that the button + menu are there on the header
                 //TODO: logout from Admin - login to buyer - tests the header
                 debugger;
