@@ -3,12 +3,13 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { after, afterEach, before, describe, it } from 'mocha';
 import { ConfigurationsService } from '../../services/configurations.service';
-import GeneralService, { testDataNoSync } from '../../services/general.service';
+import GeneralService, { testData as testDataBase } from '../../services/general.service';
 import { WebAppHomePage } from '../pom';
 import { AppHeaderObject, ApplicationHeader } from '../pom/addons/AppHeaderService';
 import { Flow, FlowStep } from '../pom/addons/flow.service';
 import { Browser } from '../utilities/browser';
 import { createFlowUsingE2E } from './flows_builder.test';
+import { OpenSyncService } from '../../services/open-sync.service';
 
 chai.use(promised);
 
@@ -54,28 +55,28 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
         Menu: [{ FlowKey: '', Name: 'evgeny_test_menu', FlowName: '' }], //
     };
     // #region Upgrade open sync dependencies
-    await generalService.baseAddonVersionsInstallation(varPass, testDataNoSync);
+    await generalService.baseAddonVersionsInstallation(varPass, testDataBase);
     const testData = {
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
-        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.30.%'],
-        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'],
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi-node
+        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.30.%'], //cpas
+        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //papi
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //pfs
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.0.%'],
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], //webapp b2b
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
+        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], //udc
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', ''],
-        'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''],
-        'application-header': ['9bc8af38-dd67-4d33-beb0-7d6b39a6e98d', ''],
+        'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''], //flows
+        'application-header': ['9bc8af38-dd67-4d33-beb0-7d6b39a6e98d', ''], // the header itself
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
@@ -145,6 +146,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
             });
             it(`1. Basic UI Test: Using Admin Login To WebApp, Create A Basic Flow, Set App. Header To Show This Flow And Notifications Button Using Legacy Resources And See It Changes The Header On Admin And Buyer`, async function () {
                 //1. login to webapp & create a flow
+                debugger;
                 const [flowKey, flowName] = await createFlowUsingE2E(
                     driver,
                     generalService,
@@ -217,15 +219,42 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 );
                 expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Buttons[0].Visible).to.equal(true);
                 expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Menu[0].Title).to.equal(headerObject.Menu[0].Name);
-                expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Menu[0].Flow.Key).to.equal(flowKey);
+                expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Menu[0].Flow.FlowKey).to.equal(flowKey);
                 expect(newlyCreatedHeaderWithButtonAndMenu1.Data.Menu[0].Visible).to.equal(true);
                 //7. shortly validate - using UI
                 const isMenuAndButtonAreCreated = await appHeaderService.validateMenuAndButtonsViaUI(headerObject);
                 expect(isMenuAndButtonAreCreated).to.equal(true);
+                //* check open sync object got this published header + cpi data schemes
+                const openSyncService = new OpenSyncService(generalService);
+                const sources = [
+                    { AddonUUID: '84c999c3-84b7-454e-9a86-71b7abc96554', LastSyncDateTime: '1970-02-18T08:48:44.880Z' },
+                ];
+                const openSyncResponse = await openSyncService.getSyncedConfigurationObjectBasedOnResource(
+                    sources,
+                    '1970-11-23T14:39:50.781Z',
+                );
+                const filteredForSyncedConfigObject = openSyncResponse.Body.Resources.Data.filter((data) =>
+                    data.Schema.Name.includes('synced_configuration_objects'),
+                );
+                const spesificHeaderWeJustCreated = filteredForSyncedConfigObject.Objects.filter(
+                    (obj) => obj.Key === appHeaderUUID,
+                );
+                debugger;
+                expect(spesificHeaderWeJustCreated.length).to.be.above(0); //to equal one?
+                //ConfigurationSchemeName - > AppHeaderConfiguration
+                //AddonUUID -> '9bc8af38-dd67-4d33-beb0-7d6b39a6e98d'
+                //Hidden -> false
+                //Profile??
+                //Version??
+                //Data.Buttons
+                //Data.Menu
+                debugger;
                 //8. goto slugs and set Application_Header to use just created header
+                await appHeaderService.deleteAppHeaderSlug();
                 await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
                 //9. re-sync
                 await webAppHomePage.reSyncApp();
+                debugger;
                 //TODO: test that the button + menu are there on the header
                 //TODO: logout from Admin - login to buyer - tests the header
                 debugger;

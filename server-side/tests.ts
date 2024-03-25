@@ -97,6 +97,7 @@ import { Adal40KImportAndPurgeTest } from './api-tests/adal_40k_import_export_an
 import { UnistallAddonFromAllUsers } from './api-tests/uninstall_addon_from_all_auto_users';
 import { UpgradeDependenciesTestsWithNewSync } from './api-tests/test-service/upgrade_dependencies_with_new_sync';
 import { SchedulerTests_Part2 } from './api-tests/code-jobs/scheduler_DI_23872';
+import { UpgradeDependenciesTestsWithNewSyncNoNebula } from './api-tests/test-service/upgrade_dependencies_with_new_sync_no_nebula';
 // import { PapiClient } from '@pepperi-addons/papi-sdk'; WIP - dev tests
 // import { checkVersionsTest } from './api-tests/check_versions';
 
@@ -154,6 +155,21 @@ export async function upgrade_dependencies_with_new_sync(
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await UpgradeDependenciesTestsWithNewSync(service, request, testerFunctions);
+    await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function upgrade_dependencies_with_new_sync_no_nebula(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Upgrade_Dependencies_New_Sync_Included';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await UpgradeDependenciesTestsWithNewSyncNoNebula(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
