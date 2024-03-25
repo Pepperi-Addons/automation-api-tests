@@ -226,14 +226,14 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(isMenuAndButtonAreCreated).to.equal(true);
                 //* check open sync object got this published header + cpi data schemes
                 const openSyncService = new OpenSyncService(generalService);
-                const sources = [
+                const sourcesForConfig = [
                     { AddonUUID: '84c999c3-84b7-454e-9a86-71b7abc96554', LastSyncDateTime: '1970-02-18T08:48:44.880Z' },
                 ];
-                const openSyncResponse = await openSyncService.getSyncedConfigurationObjectBasedOnResource(
-                    sources,
+                const openSyncResponseCofig = await openSyncService.getSyncedConfigurationObjectBasedOnResource(
+                    sourcesForConfig,
                     '1970-11-23T14:39:50.781Z',
                 );
-                const syncConfigObject = openSyncResponse.Body.Resources.Data.find(
+                const syncConfigObject = openSyncResponseCofig.Body.Resources.Data.find(
                     (data) => data.Schema.Name === 'synced_configuration_objects',
                 );
                 const spesificHeaderWeJustCreated = syncConfigObject.Objects.filter((obj) => obj.Key === appHeaderUUID);
@@ -257,6 +257,18 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(headersButton.Title).to.equal(headerObject.Button[0].ButtonName);
                 expect(headersButton.Key).to.equal(headerObject.Button[0].ButtonKey);
                 expect(headersButton.Visible).to.equal(true);
+                // const sourcesForSchemes = [
+                //     { AddonUUID: 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', LastSyncDateTime: '1970-02-18T08:48:44.880Z' },
+                // ];
+                // const openSyncResponseSchemes = await openSyncService.getSyncedConfigurationObjectBasedOnResource(
+                //     sourcesForSchemes,
+                //     '1970-11-23T14:39:50.781Z',
+                // );
+                // debugger;
+                // const syncSchemesObject = openSyncResponseSchemes.Body.Resources.Data.find(
+                //     (data) => data.Schema.Name === 'schemes',
+                // );
+                // debugger;
                 //8. goto slugs and set Application_Header to use just created header
                 await appHeaderService.deleteAppHeaderSlug();
                 await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
