@@ -184,3 +184,51 @@ export class ResourceUdcField extends BaseUdcField {
         this.Type = 'Resource';
     }
 }
+
+export class ContainedArrayUdcField extends BaseUdcField {
+    constructor(
+        resource: string,
+        description = '',
+        mandatory = false,
+        itemsDescription = '',
+        itemsMandatory?: boolean,
+        itemsOptionalValues?: string[],
+        itemsIndexed?: boolean,
+        itemsIndexedFields?: { [key: string]: SchemeField },
+        optionalValues?: string[],
+        addonUUID?: string,
+        indexed?: boolean,
+        indexedFields?: { [key: string]: SchemeField },
+        keyword?: boolean,
+        sync?: boolean,
+        unique?: boolean,
+        fields?: { [key: string]: CollectionField },
+    ) {
+        super(
+            description,
+            mandatory,
+            'Array', // type
+            optionalValues ? optionalValues : undefined,
+            new BaseUdcField( // items
+                itemsDescription,
+                itemsMandatory,
+                'ContainedResource', // type
+                itemsOptionalValues,
+                undefined, // items
+                resource,
+                addonUUID,
+                itemsIndexed,
+                itemsIndexedFields,
+            ),
+            resource,
+            addonUUID ? addonUUID : undefined,
+            indexed ? indexed : undefined,
+            indexedFields ? indexedFields : undefined,
+            keyword ? keyword : undefined,
+            sync ? sync : undefined,
+            unique ? unique : undefined,
+            fields ? fields : undefined,
+        );
+        this.Type = 'Array';
+    }
+}
