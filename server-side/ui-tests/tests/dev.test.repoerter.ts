@@ -9,7 +9,7 @@ chai.use(promised);
 export async function DevTestReporter(email: string, password: string, client: Client, var_pass) {
     const generalService = new GeneralService(client);
     const testsAndJenkinsLinksList = {
-        COVGIGURTIONS: {
+        CONFIGURATIONS: {
             uuid: '84c999c3-84b7-454e-9a86-71b7abc96554',
             jenkins: {
                 prod: {

@@ -10,6 +10,7 @@ import { Flow, FlowStep } from '../pom/addons/flow.service';
 import { Browser } from '../utilities/browser';
 import { createFlowUsingE2E } from './flows_builder.test';
 import { OpenSyncService } from '../../services/open-sync.service';
+import E2EUtils from '../utilities/e2e_utils';
 
 chai.use(promised);
 
@@ -18,7 +19,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
     let driver: Browser;
     const flowStepScript = {
         actualScript: `export async function main(data){return 'evgeny123';}`,
-        scriptName: generalService.generateRandomString(5) + '_fowFlow',
+        scriptName: generalService.generateRandomString(5) + '_forFlow',
         scriptDesc: 'forFlow',
         params: '',
     };
@@ -146,7 +147,6 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
             });
             it(`1. Basic UI Test: Using Admin Login To WebApp, Create A Basic Flow, Set App. Header To Show This Flow And Notifications Button Using Legacy Resources And See It Changes The Header On Admin And Buyer`, async function () {
                 //1. login to webapp & create a flow
-                debugger;
                 const [flowKey, flowName] = await createFlowUsingE2E(
                     driver,
                     generalService,
@@ -185,7 +185,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(newlyCreatedHeader.Data.Published).to.equal(true);
                 expect(newlyCreatedHeader.Data.Draft).to.equal(true);
                 //5. adding button and menu using API (d&d)
-                const headerCreationRespone = await appHeaderService.configureMenuAndButtonViaAPI(
+                const [headerCreationRespone, menuKey] = await appHeaderService.configureMenuAndButtonViaAPI(
                     generalService,
                     headerObject,
                     appHeaderUUID,
@@ -226,36 +226,70 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(isMenuAndButtonAreCreated).to.equal(true);
                 //* check open sync object got this published header + cpi data schemes
                 const openSyncService = new OpenSyncService(generalService);
-                const sources = [
+                const sourcesForConfig = [
                     { AddonUUID: '84c999c3-84b7-454e-9a86-71b7abc96554', LastSyncDateTime: '1970-02-18T08:48:44.880Z' },
                 ];
-                const openSyncResponse = await openSyncService.getSyncedConfigurationObjectBasedOnResource(
-                    sources,
+                const openSyncResponseCofig = await openSyncService.getSyncedConfigurationObjectBasedOnResource(
+                    sourcesForConfig,
                     '1970-11-23T14:39:50.781Z',
                 );
-                const filteredForSyncedConfigObject = openSyncResponse.Body.Resources.Data.filter((data) =>
-                    data.Schema.Name.includes('synced_configuration_objects'),
+                const syncConfigObject = openSyncResponseCofig.Body.Resources.Data.find(
+                    (data) => data.Schema.Name === 'synced_configuration_objects',
                 );
-                const spesificHeaderWeJustCreated = filteredForSyncedConfigObject.Objects.filter(
-                    (obj) => obj.Key === appHeaderUUID,
-                );
-                debugger;
-                expect(spesificHeaderWeJustCreated.length).to.be.above(0); //to equal one?
-                //ConfigurationSchemeName - > AppHeaderConfiguration
-                //AddonUUID -> '9bc8af38-dd67-4d33-beb0-7d6b39a6e98d'
-                //Hidden -> false
+                const spesificHeaderWeJustCreated = syncConfigObject.Objects.filter((obj) => obj.Key === appHeaderUUID);
+                expect(spesificHeaderWeJustCreated.length).to.equal(1);
+                const headerElement = spesificHeaderWeJustCreated[0];
                 //Profile??
                 //Version??
-                //Data.Buttons
-                //Data.Menu
-                debugger;
+                expect(headerElement.ConfigurationSchemeName).to.equal('AppHeaderConfiguration');
+                expect(headerElement.AddonUUID).to.equal('9bc8af38-dd67-4d33-beb0-7d6b39a6e98d');
+                expect(headerElement.Hidden).to.equal(false);
+                expect(headerElement.Key).to.equal(headerElement.Draft);
+                expect(headerElement.Data.Published).to.equal(true);
+                expect(headerElement.Data.Menu.length).to.equal(1);
+                const headersMenu = headerElement.Data.Menu[0];
+                expect(headersMenu.Enabled).to.equal(true);
+                expect(headersMenu.Key).to.equal(menuKey);
+                expect(headersMenu.Flow.FlowKey).to.equal(flowKey);
+                expect(headersMenu.Title).to.equal(headerObject.Menu[0].Name);
+                expect(headerElement.Data.Buttons.length).to.equal(1);
+                const headersButton = headerElement.Data.Buttons[0];
+                expect(headersButton.Title).to.equal(headerObject.Button[0].ButtonName);
+                expect(headersButton.Key).to.equal(headerObject.Button[0].ButtonKey);
+                expect(headersButton.Visible).to.equal(true);
+                // const sourcesForSchemes = [
+                //     { AddonUUID: 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', LastSyncDateTime: '1970-02-18T08:48:44.880Z' },
+                // ];
+                // const openSyncResponseSchemes = await openSyncService.getSyncedConfigurationObjectBasedOnResource(
+                //     sourcesForSchemes,
+                //     '1970-11-23T14:39:50.781Z',
+                // );
+                // debugger;
+                // const syncSchemesObject = openSyncResponseSchemes.Body.Resources.Data.find(
+                //     (data) => data.Schema.Name === 'schemes',
+                // );
+                // debugger;
                 //8. goto slugs and set Application_Header to use just created header
                 await appHeaderService.deleteAppHeaderSlug();
                 await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
                 //9. re-sync
                 await webAppHomePage.reSyncApp();
-                debugger;
+                driver.sleep(1500);
                 //TODO: test that the button + menu are there on the header
+                const isHeaderPresentedCorrectly = await appHeaderService.UIValidateWeSeeAppHeader(
+                    headerObject.Button[0].ButtonName,
+                    headerObject.Menu[0].Name,
+                );
+                expect(isHeaderPresentedCorrectly).to.equal(true);
+                //logout & login again - see header is still presented
+                const e2eUiService = new E2EUtils(this.browser);
+                await e2eUiService.logOutLogIn_Web18(email, password);
+                debugger;
+                const isHeaderPresentedCorrectlyAfterLoggingOut = await appHeaderService.UIValidateWeSeeAppHeader(
+                    headerObject.Button[0].ButtonName,
+                    headerObject.Menu[0].Name,
+                );
+                expect(isHeaderPresentedCorrectlyAfterLoggingOut).to.equal(true);
                 //TODO: logout from Admin - login to buyer - tests the header
                 debugger;
             });
@@ -272,9 +306,6 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 const appHeaderConfigScheme = configSchemes.find((config) => config.AddonUUID === appHeaderUUID);
                 expect(appHeaderConfigScheme.length).to.equal(1);
                 debugger;
-            });
-            it(`3. Data Aspect API Test: Check the Data Inside The ADAL Inside Chache And All This`, async function () {
-                console.log('dsfsfds');
             });
         });
     });

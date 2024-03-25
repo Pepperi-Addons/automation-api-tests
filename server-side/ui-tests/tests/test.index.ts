@@ -113,6 +113,7 @@ import { ConfigurationTests } from './configurations.dev.test';
 import { SyncTests as SyncDevTests } from './sync.dev.test';
 import { DevTestReporter } from './dev.test.repoerter';
 import { SyncE2ETester } from './syncE2ETester.test';
+import { TestDataTestsNewSyncNoNebula } from '../../api-tests/test-service/test_data_new_syn_no_nebula';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -290,7 +291,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                 varKeyEU: varPassEU,
             },
         });
-        await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
+        await TestDataTestsNewSyncNoNebula(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
     }
