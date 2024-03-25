@@ -3,6 +3,7 @@ import { DataViewBaseField, UpsertUdcGridDataView } from '../ui-tests/blueprints
 import {
     ArrayOfPrimitiveTypeUdcField,
     BodyToUpsertUdcWithFields,
+    ContainedArrayUdcField,
     PrimitiveTypeUdcField,
     ResourceUdcField,
 } from '../ui-tests/blueprints/UdcBlueprints';
@@ -25,7 +26,7 @@ export interface UdcField {
 export interface CollectionDefinition {
     nameOfCollection: string;
     fieldsOfCollection: {
-        classType: 'Primitive' | 'Array' | 'Contained' | 'Resource';
+        classType: 'Primitive' | 'Array' | 'Contained' | 'Resource' | 'ContainedArray';
         fieldName: string;
         fieldTitle: string;
         field: CollectionField;
@@ -757,21 +758,41 @@ export class UDCService {
                     break;
                 case 'Contained':
                     break;
+                case 'ContainedArray':
+                    collectionFields[scheme.fieldName] = new ContainedArrayUdcField(
+                        scheme.field.Resource || '',
+                        scheme.field.Description || '',
+                        scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
+                        undefined, // itemsDescription
+                        undefined, // itemsMandatory
+                        undefined, // itemsOptionalValues
+                        undefined, // itemsIndexed
+                        undefined, // itemsIndexedFields
+                        scheme.field.OptionalValues,
+                        scheme.field.AddonUUID,
+                        scheme.field.Indexed, // indexed
+                        scheme.field.IndexedFields, // indexedFields
+                        scheme.field.Keyword, // keyword
+                        scheme.field.Sync,
+                        scheme.field.Unique,
+                        scheme.field.Fields,
+                    );
+                    break;
                 case 'Resource':
                     collectionFields[scheme.fieldName] = new ResourceUdcField(
-                        scheme.field.Resource ? scheme.field.Resource : '',
-                        scheme.field.Description ? scheme.field.Description : undefined,
-                        scheme.field.Mandatory ? scheme.field.Mandatory : undefined,
-                        scheme.field.Type ? scheme.field.Type : 'Resource',
-                        scheme.field.OptionalValues ? scheme.field.OptionalValues : undefined,
-                        scheme.field.Items ? scheme.field.Items : undefined,
-                        scheme.field.AddonUUID ? scheme.field.AddonUUID : undefined,
-                        scheme.field.Indexed ? scheme.field.Indexed : undefined,
-                        scheme.field.IndexedFields ? scheme.field.IndexedFields : undefined,
-                        scheme.field.Keyword ? scheme.field.Keyword : undefined,
-                        scheme.field.Sync ? scheme.field.Sync : undefined,
-                        scheme.field.Unique ? scheme.field.Unique : undefined,
-                        scheme.field.Fields ? scheme.field.Fields : undefined,
+                        scheme.field.Resource || '',
+                        scheme.field.Description,
+                        scheme.field.Mandatory,
+                        scheme.field.Type || 'Resource',
+                        scheme.field.OptionalValues,
+                        scheme.field.Items,
+                        scheme.field.AddonUUID,
+                        scheme.field.Indexed,
+                        scheme.field.IndexedFields,
+                        scheme.field.Keyword,
+                        scheme.field.Sync,
+                        scheme.field.Unique,
+                        scheme.field.Fields,
                     );
                     break;
 
