@@ -200,7 +200,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
     const testData = {
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
         'application-header': ['9bc8af38-dd67-4d33-beb0-7d6b39a6e98d', ''],
-        configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+        configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.39'],
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'],

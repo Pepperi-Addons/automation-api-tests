@@ -307,9 +307,6 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(appHeaderConfigScheme.length).to.equal(1);
                 debugger;
             });
-            it(`3. Data Aspect API Test: Check the Data Inside The ADAL Inside Chache And All This`, async function () {
-                console.log('dsfsfds');
-            });
         });
     });
 }
